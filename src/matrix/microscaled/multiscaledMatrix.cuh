@@ -2,12 +2,11 @@
 
 #include "multiscaledMatrix.hh"
 
-#if defined(__CUDACC__)
 template<int Bits, typename Real>
-__global__ MULCSR_LAUNCH_BOUNDS void mulcsr_quantize_block_kernel(
+__global__ __launch_bounds__(128, 4) void mulcsr_quantize_block_kernel(
     multiscaled_csr_matrix<Bits, Real> matrix,
     multiscaled_csr_block block,
-    const Real* MULCSR_RESTRICT values_by_nnz_block) {
+    const Real* __restrict__ values_by_nnz_block) {
     int row;
 
     row = static_cast<int>(blockIdx.x * blockDim.x + threadIdx.x) + block.row_begin;
@@ -19,10 +18,10 @@ __global__ MULCSR_LAUNCH_BOUNDS void mulcsr_quantize_block_kernel(
 }
 
 template<int Bits, typename Real>
-__global__ MULCSR_LAUNCH_BOUNDS void mulcsr_dequantize_block_kernel(
+__global__ __launch_bounds__(128, 4) void mulcsr_dequantize_block_kernel(
     multiscaled_csr_matrix<Bits, Real> matrix,
     multiscaled_csr_block block,
-    Real* MULCSR_RESTRICT values_by_nnz_block) {
+    Real* __restrict__ values_by_nnz_block) {
     int row;
 
     row = static_cast<int>(blockIdx.x * blockDim.x + threadIdx.x) + block.row_begin;
@@ -116,5 +115,3 @@ cudaError_t mulcsr_launch_dequantize_block_v100(
     }
     return mulcsr_launch_dequantize_block(matrix, block_index, values_by_nnz_block, stream);
 }
-#endif
-

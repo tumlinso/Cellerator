@@ -5,16 +5,6 @@
 
 #include "../matrix.hh"
 
-#if defined(__CUDACC__)
-#define USCSR_HD __host__ __device__ __forceinline__
-#define USCSR_RESTRICT __restrict__
-#define USCSR_LAUNCH_BOUNDS __launch_bounds__(128, 4)
-#else
-#define USCSR_HD inline
-#define USCSR_RESTRICT
-#define USCSR_LAUNCH_BOUNDS
-#endif
-
 template<int Bits>
 struct uscsr_traits;
 
@@ -26,11 +16,11 @@ struct uscsr_traits<8> {
         code_mask = 0xff
     };
 
-    USCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return row_nnz;
     }
 
-    USCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         return static_cast<unsigned int>(packed[local_index]);
     }
 };
@@ -43,11 +33,11 @@ struct uscsr_traits<4> {
         code_mask = 0x0f
     };
 
-    USCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return (row_nnz + 1) >> 1;
     }
 
-    USCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         int shift;
 
         shift = (local_index & 1) << 2;
@@ -63,11 +53,11 @@ struct uscsr_traits<2> {
         code_mask = 0x03
     };
 
-    USCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return (row_nnz + 3) >> 2;
     }
 
-    USCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         int shift;
 
         shift = (local_index & 3) << 1;
@@ -76,48 +66,36 @@ struct uscsr_traits<2> {
 };
 
 template<typename Real>
-USCSR_HD float uscsr_to_float(Real value) {
+__host__ __device__ __forceinline__ float uscsr_to_float(Real value) {
     return static_cast<float>(value);
 }
 
 template<>
-USCSR_HD float uscsr_to_float<__half>(__half value) {
+__host__ __device__ __forceinline__ float uscsr_to_float<__half>(__half value) {
     return __half2float(value);
 }
 
 template<typename Real>
-USCSR_HD Real uscsr_from_float(float value) {
+__host__ __device__ __forceinline__ Real uscsr_from_float(float value) {
     return static_cast<Real>(value);
 }
 
 template<>
-USCSR_HD __half uscsr_from_float<__half>(float value) {
+__host__ __device__ __forceinline__ __half uscsr_from_float<__half>(float value) {
     return __float2half(value);
 }
 
 template<typename T>
-USCSR_HD T uscsr_ldg(const T* ptr) {
-#if defined(__CUDA_ARCH__)
-    return __ldg(ptr);
-#else
+__host__ __device__ __forceinline__ T uscsr_ldg(const T* ptr) {
     return *ptr;
-#endif
 }
 
-USCSR_HD float uscsr_fast_div(float num, float den) {
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ == 700)
-    return __fdividef(num, den);
-#else
+__host__ __device__ __forceinline__ float uscsr_fast_div(float num, float den) {
     return num / den;
-#endif
 }
 
-USCSR_HD float uscsr_fast_fma(float a, float b, float c) {
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 700)
-    return __fmaf_rn(a, b, c);
-#else
+__host__ __device__ __forceinline__ float uscsr_fast_fma(float a, float b, float c) {
     return a * b + c;
-#endif
 }
 
 template<int Bits, typename Real>
@@ -148,7 +126,7 @@ struct uniscaled_csr_block {
 };
 
 template<int Bits, typename Real>
-USCSR_HD uniscaled_csr_matrix<Bits, Real> uscsr_make_matrix(
+__host__ __device__ __forceinline__ uniscaled_csr_matrix<Bits, Real> uscsr_make_matrix(
     int rows,
     int cols,
     int nnz,
@@ -176,7 +154,7 @@ USCSR_HD uniscaled_csr_matrix<Bits, Real> uscsr_make_matrix(
 }
 
 template<int Bits>
-USCSR_HD int uscsr_row_packed_nbytes(int row_nnz) {
+__host__ __device__ __forceinline__ int uscsr_row_packed_nbytes(int row_nnz) {
     return uscsr_traits<Bits>::row_bytes(row_nnz);
 }
 
@@ -203,7 +181,7 @@ next_row:
     goto next_row;
 }
 
-USCSR_HD int uscsr_block_count_for_rows(int rows, int rows_per_block) {
+__host__ __device__ __forceinline__ int uscsr_block_count_for_rows(int rows, int rows_per_block) {
     if (rows <= 0 || rows_per_block <= 0) {
         return 0;
     }
@@ -239,7 +217,7 @@ next_block:
 }
 
 template<int Bits, typename Real>
-USCSR_HD unsigned int uscsr_quantize_code(Real value, Real gene_scale) {
+__host__ __device__ __forceinline__ unsigned int uscsr_quantize_code(Real value, Real gene_scale) {
     float scale;
     float q;
     int rounded;
@@ -250,11 +228,7 @@ USCSR_HD unsigned int uscsr_quantize_code(Real value, Real gene_scale) {
     }
 
     q = uscsr_fast_div(uscsr_to_float(value), scale);
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 700)
-    rounded = __float2int_rn(q);
-#else
     rounded = (q >= 0.0f) ? static_cast<int>(q + 0.5f) : static_cast<int>(q - 0.5f);
-#endif
     if (rounded < 0) {
         return 0u;
     }
@@ -265,12 +239,12 @@ USCSR_HD unsigned int uscsr_quantize_code(Real value, Real gene_scale) {
 }
 
 template<int Bits, typename Real>
-USCSR_HD Real uscsr_dequantize_code(unsigned int code, Real gene_scale) {
+__host__ __device__ __forceinline__ Real uscsr_dequantize_code(unsigned int code, Real gene_scale) {
     return uscsr_from_float<Real>(uscsr_fast_fma(static_cast<float>(code), uscsr_to_float(gene_scale), 0.0f));
 }
 
 template<int Bits, typename Real>
-USCSR_HD uniscaled_csr_block uscsr_get_block(
+__host__ __device__ __forceinline__ uniscaled_csr_block uscsr_get_block(
     const uniscaled_csr_matrix<Bits, Real>* matrix,
     int block_index) {
     uniscaled_csr_block block;
@@ -307,7 +281,7 @@ USCSR_HD uniscaled_csr_block uscsr_get_block(
 }
 
 template<int Bits, typename Real>
-USCSR_HD int uscsr_find_in_row(const uniscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
+__host__ __device__ __forceinline__ int uscsr_find_in_row(const uniscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
     int begin;
     int end;
     int cursor;
@@ -332,7 +306,7 @@ scan_next:
 }
 
 template<int Bits, typename Real>
-USCSR_HD Real uscsr_get_value(const uniscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
+__host__ __device__ __forceinline__ Real uscsr_get_value(const uniscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
     int index;
     int local_index;
     int row_nnz_begin;
@@ -356,7 +330,7 @@ USCSR_HD Real uscsr_get_value(const uniscaled_csr_matrix<Bits, Real>* matrix, in
 }
 
 template<int Bits, typename Real>
-USCSR_HD void uscsr_pack_row_values(
+__host__ __device__ __forceinline__ void uscsr_pack_row_values(
     const uniscaled_csr_matrix<Bits, Real>* matrix,
     int row,
     int value_base,
@@ -476,7 +450,7 @@ pack2_quad:
 }
 
 template<int Bits, typename Real>
-USCSR_HD void uscsr_unpack_row_values(
+__host__ __device__ __forceinline__ void uscsr_unpack_row_values(
     const uniscaled_csr_matrix<Bits, Real>* matrix,
     int row,
     int value_base,

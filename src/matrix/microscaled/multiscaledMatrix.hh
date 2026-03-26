@@ -5,16 +5,6 @@
 
 #include "../matrix.hh"
 
-#if defined(__CUDACC__)
-#define MULCSR_HD __host__ __device__ __forceinline__
-#define MULCSR_RESTRICT __restrict__
-#define MULCSR_LAUNCH_BOUNDS __launch_bounds__(128, 4)
-#else
-#define MULCSR_HD inline
-#define MULCSR_RESTRICT
-#define MULCSR_LAUNCH_BOUNDS
-#endif
-
 template<int Bits>
 struct mulcsr_traits;
 
@@ -26,11 +16,11 @@ struct mulcsr_traits<8> {
         code_mask = 0xff
     };
 
-    MULCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return row_nnz;
     }
 
-    MULCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         return static_cast<unsigned int>(packed[local_index]);
     }
 };
@@ -43,11 +33,11 @@ struct mulcsr_traits<4> {
         code_mask = 0x0f
     };
 
-    MULCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return (row_nnz + 1) >> 1;
     }
 
-    MULCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         int shift;
 
         shift = (local_index & 1) << 2;
@@ -63,11 +53,11 @@ struct mulcsr_traits<2> {
         code_mask = 0x03
     };
 
-    MULCSR_HD static int row_bytes(int row_nnz) {
+    __host__ __device__ __forceinline__ static int row_bytes(int row_nnz) {
         return (row_nnz + 3) >> 2;
     }
 
-    MULCSR_HD static unsigned int unpack(const unsigned char* packed, int local_index) {
+    __host__ __device__ __forceinline__ static unsigned int unpack(const unsigned char* packed, int local_index) {
         int shift;
 
         shift = (local_index & 3) << 1;
@@ -76,48 +66,36 @@ struct mulcsr_traits<2> {
 };
 
 template<typename Real>
-MULCSR_HD float mulcsr_to_float(Real value) {
+__host__ __device__ __forceinline__ float mulcsr_to_float(Real value) {
     return static_cast<float>(value);
 }
 
 template<>
-MULCSR_HD float mulcsr_to_float<__half>(__half value) {
+__host__ __device__ __forceinline__ float mulcsr_to_float<__half>(__half value) {
     return __half2float(value);
 }
 
 template<typename Real>
-MULCSR_HD Real mulcsr_from_float(float value) {
+__host__ __device__ __forceinline__ Real mulcsr_from_float(float value) {
     return static_cast<Real>(value);
 }
 
 template<>
-MULCSR_HD __half mulcsr_from_float<__half>(float value) {
+__host__ __device__ __forceinline__ __half mulcsr_from_float<__half>(float value) {
     return __float2half(value);
 }
 
 template<typename T>
-MULCSR_HD T mulcsr_ldg(const T* ptr) {
-#if defined(__CUDA_ARCH__)
-    return __ldg(ptr);
-#else
+__host__ __device__ __forceinline__ T mulcsr_ldg(const T* ptr) {
     return *ptr;
-#endif
 }
 
-MULCSR_HD float mulcsr_fast_div(float num, float den) {
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ == 700)
-    return __fdividef(num, den);
-#else
+__host__ __device__ __forceinline__ float mulcsr_fast_div(float num, float den) {
     return num / den;
-#endif
 }
 
-MULCSR_HD float mulcsr_fast_fma(float a, float b, float c) {
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 700)
-    return __fmaf_rn(a, b, c);
-#else
+__host__ __device__ __forceinline__ float mulcsr_fast_fma(float a, float b, float c) {
     return a * b + c;
-#endif
 }
 
 template<int Bits, typename Real>
@@ -149,7 +127,7 @@ struct multiscaled_csr_block {
 };
 
 template<int Bits, typename Real>
-MULCSR_HD multiscaled_csr_matrix<Bits, Real> mulcsr_make_matrix(
+__host__ __device__ __forceinline__ multiscaled_csr_matrix<Bits, Real> mulcsr_make_matrix(
     int rows,
     int cols,
     int nnz,
@@ -179,7 +157,7 @@ MULCSR_HD multiscaled_csr_matrix<Bits, Real> mulcsr_make_matrix(
 }
 
 template<int Bits>
-MULCSR_HD int mulcsr_row_packed_nbytes(int row_nnz) {
+__host__ __device__ __forceinline__ int mulcsr_row_packed_nbytes(int row_nnz) {
     return mulcsr_traits<Bits>::row_bytes(row_nnz);
 }
 
@@ -206,7 +184,7 @@ next_row:
     goto next_row;
 }
 
-MULCSR_HD int mulcsr_block_count_for_rows(int rows, int rows_per_block) {
+__host__ __device__ __forceinline__ int mulcsr_block_count_for_rows(int rows, int rows_per_block) {
     if (rows <= 0 || rows_per_block <= 0) {
         return 0;
     }
@@ -242,7 +220,7 @@ next_block:
 }
 
 template<int Bits, typename Real>
-MULCSR_HD unsigned int mulcsr_quantize_code(Real value, Real column_scale, Real row_offset) {
+__host__ __device__ __forceinline__ unsigned int mulcsr_quantize_code(Real value, Real column_scale, Real row_offset) {
     float scale;
     float q;
     int rounded;
@@ -253,11 +231,7 @@ MULCSR_HD unsigned int mulcsr_quantize_code(Real value, Real column_scale, Real 
     }
 
     q = mulcsr_fast_div(mulcsr_to_float(value) - mulcsr_to_float(row_offset), scale);
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 700)
-    rounded = __float2int_rn(q);
-#else
     rounded = (q >= 0.0f) ? static_cast<int>(q + 0.5f) : static_cast<int>(q - 0.5f);
-#endif
     if (rounded < 0) {
         return 0u;
     }
@@ -268,13 +242,13 @@ MULCSR_HD unsigned int mulcsr_quantize_code(Real value, Real column_scale, Real 
 }
 
 template<int Bits, typename Real>
-MULCSR_HD Real mulcsr_dequantize_code(unsigned int code, Real column_scale, Real row_offset) {
+__host__ __device__ __forceinline__ Real mulcsr_dequantize_code(unsigned int code, Real column_scale, Real row_offset) {
     return mulcsr_from_float<Real>(
         mulcsr_fast_fma(static_cast<float>(code), mulcsr_to_float(column_scale), mulcsr_to_float(row_offset)));
 }
 
 template<int Bits, typename Real>
-MULCSR_HD multiscaled_csr_block mulcsr_get_block(
+__host__ __device__ __forceinline__ multiscaled_csr_block mulcsr_get_block(
     const multiscaled_csr_matrix<Bits, Real>* matrix,
     int block_index) {
     multiscaled_csr_block block;
@@ -311,7 +285,7 @@ MULCSR_HD multiscaled_csr_block mulcsr_get_block(
 }
 
 template<int Bits, typename Real>
-MULCSR_HD int mulcsr_find_in_row(const multiscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
+__host__ __device__ __forceinline__ int mulcsr_find_in_row(const multiscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
     int begin;
     int end;
     int cursor;
@@ -336,7 +310,7 @@ scan_next:
 }
 
 template<int Bits, typename Real>
-MULCSR_HD Real mulcsr_get_value(const multiscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
+__host__ __device__ __forceinline__ Real mulcsr_get_value(const multiscaled_csr_matrix<Bits, Real>* matrix, int row, int column) {
     int index;
     int local_index;
     int row_nnz_begin;
@@ -363,7 +337,7 @@ MULCSR_HD Real mulcsr_get_value(const multiscaled_csr_matrix<Bits, Real>* matrix
 }
 
 template<int Bits, typename Real>
-MULCSR_HD void mulcsr_pack_row_values(
+__host__ __device__ __forceinline__ void mulcsr_pack_row_values(
     const multiscaled_csr_matrix<Bits, Real>* matrix,
     int row,
     int value_base,
@@ -497,7 +471,7 @@ pack2_quad:
 }
 
 template<int Bits, typename Real>
-MULCSR_HD void mulcsr_unpack_row_values(
+__host__ __device__ __forceinline__ void mulcsr_unpack_row_values(
     const multiscaled_csr_matrix<Bits, Real>* matrix,
     int row,
     int value_base,

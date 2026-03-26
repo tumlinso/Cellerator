@@ -51,11 +51,7 @@ __host__ __device__ __forceinline__ Real real_from_float(float value) {
 
 template<typename T>
 __host__ __device__ __forceinline__ T ldg(const T *ptr) {
-#if defined(__CUDA_ARCH__)
-    return __ldg(ptr);
-#else
     return *ptr;
-#endif
 }
 
 __host__ __device__ __forceinline__ Index find_offset_span(Index row, const Index *offsets, Index count) {
