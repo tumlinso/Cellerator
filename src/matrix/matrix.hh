@@ -10,23 +10,6 @@
 
 namespace matrix {
 
-#if defined(__CUDACC__)
-#define MATRIX_HD __host__ __device__ __forceinline__
-#define MATRIX_H __host__ __forceinline__
-#define MATRIX_D __device__ __forceinline__
-#define MATRIX_RESTRICT __restrict__
-#elif defined(_MSC_VER)
-#define MATRIX_HD inline
-#define MATRIX_H inline
-#define MATRIX_D inline
-#define MATRIX_RESTRICT __restrict
-#else
-#define MATRIX_HD inline
-#define MATRIX_H inline
-#define MATRIX_D inline
-#define MATRIX_RESTRICT __restrict__
-#endif
-
 typedef __half Real;
 typedef std::uint32_t Index;
 typedef std::int32_t DiagIndex;
@@ -58,16 +41,16 @@ struct header {
     Index nnz;
 };
 
-MATRIX_HD float real_to_float(Real value) {
+__host__ __device__ __forceinline__ float real_to_float(Real value) {
     return __half2float(value);
 }
 
-MATRIX_HD Real real_from_float(float value) {
+__host__ __device__ __forceinline__ Real real_from_float(float value) {
     return __float2half(value);
 }
 
 template<typename T>
-MATRIX_HD T ldg(const T *ptr) {
+__host__ __device__ __forceinline__ T ldg(const T *ptr) {
 #if defined(__CUDA_ARCH__)
     return __ldg(ptr);
 #else
@@ -75,7 +58,7 @@ MATRIX_HD T ldg(const T *ptr) {
 #endif
 }
 
-MATRIX_HD Index find_offset_span(Index row, const Index *offsets, Index count) {
+__host__ __device__ __forceinline__ Index find_offset_span(Index row, const Index *offsets, Index count) {
     Index lo = 0;
     Index hi = count;
     while (lo < hi) {
@@ -90,13 +73,13 @@ MATRIX_HD Index find_offset_span(Index row, const Index *offsets, Index count) {
 }
 
 template<typename ValueT>
-MATRIX_HD void require_fp_storage() {
+__host__ __device__ __forceinline__ void require_fp_storage() {
     static_assert(sizeof(ValueT) == 2 || sizeof(ValueT) == 4,
                   "matrix values must be 16-bit or 32-bit floating storage");
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t value_bytes() {
+__host__ __device__ __forceinline__ std::size_t value_bytes() {
     require_fp_storage<ValueT>();
     return sizeof(ValueT);
 }
@@ -128,24 +111,24 @@ struct csr_base {
 namespace matrix {
 
 template<typename MatrixT>
-MATRIX_HD Index part_aux(const MatrixT *) {
+__host__ __device__ __forceinline__ Index part_aux(const MatrixT *) {
     return 0;
 }
 
 template<typename ValueT>
-MATRIX_HD Index part_aux(const sparse::dia<ValueT> *m) {
+__host__ __device__ __forceinline__ Index part_aux(const sparse::dia<ValueT> *m) {
     return m->num_diagonals;
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t part_bytes(const sharded<dense<ValueT> > *m, Index partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<dense<ValueT> > *m, Index partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(dense<ValueT>) + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t part_bytes(const sharded<sparse::csr<ValueT> > *m, Index partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::csr<ValueT> > *m, Index partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::csr<ValueT>)
@@ -155,7 +138,7 @@ MATRIX_HD std::size_t part_bytes(const sharded<sparse::csr<ValueT> > *m, Index p
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t part_bytes(const sharded<sparse::coo<ValueT> > *m, Index partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::coo<ValueT> > *m, Index partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::coo<ValueT>)
@@ -165,7 +148,7 @@ MATRIX_HD std::size_t part_bytes(const sharded<sparse::coo<ValueT> > *m, Index p
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t part_bytes(const sharded<sparse::dia<ValueT> > *m, Index partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::dia<ValueT> > *m, Index partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::dia<ValueT>)
@@ -174,28 +157,28 @@ MATRIX_HD std::size_t part_bytes(const sharded<sparse::dia<ValueT> > *m, Index p
 }
 
 template<typename ValueT>
-MATRIX_H void destroy(dense<ValueT> *m) {
+__host__ __forceinline__ void destroy(dense<ValueT> *m) {
     if (m == 0) return;
     clear(m);
     delete m;
 }
 
 template<typename ValueT>
-MATRIX_H void destroy(sparse::csr<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::csr<ValueT> *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;
 }
 
 template<typename ValueT>
-MATRIX_H void destroy(sparse::coo<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::coo<ValueT> *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;
 }
 
 template<typename ValueT>
-MATRIX_H void destroy(sparse::dia<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::dia<ValueT> *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;
