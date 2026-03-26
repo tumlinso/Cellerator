@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../matrix.cuh"
+
 namespace matrix {
 namespace sparse {
 

@@ -1,4 +1,4 @@
-#include "matrix_io.hh"
+#include "matrix_io.cuh"
 
 #include <cstdio>
 #include <cstdlib>

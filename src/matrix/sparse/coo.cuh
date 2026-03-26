@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../matrix.cuh"
+
 namespace matrix {
 namespace sparse {
 
@@ -19,7 +21,7 @@ struct alignas(16) coo {
 };
 
 template<typename Real>
-MATRIX_HD void init(coo<Real> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 0, Index nnz = 0) {
+__host__ __device__ __forceinline__ void init(coo<Real> * __restrict__ m, Index rows = 0, Index cols = 0, Index nnz = 0) {
     require_fp_storage<Real>();
     m->rows = rows;
     m->cols = cols;
@@ -31,7 +33,7 @@ MATRIX_HD void init(coo<Real> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 
 }
 
 template<typename Real>
-MATRIX_HD std::size_t bytes(const coo<Real> * MATRIX_RESTRICT m) {
+__host__ __device__ __forceinline__ std::size_t bytes(const coo<Real> * __restrict__ m) {
     return sizeof(*m)
         + (std::size_t) m->nnz * sizeof(Index)
         + (std::size_t) m->nnz * sizeof(Index)
@@ -39,7 +41,7 @@ MATRIX_HD std::size_t bytes(const coo<Real> * MATRIX_RESTRICT m) {
 }
 
 template<typename Real>
-MATRIX_H void clear(coo<Real> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ void clear(coo<Real> * __restrict__ m) {
     std::free(m->rowIdx);
     std::free(m->colIdx);
     std::free(m->val);
@@ -53,7 +55,7 @@ MATRIX_H void clear(coo<Real> * MATRIX_RESTRICT m) {
 }
 
 template<typename Real>
-MATRIX_H int allocate(coo<Real> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ int allocate(coo<Real> * __restrict__ m) {
     std::free(m->rowIdx);
     std::free(m->colIdx);
     std::free(m->val);
@@ -77,23 +79,23 @@ MATRIX_H int allocate(coo<Real> * MATRIX_RESTRICT m) {
 }
 
 template<typename Real>
-MATRIX_HD const Real *at(const coo<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ const Real *at(const coo<Real> * __restrict__ m, Index r, Index c) {
     for (Index i = 0; i < m->nnz; ++i) {
-        if (ldg(m->rowIdx + i) == r && ldg(m->colIdx + i) == c) return m->val + i;
+        if (m->rowIdx[i] == r && m->colIdx[i] == c) return m->val + i;
     }
     return 0;
 }
 
 template<typename Real>
-MATRIX_HD Real *at(coo<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ Real *at(coo<Real> * __restrict__ m, Index r, Index c) {
     for (Index i = 0; i < m->nnz; ++i) {
-        if (ldg(m->rowIdx + i) == r && ldg(m->colIdx + i) == c) return m->val + i;
+        if (m->rowIdx[i] == r && m->colIdx[i] == c) return m->val + i;
     }
     return 0;
 }
 
 template<typename Real>
-MATRIX_H int concatenate_rows(coo<Real> * MATRIX_RESTRICT dst, const coo<Real> * MATRIX_RESTRICT top, const coo<Real> * MATRIX_RESTRICT bottom) {
+__host__ __forceinline__ int concatenate_rows(coo<Real> * __restrict__ dst, const coo<Real> * __restrict__ top, const coo<Real> * __restrict__ bottom) {
     if (top->cols != 0 && bottom->cols != 0 && top->cols != bottom->cols) {
         std::fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;
@@ -123,7 +125,7 @@ MATRIX_H int concatenate_rows(coo<Real> * MATRIX_RESTRICT dst, const coo<Real> *
 }
 
 template<typename Real>
-MATRIX_H int append_rows(coo<Real> * MATRIX_RESTRICT dst, const coo<Real> * MATRIX_RESTRICT src) {
+__host__ __forceinline__ int append_rows(coo<Real> * __restrict__ dst, const coo<Real> * __restrict__ src) {
     if (dst->cols != 0 && src->cols != 0 && dst->cols != src->cols) {
         std::fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;

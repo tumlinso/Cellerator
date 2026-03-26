@@ -17,7 +17,7 @@ struct alignas(16) dense {
 };
 
 template<typename ValueT>
-MATRIX_HD void init(dense<ValueT> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 0) {
+__host__ __device__ __forceinline__ void init(dense<ValueT> * __restrict__ m, Index rows = 0, Index cols = 0) {
     require_fp_storage<ValueT>();
     m->rows = rows;
     m->cols = cols;
@@ -28,12 +28,12 @@ MATRIX_HD void init(dense<ValueT> * MATRIX_RESTRICT m, Index rows = 0, Index col
 }
 
 template<typename ValueT>
-MATRIX_HD std::size_t bytes(const dense<ValueT> * MATRIX_RESTRICT m) {
+__host__ __device__ __forceinline__ std::size_t bytes(const dense<ValueT> * __restrict__ m) {
     return sizeof(*m) + (std::size_t) m->nnz * sizeof(ValueT);
 }
 
 template<typename ValueT>
-MATRIX_H void clear(dense<ValueT> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ void clear(dense<ValueT> * __restrict__ m) {
     std::free(m->val);
     m->val = 0;
     m->ld = 0;
@@ -44,7 +44,7 @@ MATRIX_H void clear(dense<ValueT> * MATRIX_RESTRICT m) {
 }
 
 template<typename ValueT>
-MATRIX_H int allocate(dense<ValueT> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ int allocate(dense<ValueT> * __restrict__ m) {
     std::free(m->val);
     m->val = 0;
     m->nnz = m->rows * m->cols;
@@ -55,12 +55,12 @@ MATRIX_H int allocate(dense<ValueT> * MATRIX_RESTRICT m) {
 }
 
 template<typename ValueT>
-MATRIX_HD const ValueT *at(const dense<ValueT> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ const ValueT *at(const dense<ValueT> * __restrict__ m, Index r, Index c) {
     return m->val + r * m->ld + c;
 }
 
 template<typename ValueT>
-MATRIX_HD ValueT *at(dense<ValueT> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ ValueT *at(dense<ValueT> * __restrict__ m, Index r, Index c) {
     return m->val + r * m->ld + c;
 }
 

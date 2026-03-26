@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <cstdlib>
 
-#include "matrix.hh"
+#include "matrix.cuh"
 
 namespace matrix {
 

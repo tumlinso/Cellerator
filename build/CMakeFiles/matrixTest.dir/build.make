@@ -70,32 +70,34 @@ include CMakeFiles/matrixTest.dir/progress.make
 include CMakeFiles/matrixTest.dir/flags.make
 
 CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o: CMakeFiles/matrixTest.dir/flags.make
+CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o: CMakeFiles/matrixTest.dir/includes_CUDA.rsp
 CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o: /home/tumlinson/Software/Cellerator/tests/matrix_test.cc
 CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o: CMakeFiles/matrixTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o -MF CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o.d -o CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o -c /home/tumlinson/Software/Cellerator/tests/matrix_test.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o"
+	/usr/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o -MF CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o.d -x cu -c /home/tumlinson/Software/Cellerator/tests/matrix_test.cc -o CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o
 
 CMakeFiles/matrixTest.dir/tests/matrix_test.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/matrixTest.dir/tests/matrix_test.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tumlinson/Software/Cellerator/tests/matrix_test.cc > CMakeFiles/matrixTest.dir/tests/matrix_test.cc.i
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/matrixTest.dir/tests/matrix_test.cc.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
 CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tumlinson/Software/Cellerator/tests/matrix_test.cc -o CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/flags.make
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/includes_CUDA.rsp
 CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc
 CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o -MF CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o.d -o CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o -c /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o"
+	/usr/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o -MF CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o.d -x cu -c /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc -o CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
 
 CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc > CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
 CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc -o CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s"
+	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 # Object files for target matrixTest
 matrixTest_OBJECTS = \
@@ -108,8 +110,10 @@ matrixTest_EXTERNAL_OBJECTS =
 matrixTest: CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o
 matrixTest: CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
 matrixTest: CMakeFiles/matrixTest.dir/build.make
+matrixTest: CMakeFiles/matrixTest.dir/linkLibs.rsp
+matrixTest: CMakeFiles/matrixTest.dir/objects1.rsp
 matrixTest: CMakeFiles/matrixTest.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable matrixTest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CUDA executable matrixTest"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/matrixTest.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

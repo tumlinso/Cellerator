@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 
-#include "matrix_io.hh"
+#include "matrix_io.cuh"
 
 namespace matrix {
 namespace device {
@@ -70,13 +70,13 @@ struct alignas(16) dia_view {
 };
 
 template<typename MatrixT>
-MATRIX_H void init(shard_cache<MatrixT> *c) {
+__host__ __forceinline__ void init(shard_cache<MatrixT> *c) {
     c->capacity = 0;
     c->parts = 0;
 }
 
 template<typename MatrixT>
-MATRIX_H void clear(shard_cache<MatrixT> *c) {
+__host__ __forceinline__ void clear(shard_cache<MatrixT> *c) {
     Index i = 0;
     if (c->parts != 0) {
         for (i = 0; i < c->capacity; ++i) {
@@ -89,7 +89,7 @@ MATRIX_H void clear(shard_cache<MatrixT> *c) {
 }
 
 template<typename MatrixT>
-MATRIX_H int reserve(shard_cache<MatrixT> *c, Index capacity) {
+__host__ __forceinline__ int reserve(shard_cache<MatrixT> *c, Index capacity) {
     part_record<MatrixT> *records = 0;
     Index i = 0;
 
@@ -106,7 +106,7 @@ MATRIX_H int reserve(shard_cache<MatrixT> *c, Index capacity) {
 }
 
 template<typename MatrixT>
-MATRIX_H void zero_record(part_record<MatrixT> *record) {
+__host__ __forceinline__ void zero_record(part_record<MatrixT> *record) {
     record->view = 0;
     record->a0 = 0;
     record->a1 = 0;
@@ -115,7 +115,7 @@ MATRIX_H void zero_record(part_record<MatrixT> *record) {
 }
 
 template<typename ValueT>
-MATRIX_H cudaError_t upload(const ::matrix::dense<ValueT> *src, part_record< ::matrix::dense<ValueT> > *record) {
+__host__ __forceinline__ cudaError_t upload(const ::matrix::dense<ValueT> *src, part_record< ::matrix::dense<ValueT> > *record) {
     dense_view<ValueT> host;
     dense_view<ValueT> *deviceView = 0;
     cudaError_t err = cudaSuccess;
@@ -151,7 +151,7 @@ fail:
 }
 
 template<typename ValueT>
-MATRIX_H cudaError_t upload(const ::matrix::sparse::csr<ValueT> *src, part_record< ::matrix::sparse::csr<ValueT> > *record) {
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::csr<ValueT> *src, part_record< ::matrix::sparse::csr<ValueT> > *record) {
     csr_view<ValueT> host;
     csr_view<ValueT> *deviceView = 0;
     cudaError_t err = cudaSuccess;
@@ -203,7 +203,7 @@ fail:
 }
 
 template<typename ValueT>
-MATRIX_H cudaError_t upload(const ::matrix::sparse::coo<ValueT> *src, part_record< ::matrix::sparse::coo<ValueT> > *record) {
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::coo<ValueT> *src, part_record< ::matrix::sparse::coo<ValueT> > *record) {
     coo_view<ValueT> host;
     coo_view<ValueT> *deviceView = 0;
     cudaError_t err = cudaSuccess;
@@ -252,7 +252,7 @@ fail:
 }
 
 template<typename ValueT>
-MATRIX_H cudaError_t upload(const ::matrix::sparse::dia<ValueT> *src, part_record< ::matrix::sparse::dia<ValueT> > *record) {
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::dia<ValueT> *src, part_record< ::matrix::sparse::dia<ValueT> > *record) {
     dia_view<ValueT> host;
     dia_view<ValueT> *deviceView = 0;
     cudaError_t err = cudaSuccess;
@@ -297,7 +297,7 @@ fail:
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t release(part_record<MatrixT> *record) {
+__host__ __forceinline__ cudaError_t release(part_record<MatrixT> *record) {
     cudaError_t err = cudaSuccess;
 
     if (record->a2 != 0) {
@@ -321,12 +321,12 @@ MATRIX_H cudaError_t release(part_record<MatrixT> *record) {
 }
 
 template<typename ValueT>
-MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense<ValueT> > *view, Index partId) {
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense<ValueT> > *view, Index partId) {
     return sizeof(dense_view<ValueT>) + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
 template<typename ValueT>
-MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr<ValueT> > *view, Index partId) {
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr<ValueT> > *view, Index partId) {
     return sizeof(csr_view<ValueT>)
         + (std::size_t) (view->part_rows[partId] + 1) * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
@@ -334,7 +334,7 @@ MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse
 }
 
 template<typename ValueT>
-MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo<ValueT> > *view, Index partId) {
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo<ValueT> > *view, Index partId) {
     return sizeof(coo_view<ValueT>)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
@@ -342,14 +342,14 @@ MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse
 }
 
 template<typename ValueT>
-MATRIX_H std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia<ValueT> > *view, Index partId) {
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia<ValueT> > *view, Index partId) {
     return sizeof(dia_view<ValueT>)
         + (std::size_t) view->part_aux[partId] * sizeof(DiagIndex)
         + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
 template<typename MatrixT>
-MATRIX_H std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT> *view, Index shardId) {
+__host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT> *view, Index shardId) {
     Index begin = 0;
     Index end = 0;
     Index i = 0;
@@ -363,7 +363,7 @@ MATRIX_H std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT> *view, 
 }
 
 template<typename MatrixT>
-MATRIX_H int set_shards_by_device_bytes(::matrix::sharded<MatrixT> *view, std::size_t max_bytes) {
+__host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<MatrixT> *view, std::size_t max_bytes) {
     std::size_t used = 0;
     std::size_t bytes = 0;
     Index shardCount = 0;
@@ -392,7 +392,7 @@ MATRIX_H int set_shards_by_device_bytes(::matrix::sharded<MatrixT> *view, std::s
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index partId, int deviceId) {
+__host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index partId, int deviceId) {
     cudaError_t err = cudaSuccess;
 
     if (partId >= view->num_parts || partId >= cache->capacity || view->parts[partId] == 0) return cudaErrorInvalidValue;
@@ -410,7 +410,7 @@ MATRIX_H cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sh
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t release_part(shard_cache<MatrixT> *cache, Index partId) {
+__host__ __forceinline__ cudaError_t release_part(shard_cache<MatrixT> *cache, Index partId) {
     cudaError_t err = cudaSuccess;
 
     if (partId >= cache->capacity || cache->parts[partId].view == 0) return cudaSuccess;
@@ -420,7 +420,7 @@ MATRIX_H cudaError_t release_part(shard_cache<MatrixT> *cache, Index partId) {
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId, int deviceId) {
+__host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId, int deviceId) {
     Index begin = 0;
     Index end = 0;
     Index i = 0;
@@ -437,7 +437,7 @@ MATRIX_H cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::s
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId) {
+__host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId) {
     Index begin = 0;
     Index end = 0;
     Index i = 0;
@@ -454,7 +454,7 @@ MATRIX_H cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t stage_part(shard_cache<MatrixT> *cache,
+__host__ __forceinline__ cudaError_t stage_part(shard_cache<MatrixT> *cache,
                               ::matrix::sharded<MatrixT> *view,
                               const ::matrix::shard_storage *files,
                               Index partId,
@@ -481,7 +481,7 @@ MATRIX_H cudaError_t stage_part(shard_cache<MatrixT> *cache,
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t stage_shard(shard_cache<MatrixT> *cache,
+__host__ __forceinline__ cudaError_t stage_shard(shard_cache<MatrixT> *cache,
                                ::matrix::sharded<MatrixT> *view,
                                const ::matrix::shard_storage *files,
                                Index shardId,
@@ -503,7 +503,7 @@ MATRIX_H cudaError_t stage_shard(shard_cache<MatrixT> *cache,
 }
 
 template<typename MatrixT>
-MATRIX_H cudaError_t swap_shard(shard_cache<MatrixT> *cache,
+__host__ __forceinline__ cudaError_t swap_shard(shard_cache<MatrixT> *cache,
                               ::matrix::sharded<MatrixT> *view,
                               const ::matrix::shard_storage *files,
                               Index outShardId,

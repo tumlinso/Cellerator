@@ -1,5 +1,5 @@
-#include "../src/matrix/matrix.hh"
-#include "../src/matrix/matrix_io.hh"
+#include "../src/matrix/matrix.cuh"
+#include "../src/matrix/matrix_io.cuh"
 
 #include <cstdio>
 

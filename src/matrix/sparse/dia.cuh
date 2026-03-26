@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../matrix.cuh"
+
 namespace matrix {
 namespace sparse {
 
@@ -19,7 +21,7 @@ struct alignas(16) dia {
 };
 
 template<typename Real>
-MATRIX_HD void init(dia<Real> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 0, Index nnz = 0) {
+__host__ __device__ __forceinline__ void init(dia<Real> * __restrict__ m, Index rows = 0, Index cols = 0, Index nnz = 0) {
     require_fp_storage<Real>();
     m->rows = rows;
     m->cols = cols;
@@ -31,14 +33,14 @@ MATRIX_HD void init(dia<Real> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 
 }
 
 template<typename Real>
-MATRIX_HD std::size_t bytes(const dia<Real> * MATRIX_RESTRICT m) {
+__host__ __device__ __forceinline__ std::size_t bytes(const dia<Real> * __restrict__ m) {
     return sizeof(*m)
         + (std::size_t) m->num_diagonals * sizeof(DiagIndex)
         + (std::size_t) m->nnz * sizeof(Real);
 }
 
 template<typename Real>
-MATRIX_H void clear(dia<Real> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ void clear(dia<Real> * __restrict__ m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
@@ -51,7 +53,7 @@ MATRIX_H void clear(dia<Real> * MATRIX_RESTRICT m) {
 }
 
 template<typename Real>
-MATRIX_H int allocate(dia<Real> * MATRIX_RESTRICT m) {
+__host__ __forceinline__ int allocate(dia<Real> * __restrict__ m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
@@ -68,19 +70,19 @@ MATRIX_H int allocate(dia<Real> * MATRIX_RESTRICT m) {
 }
 
 template<typename Real>
-MATRIX_HD const Real *at(const dia<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ const Real *at(const dia<Real> * __restrict__ m, Index r, Index c) {
     const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
     for (Index i = 0; i < m->num_diagonals; ++i) {
-        if (ldg(m->offsets + i) == offset) return m->val + i * m->rows + r;
+        if (m->offsets[i] == offset) return m->val + i * m->rows + r;
     }
     return 0;
 }
 
 template<typename Real>
-MATRIX_HD Real *at(dia<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+__host__ __device__ __forceinline__ Real *at(dia<Real> * __restrict__ m, Index r, Index c) {
     const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
     for (Index i = 0; i < m->num_diagonals; ++i) {
-        if (ldg(m->offsets + i) == offset) return m->val + i * m->rows + r;
+        if (m->offsets[i] == offset) return m->val + i * m->rows + r;
     }
     return 0;
 }
