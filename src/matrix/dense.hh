@@ -3,7 +3,7 @@
 namespace matrix {
 
 template<typename ValueT = Real>
-struct dense {
+struct alignas(16) dense {
     typedef ValueT value_type;
     typedef Index index_type;
 
@@ -17,7 +17,7 @@ struct dense {
 };
 
 template<typename ValueT>
-inline void init(dense<ValueT> *m, Index rows = 0, Index cols = 0) {
+MATRIX_HD void init(dense<ValueT> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 0) {
     require_fp_storage<ValueT>();
     m->rows = rows;
     m->cols = cols;
@@ -28,12 +28,12 @@ inline void init(dense<ValueT> *m, Index rows = 0, Index cols = 0) {
 }
 
 template<typename ValueT>
-inline std::size_t bytes(const dense<ValueT> *m) {
+MATRIX_HD std::size_t bytes(const dense<ValueT> * MATRIX_RESTRICT m) {
     return sizeof(*m) + (std::size_t) m->nnz * sizeof(ValueT);
 }
 
 template<typename ValueT>
-inline void clear(dense<ValueT> *m) {
+MATRIX_H void clear(dense<ValueT> * MATRIX_RESTRICT m) {
     std::free(m->val);
     m->val = 0;
     m->ld = 0;
@@ -44,7 +44,7 @@ inline void clear(dense<ValueT> *m) {
 }
 
 template<typename ValueT>
-inline int allocate(dense<ValueT> *m) {
+MATRIX_H int allocate(dense<ValueT> * MATRIX_RESTRICT m) {
     std::free(m->val);
     m->val = 0;
     m->nnz = m->rows * m->cols;
@@ -55,12 +55,12 @@ inline int allocate(dense<ValueT> *m) {
 }
 
 template<typename ValueT>
-inline const ValueT *at(const dense<ValueT> *m, Index r, Index c) {
+MATRIX_HD const ValueT *at(const dense<ValueT> * MATRIX_RESTRICT m, Index r, Index c) {
     return m->val + r * m->ld + c;
 }
 
 template<typename ValueT>
-inline ValueT *at(dense<ValueT> *m, Index r, Index c) {
+MATRIX_HD ValueT *at(dense<ValueT> * MATRIX_RESTRICT m, Index r, Index c) {
     return m->val + r * m->ld + c;
 }
 

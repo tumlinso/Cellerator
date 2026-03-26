@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <cuda_fp16.h>
-#include <cuda_runtime.h>
+#include "../matrix.hh"
 
 #if defined(__CUDACC__)
 #define USCSR_HD __host__ __device__ __forceinline__
@@ -122,7 +121,7 @@ USCSR_HD float uscsr_fast_fma(float a, float b, float c) {
 }
 
 template<int Bits, typename Real>
-struct uniscaled_csr_matrix {
+struct uniscaled_csr_matrix : public matrix::sparse::csr_base<int, const int*, const int*> {
     static_assert(Bits == 8 || Bits == 4 || Bits == 2, "Bits must be 8, 4, or 2");
 
     enum {
@@ -131,13 +130,8 @@ struct uniscaled_csr_matrix {
         code_mask = uscsr_traits<Bits>::code_mask
     };
 
-    int rows;
-    int cols;
-    int nnz;
     int block_count;
-    const int* row_ptr;
     const int* packed_row_ptr;
-    const int* col_idx;
     const int* block_row_ptr;
     unsigned char* packed_values;
     const Real* gene_scales;
@@ -170,10 +164,11 @@ USCSR_HD uniscaled_csr_matrix<Bits, Real> uscsr_make_matrix(
     matrix.rows = rows;
     matrix.cols = cols;
     matrix.nnz = nnz;
+    matrix.format = matrix::format_csr;
     matrix.block_count = block_count;
-    matrix.row_ptr = row_ptr;
+    matrix.rowPtr = row_ptr;
     matrix.packed_row_ptr = packed_row_ptr;
-    matrix.col_idx = col_idx;
+    matrix.colIdx = col_idx;
     matrix.block_row_ptr = block_row_ptr;
     matrix.packed_values = packed_values;
     matrix.gene_scales = gene_scales;
@@ -304,8 +299,8 @@ USCSR_HD uniscaled_csr_block uscsr_get_block(
         block.row_end = uscsr_ldg(matrix->block_row_ptr + block_index + 1);
     }
 
-    block.nnz_begin = uscsr_ldg(matrix->row_ptr + block.row_begin);
-    block.nnz_end = uscsr_ldg(matrix->row_ptr + block.row_end);
+    block.nnz_begin = uscsr_ldg(matrix->rowPtr + block.row_begin);
+    block.nnz_end = uscsr_ldg(matrix->rowPtr + block.row_end);
     block.packed_begin = uscsr_ldg(matrix->packed_row_ptr + block.row_begin);
     block.packed_end = uscsr_ldg(matrix->packed_row_ptr + block.row_end);
     return block;
@@ -321,15 +316,15 @@ USCSR_HD int uscsr_find_in_row(const uniscaled_csr_matrix<Bits, Real>* matrix, i
         return -1;
     }
 
-    begin = uscsr_ldg(matrix->row_ptr + row);
-    end = uscsr_ldg(matrix->row_ptr + row + 1);
+    begin = uscsr_ldg(matrix->rowPtr + row);
+    end = uscsr_ldg(matrix->rowPtr + row + 1);
     cursor = begin;
 
 scan_next:
     if (cursor >= end) {
         return -1;
     }
-    if (uscsr_ldg(matrix->col_idx + cursor) == column) {
+    if (uscsr_ldg(matrix->colIdx + cursor) == column) {
         return cursor;
     }
     ++cursor;
@@ -353,7 +348,7 @@ USCSR_HD Real uscsr_get_value(const uniscaled_csr_matrix<Bits, Real>* matrix, in
         return uscsr_from_float<Real>(0.0f);
     }
 
-    row_nnz_begin = uscsr_ldg(matrix->row_ptr + row);
+    row_nnz_begin = uscsr_ldg(matrix->rowPtr + row);
     local_index = index - row_nnz_begin;
     row_packed_values = matrix->packed_values + uscsr_ldg(matrix->packed_row_ptr + row);
     code = uscsr_traits<Bits>::unpack(row_packed_values, local_index);
@@ -370,8 +365,8 @@ USCSR_HD void uscsr_pack_row_values(
     int end;
     unsigned char* out;
 
-    index = uscsr_ldg(matrix->row_ptr + row);
-    end = uscsr_ldg(matrix->row_ptr + row + 1);
+    index = uscsr_ldg(matrix->rowPtr + row);
+    end = uscsr_ldg(matrix->rowPtr + row + 1);
     out = matrix->packed_values + uscsr_ldg(matrix->packed_row_ptr + row);
 
     if constexpr (Bits == 8) {
@@ -381,7 +376,7 @@ pack8_next:
         }
         *out = static_cast<unsigned char>(uscsr_quantize_code<Bits>(
             uscsr_ldg(values_by_nnz + (index - value_base)),
-            uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index))));
+            uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index))));
         ++index;
         ++out;
         goto pack8_next;
@@ -395,10 +390,10 @@ pack4_pair:
         if (index + 1 < end) {
             q0 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             q1 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index + 1 - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 1)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 1)));
             *out = static_cast<unsigned char>((q0 & 0x0fu) | ((q1 & 0x0fu) << 4));
             index += 2;
             ++out;
@@ -408,7 +403,7 @@ pack4_pair:
         if (index < end) {
             q0 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             *out = static_cast<unsigned char>(q0 & 0x0fu);
         }
         return;
@@ -424,16 +419,16 @@ pack2_quad:
         if (index + 3 < end) {
             q0 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             q1 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index + 1 - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 1)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 1)));
             q2 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index + 2 - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 2)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 2)));
             q3 = uscsr_quantize_code<Bits>(
                 uscsr_ldg(values_by_nnz + (index + 3 - value_base)),
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 3)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 3)));
             *out = static_cast<unsigned char>(
                 (q0 & 0x03u) |
                 ((q1 & 0x03u) << 2) |
@@ -451,28 +446,28 @@ pack2_quad:
             if (index < end) {
                 q0 = uscsr_quantize_code<Bits>(
                     uscsr_ldg(values_by_nnz + (index - value_base)),
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 packed_byte |= (q0 & 0x03u);
                 ++index;
             }
             if (index < end) {
                 q1 = uscsr_quantize_code<Bits>(
                     uscsr_ldg(values_by_nnz + (index - value_base)),
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 packed_byte |= ((q1 & 0x03u) << 2);
                 ++index;
             }
             if (index < end) {
                 q2 = uscsr_quantize_code<Bits>(
                     uscsr_ldg(values_by_nnz + (index - value_base)),
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 packed_byte |= ((q2 & 0x03u) << 4);
                 ++index;
             }
             if (index < end) {
                 q3 = uscsr_quantize_code<Bits>(
                     uscsr_ldg(values_by_nnz + (index - value_base)),
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 packed_byte |= ((q3 & 0x03u) << 6);
             }
             *out = static_cast<unsigned char>(packed_byte);
@@ -490,8 +485,8 @@ USCSR_HD void uscsr_unpack_row_values(
     int end;
     const unsigned char* in;
 
-    index = uscsr_ldg(matrix->row_ptr + row);
-    end = uscsr_ldg(matrix->row_ptr + row + 1);
+    index = uscsr_ldg(matrix->rowPtr + row);
+    end = uscsr_ldg(matrix->rowPtr + row + 1);
     in = matrix->packed_values + uscsr_ldg(matrix->packed_row_ptr + row);
 
     if constexpr (Bits == 8) {
@@ -501,7 +496,7 @@ unpack8_next:
         }
         values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
             static_cast<unsigned int>(*in),
-            uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+            uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
         ++index;
         ++in;
         goto unpack8_next;
@@ -515,10 +510,10 @@ unpack4_pair:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                 packed_byte & 0x0fu,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             values_by_nnz[index + 1 - value_base] = uscsr_dequantize_code<Bits>(
                 (packed_byte >> 4) & 0x0fu,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 1)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 1)));
             index += 2;
             ++in;
             goto unpack4_pair;
@@ -528,7 +523,7 @@ unpack4_pair:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                 packed_byte & 0x0fu,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
         }
         return;
     }
@@ -541,16 +536,16 @@ unpack2_quad:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                 packed_byte & 0x03u,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             values_by_nnz[index + 1 - value_base] = uscsr_dequantize_code<Bits>(
                 (packed_byte >> 2) & 0x03u,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 1)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 1)));
             values_by_nnz[index + 2 - value_base] = uscsr_dequantize_code<Bits>(
                 (packed_byte >> 4) & 0x03u,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 2)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 2)));
             values_by_nnz[index + 3 - value_base] = uscsr_dequantize_code<Bits>(
                 (packed_byte >> 6) & 0x03u,
-                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index + 3)));
+                uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index + 3)));
             index += 4;
             ++in;
             goto unpack2_quad;
@@ -561,25 +556,25 @@ unpack2_quad:
             if (index < end) {
                 values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                     packed_byte & 0x03u,
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                     (packed_byte >> 2) & 0x03u,
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                     (packed_byte >> 4) & 0x03u,
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = uscsr_dequantize_code<Bits>(
                     (packed_byte >> 6) & 0x03u,
-                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->col_idx + index)));
+                    uscsr_ldg(matrix->gene_scales + uscsr_ldg(matrix->colIdx + index)));
             }
         }
     }

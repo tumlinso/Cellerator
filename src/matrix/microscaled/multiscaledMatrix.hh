@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <cuda_fp16.h>
-#include <cuda_runtime.h>
+#include "../matrix.hh"
 
 #if defined(__CUDACC__)
 #define MULCSR_HD __host__ __device__ __forceinline__
@@ -122,7 +121,7 @@ MULCSR_HD float mulcsr_fast_fma(float a, float b, float c) {
 }
 
 template<int Bits, typename Real>
-struct multiscaled_csr_matrix {
+struct multiscaled_csr_matrix : public matrix::sparse::csr_base<int, const int*, const int*> {
     static_assert(Bits == 8 || Bits == 4 || Bits == 2, "Bits must be 8, 4, or 2");
 
     enum {
@@ -131,13 +130,8 @@ struct multiscaled_csr_matrix {
         code_mask = mulcsr_traits<Bits>::code_mask
     };
 
-    int rows;
-    int cols;
-    int nnz;
     int block_count;
-    const int* row_ptr;
     const int* packed_row_ptr;
-    const int* col_idx;
     const int* block_row_ptr;
     unsigned char* packed_values;
     const Real* column_scales;
@@ -172,10 +166,11 @@ MULCSR_HD multiscaled_csr_matrix<Bits, Real> mulcsr_make_matrix(
     matrix.rows = rows;
     matrix.cols = cols;
     matrix.nnz = nnz;
+    matrix.format = matrix::format_csr;
     matrix.block_count = block_count;
-    matrix.row_ptr = row_ptr;
+    matrix.rowPtr = row_ptr;
     matrix.packed_row_ptr = packed_row_ptr;
-    matrix.col_idx = col_idx;
+    matrix.colIdx = col_idx;
     matrix.block_row_ptr = block_row_ptr;
     matrix.packed_values = packed_values;
     matrix.column_scales = column_scales;
@@ -308,8 +303,8 @@ MULCSR_HD multiscaled_csr_block mulcsr_get_block(
         block.row_end = mulcsr_ldg(matrix->block_row_ptr + block_index + 1);
     }
 
-    block.nnz_begin = mulcsr_ldg(matrix->row_ptr + block.row_begin);
-    block.nnz_end = mulcsr_ldg(matrix->row_ptr + block.row_end);
+    block.nnz_begin = mulcsr_ldg(matrix->rowPtr + block.row_begin);
+    block.nnz_end = mulcsr_ldg(matrix->rowPtr + block.row_end);
     block.packed_begin = mulcsr_ldg(matrix->packed_row_ptr + block.row_begin);
     block.packed_end = mulcsr_ldg(matrix->packed_row_ptr + block.row_end);
     return block;
@@ -325,15 +320,15 @@ MULCSR_HD int mulcsr_find_in_row(const multiscaled_csr_matrix<Bits, Real>* matri
         return -1;
     }
 
-    begin = mulcsr_ldg(matrix->row_ptr + row);
-    end = mulcsr_ldg(matrix->row_ptr + row + 1);
+    begin = mulcsr_ldg(matrix->rowPtr + row);
+    end = mulcsr_ldg(matrix->rowPtr + row + 1);
     cursor = begin;
 
 scan_next:
     if (cursor >= end) {
         return -1;
     }
-    if (mulcsr_ldg(matrix->col_idx + cursor) == column) {
+    if (mulcsr_ldg(matrix->colIdx + cursor) == column) {
         return cursor;
     }
     ++cursor;
@@ -357,7 +352,7 @@ MULCSR_HD Real mulcsr_get_value(const multiscaled_csr_matrix<Bits, Real>* matrix
         return mulcsr_from_float<Real>(0.0f);
     }
 
-    row_nnz_begin = mulcsr_ldg(matrix->row_ptr + row);
+    row_nnz_begin = mulcsr_ldg(matrix->rowPtr + row);
     local_index = index - row_nnz_begin;
     row_packed_values = matrix->packed_values + mulcsr_ldg(matrix->packed_row_ptr + row);
     code = mulcsr_traits<Bits>::unpack(row_packed_values, local_index);
@@ -378,8 +373,8 @@ MULCSR_HD void mulcsr_pack_row_values(
     unsigned char* out;
     Real row_offset;
 
-    index = mulcsr_ldg(matrix->row_ptr + row);
-    end = mulcsr_ldg(matrix->row_ptr + row + 1);
+    index = mulcsr_ldg(matrix->rowPtr + row);
+    end = mulcsr_ldg(matrix->rowPtr + row + 1);
     out = matrix->packed_values + mulcsr_ldg(matrix->packed_row_ptr + row);
     row_offset = mulcsr_ldg(matrix->row_offsets + row);
 
@@ -390,7 +385,7 @@ pack8_next:
         }
         *out = static_cast<unsigned char>(mulcsr_quantize_code<Bits>(
             mulcsr_ldg(values_by_nnz + (index - value_base)),
-            mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+            mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
             row_offset));
         ++index;
         ++out;
@@ -405,11 +400,11 @@ pack4_pair:
         if (index + 1 < end) {
             q0 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
             q1 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index + 1 - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 1)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 1)),
                 row_offset);
             *out = static_cast<unsigned char>((q0 & 0x0fu) | ((q1 & 0x0fu) << 4));
             index += 2;
@@ -420,7 +415,7 @@ pack4_pair:
         if (index < end) {
             q0 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
             *out = static_cast<unsigned char>(q0 & 0x0fu);
         }
@@ -437,19 +432,19 @@ pack2_quad:
         if (index + 3 < end) {
             q0 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
             q1 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index + 1 - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 1)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 1)),
                 row_offset);
             q2 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index + 2 - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 2)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 2)),
                 row_offset);
             q3 = mulcsr_quantize_code<Bits>(
                 mulcsr_ldg(values_by_nnz + (index + 3 - value_base)),
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 3)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 3)),
                 row_offset);
             *out = static_cast<unsigned char>(
                 (q0 & 0x03u) |
@@ -468,7 +463,7 @@ pack2_quad:
             if (index < end) {
                 q0 = mulcsr_quantize_code<Bits>(
                     mulcsr_ldg(values_by_nnz + (index - value_base)),
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 packed_byte |= (q0 & 0x03u);
                 ++index;
@@ -476,7 +471,7 @@ pack2_quad:
             if (index < end) {
                 q1 = mulcsr_quantize_code<Bits>(
                     mulcsr_ldg(values_by_nnz + (index - value_base)),
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 packed_byte |= ((q1 & 0x03u) << 2);
                 ++index;
@@ -484,7 +479,7 @@ pack2_quad:
             if (index < end) {
                 q2 = mulcsr_quantize_code<Bits>(
                     mulcsr_ldg(values_by_nnz + (index - value_base)),
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 packed_byte |= ((q2 & 0x03u) << 4);
                 ++index;
@@ -492,7 +487,7 @@ pack2_quad:
             if (index < end) {
                 q3 = mulcsr_quantize_code<Bits>(
                     mulcsr_ldg(values_by_nnz + (index - value_base)),
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 packed_byte |= ((q3 & 0x03u) << 6);
             }
@@ -512,8 +507,8 @@ MULCSR_HD void mulcsr_unpack_row_values(
     const unsigned char* in;
     Real row_offset;
 
-    index = mulcsr_ldg(matrix->row_ptr + row);
-    end = mulcsr_ldg(matrix->row_ptr + row + 1);
+    index = mulcsr_ldg(matrix->rowPtr + row);
+    end = mulcsr_ldg(matrix->rowPtr + row + 1);
     in = matrix->packed_values + mulcsr_ldg(matrix->packed_row_ptr + row);
     row_offset = mulcsr_ldg(matrix->row_offsets + row);
 
@@ -524,7 +519,7 @@ unpack8_next:
         }
         values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
             static_cast<unsigned int>(*in),
-            mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+            mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
             row_offset);
         ++index;
         ++in;
@@ -539,11 +534,11 @@ unpack4_pair:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                 packed_byte & 0x0fu,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
             values_by_nnz[index + 1 - value_base] = mulcsr_dequantize_code<Bits>(
                 (packed_byte >> 4) & 0x0fu,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 1)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 1)),
                 row_offset);
             index += 2;
             ++in;
@@ -554,7 +549,7 @@ unpack4_pair:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                 packed_byte & 0x0fu,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
         }
         return;
@@ -568,19 +563,19 @@ unpack2_quad:
             packed_byte = static_cast<unsigned int>(*in);
             values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                 packed_byte & 0x03u,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                 row_offset);
             values_by_nnz[index + 1 - value_base] = mulcsr_dequantize_code<Bits>(
                 (packed_byte >> 2) & 0x03u,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 1)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 1)),
                 row_offset);
             values_by_nnz[index + 2 - value_base] = mulcsr_dequantize_code<Bits>(
                 (packed_byte >> 4) & 0x03u,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 2)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 2)),
                 row_offset);
             values_by_nnz[index + 3 - value_base] = mulcsr_dequantize_code<Bits>(
                 (packed_byte >> 6) & 0x03u,
-                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index + 3)),
+                mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index + 3)),
                 row_offset);
             index += 4;
             ++in;
@@ -592,28 +587,28 @@ unpack2_quad:
             if (index < end) {
                 values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                     packed_byte & 0x03u,
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                     (packed_byte >> 2) & 0x03u,
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                     (packed_byte >> 4) & 0x03u,
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
                 ++index;
             }
             if (index < end) {
                 values_by_nnz[index - value_base] = mulcsr_dequantize_code<Bits>(
                     (packed_byte >> 6) & 0x03u,
-                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->col_idx + index)),
+                    mulcsr_ldg(matrix->column_scales + mulcsr_ldg(matrix->colIdx + index)),
                     row_offset);
             }
         }

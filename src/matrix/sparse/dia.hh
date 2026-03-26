@@ -4,7 +4,7 @@ namespace matrix {
 namespace sparse {
 
 template<typename Real = ::matrix::Real>
-struct dia {
+struct alignas(16) dia {
     typedef Real value_type;
     typedef Index index_type;
 
@@ -13,13 +13,13 @@ struct dia {
     Index nnz;
     unsigned char format;
 
-    Index *offsets;
+    DiagIndex *offsets;
     Real *val;
     Index num_diagonals;
 };
 
 template<typename Real>
-inline void init(dia<Real> *m, Index rows = 0, Index cols = 0, Index nnz = 0) {
+MATRIX_HD void init(dia<Real> * MATRIX_RESTRICT m, Index rows = 0, Index cols = 0, Index nnz = 0) {
     require_fp_storage<Real>();
     m->rows = rows;
     m->cols = cols;
@@ -31,14 +31,14 @@ inline void init(dia<Real> *m, Index rows = 0, Index cols = 0, Index nnz = 0) {
 }
 
 template<typename Real>
-inline std::size_t bytes(const dia<Real> *m) {
+MATRIX_HD std::size_t bytes(const dia<Real> * MATRIX_RESTRICT m) {
     return sizeof(*m)
-        + (std::size_t) m->num_diagonals * sizeof(Index)
+        + (std::size_t) m->num_diagonals * sizeof(DiagIndex)
         + (std::size_t) m->nnz * sizeof(Real);
 }
 
 template<typename Real>
-inline void clear(dia<Real> *m) {
+MATRIX_H void clear(dia<Real> * MATRIX_RESTRICT m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
@@ -51,12 +51,12 @@ inline void clear(dia<Real> *m) {
 }
 
 template<typename Real>
-inline int allocate(dia<Real> *m) {
+MATRIX_H int allocate(dia<Real> * MATRIX_RESTRICT m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
     m->val = 0;
-    if (m->num_diagonals != 0) m->offsets = (Index *) std::malloc((std::size_t) m->num_diagonals * sizeof(Index));
+    if (m->num_diagonals != 0) m->offsets = (DiagIndex *) std::malloc((std::size_t) m->num_diagonals * sizeof(DiagIndex));
     if (m->nnz != 0) m->val = (Real *) std::malloc((std::size_t) m->nnz * sizeof(Real));
     if (m->num_diagonals != 0 && m->offsets == 0) return 0;
     if (m->nnz != 0 && m->val == 0) {
@@ -68,19 +68,19 @@ inline int allocate(dia<Real> *m) {
 }
 
 template<typename Real>
-inline const Real *at(const dia<Real> *m, Index r, Index c) {
-    Index offset = c - r;
+MATRIX_HD const Real *at(const dia<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+    const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
     for (Index i = 0; i < m->num_diagonals; ++i) {
-        if (m->offsets[i] == offset) return m->val + i * m->rows + r;
+        if (ldg(m->offsets + i) == offset) return m->val + i * m->rows + r;
     }
     return 0;
 }
 
 template<typename Real>
-inline Real *at(dia<Real> *m, Index r, Index c) {
-    Index offset = c - r;
+MATRIX_HD Real *at(dia<Real> * MATRIX_RESTRICT m, Index r, Index c) {
+    const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
     for (Index i = 0; i < m->num_diagonals; ++i) {
-        if (m->offsets[i] == offset) return m->val + i * m->rows + r;
+        if (ldg(m->offsets + i) == offset) return m->val + i * m->rows + r;
     }
     return 0;
 }

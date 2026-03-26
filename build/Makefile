@@ -129,6 +129,30 @@ matrixTest/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/build
 .PHONY : matrixTest/fast
 
+src/matrix/matrix_io.o: src/matrix/matrix_io.cc.o
+.PHONY : src/matrix/matrix_io.o
+
+# target to build an object file
+src/matrix/matrix_io.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
+.PHONY : src/matrix/matrix_io.cc.o
+
+src/matrix/matrix_io.i: src/matrix/matrix_io.cc.i
+.PHONY : src/matrix/matrix_io.i
+
+# target to preprocess a source file
+src/matrix/matrix_io.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i
+.PHONY : src/matrix/matrix_io.cc.i
+
+src/matrix/matrix_io.s: src/matrix/matrix_io.cc.s
+.PHONY : src/matrix/matrix_io.s
+
+# target to generate assembly for a file
+src/matrix/matrix_io.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s
+.PHONY : src/matrix/matrix_io.cc.s
+
 tests/matrix_test.o: tests/matrix_test.cc.o
 .PHONY : tests/matrix_test.o
 
@@ -162,6 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... matrixTest"
+	@echo "... src/matrix/matrix_io.o"
+	@echo "... src/matrix/matrix_io.i"
+	@echo "... src/matrix/matrix_io.s"
 	@echo "... tests/matrix_test.o"
 	@echo "... tests/matrix_test.i"
 	@echo "... tests/matrix_test.s"

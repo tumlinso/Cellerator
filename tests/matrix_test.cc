@@ -146,7 +146,7 @@ int testDiaRoundTrip() {
     written.num_diagonals = 2;
     matrix::sparse::allocate(&written);
     written.offsets[0] = 0;
-    written.offsets[1] = 1;
+    written.offsets[1] = -1;
     written.val[0] = matrix::real_from_float(10.0f);
     written.val[1] = matrix::real_from_float(11.0f);
     written.val[2] = matrix::real_from_float(12.0f);
@@ -162,10 +162,10 @@ int testDiaRoundTrip() {
     int ok = 1;
     ok = checkEqual(readBack.num_diagonals, 2u, "dia diagonals") && ok;
     ok = checkTrue(matrix::sparse::at(&readBack, 1u, 1u) != 0, "dia main diagonal") && ok;
-    ok = checkTrue(matrix::sparse::at(&readBack, 1u, 2u) != 0, "dia upper diagonal") && ok;
-    ok = checkTrue(matrix::sparse::at(&readBack, 2u, 0u) == 0, "dia missing entry") && ok;
+    ok = checkTrue(matrix::sparse::at(&readBack, 2u, 1u) != 0, "dia lower diagonal") && ok;
+    ok = checkTrue(matrix::sparse::at(&readBack, 1u, 2u) == 0, "dia missing entry") && ok;
     if (matrix::sparse::at(&readBack, 1u, 1u) != 0) ok = checkEqual(*matrix::sparse::at(&readBack, 1u, 1u), 11.0f, "dia value") && ok;
-    if (matrix::sparse::at(&readBack, 1u, 2u) != 0) ok = checkEqual(*matrix::sparse::at(&readBack, 1u, 2u), 21.0f, "dia value 2") && ok;
+    if (matrix::sparse::at(&readBack, 2u, 1u) != 0) ok = checkEqual(*matrix::sparse::at(&readBack, 2u, 1u), 22.0f, "dia value 2") && ok;
 
     matrix::sparse::clear(&written);
     matrix::sparse::clear(&readBack);
@@ -221,8 +221,8 @@ int testShardedDiskRoundTrip() {
     matrix::dense<> *second = new matrix::dense<>;
     matrix::sharded<matrix::dense<> > written;
     matrix::sharded<matrix::dense<> > loaded;
-    matrix::shard_storage<matrix::dense<> > files;
-    matrix::shard_storage<matrix::dense<> > loadedFiles;
+    matrix::shard_storage files;
+    matrix::shard_storage loadedFiles;
 
     matrix::init(first, 1u, 2u);
     matrix::allocate(first);
@@ -275,7 +275,7 @@ int testShardedBudgeting() {
     matrix::dense<> *b = new matrix::dense<>;
     matrix::dense<> *c = new matrix::dense<>;
     matrix::sharded<matrix::dense<> > view;
-    matrix::shard_storage<matrix::dense<> > files;
+    matrix::shard_storage files;
 
     matrix::init(a, 1u, 2u);
     matrix::allocate(a);
@@ -313,7 +313,7 @@ int testDropKeepsLogicalMap() {
     matrix::dense<> *second = new matrix::dense<>;
     matrix::sharded<matrix::dense<> > written;
     matrix::sharded<matrix::dense<> > loaded;
-    matrix::shard_storage<matrix::dense<> > files;
+    matrix::shard_storage files;
 
     matrix::init(first, 2u, 2u);
     matrix::allocate(first);
