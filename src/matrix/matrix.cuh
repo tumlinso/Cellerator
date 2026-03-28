@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <climits>
 
 #include "../real.cuh"
 
@@ -40,13 +41,14 @@ struct header {
     Index nnz;
 };
 
-__host__ __device__ __forceinline__ Index find_offset_span(Index row, const Index *offsets, Index count) {
-    Index lo = 0;
-    Index hi = count;
+template<typename OffsetT>
+__host__ __device__ __forceinline__ OffsetT find_offset_span(OffsetT row, const OffsetT *offsets, OffsetT count) {
+    OffsetT lo = 0;
+    OffsetT hi = count;
     while (lo < hi) {
-        Index mid = lo + ((hi - lo) >> 1);
-        const Index mid_offset = offsets[mid];
-        const Index next_offset = offsets[mid + 1];
+        const OffsetT mid = lo + ((hi - lo) >> 1);
+        const OffsetT mid_offset = offsets[mid];
+        const OffsetT next_offset = offsets[mid + 1];
         if (row < mid_offset) hi = mid;
         else if (row >= next_offset) lo = mid + 1;
         else return mid;
@@ -90,15 +92,15 @@ __host__ __device__ __forceinline__ Index part_aux(const sparse::dia<ValueT> *m)
     return m->num_diagonals;
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<dense<ValueT> > *m, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<dense<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(dense<ValueT>) + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::csr<ValueT> > *m, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::csr<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::csr<ValueT>)
@@ -107,8 +109,8 @@ __host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse:
         + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::coo<ValueT> > *m, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::coo<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::coo<ValueT>)
@@ -117,8 +119,8 @@ __host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse:
         + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::dia<ValueT> > *m, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::dia<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
     return sizeof(sparse::dia<ValueT>)

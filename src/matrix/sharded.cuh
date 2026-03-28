@@ -2,35 +2,39 @@
 
 namespace matrix {
 
-template<typename MatrixT>
+template<typename MatrixT, typename ShardedIndexT = Index>
 struct alignas(16) sharded {
     typedef typename MatrixT::value_type value_type;
-    typedef Index index_type;
+    typedef ShardedIndexT index_type;
 
-    Index rows;
-    Index cols;
-    Index nnz;
+    ShardedIndexT rows;
+    ShardedIndexT cols;
+    ShardedIndexT nnz;
     unsigned char format;
 
-    Index num_parts;
-    Index part_capacity;
+    ShardedIndexT num_parts;
+    ShardedIndexT part_capacity;
     MatrixT **parts;
-    Index *part_offsets;
-    Index *part_rows;
-    Index *part_nnz;
-    Index *part_aux;
+    ShardedIndexT *part_offsets;
+    ShardedIndexT *part_rows;
+    ShardedIndexT *part_nnz;
+    ShardedIndexT *part_aux;
 
-    Index num_shards;
-    Index shard_capacity;
-    Index *shard_offsets;
+    ShardedIndexT num_shards;
+    ShardedIndexT shard_capacity;
+    ShardedIndexT *shard_offsets;
 };
 
-template<typename MatrixT> __host__ __forceinline__ void destroy(MatrixT *m);
+template<typename MatrixT> __host__ inline void destroy(MatrixT *m) {
+    if (m == 0) return;
+    clear(m);
+    delete m;
+}
 template<typename MatrixT> __host__ __device__ __forceinline__ Index part_aux(const MatrixT *m);
-template<typename MatrixT> __host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<MatrixT> *m, Index partId);
+template<typename MatrixT, typename ShardedIndexT> __host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<MatrixT, ShardedIndexT> *m, ShardedIndexT partId);
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ void init(sharded<MatrixT> * __restrict__ m) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ void init(sharded<MatrixT, ShardedIndexT> * __restrict__ m) {
     m->rows = 0;
     m->cols = 0;
     m->nnz = 0;
@@ -47,9 +51,9 @@ __host__ __device__ __forceinline__ void init(sharded<MatrixT> * __restrict__ m)
     m->shard_offsets = 0;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ void clear(sharded<MatrixT> * __restrict__ m) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ void clear(sharded<MatrixT, ShardedIndexT> * __restrict__ m) {
+    ShardedIndexT i = 0;
     if (m->parts != 0) {
         for (i = 0; i < m->num_parts; ++i) destroy(m->parts[i]);
     }
@@ -62,20 +66,20 @@ __host__ __forceinline__ void clear(sharded<MatrixT> * __restrict__ m) {
     init(m);
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int reserve_parts(sharded<MatrixT> * __restrict__ m, Index capacity) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int reserve_parts(sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT capacity) {
     MatrixT **newParts = 0;
-    Index *newOffsets = 0;
-    Index *newRows = 0;
-    Index *newNnz = 0;
-    Index *newAux = 0;
+    ShardedIndexT *newOffsets = 0;
+    ShardedIndexT *newRows = 0;
+    ShardedIndexT *newNnz = 0;
+    ShardedIndexT *newAux = 0;
 
     if (capacity <= m->part_capacity) return 1;
     newParts = (MatrixT **) std::calloc((std::size_t) capacity, sizeof(MatrixT *));
-    newOffsets = (Index *) std::calloc((std::size_t) (capacity + 1), sizeof(Index));
-    newRows = (Index *) std::calloc((std::size_t) capacity, sizeof(Index));
-    newNnz = (Index *) std::calloc((std::size_t) capacity, sizeof(Index));
-    newAux = (Index *) std::calloc((std::size_t) capacity, sizeof(Index));
+    newOffsets = (ShardedIndexT *) std::calloc((std::size_t) (capacity + 1), sizeof(ShardedIndexT));
+    newRows = (ShardedIndexT *) std::calloc((std::size_t) capacity, sizeof(ShardedIndexT));
+    newNnz = (ShardedIndexT *) std::calloc((std::size_t) capacity, sizeof(ShardedIndexT));
+    newAux = (ShardedIndexT *) std::calloc((std::size_t) capacity, sizeof(ShardedIndexT));
     if (newParts == 0 || newOffsets == 0 || newRows == 0 || newNnz == 0 || newAux == 0) {
         std::free(newParts);
         std::free(newOffsets);
@@ -106,12 +110,12 @@ __host__ __forceinline__ int reserve_parts(sharded<MatrixT> * __restrict__ m, In
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int reserve_shards(sharded<MatrixT> * __restrict__ m, Index capacity) {
-    Index *newOffsets = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int reserve_shards(sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT capacity) {
+    ShardedIndexT *newOffsets = 0;
 
     if (capacity <= m->shard_capacity) return 1;
-    newOffsets = (Index *) std::calloc((std::size_t) (capacity + 1), sizeof(Index));
+    newOffsets = (ShardedIndexT *) std::calloc((std::size_t) (capacity + 1), sizeof(ShardedIndexT));
     if (newOffsets == 0) return 0;
     if (m->shard_offsets != 0 && m->num_shards != 0) {
         std::memcpy(newOffsets, m->shard_offsets, (std::size_t) (m->num_shards + 1) * sizeof(Index));
@@ -122,9 +126,9 @@ __host__ __forceinline__ int reserve_shards(sharded<MatrixT> * __restrict__ m, I
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ void rebuild_part_offsets(sharded<MatrixT> * __restrict__ m) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ void rebuild_part_offsets(sharded<MatrixT, ShardedIndexT> * __restrict__ m) {
+    ShardedIndexT i = 0;
 
     m->rows = 0;
     m->nnz = 0;
@@ -137,30 +141,30 @@ __host__ __forceinline__ void rebuild_part_offsets(sharded<MatrixT> * __restrict
     m->rows = m->part_offsets[m->num_parts];
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int set_shards_to_parts(sharded<MatrixT> * __restrict__ m) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int set_shards_to_parts(sharded<MatrixT, ShardedIndexT> * __restrict__ m) {
+    ShardedIndexT i = 0;
     if (!reserve_shards(m, m->num_parts)) return 0;
     m->num_shards = m->num_parts;
     for (i = 0; i <= m->num_parts; ++i) m->shard_offsets[i] = m->part_offsets[i];
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ Index find_part(const sharded<MatrixT> * __restrict__ m, Index row) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ ShardedIndexT find_part(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT row) {
     if (m->part_offsets == 0 || m->num_parts == 0) return m->num_parts;
     return find_offset_span(row, m->part_offsets, m->num_parts);
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ Index find_shard(const sharded<MatrixT> * __restrict__ m, Index row) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ ShardedIndexT find_shard(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT row) {
     if (m->shard_offsets == 0 || m->num_shards == 0) return m->num_shards;
     return find_offset_span(row, m->shard_offsets, m->num_shards);
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ const typename MatrixT::value_type *at(const sharded<MatrixT> * __restrict__ m, Index r, Index c) {
-    Index partId = find_part(m, r);
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ const typename MatrixT::value_type *at(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT r, typename MatrixT::index_type c) {
+    ShardedIndexT partId = find_part(m, r);
     MatrixT *part = 0;
     if (partId >= m->num_parts) return 0;
     part = m->parts[partId];
@@ -168,9 +172,9 @@ __host__ __device__ __forceinline__ const typename MatrixT::value_type *at(const
     return at(part, r - m->part_offsets[partId], c);
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ typename MatrixT::value_type *at(sharded<MatrixT> * __restrict__ m, Index r, Index c) {
-    Index partId = find_part(m, r);
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ typename MatrixT::value_type *at(sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT r, typename MatrixT::index_type c) {
+    ShardedIndexT partId = find_part(m, r);
     MatrixT *part = 0;
     if (partId >= m->num_parts) return 0;
     part = m->parts[partId];
@@ -178,9 +182,9 @@ __host__ __device__ __forceinline__ typename MatrixT::value_type *at(sharded<Mat
     return at(part, r - m->part_offsets[partId], c);
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int append_part(sharded<MatrixT> * __restrict__ m, MatrixT *part) {
-    Index next = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int append_part(sharded<MatrixT, ShardedIndexT> * __restrict__ m, MatrixT *part) {
+    ShardedIndexT next = 0;
 
     if (m->num_parts == m->part_capacity) {
         next = m->part_capacity == 0 ? 4 : m->part_capacity << 1;
@@ -199,9 +203,9 @@ __host__ __forceinline__ int append_part(sharded<MatrixT> * __restrict__ m, Matr
     return set_shards_to_parts(m);
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int concatenate(sharded<MatrixT> * __restrict__ dst, sharded<MatrixT> * __restrict__ src) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int concatenate(sharded<MatrixT, ShardedIndexT> * __restrict__ dst, sharded<MatrixT, ShardedIndexT> * __restrict__ src) {
+    ShardedIndexT i = 0;
 
     if (src->num_parts == 0) return 1;
     if (!reserve_parts(dst, dst->num_parts + src->num_parts)) return 0;
@@ -228,12 +232,12 @@ __host__ __forceinline__ int concatenate(sharded<MatrixT> * __restrict__ dst, sh
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int set_equal_shards(sharded<MatrixT> * __restrict__ m, Index count) {
-    Index base = 0;
-    Index rem = 0;
-    Index row = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int set_equal_shards(sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT count) {
+    ShardedIndexT base = 0;
+    ShardedIndexT rem = 0;
+    ShardedIndexT row = 0;
+    ShardedIndexT i = 0;
 
     if (count == 0) {
         m->num_shards = 0;
@@ -251,9 +255,9 @@ __host__ __forceinline__ int set_equal_shards(sharded<MatrixT> * __restrict__ m,
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int reshard(sharded<MatrixT> * __restrict__ m, Index count, const Index * __restrict__ offsets) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int reshard(sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT count, const ShardedIndexT * __restrict__ offsets) {
+    ShardedIndexT i = 0;
 
     if (count == 0 || offsets == 0) {
         m->num_shards = 0;
@@ -269,32 +273,32 @@ __host__ __forceinline__ int reshard(sharded<MatrixT> * __restrict__ m, Index co
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ Index first_part_in_shard(const sharded<MatrixT> * __restrict__ m, Index shardId) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ ShardedIndexT first_part_in_shard(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT shardId) {
     if (shardId >= m->num_shards || m->num_parts == 0) return m->num_parts;
     return find_part(m, m->shard_offsets[shardId]);
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ Index last_part_in_shard(const sharded<MatrixT> * __restrict__ m, Index shardId) {
-    Index rowEnd = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ ShardedIndexT last_part_in_shard(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT shardId) {
+    ShardedIndexT rowEnd = 0;
     if (shardId >= m->num_shards) return m->num_parts;
     rowEnd = m->shard_offsets[shardId + 1];
     if (rowEnd == 0) return 0;
     return find_part(m, rowEnd - 1) + 1;
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ int part_loaded(const sharded<MatrixT> * __restrict__ m, Index partId) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ int part_loaded(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     return m->parts[partId] != 0;
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ int shard_loaded(const sharded<MatrixT> * __restrict__ m, Index shardId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ int shard_loaded(const sharded<MatrixT, ShardedIndexT> * __restrict__ m, ShardedIndexT shardId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
 
     if (shardId >= m->num_shards) return 0;
     begin = first_part_in_shard(m, shardId);
@@ -305,28 +309,28 @@ __host__ __device__ __forceinline__ int shard_loaded(const sharded<MatrixT> * __
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __device__ __forceinline__ std::size_t bytes(const sharded<MatrixT> * __restrict__ m) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __device__ __forceinline__ std::size_t bytes(const sharded<MatrixT, ShardedIndexT> * __restrict__ m) {
+    ShardedIndexT i = 0;
     std::size_t total = sizeof(*m);
     total += (std::size_t) m->part_capacity * sizeof(MatrixT *);
-    total += (std::size_t) (m->part_capacity + 1) * sizeof(Index);
-    total += (std::size_t) m->part_capacity * sizeof(Index);
-    total += (std::size_t) m->part_capacity * sizeof(Index);
-    total += (std::size_t) m->part_capacity * sizeof(Index);
-    total += (std::size_t) (m->shard_capacity + 1) * sizeof(Index);
+    total += (std::size_t) (m->part_capacity + 1) * sizeof(ShardedIndexT);
+    total += (std::size_t) m->part_capacity * sizeof(ShardedIndexT);
+    total += (std::size_t) m->part_capacity * sizeof(ShardedIndexT);
+    total += (std::size_t) m->part_capacity * sizeof(ShardedIndexT);
+    total += (std::size_t) (m->shard_capacity + 1) * sizeof(ShardedIndexT);
     for (i = 0; i < m->num_parts; ++i) {
         total += part_bytes(m, i);
     }
     return total;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int set_shards_by_part_bytes(sharded<MatrixT> * __restrict__ m, std::size_t max_bytes) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int set_shards_by_part_bytes(sharded<MatrixT, ShardedIndexT> * __restrict__ m, std::size_t max_bytes) {
     std::size_t used = 0;
     std::size_t partBytes = 0;
-    Index shardCount = 0;
-    Index i = 0;
+    ShardedIndexT shardCount = 0;
+    ShardedIndexT i = 0;
 
     if (max_bytes == 0) return set_shards_to_parts(m);
     if (!reserve_shards(m, m->num_parts)) return 0;

@@ -129,29 +129,69 @@ matrixTest/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/build
 .PHONY : matrixTest/fast
 
-src/matrix/matrix_io.o: src/matrix/matrix_io.cc.o
+#=============================================================================
+# Target rules for targets named convertEmbryoMtxShards
+
+# Build rule for target.
+convertEmbryoMtxShards: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 convertEmbryoMtxShards
+.PHONY : convertEmbryoMtxShards
+
+# fast build rule for target.
+convertEmbryoMtxShards/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/build
+.PHONY : convertEmbryoMtxShards/fast
+
+src/load_embryo_mtx_shards.o: src/load_embryo_mtx_shards.cu.o
+.PHONY : src/load_embryo_mtx_shards.o
+
+# target to build an object file
+src/load_embryo_mtx_shards.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/load_embryo_mtx_shards.cu.o
+.PHONY : src/load_embryo_mtx_shards.cu.o
+
+src/load_embryo_mtx_shards.i: src/load_embryo_mtx_shards.cu.i
+.PHONY : src/load_embryo_mtx_shards.i
+
+# target to preprocess a source file
+src/load_embryo_mtx_shards.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/load_embryo_mtx_shards.cu.i
+.PHONY : src/load_embryo_mtx_shards.cu.i
+
+src/load_embryo_mtx_shards.s: src/load_embryo_mtx_shards.cu.s
+.PHONY : src/load_embryo_mtx_shards.s
+
+# target to generate assembly for a file
+src/load_embryo_mtx_shards.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/load_embryo_mtx_shards.cu.s
+.PHONY : src/load_embryo_mtx_shards.cu.s
+
+src/matrix/matrix_io.o: src/matrix/matrix_io.cu.o
 .PHONY : src/matrix/matrix_io.o
 
 # target to build an object file
-src/matrix/matrix_io.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
-.PHONY : src/matrix/matrix_io.cc.o
+src/matrix/matrix_io.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/matrix/matrix_io.cu.o
+.PHONY : src/matrix/matrix_io.cu.o
 
-src/matrix/matrix_io.i: src/matrix/matrix_io.cc.i
+src/matrix/matrix_io.i: src/matrix/matrix_io.cu.i
 .PHONY : src/matrix/matrix_io.i
 
 # target to preprocess a source file
-src/matrix/matrix_io.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i
-.PHONY : src/matrix/matrix_io.cc.i
+src/matrix/matrix_io.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/matrix/matrix_io.cu.i
+.PHONY : src/matrix/matrix_io.cu.i
 
-src/matrix/matrix_io.s: src/matrix/matrix_io.cc.s
+src/matrix/matrix_io.s: src/matrix/matrix_io.cu.s
 .PHONY : src/matrix/matrix_io.s
 
 # target to generate assembly for a file
-src/matrix/matrix_io.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s
-.PHONY : src/matrix/matrix_io.cc.s
+src/matrix/matrix_io.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/matrixTest.dir/build.make CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/convertEmbryoMtxShards.dir/build.make CMakeFiles/convertEmbryoMtxShards.dir/src/matrix/matrix_io.cu.s
+.PHONY : src/matrix/matrix_io.cu.s
 
 tests/matrix_test.o: tests/matrix_test.cc.o
 .PHONY : tests/matrix_test.o
@@ -185,7 +225,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... convertEmbryoMtxShards"
 	@echo "... matrixTest"
+	@echo "... src/load_embryo_mtx_shards.o"
+	@echo "... src/load_embryo_mtx_shards.i"
+	@echo "... src/load_embryo_mtx_shards.s"
 	@echo "... src/matrix/matrix_io.o"
 	@echo "... src/matrix/matrix_io.i"
 	@echo "... src/matrix/matrix_io.s"

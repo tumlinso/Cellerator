@@ -320,39 +320,39 @@ __host__ __forceinline__ cudaError_t release(part_record<MatrixT> *record) {
     return cudaSuccess;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense<ValueT> > *view, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
     return sizeof(dense_view<ValueT>) + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr<ValueT> > *view, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
     return sizeof(csr_view<ValueT>)
         + (std::size_t) (view->part_rows[partId] + 1) * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo<ValueT> > *view, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
     return sizeof(coo_view<ValueT>)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(Index)
         + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename ValueT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia<ValueT> > *view, Index partId) {
+template<typename ValueT, typename ShardedIndexT>
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
     return sizeof(dia_view<ValueT>)
         + (std::size_t) view->part_aux[partId] * sizeof(DiagIndex)
         + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT> *view, Index shardId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
     std::size_t total = 0;
 
     if (shardId >= view->num_shards) return 0;
@@ -362,12 +362,12 @@ __host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<
     return total;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<MatrixT> *view, std::size_t max_bytes) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<MatrixT, ShardedIndexT> *view, std::size_t max_bytes) {
     std::size_t used = 0;
     std::size_t bytes = 0;
-    Index shardCount = 0;
-    Index i = 0;
+    ShardedIndexT shardCount = 0;
+    ShardedIndexT i = 0;
 
     if (max_bytes == 0) return ::matrix::set_shards_to_parts(view);
     if (!::matrix::reserve_shards(view, view->num_parts)) return 0;
@@ -391,8 +391,8 @@ __host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<Matrix
     return 1;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index partId, int deviceId) {
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT partId, int deviceId) {
     cudaError_t err = cudaSuccess;
 
     if (partId >= view->num_parts || partId >= cache->capacity || view->parts[partId] == 0) return cudaErrorInvalidValue;
@@ -419,11 +419,11 @@ __host__ __forceinline__ cudaError_t release_part(shard_cache<MatrixT> *cache, I
     return release(&cache->parts[partId]);
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId, int deviceId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId, int deviceId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -436,11 +436,11 @@ __host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, c
     return cudaSuccess;
 }
 
-template<typename MatrixT>
-__host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, Index shardId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+__host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -453,11 +453,11 @@ __host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, 
     return cudaSuccess;
 }
 
-template<typename MatrixT>
+template<typename MatrixT, typename ShardedIndexT>
 __host__ __forceinline__ cudaError_t stage_part(shard_cache<MatrixT> *cache,
-                              ::matrix::sharded<MatrixT> *view,
+                              ::matrix::sharded<MatrixT, ShardedIndexT> *view,
                               const ::matrix::shard_storage *files,
-                              Index partId,
+                              ShardedIndexT partId,
                               int deviceId,
                               int drop_host_after_upload) {
     cudaError_t err = cudaSuccess;
@@ -480,16 +480,16 @@ __host__ __forceinline__ cudaError_t stage_part(shard_cache<MatrixT> *cache,
     return cudaSuccess;
 }
 
-template<typename MatrixT>
+template<typename MatrixT, typename ShardedIndexT>
 __host__ __forceinline__ cudaError_t stage_shard(shard_cache<MatrixT> *cache,
-                               ::matrix::sharded<MatrixT> *view,
+                               ::matrix::sharded<MatrixT, ShardedIndexT> *view,
                                const ::matrix::shard_storage *files,
-                               Index shardId,
+                               ShardedIndexT shardId,
                                int deviceId,
                                int drop_host_after_upload) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -502,12 +502,12 @@ __host__ __forceinline__ cudaError_t stage_shard(shard_cache<MatrixT> *cache,
     return cudaSuccess;
 }
 
-template<typename MatrixT>
+template<typename MatrixT, typename ShardedIndexT>
 __host__ __forceinline__ cudaError_t swap_shard(shard_cache<MatrixT> *cache,
-                              ::matrix::sharded<MatrixT> *view,
+                              ::matrix::sharded<MatrixT, ShardedIndexT> *view,
                               const ::matrix::shard_storage *files,
-                              Index outShardId,
-                              Index inShardId,
+                              ShardedIndexT outShardId,
+                              ShardedIndexT inShardId,
                               int deviceId,
                               int drop_host_after_upload,
                               int drop_host_after_release) {

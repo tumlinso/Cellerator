@@ -1,7 +1,11 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <type_traits>
 
 #include "matrix.cuh"
 
@@ -13,6 +17,166 @@ struct shard_storage {
 };
 
 namespace detail {
+
+inline int sharded_write_block(std::FILE *fp, const void *ptr, std::size_t elem_size, std::size_t count) {
+    if (count == 0) return 1;
+    return std::fwrite(ptr, elem_size, count, fp) == count;
+}
+
+inline int sharded_read_block(std::FILE *fp, void *ptr, std::size_t elem_size, std::size_t count) {
+    if (count == 0) return 1;
+    return std::fread(ptr, elem_size, count, fp) == count;
+}
+
+template<typename ShardedIndexT>
+inline int sharded_to_u64(ShardedIndexT value, std::uint64_t *out, const char *label, const char *filename) {
+    if constexpr (std::is_signed<ShardedIndexT>::value) {
+        if (value < 0) {
+            std::fprintf(stderr, "Error: negative %s in %s\n", label, filename);
+            return 0;
+        }
+    }
+    *out = (std::uint64_t) value;
+    if ((ShardedIndexT) *out != value) {
+        std::fprintf(stderr, "Error: %s out of disk u64 range in %s\n", label, filename);
+        return 0;
+    }
+    return 1;
+}
+
+template<typename ShardedIndexT>
+inline int sharded_from_u64(std::uint64_t value, ShardedIndexT *out, const char *label, const char *filename) {
+    *out = (ShardedIndexT) value;
+    if ((std::uint64_t) *out != value) {
+        std::fprintf(stderr, "Error: %s does not fit target sharded index type in %s\n", label, filename);
+        return 0;
+    }
+    return 1;
+}
+
+template<typename ShardedIndexT>
+inline int store_sharded_index_array(std::FILE *fp, const ShardedIndexT *src, std::size_t count, const char *label, const char *filename) {
+    std::uint64_t value = 0;
+    std::size_t i = 0;
+
+    for (i = 0; i < count; ++i) {
+        if (!sharded_to_u64(src[i], &value, label, filename)) return 0;
+        if (!sharded_write_block(fp, &value, sizeof(value), 1)) return 0;
+    }
+    return 1;
+}
+
+template<typename ShardedIndexT>
+inline int load_sharded_index_array(std::FILE *fp, ShardedIndexT *dst, std::size_t count, const char *label, const char *filename) {
+    std::uint64_t value = 0;
+    std::size_t i = 0;
+
+    for (i = 0; i < count; ++i) {
+        if (!sharded_read_block(fp, &value, sizeof(value), 1)) return 0;
+        if (!sharded_from_u64(value, dst + i, label, filename)) return 0;
+    }
+    return 1;
+}
+
+template<typename MatrixT, typename ShardedIndexT>
+inline int store_sharded_header_typed(const char *filename, const sharded<MatrixT, ShardedIndexT> *m) {
+    static const unsigned char magic[8] = { 'C', 'S', 'H', 'R', 'D', '0', '1', '\0' };
+    std::FILE *fp = 0;
+    std::uint64_t rows = 0;
+    std::uint64_t cols = 0;
+    std::uint64_t nnz = 0;
+    std::uint64_t num_parts = 0;
+    std::uint64_t num_shards = 0;
+    int ok = 0;
+
+    fp = std::fopen(filename, "wb");
+    if (fp == 0) return 0;
+    if (!sharded_to_u64(m->rows, &rows, "rows", filename)) goto done;
+    if (!sharded_to_u64(m->cols, &cols, "cols", filename)) goto done;
+    if (!sharded_to_u64(m->nnz, &nnz, "nnz", filename)) goto done;
+    if (!sharded_to_u64(m->num_parts, &num_parts, "num_parts", filename)) goto done;
+    if (!sharded_to_u64(m->num_shards, &num_shards, "num_shards", filename)) goto done;
+    if (!sharded_write_block(fp, magic, sizeof(magic), 1)) goto done;
+    if (!sharded_write_block(fp, &m->format, sizeof(m->format), 1)) goto done;
+    if (!sharded_write_block(fp, &rows, sizeof(rows), 1)) goto done;
+    if (!sharded_write_block(fp, &cols, sizeof(cols), 1)) goto done;
+    if (!sharded_write_block(fp, &nnz, sizeof(nnz), 1)) goto done;
+    if (!sharded_write_block(fp, &num_parts, sizeof(num_parts), 1)) goto done;
+    if (!sharded_write_block(fp, &num_shards, sizeof(num_shards), 1)) goto done;
+    if (!store_sharded_index_array(fp, m->part_rows, (std::size_t) m->num_parts, "part_rows", filename)) goto done;
+    if (!store_sharded_index_array(fp, m->part_nnz, (std::size_t) m->num_parts, "part_nnz", filename)) goto done;
+    if (!store_sharded_index_array(fp, m->part_aux, (std::size_t) m->num_parts, "part_aux", filename)) goto done;
+    if (!store_sharded_index_array(fp, m->shard_offsets, (std::size_t) (m->num_shards + 1), "shard_offsets", filename)) goto done;
+    ok = 1;
+
+done:
+    std::fclose(fp);
+    return ok;
+}
+
+template<typename MatrixT, typename ShardedIndexT>
+inline int load_sharded_header_typed(const char *filename, sharded<MatrixT, ShardedIndexT> *m) {
+    static const unsigned char magic[8] = { 'C', 'S', 'H', 'R', 'D', '0', '1', '\0' };
+    unsigned char got_magic[8];
+    std::FILE *fp = 0;
+    std::uint64_t rows = 0;
+    std::uint64_t cols = 0;
+    std::uint64_t nnz = 0;
+    std::uint64_t num_parts = 0;
+    std::uint64_t num_shards = 0;
+    int ok = 0;
+
+    fp = std::fopen(filename, "rb");
+    if (fp == 0) return 0;
+    if (!sharded_read_block(fp, got_magic, sizeof(got_magic), 1)) goto done;
+    if (std::memcmp(got_magic, magic, sizeof(magic)) != 0) goto done;
+    clear(m);
+    init(m);
+    if (!sharded_read_block(fp, &m->format, sizeof(m->format), 1)) goto done;
+    if (!sharded_read_block(fp, &rows, sizeof(rows), 1)) goto done;
+    if (!sharded_read_block(fp, &cols, sizeof(cols), 1)) goto done;
+    if (!sharded_read_block(fp, &nnz, sizeof(nnz), 1)) goto done;
+    if (!sharded_read_block(fp, &num_parts, sizeof(num_parts), 1)) goto done;
+    if (!sharded_read_block(fp, &num_shards, sizeof(num_shards), 1)) goto done;
+    if (!sharded_from_u64(rows, &m->rows, "rows", filename)) goto done;
+    if (!sharded_from_u64(cols, &m->cols, "cols", filename)) goto done;
+    if (!sharded_from_u64(nnz, &m->nnz, "nnz", filename)) goto done;
+    if (!sharded_from_u64(num_parts, &m->num_parts, "num_parts", filename)) goto done;
+    if (!sharded_from_u64(num_shards, &m->num_shards, "num_shards", filename)) goto done;
+    m->part_capacity = m->num_parts;
+    m->shard_capacity = m->num_shards;
+
+    if (m->part_capacity != 0) {
+        m->parts = (MatrixT **) std::calloc((std::size_t) m->part_capacity, sizeof(MatrixT *));
+        m->part_offsets = (ShardedIndexT *) std::calloc((std::size_t) (m->part_capacity + 1), sizeof(ShardedIndexT));
+        m->part_rows = (ShardedIndexT *) std::calloc((std::size_t) m->part_capacity, sizeof(ShardedIndexT));
+        m->part_nnz = (ShardedIndexT *) std::calloc((std::size_t) m->part_capacity, sizeof(ShardedIndexT));
+        m->part_aux = (ShardedIndexT *) std::calloc((std::size_t) m->part_capacity, sizeof(ShardedIndexT));
+        if (m->parts == 0 || m->part_offsets == 0 || m->part_rows == 0 || m->part_nnz == 0 || m->part_aux == 0) {
+            clear(m);
+            goto done;
+        }
+    }
+    if (m->shard_capacity != 0) {
+        m->shard_offsets = (ShardedIndexT *) std::calloc((std::size_t) (m->shard_capacity + 1), sizeof(ShardedIndexT));
+        if (m->shard_offsets == 0) {
+            clear(m);
+            goto done;
+        }
+    }
+
+    if (!load_sharded_index_array(fp, m->part_rows, (std::size_t) m->num_parts, "part_rows", filename)) goto done;
+    if (!load_sharded_index_array(fp, m->part_nnz, (std::size_t) m->num_parts, "part_nnz", filename)) goto done;
+    if (!load_sharded_index_array(fp, m->part_aux, (std::size_t) m->num_parts, "part_aux", filename)) goto done;
+    if (!load_sharded_index_array(fp, m->shard_offsets, (std::size_t) (m->num_shards + 1), "shard_offsets", filename)) goto done;
+    rebuild_part_offsets(m);
+    ok = 1;
+
+done:
+    if (!ok) clear(m);
+    std::fclose(fp);
+    return ok;
+}
 
 struct dense_load_result {
     header h;
@@ -185,22 +349,30 @@ inline int load(const char *filename, sparse::dia<ValueT> *m) {
     return 1;
 }
 
-template<typename MatrixT>
-inline int store(const char *filename, const sharded<MatrixT> *m, const shard_storage *s) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+inline int store_header(const char *filename, const sharded<MatrixT, ShardedIndexT> *m) {
+    if constexpr (std::is_same<ShardedIndexT, Index>::value) {
+        return detail::store_sharded_header_raw(filename,
+                                                m->format,
+                                                m->rows,
+                                                m->cols,
+                                                m->nnz,
+                                                m->num_parts,
+                                                m->num_shards,
+                                                m->part_rows,
+                                                m->part_nnz,
+                                                m->part_aux,
+                                                m->shard_offsets);
+    }
+    return detail::store_sharded_header_typed(filename, m);
+}
+
+template<typename MatrixT, typename ShardedIndexT>
+inline int store(const char *filename, const sharded<MatrixT, ShardedIndexT> *m, const shard_storage *s) {
+    ShardedIndexT i = 0;
 
     if (s == 0 || s->capacity < m->num_parts) return 0;
-    if (!detail::store_sharded_header_raw(filename,
-                                          m->format,
-                                          m->rows,
-                                          m->cols,
-                                          m->nnz,
-                                          m->num_parts,
-                                          m->num_shards,
-                                          m->part_rows,
-                                          m->part_nnz,
-                                          m->part_aux,
-                                          m->shard_offsets)) return 0;
+    if (!store_header(filename, m)) return 0;
 
     for (i = 0; i < m->num_parts; ++i) {
         if (m->parts[i] == 0 || s->paths[i] == 0) return 0;
@@ -209,47 +381,50 @@ inline int store(const char *filename, const sharded<MatrixT> *m, const shard_st
     return 1;
 }
 
-template<typename MatrixT>
-inline int load_header(const char *filename, sharded<MatrixT> *m) {
-    detail::sharded_header_load_result tmp;
+template<typename MatrixT, typename ShardedIndexT>
+inline int load_header(const char *filename, sharded<MatrixT, ShardedIndexT> *m) {
+    if constexpr (std::is_same<ShardedIndexT, Index>::value) {
+        detail::sharded_header_load_result tmp;
 
-    tmp.part_rows = 0;
-    tmp.part_nnz = 0;
-    tmp.part_aux = 0;
-    tmp.shard_offsets = 0;
-    if (!detail::load_sharded_header_raw(filename, &tmp)) return 0;
+        tmp.part_rows = 0;
+        tmp.part_nnz = 0;
+        tmp.part_aux = 0;
+        tmp.shard_offsets = 0;
+        if (!detail::load_sharded_header_raw(filename, &tmp)) return 0;
 
-    clear(m);
-    init(m);
-    m->rows = tmp.h.rows;
-    m->cols = tmp.h.cols;
-    m->nnz = tmp.h.nnz;
-    m->format = tmp.h.format;
-    m->num_parts = tmp.num_parts;
-    m->part_capacity = tmp.num_parts;
-    m->num_shards = tmp.num_shards;
-    m->shard_capacity = tmp.num_shards;
-    m->parts = 0;
-    m->part_offsets = 0;
-    m->part_rows = tmp.part_rows;
-    m->part_nnz = tmp.part_nnz;
-    m->part_aux = tmp.part_aux;
-    m->shard_offsets = tmp.shard_offsets;
+        clear(m);
+        init(m);
+        m->rows = tmp.h.rows;
+        m->cols = tmp.h.cols;
+        m->nnz = tmp.h.nnz;
+        m->format = tmp.h.format;
+        m->num_parts = tmp.num_parts;
+        m->part_capacity = tmp.num_parts;
+        m->num_shards = tmp.num_shards;
+        m->shard_capacity = tmp.num_shards;
+        m->parts = 0;
+        m->part_offsets = 0;
+        m->part_rows = tmp.part_rows;
+        m->part_nnz = tmp.part_nnz;
+        m->part_aux = tmp.part_aux;
+        m->shard_offsets = tmp.shard_offsets;
 
-    if (m->part_capacity != 0) {
-        m->parts = (MatrixT **) std::calloc((std::size_t) m->part_capacity, sizeof(MatrixT *));
-        m->part_offsets = (Index *) std::calloc((std::size_t) (m->part_capacity + 1), sizeof(Index));
-        if (m->parts == 0 || m->part_offsets == 0) {
-            clear(m);
-            return 0;
+        if (m->part_capacity != 0) {
+            m->parts = (MatrixT **) std::calloc((std::size_t) m->part_capacity, sizeof(MatrixT *));
+            m->part_offsets = (ShardedIndexT *) std::calloc((std::size_t) (m->part_capacity + 1), sizeof(ShardedIndexT));
+            if (m->parts == 0 || m->part_offsets == 0) {
+                clear(m);
+                return 0;
+            }
         }
+        rebuild_part_offsets(m);
+        return 1;
     }
-    rebuild_part_offsets(m);
-    return 1;
+    return detail::load_sharded_header_typed(filename, m);
 }
 
-template<typename MatrixT>
-inline int fetch_part(sharded<MatrixT> *m, const shard_storage *s, Index partId) {
+template<typename MatrixT, typename ShardedIndexT>
+inline int fetch_part(sharded<MatrixT, ShardedIndexT> *m, const shard_storage *s, ShardedIndexT partId) {
     MatrixT *part = 0;
     int ok = 0;
 
@@ -276,9 +451,9 @@ fail:
     return ok;
 }
 
-template<typename MatrixT>
-inline int fetch_all_parts(sharded<MatrixT> *m, const shard_storage *s) {
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+inline int fetch_all_parts(sharded<MatrixT, ShardedIndexT> *m, const shard_storage *s) {
+    ShardedIndexT i = 0;
     for (i = 0; i < m->num_parts; ++i) {
         if (!fetch_part(m, s, i)) return 0;
     }
@@ -286,11 +461,11 @@ inline int fetch_all_parts(sharded<MatrixT> *m, const shard_storage *s) {
     return 1;
 }
 
-template<typename MatrixT>
-inline int fetch_shard(sharded<MatrixT> *m, const shard_storage *s, Index shardId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+inline int fetch_shard(sharded<MatrixT, ShardedIndexT> *m, const shard_storage *s, ShardedIndexT shardId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
 
     if (shardId >= m->num_shards) return 0;
     begin = first_part_in_shard(m, shardId);
@@ -301,19 +476,19 @@ inline int fetch_shard(sharded<MatrixT> *m, const shard_storage *s, Index shardI
     return 1;
 }
 
-template<typename MatrixT>
-inline int drop_part(sharded<MatrixT> *m, Index partId) {
+template<typename MatrixT, typename ShardedIndexT>
+inline int drop_part(sharded<MatrixT, ShardedIndexT> *m, ShardedIndexT partId) {
     if (partId >= m->num_parts) return 0;
     destroy(m->parts[partId]);
     m->parts[partId] = 0;
     return 1;
 }
 
-template<typename MatrixT>
-inline int drop_shard(sharded<MatrixT> *m, Index shardId) {
-    Index begin = 0;
-    Index end = 0;
-    Index i = 0;
+template<typename MatrixT, typename ShardedIndexT>
+inline int drop_shard(sharded<MatrixT, ShardedIndexT> *m, ShardedIndexT shardId) {
+    ShardedIndexT begin = 0;
+    ShardedIndexT end = 0;
+    ShardedIndexT i = 0;
 
     if (shardId >= m->num_shards) return 0;
     begin = first_part_in_shard(m, shardId);

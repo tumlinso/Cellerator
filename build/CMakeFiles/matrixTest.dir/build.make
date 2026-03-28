@@ -84,31 +84,31 @@ CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/matrixTest.dir/tests/matrix_test.cc.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/flags.make
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/includes_CUDA.rsp
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o: CMakeFiles/matrixTest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o"
-	/usr/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o -MF CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o.d -x cu -c /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cc -o CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o: CMakeFiles/matrixTest.dir/flags.make
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o: CMakeFiles/matrixTest.dir/includes_CUDA.rsp
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o: /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cu
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o: CMakeFiles/matrixTest.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/tumlinson/Software/Cellerator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o"
+	/usr/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o -MF CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o.d -x cu -c /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cu -o CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o
 
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.i"
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.i"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
-CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.s"
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 # Object files for target matrixTest
 matrixTest_OBJECTS = \
 "CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o" \
-"CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o"
+"CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o"
 
 # External object files for target matrixTest
 matrixTest_EXTERNAL_OBJECTS =
 
 matrixTest: CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o
-matrixTest: CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o
+matrixTest: CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o
 matrixTest: CMakeFiles/matrixTest.dir/build.make
 matrixTest: CMakeFiles/matrixTest.dir/linkLibs.rsp
 matrixTest: CMakeFiles/matrixTest.dir/objects1.rsp

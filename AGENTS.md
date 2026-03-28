@@ -2,377 +2,404 @@
 
 ## Purpose
 
-This codebase exists for high-performance computing on NVIDIA GPUs, specifically multi-GPU CUDA C++ workloads targeting **NVIDIA Volta V100** devices. The current target machine has **4× V100 GPUs**. All code generation, refactoring, and optimization decisions must prioritize:
+This repository is for high-performance numerical computing on **4× NVIDIA Volta V100 GPUs**.
 
-1. **Throughput**
-2. **Latency**
-3. **Memory efficiency**
-4. **Kernel efficiency**
-5. **Scalability across multiple V100s**
-6. **Predictable low-level behavior**
+Everything here is performance work. The priorities are:
 
-Readability, abstraction, stylistic modernism, and “clean code” preferences are **strictly secondary** to measured performance.
+1. throughput
+2. latency
+3. memory bandwidth efficiency
+4. GPU residency
+5. multi-GPU scaling
+6. predictable low-level behavior
+
+Readability, elegance, modern C++ style, and abstraction quality are not priorities unless they are free.
+
+---
+
+## Non-negotiable style rules
+
+Write code like a low-level CUDA/HPC engineer.
+
+Do not introduce abstraction for its own sake. Do not hide memory movement, indexing, launches, synchronization, or ownership behind wrappers, classes, helper frameworks, or “clean” interfaces.
+
+### Hard bans
+
+The following are not to be used:
+
+- `std::vector`
+- smart pointers of any kind
+- exceptions
+- RTTI
+- virtual functions in performance-sensitive code
+- inheritance-heavy design
+- `std::function`
+- iostreams in hot or infrastructure paths
+- container-heavy STL code
+- RAII-heavy resource wrappers
+- generic helper layers that hide CUDA, NCCL, or memory behavior
+- “modern C++” refactors that make machine behavior less obvious
+
+If dynamic memory is needed, use explicit allocation and explicit cleanup.
+
+If ownership matters, make ownership visible in the code.
+
+If a wrapper obscures cost, do not use it.
 
 ---
 
 ## Primary directive
 
-When writing code in this repository, act like a low-level CUDA/HPC engineer, not an application developer.
+Prefer direct, dense, explicit code.
 
-Write code in the **lowest-level practical style** that improves performance or control. Do **not** default to high-level C++ abstractions. Prefer explicit control over memory layout, branching, synchronization, launch configuration, and data movement.
+Use:
 
-Assume the user wants:
+- CUDA C++
+- raw pointers
+- flat arrays
+- POD structs
+- manual loops
+- explicit indexing
+- explicit kernel launches
+- explicit transfers
+- explicit synchronization
+- `__restrict__`
+- `static inline`
+- `__forceinline__`
+- macros where useful
+- `switch`
+- `goto`
+- fallthrough dispatch
+- manual specialization
+- handwritten fast paths
 
-- **dense**
-- **manual**
-- **performance-first**
-- **cache-aware**
-- **branch-aware**
-- **allocation-averse**
-- **GPU-oriented**
-- **benchmark-driven**
-- **minimally abstracted**
-- **host/device explicit**
+Old C style is acceptable and encouraged when it produces tighter or more controllable code.
 
-Do not try to “modernize” the style unless explicitly asked.
+Do not remove ugly low-level code just because it is ugly.
 
 ---
 
-## Language and style rules
+## Host memory policy
 
-### Overall language preference
+This machine has **more aggregate VRAM than CPU RAM**.
+
+That means host memory is not the main working set. Host RAM is a staging and control layer only.
+
+### Rules
+
+- keep data on GPU as long as possible
+- keep intermediates on GPU
+- minimize host-side copies
+- minimize device-host-device round trips
+- do not materialize large host mirrors unless absolutely necessary
+- do not design pipelines around CPU memory convenience
 
 Prefer:
 
-- CUDA C++
-- C-style code patterns
-- explicit pointers
-- raw arrays
-- POD structs
-- manual loops
-- macros where useful
-- `static inline`
-- `__forceinline__`
-- `restrict` / `__restrict__`
-- explicit index arithmetic
-- manual unrolling when justified
-- `switch`
-- `goto`
-- bit tricks
-- compact control flow
+- GPU-resident pipelines
+- preallocated device buffers
+- reused device workspaces
+- fused kernels
+- device-to-device transfers
+- NCCL collectives
+- peer-to-peer transfers
+- chunked streaming when necessary
+- pinned memory only when unavoidable
 
-Avoid or minimize:
+Avoid:
 
-- exceptions
-- RTTI
-- virtual dispatch
-- inheritance-heavy designs
-- templates unless they materially help optimization
-- metaprogramming for its own sake
-- STL-heavy code
-- iostreams
-- `std::function`
-- `std::vector` in hot paths
-- `std::string` in hot paths
-- smart pointers in performance-critical regions
-- fancy wrappers around CUDA APIs
-- hidden allocations
-- polymorphic abstractions
-- overengineered class hierarchies
+- duplicate host copies
+- CPU-owned intermediates
+- host preprocessing that could run on device
+- spilling back to host between GPU stages
 
-Use C++ only where it helps generate better machine code or cleaner zero-cost structure.
+The CPU should orchestrate. The GPUs should hold the data.
 
 ---
 
-## Performance-first coding philosophy
+## Toolchain policy
 
-Every implementation should assume:
+Use the lowest-level practical tool that does the job without abstraction pollution.
 
-- this code may run on large tensors, matrices, sparse structures, or genomic-scale data
-- host-device transfers are expensive
-- synchronization is expensive
-- branching is expensive
-- bad memory access patterns are fatal
-- unnecessary abstraction is suspect
-- every allocation should be justified
-- every kernel launch should be deliberate
-- every extra pass over memory should be questioned
+### Preferred order
 
-Always prefer:
+1. raw CUDA C++ when control matters
+2. NVIDIA HPC toolkit libraries when they are a legitimate numerical fit
+3. OpenACC where it maps cleanly and does not degrade control, residency, or performance
 
-- fewer allocations
-- fewer launches
-- fewer passes over memory
-- contiguous access
-- coalesced loads/stores
-- explicit shared memory usage
-- register-aware kernel design
-- occupancy-aware launch design
-- asynchronous overlap when possible
-- streams/events where useful
-- pinned memory for transfers when appropriate
-- peer-to-peer and NCCL-aware thinking for multi-GPU work
+### NVIDIA HPC toolkit policy
 
----
+Everything in NVIDIA’s HPC toolkit is allowed **if it is legitimately the right tool** and not abstraction pollution.
 
-## CUDA-specific directives
+That includes, when appropriate:
 
-### GPU target assumptions
+- cuBLAS
+- cuSPARSE
+- cuFFT
+- NCCL
+- CUB
+- Thrust only in limited cases where it is genuinely the best low-level practical choice and does not infect hot paths with abstraction-heavy style
+- OpenACC
+- other NVIDIA HPC SDK components that directly serve performance
 
-Optimize for:
+Do not avoid NVIDIA libraries on ideological grounds.
 
-- **NVIDIA Volta V100**
-- warp size = 32
-- Volta-era memory hierarchy and scheduling behavior
-- 4-GPU systems as the default multi-GPU target
+Do not wrap them in useless abstraction.
 
-When writing CUDA code:
+Do not force the codebase into a library-shaped architecture just because a library is being used.
 
-- Prefer explicit CUDA runtime or driver API usage over wrappers
-- Be careful with register pressure
-- Consider occupancy, but do not worship it blindly
-- Balance occupancy against instruction count, register usage, and memory behavior
-- Use shared memory only when it clearly helps
-- Prefer coalesced access over cleverness
-- Use warp-level primitives where they help
-- Think about SM utilization and memory bandwidth first
-- Minimize divergence
-- Avoid atomics unless unavoidable
-- Fuse operations when it reduces memory traffic and launch overhead
-- Keep temporary storage local and predictable
+Use them when they are numerically appropriate, operationally direct, and performance-legitimate.
 
-### Kernel writing rules
-
-Kernel code should generally:
-
-- use raw pointers
-- use `__restrict__`
-- use grid-stride loops where appropriate
-- use explicit integer indexing
-- minimize control overhead
-- avoid unnecessary temporary abstractions
-- avoid device-side heap usage
-- avoid hidden copies
-- avoid helper layers that obscure generated code
-
-When useful, it is acceptable to use:
-
-- `goto` for hot-path control flow simplification
-- `switch` for dispatch and branch shaping
-- macro-generated specializations
-- manual tail handling
-- manually flattened indexing
-- manually staged shared memory tiles
-- hand-unrolled reductions
-- branch hoisting
-- predication-aware rewrite patterns
-
-Do not reject `goto`, fallthrough `switch`, or other old-school C techniques on stylistic grounds. Use them if they produce tighter code, better branch behavior, or simpler hot paths.
+Do not use them when a custom kernel would clearly avoid extra passes, extra conversions, extra synchronization, or extra transfers.
 
 ---
 
-## Multi-GPU directives
+## CUDA policy
 
-Assume the machine has **4 V100 GPUs** unless told otherwise.
+Optimize for **Volta V100**.
 
-When writing multi-GPU code:
-
-- think explicitly about device partitioning
-- minimize inter-GPU communication
-- overlap transfer and compute where possible
-- use NCCL when collectives are needed
-- prefer embarrassingly parallel partitioning when possible
-- be explicit about device ownership of buffers
-- use peer access when useful
-- avoid host round-trips unless necessary
-- structure work so each GPU gets large enough chunks to amortize overhead
-
-Do not write single-GPU-only code if the problem obviously benefits from multi-GPU partitioning.
-
-If proposing a design, discuss:
-
-- workload sharding strategy
-- communication cost
-- synchronization points
-- memory duplication vs partitioning
-- stream usage
-- whether overlap is possible
-
----
-
-## Sparse / HPC data structure preferences
-
-Prefer data layouts that are explicit and efficient.
-
-Typical preferences:
-
-- SoA over AoS when it improves bandwidth/coalescing
-- CSR/CSC/COO or custom packed formats for sparse problems
-- aligned allocations when relevant
-- integer widths chosen deliberately
-- fixed-layout structs
-- flattened arrays instead of nested containers
-- preallocated workspaces
-- reuse of buffers across iterations
-
-Avoid opaque container-heavy representations in hot paths.
-
----
-
-## Benchmarking and optimization rules
-
-Never claim a rewrite is “faster” unless one of the following is true:
-
-1. it is obviously reducing asymptotic work or memory traffic, or
-2. it is a standard low-level optimization with clear architectural justification, or
-3. benchmark evidence is provided
-
-When optimizing, explain concretely in terms of:
+Always think in terms of:
 
 - memory traffic
 - coalescing
-- branch divergence
-- occupancy
+- divergence
 - register pressure
 - launch overhead
-- synchronization
-- cache/shared memory reuse
-- PCIe/NVLink transfer behavior
+- synchronization cost
 - arithmetic intensity
+- occupancy as a tradeoff, not a religion
 
-Prefer measured-performance thinking over style opinions.
+Kernel code should usually have:
 
----
+- raw pointer arguments
+- `__restrict__`
+- flat indexing
+- grid-stride loops where appropriate
+- minimal branching
+- minimal helper layers
+- no hidden allocations
+- no device-side heap use unless absolutely unavoidable
 
-## What to do when asked to write code
+Allowed and encouraged when justified:
 
-When producing code, default to:
-
-- a single-file, direct implementation if practical
-- minimal abstraction
-- explicit includes
-- explicit types
-- explicit error checks
-- explicit kernel launches
-- explicit memory management
-- comments that explain performance rationale, not basic syntax
-
-When multiple approaches exist, prefer the one with:
-
-- tighter control
-- fewer moving parts
-- lower overhead
-- fewer allocations
-- better visibility into generated code
-- easier profiling with Nsight / nvprof / `cuda-memcheck`
-
----
-
-## What not to do
-
-Do **not** automatically rewrite code into:
-
-- “clean architecture”
-- OOP frameworks
-- generic libraries
-- deeply templated abstractions
-- STL-rich code
-- RAII-heavy resource layers in hot paths
-- elegant but slower helper abstractions
-
-Do **not** reject C-style patterns just because they are unfashionable.
-
-Do **not** replace manual control flow with prettier code unless asked.
-
-Do **not** introduce abstraction barriers that make PTX/SASS consequences harder to reason about.
-
-Do **not** prioritize readability over performance in performance-critical code.
-
----
-
-## Acceptable low-level patterns
-
-The following are explicitly allowed and encouraged when justified:
-
-- `goto` for fast exits, cleanup, and control-flow flattening
-- `switch`-based specialization and dispatch
-- fallthrough dispatch patterns
-- macros for tiny repeated hot-path logic
-- manual loop unrolling
-- manual vectorized loads/stores where valid
+- `goto`
+- `switch`
+- fallthrough dispatch
+- manual unrolling
+- manual tail handling
 - pointer bumping
-- aliasing control via `__restrict__`
-- sentinel-based loops
+- flattened control flow
+- handwritten reductions
+- handwritten scans
+- macros for tiny hot-path specializations
+- separate kernels for materially different cases
+
+Do not reject these patterns because they look old.
+
+---
+
+## OpenACC policy
+
+OpenACC is allowed where it is genuinely useful.
+
+Good use cases:
+
+- regular dense numerical loops
+- structured kernels
+- regular map/reduce-like operations
+- code that benefits from acceleration without needing hand-written CUDA kernels
+
+Rules for OpenACC:
+
+- control data regions explicitly
+- keep data resident across regions
+- minimize copies
+- do not let OpenACC drag code back into a host-centric model
+- do not use OpenACC where raw CUDA is clearly required for low-level control
+
+If OpenACC introduces transfer noise, poor residency, or weak execution control, do not use it.
+
+---
+
+## Multi-GPU policy
+
+Assume **4× V100 GPUs with NVLink**.
+
+When writing multi-GPU code:
+
+- shard work explicitly
+- minimize communication volume
+- minimize synchronization points
+- overlap communication and compute where possible
+- prefer large chunks of work per GPU
+- use **NCCL** for collectives by default
+- use peer access where useful
+- prefer direct GPU-to-GPU exchange over host-mediated transfers
+- do not bounce inter-GPU data through host memory unless absolutely necessary
+
+Be explicit about:
+
+- ownership of buffers
+- sharding strategy
+- communication pattern
+- stream layout
+- overlap opportunities
+- duplication versus partitioning
+- when NCCL is used and why
+
+Do not write single-GPU-minded code for problems that clearly want sharding.
+
+---
+
+## Data structure policy
+
+Prefer machine-friendly data layouts.
+
+Usually that means:
+
+- flat arrays
+- SoA over AoS when it improves bandwidth or coalescing
+- CSR / CSC / COO for sparse data where appropriate
+- direct packed layouts
+- fixed-layout structs
+- deliberate integer widths
+- aligned storage where useful
+- reusable scratch buffers
+- preallocated workspaces
+
+Do not use container-heavy representations in hot paths.
+
+---
+
+## Benchmarking and optimization policy
+
+Do not call something “faster” unless:
+
+1. it obviously reduces work or memory traffic, or
+2. it obviously reduces launches, transfers, or synchronization, or
+3. it is benchmarked
+
+Explain optimizations in terms of:
+
+- bytes moved
+- access regularity
+- coalescing
+- divergence
+- register usage
+- occupancy tradeoffs
+- launch count
+- synchronization count
+- transfer volume
+- NVLink / PCIe behavior
+- GPU residency
+
+Do not justify rewrites by saying they are cleaner, nicer, safer, or more maintainable unless that cost is literally zero.
+
+---
+
+## Code generation rules
+
+When asked to write code:
+
+- write direct implementations
+- keep abstractions near zero
+- make ownership explicit
+- make memory movement explicit
+- make synchronization explicit
+- make launch configuration explicit
+- comment performance decisions, not beginner syntax
+
+Do not “improve” code by making it more object-oriented, more generic, or more modern.
+
+If two versions are possible, choose the one with:
+
+- less abstraction
+- less hidden cost
+- less host-memory use
+- fewer allocations
+- fewer passes over memory
+- more predictable machine behavior
+- easier profiling in Nsight
+
+---
+
+## Explicitly allowed patterns
+
+These are explicitly allowed and should not be removed on style grounds:
+
+- `goto`
+- `switch`
+- fallthrough
+- macros
+- pointer arithmetic
+- manual unrolling
 - fused kernels
-- handwritten reductions/scans
-- explicit staging buffers
-- compile-time specialization via macros or simple templates
-- hard-coded fast paths for known GPU constraints
+- handwritten reductions
+- handwritten scans
+- specialized fast paths
+- direct library calls
+- C-style cleanup blocks
+- hard-coded dispatch for materially different cases
 
 ---
 
-## Error handling philosophy
+## Error handling policy
 
-In hot paths:
+Keep error handling explicit and cheap.
 
-- keep error handling minimal and explicit
-- avoid exception-based handling
-- use direct CUDA error macros or inline helpers
-- keep cleanup paths simple and low overhead
+Prefer:
 
-A C-style pattern is preferred, for example a single cleanup block using `goto` on the host side when it keeps resource handling compact and predictable.
+- direct CUDA error checks
+- direct status checks for NVIDIA libraries
+- inline macros or tiny helpers
+- one cleanup block with `goto` when useful
 
----
-
-## Commenting style
-
-Do not over-comment.
-
-Comments should explain:
-
-- why a layout was chosen
-- why a branch structure exists
-- why a kernel is shaped a certain way
-- what performance tradeoff is being made
-- what Volta/V100 assumption matters
-
-Do not clutter code with tutorial commentary.
+Do not use exception-based error handling.
 
 ---
 
-## Response style for generated code
+## Interconnect policy
 
-When asked for code:
+The GPUs in this machine are connected with **NVLink**.
 
-- provide code first
-- keep explanation brief and technical
-- mention performance assumptions
-- mention likely bottlenecks
-- mention where profiling should focus
-- avoid moralizing about style
+Treat GPU-to-GPU communication as a first-class path. Do not default to host-mediated transfer patterns when inter-device exchange is needed.
 
-If a requested low-level style is ugly but fast, prefer ugly.
+Rules:
 
-If a requested low-level style is ugly and only maybe fast, still allow it, but note where benchmarking is needed.
+- prefer GPU-to-GPU communication over routing through host memory
+- use **NCCL** for collective communication
+- use peer-to-peer transfers where appropriate
+- design multi-GPU work assuming fast direct interconnect is available
+- avoid host bounce buffers for cross-GPU exchange unless there is no better option
+- overlap NVLink communication with compute where possible
+
+When writing multi-GPU code, assume NCCL is the default collective layer unless there is a specific reason not to use it.
 
 ---
 
 ## Final instruction
 
-This repository is for **serious HPC CUDA work**, not for showcasing fashionable C++.
+This is a **performance repository**, not a software architecture exercise.
 
-Generate code that is:
+Write code that is:
 
 - blunt
 - explicit
 - dense
-- fast
 - low-level
-- profiler-conscious
-- V100-aware
+- GPU-first
 - multi-GPU-aware
-- unafraid of old-school C idioms
+- comfortable with ugly C idioms
+- willing to use NVIDIA HPC toolkit components when they are truly the right tool
+- hostile to abstraction pollution
+- hostile to host-memory-centric design
 
-When in doubt, choose the version with **more control and less abstraction**.
+Never use `std::vector`.
 
-**Additional hard rule:** this machine has more aggregate VRAM than CPU RAM, so code must be written to keep the working set on GPU as much as possible and to minimize host-memory residency and host-device transfer volume.
+Assume NVLink is available and NCCL should be used for collective multi-GPU work by default.
+
+Never use smart pointers.
+
+Never hide machine-relevant behavior behind pretty code.
+
+When in doubt, choose the version with less abstraction and more control.

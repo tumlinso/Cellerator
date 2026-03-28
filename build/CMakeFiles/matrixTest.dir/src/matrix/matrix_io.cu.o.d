@@ -1,4 +1,4 @@
-CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o : /home/tumlinson/Software/Cellerator/tests/matrix_test.cc \
+CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o : /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cu \
     /usr/include/stdc-predef.h \
     /usr/include/cuda_runtime.h \
     /usr/include/crt/host_config.h \
@@ -180,7 +180,7 @@ CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o : /home/tumlinson/Software/Cell
     /usr/include/c++/12/utility \
     /usr/include/c++/12/bits/stl_relops.h \
     /usr/include/c++/12/initializer_list \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/matrix.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/matrix_io.cuh \
     /usr/include/c++/12/cstddef \
     /usr/include/c++/12/cstdint \
     /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
@@ -190,16 +190,16 @@ CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o : /home/tumlinson/Software/Cell
     /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
     /usr/include/c++/12/cstdio \
     /usr/include/c++/12/cstring \
+    /home/tumlinson/Software/Cellerator/src/matrix/matrix.cuh \
     /usr/include/c++/12/climits \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/../real.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/../real.cuh \
     /usr/include/cuda_fp16.h \
     /usr/include/cuda_fp16.hpp \
     /usr/include/nv/target \
     /usr/include/nv/detail/__target_macros \
     /usr/include/nv/detail/__preprocessor \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/dense.cuh \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/sparse/csr.cuh \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/sparse/coo.cuh \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/sparse/dia.cuh \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/sharded.cuh \
-    /home/tumlinson/Software/Cellerator/tests/../src/matrix/matrix_io.cuh
+    /home/tumlinson/Software/Cellerator/src/matrix/dense.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/sparse/csr.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/sparse/coo.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/sparse/dia.cuh \
+    /home/tumlinson/Software/Cellerator/src/matrix/sharded.cuh

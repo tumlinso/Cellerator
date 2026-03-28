@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o"
-  "CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cc.o.d"
+  "CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o"
+  "CMakeFiles/matrixTest.dir/src/matrix/matrix_io.cu.o.d"
   "CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o"
   "CMakeFiles/matrixTest.dir/tests/matrix_test.cc.o.d"
   "matrixTest"
