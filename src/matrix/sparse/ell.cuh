@@ -5,24 +5,18 @@
 namespace matrix {
 namespace sparse {
 
-template<typename Real = ::matrix::Real>
 struct ell {
-    typedef Real value_type;
-    typedef Index index_type;
-
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
     unsigned char format;
 
-    Index *colIdx;
-    Real *val;
-    Index max_nnz_per_row;
+    unsigned int *colIdx;
+    __half *val;
+    unsigned int max_nnz_per_row;
 };
 
-template<typename Real>
-inline void init(ell<Real> *m, Index rows = 0, Index cols = 0, Index width = 0) {
-    require_fp_storage<Real>();
+inline void init(ell *m, unsigned int rows = 0, unsigned int cols = 0, unsigned int width = 0) {
     m->rows = rows;
     m->cols = cols;
     m->nnz = rows * width;
@@ -32,15 +26,13 @@ inline void init(ell<Real> *m, Index rows = 0, Index cols = 0, Index width = 0) 
     m->max_nnz_per_row = width;
 }
 
-template<typename Real>
-inline std::size_t bytes(const ell<Real> *m) {
+inline std::size_t bytes(const ell *m) {
     return sizeof(*m)
-        + (std::size_t) m->nnz * sizeof(Index)
-        + (std::size_t) m->nnz * sizeof(Real);
+        + (std::size_t) m->nnz * sizeof(unsigned int)
+        + (std::size_t) m->nnz * sizeof(__half);
 }
 
-template<typename Real>
-inline void clear(ell<Real> *m) {
+inline void clear(ell *m) {
     std::free(m->colIdx);
     std::free(m->val);
     m->colIdx = 0;
@@ -52,16 +44,15 @@ inline void clear(ell<Real> *m) {
     m->format = format_ell;
 }
 
-template<typename Real>
-inline int allocate(ell<Real> *m) {
+inline int allocate(ell *m) {
     std::free(m->colIdx);
     std::free(m->val);
     m->colIdx = 0;
     m->val = 0;
     m->nnz = m->rows * m->max_nnz_per_row;
     if (m->nnz == 0) return 1;
-    m->colIdx = (Index *) std::malloc((std::size_t) m->nnz * sizeof(Index));
-    m->val = (Real *) std::malloc((std::size_t) m->nnz * sizeof(Real));
+    m->colIdx = (unsigned int *) std::malloc((std::size_t) m->nnz * sizeof(unsigned int));
+    m->val = (__half *) std::malloc((std::size_t) m->nnz * sizeof(__half));
     if (m->colIdx == 0 || m->val == 0) {
         std::free(m->colIdx);
         std::free(m->val);
@@ -72,19 +63,17 @@ inline int allocate(ell<Real> *m) {
     return 1;
 }
 
-template<typename Real>
-inline const Real *at(const ell<Real> *m, Index r, Index c) {
-    Index base = r * m->max_nnz_per_row;
-    for (Index i = 0; i < m->max_nnz_per_row; ++i) {
+inline const __half *at(const ell *m, unsigned int r, unsigned int c) {
+    unsigned int base = r * m->max_nnz_per_row;
+    for (unsigned int i = 0; i < m->max_nnz_per_row; ++i) {
         if (m->colIdx[base + i] == c) return m->val + base + i;
     }
     return 0;
 }
 
-template<typename Real>
-inline Real *at(ell<Real> *m, Index r, Index c) {
-    Index base = r * m->max_nnz_per_row;
-    for (Index i = 0; i < m->max_nnz_per_row; ++i) {
+inline __half *at(ell *m, unsigned int r, unsigned int c) {
+    unsigned int base = r * m->max_nnz_per_row;
+    for (unsigned int i = 0; i < m->max_nnz_per_row; ++i) {
         if (m->colIdx[base + i] == c) return m->val + base + i;
     }
     return 0;

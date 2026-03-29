@@ -5,24 +5,18 @@
 namespace matrix {
 namespace sparse {
 
-template<typename Real = ::matrix::Real>
 struct alignas(16) dia {
-    typedef Real value_type;
-    typedef Index index_type;
-
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
     unsigned char format;
 
-    DiagIndex *offsets;
-    Real *val;
-    Index num_diagonals;
+    int *offsets;
+    __half *val;
+    unsigned int num_diagonals;
 };
 
-template<typename Real>
-__host__ __device__ __forceinline__ void init(dia<Real> * __restrict__ m, Index rows = 0, Index cols = 0, Index nnz = 0) {
-    require_fp_storage<Real>();
+__host__ __device__ __forceinline__ void init(dia * __restrict__ m, unsigned int rows = 0, unsigned int cols = 0, unsigned int nnz = 0) {
     m->rows = rows;
     m->cols = cols;
     m->nnz = nnz;
@@ -32,15 +26,13 @@ __host__ __device__ __forceinline__ void init(dia<Real> * __restrict__ m, Index 
     m->num_diagonals = 0;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ std::size_t bytes(const dia<Real> * __restrict__ m) {
+__host__ __device__ __forceinline__ std::size_t bytes(const dia * __restrict__ m) {
     return sizeof(*m)
-        + (std::size_t) m->num_diagonals * sizeof(DiagIndex)
-        + (std::size_t) m->nnz * sizeof(Real);
+        + (std::size_t) m->num_diagonals * sizeof(int)
+        + (std::size_t) m->nnz * sizeof(__half);
 }
 
-template<typename Real>
-__host__ __forceinline__ void clear(dia<Real> * __restrict__ m) {
+__host__ __forceinline__ void clear(dia * __restrict__ m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
@@ -52,14 +44,13 @@ __host__ __forceinline__ void clear(dia<Real> * __restrict__ m) {
     m->format = format_dia;
 }
 
-template<typename Real>
-__host__ __forceinline__ int allocate(dia<Real> * __restrict__ m) {
+__host__ __forceinline__ int allocate(dia * __restrict__ m) {
     std::free(m->offsets);
     std::free(m->val);
     m->offsets = 0;
     m->val = 0;
-    if (m->num_diagonals != 0) m->offsets = (DiagIndex *) std::malloc((std::size_t) m->num_diagonals * sizeof(DiagIndex));
-    if (m->nnz != 0) m->val = (Real *) std::malloc((std::size_t) m->nnz * sizeof(Real));
+    if (m->num_diagonals != 0) m->offsets = (int *) std::malloc((std::size_t) m->num_diagonals * sizeof(int));
+    if (m->nnz != 0) m->val = (__half *) std::malloc((std::size_t) m->nnz * sizeof(__half));
     if (m->num_diagonals != 0 && m->offsets == 0) return 0;
     if (m->nnz != 0 && m->val == 0) {
         std::free(m->offsets);
@@ -69,19 +60,17 @@ __host__ __forceinline__ int allocate(dia<Real> * __restrict__ m) {
     return 1;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ const Real *at(const dia<Real> * __restrict__ m, Index r, Index c) {
-    const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
-    for (Index i = 0; i < m->num_diagonals; ++i) {
+__host__ __device__ __forceinline__ const __half *at(const dia * __restrict__ m, unsigned int r, unsigned int c) {
+    const int offset = (int) c - (int) r;
+    for (unsigned int i = 0; i < m->num_diagonals; ++i) {
         if (m->offsets[i] == offset) return m->val + i * m->rows + r;
     }
     return 0;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ Real *at(dia<Real> * __restrict__ m, Index r, Index c) {
-    const DiagIndex offset = (DiagIndex) c - (DiagIndex) r;
-    for (Index i = 0; i < m->num_diagonals; ++i) {
+__host__ __device__ __forceinline__ __half *at(dia * __restrict__ m, unsigned int r, unsigned int c) {
+    const int offset = (int) c - (int) r;
+    for (unsigned int i = 0; i < m->num_diagonals; ++i) {
         if (m->offsets[i] == offset) return m->val + i * m->rows + r;
     }
     return 0;

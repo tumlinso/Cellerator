@@ -18,9 +18,7 @@ struct alignas(16) part_record {
 
 template<typename MatrixT>
 struct shard_cache {
-    typedef Index index_type;
-
-    Index capacity;
+    unsigned long capacity;
     part_record<MatrixT> *parts;
 };
 
@@ -28,45 +26,41 @@ template<typename MatrixT>
 inline cudaError_t release(part_record<MatrixT> *record);
 
 template<typename MatrixT>
-inline cudaError_t release_part(shard_cache<MatrixT> *cache, Index partId);
+inline cudaError_t release_part(shard_cache<MatrixT> *cache, unsigned long partId);
 
-template<typename ValueT>
 struct alignas(16) dense_view {
-    Index rows;
-    Index cols;
-    Index nnz;
-    Index ld;
-    ValueT *val;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
+    unsigned int ld;
+    __half *val;
 };
 
-template<typename ValueT>
 struct alignas(16) csr_view {
-    Index rows;
-    Index cols;
-    Index nnz;
-    Index *rowPtr;
-    Index *colIdx;
-    ValueT *val;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
+    unsigned int *rowPtr;
+    unsigned int *colIdx;
+    __half *val;
 };
 
-template<typename ValueT>
 struct alignas(16) coo_view {
-    Index rows;
-    Index cols;
-    Index nnz;
-    Index *rowIdx;
-    Index *colIdx;
-    ValueT *val;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
+    unsigned int *rowIdx;
+    unsigned int *colIdx;
+    __half *val;
 };
 
-template<typename ValueT>
 struct alignas(16) dia_view {
-    Index rows;
-    Index cols;
-    Index nnz;
-    Index num_diagonals;
-    DiagIndex *offsets;
-    ValueT *val;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
+    unsigned int num_diagonals;
+    int *offsets;
+    __half *val;
 };
 
 template<typename MatrixT>
@@ -77,7 +71,7 @@ __host__ __forceinline__ void init(shard_cache<MatrixT> *c) {
 
 template<typename MatrixT>
 __host__ __forceinline__ void clear(shard_cache<MatrixT> *c) {
-    Index i = 0;
+    unsigned long i = 0;
     if (c->parts != 0) {
         for (i = 0; i < c->capacity; ++i) {
             if (c->parts[i].view != 0) release_part(c, i);
@@ -89,9 +83,9 @@ __host__ __forceinline__ void clear(shard_cache<MatrixT> *c) {
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ int reserve(shard_cache<MatrixT> *c, Index capacity) {
+__host__ __forceinline__ int reserve(shard_cache<MatrixT> *c, unsigned long capacity) {
     part_record<MatrixT> *records = 0;
-    Index i = 0;
+    unsigned long i = 0;
 
     if (capacity <= c->capacity) return 1;
     records = (part_record<MatrixT> *) std::malloc((std::size_t) capacity * sizeof(part_record<MatrixT>));
@@ -114,10 +108,9 @@ __host__ __forceinline__ void zero_record(part_record<MatrixT> *record) {
     record->device_id = -1;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ cudaError_t upload(const ::matrix::dense<ValueT> *src, part_record< ::matrix::dense<ValueT> > *record) {
-    dense_view<ValueT> host;
-    dense_view<ValueT> *deviceView = 0;
+__host__ __forceinline__ cudaError_t upload(const ::matrix::dense *src, part_record< ::matrix::dense > *record) {
+    dense_view host;
+    dense_view *deviceView = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
@@ -128,9 +121,9 @@ __host__ __forceinline__ cudaError_t upload(const ::matrix::dense<ValueT> *src, 
     host.val = 0;
 
     if (src->nnz != 0) {
-        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(ValueT));
+        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(__half));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(ValueT), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(__half), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
 
@@ -150,10 +143,9 @@ fail:
     return err;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::csr<ValueT> *src, part_record< ::matrix::sparse::csr<ValueT> > *record) {
-    csr_view<ValueT> host;
-    csr_view<ValueT> *deviceView = 0;
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::csr *src, part_record< ::matrix::sparse::csr > *record) {
+    csr_view host;
+    csr_view *deviceView = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
@@ -165,20 +157,20 @@ __host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::csr<ValueT> 
     host.val = 0;
 
     if (src->rows != 0) {
-        err = cudaMalloc((void **) &host.rowPtr, (src->rows + 1) * sizeof(Index));
+        err = cudaMalloc((void **) &host.rowPtr, (src->rows + 1) * sizeof(unsigned int));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.rowPtr, src->rowPtr, (src->rows + 1) * sizeof(Index), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.rowPtr, src->rowPtr, (src->rows + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
 
     if (src->nnz != 0) {
-        err = cudaMalloc((void **) &host.colIdx, src->nnz * sizeof(Index));
+        err = cudaMalloc((void **) &host.colIdx, src->nnz * sizeof(unsigned int));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.colIdx, src->colIdx, src->nnz * sizeof(Index), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.colIdx, src->colIdx, src->nnz * sizeof(unsigned int), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
-        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(ValueT));
+        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(__half));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(ValueT), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(__half), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
 
@@ -202,10 +194,9 @@ fail:
     return err;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::coo<ValueT> *src, part_record< ::matrix::sparse::coo<ValueT> > *record) {
-    coo_view<ValueT> host;
-    coo_view<ValueT> *deviceView = 0;
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::coo *src, part_record< ::matrix::sparse::coo > *record) {
+    coo_view host;
+    coo_view *deviceView = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
@@ -217,17 +208,17 @@ __host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::coo<ValueT> 
     host.val = 0;
 
     if (src->nnz != 0) {
-        err = cudaMalloc((void **) &host.rowIdx, src->nnz * sizeof(Index));
+        err = cudaMalloc((void **) &host.rowIdx, src->nnz * sizeof(unsigned int));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.rowIdx, src->rowIdx, src->nnz * sizeof(Index), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.rowIdx, src->rowIdx, src->nnz * sizeof(unsigned int), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
-        err = cudaMalloc((void **) &host.colIdx, src->nnz * sizeof(Index));
+        err = cudaMalloc((void **) &host.colIdx, src->nnz * sizeof(unsigned int));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.colIdx, src->colIdx, src->nnz * sizeof(Index), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.colIdx, src->colIdx, src->nnz * sizeof(unsigned int), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
-        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(ValueT));
+        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(__half));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(ValueT), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(__half), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
 
@@ -251,10 +242,9 @@ fail:
     return err;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::dia<ValueT> *src, part_record< ::matrix::sparse::dia<ValueT> > *record) {
-    dia_view<ValueT> host;
-    dia_view<ValueT> *deviceView = 0;
+__host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::dia *src, part_record< ::matrix::sparse::dia > *record) {
+    dia_view host;
+    dia_view *deviceView = 0;
     cudaError_t err = cudaSuccess;
 
     zero_record(record);
@@ -266,15 +256,15 @@ __host__ __forceinline__ cudaError_t upload(const ::matrix::sparse::dia<ValueT> 
     host.val = 0;
 
     if (src->num_diagonals != 0) {
-        err = cudaMalloc((void **) &host.offsets, src->num_diagonals * sizeof(DiagIndex));
+        err = cudaMalloc((void **) &host.offsets, src->num_diagonals * sizeof(int));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.offsets, src->offsets, src->num_diagonals * sizeof(DiagIndex), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.offsets, src->offsets, src->num_diagonals * sizeof(int), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
     if (src->nnz != 0) {
-        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(ValueT));
+        err = cudaMalloc((void **) &host.val, src->nnz * sizeof(__half));
         if (err != cudaSuccess) goto fail;
-        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(ValueT), cudaMemcpyHostToDevice);
+        err = cudaMemcpy(host.val, src->val, src->nnz * sizeof(__half), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) goto fail;
     }
 
@@ -320,39 +310,35 @@ __host__ __forceinline__ cudaError_t release(part_record<MatrixT> *record) {
     return cudaSuccess;
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
-    return sizeof(dense_view<ValueT>) + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::dense > *view, unsigned long partId) {
+    return sizeof(dense_view) + (std::size_t) view->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
-    return sizeof(csr_view<ValueT>)
-        + (std::size_t) (view->part_rows[partId] + 1) * sizeof(Index)
-        + (std::size_t) view->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::csr > *view, unsigned long partId) {
+    return sizeof(csr_view)
+        + (std::size_t) (view->part_rows[partId] + 1) * sizeof(unsigned int)
+        + (std::size_t) view->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) view->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
-    return sizeof(coo_view<ValueT>)
-        + (std::size_t) view->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) view->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::coo > *view, unsigned long partId) {
+    return sizeof(coo_view)
+        + (std::size_t) view->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) view->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) view->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia<ValueT>, ShardedIndexT > *view, ShardedIndexT partId) {
-    return sizeof(dia_view<ValueT>)
-        + (std::size_t) view->part_aux[partId] * sizeof(DiagIndex)
-        + (std::size_t) view->part_nnz[partId] * sizeof(ValueT);
+__host__ __forceinline__ std::size_t device_part_bytes(const ::matrix::sharded< ::matrix::sparse::dia > *view, unsigned long partId) {
+    return sizeof(dia_view)
+        + (std::size_t) view->part_aux[partId] * sizeof(int)
+        + (std::size_t) view->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename MatrixT, typename ShardedIndexT>
-__host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId) {
-    ShardedIndexT begin = 0;
-    ShardedIndexT end = 0;
-    ShardedIndexT i = 0;
+template<typename MatrixT>
+__host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<MatrixT> *view, unsigned long shardId) {
+    unsigned long begin = 0;
+    unsigned long end = 0;
+    unsigned long i = 0;
     std::size_t total = 0;
 
     if (shardId >= view->num_shards) return 0;
@@ -362,12 +348,12 @@ __host__ __forceinline__ std::size_t device_shard_bytes(const ::matrix::sharded<
     return total;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
-__host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<MatrixT, ShardedIndexT> *view, std::size_t max_bytes) {
+template<typename MatrixT>
+__host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<MatrixT> *view, std::size_t max_bytes) {
     std::size_t used = 0;
     std::size_t bytes = 0;
-    ShardedIndexT shardCount = 0;
-    ShardedIndexT i = 0;
+    unsigned long shardCount = 0;
+    unsigned long i = 0;
 
     if (max_bytes == 0) return ::matrix::set_shards_to_parts(view);
     if (!::matrix::reserve_shards(view, view->num_parts)) return 0;
@@ -391,8 +377,8 @@ __host__ __forceinline__ int set_shards_by_device_bytes(::matrix::sharded<Matrix
     return 1;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
-__host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT partId, int deviceId) {
+template<typename MatrixT>
+__host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, unsigned long partId, int deviceId) {
     cudaError_t err = cudaSuccess;
 
     if (partId >= view->num_parts || partId >= cache->capacity || view->parts[partId] == 0) return cudaErrorInvalidValue;
@@ -410,7 +396,7 @@ __host__ __forceinline__ cudaError_t upload_part(shard_cache<MatrixT> *cache, co
 }
 
 template<typename MatrixT>
-__host__ __forceinline__ cudaError_t release_part(shard_cache<MatrixT> *cache, Index partId) {
+__host__ __forceinline__ cudaError_t release_part(shard_cache<MatrixT> *cache, unsigned long partId) {
     cudaError_t err = cudaSuccess;
 
     if (partId >= cache->capacity || cache->parts[partId].view == 0) return cudaSuccess;
@@ -419,11 +405,11 @@ __host__ __forceinline__ cudaError_t release_part(shard_cache<MatrixT> *cache, I
     return release(&cache->parts[partId]);
 }
 
-template<typename MatrixT, typename ShardedIndexT>
-__host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId, int deviceId) {
-    ShardedIndexT begin = 0;
-    ShardedIndexT end = 0;
-    ShardedIndexT i = 0;
+template<typename MatrixT>
+__host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, unsigned long shardId, int deviceId) {
+    unsigned long begin = 0;
+    unsigned long end = 0;
+    unsigned long i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -436,11 +422,11 @@ __host__ __forceinline__ cudaError_t upload_shard(shard_cache<MatrixT> *cache, c
     return cudaSuccess;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
-__host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT, ShardedIndexT> *view, ShardedIndexT shardId) {
-    ShardedIndexT begin = 0;
-    ShardedIndexT end = 0;
-    ShardedIndexT i = 0;
+template<typename MatrixT>
+__host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, const ::matrix::sharded<MatrixT> *view, unsigned long shardId) {
+    unsigned long begin = 0;
+    unsigned long end = 0;
+    unsigned long i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -453,11 +439,11 @@ __host__ __forceinline__ cudaError_t release_shard(shard_cache<MatrixT> *cache, 
     return cudaSuccess;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
+template<typename MatrixT>
 __host__ __forceinline__ cudaError_t stage_part(shard_cache<MatrixT> *cache,
-                              ::matrix::sharded<MatrixT, ShardedIndexT> *view,
+                              ::matrix::sharded<MatrixT> *view,
                               const ::matrix::shard_storage *files,
-                              ShardedIndexT partId,
+                              unsigned long partId,
                               int deviceId,
                               int drop_host_after_upload) {
     cudaError_t err = cudaSuccess;
@@ -480,16 +466,16 @@ __host__ __forceinline__ cudaError_t stage_part(shard_cache<MatrixT> *cache,
     return cudaSuccess;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
+template<typename MatrixT>
 __host__ __forceinline__ cudaError_t stage_shard(shard_cache<MatrixT> *cache,
-                               ::matrix::sharded<MatrixT, ShardedIndexT> *view,
+                               ::matrix::sharded<MatrixT> *view,
                                const ::matrix::shard_storage *files,
-                               ShardedIndexT shardId,
+                               unsigned long shardId,
                                int deviceId,
                                int drop_host_after_upload) {
-    ShardedIndexT begin = 0;
-    ShardedIndexT end = 0;
-    ShardedIndexT i = 0;
+    unsigned long begin = 0;
+    unsigned long end = 0;
+    unsigned long i = 0;
     cudaError_t err = cudaSuccess;
 
     if (shardId >= view->num_shards) return cudaErrorInvalidValue;
@@ -502,12 +488,12 @@ __host__ __forceinline__ cudaError_t stage_shard(shard_cache<MatrixT> *cache,
     return cudaSuccess;
 }
 
-template<typename MatrixT, typename ShardedIndexT>
+template<typename MatrixT>
 __host__ __forceinline__ cudaError_t swap_shard(shard_cache<MatrixT> *cache,
-                              ::matrix::sharded<MatrixT, ShardedIndexT> *view,
+                              ::matrix::sharded<MatrixT> *view,
                               const ::matrix::shard_storage *files,
-                              ShardedIndexT outShardId,
-                              ShardedIndexT inShardId,
+                              unsigned long outShardId,
+                              unsigned long inShardId,
                               int deviceId,
                               int drop_host_after_upload,
                               int drop_host_after_release) {

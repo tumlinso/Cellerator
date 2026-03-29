@@ -19,7 +19,7 @@ inline int read_block(std::FILE *fp, void *ptr, std::size_t elem_size, std::size
     return std::fread(ptr, elem_size, count, fp) == count;
 }
 
-inline int write_header(std::FILE *fp, unsigned char format, Index rows, Index cols, Index nnz) {
+inline int write_header(std::FILE *fp, unsigned char format, unsigned int rows, unsigned int cols, unsigned int nnz) {
     if (!write_block(fp, &format, sizeof(format), 1)) return 0;
     if (!write_block(fp, &rows, sizeof(rows), 1)) return 0;
     if (!write_block(fp, &cols, sizeof(cols), 1)) return 0;
@@ -87,7 +87,7 @@ void init(shard_storage *s) {
 }
 
 void clear(shard_storage *s) {
-    Index i = 0;
+    unsigned int i = 0;
 
     if (s->paths != 0) {
         for (i = 0; i < s->capacity; ++i) std::free(s->paths[i]);
@@ -97,9 +97,9 @@ void clear(shard_storage *s) {
     s->paths = 0;
 }
 
-int reserve(shard_storage *s, Index capacity) {
+int reserve(shard_storage *s, unsigned int capacity) {
     char **paths = 0;
-    Index i = 0;
+    unsigned int i = 0;
 
     if (capacity <= s->capacity) return 1;
     paths = (char **) std::calloc((std::size_t) capacity, sizeof(char *));
@@ -111,7 +111,7 @@ int reserve(shard_storage *s, Index capacity) {
     return 1;
 }
 
-int bind(shard_storage *s, Index partId, const char *path) {
+int bind(shard_storage *s, unsigned int partId, const char *path) {
     std::size_t len = 0;
     char *copy = 0;
 
@@ -128,9 +128,9 @@ int bind(shard_storage *s, Index partId, const char *path) {
     return 1;
 }
 
-int bind_sequential(shard_storage *s, Index count, const char *prefix) {
+int bind_sequential(shard_storage *s, unsigned int count, const char *prefix) {
     char path[1024];
-    Index i = 0;
+    unsigned int i = 0;
 
     if (!::matrix::detail::reserve(s, count)) return 0;
     for (i = 0; i < count; ++i) {
@@ -140,7 +140,7 @@ int bind_sequential(shard_storage *s, Index count, const char *prefix) {
     return 1;
 }
 
-int store_dense_raw(const char *filename, Index rows, Index cols, Index nnz, const void *val, std::size_t value_size) {
+int store_dense_raw(const char *filename, unsigned int rows, unsigned int cols, unsigned int nnz, const void *val, std::size_t value_size) {
     std::FILE *fp = 0;
     int ok = 0;
 
@@ -178,7 +178,7 @@ done:
     return ok;
 }
 
-int store_csr_raw(const char *filename, Index rows, Index cols, Index nnz, const Index *rowPtr, const Index *colIdx, const void *val, std::size_t value_size) {
+int store_csr_raw(const char *filename, unsigned int rows, unsigned int cols, unsigned int nnz, const unsigned int *rowPtr, const unsigned int *colIdx, const void *val, std::size_t value_size) {
     std::FILE *fp = 0;
     int ok = 0;
 
@@ -186,8 +186,8 @@ int store_csr_raw(const char *filename, Index rows, Index cols, Index nnz, const
     if (fp == 0) return 0;
     if (!write_header(fp, format_csr, rows, cols, nnz)) goto done;
     if (!write_block(fp, val, value_size, nnz)) goto done;
-    if (rows != 0 && !write_block(fp, rowPtr, sizeof(Index), (std::size_t) rows + 1)) goto done;
-    if (!write_block(fp, colIdx, sizeof(Index), nnz)) goto done;
+    if (rows != 0 && !write_block(fp, rowPtr, sizeof(unsigned int), (std::size_t) rows + 1)) goto done;
+    if (!write_block(fp, colIdx, sizeof(unsigned int), nnz)) goto done;
     ok = 1;
 
 done:
@@ -206,14 +206,14 @@ int load_csr_raw(const char *filename, std::size_t value_size, csr_load_result *
     if (fp == 0) return 0;
     if (!read_header(fp, &out->h)) goto done;
     if (!checkformat(format_csr, out->h.format, "csr matrix")) goto done;
-    if (out->h.rows != 0) out->rowPtr = (Index *) alloc_bytes((std::size_t) (out->h.rows + 1) * sizeof(Index));
-    out->colIdx = (Index *) alloc_bytes((std::size_t) out->h.nnz * sizeof(Index));
+    if (out->h.rows != 0) out->rowPtr = (unsigned int *) alloc_bytes((std::size_t) (out->h.rows + 1) * sizeof(unsigned int));
+    out->colIdx = (unsigned int *) alloc_bytes((std::size_t) out->h.nnz * sizeof(unsigned int));
     out->val = alloc_bytes((std::size_t) out->h.nnz * value_size);
     if (out->h.rows != 0 && out->rowPtr == 0) goto done;
     if (out->h.nnz != 0 && (out->colIdx == 0 || out->val == 0)) goto done;
     if (!read_block(fp, out->val, value_size, out->h.nnz)) goto done;
-    if (out->h.rows != 0 && !read_block(fp, out->rowPtr, sizeof(Index), (std::size_t) out->h.rows + 1)) goto done;
-    if (!read_block(fp, out->colIdx, sizeof(Index), out->h.nnz)) goto done;
+    if (out->h.rows != 0 && !read_block(fp, out->rowPtr, sizeof(unsigned int), (std::size_t) out->h.rows + 1)) goto done;
+    if (!read_block(fp, out->colIdx, sizeof(unsigned int), out->h.nnz)) goto done;
     ok = 1;
 
 done:
@@ -222,7 +222,7 @@ done:
     return ok;
 }
 
-int store_coo_raw(const char *filename, Index rows, Index cols, Index nnz, const Index *rowIdx, const Index *colIdx, const void *val, std::size_t value_size) {
+int store_coo_raw(const char *filename, unsigned int rows, unsigned int cols, unsigned int nnz, const unsigned int *rowIdx, const unsigned int *colIdx, const void *val, std::size_t value_size) {
     std::FILE *fp = 0;
     int ok = 0;
 
@@ -230,8 +230,8 @@ int store_coo_raw(const char *filename, Index rows, Index cols, Index nnz, const
     if (fp == 0) return 0;
     if (!write_header(fp, format_coo, rows, cols, nnz)) goto done;
     if (!write_block(fp, val, value_size, nnz)) goto done;
-    if (!write_block(fp, rowIdx, sizeof(Index), nnz)) goto done;
-    if (!write_block(fp, colIdx, sizeof(Index), nnz)) goto done;
+    if (!write_block(fp, rowIdx, sizeof(unsigned int), nnz)) goto done;
+    if (!write_block(fp, colIdx, sizeof(unsigned int), nnz)) goto done;
     ok = 1;
 
 done:
@@ -250,13 +250,13 @@ int load_coo_raw(const char *filename, std::size_t value_size, coo_load_result *
     if (fp == 0) return 0;
     if (!read_header(fp, &out->h)) goto done;
     if (!checkformat(format_coo, out->h.format, "coo matrix")) goto done;
-    out->rowIdx = (Index *) alloc_bytes((std::size_t) out->h.nnz * sizeof(Index));
-    out->colIdx = (Index *) alloc_bytes((std::size_t) out->h.nnz * sizeof(Index));
+    out->rowIdx = (unsigned int *) alloc_bytes((std::size_t) out->h.nnz * sizeof(unsigned int));
+    out->colIdx = (unsigned int *) alloc_bytes((std::size_t) out->h.nnz * sizeof(unsigned int));
     out->val = alloc_bytes((std::size_t) out->h.nnz * value_size);
     if (out->h.nnz != 0 && (out->rowIdx == 0 || out->colIdx == 0 || out->val == 0)) goto done;
     if (!read_block(fp, out->val, value_size, out->h.nnz)) goto done;
-    if (!read_block(fp, out->rowIdx, sizeof(Index), out->h.nnz)) goto done;
-    if (!read_block(fp, out->colIdx, sizeof(Index), out->h.nnz)) goto done;
+    if (!read_block(fp, out->rowIdx, sizeof(unsigned int), out->h.nnz)) goto done;
+    if (!read_block(fp, out->colIdx, sizeof(unsigned int), out->h.nnz)) goto done;
     ok = 1;
 
 done:
@@ -265,15 +265,15 @@ done:
     return ok;
 }
 
-int store_dia_raw(const char *filename, Index rows, Index cols, Index nnz, Index num_diagonals, const DiagIndex *offsets, const void *val, std::size_t value_size) {
+int store_dia_raw(const char *filename, unsigned int rows, unsigned int cols, unsigned int nnz, unsigned int num_diagonals, const int *offsets, const void *val, std::size_t value_size) {
     std::FILE *fp = 0;
     int ok = 0;
 
     fp = std::fopen(filename, "wb");
     if (fp == 0) return 0;
     if (!write_header(fp, format_dia, rows, cols, nnz)) goto done;
-    if (!write_block(fp, &num_diagonals, sizeof(Index), 1)) goto done;
-    if (!write_block(fp, offsets, sizeof(DiagIndex), num_diagonals)) goto done;
+    if (!write_block(fp, &num_diagonals, sizeof(unsigned int), 1)) goto done;
+    if (!write_block(fp, offsets, sizeof(int), num_diagonals)) goto done;
     if (!write_block(fp, val, value_size, nnz)) goto done;
     ok = 1;
 
@@ -293,12 +293,12 @@ int load_dia_raw(const char *filename, std::size_t value_size, dia_load_result *
     if (fp == 0) return 0;
     if (!read_header(fp, &out->h)) goto done;
     if (!checkformat(format_dia, out->h.format, "dia matrix")) goto done;
-    if (!read_block(fp, &out->num_diagonals, sizeof(Index), 1)) goto done;
-    out->offsets = (DiagIndex *) alloc_bytes((std::size_t) out->num_diagonals * sizeof(DiagIndex));
+    if (!read_block(fp, &out->num_diagonals, sizeof(unsigned int), 1)) goto done;
+    out->offsets = (int *) alloc_bytes((std::size_t) out->num_diagonals * sizeof(int));
     out->val = alloc_bytes((std::size_t) out->h.nnz * value_size);
     if (out->num_diagonals != 0 && out->offsets == 0) goto done;
     if (out->h.nnz != 0 && out->val == 0) goto done;
-    if (!read_block(fp, out->offsets, sizeof(DiagIndex), out->num_diagonals)) goto done;
+    if (!read_block(fp, out->offsets, sizeof(int), out->num_diagonals)) goto done;
     if (!read_block(fp, out->val, value_size, out->h.nnz)) goto done;
     ok = 1;
 
@@ -310,27 +310,27 @@ done:
 
 int store_sharded_header_raw(const char *filename,
                              unsigned char format,
-                             Index rows,
-                             Index cols,
-                             Index nnz,
-                             Index num_parts,
-                             Index num_shards,
-                             const Index *part_rows,
-                             const Index *part_nnz,
-                             const Index *part_aux,
-                             const Index *shard_offsets) {
+                             unsigned int rows,
+                             unsigned int cols,
+                             unsigned int nnz,
+                             unsigned int num_parts,
+                             unsigned int num_shards,
+                             const unsigned int *part_rows,
+                             const unsigned int *part_nnz,
+                             const unsigned int *part_aux,
+                             const unsigned int *shard_offsets) {
     std::FILE *fp = 0;
     int ok = 0;
 
     fp = std::fopen(filename, "wb");
     if (fp == 0) return 0;
     if (!write_header(fp, format, rows, cols, nnz)) goto done;
-    if (!write_block(fp, &num_parts, sizeof(Index), 1)) goto done;
-    if (!write_block(fp, &num_shards, sizeof(Index), 1)) goto done;
-    if (!write_block(fp, part_rows, sizeof(Index), num_parts)) goto done;
-    if (!write_block(fp, part_nnz, sizeof(Index), num_parts)) goto done;
-    if (!write_block(fp, part_aux, sizeof(Index), num_parts)) goto done;
-    if (num_shards != 0 && !write_block(fp, shard_offsets, sizeof(Index), (std::size_t) num_shards + 1)) goto done;
+    if (!write_block(fp, &num_parts, sizeof(unsigned int), 1)) goto done;
+    if (!write_block(fp, &num_shards, sizeof(unsigned int), 1)) goto done;
+    if (!write_block(fp, part_rows, sizeof(unsigned int), num_parts)) goto done;
+    if (!write_block(fp, part_nnz, sizeof(unsigned int), num_parts)) goto done;
+    if (!write_block(fp, part_aux, sizeof(unsigned int), num_parts)) goto done;
+    if (num_shards != 0 && !write_block(fp, shard_offsets, sizeof(unsigned int), (std::size_t) num_shards + 1)) goto done;
     ok = 1;
 
 done:
@@ -351,20 +351,20 @@ int load_sharded_header_raw(const char *filename, sharded_header_load_result *ou
     fp = std::fopen(filename, "rb");
     if (fp == 0) return 0;
     if (!read_header(fp, &out->h)) goto done;
-    if (!read_block(fp, &out->num_parts, sizeof(Index), 1)) goto done;
-    if (!read_block(fp, &out->num_shards, sizeof(Index), 1)) goto done;
+    if (!read_block(fp, &out->num_parts, sizeof(unsigned int), 1)) goto done;
+    if (!read_block(fp, &out->num_shards, sizeof(unsigned int), 1)) goto done;
 
-    out->part_rows = (Index *) alloc_bytes((std::size_t) out->num_parts * sizeof(Index));
-    out->part_nnz = (Index *) alloc_bytes((std::size_t) out->num_parts * sizeof(Index));
-    out->part_aux = (Index *) alloc_bytes((std::size_t) out->num_parts * sizeof(Index));
-    if (out->num_shards != 0) out->shard_offsets = (Index *) alloc_bytes((std::size_t) (out->num_shards + 1) * sizeof(Index));
+    out->part_rows = (unsigned int *) alloc_bytes((std::size_t) out->num_parts * sizeof(unsigned int));
+    out->part_nnz = (unsigned int *) alloc_bytes((std::size_t) out->num_parts * sizeof(unsigned int));
+    out->part_aux = (unsigned int *) alloc_bytes((std::size_t) out->num_parts * sizeof(unsigned int));
+    if (out->num_shards != 0) out->shard_offsets = (unsigned int *) alloc_bytes((std::size_t) (out->num_shards + 1) * sizeof(unsigned int));
     if (out->num_parts != 0 && (out->part_rows == 0 || out->part_nnz == 0 || out->part_aux == 0)) goto done;
     if (out->num_shards != 0 && out->shard_offsets == 0) goto done;
 
-    if (!read_block(fp, out->part_rows, sizeof(Index), out->num_parts)) goto done;
-    if (!read_block(fp, out->part_nnz, sizeof(Index), out->num_parts)) goto done;
-    if (!read_block(fp, out->part_aux, sizeof(Index), out->num_parts)) goto done;
-    if (out->num_shards != 0 && !read_block(fp, out->shard_offsets, sizeof(Index), (std::size_t) out->num_shards + 1)) goto done;
+    if (!read_block(fp, out->part_rows, sizeof(unsigned int), out->num_parts)) goto done;
+    if (!read_block(fp, out->part_nnz, sizeof(unsigned int), out->num_parts)) goto done;
+    if (!read_block(fp, out->part_aux, sizeof(unsigned int), out->num_parts)) goto done;
+    if (out->num_shards != 0 && !read_block(fp, out->shard_offsets, sizeof(unsigned int), (std::size_t) out->num_shards + 1)) goto done;
     ok = 1;
 
 done:

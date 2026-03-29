@@ -5,24 +5,18 @@
 namespace matrix {
 namespace sparse {
 
-template<typename Real = ::matrix::Real>
 struct csc {
-    typedef Real value_type;
-    typedef Index index_type;
-
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
     unsigned char format;
 
-    Index *colPtr;
-    Index *rowIdx;
-    Real *val;
+    unsigned int *colPtr;
+    unsigned int *rowIdx;
+    __half *val;
 };
 
-template<typename Real>
-inline void init(csc<Real> *m, Index rows = 0, Index cols = 0, Index nnz = 0) {
-    require_fp_storage<Real>();
+inline void init(csc *m, unsigned int rows = 0, unsigned int cols = 0, unsigned int nnz = 0) {
     m->rows = rows;
     m->cols = cols;
     m->nnz = nnz;
@@ -32,16 +26,14 @@ inline void init(csc<Real> *m, Index rows = 0, Index cols = 0, Index nnz = 0) {
     m->val = 0;
 }
 
-template<typename Real>
-inline std::size_t bytes(const csc<Real> *m) {
+inline std::size_t bytes(const csc *m) {
     return sizeof(*m)
-        + (std::size_t) (m->cols + 1) * sizeof(Index)
-        + (std::size_t) m->nnz * sizeof(Index)
-        + (std::size_t) m->nnz * sizeof(Real);
+        + (std::size_t) (m->cols + 1) * sizeof(unsigned int)
+        + (std::size_t) m->nnz * sizeof(unsigned int)
+        + (std::size_t) m->nnz * sizeof(__half);
 }
 
-template<typename Real>
-inline void clear(csc<Real> *m) {
+inline void clear(csc *m) {
     std::free(m->colPtr);
     std::free(m->rowIdx);
     std::free(m->val);
@@ -54,18 +46,17 @@ inline void clear(csc<Real> *m) {
     m->format = format_csc;
 }
 
-template<typename Real>
-inline int allocate(csc<Real> *m) {
+inline int allocate(csc *m) {
     std::free(m->colPtr);
     std::free(m->rowIdx);
     std::free(m->val);
     m->colPtr = 0;
     m->rowIdx = 0;
     m->val = 0;
-    if (m->cols != 0) m->colPtr = (Index *) std::malloc((std::size_t) (m->cols + 1) * sizeof(Index));
+    if (m->cols != 0) m->colPtr = (unsigned int *) std::malloc((std::size_t) (m->cols + 1) * sizeof(unsigned int));
     if (m->nnz != 0) {
-        m->rowIdx = (Index *) std::malloc((std::size_t) m->nnz * sizeof(Index));
-        m->val = (Real *) std::malloc((std::size_t) m->nnz * sizeof(Real));
+        m->rowIdx = (unsigned int *) std::malloc((std::size_t) m->nnz * sizeof(unsigned int));
+        m->val = (__half *) std::malloc((std::size_t) m->nnz * sizeof(__half));
     }
     if (m->cols != 0 && m->colPtr == 0) return 0;
     if (m->nnz != 0 && (m->rowIdx == 0 || m->val == 0)) {
@@ -80,17 +71,15 @@ inline int allocate(csc<Real> *m) {
     return 1;
 }
 
-template<typename Real>
-inline const Real *at(const csc<Real> *m, Index r, Index c) {
-    for (Index i = m->colPtr[c]; i < m->colPtr[c + 1]; ++i) {
+inline const __half *at(const csc *m, unsigned int r, unsigned int c) {
+    for (unsigned int i = m->colPtr[c]; i < m->colPtr[c + 1]; ++i) {
         if (m->rowIdx[i] == r) return m->val + i;
     }
     return 0;
 }
 
-template<typename Real>
-inline Real *at(csc<Real> *m, Index r, Index c) {
-    for (Index i = m->colPtr[c]; i < m->colPtr[c + 1]; ++i) {
+inline __half *at(csc *m, unsigned int r, unsigned int c) {
+    for (unsigned int i = m->colPtr[c]; i < m->colPtr[c + 1]; ++i) {
         if (m->rowIdx[i] == r) return m->val + i;
     }
     return 0;

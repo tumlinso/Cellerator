@@ -5,24 +5,22 @@
 namespace matrix {
 namespace sparse {
 
-template<typename Real = ::matrix::Real>
 struct alignas(16) coo {
-    typedef Real value_type;
-    typedef Index index_type;
-
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
     unsigned char format;
 
-    Index *rowIdx;
-    Index *colIdx;
-    Real *val;
+    unsigned int *rowIdx;
+    unsigned int *colIdx;
+    __half *val;
 };
 
-template<typename Real>
-__host__ __device__ __forceinline__ void init(coo<Real> * __restrict__ m, Index rows = 0, Index cols = 0, Index nnz = 0) {
-    require_fp_storage<Real>();
+__host__ __device__ __forceinline__ void init(
+    coo * __restrict__ m,
+    unsigned int rows = 0,
+    unsigned int cols = 0,
+    unsigned int nnz = 0) {
     m->rows = rows;
     m->cols = cols;
     m->nnz = nnz;
@@ -32,16 +30,14 @@ __host__ __device__ __forceinline__ void init(coo<Real> * __restrict__ m, Index 
     m->val = 0;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ std::size_t bytes(const coo<Real> * __restrict__ m) {
+__host__ __device__ __forceinline__ std::size_t bytes(const coo * __restrict__ m) {
     return sizeof(*m)
-        + (std::size_t) m->nnz * sizeof(Index)
-        + (std::size_t) m->nnz * sizeof(Index)
-        + (std::size_t) m->nnz * sizeof(Real);
+        + (std::size_t) m->nnz * sizeof(unsigned int)
+        + (std::size_t) m->nnz * sizeof(unsigned int)
+        + (std::size_t) m->nnz * sizeof(__half);
 }
 
-template<typename Real>
-__host__ __forceinline__ void clear(coo<Real> * __restrict__ m) {
+__host__ __forceinline__ void clear(coo * __restrict__ m) {
     std::free(m->rowIdx);
     std::free(m->colIdx);
     std::free(m->val);
@@ -54,8 +50,7 @@ __host__ __forceinline__ void clear(coo<Real> * __restrict__ m) {
     m->format = format_coo;
 }
 
-template<typename Real>
-__host__ __forceinline__ int allocate(coo<Real> * __restrict__ m) {
+__host__ __forceinline__ int allocate(coo * __restrict__ m) {
     std::free(m->rowIdx);
     std::free(m->colIdx);
     std::free(m->val);
@@ -63,9 +58,9 @@ __host__ __forceinline__ int allocate(coo<Real> * __restrict__ m) {
     m->colIdx = 0;
     m->val = 0;
     if (m->nnz == 0) return 1;
-    m->rowIdx = (Index *) std::malloc((std::size_t) m->nnz * sizeof(Index));
-    m->colIdx = (Index *) std::malloc((std::size_t) m->nnz * sizeof(Index));
-    m->val = (Real *) std::malloc((std::size_t) m->nnz * sizeof(Real));
+    m->rowIdx = (unsigned int *) std::malloc((std::size_t) m->nnz * sizeof(unsigned int));
+    m->colIdx = (unsigned int *) std::malloc((std::size_t) m->nnz * sizeof(unsigned int));
+    m->val = (__half *) std::malloc((std::size_t) m->nnz * sizeof(__half));
     if (m->rowIdx == 0 || m->colIdx == 0 || m->val == 0) {
         std::free(m->rowIdx);
         std::free(m->colIdx);
@@ -78,30 +73,27 @@ __host__ __forceinline__ int allocate(coo<Real> * __restrict__ m) {
     return 1;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ const Real *at(const coo<Real> * __restrict__ m, Index r, Index c) {
-    for (Index i = 0; i < m->nnz; ++i) {
+__host__ __device__ __forceinline__ const __half *at(const coo * __restrict__ m, unsigned int r, unsigned int c) {
+    for (unsigned int i = 0; i < m->nnz; ++i) {
         if (m->rowIdx[i] == r && m->colIdx[i] == c) return m->val + i;
     }
     return 0;
 }
 
-template<typename Real>
-__host__ __device__ __forceinline__ Real *at(coo<Real> * __restrict__ m, Index r, Index c) {
-    for (Index i = 0; i < m->nnz; ++i) {
+__host__ __device__ __forceinline__ __half *at(coo * __restrict__ m, unsigned int r, unsigned int c) {
+    for (unsigned int i = 0; i < m->nnz; ++i) {
         if (m->rowIdx[i] == r && m->colIdx[i] == c) return m->val + i;
     }
     return 0;
 }
 
-template<typename Real>
-__host__ __forceinline__ int concatenate_rows(coo<Real> * __restrict__ dst, const coo<Real> * __restrict__ top, const coo<Real> * __restrict__ bottom) {
+__host__ __forceinline__ int concatenate_rows(coo * __restrict__ dst, const coo * __restrict__ top, const coo * __restrict__ bottom) {
     if (top->cols != 0 && bottom->cols != 0 && top->cols != bottom->cols) {
         std::fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;
     }
 
-    Index oldRows = top->rows;
+    unsigned int oldRows = top->rows;
     dst->rows = top->rows + bottom->rows;
     dst->cols = top->cols != 0 ? top->cols : bottom->cols;
     dst->nnz = top->nnz + bottom->nnz;
@@ -112,40 +104,39 @@ __host__ __forceinline__ int concatenate_rows(coo<Real> * __restrict__ dst, cons
     if (!allocate(dst)) return 0;
 
     if (top->nnz != 0) {
-        std::memcpy(dst->rowIdx, top->rowIdx, top->nnz * sizeof(Index));
-        std::memcpy(dst->colIdx, top->colIdx, top->nnz * sizeof(Index));
-        std::memcpy(dst->val, top->val, top->nnz * sizeof(Real));
+        std::memcpy(dst->rowIdx, top->rowIdx, top->nnz * sizeof(unsigned int));
+        std::memcpy(dst->colIdx, top->colIdx, top->nnz * sizeof(unsigned int));
+        std::memcpy(dst->val, top->val, top->nnz * sizeof(__half));
     }
-    for (Index i = 0; i < bottom->nnz; ++i) dst->rowIdx[top->nnz + i] = bottom->rowIdx[i] + oldRows;
+    for (unsigned int i = 0; i < bottom->nnz; ++i) dst->rowIdx[top->nnz + i] = bottom->rowIdx[i] + oldRows;
     if (bottom->nnz != 0) {
-        std::memcpy(dst->colIdx + top->nnz, bottom->colIdx, bottom->nnz * sizeof(Index));
-        std::memcpy(dst->val + top->nnz, bottom->val, bottom->nnz * sizeof(Real));
+        std::memcpy(dst->colIdx + top->nnz, bottom->colIdx, bottom->nnz * sizeof(unsigned int));
+        std::memcpy(dst->val + top->nnz, bottom->val, bottom->nnz * sizeof(__half));
     }
     return 1;
 }
 
-template<typename Real>
-__host__ __forceinline__ int append_rows(coo<Real> * __restrict__ dst, const coo<Real> * __restrict__ src) {
+__host__ __forceinline__ int append_rows(coo * __restrict__ dst, const coo * __restrict__ src) {
     if (dst->cols != 0 && src->cols != 0 && dst->cols != src->cols) {
         std::fprintf(stderr, "Error: cannot concatenate coo matrices with different column counts\n");
         return 0;
     }
 
-    Index oldRows = dst->rows;
-    Index oldNnz = dst->nnz;
-    Index newNnz = dst->nnz + src->nnz;
-    Index *rowIdx = 0;
-    Index *colIdx = 0;
-    Real *val = 0;
+    unsigned int oldRows = dst->rows;
+    unsigned int oldNnz = dst->nnz;
+    unsigned int newNnz = dst->nnz + src->nnz;
+    unsigned int *rowIdx = 0;
+    unsigned int *colIdx = 0;
+    __half *val = 0;
 
     dst->rows += src->rows;
     if (dst->cols == 0) dst->cols = src->cols;
     dst->nnz = newNnz;
     dst->format = format_coo;
     if (newNnz != 0) {
-        rowIdx = (Index *) std::malloc((std::size_t) newNnz * sizeof(Index));
-        colIdx = (Index *) std::malloc((std::size_t) newNnz * sizeof(Index));
-        val = (Real *) std::malloc((std::size_t) newNnz * sizeof(Real));
+        rowIdx = (unsigned int *) std::malloc((std::size_t) newNnz * sizeof(unsigned int));
+        colIdx = (unsigned int *) std::malloc((std::size_t) newNnz * sizeof(unsigned int));
+        val = (__half *) std::malloc((std::size_t) newNnz * sizeof(__half));
         if (rowIdx == 0 || colIdx == 0 || val == 0) {
             std::free(rowIdx);
             std::free(colIdx);
@@ -157,9 +148,9 @@ __host__ __forceinline__ int append_rows(coo<Real> * __restrict__ dst, const coo
     }
 
     if (oldNnz != 0) {
-        std::memcpy(rowIdx, dst->rowIdx, (std::size_t) oldNnz * sizeof(Index));
-        std::memcpy(colIdx, dst->colIdx, (std::size_t) oldNnz * sizeof(Index));
-        std::memcpy(val, dst->val, (std::size_t) oldNnz * sizeof(Real));
+        std::memcpy(rowIdx, dst->rowIdx, (std::size_t) oldNnz * sizeof(unsigned int));
+        std::memcpy(colIdx, dst->colIdx, (std::size_t) oldNnz * sizeof(unsigned int));
+        std::memcpy(val, dst->val, (std::size_t) oldNnz * sizeof(__half));
     }
     std::free(dst->rowIdx);
     std::free(dst->colIdx);
@@ -168,10 +159,10 @@ __host__ __forceinline__ int append_rows(coo<Real> * __restrict__ dst, const coo
     dst->colIdx = colIdx;
     dst->val = val;
 
-    for (Index i = 0; i < src->nnz; ++i) dst->rowIdx[oldNnz + i] = src->rowIdx[i] + oldRows;
+    for (unsigned int i = 0; i < src->nnz; ++i) dst->rowIdx[oldNnz + i] = src->rowIdx[i] + oldRows;
     if (src->nnz != 0) {
-        std::memcpy(dst->colIdx + oldNnz, src->colIdx, src->nnz * sizeof(Index));
-        std::memcpy(dst->val + oldNnz, src->val, src->nnz * sizeof(Real));
+        std::memcpy(dst->colIdx + oldNnz, src->colIdx, src->nnz * sizeof(unsigned int));
+        std::memcpy(dst->val + oldNnz, src->val, src->nnz * sizeof(__half));
     }
     return 1;
 }

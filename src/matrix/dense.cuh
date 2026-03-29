@@ -2,23 +2,17 @@
 
 namespace matrix {
 
-template<typename ValueT = Real>
 struct alignas(16) dense {
-    typedef ValueT value_type;
-    typedef Index index_type;
-
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
     unsigned char format;
 
-    ValueT *val;
-    Index ld;
+    __half *val;
+    unsigned int ld;
 };
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ void init(dense<ValueT> * __restrict__ m, Index rows = 0, Index cols = 0) {
-    require_fp_storage<ValueT>();
+__host__ __device__ __forceinline__ void init(dense * __restrict__ m, unsigned int rows = 0, unsigned int cols = 0) {
     m->rows = rows;
     m->cols = cols;
     m->nnz = rows * cols;
@@ -27,13 +21,11 @@ __host__ __device__ __forceinline__ void init(dense<ValueT> * __restrict__ m, In
     m->ld = cols;
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ std::size_t bytes(const dense<ValueT> * __restrict__ m) {
-    return sizeof(*m) + (std::size_t) m->nnz * sizeof(ValueT);
+__host__ __device__ __forceinline__ std::size_t bytes(const dense * __restrict__ m) {
+    return sizeof(*m) + (std::size_t) m->nnz * sizeof(__half);
 }
 
-template<typename ValueT>
-__host__ __forceinline__ void clear(dense<ValueT> * __restrict__ m) {
+__host__ __forceinline__ void clear(dense * __restrict__ m) {
     std::free(m->val);
     m->val = 0;
     m->ld = 0;
@@ -43,24 +35,21 @@ __host__ __forceinline__ void clear(dense<ValueT> * __restrict__ m) {
     m->format = format_dense;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ int allocate(dense<ValueT> * __restrict__ m) {
+__host__ __forceinline__ int allocate(dense * __restrict__ m) {
     std::free(m->val);
     m->val = 0;
     m->nnz = m->rows * m->cols;
     m->ld = m->cols;
     if (m->nnz == 0) return 1;
-    m->val = (ValueT *) std::malloc((std::size_t) m->nnz * sizeof(ValueT));
+    m->val = (__half *) std::malloc((std::size_t) m->nnz * sizeof(__half));
     return m->val != 0;
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ const ValueT *at(const dense<ValueT> * __restrict__ m, Index r, Index c) {
+__host__ __device__ __forceinline__ const __half *at(const dense * __restrict__ m, unsigned int r, unsigned int c) {
     return m->val + r * m->ld + c;
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ ValueT *at(dense<ValueT> * __restrict__ m, Index r, Index c) {
+__host__ __device__ __forceinline__ __half *at(dense * __restrict__ m, unsigned int r, unsigned int c) {
     return m->val + r * m->ld + c;
 }
 

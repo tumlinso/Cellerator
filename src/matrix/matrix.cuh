@@ -11,9 +11,6 @@
 
 namespace matrix {
 
-typedef std::uint32_t Index;
-typedef std::int32_t DiagIndex;
-
 enum {
     format_none  = 0,
     format_dense = 1,
@@ -36,9 +33,9 @@ inline int checkformat(unsigned char expected, unsigned char actual, const char 
 
 struct header {
     unsigned char format;
-    Index rows;
-    Index cols;
-    Index nnz;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
 };
 
 template<typename OffsetT>
@@ -60,8 +57,6 @@ namespace sparse {
 
 template<typename IndexT, typename RowPtrT, typename ColIdxT>
 struct csr_base {
-    typedef IndexT index_type;
-
     IndexT rows;
     IndexT cols;
     IndexT nnz;
@@ -76,6 +71,7 @@ struct csr_base {
 
 #include "dense.cuh"
 #include "sparse/csr.cuh"
+#include "sparse/buffer/csr_buffer.cuh"
 #include "sparse/coo.cuh"
 #include "sparse/dia.cuh"
 #include "sharded.cuh"
@@ -83,74 +79,65 @@ struct csr_base {
 namespace matrix {
 
 template<typename MatrixT>
-__host__ __device__ __forceinline__ Index part_aux(const MatrixT *) {
+__host__ __device__ __forceinline__ unsigned int part_aux(const MatrixT *) {
     return 0;
 }
 
-template<typename ValueT>
-__host__ __device__ __forceinline__ Index part_aux(const sparse::dia<ValueT> *m) {
+__host__ __device__ __forceinline__ unsigned int part_aux(const sparse::dia *m) {
     return m->num_diagonals;
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<dense<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<dense> *m, unsigned long partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
-    return sizeof(dense<ValueT>) + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
+    return sizeof(dense) + (std::size_t) m->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::csr<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::csr> *m, unsigned long partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
-    return sizeof(sparse::csr<ValueT>)
-        + (std::size_t) (m->part_rows[partId] + 1) * sizeof(Index)
-        + (std::size_t) m->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
+    return sizeof(sparse::csr)
+        + (std::size_t) (m->part_rows[partId] + 1) * sizeof(unsigned int)
+        + (std::size_t) m->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) m->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::coo<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::coo> *m, unsigned long partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
-    return sizeof(sparse::coo<ValueT>)
-        + (std::size_t) m->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) m->part_nnz[partId] * sizeof(Index)
-        + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
+    return sizeof(sparse::coo)
+        + (std::size_t) m->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) m->part_nnz[partId] * sizeof(unsigned int)
+        + (std::size_t) m->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT, typename ShardedIndexT>
-__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::dia<ValueT>, ShardedIndexT> *m, ShardedIndexT partId) {
+__host__ __device__ __forceinline__ std::size_t part_bytes(const sharded<sparse::dia> *m, unsigned long partId) {
     if (partId >= m->num_parts) return 0;
     if (m->parts[partId] != 0) return bytes(m->parts[partId]);
-    return sizeof(sparse::dia<ValueT>)
-        + (std::size_t) m->part_aux[partId] * sizeof(DiagIndex)
-        + (std::size_t) m->part_nnz[partId] * sizeof(ValueT);
+    return sizeof(sparse::dia)
+        + (std::size_t) m->part_aux[partId] * sizeof(int)
+        + (std::size_t) m->part_nnz[partId] * sizeof(__half);
 }
 
-template<typename ValueT>
-__host__ __forceinline__ void destroy(dense<ValueT> *m) {
+__host__ __forceinline__ void destroy(dense *m) {
     if (m == 0) return;
     clear(m);
     delete m;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ void destroy(sparse::csr<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::csr *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ void destroy(sparse::coo<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::coo *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;
 }
 
-template<typename ValueT>
-__host__ __forceinline__ void destroy(sparse::dia<ValueT> *m) {
+__host__ __forceinline__ void destroy(sparse::dia *m) {
     if (m == 0) return;
     sparse::clear(m);
     delete m;

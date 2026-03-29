@@ -10,9 +10,8 @@ double toDouble(T value) {
     return (double) value;
 }
 
-template<>
-double toDouble<matrix::Real>(matrix::Real value) {
-    return (double) matrix::real_to_float(value);
+double toDouble(__half value) {
+    return (double) __half2float(value);
 }
 
 template<typename ActualT, typename ExpectedT>
@@ -33,18 +32,18 @@ int checkTrue(int condition, const char *label) {
 int testDenseRoundTrip() {
     const char *filename = "/tmp/cellerator_dense_test.bin";
 
-    matrix::dense<> written;
+    matrix::dense written;
     matrix::init(&written, 2u, 3u);
     matrix::allocate(&written);
-    *matrix::at(&written, 0u, 0u) = matrix::real_from_float(1.0f);
-    *matrix::at(&written, 0u, 1u) = matrix::real_from_float(2.0f);
-    *matrix::at(&written, 0u, 2u) = matrix::real_from_float(3.0f);
-    *matrix::at(&written, 1u, 0u) = matrix::real_from_float(4.0f);
-    *matrix::at(&written, 1u, 1u) = matrix::real_from_float(5.0f);
-    *matrix::at(&written, 1u, 2u) = matrix::real_from_float(6.0f);
+    *matrix::at(&written, 0u, 0u) = __float2half(1.0f);
+    *matrix::at(&written, 0u, 1u) = __float2half(2.0f);
+    *matrix::at(&written, 0u, 2u) = __float2half(3.0f);
+    *matrix::at(&written, 1u, 0u) = __float2half(4.0f);
+    *matrix::at(&written, 1u, 1u) = __float2half(5.0f);
+    *matrix::at(&written, 1u, 2u) = __float2half(6.0f);
     if (!matrix::store(filename, &written)) return 0;
 
-    matrix::dense<> readBack;
+    matrix::dense readBack;
     matrix::init(&readBack);
     if (!matrix::load(filename, &readBack)) return 0;
 
@@ -64,7 +63,7 @@ int testDenseRoundTrip() {
 int testCsrRoundTrip() {
     const char *filename = "/tmp/cellerator_csr_test.bin";
 
-    matrix::sparse::csr<> written;
+    matrix::sparse::csr written;
     matrix::sparse::init(&written, 3u, 4u, 4u);
     matrix::sparse::allocate(&written);
     written.rowPtr[0] = 0;
@@ -75,13 +74,13 @@ int testCsrRoundTrip() {
     written.colIdx[1] = 3;
     written.colIdx[2] = 1;
     written.colIdx[3] = 2;
-    written.val[0] = matrix::real_from_float(1.0f);
-    written.val[1] = matrix::real_from_float(4.0f);
-    written.val[2] = matrix::real_from_float(5.0f);
-    written.val[3] = matrix::real_from_float(6.0f);
+    written.val[0] = __float2half(1.0f);
+    written.val[1] = __float2half(4.0f);
+    written.val[2] = __float2half(5.0f);
+    written.val[3] = __float2half(6.0f);
     if (!matrix::store(filename, &written)) return 0;
 
-    matrix::sparse::csr<> readBack;
+    matrix::sparse::csr readBack;
     matrix::sparse::init(&readBack);
     if (!matrix::load(filename, &readBack)) return 0;
 
@@ -98,9 +97,9 @@ int testCsrRoundTrip() {
 }
 
 int testCooConcatenation() {
-    matrix::sparse::coo<> top;
-    matrix::sparse::coo<> bottom;
-    matrix::sparse::coo<> combined;
+    matrix::sparse::coo top;
+    matrix::sparse::coo bottom;
+    matrix::sparse::coo combined;
     matrix::sparse::init(&top, 2u, 3u, 2u);
     matrix::sparse::init(&bottom, 1u, 3u, 2u);
     matrix::sparse::init(&combined);
@@ -109,17 +108,17 @@ int testCooConcatenation() {
 
     top.rowIdx[0] = 0;
     top.colIdx[0] = 1;
-    top.val[0] = matrix::real_from_float(1.0f);
+    top.val[0] = __float2half(1.0f);
     top.rowIdx[1] = 1;
     top.colIdx[1] = 2;
-    top.val[1] = matrix::real_from_float(2.0f);
+    top.val[1] = __float2half(2.0f);
 
     bottom.rowIdx[0] = 0;
     bottom.colIdx[0] = 0;
-    bottom.val[0] = matrix::real_from_float(3.0f);
+    bottom.val[0] = __float2half(3.0f);
     bottom.rowIdx[1] = 0;
     bottom.colIdx[1] = 2;
-    bottom.val[1] = matrix::real_from_float(4.0f);
+    bottom.val[1] = __float2half(4.0f);
 
     if (!matrix::sparse::concatenate_rows(&combined, &top, &bottom)) return 0;
     if (!matrix::sparse::append_rows(&top, &bottom)) return 0;
@@ -141,21 +140,21 @@ int testCooConcatenation() {
 int testDiaRoundTrip() {
     const char *filename = "/tmp/cellerator_dia_test.bin";
 
-    matrix::sparse::dia<> written;
+    matrix::sparse::dia written;
     matrix::sparse::init(&written, 3u, 3u, 6u);
     written.num_diagonals = 2;
     matrix::sparse::allocate(&written);
     written.offsets[0] = 0;
     written.offsets[1] = -1;
-    written.val[0] = matrix::real_from_float(10.0f);
-    written.val[1] = matrix::real_from_float(11.0f);
-    written.val[2] = matrix::real_from_float(12.0f);
-    written.val[3] = matrix::real_from_float(20.0f);
-    written.val[4] = matrix::real_from_float(21.0f);
-    written.val[5] = matrix::real_from_float(22.0f);
+    written.val[0] = __float2half(10.0f);
+    written.val[1] = __float2half(11.0f);
+    written.val[2] = __float2half(12.0f);
+    written.val[3] = __float2half(20.0f);
+    written.val[4] = __float2half(21.0f);
+    written.val[5] = __float2half(22.0f);
     if (!matrix::store(filename, &written)) return 0;
 
-    matrix::sparse::dia<> readBack;
+    matrix::sparse::dia readBack;
     matrix::sparse::init(&readBack);
     if (!matrix::load(filename, &readBack)) return 0;
 
@@ -173,25 +172,25 @@ int testDiaRoundTrip() {
 }
 
 int testShardedLayout() {
-    matrix::dense<> *first = new matrix::dense<>;
-    matrix::dense<> *second = new matrix::dense<>;
-    matrix::sharded<matrix::dense<> > view;
+    matrix::dense *first = new matrix::dense;
+    matrix::dense *second = new matrix::dense;
+    matrix::sharded<matrix::dense> view;
     matrix::init(first, 1u, 2u);
     matrix::allocate(first);
-    *matrix::at(first, 0u, 0u) = matrix::real_from_float(1.0f);
-    *matrix::at(first, 0u, 1u) = matrix::real_from_float(2.0f);
+    *matrix::at(first, 0u, 0u) = __float2half(1.0f);
+    *matrix::at(first, 0u, 1u) = __float2half(2.0f);
     matrix::init(second, 2u, 2u);
     matrix::allocate(second);
-    *matrix::at(second, 0u, 0u) = matrix::real_from_float(3.0f);
-    *matrix::at(second, 0u, 1u) = matrix::real_from_float(4.0f);
-    *matrix::at(second, 1u, 0u) = matrix::real_from_float(5.0f);
-    *matrix::at(second, 1u, 1u) = matrix::real_from_float(6.0f);
+    *matrix::at(second, 0u, 0u) = __float2half(3.0f);
+    *matrix::at(second, 0u, 1u) = __float2half(4.0f);
+    *matrix::at(second, 1u, 0u) = __float2half(5.0f);
+    *matrix::at(second, 1u, 1u) = __float2half(6.0f);
 
     matrix::init(&view);
     if (!matrix::append_part(&view, first)) return 0;
     if (!matrix::append_part(&view, second)) return 0;
 
-    matrix::Index offsets[3];
+    unsigned long offsets[3];
     offsets[0] = 0;
     offsets[1] = 2;
     offsets[2] = 3;
@@ -217,21 +216,21 @@ int testShardedDiskRoundTrip() {
     const char *part0 = "/tmp/cellerator_sharded_part0.bin";
     const char *part1 = "/tmp/cellerator_sharded_part1.bin";
 
-    matrix::dense<> *first = new matrix::dense<>;
-    matrix::dense<> *second = new matrix::dense<>;
-    matrix::sharded<matrix::dense<> > written;
-    matrix::sharded<matrix::dense<> > loaded;
+    matrix::dense *first = new matrix::dense;
+    matrix::dense *second = new matrix::dense;
+    matrix::sharded<matrix::dense> written;
+    matrix::sharded<matrix::dense> loaded;
     matrix::shard_storage files;
     matrix::shard_storage loadedFiles;
 
     matrix::init(first, 1u, 2u);
     matrix::allocate(first);
-    *matrix::at(first, 0u, 0u) = matrix::real_from_float(1.0f);
-    *matrix::at(first, 0u, 1u) = matrix::real_from_float(2.0f);
+    *matrix::at(first, 0u, 0u) = __float2half(1.0f);
+    *matrix::at(first, 0u, 1u) = __float2half(2.0f);
     matrix::init(second, 1u, 2u);
     matrix::allocate(second);
-    *matrix::at(second, 0u, 0u) = matrix::real_from_float(3.0f);
-    *matrix::at(second, 0u, 1u) = matrix::real_from_float(4.0f);
+    *matrix::at(second, 0u, 0u) = __float2half(3.0f);
+    *matrix::at(second, 0u, 1u) = __float2half(4.0f);
 
     matrix::init(&written);
     matrix::init(&loaded);
@@ -271,10 +270,10 @@ int testShardedDiskRoundTrip() {
 }
 
 int testShardedBudgeting() {
-    matrix::dense<> *a = new matrix::dense<>;
-    matrix::dense<> *b = new matrix::dense<>;
-    matrix::dense<> *c = new matrix::dense<>;
-    matrix::sharded<matrix::dense<> > view;
+    matrix::dense *a = new matrix::dense;
+    matrix::dense *b = new matrix::dense;
+    matrix::dense *c = new matrix::dense;
+    matrix::sharded<matrix::dense> view;
     matrix::shard_storage files;
 
     matrix::init(a, 1u, 2u);
@@ -309,10 +308,10 @@ int testDropKeepsLogicalMap() {
     const char *headerFile = "/tmp/cellerator_drop_header.bin";
     const char *part0 = "/tmp/cellerator_drop_part0.bin";
     const char *part1 = "/tmp/cellerator_drop_part1.bin";
-    matrix::dense<> *first = new matrix::dense<>;
-    matrix::dense<> *second = new matrix::dense<>;
-    matrix::sharded<matrix::dense<> > written;
-    matrix::sharded<matrix::dense<> > loaded;
+    matrix::dense *first = new matrix::dense;
+    matrix::dense *second = new matrix::dense;
+    matrix::sharded<matrix::dense> written;
+    matrix::sharded<matrix::dense> loaded;
     matrix::shard_storage files;
 
     matrix::init(first, 2u, 2u);

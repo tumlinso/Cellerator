@@ -1,5 +1,7 @@
 #include "matrix/matrix.cuh"
 #include "matrix/matrix_io.cuh"
+
+#include <cub/cub.cuh>
 #include <cuda_runtime.h>
 
 #include <cerrno>
@@ -11,7 +13,9 @@
 #include <cstring>
 #include <limits>
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include <dirent.h>
 #include <fcntl.h>
@@ -23,11 +27,10 @@
 namespace {
 
 typedef std::uint64_t U64;
-typedef matrix::sparse::csr CsrMatrix;
-typedef matrix::sparse::coo CooMatrix;
-typedef matrix::sharded<CsrMatrix> CsrSharded;
-typedef matrix::sharded<CooMatrix> CooSharded;
-typedef matrix::sparse::csr_gpu_buffers gpu_csr_workspace;
+typedef matrix::sparse::csr<matrix::Real> CsrMatrix;
+typedef matrix::sparse::coo<matrix::Real> CooMatrix;
+typedef matrix::sharded<CsrMatrix, long> CsrSharded;
+typedef matrix::sharded<CooMatrix, long> CooSharded;
 
 static const U64 U32_LIMIT = 0xffffffffull;
 static const std::size_t SOURCE_BUFFER_BYTES = 128u << 20;
@@ -51,6 +54,116 @@ struct gpu_verify_accum {
     double mean_rel_err_sum;
     float max_abs_err;
     float max_rel_err;
+};
+
+struct mapped_file {
+    int fd;
+    std::size_t bytes;
+    const char *base;
+};
+
+struct mm_header {
+    U64 rows;
+    U64 cols;
+    U64 nnz;
+    U64 entries_offset;
+    const char *entries_begin;
+};
+
+struct part_plan {
+    matrix::Index count;
+    matrix::Index capacity;
+    matrix::Index *cell_begin;
+    matrix::Index *row_count;
+    matrix::Index *exon_nnz;
+    matrix::Index *intron_nnz;
+};
+
+struct embryo_entry {
+    unsigned int embryo_id;
+    char *name;
+    long global_cell_begin;
+    long cells;
+    matrix::Index gene_count;
+    long part_begin;
+    matrix::Index part_count;
+    part_plan plan;
+    U64 exon_file_bytes;
+    U64 intron_file_bytes;
+    U64 *exon_counts;
+    U64 *intron_counts;
+    U64 *exon_offsets;
+    U64 *intron_offsets;
+};
+
+struct modality_task {
+    matrix::Index embryo_i;
+    int is_exon;
+    U64 work_bytes;
+};
+
+struct convert_task {
+    matrix::Index embryo_i;
+    int is_exon;
+    matrix::Index part_begin;
+    matrix::Index part_end;
+    U64 source_bytes;
+    U64 work_bytes;
+};
+
+struct verify_request {
+    matrix::Index embryo_i;
+    int is_exon;
+    U64 start_byte;
+    U64 end_byte;
+    char *data;
+    U64 loaded_bytes;
+};
+
+struct verify_stats {
+    long samples;
+    long exact_cast;
+    long rounded_cast;
+    long overflow_cast;
+    long pipeline_match;
+    long pipeline_mismatch;
+    long missing_nonzero;
+    long finite_samples;
+    long rel_le_001pct;
+    long rel_le_01pct;
+    long rel_le_1pct;
+    long rel_le_5pct;
+    long rel_gt_5pct;
+    double mean_abs_err_sum;
+    double mean_rel_err_sum;
+    double max_abs_err;
+    double max_rel_err;
+};
+
+struct verify_part_cache {
+    long part_id;
+    CsrMatrix part;
+};
+
+struct gpu_csr_workspace {
+    int device;
+    cudaStream_t stream;
+    matrix::Index row_capacity;
+    matrix::Index nnz_capacity;
+    std::size_t scan_capacity;
+    matrix::Index *d_row_idx;
+    matrix::Index *d_col_idx;
+    matrix::Real *d_val;
+    matrix::Index *d_row_ptr;
+    matrix::Index *d_heads;
+    matrix::Index *d_out_col;
+    matrix::Real *d_out_val;
+    void *scan_tmp;
+    matrix::Index host_row_capacity;
+    matrix::Index host_nnz_capacity;
+    matrix::Index *host_row_ptr;
+    matrix::Index *host_col;
+    matrix::Real *host_val;
 };
 
 __device__ __forceinline__ unsigned long long atomic_add_double_bits(double *addr, double value) {
@@ -79,33 +192,75 @@ __device__ __forceinline__ int atomic_max_float(float *addr, float value) {
     return old;
 }
 
-__global__ void verify_csr_samples_kernel(unsigned int samples,
-                                          const unsigned int * __restrict__ row_ptr,
-                                          const unsigned int * __restrict__ col_idx,
-                                          const __half * __restrict__ val,
-                                          const unsigned int * __restrict__ sample_rows,
-                                          const unsigned int * __restrict__ sample_cols,
+__global__ void csr_count_rows_kernel(matrix::Index nnz,
+                                      const matrix::Index * __restrict__ row_idx,
+                                      matrix::Index * __restrict__ row_ptr_shifted) {
+    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
+    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
+    matrix::Index i = tid;
+    while (i < nnz) {
+        atomicAdd(row_ptr_shifted + row_idx[i] + 1, 1u);
+        i += stride;
+    }
+}
+
+__global__ void csr_init_heads_kernel(matrix::Index rows,
+                                      const matrix::Index * __restrict__ row_ptr,
+                                      matrix::Index * __restrict__ heads) {
+    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
+    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
+    matrix::Index i = tid;
+    while (i < rows) {
+        heads[i] = row_ptr[i];
+        i += stride;
+    }
+}
+
+__global__ void csr_scatter_kernel(matrix::Index nnz,
+                                   const matrix::Index * __restrict__ row_idx,
+                                   const matrix::Index * __restrict__ col_idx,
+                                   const matrix::Real * __restrict__ val,
+                                   matrix::Index * __restrict__ heads,
+                                   matrix::Index * __restrict__ out_col,
+                                   matrix::Real * __restrict__ out_val) {
+    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
+    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
+    matrix::Index i = tid;
+    while (i < nnz) {
+        const matrix::Index dst = atomicAdd(heads + row_idx[i], 1u);
+        out_col[dst] = col_idx[i];
+        out_val[dst] = val[i];
+        i += stride;
+    }
+}
+
+__global__ void verify_csr_samples_kernel(matrix::Index samples,
+                                          const matrix::Index * __restrict__ row_ptr,
+                                          const matrix::Index * __restrict__ col_idx,
+                                          const matrix::Real * __restrict__ val,
+                                          const matrix::Index * __restrict__ sample_rows,
+                                          const matrix::Index * __restrict__ sample_cols,
                                           const int * __restrict__ sample_original,
                                           gpu_verify_accum * __restrict__ stats) {
-    const unsigned int tid = (unsigned int) (blockIdx.x * blockDim.x + threadIdx.x);
-    const unsigned int stride = (unsigned int) (gridDim.x * blockDim.x);
-    unsigned int i = tid;
+    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
+    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
+    matrix::Index i = tid;
 
     while (i < samples) {
-        const unsigned int row = sample_rows[i];
-        const unsigned int col = sample_cols[i];
+        const matrix::Index row = sample_rows[i];
+        const matrix::Index col = sample_cols[i];
         const int original = sample_original[i];
-        const float expected_cast = __half2float(__float2half((float) original));
+        const float expected_cast = matrix::real_to_float(matrix::real_from_float((float) original));
         const float original_float = (float) original;
-        const unsigned int begin = row_ptr[row];
-        const unsigned int end = row_ptr[row + 1];
+        const matrix::Index begin = row_ptr[row];
+        const matrix::Index end = row_ptr[row + 1];
         float stored = 0.0f;
         int found = 0;
-        unsigned int j = begin;
+        matrix::Index j = begin;
 
         while (j < end) {
             if (col_idx[j] == col) {
-                stored = __half2float(val[j]);
+                stored = matrix::real_to_float(val[j]);
                 found = 1;
                 break;
             }
@@ -147,100 +302,12 @@ __global__ void verify_csr_samples_kernel(unsigned int samples,
     }
 }
 
-struct mapped_file {
-    int fd;
-    std::size_t bytes;
-    const char *base;
-};
-
-struct mm_header {
-    U64 rows;
-    U64 cols;
-    U64 nnz;
-    U64 entries_offset;
-    const char *entries_begin;
-};
-
-struct part_plan {
-    unsigned int count;
-    unsigned int capacity;
-    unsigned int *cell_begin;
-    unsigned int *row_count;
-    unsigned int *exon_nnz;
-    unsigned int *intron_nnz;
-};
-
-struct embryo_entry {
-    unsigned int embryo_id;
-    char *name;
-    long global_cell_begin;
-    long cells;
-    unsigned int gene_count;
-    long part_begin;
-    unsigned int part_count;
-    part_plan plan;
-    U64 exon_file_bytes;
-    U64 intron_file_bytes;
-    U64 *exon_counts;
-    U64 *intron_counts;
-    U64 *exon_offsets;
-    U64 *intron_offsets;
-};
-
-struct modality_task {
-    unsigned int embryo_i;
-    int is_exon;
-    U64 work_bytes;
-};
-
-struct convert_task {
-    unsigned int embryo_i;
-    int is_exon;
-    unsigned int part_begin;
-    unsigned int part_end;
-    U64 source_bytes;
-    U64 work_bytes;
-};
-
-struct verify_request {
-    unsigned int embryo_i;
-    int is_exon;
-    U64 start_byte;
-    U64 end_byte;
-    char *data;
-    U64 loaded_bytes;
-};
-
-struct verify_stats {
-    long samples;
-    long exact_cast;
-    long rounded_cast;
-    long overflow_cast;
-    long pipeline_match;
-    long pipeline_mismatch;
-    long missing_nonzero;
-    long finite_samples;
-    long rel_le_001pct;
-    long rel_le_01pct;
-    long rel_le_1pct;
-    long rel_le_5pct;
-    long rel_gt_5pct;
-    double mean_abs_err_sum;
-    double mean_rel_err_sum;
-    double max_abs_err;
-    double max_rel_err;
-};
-
-struct verify_part_cache {
-    long part_id;
-    CsrMatrix part;
-};
-
 static void init_part_plan(part_plan *plan);
 static void clear_part_plan(part_plan *plan);
 static int choose_worker_threads(long work_items, long long bytes_per_worker, int hard_cap);
 static int choose_gpu_count();
-static int bind_task_gpu(unsigned int task_id, int gpu_count);
+static int bind_task_gpu(matrix::Index task_id, int gpu_count);
+static int cuda_check(cudaError_t err, const char *label);
 static int open_readonly_fd(const char *path);
 static int stat_file_bytes(const char *path, U64 *bytes_out);
 
@@ -551,6 +618,86 @@ static void init_verify_part_cache(verify_part_cache *cache) {
     matrix::sparse::init(&cache->part);
 }
 
+static void init_gpu_csr_workspace(gpu_csr_workspace *ws) {
+    std::memset(ws, 0, sizeof(*ws));
+    ws->device = -1;
+}
+
+static void clear_gpu_csr_workspace(gpu_csr_workspace *ws) {
+    if (ws->scan_tmp != 0) cudaFree(ws->scan_tmp);
+    if (ws->d_out_val != 0) cudaFree(ws->d_out_val);
+    if (ws->d_out_col != 0) cudaFree(ws->d_out_col);
+    if (ws->d_heads != 0) cudaFree(ws->d_heads);
+    if (ws->d_row_ptr != 0) cudaFree(ws->d_row_ptr);
+    if (ws->d_val != 0) cudaFree(ws->d_val);
+    if (ws->d_col_idx != 0) cudaFree(ws->d_col_idx);
+    if (ws->d_row_idx != 0) cudaFree(ws->d_row_idx);
+    if (ws->host_val != 0) cudaFreeHost(ws->host_val);
+    if (ws->host_col != 0) cudaFreeHost(ws->host_col);
+    if (ws->host_row_ptr != 0) cudaFreeHost(ws->host_row_ptr);
+    if (ws->stream != 0) cudaStreamDestroy(ws->stream);
+    init_gpu_csr_workspace(ws);
+}
+
+static int setup_gpu_csr_workspace(gpu_csr_workspace *ws, int device) {
+    init_gpu_csr_workspace(ws);
+    ws->device = device;
+    if (!cuda_check(cudaSetDevice(device), "cudaSetDevice workspace")) return 0;
+    return cuda_check(cudaStreamCreateWithFlags(&ws->stream, cudaStreamNonBlocking), "cudaStreamCreateWithFlags");
+}
+
+static int reserve_gpu_csr_workspace(gpu_csr_workspace *ws, matrix::Index rows, matrix::Index nnz) {
+    std::size_t scan_bytes = 0;
+    if (rows > ws->row_capacity) {
+        if (ws->d_row_ptr != 0) cudaFree(ws->d_row_ptr);
+        if (ws->d_heads != 0) cudaFree(ws->d_heads);
+        if (ws->host_row_ptr != 0) cudaFreeHost(ws->host_row_ptr);
+        ws->d_row_ptr = 0;
+        ws->d_heads = 0;
+        ws->host_row_ptr = 0;
+        if (!cuda_check(cudaMalloc((void **) &ws->d_row_ptr, (std::size_t) (rows + 1) * sizeof(matrix::Index)), "cudaMalloc ws d_row_ptr")) return 0;
+        if (rows != 0 && !cuda_check(cudaMalloc((void **) &ws->d_heads, (std::size_t) rows * sizeof(matrix::Index)), "cudaMalloc ws d_heads")) return 0;
+        if (!cuda_check(cudaMallocHost((void **) &ws->host_row_ptr, (std::size_t) (rows + 1) * sizeof(matrix::Index)), "cudaMallocHost ws host_row_ptr")) return 0;
+        ws->row_capacity = rows;
+        ws->host_row_capacity = rows;
+    }
+    if (nnz > ws->nnz_capacity) {
+        if (ws->d_row_idx != 0) cudaFree(ws->d_row_idx);
+        if (ws->d_col_idx != 0) cudaFree(ws->d_col_idx);
+        if (ws->d_val != 0) cudaFree(ws->d_val);
+        if (ws->d_out_col != 0) cudaFree(ws->d_out_col);
+        if (ws->d_out_val != 0) cudaFree(ws->d_out_val);
+        if (ws->host_col != 0) cudaFreeHost(ws->host_col);
+        if (ws->host_val != 0) cudaFreeHost(ws->host_val);
+        ws->d_row_idx = 0;
+        ws->d_col_idx = 0;
+        ws->d_val = 0;
+        ws->d_out_col = 0;
+        ws->d_out_val = 0;
+        ws->host_col = 0;
+        ws->host_val = 0;
+        if (nnz != 0) {
+            if (!cuda_check(cudaMalloc((void **) &ws->d_row_idx, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMalloc ws d_row_idx")) return 0;
+            if (!cuda_check(cudaMalloc((void **) &ws->d_col_idx, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMalloc ws d_col_idx")) return 0;
+            if (!cuda_check(cudaMalloc((void **) &ws->d_val, (std::size_t) nnz * sizeof(matrix::Real)), "cudaMalloc ws d_val")) return 0;
+            if (!cuda_check(cudaMalloc((void **) &ws->d_out_col, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMalloc ws d_out_col")) return 0;
+            if (!cuda_check(cudaMalloc((void **) &ws->d_out_val, (std::size_t) nnz * sizeof(matrix::Real)), "cudaMalloc ws d_out_val")) return 0;
+            if (!cuda_check(cudaMallocHost((void **) &ws->host_col, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMallocHost ws host_col")) return 0;
+            if (!cuda_check(cudaMallocHost((void **) &ws->host_val, (std::size_t) nnz * sizeof(matrix::Real)), "cudaMallocHost ws host_val")) return 0;
+        }
+        ws->nnz_capacity = nnz;
+        ws->host_nnz_capacity = nnz;
+    }
+    if (!cuda_check(cub::DeviceScan::ExclusiveSum(0, scan_bytes, ws->d_row_ptr, ws->d_row_ptr, rows + 1, ws->stream), "cub dry scan ws")) return 0;
+    if (scan_bytes > ws->scan_capacity) {
+        if (ws->scan_tmp != 0) cudaFree(ws->scan_tmp);
+        ws->scan_tmp = 0;
+        if (scan_bytes != 0 && !cuda_check(cudaMalloc((void **) &ws->scan_tmp, scan_bytes), "cudaMalloc ws scan_tmp")) return 0;
+        ws->scan_capacity = scan_bytes;
+    }
+    return 1;
+}
+
 static void clear_verify_part_cache(verify_part_cache *cache) {
     matrix::sparse::clear(&cache->part);
     cache->part_id = -1;
@@ -565,8 +712,8 @@ static std::uint64_t next_rng(std::uint64_t *state) {
     return x * 2685821657736338717ull;
 }
 
-static void clear_embryos(embryo_entry *entries, unsigned int count) {
-    unsigned int i = 0;
+static void clear_embryos(embryo_entry *entries, matrix::Index count) {
+    matrix::Index i = 0;
 
     if (entries == 0) return;
     for (i = 0; i < count; ++i) {
@@ -580,13 +727,13 @@ static void clear_embryos(embryo_entry *entries, unsigned int count) {
     std::free(entries);
 }
 
-static int list_embryos(const char *base_dir, embryo_entry **out_entries, unsigned int *out_count) {
+static int list_embryos(const char *base_dir, embryo_entry **out_entries, matrix::Index *out_count) {
     DIR *dir = 0;
     struct dirent *entry = 0;
     embryo_entry *entries = 0;
     embryo_entry *grown = 0;
-    unsigned int count = 0;
-    unsigned int capacity = 0;
+    matrix::Index count = 0;
+    matrix::Index capacity = 0;
     char *name_copy = 0;
     unsigned int embryo_id = 0;
 
@@ -664,18 +811,18 @@ static void clear_part_plan(part_plan *plan) {
     init_part_plan(plan);
 }
 
-static int reserve_part_plan(part_plan *plan, unsigned int capacity) {
-    unsigned int *cell_begin = 0;
-    unsigned int *row_count = 0;
-    unsigned int *exon_nnz = 0;
-    unsigned int *intron_nnz = 0;
+static int reserve_part_plan(part_plan *plan, matrix::Index capacity) {
+    matrix::Index *cell_begin = 0;
+    matrix::Index *row_count = 0;
+    matrix::Index *exon_nnz = 0;
+    matrix::Index *intron_nnz = 0;
 
     if (capacity <= plan->capacity) return 1;
 
-    cell_begin = (unsigned int *) std::calloc((std::size_t) capacity, sizeof(unsigned int));
-    row_count = (unsigned int *) std::calloc((std::size_t) capacity, sizeof(unsigned int));
-    exon_nnz = (unsigned int *) std::calloc((std::size_t) capacity, sizeof(unsigned int));
-    intron_nnz = (unsigned int *) std::calloc((std::size_t) capacity, sizeof(unsigned int));
+    cell_begin = (matrix::Index *) std::calloc((std::size_t) capacity, sizeof(matrix::Index));
+    row_count = (matrix::Index *) std::calloc((std::size_t) capacity, sizeof(matrix::Index));
+    exon_nnz = (matrix::Index *) std::calloc((std::size_t) capacity, sizeof(matrix::Index));
+    intron_nnz = (matrix::Index *) std::calloc((std::size_t) capacity, sizeof(matrix::Index));
     if (cell_begin == 0 || row_count == 0 || exon_nnz == 0 || intron_nnz == 0) {
         std::free(cell_begin);
         std::free(row_count);
@@ -685,10 +832,10 @@ static int reserve_part_plan(part_plan *plan, unsigned int capacity) {
     }
 
     if (plan->count != 0) {
-        std::memcpy(cell_begin, plan->cell_begin, (std::size_t) plan->count * sizeof(unsigned int));
-        std::memcpy(row_count, plan->row_count, (std::size_t) plan->count * sizeof(unsigned int));
-        std::memcpy(exon_nnz, plan->exon_nnz, (std::size_t) plan->count * sizeof(unsigned int));
-        std::memcpy(intron_nnz, plan->intron_nnz, (std::size_t) plan->count * sizeof(unsigned int));
+        std::memcpy(cell_begin, plan->cell_begin, (std::size_t) plan->count * sizeof(matrix::Index));
+        std::memcpy(row_count, plan->row_count, (std::size_t) plan->count * sizeof(matrix::Index));
+        std::memcpy(exon_nnz, plan->exon_nnz, (std::size_t) plan->count * sizeof(matrix::Index));
+        std::memcpy(intron_nnz, plan->intron_nnz, (std::size_t) plan->count * sizeof(matrix::Index));
     }
 
     std::free(plan->cell_begin);
@@ -704,11 +851,11 @@ static int reserve_part_plan(part_plan *plan, unsigned int capacity) {
 }
 
 static int append_part_plan(part_plan *plan,
-                            unsigned int cell_begin,
-                            unsigned int row_count,
-                            unsigned int exon_nnz,
-                            unsigned int intron_nnz) {
-    unsigned int next = 0;
+                            matrix::Index cell_begin,
+                            matrix::Index row_count,
+                            matrix::Index exon_nnz,
+                            matrix::Index intron_nnz) {
+    matrix::Index next = 0;
 
     if (plan->count == plan->capacity) {
         next = plan->capacity == 0 ? 16u : (plan->capacity << 1);
@@ -826,16 +973,16 @@ done:
 }
 
 static int build_common_part_plan(const char *label,
-                                  unsigned int cells,
-                                  unsigned int max_rows_per_part,
+                                  matrix::Index cells,
+                                  matrix::Index max_rows_per_part,
                                   const U64 *exon_counts,
                                   const U64 *intron_counts,
                                   part_plan *plan) {
-    unsigned int cell_begin = 0;
-    unsigned int row_count = 0;
+    matrix::Index cell_begin = 0;
+    matrix::Index row_count = 0;
     U64 exon_acc = 0;
     U64 intron_acc = 0;
-    unsigned int cell = 0;
+    matrix::Index cell = 0;
     U64 exon_next = 0;
     U64 intron_next = 0;
 
@@ -852,8 +999,8 @@ static int build_common_part_plan(const char *label,
             if (!append_part_plan(plan,
                                   cell_begin,
                                   row_count,
-                                  (unsigned int) exon_acc,
-                                  (unsigned int) intron_acc)) return 0;
+                                  (matrix::Index) exon_acc,
+                                  (matrix::Index) intron_acc)) return 0;
             cell_begin = cell;
             row_count = 0;
             exon_acc = 0;
@@ -876,13 +1023,13 @@ static int build_common_part_plan(const char *label,
         if (!append_part_plan(plan,
                               cell_begin,
                               row_count,
-                              (unsigned int) exon_acc,
-                              (unsigned int) intron_acc)) return 0;
+                              (matrix::Index) exon_acc,
+                              (matrix::Index) intron_acc)) return 0;
     }
     return 1;
 }
 
-static CsrMatrix *allocate_csr_part(unsigned int rows, unsigned int cols, unsigned int nnz) {
+static CsrMatrix *allocate_csr_part(matrix::Index rows, matrix::Index cols, matrix::Index nnz) {
     CsrMatrix *part = new CsrMatrix;
     matrix::sparse::init(part, rows, cols, nnz);
     if (!matrix::sparse::allocate(part)) {
@@ -910,7 +1057,7 @@ static int store_part_direct(const char *part_prefix, long part_id, CsrMatrix **
 
 static int analyze_embryo(const char *base_dir,
                           embryo_entry *embryo,
-                          unsigned int max_rows_per_part) {
+                          matrix::Index max_rows_per_part) {
     char exon_matrix_path[4096];
     char intron_matrix_path[4096];
     mm_header exon_hdr;
@@ -943,7 +1090,7 @@ static int analyze_embryo(const char *base_dir,
     if (!count_cells_from_matrix(exon_matrix_path, &exon_hdr, exon_counts, 0, 0)) goto done;
     if (!count_cells_from_matrix(intron_matrix_path, &intron_hdr, intron_counts, 0, 0)) goto done;
     if (!build_common_part_plan(embryo->name,
-                                (unsigned int) embryo->cells,
+                                (matrix::Index) embryo->cells,
                                 max_rows_per_part,
                                 exon_counts,
                                 intron_counts,
@@ -973,10 +1120,10 @@ static int stat_file_bytes(const char *path, U64 *bytes_out) {
 
 static int prepare_verify_metadata(const char *base_dir,
                                    embryo_entry *embryos,
-                                   unsigned int embryo_count,
-                                   unsigned int *gene_count_out) {
-    unsigned int embryo_i = 0;
-    unsigned int gene_count = 0;
+                                   matrix::Index embryo_count,
+                                   matrix::Index *gene_count_out) {
+    matrix::Index embryo_i = 0;
+    matrix::Index gene_count = 0;
     int have_gene_count = 0;
     long global_cell_begin = 0;
 
@@ -1028,10 +1175,10 @@ static int prepare_verify_metadata(const char *base_dir,
 
 static int prepare_embryo_metadata(const char *base_dir,
                                    embryo_entry *embryos,
-                                   unsigned int embryo_count,
-                                   unsigned int *gene_count_out) {
-    unsigned int embryo_i = 0;
-    unsigned int gene_count = 0;
+                                   matrix::Index embryo_count,
+                                   matrix::Index *gene_count_out) {
+    matrix::Index embryo_i = 0;
+    matrix::Index gene_count = 0;
     int have_gene_count = 0;
 
     for (embryo_i = 0; embryo_i < embryo_count; ++embryo_i) {
@@ -1096,12 +1243,12 @@ static int prepare_embryo_metadata(const char *base_dir,
 }
 
 static int build_modality_tasks(const embryo_entry *embryos,
-                                unsigned int embryo_count,
+                                matrix::Index embryo_count,
                                 modality_task **out_tasks,
-                                unsigned int *out_task_count) {
+                                matrix::Index *out_task_count) {
     modality_task *tasks = 0;
-    unsigned int task_i = 0;
-    unsigned int embryo_i = 0;
+    matrix::Index task_i = 0;
+    matrix::Index embryo_i = 0;
 
     *out_tasks = 0;
     *out_task_count = 0;
@@ -1124,14 +1271,14 @@ static int build_modality_tasks(const embryo_entry *embryos,
 }
 
 static int build_convert_tasks(const embryo_entry *embryos,
-                               unsigned int embryo_count,
+                               matrix::Index embryo_count,
                                U64 target_chunk_bytes,
                                convert_task **out_tasks,
-                               unsigned int *out_task_count) {
+                               matrix::Index *out_task_count) {
     convert_task *tasks = 0;
-    unsigned int capacity = 0;
-    unsigned int count = 0;
-    unsigned int embryo_i = 0;
+    matrix::Index capacity = 0;
+    matrix::Index count = 0;
+    matrix::Index embryo_i = 0;
 
     *out_tasks = 0;
     *out_task_count = 0;
@@ -1148,10 +1295,10 @@ static int build_convert_tasks(const embryo_entry *embryos,
             const U64 *cell_offsets = modality ? embryos[embryo_i].exon_offsets : embryos[embryo_i].intron_offsets;
             const U64 source_bytes = modality ? embryos[embryo_i].exon_file_bytes : embryos[embryo_i].intron_file_bytes;
             const part_plan *plan = &embryos[embryo_i].plan;
-            unsigned int begin = 0;
+            matrix::Index begin = 0;
 
             while (begin < plan->count) {
-                unsigned int end = begin;
+                matrix::Index end = begin;
                 U64 start_byte = cell_offsets[plan->cell_begin[begin]];
                 U64 end_byte = start_byte;
 
@@ -1200,22 +1347,22 @@ static void accumulate_verify_stats(verify_stats *dst, const verify_stats *src) 
 }
 
 static int build_verify_tasks(const embryo_entry *embryos,
-                              unsigned int embryo_count,
+                              matrix::Index embryo_count,
                               int num_tasks_per_modality,
                               U64 chunk_bytes,
                               convert_task **out_tasks,
-                              unsigned int *out_count) {
+                              matrix::Index *out_count) {
     convert_task *all_tasks = 0;
     convert_task *picked = 0;
-    unsigned int all_count = 0;
-    unsigned int pick_count = 0;
-    unsigned int i = 0;
+    matrix::Index all_count = 0;
+    matrix::Index pick_count = 0;
+    matrix::Index i = 0;
     U64 *prefix_exon = 0;
     U64 *prefix_intron = 0;
-    unsigned int *exon_ids = 0;
-    unsigned int *intron_ids = 0;
-    unsigned int exon_count = 0;
-    unsigned int intron_count = 0;
+    matrix::Index *exon_ids = 0;
+    matrix::Index *intron_ids = 0;
+    matrix::Index exon_count = 0;
+    matrix::Index intron_count = 0;
     U64 exon_total = 0;
     U64 intron_total = 0;
     std::uint64_t rng = 0x1234fedcba987654ull;
@@ -1225,8 +1372,8 @@ static int build_verify_tasks(const embryo_entry *embryos,
     if (!build_convert_tasks(embryos, embryo_count, chunk_bytes, &all_tasks, &all_count)) return 0;
     prefix_exon = (U64 *) std::calloc((std::size_t) all_count, sizeof(U64));
     prefix_intron = (U64 *) std::calloc((std::size_t) all_count, sizeof(U64));
-    exon_ids = (unsigned int *) std::calloc((std::size_t) all_count, sizeof(unsigned int));
-    intron_ids = (unsigned int *) std::calloc((std::size_t) all_count, sizeof(unsigned int));
+    exon_ids = (matrix::Index *) std::calloc((std::size_t) all_count, sizeof(matrix::Index));
+    intron_ids = (matrix::Index *) std::calloc((std::size_t) all_count, sizeof(matrix::Index));
     picked = (convert_task *) std::calloc((std::size_t) (num_tasks_per_modality * 2), sizeof(convert_task));
     if (prefix_exon == 0 || prefix_intron == 0 || exon_ids == 0 || intron_ids == 0 || picked == 0) goto fail;
 
@@ -1243,16 +1390,16 @@ static int build_verify_tasks(const embryo_entry *embryos,
     }
     if (exon_total == 0 || intron_total == 0) goto fail;
 
-    for (i = 0; i < (unsigned int) num_tasks_per_modality; ++i) {
+    for (i = 0; i < (matrix::Index) num_tasks_per_modality; ++i) {
         U64 pick = next_rng(&rng) % exon_total;
-        unsigned int idx = 0;
+        matrix::Index idx = 0;
         while (idx + 1 < exon_count && pick >= prefix_exon[idx]) ++idx;
         picked[pick_count++] = all_tasks[exon_ids[idx]];
     }
 
-    for (i = 0; i < (unsigned int) num_tasks_per_modality; ++i) {
+    for (i = 0; i < (matrix::Index) num_tasks_per_modality; ++i) {
         U64 pick = next_rng(&rng) % intron_total;
-        unsigned int idx = 0;
+        matrix::Index idx = 0;
         while (idx + 1 < intron_count && pick >= prefix_intron[idx]) ++idx;
         picked[pick_count++] = all_tasks[intron_ids[idx]];
     }
@@ -1279,11 +1426,11 @@ fail:
 
 static int build_view_layout(CsrSharded *view,
                              const embryo_entry *embryos,
-                             unsigned int embryo_count,
-                             unsigned int gene_count,
+                             matrix::Index embryo_count,
+                             matrix::Index gene_count,
                              int is_exon) {
-    unsigned int embryo_i = 0;
-    unsigned int local_part = 0;
+    matrix::Index embryo_i = 0;
+    matrix::Index local_part = 0;
     long total_parts = 0;
 
     matrix::init(view);
@@ -1315,31 +1462,25 @@ static int cuda_check(cudaError_t err, const char *label) {
     return 0;
 }
 
-static int choose_gpu_count() {
-    int count = 0;
-    if (cudaGetDeviceCount(&count) != cudaSuccess) return 1;
-    if (count < 1) return 1;
-    if (count > 4) count = 4;
-    return count;
-}
 
-static int bind_task_gpu(unsigned int task_id, int gpu_count) {
-    const int device = gpu_count > 1 ? (int) (task_id % (unsigned int) gpu_count) : 0;
+
+static int bind_task_gpu(matrix::Index task_id, int gpu_count) {
+    const int device = gpu_count > 1 ? (int) (task_id % (matrix::Index) gpu_count) : 0;
     return cuda_check(cudaSetDevice(device), "cudaSetDevice");
 }
 
 static int sum_task_shape(const embryo_entry *embryo,
                           int is_exon,
-                          unsigned int part_begin,
-                          unsigned int part_end,
-                          unsigned int *rows_out,
-                          unsigned int *nnz_out,
-                          unsigned int *cell_begin_out) {
+                          matrix::Index part_begin,
+                          matrix::Index part_end,
+                          matrix::Index *rows_out,
+                          matrix::Index *nnz_out,
+                          matrix::Index *cell_begin_out) {
     const part_plan *plan = &embryo->plan;
-    const unsigned int *nnz_per_part = is_exon ? plan->exon_nnz : plan->intron_nnz;
-    unsigned int rows = 0;
-    unsigned int nnz = 0;
-    unsigned int i = 0;
+    const matrix::Index *nnz_per_part = is_exon ? plan->exon_nnz : plan->intron_nnz;
+    matrix::Index rows = 0;
+    matrix::Index nnz = 0;
+    matrix::Index i = 0;
 
     if (part_begin >= part_end || part_end > plan->count) return 0;
     *cell_begin_out = plan->cell_begin[part_begin];
@@ -1353,17 +1494,17 @@ static int sum_task_shape(const embryo_entry *embryo,
 }
 
 static int parse_task_to_pinned_coo(const char *path,
-                                    unsigned int cols_out,
+                                    matrix::Index cols_out,
                                     const embryo_entry *embryo,
                                     int is_exon,
-                                    unsigned int task_part_begin,
-                                    unsigned int task_part_end,
-                                    unsigned int *rows_out,
-                                    unsigned int *nnz_out,
-                                    unsigned int *cell_begin_out,
-                                    unsigned int **row_idx_out,
-                                    unsigned int **col_idx_out,
-                                    __half **val_out) {
+                                    matrix::Index task_part_begin,
+                                    matrix::Index task_part_end,
+                                    matrix::Index *rows_out,
+                                    matrix::Index *nnz_out,
+                                    matrix::Index *cell_begin_out,
+                                    matrix::Index **row_idx_out,
+                                    matrix::Index **col_idx_out,
+                                    matrix::Real **val_out) {
     const part_plan *plan = &embryo->plan;
     const U64 *cell_offsets = is_exon ? embryo->exon_offsets : embryo->intron_offsets;
     int fd = -1;
@@ -1373,13 +1514,13 @@ static int parse_task_to_pinned_coo(const char *path,
     U64 scan_begin = 0;
     U64 scan_end = 0;
     U64 next_read_offset = 0;
-    unsigned int rows = 0;
-    unsigned int nnz = 0;
-    unsigned int task_cell_begin = 0;
-    unsigned int write_pos = 0;
-    unsigned int *row_idx = 0;
-    unsigned int *col_idx = 0;
-    __half *val = 0;
+    matrix::Index rows = 0;
+    matrix::Index nnz = 0;
+    matrix::Index task_cell_begin = 0;
+    matrix::Index write_pos = 0;
+    matrix::Index *row_idx = 0;
+    matrix::Index *col_idx = 0;
+    matrix::Real *val = 0;
     int ok = 0;
 
     *row_idx_out = 0;
@@ -1391,9 +1532,9 @@ static int parse_task_to_pinned_coo(const char *path,
     *cell_begin_out = task_cell_begin;
     if (nnz == 0) return 1;
 
-    if (!cuda_check(cudaMallocHost((void **) &row_idx, (std::size_t) nnz * sizeof(unsigned int)), "cudaMallocHost row_idx")) goto done;
-    if (!cuda_check(cudaMallocHost((void **) &col_idx, (std::size_t) nnz * sizeof(unsigned int)), "cudaMallocHost col_idx")) goto done;
-    if (!cuda_check(cudaMallocHost((void **) &val, (std::size_t) nnz * sizeof(__half)), "cudaMallocHost val")) goto done;
+    if (!cuda_check(cudaMallocHost((void **) &row_idx, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMallocHost row_idx")) goto done;
+    if (!cuda_check(cudaMallocHost((void **) &col_idx, (std::size_t) nnz * sizeof(matrix::Index)), "cudaMallocHost col_idx")) goto done;
+    if (!cuda_check(cudaMallocHost((void **) &val, (std::size_t) nnz * sizeof(matrix::Real)), "cudaMallocHost val")) goto done;
 
     if (!read_matrix_header_only(path, &hdr)) goto done;
     if (hdr.rows != cols_out) {
@@ -1450,9 +1591,9 @@ static int parse_task_to_pinned_coo(const char *path,
                 !parse_u64_token(&p, end, &cell) ||
                 !parse_i32_token(&p, end, &value) ||
                 !expect_line_end(&p, end)) goto done;
-            row_idx[write_pos] = (unsigned int) (cell - 1 - task_cell_begin);
-            col_idx[write_pos] = (unsigned int) (gene - 1);
-            val[write_pos] = __float2half((float) value);
+            row_idx[write_pos] = (matrix::Index) (cell - 1 - task_cell_begin);
+            col_idx[write_pos] = (matrix::Index) (gene - 1);
+            val[write_pos] = matrix::real_from_float((float) value);
             ++write_pos;
         }
         carry = total - parse_bytes;
@@ -1485,32 +1626,102 @@ done:
     return 1;
 }
 
+static int gpu_build_csr_from_coo(gpu_csr_workspace *ws,
+                                  matrix::Index rows,
+                                  matrix::Index nnz,
+                                  const matrix::Index *host_row_idx,
+                                  const matrix::Index *host_col_idx,
+                                  const matrix::Real *host_val) {
+    int blocks_nnz = 0;
+    int blocks_rows = 0;
+    if (rows == 0 && nnz == 0) return 1;
+    if (nnz == 0) {
+        if (!reserve_gpu_csr_workspace(ws, rows, 0)) return 0;
+        std::memset(ws->host_row_ptr, 0, (std::size_t) (rows + 1) * sizeof(matrix::Index));
+        return 1;
+    }
+
+    if (!reserve_gpu_csr_workspace(ws, rows, nnz)) return 0;
+    blocks_nnz = (int) ((nnz + 255u) / 256u);
+    blocks_rows = (int) ((rows + 255u) / 256u);
+    if (blocks_nnz < 1) blocks_nnz = 1;
+    if (blocks_rows < 1) blocks_rows = 1;
+    if (blocks_nnz > 4096) blocks_nnz = 4096;
+    if (blocks_rows > 4096) blocks_rows = 4096;
+
+    if (!cuda_check(cudaMemcpyAsync(ws->d_row_idx,
+                                    host_row_idx,
+                                    (std::size_t) nnz * sizeof(matrix::Index),
+                                    cudaMemcpyHostToDevice,
+                                    ws->stream),
+                    "copy row_idx async")) return 0;
+    if (!cuda_check(cudaMemcpyAsync(ws->d_col_idx,
+                                    host_col_idx,
+                                    (std::size_t) nnz * sizeof(matrix::Index),
+                                    cudaMemcpyHostToDevice,
+                                    ws->stream),
+                    "copy col_idx async")) return 0;
+    if (!cuda_check(cudaMemcpyAsync(ws->d_val,
+                                    host_val,
+                                    (std::size_t) nnz * sizeof(matrix::Real),
+                                    cudaMemcpyHostToDevice,
+                                    ws->stream),
+                    "copy val async")) return 0;
+    if (!cuda_check(cudaMemsetAsync(ws->d_row_ptr, 0, (std::size_t) (rows + 1) * sizeof(matrix::Index), ws->stream), "memset row_ptr async")) return 0;
+    csr_count_rows_kernel<<<blocks_nnz, 256, 0, ws->stream>>>(nnz, ws->d_row_idx, ws->d_row_ptr);
+    if (!cuda_check(cudaGetLastError(), "csr_count_rows_kernel")) return 0;
+    if (!cuda_check(cub::DeviceScan::ExclusiveSum(ws->scan_tmp, ws->scan_capacity, ws->d_row_ptr, ws->d_row_ptr, rows + 1, ws->stream), "cub scan")) return 0;
+    csr_init_heads_kernel<<<blocks_rows, 256, 0, ws->stream>>>(rows, ws->d_row_ptr, ws->d_heads);
+    if (!cuda_check(cudaGetLastError(), "csr_init_heads_kernel")) return 0;
+    csr_scatter_kernel<<<blocks_nnz, 256, 0, ws->stream>>>(nnz, ws->d_row_idx, ws->d_col_idx, ws->d_val, ws->d_heads, ws->d_out_col, ws->d_out_val);
+    if (!cuda_check(cudaGetLastError(), "csr_scatter_kernel")) return 0;
+    if (!cuda_check(cudaMemcpyAsync(ws->host_row_ptr,
+                                    ws->d_row_ptr,
+                                    (std::size_t) (rows + 1) * sizeof(matrix::Index),
+                                    cudaMemcpyDeviceToHost,
+                                    ws->stream),
+                    "copy row_ptr back async")) return 0;
+    if (!cuda_check(cudaMemcpyAsync(ws->host_col,
+                                    ws->d_out_col,
+                                    (std::size_t) nnz * sizeof(matrix::Index),
+                                    cudaMemcpyDeviceToHost,
+                                    ws->stream),
+                    "copy col back async")) return 0;
+    if (!cuda_check(cudaMemcpyAsync(ws->host_val,
+                                    ws->d_out_val,
+                                    (std::size_t) nnz * sizeof(matrix::Real),
+                                    cudaMemcpyDeviceToHost,
+                                    ws->stream),
+                    "copy val back async")) return 0;
+    return cuda_check(cudaStreamSynchronize(ws->stream), "cudaStreamSynchronize csr build");
+}
+
 static int store_csr_task_parts_from_combined(const char *part_prefix,
-                                              unsigned int cols_out,
+                                              matrix::Index cols_out,
                                               const embryo_entry *embryo,
                                               int is_exon,
-                                              unsigned int task_part_begin,
-                                              unsigned int task_part_end,
-                                              unsigned int task_rows,
-                                              const unsigned int *task_row_ptr,
-                                              const unsigned int *task_col,
-                                              const __half *task_val) {
+                                              matrix::Index task_part_begin,
+                                              matrix::Index task_part_end,
+                                              matrix::Index task_rows,
+                                              const matrix::Index *task_row_ptr,
+                                              const matrix::Index *task_col,
+                                              const matrix::Real *task_val) {
     const part_plan *plan = &embryo->plan;
-    const unsigned int *nnz_per_part = is_exon ? plan->exon_nnz : plan->intron_nnz;
-    unsigned int local_row_begin = 0;
-    unsigned int part_i = 0;
+    const matrix::Index *nnz_per_part = is_exon ? plan->exon_nnz : plan->intron_nnz;
+    matrix::Index local_row_begin = 0;
+    matrix::Index part_i = 0;
 
     (void) task_rows;
     for (part_i = task_part_begin; part_i < task_part_end; ++part_i) {
-        const unsigned int rows = plan->row_count[part_i];
-        const unsigned int nnz = nnz_per_part[part_i];
-        const unsigned int nnz_begin = task_row_ptr[local_row_begin];
+        const matrix::Index rows = plan->row_count[part_i];
+        const matrix::Index nnz = nnz_per_part[part_i];
+        const matrix::Index nnz_begin = task_row_ptr[local_row_begin];
         char path[4096];
-        unsigned int *row_ptr = 0;
-        unsigned int r = 0;
+        matrix::Index *row_ptr = 0;
+        matrix::Index r = 0;
 
         if (!build_part_path(path, sizeof(path), part_prefix, embryo->part_begin + part_i)) return 0;
-        row_ptr = (unsigned int *) std::malloc((std::size_t) (rows + 1) * sizeof(unsigned int));
+        row_ptr = (matrix::Index *) std::malloc((std::size_t) (rows + 1) * sizeof(matrix::Index));
         if (row_ptr == 0) return 0;
         for (r = 0; r <= rows; ++r) row_ptr[r] = task_row_ptr[local_row_begin + r] - nnz_begin;
         if (!matrix::detail::store_csr_raw(path,
@@ -1520,7 +1731,7 @@ static int store_csr_task_parts_from_combined(const char *part_prefix,
                                            row_ptr,
                                            task_col + nnz_begin,
                                            task_val + nnz_begin,
-                                           sizeof(__half))) {
+                                           sizeof(matrix::Real))) {
             std::free(row_ptr);
             return 0;
         }
@@ -1531,19 +1742,19 @@ static int store_csr_task_parts_from_combined(const char *part_prefix,
 }
 
 static int convert_matrix_to_csr_parts(const char *path,
-                                       unsigned int cols_out,
+                                       matrix::Index cols_out,
                                        const char *part_prefix,
                                        const embryo_entry *embryo,
                                        int is_exon,
                                        gpu_csr_workspace *ws,
-                                       unsigned int task_part_begin,
-                                       unsigned int task_part_end) {
-    unsigned int rows = 0;
-    unsigned int nnz = 0;
-    unsigned int cell_begin = 0;
-    unsigned int *host_row_idx = 0;
-    unsigned int *host_col_idx = 0;
-    __half *host_in_val = 0;
+                                       matrix::Index task_part_begin,
+                                       matrix::Index task_part_end) {
+    matrix::Index rows = 0;
+    matrix::Index nnz = 0;
+    matrix::Index cell_begin = 0;
+    matrix::Index *host_row_idx = 0;
+    matrix::Index *host_col_idx = 0;
+    matrix::Real *host_in_val = 0;
     int ok = 0;
 
     if (task_part_begin >= task_part_end) return 1;
@@ -1559,12 +1770,12 @@ static int convert_matrix_to_csr_parts(const char *path,
                                   &host_row_idx,
                                   &host_col_idx,
                                   &host_in_val)) goto done;
-    if (!matrix::sparse::csr_gpu_buffer_build_from_coo(ws,
-                                                       rows,
-                                                       nnz,
-                                                       host_row_idx,
-                                                       host_col_idx,
-                                                       host_in_val)) goto done;
+    if (!gpu_build_csr_from_coo(ws,
+                                rows,
+                                nnz,
+                                host_row_idx,
+                                host_col_idx,
+                                host_in_val)) goto done;
     if (!store_csr_task_parts_from_combined(part_prefix,
                                             cols_out,
                                             embryo,
@@ -1572,9 +1783,9 @@ static int convert_matrix_to_csr_parts(const char *path,
                                             task_part_begin,
                                             task_part_end,
                                             rows,
-                                            ws->h_rowPtr,
-                                            ws->h_colIdx,
-                                            ws->h_val)) goto done;
+                                            ws->host_row_ptr,
+                                            ws->host_col,
+                                            ws->host_val)) goto done;
     ok = 1;
 
 done:
@@ -1586,20 +1797,20 @@ done:
 }
 
 static int build_shard_offsets_from_parts(const CsrSharded *view,
-                                          unsigned long target_rows_per_shard,
-                                          unsigned long **out_offsets,
-                                          unsigned long *out_count) {
-    unsigned long *offsets = 0;
-    unsigned long shard_count = 0;
-    unsigned long i = 0;
-    unsigned long used = 0;
-    unsigned long rows = 0;
+                                          long target_rows_per_shard,
+                                          long **out_offsets,
+                                          long *out_count) {
+    long *offsets = 0;
+    long shard_count = 0;
+    long i = 0;
+    long used = 0;
+    long rows = 0;
 
     *out_offsets = 0;
     *out_count = 0;
     if (view->num_parts == 0) return 1;
 
-    offsets = (unsigned long *) std::calloc((std::size_t) (view->num_parts + 1), sizeof(unsigned long));
+    offsets = (long *) std::calloc((std::size_t) (view->num_parts + 1), sizeof(long));
     if (offsets == 0) return 0;
     offsets[0] = 0;
 
@@ -1664,10 +1875,10 @@ done:
 static int save_cell_map(const char *path,
                          const char *base_dir,
                          const embryo_entry *embryos,
-                         unsigned int embryo_count,
+                         matrix::Index embryo_count,
                          const CsrSharded *view) {
     std::FILE *fp = 0;
-    unsigned int embryo_i = 0;
+    matrix::Index embryo_i = 0;
     char barcodes_path[4096];
     mapped_file m;
     const char *p = 0;
@@ -1772,15 +1983,15 @@ static int open_readonly_fd(const char *path) {
     return fd;
 }
 
-static void clear_verify_requests(verify_request *requests, unsigned int count) {
-    unsigned int i = 0;
+static void clear_verify_requests(verify_request *requests, matrix::Index count) {
+    matrix::Index i = 0;
     if (requests == 0) return;
     for (i = 0; i < count; ++i) std::free(requests[i].data);
     std::free(requests);
 }
 
 static void update_verify_stats(verify_stats *stats, int original_value, int missing, float stored_value) {
-    const float expected_cast = __half2float(__float2half((float) original_value));
+    const float expected_cast = matrix::real_to_float(matrix::real_from_float((float) original_value));
     const float original_float = (float) original_value;
 
     ++stats->samples;
@@ -1814,17 +2025,17 @@ static void update_verify_stats(verify_stats *stats, int original_value, int mis
 }
 
 static int build_verify_requests(const embryo_entry *embryos,
-                                 unsigned int embryo_count,
+                                 matrix::Index embryo_count,
                                  int is_exon,
                                  int num_requests,
                                  U64 chunk_bytes,
                                  verify_request **out_requests,
-                                 unsigned int *out_count) {
+                                 matrix::Index *out_count) {
     verify_request *reqs = 0;
     U64 *prefix = 0;
     U64 total_bytes = 0;
     std::uint64_t rng = 0x9e3779b97f4a7c15ull ^ (is_exon ? 0xa5a5a5a5ull : 0x5a5a5a5aull);
-    unsigned int i = 0;
+    matrix::Index i = 0;
 
     *out_requests = 0;
     *out_count = 0;
@@ -1847,9 +2058,9 @@ static int build_verify_requests(const embryo_entry *embryos,
         return 0;
     }
 
-    for (i = 0; i < (unsigned int) num_requests; ++i) {
+    for (i = 0; i < (matrix::Index) num_requests; ++i) {
         U64 pick = next_rng(&rng) % total_bytes;
-        unsigned int embryo_i = 0;
+        matrix::Index embryo_i = 0;
         U64 bytes = 0;
         U64 start = 0;
 
@@ -1866,7 +2077,7 @@ static int build_verify_requests(const embryo_entry *embryos,
 
     qsort(reqs, (std::size_t) num_requests, sizeof(verify_request), verify_request_compare);
     *out_requests = reqs;
-    *out_count = (unsigned int) num_requests;
+    *out_count = (matrix::Index) num_requests;
     std::free(prefix);
     return 1;
 }
@@ -1875,13 +2086,13 @@ static int verify_requests_for_modality(const char *base_dir,
                                         const char *part_prefix,
                                         const embryo_entry *embryos,
                                         const verify_request *requests,
-                                        unsigned int request_count,
+                                        matrix::Index request_count,
                                         const CsrSharded *view,
                                         verify_stats *stats) {
     char matrix_path[4096];
     mapped_file current_file;
-    unsigned int req_i = 0;
-    unsigned int current_embryo = (unsigned int) -1;
+    matrix::Index req_i = 0;
+    matrix::Index current_embryo = (matrix::Index) -1;
     verify_part_cache cache;
     int ok = 0;
 
@@ -1926,7 +2137,7 @@ static int verify_requests_for_modality(const char *base_dir,
             long global_cell = 0;
             long part_id = 0;
             float stored_value = 0.0f;
-            const __half *slot = 0;
+            const matrix::Real *slot = 0;
             int missing = 0;
 
             skip_empty_and_comment_lines(&p, end);
@@ -1942,13 +2153,13 @@ static int verify_requests_for_modality(const char *base_dir,
             part_id = matrix::find_part(view, global_cell);
             if (!load_verify_part(part_prefix, view, part_id, &cache)) goto done;
             slot = matrix::sparse::at(&cache.part,
-                                      (unsigned int) (global_cell - view->part_offsets[part_id]),
-                                      (unsigned int) (gene - 1));
+                                      (matrix::Index) (global_cell - view->part_offsets[part_id]),
+                                      (matrix::Index) (gene - 1));
             if (slot == 0) {
                 missing = 1;
                 stored_value = 0.0f;
             } else {
-                stored_value = __half2float(*slot);
+                stored_value = matrix::real_to_float(*slot);
             }
             update_verify_stats(stats, value, missing, stored_value);
         }
@@ -2022,16 +2233,16 @@ static void accumulate_gpu_verify_accum(verify_stats *dst, const gpu_verify_accu
 }
 
 static int gpu_compare_loaded_part(const CsrMatrix *part,
-                                   unsigned int samples,
-                                   const unsigned int *host_rows,
-                                   const unsigned int *host_cols,
+                                   matrix::Index samples,
+                                   const matrix::Index *host_rows,
+                                   const matrix::Index *host_cols,
                                    const int *host_original,
                                    verify_stats *stats) {
-    unsigned int *d_row_ptr = 0;
-    unsigned int *d_col_idx = 0;
-    __half *d_val = 0;
-    unsigned int *d_rows = 0;
-    unsigned int *d_cols = 0;
+    matrix::Index *d_row_ptr = 0;
+    matrix::Index *d_col_idx = 0;
+    matrix::Real *d_val = 0;
+    matrix::Index *d_rows = 0;
+    matrix::Index *d_cols = 0;
     int *d_original = 0;
     gpu_verify_accum *d_stats = 0;
     gpu_verify_accum host_stats;
@@ -2044,18 +2255,18 @@ static int gpu_compare_loaded_part(const CsrMatrix *part,
     if (blocks < 1) blocks = 1;
     if (blocks > 4096) blocks = 4096;
 
-    if (!cuda_check(cudaMalloc((void **) &d_row_ptr, (std::size_t) (part->rows + 1) * sizeof(unsigned int)), "cudaMalloc verify d_row_ptr")) goto done;
-    if (!cuda_check(cudaMalloc((void **) &d_col_idx, (std::size_t) part->nnz * sizeof(unsigned int)), "cudaMalloc verify d_col_idx")) goto done;
-    if (!cuda_check(cudaMalloc((void **) &d_val, (std::size_t) part->nnz * sizeof(__half)), "cudaMalloc verify d_val")) goto done;
-    if (!cuda_check(cudaMalloc((void **) &d_rows, (std::size_t) samples * sizeof(unsigned int)), "cudaMalloc verify d_rows")) goto done;
-    if (!cuda_check(cudaMalloc((void **) &d_cols, (std::size_t) samples * sizeof(unsigned int)), "cudaMalloc verify d_cols")) goto done;
+    if (!cuda_check(cudaMalloc((void **) &d_row_ptr, (std::size_t) (part->rows + 1) * sizeof(matrix::Index)), "cudaMalloc verify d_row_ptr")) goto done;
+    if (!cuda_check(cudaMalloc((void **) &d_col_idx, (std::size_t) part->nnz * sizeof(matrix::Index)), "cudaMalloc verify d_col_idx")) goto done;
+    if (!cuda_check(cudaMalloc((void **) &d_val, (std::size_t) part->nnz * sizeof(matrix::Real)), "cudaMalloc verify d_val")) goto done;
+    if (!cuda_check(cudaMalloc((void **) &d_rows, (std::size_t) samples * sizeof(matrix::Index)), "cudaMalloc verify d_rows")) goto done;
+    if (!cuda_check(cudaMalloc((void **) &d_cols, (std::size_t) samples * sizeof(matrix::Index)), "cudaMalloc verify d_cols")) goto done;
     if (!cuda_check(cudaMalloc((void **) &d_original, (std::size_t) samples * sizeof(int)), "cudaMalloc verify d_original")) goto done;
     if (!cuda_check(cudaMalloc((void **) &d_stats, sizeof(gpu_verify_accum)), "cudaMalloc verify d_stats")) goto done;
-    if (!cuda_check(cudaMemcpy(d_row_ptr, part->rowPtr, (std::size_t) (part->rows + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice), "copy verify row_ptr")) goto done;
-    if (!cuda_check(cudaMemcpy(d_col_idx, part->colIdx, (std::size_t) part->nnz * sizeof(unsigned int), cudaMemcpyHostToDevice), "copy verify col_idx")) goto done;
-    if (!cuda_check(cudaMemcpy(d_val, part->val, (std::size_t) part->nnz * sizeof(__half), cudaMemcpyHostToDevice), "copy verify val")) goto done;
-    if (!cuda_check(cudaMemcpy(d_rows, host_rows, (std::size_t) samples * sizeof(unsigned int), cudaMemcpyHostToDevice), "copy verify rows")) goto done;
-    if (!cuda_check(cudaMemcpy(d_cols, host_cols, (std::size_t) samples * sizeof(unsigned int), cudaMemcpyHostToDevice), "copy verify cols")) goto done;
+    if (!cuda_check(cudaMemcpy(d_row_ptr, part->rowPtr, (std::size_t) (part->rows + 1) * sizeof(matrix::Index), cudaMemcpyHostToDevice), "copy verify row_ptr")) goto done;
+    if (!cuda_check(cudaMemcpy(d_col_idx, part->colIdx, (std::size_t) part->nnz * sizeof(matrix::Index), cudaMemcpyHostToDevice), "copy verify col_idx")) goto done;
+    if (!cuda_check(cudaMemcpy(d_val, part->val, (std::size_t) part->nnz * sizeof(matrix::Real), cudaMemcpyHostToDevice), "copy verify val")) goto done;
+    if (!cuda_check(cudaMemcpy(d_rows, host_rows, (std::size_t) samples * sizeof(matrix::Index), cudaMemcpyHostToDevice), "copy verify rows")) goto done;
+    if (!cuda_check(cudaMemcpy(d_cols, host_cols, (std::size_t) samples * sizeof(matrix::Index), cudaMemcpyHostToDevice), "copy verify cols")) goto done;
     if (!cuda_check(cudaMemcpy(d_original, host_original, (std::size_t) samples * sizeof(int), cudaMemcpyHostToDevice), "copy verify original")) goto done;
     if (!cuda_check(cudaMemcpy(d_stats, &host_stats, sizeof(host_stats), cudaMemcpyHostToDevice), "zero verify stats")) goto done;
     verify_csr_samples_kernel<<<blocks, 256>>>(samples, d_row_ptr, d_col_idx, d_val, d_rows, d_cols, d_original, d_stats);
@@ -2078,13 +2289,13 @@ done:
 static int preload_verify_requests(const char *base_dir,
                                    const embryo_entry *embryos,
                                    verify_request *requests,
-                                   unsigned int request_count) {
+                                   matrix::Index request_count) {
     static const std::size_t tail_slop = 4096;
     char matrix_path[4096];
     int current_fd = -1;
-    unsigned int current_embryo = (unsigned int) -1;
+    matrix::Index current_embryo = (matrix::Index) -1;
     int current_is_exon = -1;
-    unsigned int req_i = 0;
+    matrix::Index req_i = 0;
 
     for (req_i = 0; req_i < request_count; ++req_i) {
         const embryo_entry *embryo = embryos + requests[req_i].embryo_i;
@@ -2130,7 +2341,7 @@ static int verify_loaded_requests_modality(const char *label,
                                            const char *part_prefix,
                                            const embryo_entry *embryos,
                                            verify_request *requests,
-                                           unsigned int request_count,
+                                           matrix::Index request_count,
                                            const CsrSharded *view,
                                            int verify_threads,
                                            int gpu_count,
@@ -2140,12 +2351,12 @@ static int verify_loaded_requests_modality(const char *label,
     long *thread_part_counts = 0;
     long *thread_part_bases = 0;
     long *active_part_ids = 0;
-    unsigned int *sample_rows = 0;
-    unsigned int *sample_cols = 0;
+    matrix::Index *sample_rows = 0;
+    matrix::Index *sample_cols = 0;
     int *sample_original = 0;
     long total_samples = 0;
     long active_count = 0;
-    unsigned int req_i = 0;
+    matrix::Index req_i = 0;
     long part_i = 0;
     int ok = 0;
     int failed = 0;
@@ -2250,8 +2461,8 @@ static int verify_loaded_requests_modality(const char *label,
     }
 
     active_part_ids = (long *) std::malloc((std::size_t) active_count * sizeof(long));
-    sample_rows = (unsigned int *) std::malloc((std::size_t) total_samples * sizeof(unsigned int));
-    sample_cols = (unsigned int *) std::malloc((std::size_t) total_samples * sizeof(unsigned int));
+    sample_rows = (matrix::Index *) std::malloc((std::size_t) total_samples * sizeof(matrix::Index));
+    sample_cols = (matrix::Index *) std::malloc((std::size_t) total_samples * sizeof(matrix::Index));
     sample_original = (int *) std::malloc((std::size_t) total_samples * sizeof(int));
     if (active_part_ids == 0 || sample_rows == 0 || sample_cols == 0 || sample_original == 0) goto done;
 
@@ -2319,8 +2530,8 @@ static int verify_loaded_requests_modality(const char *label,
                 break;
             }
             write_at = local_write[part_id]++;
-            sample_rows[write_at] = (unsigned int) (global_cell - view->part_offsets[part_id]);
-            sample_cols[write_at] = (unsigned int) (gene - 1);
+            sample_rows[write_at] = (matrix::Index) (global_cell - view->part_offsets[part_id]);
+            sample_cols[write_at] = (matrix::Index) (gene - 1);
             sample_original[write_at] = value;
         }
     }
@@ -2349,7 +2560,7 @@ static int verify_loaded_requests_modality(const char *label,
         long active_i = 0;
         init_verify_stats(&local_stats);
         init_verify_part_cache(&cache);
-        if (!bind_task_gpu((unsigned int) omp_get_thread_num(), gpu_count)) __atomic_store_n(&failed, 1, __ATOMIC_RELAXED);
+        if (!bind_task_gpu((matrix::Index) omp_get_thread_num(), gpu_count)) __atomic_store_n(&failed, 1, __ATOMIC_RELAXED);
 #pragma omp for schedule(static)
         for (active_i = 0; active_i < active_count; ++active_i) {
             const long local_part_id = active_part_ids[active_i];
@@ -2359,7 +2570,7 @@ static int verify_loaded_requests_modality(const char *label,
             if (end <= begin) continue;
             if (!load_verify_part(part_prefix, view, local_part_id, &cache) ||
                 !gpu_compare_loaded_part(&cache.part,
-                                         (unsigned int) (end - begin),
+                                         (matrix::Index) (end - begin),
                                          sample_rows + begin,
                                          sample_cols + begin,
                                          sample_original + begin,
@@ -2390,7 +2601,7 @@ static int verify_loaded_requests_modality(const char *label,
             if (end <= begin) continue;
             if (!load_verify_part(part_prefix, view, local_part_id, &cache) ||
                 !gpu_compare_loaded_part(&cache.part,
-                                         (unsigned int) (end - begin),
+                                         (matrix::Index) (end - begin),
                                          sample_rows + begin,
                                          sample_cols + begin,
                                          sample_original + begin,
@@ -2429,7 +2640,7 @@ done:
 static int verify_saved_conversion(const char *base_dir,
                                    const char *out_prefix,
                                    const embryo_entry *embryos,
-                                   unsigned int embryo_count,
+                                   matrix::Index embryo_count,
                                    int num_requests,
                                    U64 chunk_bytes) {
     char exon_header_path[4096];
@@ -2440,8 +2651,8 @@ static int verify_saved_conversion(const char *base_dir,
     U64 buffered_bytes = 0;
     verify_request *exon_requests = 0;
     verify_request *intron_requests = 0;
-    unsigned int exon_request_count = 0;
-    unsigned int intron_request_count = 0;
+    matrix::Index exon_request_count = 0;
+    matrix::Index intron_request_count = 0;
     int verify_threads = 1;
     int gpu_count = 1;
     CsrSharded exon_view;
@@ -2476,7 +2687,7 @@ static int verify_saved_conversion(const char *base_dir,
     std::fprintf(stderr, "verify exon: preload begin\n");
     if (!preload_verify_requests(base_dir, embryos, exon_requests, exon_request_count)) goto done;
     buffered_bytes = 0;
-    for (unsigned int i = 0; i < exon_request_count; ++i) buffered_bytes += exon_requests[i].loaded_bytes;
+    for (matrix::Index i = 0; i < exon_request_count; ++i) buffered_bytes += exon_requests[i].loaded_bytes;
     std::fprintf(stderr,
                  "verify exon: preload complete, buffered_bytes=%llu\n",
                  (unsigned long long) buffered_bytes);
@@ -2495,7 +2706,7 @@ static int verify_saved_conversion(const char *base_dir,
     std::fprintf(stderr, "verify intron: preload begin\n");
     if (!preload_verify_requests(base_dir, embryos, intron_requests, intron_request_count)) goto done;
     buffered_bytes = 0;
-    for (unsigned int i = 0; i < intron_request_count; ++i) buffered_bytes += intron_requests[i].loaded_bytes;
+    for (matrix::Index i = 0; i < intron_request_count; ++i) buffered_bytes += intron_requests[i].loaded_bytes;
     std::fprintf(stderr,
                  "verify intron: preload complete, buffered_bytes=%llu\n",
                  (unsigned long long) buffered_bytes);
@@ -2569,25 +2780,25 @@ static int choose_worker_threads(long work_items, long long bytes_per_worker, in
 
 static int process_all_embryos(const char *base_dir,
                                const char *out_prefix,
-                               unsigned int max_rows_per_part,
-                               unsigned int target_rows_per_shard) {
+                               matrix::Index max_rows_per_part,
+                               matrix::Index target_rows_per_shard) {
     embryo_entry *embryos = 0;
     modality_task *count_tasks = 0;
     convert_task *convert_tasks = 0;
-    unsigned int embryo_count = 0;
-    unsigned int embryo_i = 0;
-    unsigned int count_task_count = 0;
-    unsigned int convert_task_count = 0;
-    unsigned long total_cells = 0;
-    unsigned long total_parts = 0;
-    unsigned int gene_count = 0;
+    matrix::Index embryo_count = 0;
+    matrix::Index embryo_i = 0;
+    matrix::Index count_task_count = 0;
+    matrix::Index convert_task_count = 0;
+    long total_cells = 0;
+    long total_parts = 0;
+    matrix::Index gene_count = 0;
     int planner_threads = 1;
     int converter_threads = 1;
     int gpu_count = 1;
     CsrSharded exon_view;
     CsrSharded intron_view;
-    unsigned long *shard_offsets = 0;
-    unsigned long shard_count = 0;
+    long *shard_offsets = 0;
+    long shard_count = 0;
     char exon_part_prefix[4096];
     char intron_part_prefix[4096];
     char exon_header_path[4096];
@@ -2659,7 +2870,7 @@ static int process_all_embryos(const char *base_dir,
 
     for (embryo_i = 0; embryo_i < embryo_count; ++embryo_i) {
         if (!build_common_part_plan(embryos[embryo_i].name,
-                                    (unsigned int) embryos[embryo_i].cells,
+                                    (matrix::Index) embryos[embryo_i].cells,
                                     max_rows_per_part,
                                     embryos[embryo_i].exon_counts,
                                     embryos[embryo_i].intron_counts,
@@ -2693,8 +2904,8 @@ static int process_all_embryos(const char *base_dir,
         gpu_csr_workspace ws;
         const int tid = omp_get_thread_num();
         const int device = gpu_count > 1 ? (tid % gpu_count) : 0;
-        matrix::sparse::csr_gpu_buffer_init(&ws);
-        if (!matrix::sparse::csr_gpu_buffer_setup(&ws, device)) __atomic_store_n(&failed, 1, __ATOMIC_RELAXED);
+        init_gpu_csr_workspace(&ws);
+        if (!setup_gpu_csr_workspace(&ws, device)) __atomic_store_n(&failed, 1, __ATOMIC_RELAXED);
 #pragma omp for schedule(dynamic, 1)
         for (embryo_i = 0; embryo_i < convert_task_count; ++embryo_i) {
             const convert_task *task = convert_tasks + embryo_i;
@@ -2725,13 +2936,13 @@ static int process_all_embryos(const char *base_dir,
                 }
             }
         }
-        matrix::sparse::csr_gpu_buffer_clear(&ws);
+        clear_gpu_csr_workspace(&ws);
     }
 #else
     {
         gpu_csr_workspace ws;
-        matrix::sparse::csr_gpu_buffer_init(&ws);
-        if (!matrix::sparse::csr_gpu_buffer_setup(&ws, 0)) goto done;
+        init_gpu_csr_workspace(&ws);
+        if (!setup_gpu_csr_workspace(&ws, 0)) goto done;
         for (embryo_i = 0; embryo_i < convert_task_count; ++embryo_i) {
             const convert_task *task = convert_tasks + embryo_i;
             const embryo_entry *embryo = embryos + task->embryo_i;
@@ -2751,7 +2962,7 @@ static int process_all_embryos(const char *base_dir,
                                              &ws,
                                              task->part_begin,
                                              task->part_end)) {
-                matrix::sparse::csr_gpu_buffer_clear(&ws);
+                clear_gpu_csr_workspace(&ws);
                 goto done;
             }
             ++converted_done;
@@ -2759,7 +2970,7 @@ static int process_all_embryos(const char *base_dir,
                 std::fprintf(stderr, "converted %d/%u conversion tasks\n", converted_done, (unsigned int) convert_task_count);
             }
         }
-        matrix::sparse::csr_gpu_buffer_clear(&ws);
+        clear_gpu_csr_workspace(&ws);
     }
 #endif
     if (failed) goto done;
@@ -2778,13 +2989,13 @@ static int process_all_embryos(const char *base_dir,
     if (!save_cell_map(cell_map_path, base_dir, embryos, embryo_count, &exon_view)) goto done;
     if (!verify_saved_conversion(base_dir, out_prefix, embryos, embryo_count, 12, 512ull << 20)) goto done;
 
-    std::printf("exon: rows=%lu cols=%lu nnz=%lu parts=%lu shards=%lu\n",
+    std::printf("exon: rows=%ld cols=%ld nnz=%ld parts=%ld shards=%ld\n",
                 exon_view.rows,
                 exon_view.cols,
                 exon_view.nnz,
                 exon_view.num_parts,
                 exon_view.num_shards);
-    std::printf("intron: rows=%lu cols=%lu nnz=%lu parts=%lu shards=%lu\n",
+    std::printf("intron: rows=%ld cols=%ld nnz=%ld parts=%ld shards=%ld\n",
                 intron_view.rows,
                 intron_view.cols,
                 intron_view.nnz,
@@ -2814,8 +3025,8 @@ static int verify_existing_saved_conversion(const char *base_dir,
                                             int num_requests,
                                             U64 chunk_bytes) {
     embryo_entry *embryos = 0;
-    unsigned int embryo_count = 0;
-    unsigned int gene_count = 0;
+    matrix::Index embryo_count = 0;
+    matrix::Index gene_count = 0;
     int ok = 0;
 
     if (!list_embryos(base_dir, &embryos, &embryo_count)) goto done;
@@ -2901,8 +3112,8 @@ int main(int argc, char **argv) {
 
     return process_all_embryos(argv[1],
                                argv[2],
-                               (unsigned int) part_rows,
-                               (unsigned int) shard_rows)
+                               (matrix::Index) part_rows,
+                               (matrix::Index) shard_rows)
         ? 0
         : 1;
 }
