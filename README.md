@@ -36,14 +36,14 @@ Short version:
 
 ## Current State
 
-The current source tree is still early and matrix-heavy:
+The current source tree is still early and ingest-heavy:
 
-- `src/matrix/`: active sparse matrix formats, sharding, GPU staging, microscaled matrix experiments
+- `src/ingest/`: active extracted ingest subtree owned by `Cellerator`
 - `src/load_embryo_mtx_shards.cu`: main ingest/conversion executable today
 - `src/load_embryo_series.cuh`: large ingest path for embryo series work
 - `src/normalize.*`: placeholder normalization slot
 
-That is enough to build conversion and matrix tests, but it is not yet arranged like a general single-cell toolkit plus modeling stack.
+`CellShard` now owns the reusable high-performance storage, packfile, and conversion substrate. `Cellerator` owns the source-format readers and ingest orchestration built on top of it.
 
 ## Target `src/` Layout
 
@@ -54,7 +54,7 @@ Underscore rule:
 - directories with a leading underscore are scaffolded but not yet migrated
 - directories without a leading underscore are active homes for code that already lives there
 
-Right now that means `src/matrix/` stays active, while the other top-level homes start as scaffold directories:
+Right now the extracted `src/ingest/` subtree is active, while the other top-level homes still act as scaffold directories:
 
 ```text
 src/
@@ -72,13 +72,10 @@ src/
 │   ├── _mtx/
 │   ├── _h5ad/
 │   └── _loom/
-├── matrix/
-│   ├── formats/
-│   ├── sparse/
-│   ├── sharded/
-│   ├── convert/
-│   ├── microscaled/
-│   └── device/
+├── ingest/
+│   ├── common/
+│   ├── mtx/
+│   └── series/
 ├── _rna/
 │   ├── _qc/
 │   ├── _normalize/
@@ -124,6 +121,8 @@ Dataset readers and conversion front-ends.
 
 This layer should understand source file formats and how to turn them into working matrix views, but not contain the actual modeling logic.
 
+Today the extracted implementation still lives under `src/ingest/`. Treat that as the active Cellerator-owned home while the cleanup toward `src/_ingest/` is still in progress.
+
 For now, this layer should only cover:
 
 - `_mtx`
@@ -134,26 +133,6 @@ Important split:
 
 - `Cellerator` ingests source formats
 - `CellShard` owns durable storage layout and container details
-
-### `src/matrix/`
-
-The reusable numerical substrate.
-
-This holds:
-
-- dense and sparse matrix layouts
-- sharded views
-- GPU upload/staging support
-- sparse conversion kernels
-- low-level microscaled matrix encodings
-
-This is the right place for generic packed low-bit matrix layouts.
-
-Examples:
-
-- CSR/COO/CSC/DIA
-- sharded matrix views
-- microscaled CSR codebooks and dequantization helpers
 
 ### `src/_rna/`
 
@@ -197,8 +176,8 @@ Both belong in `Cellerator`, but they should not be mixed together.
 
 Use these rules when deciding where a new file should go:
 
-1. If it is a reusable matrix/storage/kernel primitive, put it in `src/matrix/`.
-2. If it is source-format ingest code for `mtx`, `h5ad`, or `loom`, put it in `src/_ingest/` until migrated.
+1. If it is a reusable storage/kernel primitive, put it in `CellShard`.
+2. If it is source-format ingest code for `mtx`, `h5ad`, or `loom`, put it in `src/ingest/` today and migrate it toward `src/_ingest/` later.
 3. If it is standard single-cell RNA workflow logic, put it in `src/_rna/` until migrated.
 4. If it is specific to Cellerator’s biological modeling ideas, put it in `src/_models/` until migrated.
 5. If it is only an executable front-end, put it in `src/_apps/` until migrated.
@@ -207,16 +186,16 @@ Use these rules when deciding where a new file should go:
 
 The tree does not need a big bang rewrite. The right move is gradual migration:
 
-- keep `src/matrix/` as the active numerical base
+- keep source-format ingest under the Cellerator-owned `src/ingest/` subtree
 - move standalone executables under `src/_apps/`
-- move ingest-specific code under `src/_ingest/`
+- fold `src/ingest/` toward `src/_ingest/` over time
 - build standard toolkit pieces under `src/_rna/`
 - build the state quantizer under `src/_models/_state_quantizer/`
 
 Concrete examples:
 
 - `src/load_embryo_mtx_shards.cu` -> `src/_apps/_convert/embryo_mtx_to_cellshard.cu`
-- `src/load_embryo_series.cuh` -> `src/_ingest/_mtx/embryo_series.cuh`
+- `src/load_embryo_series.cuh` -> `src/ingest/series/series_ingest.cuh` first, then later to `src/_ingest/_mtx/`
 - `src/normalize.hh` / `src/normalize.cc` -> `src/_rna/_normalize/`
 
 ## Build
@@ -228,7 +207,7 @@ Current targets:
 
 As the tree grows, build targets should follow the new directory split:
 
-- libraries or object groups for `core`, `matrix`, `ingest`, `rna`, `models`
+- libraries or object groups for `core`, `ingest`, `rna`, `models`
 - small executables under `src/_apps/`
 
 ## Direction
