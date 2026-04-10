@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../microscaled/multiscaledMatrix.cuh"
+#include "quantized_matrix.cuh"

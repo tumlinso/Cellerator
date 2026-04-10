@@ -9,7 +9,6 @@
 #include <torch/torch.h>
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -20,16 +19,16 @@
 #include <utility>
 #include <vector>
 
-namespace cellerator::models::dense_reduce {
+namespace cellerator::models::developmental_time {
 
-struct DenseReduceBatch {
+struct TimeBatch {
     torch::Tensor features;
-    torch::Tensor developmental_time;
-    torch::Tensor time_buckets;
+    torch::Tensor day_labels;
+    torch::Tensor day_buckets;
     torch::Tensor cell_indices;
 };
 
-class BalancedDenseReduceSampler {
+class BalancedTimeSampler {
 public:
     using matrix_type = cellshard::sharded<cellshard::sparse::compressed>;
     using part_type = cellshard::sparse::compressed;
@@ -38,28 +37,25 @@ public:
     struct Options {
         bool with_replacement = true;
         bool drop_fetched_parts = true;
-        std::size_t max_buckets_per_batch = 0;
-        std::size_t target_bucket_count = 16;
+        std::size_t max_days_per_batch = 0;
         std::uint64_t seed = std::random_device{}();
     };
 
-    BalancedDenseReduceSampler(
-        matrix_type *matrix,
-        std::vector<float> developmental_time,
-        const storage_type *storage = 0)
-        : BalancedDenseReduceSampler(matrix, std::move(developmental_time), storage, Options{}) {}
+    BalancedTimeSampler(matrix_type *matrix,
+                        std::vector<float> day_labels,
+                        const storage_type *storage = 0)
+        : BalancedTimeSampler(matrix, std::move(day_labels), storage, Options{}) {}
 
-    BalancedDenseReduceSampler(
-        matrix_type *matrix,
-        std::vector<float> developmental_time,
-        const storage_type *storage,
-        Options options)
+    BalancedTimeSampler(matrix_type *matrix,
+                        std::vector<float> day_labels,
+                        const storage_type *storage,
+                        Options options)
         : matrix_(matrix),
           storage_(storage),
-          developmental_time_(std::move(developmental_time)),
+          day_labels_(std::move(day_labels)),
           options_(options) {
         validate_constructor_state_();
-        build_time_buckets_();
+        build_day_buckets_();
     }
 
     std::size_t num_cells() const {
@@ -70,42 +66,42 @@ public:
         return matrix_ != 0 ? static_cast<std::size_t>(matrix_->cols) : 0u;
     }
 
-    std::size_t num_buckets() const {
-        return rows_by_bucket_.size();
+    std::size_t num_days() const {
+        return day_values_.size();
     }
 
-    DenseReduceBatch sample_sparse_csr(std::size_t cells_per_bucket) {
+    const std::vector<float> &day_values() const {
+        return day_values_;
+    }
+
+    TimeBatch sample_sparse_csr(std::size_t cells_per_day) {
         std::lock_guard<std::mutex> lock(mutex_);
         std::vector<unsigned long> fetched_parts;
         std::vector<sampled_row_span> sampled_rows;
         std::int64_t total_nnz = 0;
 
-        if (cells_per_bucket == 0) {
-            throw std::invalid_argument("sample_sparse_csr requires cells_per_bucket > 0");
-        }
+        if (cells_per_day == 0) throw std::invalid_argument("sample_sparse_csr requires cells_per_day > 0");
 
         try {
-            const std::vector<std::int64_t> selected_buckets = select_time_buckets_();
-            sampled_rows.reserve(selected_buckets.size() * cells_per_bucket);
+            const std::vector<std::int64_t> selected_days = select_day_buckets_();
+            sampled_rows.reserve(selected_days.size() * cells_per_day);
 
-            for (const std::int64_t bucket_id : selected_buckets) {
-                const std::vector<unsigned long> local_positions =
-                    row_fetchers_[static_cast<std::size_t>(bucket_id)].next(cells_per_bucket);
+            for (const std::int64_t bucket_id : selected_days) {
+                const std::vector<unsigned long> local_positions = row_fetchers_[static_cast<std::size_t>(bucket_id)].next(cells_per_day);
                 const std::vector<unsigned long> &bucket_rows = rows_by_bucket_[static_cast<std::size_t>(bucket_id)];
                 for (const unsigned long local_pos : local_positions) {
                     const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
                     const unsigned long part_id = cellshard::find_part(matrix_, global_row);
                     part_type *part = require_part_(part_id, &fetched_parts);
                     const unsigned long part_row_base = matrix_->part_offsets[part_id];
-                    const cellshard::types::dim_t local_row =
-                        static_cast<cellshard::types::dim_t>(global_row - part_row_base);
+                    const cellshard::types::dim_t local_row = static_cast<cellshard::types::dim_t>(global_row - part_row_base);
                     const cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
                     const cellshard::types::ptr_t row_end = part->majorPtr[local_row + 1];
 
                     sampled_rows.push_back(sampled_row_span{
                         global_row,
                         bucket_id,
-                        developmental_time_[static_cast<std::size_t>(global_row)],
+                        day_values_[static_cast<std::size_t>(bucket_id)],
                         part,
                         row_begin,
                         row_end
@@ -118,7 +114,7 @@ public:
             throw;
         }
 
-        DenseReduceBatch batch = build_sparse_batch_(sampled_rows, total_nnz);
+        TimeBatch batch = build_sparse_batch_(sampled_rows, total_nnz);
         drop_fetched_parts_(fetched_parts);
         return batch;
     }
@@ -127,7 +123,7 @@ private:
     struct sampled_row_span {
         unsigned long global_row;
         std::int64_t bucket_id;
-        float developmental_time;
+        float day_label;
         part_type *part;
         cellshard::types::ptr_t row_begin;
         cellshard::types::ptr_t row_end;
@@ -144,9 +140,7 @@ private:
         torch::Tensor tensor = torch::empty(
             { static_cast<std::int64_t>(values.size()) },
             torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
-        if (!values.empty()) {
-            std::memcpy(tensor.data_ptr<std::int64_t>(), values.data(), values.size() * sizeof(std::int64_t));
-        }
+        if (!values.empty()) std::memcpy(tensor.data_ptr<std::int64_t>(), values.data(), values.size() * sizeof(std::int64_t));
         return tensor;
     }
 
@@ -159,31 +153,29 @@ private:
     }
 
     void validate_constructor_state_() const {
-        if (matrix_ == 0) throw std::invalid_argument("BalancedDenseReduceSampler requires a non-null CellShard matrix");
-        if (matrix_->rows == 0) throw std::invalid_argument("BalancedDenseReduceSampler requires a non-empty CellShard matrix");
+        if (matrix_ == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-null CellShard matrix");
+        if (matrix_->rows == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-empty CellShard matrix");
         if (matrix_->num_parts == 0 || matrix_->part_offsets == 0 || matrix_->part_rows == 0 || matrix_->part_aux == 0) {
-            throw std::invalid_argument("BalancedDenseReduceSampler requires sharded CSR metadata to be initialized");
+            throw std::invalid_argument("BalancedTimeSampler requires sharded CSR metadata to be initialized");
         }
-        if (developmental_time_.size() != static_cast<std::size_t>(matrix_->rows)) {
-            throw std::invalid_argument("developmental_time length must match the number of cells in the CellShard matrix");
-        }
-        if (options_.target_bucket_count == 0) {
-            throw std::invalid_argument("BalancedDenseReduceSampler target_bucket_count must be > 0");
+        if (day_labels_.size() != static_cast<std::size_t>(matrix_->rows)) {
+            throw std::invalid_argument("day label vector length must match the number of cells in the CellShard matrix");
         }
         checked_i64_(matrix_->rows, "rows");
         checked_i64_(matrix_->cols, "cols");
         for (unsigned long part_id = 0; part_id < matrix_->num_parts; ++part_id) {
             if (matrix_->part_aux[part_id] != cellshard::sparse::compressed_by_row) {
-                throw std::invalid_argument("BalancedDenseReduceSampler requires CSR parts compressed by row");
+                throw std::invalid_argument("BalancedTimeSampler requires CSR parts compressed by row");
             }
         }
     }
 
-    void build_time_buckets_() {
+    void build_day_buckets_() {
         std::vector<std::pair<float, unsigned long>> labeled_rows;
-        labeled_rows.reserve(developmental_time_.size());
-        for (unsigned long row = 0; row < static_cast<unsigned long>(developmental_time_.size()); ++row) {
-            labeled_rows.emplace_back(developmental_time_[static_cast<std::size_t>(row)], row);
+
+        labeled_rows.reserve(day_labels_.size());
+        for (unsigned long row = 0; row < static_cast<unsigned long>(day_labels_.size()); ++row) {
+            labeled_rows.emplace_back(day_labels_[static_cast<std::size_t>(row)], row);
         }
         std::sort(labeled_rows.begin(), labeled_rows.end(), [](const auto &lhs, const auto &rhs) {
             if (lhs.first < rhs.first) return true;
@@ -191,23 +183,19 @@ private:
             return lhs.second < rhs.second;
         });
 
-        const std::size_t row_count = labeled_rows.size();
-        const std::size_t bucket_count = std::max<std::size_t>(
-            1u,
-            std::min<std::size_t>(options_.target_bucket_count, row_count));
+        rows_by_bucket_.clear();
+        day_values_.clear();
+        bucket_by_row_.assign(day_labels_.size(), 0);
 
-        rows_by_bucket_.assign(bucket_count, {});
-        bucket_by_row_.assign(row_count, 0);
-        for (std::size_t idx = 0; idx < row_count; ++idx) {
-            const std::size_t bucket = std::min<std::size_t>((idx * bucket_count) / row_count, bucket_count - 1u);
-            const unsigned long row = labeled_rows[idx].second;
-            rows_by_bucket_[bucket].push_back(row);
-            bucket_by_row_[static_cast<std::size_t>(row)] = static_cast<std::int64_t>(bucket);
+        for (const auto &entry : labeled_rows) {
+            if (day_values_.empty() || entry.first != day_values_.back()) {
+                day_values_.push_back(entry.first);
+                rows_by_bucket_.emplace_back();
+            }
+            const std::int64_t bucket_id = static_cast<std::int64_t>(day_values_.size() - 1u);
+            rows_by_bucket_.back().push_back(entry.second);
+            bucket_by_row_[static_cast<std::size_t>(entry.second)] = bucket_id;
         }
-
-        rows_by_bucket_.erase(
-            std::remove_if(rows_by_bucket_.begin(), rows_by_bucket_.end(), [](const auto &rows) { return rows.empty(); }),
-            rows_by_bucket_.end());
 
         row_fetchers_.clear();
         row_fetchers_.reserve(rows_by_bucket_.size());
@@ -215,38 +203,37 @@ private:
             row_fetchers_.emplace_back(
                 static_cast<unsigned long>(rows_by_bucket_[bucket].size()),
                 RngFetchOptions{ options_.with_replacement, options_.seed + static_cast<std::uint64_t>(bucket) + 1u });
-            for (const unsigned long row : rows_by_bucket_[bucket]) {
-                bucket_by_row_[static_cast<std::size_t>(row)] = static_cast<std::int64_t>(bucket);
-            }
         }
 
-        bucket_fetch_.reset();
-        if (options_.max_buckets_per_batch != 0 && options_.max_buckets_per_batch < rows_by_bucket_.size()) {
-            bucket_fetch_ = std::make_unique<RngFetch>(
+        day_bucket_fetch_.reset();
+        if (options_.max_days_per_batch != 0 && options_.max_days_per_batch < rows_by_bucket_.size()) {
+            day_bucket_fetch_ = std::make_unique<RngFetch>(
                 static_cast<unsigned long>(rows_by_bucket_.size()),
                 RngFetchOptions{ false, options_.seed ^ 0x9e3779b97f4a7c15ULL });
         }
     }
 
-    std::vector<std::int64_t> select_time_buckets_() {
+    std::vector<std::int64_t> select_day_buckets_() {
         std::vector<std::int64_t> buckets;
-        if (!bucket_fetch_) {
-            buckets.reserve(rows_by_bucket_.size());
-            for (std::size_t i = 0; i < rows_by_bucket_.size(); ++i) buckets.push_back(static_cast<std::int64_t>(i));
+
+        if (!day_bucket_fetch_) {
+            buckets.reserve(day_values_.size());
+            for (std::size_t i = 0; i < day_values_.size(); ++i) buckets.push_back(static_cast<std::int64_t>(i));
             return buckets;
         }
 
-        const std::vector<unsigned long> sampled = bucket_fetch_->next(options_.max_buckets_per_batch);
-        buckets.reserve(sampled.size());
-        for (const unsigned long idx : sampled) buckets.push_back(static_cast<std::int64_t>(idx));
+        {
+            const std::vector<unsigned long> sampled = day_bucket_fetch_->next(options_.max_days_per_batch);
+            buckets.reserve(sampled.size());
+            for (const unsigned long idx : sampled) buckets.push_back(static_cast<std::int64_t>(idx));
+        }
         std::sort(buckets.begin(), buckets.end());
         return buckets;
     }
 
     part_type *require_part_(unsigned long part_id, std::vector<unsigned long> *fetched_parts) {
-        if (part_id >= matrix_->num_parts) {
-            throw std::out_of_range("sampled row resolved to an invalid CellShard part");
-        }
+        if (part_id >= matrix_->num_parts) throw std::out_of_range("sampled row resolved to an invalid CellShard part");
+
         if (!cellshard::part_loaded(matrix_, part_id)) {
             if (storage_ == 0) {
                 throw std::runtime_error("sampled row lives in an unloaded CellShard part, but no shard_storage was provided");
@@ -260,7 +247,7 @@ private:
         part_type *part = matrix_->parts[part_id];
         if (part == 0) throw std::runtime_error("CellShard part is still null after fetch");
         if (part->axis != cellshard::sparse::compressed_by_row) {
-            throw std::runtime_error("BalancedDenseReduceSampler only supports row-compressed CSR parts");
+            throw std::runtime_error("BalancedTimeSampler only supports row-compressed CSR parts");
         }
         if (matrix_->cols != 0 && part->cols != matrix_->cols) {
             throw std::runtime_error("CellShard part column count does not match sharded metadata");
@@ -275,15 +262,15 @@ private:
         }
     }
 
-    DenseReduceBatch build_sparse_batch_(const std::vector<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
+    TimeBatch build_sparse_batch_(const std::vector<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
         static_assert(sizeof(at::Half) == sizeof(::real::storage_t), "ATen half type must match CellShard half storage");
 
         const std::int64_t batch_rows = static_cast<std::int64_t>(sampled_rows.size());
         const std::int64_t feature_cols = checked_i64_(matrix_->cols, "cols");
         std::vector<std::int64_t> crow_indices;
-        std::vector<std::int64_t> time_buckets;
+        std::vector<std::int64_t> day_buckets;
         std::vector<std::int64_t> cell_indices;
-        std::vector<float> batch_times;
+        std::vector<float> batch_day_labels;
         torch::Tensor col_tensor = torch::empty(
             { total_nnz },
             torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
@@ -296,15 +283,14 @@ private:
 
         crow_indices.reserve(sampled_rows.size() + 1u);
         crow_indices.push_back(0);
-        time_buckets.reserve(sampled_rows.size());
+        day_buckets.reserve(sampled_rows.size());
         cell_indices.reserve(sampled_rows.size());
-        batch_times.reserve(sampled_rows.size());
+        batch_day_labels.reserve(sampled_rows.size());
 
         for (const sampled_row_span &row : sampled_rows) {
             const std::int64_t row_nnz = static_cast<std::int64_t>(row.row_end - row.row_begin);
             for (std::int64_t i = 0; i < row_nnz; ++i) {
-                col_ptr[nnz_cursor + i] =
-                    static_cast<std::int64_t>(row.part->minorIdx[row.row_begin + static_cast<cellshard::types::ptr_t>(i)]);
+                col_ptr[nnz_cursor + i] = static_cast<std::int64_t>(row.part->minorIdx[row.row_begin + static_cast<cellshard::types::ptr_t>(i)]);
             }
             if (row_nnz != 0) {
                 std::memcpy(
@@ -314,9 +300,9 @@ private:
             }
             nnz_cursor += row_nnz;
             crow_indices.push_back(nnz_cursor);
-            time_buckets.push_back(row.bucket_id);
+            day_buckets.push_back(row.bucket_id);
             cell_indices.push_back(static_cast<std::int64_t>(row.global_row));
-            batch_times.push_back(row.developmental_time);
+            batch_day_labels.push_back(row.day_label);
         }
 
         torch::Tensor crow_tensor = copy_i64_tensor_(crow_indices);
@@ -327,23 +313,27 @@ private:
             { batch_rows, feature_cols },
             torch::TensorOptions().dtype(torch::kFloat16).device(torch::kCPU));
 
-        return DenseReduceBatch{
+        return TimeBatch{
             std::move(features),
-            copy_f32_tensor_(batch_times),
-            copy_i64_tensor_(time_buckets),
+            copy_f32_tensor_(batch_day_labels),
+            copy_i64_tensor_(day_buckets),
             copy_i64_tensor_(cell_indices)
         };
     }
 
     matrix_type *matrix_;
     const storage_type *storage_;
-    std::vector<float> developmental_time_;
+    std::vector<float> day_labels_;
     Options options_;
+    std::vector<float> day_values_;
     std::vector<std::vector<unsigned long>> rows_by_bucket_;
     std::vector<std::int64_t> bucket_by_row_;
     std::vector<RngFetch> row_fetchers_;
-    std::unique_ptr<RngFetch> bucket_fetch_;
+    std::unique_ptr<RngFetch> day_bucket_fetch_;
     std::mutex mutex_;
 };
 
-} // namespace cellerator::models::dense_reduce
+using RandomTimeBatch = TimeBatch;
+using RandomTimeSampler = BalancedTimeSampler;
+
+} // namespace cellerator::models::developmental_time
