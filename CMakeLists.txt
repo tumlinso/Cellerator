@@ -192,6 +192,22 @@ target_link_libraries(quantizedMatrixBench PRIVATE CUDA::cudart)
 set_target_properties(quantizedMatrixBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixBench)
 
+add_executable(trajectoryCompileTest
+    tests/trajectory_compile_test.cu
+)
+target_include_directories(trajectoryCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(trajectoryCompileTest PRIVATE CUDA::cudart)
+set_target_properties(trajectoryCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(trajectoryCompileTest)
+
+add_executable(trajectoryRuntimeTest
+    tests/trajectory_runtime_test.cu
+)
+target_include_directories(trajectoryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
+set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(trajectoryRuntimeTest)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_executable(developmentalTimeCompileTest
         tests/developmental_time_compile_test.cc
