@@ -86,8 +86,6 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
         if (!cscu::cuda_check(cudaGetLastError(), "fill_ones_kernel rows")) return 0;
     }
 
-    if (!run_spmv_transpose(ws, src, CUDA_R_16F, src->val, ws->d_ones_rows, ws->d_gene_sum)) return 0;
-
     if (!ensure_reduce_tmp(ws, src->rows)) return 0;
     if (cub::DeviceReduce::Sum(ws->d_reduce_tmp,
                                ws->d_reduce_tmp_bytes,
@@ -104,6 +102,10 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
     blocks_nnz = (src->nnz + threads - 1u) / threads;
     if (blocks_nnz < 1u) blocks_nnz = 1u;
     if (blocks_nnz > 4096u) blocks_nnz = 4096u;
+
+    kernels::convert_values_kernel<<<blocks_nnz, threads, 0, ws->stream>>>(src->nnz, src->val, ws->d_tmp_nnz);
+    if (!cscu::cuda_check(cudaGetLastError(), "convert_values_kernel")) return 0;
+    if (!run_spmv_transpose(ws, src, CUDA_R_32F, ws->d_tmp_nnz, ws->d_ones_rows, ws->d_gene_sum)) return 0;
 
     kernels::square_values_kernel<<<blocks_nnz, threads, 0, ws->stream>>>(src->nnz, src->val, ws->d_tmp_nnz);
     if (!cscu::cuda_check(cudaGetLastError(), "square_values_kernel")) return 0;

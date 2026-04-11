@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../compute/preprocess/types.cuh"
 #include "../ingest/series/series_manifest.cuh"
 
 #include <cstddef>
@@ -178,9 +177,13 @@ struct series_summary {
 };
 
 struct preprocess_config {
-    compute::preprocess::cell_filter_params cell_filter{500.0f, 200u, 0.2f};
-    compute::preprocess::gene_filter_params gene_filter{1.0f, 5.0f, 0.01f};
     float target_sum = 10000.0f;
+    float min_counts = 500.0f;
+    unsigned int min_genes = 200u;
+    float max_mito_fraction = 0.2f;
+    float min_gene_sum = 1.0f;
+    float min_detected_cells = 5.0f;
+    float min_variance = 0.01f;
     int device = 0;
     bool drop_host_parts = true;
     bool mark_mito_from_feature_names = true;

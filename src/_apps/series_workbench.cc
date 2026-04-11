@@ -1,5 +1,7 @@
 #include "series_workbench.hh"
 
+#include <cuda_runtime.h>
+
 #include "../ingest/common/barcode_table.cuh"
 #include "../ingest/common/feature_table.cuh"
 #include "../ingest/common/metadata_table.cuh"
@@ -41,9 +43,11 @@ inline bool has_errors(const std::vector<issue> &issues) {
 }
 
 inline bool file_exists(const std::string &path) {
-    return !path.empty() && std::FILE *f = std::fopen(path.c_str(), "rb")
-        ? (std::fclose(f), true)
-        : false;
+    if (path.empty()) return false;
+    std::FILE *f = std::fopen(path.c_str(), "rb");
+    if (f == nullptr) return false;
+    std::fclose(f);
+    return true;
 }
 
 inline unsigned int infer_format(const source_entry &source) {
@@ -252,6 +256,13 @@ inline unsigned long find_part_index_for_row(const std::vector<std::uint64_t> &p
     return (unsigned long) std::distance(part_row_offsets.begin(), it - 1);
 }
 
+inline unsigned long find_part_end_for_row(const std::vector<std::uint64_t> &part_row_offsets,
+                                           std::uint64_t row_end) {
+    const unsigned long begin = find_part_index_for_row(part_row_offsets, row_end);
+    if (begin + 1u < part_row_offsets.size() && part_row_offsets[begin] < row_end) return begin + 1u;
+    return begin;
+}
+
 } // namespace
 
 std::string format_name(unsigned int format) {
@@ -295,12 +306,12 @@ manifest_inspection inspect_manifest_tsv(const std::string &manifest_path, std::
     inspection.sources.reserve(manifest.count);
     for (unsigned int i = 0; i < manifest.count; ++i) {
         source_entry source;
-        source.dataset_id = cseries::dataset_id_at(&manifest, i) != nullptr ? cseries::dataset_id_at(&manifest, i) : "";
-        source.matrix_path = cseries::matrix_path_at(&manifest, i) != nullptr ? cseries::matrix_path_at(&manifest, i) : "";
-        source.feature_path = cseries::feature_path_at(&manifest, i) != nullptr ? cseries::feature_path_at(&manifest, i) : "";
-        source.barcode_path = cseries::barcode_path_at(&manifest, i) != nullptr ? cseries::barcode_path_at(&manifest, i) : "";
-        source.metadata_path = cseries::metadata_path_at(&manifest, i) != nullptr ? cseries::metadata_path_at(&manifest, i) : "";
-        source.format = cseries::format_at(&manifest, i);
+        source.dataset_id = ccommon::get(&manifest.dataset_ids, i) != nullptr ? ccommon::get(&manifest.dataset_ids, i) : "";
+        source.matrix_path = ccommon::get(&manifest.matrix_paths, i) != nullptr ? ccommon::get(&manifest.matrix_paths, i) : "";
+        source.feature_path = ccommon::get(&manifest.feature_paths, i) != nullptr ? ccommon::get(&manifest.feature_paths, i) : "";
+        source.barcode_path = ccommon::get(&manifest.barcode_paths, i) != nullptr ? ccommon::get(&manifest.barcode_paths, i) : "";
+        source.metadata_path = ccommon::get(&manifest.metadata_paths, i) != nullptr ? ccommon::get(&manifest.metadata_paths, i) : "";
+        source.format = manifest.formats != nullptr ? manifest.formats[i] : cseries::source_unknown;
         source.rows = manifest.rows != nullptr ? manifest.rows[i] : 0ul;
         source.cols = manifest.cols != nullptr ? manifest.cols[i] : 0ul;
         source.nnz = manifest.nnz != nullptr ? manifest.nnz[i] : 0ul;
@@ -588,7 +599,7 @@ series_summary summarize_series_csh5(const std::string &path) {
         const std::uint64_t row_begin = shard_offsets[i];
         const std::uint64_t row_end = shard_offsets[i + 1u];
         const unsigned long part_begin = find_part_index_for_row(part_row_offsets, row_begin);
-        const unsigned long part_end = find_part_index_for_row(part_row_offsets, row_end);
+        const unsigned long part_end = find_part_end_for_row(part_row_offsets, row_end);
         summary.shards.push_back(series_shard_summary{
             (std::uint64_t) i,
             part_begin,

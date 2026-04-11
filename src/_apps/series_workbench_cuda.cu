@@ -163,6 +163,16 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
     std::vector<unsigned char> host_keep_genes;
     std::vector<float> host_gene_sum;
     float kept_cells = 0.0f;
+    const cpre::cell_filter_params cell_filter = {
+        config.min_counts,
+        config.min_genes,
+        config.max_mito_fraction
+    };
+    const cpre::gene_filter_params gene_filter = {
+        config.min_gene_sum,
+        config.min_detected_cells,
+        config.min_variance
+    };
 
     cs::init(&matrix);
     cs::init(&storage);
@@ -226,7 +236,7 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
             push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to bind uploaded device part view");
             goto done;
         }
-        if (!cpre::preprocess_part_inplace(&part_view, &workspace, config.cell_filter, config.target_sum, nullptr)) {
+        if (!cpre::preprocess_part_inplace(&part_view, &workspace, cell_filter, config.target_sum, nullptr)) {
             push_issue(&summary.issues, issue_severity::error, "preprocess", "GPU preprocess kernel pass failed");
             goto done;
         }
@@ -236,7 +246,7 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         if (loaded_here && config.drop_host_parts) cs::drop_part(&matrix, part_id);
     }
 
-    if (!cpre::build_gene_filter_mask(&workspace, (unsigned int) matrix.cols, config.gene_filter, nullptr)
+    if (!cpre::build_gene_filter_mask(&workspace, (unsigned int) matrix.cols, gene_filter, nullptr)
         || !check_cuda(cudaStreamSynchronize(workspace.stream), &summary.issues, "preprocess", "cudaStreamSynchronize final")) {
         push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to finalize gene keep mask");
         goto done;

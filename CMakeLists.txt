@@ -42,9 +42,11 @@ project(Cellerator LANGUAGES CXX CUDA)
 
 find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
+find_package(PkgConfig REQUIRED)
 
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
+option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect workbench" ON)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS AND NOT Torch_DIR AND DEFINED ENV{LIBTORCH_PATH})
     list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
@@ -59,6 +61,10 @@ find_library(NCCL_LIBRARY
     HINTS
         /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nccl/lib
 )
+
+if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
+    pkg_check_modules(NCURSESW REQUIRED ncursesw)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
@@ -183,6 +189,44 @@ target_include_directories(seriesIngestCompileTest PRIVATE ${CMAKE_CURRENT_SOURC
 target_include_directories(seriesIngestCompileTest PRIVATE ${HDF5_INCLUDE_DIRS})
 set_target_properties(seriesIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(seriesIngestCompileTest)
+
+add_library(cellerator_workbench
+    src/_apps/series_workbench.cc
+    src/_apps/series_workbench_cuda.cu
+    extern/CellShard/src/disk/matrix.cu
+    extern/CellShard/src/sharded/disk.cu
+    extern/CellShard/src/sharded/shard_paths.cu
+    extern/CellShard/src/sharded/series_h5.cc
+)
+target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(cellerator_workbench PRIVATE CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+
+add_executable(seriesWorkbenchRuntimeTest
+    tests/series_workbench_runtime_test.cc
+)
+set_source_files_properties(
+    tests/series_workbench_runtime_test.cc
+    PROPERTIES LANGUAGE CUDA
+)
+target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(seriesWorkbenchRuntimeTest PRIVATE cellerator_workbench CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+set_target_properties(seriesWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+
+if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
+    add_executable(celleratorWorkbench
+        src/_apps/series_workbench_main.cc
+    )
+    target_include_directories(celleratorWorkbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(celleratorWorkbench PRIVATE ${HDF5_INCLUDE_DIRS})
+    target_include_directories(celleratorWorkbench PRIVATE ${NCURSESW_INCLUDE_DIRS})
+    target_compile_options(celleratorWorkbench PRIVATE ${NCURSESW_CFLAGS_OTHER})
+    target_link_directories(celleratorWorkbench PRIVATE ${NCURSESW_LIBRARY_DIRS})
+    target_link_libraries(celleratorWorkbench PRIVATE cellerator_workbench ${NCURSESW_LIBRARIES})
+    set_target_properties(celleratorWorkbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+endif()
 
 add_executable(quantizedMatrixBench
     bench/quantized_matrix_bench.cu
