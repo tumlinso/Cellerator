@@ -356,12 +356,16 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
     }
 
     const auto lookup = detail::build_cell_lookup_(reference_ids);
+    std::vector<std::int64_t> query_ids_vec(static_cast<std::size_t>(query_ids.size(0)), -1);
+    if (!query_ids_vec.empty()) {
+        std::memcpy(query_ids_vec.data(), query_ids.data_ptr<std::int64_t>(), query_ids_vec.size() * sizeof(std::int64_t));
+    }
     const fn::ForwardNeighborSearchResult neighbors =
-        supervision.neighbor_index->search_future_neighbors_by_cell_index(query_ids, supervision.search_config);
+        supervision.neighbor_index->search_future_neighbors_by_cell_index(query_ids_vec, supervision.search_config);
 
     const std::int64_t rows = query_ids.size(0);
     const std::int64_t genes = reference_dense.size(1);
-    const std::int64_t top_k = neighbors.neighbor_cell_indices.size(1);
+    const std::int64_t top_k = neighbors.top_k;
     torch::Tensor target = torch::zeros(
         { rows, genes },
         torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
@@ -372,8 +376,6 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
         { rows, top_k },
         torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
 
-    const std::int64_t *neighbor_id_ptr = neighbors.neighbor_cell_indices.data_ptr<std::int64_t>();
-    const float *neighbor_similarity_ptr = neighbors.neighbor_similarity.data_ptr<float>();
     float *target_ptr = target.data_ptr<float>();
     bool *valid_ptr = valid_rows.data_ptr<bool>();
     float *weight_ptr = weights.data_ptr<float>();
@@ -389,7 +391,7 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
 
         for (std::int64_t slot = 0; slot < top_k; ++slot) {
             const std::size_t off = static_cast<std::size_t>(row * top_k + slot);
-            const std::int64_t neighbor_id = neighbor_id_ptr[off];
+            const std::int64_t neighbor_id = neighbors.neighbor_cell_indices[off];
             if (neighbor_id < 0) continue;
 
             const auto it = lookup.find(neighbor_id);
@@ -397,7 +399,7 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
                 throw std::invalid_argument("forward neighbor cell index is missing from the quantizer reference table");
             }
 
-            const float similarity = neighbor_similarity_ptr[off];
+            const float similarity = neighbors.neighbor_similarity[off];
             if (!std::isfinite(similarity)) continue;
             selected_neighbors.emplace_back(slot, it->second);
             raw_weights.push_back(std::max(similarity, 0.0f));
@@ -430,7 +432,18 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
     return ForwardNeighborTarget{
         std::move(target),
         std::move(valid_rows),
-        neighbors.neighbor_cell_indices.clone(),
+        [&neighbors]() {
+            torch::Tensor tensor = torch::empty(
+                { neighbors.query_count, neighbors.top_k },
+                torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
+            if (!neighbors.neighbor_cell_indices.empty()) {
+                std::memcpy(
+                    tensor.data_ptr<std::int64_t>(),
+                    neighbors.neighbor_cell_indices.data(),
+                    neighbors.neighbor_cell_indices.size() * sizeof(std::int64_t));
+            }
+            return tensor;
+        }(),
         std::move(weights)
     };
 }

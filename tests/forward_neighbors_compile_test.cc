@@ -1,26 +1,23 @@
 #include "../src/models/forward_neighbors/forwardNeighbors.hh"
 
-#include <torch/torch.h>
-
 #include <cmath>
 
 int main() {
     using namespace cellerator::models::forward_neighbors;
 
     ForwardNeighborRecordBatch records{
-        torch::tensor({10, 11, 12, 13, 14, 15}, torch::TensorOptions().dtype(torch::kInt64)),
-        torch::tensor({0.10f, 0.16f, 0.30f, 0.12f, 0.18f, 0.40f}, torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor(
-            {
-                {1.00f, 0.00f},
-                {0.98f, 0.02f},
-                {0.10f, 0.90f},
-                {0.85f, 0.15f},
-                {0.70f, 0.30f},
-                {0.00f, 1.00f},
-            },
-            torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({0, 0, 0, 1, 1, 1}, torch::TensorOptions().dtype(torch::kInt64))
+        {10, 11, 12, 13, 14, 15},
+        {0.10f, 0.16f, 0.30f, 0.12f, 0.18f, 0.40f},
+        {
+            1.00f, 0.00f,
+            0.98f, 0.02f,
+            0.10f, 0.90f,
+            0.85f, 0.15f,
+            0.70f, 0.30f,
+            0.00f, 1.00f,
+        },
+        {0, 0, 0, 1, 1, 1},
+        2
     };
 
     ForwardNeighborBuildConfig build_config;
@@ -40,7 +37,7 @@ int main() {
     exact_config.time_window.max_delta = 0.10f;
 
     ForwardNeighborSearchResult exact_by_id = index.search_future_neighbors_by_cell_index(
-        torch::tensor({10, 12}, torch::TensorOptions().dtype(torch::kInt64)),
+        {10, 12},
         exact_config);
 
     ForwardNeighborSearchConfig ann_config = exact_config;
@@ -49,18 +46,19 @@ int main() {
     ann_config.ann_probe_list_count = 2;
 
     ForwardNeighborQueryBatch explicit_query{
-        torch::tensor({10}, torch::TensorOptions().dtype(torch::kInt64)),
-        torch::tensor({0.10f}, torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({ {1.0f, 0.0f} }, torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({0}, torch::TensorOptions().dtype(torch::kInt64))
+        {10},
+        {0.10f},
+        {1.0f, 0.0f},
+        {0},
+        2
     };
     ForwardNeighborSearchResult ann_result = index.search_future_neighbors(explicit_query, ann_config);
 
-    const auto exact_first_neighbor = exact_by_id.neighbor_cell_indices.index({0, 0}).item<std::int64_t>();
-    const auto exact_no_neighbor = exact_by_id.neighbor_cell_indices.index({1, 0}).item<std::int64_t>();
-    const auto ann_first_neighbor = ann_result.neighbor_cell_indices.index({0, 0}).item<std::int64_t>();
-    const float ann_sqdist = ann_result.neighbor_sqdist.index({0, 0}).item<float>();
-    const auto ann_embryo = ann_result.neighbor_embryo_ids.index({0, 0}).item<std::int64_t>();
+    const auto exact_first_neighbor = exact_by_id.neighbor_cell_indices[detail::result_offset_(0, 0, exact_by_id.top_k)];
+    const auto exact_no_neighbor = exact_by_id.neighbor_cell_indices[detail::result_offset_(1, 0, exact_by_id.top_k)];
+    const auto ann_first_neighbor = ann_result.neighbor_cell_indices[detail::result_offset_(0, 0, ann_result.top_k)];
+    const float ann_sqdist = ann_result.neighbor_sqdist[detail::result_offset_(0, 0, ann_result.top_k)];
+    const auto ann_embryo = ann_result.neighbor_embryo_ids[detail::result_offset_(0, 0, ann_result.top_k)];
 
     const bool ok = index.shard_count() == 2
         && exact_first_neighbor == 11

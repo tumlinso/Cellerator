@@ -47,9 +47,18 @@ find_package(PkgConfig REQUIRED)
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect workbench" ON)
+set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
+    "Preferred root for the source-built libtorch installation")
 
-if(CELLERATOR_ENABLE_TORCH_MODELS AND NOT Torch_DIR AND DEFINED ENV{LIBTORCH_PATH})
-    list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
+if(CELLERATOR_ENABLE_TORCH_MODELS AND NOT Torch_DIR)
+    if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
+        list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
+    elseif(EXISTS "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch/TorchConfig.cmake")
+        set(Torch_DIR
+            "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch"
+            CACHE PATH "Torch CMake package directory" FORCE)
+        message(STATUS "Defaulting Torch_DIR to source-built libtorch at ${Torch_DIR}")
+    endif()
 endif()
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
@@ -252,6 +261,22 @@ target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
 set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryRuntimeTest)
 
+add_library(cellerator_forward_neighbors STATIC
+    src/models/forward_neighbors/forward_neighbors.cu
+)
+target_include_directories(cellerator_forward_neighbors PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_forward_neighbors PRIVATE CUDA::cudart)
+set_target_properties(cellerator_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_forward_neighbors)
+
+add_executable(forwardNeighborsCompileTest
+    tests/forward_neighbors_compile_test.cc
+)
+target_include_directories(forwardNeighborsCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(forwardNeighborsCompileTest PRIVATE cellerator_forward_neighbors CUDA::cudart)
+set_target_properties(forwardNeighborsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(forwardNeighborsCompileTest)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_executable(developmentalTimeCompileTest
         tests/developmental_time_compile_test.cc
@@ -277,19 +302,11 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
     set_target_properties(denseReduceCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(denseReduceCompileTest)
 
-    add_executable(forwardNeighborsCompileTest
-        tests/forward_neighbors_compile_test.cc
-    )
-    target_include_directories(forwardNeighborsCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(forwardNeighborsCompileTest PRIVATE cellerator_torch)
-    set_target_properties(forwardNeighborsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(forwardNeighborsCompileTest)
-
     add_executable(quantizeModelTest
         tests/quantize_model_test.cc
     )
     target_include_directories(quantizeModelTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch)
+    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch cellerator_forward_neighbors CUDA::cudart)
     set_target_properties(quantizeModelTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(quantizeModelTest)
 endif()

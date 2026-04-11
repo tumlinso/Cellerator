@@ -11,6 +11,32 @@ namespace fn = ::cellerator::models::forward_neighbors;
 
 namespace {
 
+fn::ForwardNeighborRecordBatch make_record_batch(
+    const torch::Tensor &cell_indices,
+    const torch::Tensor &developmental_time,
+    const torch::Tensor &latent_unit,
+    const torch::Tensor &embryo_ids) {
+    const torch::Tensor ids_cpu = cell_indices.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
+    const torch::Tensor time_cpu = developmental_time.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
+    const torch::Tensor latent_cpu = latent_unit.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
+    const torch::Tensor embryo_cpu = embryo_ids.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
+
+    fn::ForwardNeighborRecordBatch batch;
+    batch.latent_dim = latent_cpu.dim() == 2 ? latent_cpu.size(1) : 0;
+    batch.cell_indices.resize(static_cast<std::size_t>(ids_cpu.size(0)));
+    batch.developmental_time.resize(static_cast<std::size_t>(time_cpu.size(0)));
+    batch.latent_unit.resize(static_cast<std::size_t>(latent_cpu.numel()));
+    batch.embryo_ids.resize(static_cast<std::size_t>(embryo_cpu.size(0)));
+
+    if (!batch.cell_indices.empty()) {
+        std::memcpy(batch.cell_indices.data(), ids_cpu.data_ptr<std::int64_t>(), batch.cell_indices.size() * sizeof(std::int64_t));
+        std::memcpy(batch.developmental_time.data(), time_cpu.data_ptr<float>(), batch.developmental_time.size() * sizeof(float));
+        std::memcpy(batch.latent_unit.data(), latent_cpu.data_ptr<float>(), batch.latent_unit.size() * sizeof(float));
+        std::memcpy(batch.embryo_ids.data(), embryo_cpu.data_ptr<std::int64_t>(), batch.embryo_ids.size() * sizeof(std::int64_t));
+    }
+    return batch;
+}
+
 void require(bool condition, const char *message) {
     if (!condition) throw std::runtime_error(message);
 }
@@ -24,7 +50,7 @@ float rowwise_masked_mse(
 }
 
 fn::ForwardNeighborIndex build_test_index(const torch::Tensor &cell_indices) {
-    fn::ForwardNeighborRecordBatch records{
+    return fn::build_forward_neighbor_index(make_record_batch(
         cell_indices,
         torch::tensor({0.10f, 0.20f, 0.30f, 0.40f}, torch::TensorOptions().dtype(torch::kFloat32)),
         torch::tensor(
@@ -35,9 +61,7 @@ fn::ForwardNeighborIndex build_test_index(const torch::Tensor &cell_indices) {
                 {0.97f, 0.03f},
             },
             torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({0, 0, 0, 0}, torch::TensorOptions().dtype(torch::kInt64))
-    };
-    return fn::build_forward_neighbor_index(records);
+        torch::tensor({0, 0, 0, 0}, torch::TensorOptions().dtype(torch::kInt64))));
 }
 
 quant::QuantizerForwardSupervision build_supervision(
