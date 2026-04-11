@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dR_dataloader.hh"
+#include "../../compute/model_ops/model_ops.hh"
 
 #include <torch/torch.h>
 
@@ -12,6 +13,8 @@
 #include <utility>
 
 namespace cellerator::models::dense_reduce {
+
+namespace model_ops = ::cellerator::compute::model_ops;
 
 struct SparseDenseReduceConfig {
     std::int64_t input_genes = 0;
@@ -108,6 +111,8 @@ public:
     }
 
     DenseReduceOutput forward(const torch::Tensor &sparse_csr_batch) {
+        // Same main overhead as the developmental-time encoder: sparse values
+        // widen and CSR batches may be converted before useful projection work.
         torch::Tensor latent_raw = encode_raw_(sparse_csr_batch);
         torch::Tensor latent_unit = torch::nn::functional::normalize(
             latent_raw,
@@ -137,6 +142,8 @@ private:
     torch::Tensor maybe_corrupt_sparse_(const torch::Tensor &sparse_batch) const {
         if (!is_training() || config_.corruption_rate <= 0.0) return sparse_batch;
 
+        // Sparse corruption still pays for CSR -> COO normalization and
+        // coalescing before the mask is applied.
         torch::Tensor sparse_input = sparse_batch;
         if (sparse_input.layout() == torch::kSparseCsr) sparse_input = sparse_input.to_sparse();
         sparse_input = sparse_input.coalesce();
@@ -165,6 +172,8 @@ private:
             throw std::invalid_argument("DenseReduceModel expects sparse COO or CSR input");
         }
 
+        // The first projection is the right sparse-dense shape; the expensive
+        // part is the conversion path around it, not the dense MLP afterward.
         torch::Tensor sparse_input = sparse_csr_batch.to(torch::kFloat32);
         sparse_input = maybe_corrupt_sparse_(sparse_input);
         if (sparse_input.layout() == torch::kSparseCsr) sparse_input = sparse_input.to_sparse();
@@ -203,6 +212,8 @@ inline DenseReduceLoss compute_dense_reduce_loss(
     const DenseReduceOutput &output,
     const DenseReduceBatch &batch,
     const DenseReduceLossConfig &config = DenseReduceLossConfig()) {
+    // Largest avoidable overhead here: reconstruction loss densifies the sparse
+    // batch before comparing against the decoder output.
     torch::Tensor target = batch.features.to_dense().to(torch::kFloat32);
     torch::Tensor reconstruction = output.reconstruction.to(torch::kFloat32);
     torch::Tensor weights = torch::ones_like(target);
@@ -242,20 +253,32 @@ inline DenseReduceLoss compute_dense_reduce_loss(
             pair_cols = pair_cols.index_select(0, keep);
         }
 
-        torch::Tensor pair_time = torch::abs(time.index_select(0, pair_rows) - time.index_select(0, pair_cols));
-        torch::Tensor pair_sim = (latent.index_select(0, pair_rows) * latent.index_select(0, pair_cols)).sum(1);
-        torch::Tensor pair_sqdist = torch::clamp(2.0f - 2.0f * pair_sim, 0.0f);
-        torch::Tensor pair_dist = torch::sqrt(pair_sqdist + 1.0e-12f);
+        // Prefer the CUDA custom-op path once pair lists are on device.
+        if (latent.is_cuda() && time.is_cuda()) {
+            std::tie(local_loss, far_loss) = model_ops::dense_reduce_pair_losses(
+                pair_rows.contiguous(),
+                pair_cols.contiguous(),
+                latent.contiguous(),
+                time.contiguous(),
+                config.local_time_window,
+                config.far_time_window,
+                config.margin);
+        } else {
+            torch::Tensor pair_time = torch::abs(time.index_select(0, pair_rows) - time.index_select(0, pair_cols));
+            torch::Tensor pair_sim = (latent.index_select(0, pair_rows) * latent.index_select(0, pair_cols)).sum(1);
+            torch::Tensor pair_sqdist = torch::clamp(2.0f - 2.0f * pair_sim, 0.0f);
+            torch::Tensor pair_dist = torch::sqrt(pair_sqdist + 1.0e-12f);
 
-        torch::Tensor local_mask = pair_time <= config.local_time_window;
-        if (local_mask.any().item<bool>()) {
-            local_loss = pair_sqdist.masked_select(local_mask).mean();
-        }
+            torch::Tensor local_mask = pair_time <= config.local_time_window;
+            if (local_mask.any().item<bool>()) {
+                local_loss = pair_sqdist.masked_select(local_mask).mean();
+            }
 
-        torch::Tensor far_mask = pair_time >= config.far_time_window;
-        if (far_mask.any().item<bool>()) {
-            torch::Tensor far_dist = pair_dist.masked_select(far_mask);
-            far_loss = torch::relu(torch::full_like(far_dist, config.margin) - far_dist).mean();
+            torch::Tensor far_mask = pair_time >= config.far_time_window;
+            if (far_mask.any().item<bool>()) {
+                torch::Tensor far_dist = pair_dist.masked_select(far_mask);
+                far_loss = torch::relu(torch::full_like(far_dist, config.margin) - far_dist).mean();
+            }
         }
     }
 

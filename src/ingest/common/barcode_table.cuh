@@ -35,7 +35,8 @@ static inline int append(barcode_table *t, const char *barcode, std::size_t len)
     return common::append(&t->values, barcode, len);
 }
 
-// Full synchronous line-by-line ingest of a barcode file.
+// Full synchronous barcode ingest. Cost scales with file bytes and packed
+// string-column growth.
 static inline int load_lines(const char *path, barcode_table *t) {
     scan::buffered_file_reader reader;
     int rc = 0;

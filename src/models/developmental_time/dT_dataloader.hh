@@ -82,6 +82,8 @@ public:
 
         if (cells_per_day == 0) throw std::invalid_argument("sample_sparse_csr requires cells_per_day > 0");
 
+        // Host-side batch assembly: bucket selection, optional part fetch, then
+        // copy sampled rows into a fresh CPU sparse CSR tensor.
         try {
             const std::vector<std::int64_t> selected_days = select_day_buckets_();
             sampled_rows.reserve(selected_days.size() * cells_per_day);
@@ -173,6 +175,7 @@ private:
     void build_day_buckets_() {
         std::vector<std::pair<float, unsigned long>> labeled_rows;
 
+        // One-time O(rows log rows) sort so later draws are O(sampled rows).
         labeled_rows.reserve(day_labels_.size());
         for (unsigned long row = 0; row < static_cast<unsigned long>(day_labels_.size()); ++row) {
             labeled_rows.emplace_back(day_labels_[static_cast<std::size_t>(row)], row);
@@ -241,6 +244,7 @@ private:
             if (!cellshard::fetch_part(matrix_, storage_, part_id)) {
                 throw std::runtime_error("failed to fetch CellShard part for sampled row");
             }
+            // Cold-part fetches dominate batch latency more than local row copy.
             if (fetched_parts != 0) fetched_parts->push_back(part_id);
         }
 
@@ -265,6 +269,8 @@ private:
     TimeBatch build_sparse_batch_(const std::vector<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
         static_assert(sizeof(at::Half) == sizeof(::real::storage_t), "ATen half type must match CellShard half storage");
 
+        // Expensive boundary: widen CSR metadata to int64 and copy sampled nnz
+        // into a brand-new Torch-owned CPU sparse tensor every batch.
         const std::int64_t batch_rows = static_cast<std::int64_t>(sampled_rows.size());
         const std::int64_t feature_cols = checked_i64_(matrix_->cols, "cols");
         std::vector<std::int64_t> crow_indices;

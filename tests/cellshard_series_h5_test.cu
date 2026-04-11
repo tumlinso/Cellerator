@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -94,6 +95,8 @@ int main() {
     owned_text_column feature_ids = make_column({"g0", "g1", "g2"});
     owned_text_column feature_names = make_column({"Gene0", "Gene1", "Gene2"});
     owned_text_column feature_types = make_column({"gene", "gene", "gene"});
+    owned_text_column metadata_column_names = make_column({"stage", "batch"});
+    owned_text_column metadata_field_values = make_column({"E8", "A", "E9", "A", "E10", "B"});
     std::vector<std::uint32_t> dataset_formats = { 2u, 2u };
     std::vector<std::uint64_t> dataset_row_begin = { 0u, 2u };
     std::vector<std::uint64_t> dataset_row_end = { 2u, 3u };
@@ -106,6 +109,10 @@ int main() {
     std::vector<std::uint64_t> feature_local_indices = { 0u, 1u, 2u };
     std::vector<std::uint64_t> dataset_feature_offsets = { 0u, 3u, 6u };
     std::vector<std::uint32_t> dataset_feature_to_global = { 0u, 1u, 2u, 0u, 1u, 2u };
+    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 2u, 4u, 6u };
+    std::vector<std::uint32_t> metadata_dataset_indices = { 0u };
+    std::vector<std::uint64_t> metadata_global_row_begin = { 0u };
+    std::vector<std::uint64_t> metadata_global_row_end = { 3u };
     std::vector<std::uint64_t> part_rows = { 2u, 1u };
     std::vector<std::uint64_t> part_nnz = { 3u, 1u };
     std::vector<std::uint32_t> part_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row, (std::uint32_t) cellshard::sparse::compressed_by_row };
@@ -117,6 +124,23 @@ int main() {
     cellshard::series_layout_view layout;
     cellshard::series_dataset_table_view dataset_view;
     cellshard::series_provenance_view provenance_view;
+    cellshard::series_metadata_table_view metadata_table_view;
+    cellshard::series_embedded_metadata_view embedded_metadata_view;
+    cellshard::series_browse_cache_view browse_view;
+    std::vector<std::uint32_t> browse_feature_indices = { 0u, 2u };
+    std::vector<float> browse_gene_sum = { 1.0f, 6.0f };
+    std::vector<float> browse_gene_detected = { 1.0f, 2.0f };
+    std::vector<float> browse_gene_sq_sum = { 1.0f, 20.0f };
+    std::vector<float> browse_dataset_mean = { 0.5f, 1.0f, 0.0f, 4.0f };
+    std::vector<float> browse_shard_mean = { 0.5f, 1.0f, 0.0f, 4.0f };
+    std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u, 4u };
+    std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u, 2u, std::numeric_limits<std::uint64_t>::max() };
+    std::vector<float> browse_part_sample_values = {
+        1.0f, 2.0f,
+        0.0f, 0.0f,
+        0.0f, 4.0f,
+        0.0f, 0.0f
+    };
     int rc = 1;
 
     std::remove(out_path.c_str());
@@ -174,26 +198,104 @@ int main() {
     provenance_view.dataset_feature_offsets = dataset_feature_offsets.data();
     provenance_view.dataset_feature_to_global = dataset_feature_to_global.data();
 
+    metadata_table_view.rows = 3u;
+    metadata_table_view.cols = 2u;
+    metadata_table_view.column_names = metadata_column_names.view();
+    metadata_table_view.field_values = metadata_field_values.view();
+    metadata_table_view.row_offsets = metadata_row_offsets.data();
+
+    embedded_metadata_view.count = 1u;
+    embedded_metadata_view.dataset_indices = metadata_dataset_indices.data();
+    embedded_metadata_view.global_row_begin = metadata_global_row_begin.data();
+    embedded_metadata_view.global_row_end = metadata_global_row_end.data();
+    embedded_metadata_view.tables = &metadata_table_view;
+
+    browse_view.selected_feature_count = 2u;
+    browse_view.selected_feature_indices = browse_feature_indices.data();
+    browse_view.gene_sum = browse_gene_sum.data();
+    browse_view.gene_detected = browse_gene_detected.data();
+    browse_view.gene_sq_sum = browse_gene_sq_sum.data();
+    browse_view.dataset_count = 2u;
+    browse_view.dataset_feature_mean = browse_dataset_mean.data();
+    browse_view.shard_count = 2u;
+    browse_view.shard_feature_mean = browse_shard_mean.data();
+    browse_view.part_count = 2u;
+    browse_view.sample_rows_per_part = 2u;
+    browse_view.part_sample_row_offsets = browse_part_sample_offsets.data();
+    browse_view.part_sample_global_rows = browse_part_sample_rows.data();
+    browse_view.part_sample_values = browse_part_sample_values.data();
+
     if (!cellshard::create_series_compressed_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view)) goto done;
     if (!cellshard::append_standard_csr_part_h5(out_path.c_str(), 0u, &part0)) goto done;
     if (!cellshard::append_standard_csr_part_h5(out_path.c_str(), 1u, &part1)) goto done;
+    if (!cellshard::append_series_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)) {
+        std::fprintf(stderr, "failed to append embedded metadata\n");
+        goto done;
+    }
+    if (!cellshard::append_series_browse_cache_h5(out_path.c_str(), &browse_view)) {
+        std::fprintf(stderr, "failed to append browse cache\n");
+        goto done;
+    }
 
-    if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) goto done;
-    if (loaded.rows != 3u || loaded.cols != 3u || loaded.nnz != 4u) goto done;
-    if (storage.backend != cellshard::shard_storage_backend_series_h5) goto done;
+    if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
+        std::fprintf(stderr, "failed to reload header after side-domain append\n");
+        goto done;
+    }
+    if (loaded.rows != 3u || loaded.cols != 3u || loaded.nnz != 4u) {
+        std::fprintf(stderr, "reloaded header mismatch\n");
+        goto done;
+    }
+    if (storage.backend != cellshard::shard_storage_backend_series_h5) {
+        std::fprintf(stderr, "storage backend mismatch after side-domain append\n");
+        goto done;
+    }
     std::remove(cache_part0.c_str());
     std::remove(cache_part1.c_str());
     ::rmdir(cache_dir.c_str());
-    if (!cellshard::bind_series_h5_part_cache(&storage, cache_dir.c_str())) goto done;
-    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 0u)) goto done;
-    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 1u)) goto done;
-    if (::access(cache_part0.c_str(), R_OK) != 0) goto done;
-    if (::access(cache_part1.c_str(), R_OK) != 0) goto done;
-    if (!cellshard::fetch_part(&loaded, &storage, 0u)) goto done;
-    if (!cellshard::drop_part(&loaded, 0u)) goto done;
-    if (!cellshard::fetch_shard(&loaded, &storage, 1u)) goto done;
-    if (!check_part(loaded.parts[0], {0u, 2u, 3u}, {0u, 2u, 1u}, {1.0f, 2.0f, 3.0f})) goto done;
-    if (!check_part(loaded.parts[1], {0u, 1u}, {2u}, {4.0f})) goto done;
+    if (!cellshard::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
+        std::fprintf(stderr, "failed to bind series h5 part cache\n");
+        goto done;
+    }
+    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to prefetch shard 0 to cache\n");
+        goto done;
+    }
+    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 1u)) {
+        std::fprintf(stderr, "failed to prefetch shard 1 to cache\n");
+        goto done;
+    }
+    if (::access(cache_part0.c_str(), R_OK) != 0) {
+        std::fprintf(stderr, "missing cached part0\n");
+        goto done;
+    }
+    if (::access(cache_part1.c_str(), R_OK) != 0) {
+        std::fprintf(stderr, "missing cached part1\n");
+        goto done;
+    }
+    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to fetch part 0 from series file\n");
+        goto done;
+    }
+    if (!cellshard::drop_part(&loaded, 0u)) {
+        std::fprintf(stderr, "failed to drop part 0 after fetch\n");
+        goto done;
+    }
+    if (!cellshard::fetch_shard(&loaded, &storage, 1u)) {
+        std::fprintf(stderr, "failed to fetch shard 1 from series file\n");
+        goto done;
+    }
+    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to refetch part 0 from series file\n");
+        goto done;
+    }
+    if (!check_part(loaded.parts[0], {0u, 2u, 3u}, {0u, 2u, 1u}, {1.0f, 2.0f, 3.0f})) {
+        std::fprintf(stderr, "part 0 payload mismatch after side-domain append\n");
+        goto done;
+    }
+    if (!check_part(loaded.parts[1], {0u, 1u}, {2u}, {4.0f})) {
+        std::fprintf(stderr, "part 1 payload mismatch after side-domain append\n");
+        goto done;
+    }
 
     rc = 0;
 

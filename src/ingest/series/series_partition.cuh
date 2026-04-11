@@ -87,9 +87,13 @@ static inline int build_by_limit(partition *p,
     unsigned long shard_nnz = 0;
     unsigned long shard_bytes = 0;
 
+    // Rebuild the plan from scratch each time. That keeps the data structure
+    // simple and the cost linear in part count.
     clear(p);
     init(p);
 
+    // Greedy host-only packing is enough here because the goal is just to cap
+    // later fetch/convert/store windows.
     for (i = 0; i < num_parts; ++i) {
         const unsigned long rows = part_rows != 0 ? part_rows[i] : 0;
         const unsigned long nnz = part_nnz != 0 ? part_nnz[i] : 0;

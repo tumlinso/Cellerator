@@ -141,6 +141,8 @@ void for_each_dense_reduce_encoded_batch(
             throw std::runtime_error("dense reduce inference requires loaded row-compressed CSR parts");
         }
 
+        // Part-wise inference exports host CSR to a CPU Torch tensor, moves it
+        // to device, then copies latent embeddings back to CPU.
         torch::Tensor features = cellerator::torch_bindings::export_as_tensor(*part);
         features = features.to(config.device);
         torch::Tensor latent = model->encode(features).to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();

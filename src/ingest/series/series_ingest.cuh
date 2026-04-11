@@ -110,6 +110,7 @@ static inline int convert_coo_part_to_csr(const sparse::coo *src,
                                           mtx::compressed_workspace *ws,
                                           sparse::compressed *dst) {
     if (src == 0 || ws == 0 || dst == 0) return 0;
+    // Full host->device->host conversion boundary for one part.
     sparse::clear(dst);
     sparse::init(dst);
     if (!mtx::reserve(ws, src->rows, src->cols, src->nnz)) return 0;
@@ -218,6 +219,8 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
         common::init(&barcodes);
         common::init(&features);
         mtx::init(&header);
+        // Dataset planning is intentionally CPU-heavy: full MTX scan, row
+        // partitioning, then barcode/feature ingest before windowed conversion.
         if (!mtx::scan_row_nnz(matrix_path_at(m, manifest_i), &header, &row_nnz, opts->reader_bytes)) {
             common::clear(&barcodes);
             common::clear(&features);
@@ -319,6 +322,8 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
         dataset_cols.push_back((std::uint64_t) header.cols);
         dataset_nnz.push_back((std::uint64_t) header.nnz_file);
 
+        // Global feature identity is merged through a host hash table. That is
+        // appropriate for offline ingest even though it is not cheap.
         for (feature_i = 0; feature_i < common::count(&features); ++feature_i) {
             const char *feature_id = common::id(&features, feature_i);
             const char *feature_name = common::name(&features, feature_i);

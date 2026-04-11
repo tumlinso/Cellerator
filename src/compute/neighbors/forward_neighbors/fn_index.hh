@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-namespace cellerator::models::forward_neighbors {
+namespace cellerator::compute::neighbors::forward_neighbors {
 
 struct ForwardNeighborRecordBatch {
     std::vector<std::int64_t> cell_indices;
@@ -128,4 +128,4 @@ inline std::int64_t default_segment_rows_(const ForwardNeighborBuildConfig &conf
 
 } // namespace detail
 
-} // namespace cellerator::models::forward_neighbors
+} // namespace cellerator::compute::neighbors::forward_neighbors

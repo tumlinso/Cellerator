@@ -179,6 +179,7 @@ inline CandidateEdgeTable build_forward_candidates_cuda(
     d_begin.upload(bounds.row_begin.data(), bounds.row_begin.size());
     d_end.upload(bounds.row_end.data(), bounds.row_end.size());
 
+    // One block per anchor row keeps the interface simple, but on small tables the fixed launch plus full-device sync cost dominates.
     detail::score_forward_candidates_kernel_<<<table.rows, detail::candidate_block_threads>>>(
         d_latent.data(),
         d_time.data(),
@@ -192,8 +193,10 @@ inline CandidateEdgeTable build_forward_candidates_cuda(
         d_similarity.data(),
         d_dt.data());
     cuda_require(cudaGetLastError(), "score_forward_candidates_kernel launch");
+    // This explicit sync makes the helper easy to consume, but it prevents overlap with later transfers or kernels.
     cuda_require(cudaDeviceSynchronize(), "score_forward_candidates_kernel sync");
 
+    // These downloads are the full candidate table, so the helper is intentionally batch-oriented rather than row-at-a-time.
     d_dst.download(result.dst.data(), result.dst.size());
     d_similarity.download(result.similarity.data(), result.similarity.size());
     d_dt.download(result.delta_t.data(), result.delta_t.size());

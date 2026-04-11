@@ -39,6 +39,8 @@ inline TrajectoryBuildResult build_trajectory(
     records.validate();
     cg::sort_record_table(&records);
 
+    // Hybrid pipeline: CPU sort/slab planning, GPU candidate scoring, then CPU
+    // prune/tree/supernode reduction.
     TrajectoryBuildResult result;
     result.records = std::move(records);
     result.slabs = cg::build_time_slabs(result.records, config.target_rows_per_slab);

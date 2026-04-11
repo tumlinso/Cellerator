@@ -65,12 +65,14 @@ public:
     void upload(const T *host_data, std::size_t count) {
         if (count > size_) throw std::out_of_range("device_buffer upload exceeds allocation");
         if (count == 0) return;
+        // Blocking H2D copy: cost is pure link traffic, so repeated small uploads are usually worse than one larger staged transfer.
         cuda_require(cudaMemcpy(data_, host_data, count * sizeof(T), cudaMemcpyHostToDevice), "cudaMemcpy(H2D)");
     }
 
     void download(T *host_data, std::size_t count) const {
         if (count > size_) throw std::out_of_range("device_buffer download exceeds allocation");
         if (count == 0) return;
+        // Blocking D2H copy: this also becomes an execution barrier for the producing stream on the current device.
         cuda_require(cudaMemcpy(host_data, data_, count * sizeof(T), cudaMemcpyDeviceToHost), "cudaMemcpy(D2H)");
     }
 

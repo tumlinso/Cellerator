@@ -441,12 +441,10 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
     }
 
     if (!part_rows.empty()) {
-        if (!cseries::build_by_limit(&shard_plan,
+        if (!cseries::build_by_bytes(&shard_plan,
                                      part_rows.data(),
-                                     part_nnz.data(),
                                      part_bytes.data(),
                                      (unsigned long) part_rows.size(),
-                                     policy.max_part_nnz,
                                      policy.max_window_bytes)) {
             push_issue(&plan.issues, issue_severity::error, "plan", "failed to build shard plan");
         } else {
@@ -481,6 +479,8 @@ series_summary summarize_series_csh5(const std::string &path) {
     hid_t matrix = (hid_t) -1;
     hid_t provenance = (hid_t) -1;
     hid_t codecs = (hid_t) -1;
+    hid_t embedded_metadata = (hid_t) -1;
+    hid_t browse = (hid_t) -1;
     std::vector<std::uint32_t> dataset_formats;
     std::vector<std::uint64_t> dataset_row_begin;
     std::vector<std::uint64_t> dataset_row_end;
@@ -633,9 +633,82 @@ series_summary summarize_series_csh5(const std::string &path) {
         push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read feature names");
     }
 
+    embedded_metadata = open_group(file, "/embedded_metadata");
+    if (embedded_metadata >= 0) {
+        std::uint32_t metadata_count = 0;
+        std::vector<std::uint32_t> dataset_indices;
+        std::vector<std::uint64_t> global_row_begin;
+        std::vector<std::uint64_t> global_row_end;
+        if (!read_attr_u32(embedded_metadata, "count", &metadata_count)
+            || !read_dataset_vector(embedded_metadata, "dataset_indices", H5T_NATIVE_UINT32, &dataset_indices)
+            || !read_dataset_vector(embedded_metadata, "global_row_begin", H5T_NATIVE_UINT64, &global_row_begin)
+            || !read_dataset_vector(embedded_metadata, "global_row_end", H5T_NATIVE_UINT64, &global_row_end)) {
+            push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read embedded metadata directory");
+        } else {
+            summary.embedded_metadata.reserve(metadata_count);
+            for (std::uint32_t i = 0; i < metadata_count; ++i) {
+                char table_name[64];
+                hid_t table = (hid_t) -1;
+                std::uint32_t rows = 0;
+                std::uint32_t cols = 0;
+                std::vector<std::string> column_names;
+                if (std::snprintf(table_name, sizeof(table_name), "table_%u", i) <= 0) continue;
+                table = H5Gopen2(embedded_metadata, table_name, H5P_DEFAULT);
+                if (table < 0) continue;
+                if (!read_attr_u32(table, "rows", &rows)
+                    || !read_attr_u32(table, "cols", &cols)
+                    || !read_text_column_strings(table, "column_names", &column_names)) {
+                    push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read one embedded metadata table");
+                    H5Gclose(table);
+                    continue;
+                }
+                summary.embedded_metadata.push_back(embedded_metadata_dataset_summary{
+                    i < dataset_indices.size() ? dataset_indices[i] : i,
+                    i < global_row_begin.size() ? global_row_begin[i] : 0ull,
+                    i < global_row_end.size() ? global_row_end[i] : 0ull,
+                    rows,
+                    cols,
+                    std::move(column_names)
+                });
+                H5Gclose(table);
+            }
+        }
+    }
+
+    browse = open_group(file, "/browse");
+    if (browse >= 0) {
+        browse_cache_summary browse_summary;
+        if (!read_attr_u32(browse, "selected_feature_count", &browse_summary.selected_feature_count)
+            || !read_attr_u32(browse, "sample_rows_per_part", &browse_summary.sample_rows_per_part)) {
+            push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read browse cache header");
+        } else if (browse_summary.selected_feature_count != 0u) {
+            if (!read_dataset_vector(browse, "selected_feature_indices", H5T_NATIVE_UINT32, &browse_summary.selected_feature_indices)
+                || !read_dataset_vector(browse, "gene_sum", H5T_NATIVE_FLOAT, &browse_summary.gene_sum)
+                || !read_dataset_vector(browse, "gene_detected", H5T_NATIVE_FLOAT, &browse_summary.gene_detected)
+                || !read_dataset_vector(browse, "gene_sq_sum", H5T_NATIVE_FLOAT, &browse_summary.gene_sq_sum)
+                || !read_dataset_vector(browse, "dataset_feature_mean", H5T_NATIVE_FLOAT, &browse_summary.dataset_feature_mean)
+                || !read_dataset_vector(browse, "shard_feature_mean", H5T_NATIVE_FLOAT, &browse_summary.shard_feature_mean)
+                || !read_dataset_vector(browse, "part_sample_row_offsets", H5T_NATIVE_UINT32, &browse_summary.part_sample_row_offsets)
+                || !read_dataset_vector(browse, "part_sample_global_rows", H5T_NATIVE_UINT64, &browse_summary.part_sample_global_rows)
+                || !read_dataset_vector(browse, "part_sample_values", H5T_NATIVE_FLOAT, &browse_summary.part_sample_values)) {
+                push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read browse cache payload");
+            } else {
+                browse_summary.selected_feature_names.reserve(browse_summary.selected_feature_indices.size());
+                for (std::uint32_t feature_index : browse_summary.selected_feature_indices) {
+                    if (feature_index < summary.feature_names.size()) browse_summary.selected_feature_names.push_back(summary.feature_names[feature_index]);
+                    else browse_summary.selected_feature_names.push_back(std::string("g") + std::to_string(feature_index));
+                }
+                browse_summary.available = true;
+                summary.browse = std::move(browse_summary);
+            }
+        }
+    }
+
     summary.ok = !has_errors(summary.issues);
 
 done:
+    if (browse >= 0) H5Gclose(browse);
+    if (embedded_metadata >= 0) H5Gclose(embedded_metadata);
     if (codecs >= 0) H5Gclose(codecs);
     if (provenance >= 0) H5Gclose(provenance);
     if (matrix >= 0) H5Gclose(matrix);

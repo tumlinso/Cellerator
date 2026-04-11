@@ -12,7 +12,8 @@ namespace common {
 // - offsets[] points into one contiguous byte blob
 // - data[] stores zero-terminated strings back to back
 //
-// Appends can trigger host realloc+copy for offsets or data.
+// Appends can trigger host realloc+copy for offsets or data, so this is a
+// compact ownership container rather than a hot append structure.
 struct text_column {
     unsigned int count;
     unsigned int capacity;

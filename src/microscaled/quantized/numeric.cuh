@@ -25,6 +25,8 @@ __host__ __device__ __forceinline__ __half from_float<__half>(float value) {
     return __float2half(value);
 }
 
+// Keep arithmetic wrappers tiny so kernels can swap implementations later
+// without touching every call site.
 __host__ __device__ __forceinline__ float fast_div(float num, float den) {
     return num / den;
 }
@@ -36,6 +38,8 @@ __host__ __device__ __forceinline__ float fast_fma(float a, float b, float c) {
 template<typename T>
 __host__ __device__ __forceinline__ T load_scalar(const T* ptr) {
 #if defined(__CUDA_ARCH__)
+    // Packed metadata and scale reads are read-only in the kernels, so __ldg
+    // is the cheapest Volta path.
     return __ldg(ptr);
 #else
     return *ptr;

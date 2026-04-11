@@ -44,6 +44,8 @@ inline DevelopmentalStageTrainStep train_developmental_stage_step(
     model->train();
     optimizer.zero_grad();
 
+    // Extra step overhead comes from manual unscale, optional finite-gradient
+    // checks, and optional full-parameter gradient clipping.
     DevelopmentalStageOutput output = model->forward(batch.features);
     DevelopmentalStageLoss loss = compute_developmental_stage_loss(output, batch, loss_config);
     (loss.total * train_config.loss_scale).backward();

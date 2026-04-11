@@ -192,6 +192,7 @@ static inline int upload_gene_flags(device_workspace *ws, unsigned int cols, con
     if (host_flags == 0) {
         return cscu::cuda_check(cudaMemsetAsync(ws->d_gene_flags, 0, (std::size_t) cols * sizeof(unsigned char), ws->stream), "cudaMemsetAsync gene flags");
     }
+    // Asynchronous H2D for per-gene flags: low arithmetic value, so batching many tiny uploads is usually a net loss.
     return cscu::cuda_check(cudaMemcpyAsync(ws->d_gene_flags,
                                             host_flags,
                                             (std::size_t) cols * sizeof(unsigned char),
@@ -273,6 +274,7 @@ static inline int ensure_spmv_tmp(device_workspace *ws,
     (void) cusparseDestroyDnVec(xvec);
     (void) cusparseDestroySpMat(mat);
 
+    // Workspace sizing can force cudaMalloc/free churn; the fast path is to reuse one buffer across many equal-or-smaller parts.
     if (bytes > ws->d_spmv_tmp_bytes) {
         if (ws->d_spmv_tmp != 0) cudaFree(ws->d_spmv_tmp);
         ws->d_spmv_tmp = 0;
@@ -289,6 +291,7 @@ static inline int ensure_reduce_tmp(device_workspace *ws, unsigned int rows) {
         std::fprintf(stderr, "CUB error at DeviceReduce::Sum preprocess workspace sizing\n");
         return 0;
     }
+    // Same rule as SpMV scratch: resizing here is amortized if callers keep part sizes stable.
     if (bytes > ws->d_reduce_tmp_bytes) {
         if (ws->d_reduce_tmp != 0) cudaFree(ws->d_reduce_tmp);
         ws->d_reduce_tmp = 0;
@@ -328,6 +331,7 @@ static inline int run_spmv_transpose(device_workspace *ws,
                      "cusparseCreateCsr preprocess run")) goto done;
     if (!cscu::check(cusparseCreateDnVec(&xvec, (int64_t) src->rows, (void *) x, CUDA_R_32F), "cusparseCreateDnVec x preprocess run")) goto done;
     if (!cscu::check(cusparseCreateDnVec(&yvec, (int64_t) src->cols, (void *) y, CUDA_R_32F), "cusparseCreateDnVec y preprocess run")) goto done;
+    // Library path for the heavy lift in preprocess: expected to be bandwidth-bound and worth far more than the small helper launches around it.
     if (!cscu::check(cusparseSpMV(handle,
                                   CUSPARSE_OPERATION_TRANSPOSE,
                                   &alpha,
@@ -511,6 +515,7 @@ static inline int allreduce_gene_metrics(distributed_workspace *ws, csd::local_c
     for (unsigned int i = 0; i < ws->device_count; ++i) {
         const std::size_t bytes = (std::size_t) cols * sizeof(float);
         if (!cscu::cuda_check(cudaSetDevice(ws->devices[i].device), "cudaSetDevice preprocess host reduce")) return 0;
+        // Fallback multi-GPU reduction pays four blocking D2H copies per device; this is simple but PCIe-bound at scale.
         if (!cscu::cuda_check(cudaMemcpy(ws->h_gene_sum + (std::size_t) i * cols,
                                          ws->devices[i].d_gene_sum,
                                          bytes,
@@ -534,6 +539,7 @@ static inline int allreduce_gene_metrics(distributed_workspace *ws, csd::local_c
     }
 
     if (ws->device_count > 1u) {
+        // Host accumulation is linear in device_count * cols and exists only as the non-NCCL fallback path.
         for (unsigned int dev = 1; dev < ws->device_count; ++dev) {
             for (unsigned int gene = 0; gene < cols; ++gene) {
                 ws->h_gene_sum[gene] += ws->h_gene_sum[(std::size_t) dev * cols + gene];
@@ -547,6 +553,7 @@ static inline int allreduce_gene_metrics(distributed_workspace *ws, csd::local_c
     for (unsigned int i = 0; i < ws->device_count; ++i) {
         const std::size_t bytes = (std::size_t) cols * sizeof(float);
         if (!cscu::cuda_check(cudaSetDevice(ws->devices[i].device), "cudaSetDevice preprocess host scatter")) return 0;
+        // Scatter sends the reduced vectors back to every device; acceptable for one global barrier, expensive if done repeatedly per micro-batch.
         if (!cscu::cuda_check(cudaMemcpyAsync(ws->devices[i].d_gene_sum,
                                               ws->h_gene_sum,
                                               bytes,

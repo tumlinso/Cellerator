@@ -1,6 +1,6 @@
 #include "forwardNeighbors.hh"
 
-#include "../../compute/graph/workspace.cuh"
+#include "../../graph/workspace.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace cellerator::models::forward_neighbors {
+namespace cellerator::compute::neighbors::forward_neighbors {
 
 namespace detail {
 
@@ -665,6 +665,7 @@ inline void init_best_arrays_(
     best_similarity->resize(total);
     const int threads = 128;
     const int blocks = static_cast<int>((total + static_cast<std::size_t>(threads) - 1u) / static_cast<std::size_t>(threads));
+    // Initialization launch is pure bookkeeping and followed by a sync, so it is noticeable only for small query batches.
     init_best_kernel_<<<blocks, threads>>>(
         best_cell->data(),
         best_time->data(),
@@ -673,6 +674,7 @@ inline void init_best_arrays_(
         query_rows,
         k);
     cg::cuda_require(cudaGetLastError(), "init_best_kernel launch");
+    // This barrier keeps later host merges simple but removes any chance to overlap init with query uploads.
     cg::cuda_require(cudaDeviceSynchronize(), "init_best_kernel sync");
 }
 
@@ -688,6 +690,7 @@ inline std::vector<Candidate> download_best_candidates_(
     std::vector<float> time(total, detail::quiet_nan_());
     std::vector<std::int64_t> embryo(total, -1);
     std::vector<float> similarity(total, detail::negative_infinity_());
+    // Full-table downloads are intentional here: merge logic is host-side today, so query blocks should be large enough to amortize D2H latency.
     best_cell.download(cell.data(), total);
     best_time.download(time.data(), total);
     best_embryo.download(embryo.data(), total);
@@ -917,6 +920,7 @@ inline ForwardNeighborSearchResult search_core_(
             cg::device_buffer<float> d_query_lower(block_lower.size());
             cg::device_buffer<float> d_query_upper(block_upper.size());
             cg::device_buffer<std::int64_t> d_query_embryo(block_embryo.size());
+            // Per-block query uploads are fixed overhead every shard visit, so larger query blocks reduce PCIe and launch tax.
             d_query_latent.upload(block_latent.data(), block_latent.size());
             d_query_lower.upload(block_lower.data(), block_lower.size());
             d_query_upper.upload(block_upper.data(), block_upper.size());
@@ -941,6 +945,7 @@ inline ForwardNeighborSearchResult search_core_(
                 for (const auto &interval : merge_row_intervals_(std::move(intervals))) {
                     for (std::int64_t index_begin = interval.first; index_begin < interval.second; index_begin += config.index_block_rows) {
                         const std::int64_t index_end = std::min(index_begin + config.index_block_rows, interval.second);
+                        // Exact search pays one launch per query block x index block tile; too-small index tiles become launch-bound very quickly.
                         exact_search_kernel_<<<block_queries, kWarpThreads>>>(
                             d_query_latent.data(),
                             d_query_lower.data(),
@@ -963,6 +968,7 @@ inline ForwardNeighborSearchResult search_core_(
                         cg::cuda_require(cudaGetLastError(), "exact_search_kernel launch");
                     }
                 }
+                // Required because the next step reads the candidate buffers on host; this is the main overlap barrier in the exact path.
                 cg::cuda_require(cudaDeviceSynchronize(), "exact_search_kernel sync");
             } else {
                 std::vector<std::int64_t> eligible_lists;
@@ -1001,11 +1007,13 @@ inline ForwardNeighborSearchResult search_core_(
                     cg::device_buffer<std::int64_t> d_list_row_begin(eligible_row_begin.size());
                     cg::device_buffer<std::int64_t> d_list_row_end(eligible_row_end.size());
                     cg::device_buffer<std::int32_t> d_selected_lists(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(config.ann_probe_list_count));
+                    // ANN metadata upload is paid once per shard/query block and can dominate when the eligible list set is tiny.
                     d_centroids.upload(eligible_centroids.data(), eligible_centroids.size());
                     d_list_embryo.upload(eligible_embryo.data(), eligible_embryo.size());
                     d_list_row_begin.upload(eligible_row_begin.data(), eligible_row_begin.size());
                     d_list_row_end.upload(eligible_row_end.data(), eligible_row_end.size());
 
+                    // Probe is intentionally cheap: it scores list centroids only, so it should stay much smaller than refine.
                     ann_probe_kernel_<<<block_queries, kWarpThreads>>>(
                         d_query_latent.data(),
                         d_query_embryo.data(),
@@ -1019,6 +1027,7 @@ inline ForwardNeighborSearchResult search_core_(
                         d_selected_lists.data());
                     cg::cuda_require(cudaGetLastError(), "ann_probe_kernel launch");
 
+                    // Refine does the expensive candidate scan inside the selected lists; this is the hot kernel in ANN mode.
                     ann_refine_kernel_<<<block_queries, kWarpThreads>>>(
                         d_query_latent.data(),
                         d_query_lower.data(),
@@ -1041,6 +1050,7 @@ inline ForwardNeighborSearchResult search_core_(
                         d_best_embryo.data(),
                         d_best_similarity.data());
                     cg::cuda_require(cudaGetLastError(), "ann_refine_kernel launch");
+                    // Like the exact path, this sync exists only because results are merged on host immediately after.
                     cg::cuda_require(cudaDeviceSynchronize(), "ann_refine_kernel sync");
                 }
             }
@@ -1202,4 +1212,4 @@ ForwardNeighborIndex build_forward_neighbor_index(
     return std::move(builder).finalize();
 }
 
-} // namespace cellerator::models::forward_neighbors
+} // namespace cellerator::compute::neighbors::forward_neighbors

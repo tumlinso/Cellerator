@@ -30,6 +30,8 @@ public:
         return static_cast<std::size_t>(population_size_);
     }
 
+    // CPU sampler helper. With replacement is O(count); without replacement
+    // adds hash-table traffic and should stay out of tight inner loops.
     std::vector<unsigned long> next(std::size_t count) {
         std::vector<unsigned long> indices;
 
@@ -45,6 +47,7 @@ public:
             return indices;
         }
 
+        // Without replacement pays extra host work for set membership checks.
         std::unordered_set<unsigned long> seen;
         seen.reserve(count * 2u);
         while (indices.size() < count) {

@@ -65,6 +65,8 @@ static inline int reserve_buffer(buffered_file_reader *r, std::size_t cap) {
     char *next = 0;
 
     if (cap <= r->cap) return 1;
+    // Growth is a host realloc+copy path, so realistic caps matter on very
+    // large text inputs.
     next = (char *) std::malloc(cap);
     if (next == 0) return 0;
     if (r->end > r->begin) {
@@ -127,6 +129,7 @@ static inline int refill(buffered_file_reader *r) {
         r->end = 0;
     }
 
+    // Sequential host I/O hot path for text ingest.
     got = ::read(r->fd, r->buf + r->end, r->cap - r->end);
     if (got < 0) {
         r->err = errno;
@@ -174,6 +177,7 @@ static inline int next_line(buffered_file_reader *r, char **out, std::size_t *le
                 return 1;
             }
 
+            // Cross-chunk lines pay an extra scratch copy.
             if (!reserve_scratch(r, r->scratch_size + chunk + 1)) {
                 r->err = ENOMEM;
                 return -1;
@@ -270,6 +274,7 @@ static inline void strip_utf8_bom(char *line, std::size_t *len) {
     if ((unsigned char) line[0] != 0xEFu) return;
     if ((unsigned char) line[1] != 0xBBu) return;
     if ((unsigned char) line[2] != 0xBFu) return;
+    // One-time first-line fixup.
     std::memmove(line, line + 3, *len - 2);
     *len -= 3;
 }

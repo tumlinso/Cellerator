@@ -134,6 +134,8 @@ void for_each_developmental_time_batch(
             throw std::runtime_error("developmental time inference requires loaded row-compressed CSR parts");
         }
 
+        // Part-wise inference crosses an explicit boundary: export host CSR to
+        // a CPU Torch tensor, move it to device, then bring predictions back.
         torch::Tensor features = cellerator::torch_bindings::export_as_tensor(*part);
         features = features.to(config.device);
         torch::Tensor predicted_time = model->predict_stage(features);

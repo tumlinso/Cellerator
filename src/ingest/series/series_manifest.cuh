@@ -75,6 +75,7 @@ static inline int reserve(manifest *m, unsigned int capacity) {
     unsigned long *next_cols = 0;
     unsigned long *next_nnz = 0;
 
+    // Manifest growth is cold-path work, but it is still a full realloc+copy.
     if (capacity <= m->capacity) return 1;
     next_formats = (unsigned int *) std::calloc((std::size_t) capacity, sizeof(unsigned int));
     next_rows = (unsigned long *) std::calloc((std::size_t) capacity, sizeof(unsigned long));
@@ -146,6 +147,8 @@ static inline int append(manifest *m,
                          unsigned long nnz) {
     unsigned int idx = 0;
 
+    // Every field is copied into packed host columns here; there is no string
+    // aliasing back to the TSV input buffer.
     if (m->count == m->capacity) {
         if (!reserve(m, m->capacity == 0 ? 16u : m->capacity << 1u)) return 0;
     }
@@ -200,6 +203,8 @@ static inline int load_tsv(const char *path, manifest *m, int has_header = 1) {
 
     if (!scan::open(&reader, path)) goto fail;
 
+    // Rebuild the whole manifest in one pass over the TSV. This is simple
+    // control-plane code, not a steady-state data path.
     for (;;) {
         rc = scan::next_line(&reader, &line, &line_len);
         if (rc < 0) goto fail;

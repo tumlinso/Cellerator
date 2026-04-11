@@ -50,14 +50,35 @@ option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect wo
 set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
     "Preferred root for the source-built libtorch installation")
 
-if(CELLERATOR_ENABLE_TORCH_MODELS AND NOT Torch_DIR)
+if(CELLERATOR_ENABLE_TORCH_MODELS)
     if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
         list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
     elseif(EXISTS "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch/TorchConfig.cmake")
-        set(Torch_DIR
-            "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch"
-            CACHE PATH "Torch CMake package directory" FORCE)
-        message(STATUS "Defaulting Torch_DIR to source-built libtorch at ${Torch_DIR}")
+        if(NOT Torch_DIR OR Torch_DIR MATCHES ".*/site-packages/torch/share/cmake/Torch/?$")
+            set(Torch_DIR
+                "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch"
+                CACHE PATH "Torch CMake package directory" FORCE)
+            message(STATUS "Defaulting Torch_DIR to source-built libtorch at ${Torch_DIR}")
+        endif()
+        if(EXISTS "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2/Caffe2Config.cmake")
+            if(NOT Caffe2_DIR OR Caffe2_DIR MATCHES ".*/site-packages/torch/share/cmake/Caffe2/?$")
+                set(Caffe2_DIR
+                    "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2"
+                    CACHE PATH "Caffe2 CMake package directory" FORCE)
+                message(STATUS "Defaulting Caffe2_DIR to source-built libtorch at ${Caffe2_DIR}")
+            endif()
+        endif()
+        foreach(cellerator_torch_cache_var
+                IN ITEMS
+                    TORCH_LIBRARY
+                    C10_CUDA_LIBRARY
+                    c10_LIBRARY
+                    kineto_LIBRARY)
+            if(DEFINED ${cellerator_torch_cache_var}
+               AND "${${cellerator_torch_cache_var}}" MATCHES ".*/site-packages/torch/.*")
+                unset(${cellerator_torch_cache_var} CACHE)
+            endif()
+        endforeach()
     endif()
 endif()
 
@@ -118,6 +139,19 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
     target_include_directories(cellerator_torch_bindings INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(cellerator_torch_bindings INTERFACE cellerator_torch)
     target_compile_features(cellerator_torch_bindings INTERFACE cxx_std_17)
+
+    add_library(cellerator_compute_model_ops STATIC
+        src/compute/model_ops/model_ops.cu
+    )
+    target_include_directories(cellerator_compute_model_ops PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(cellerator_compute_model_ops PRIVATE cellerator_torch CUDA::cudart)
+    set_target_properties(cellerator_compute_model_ops PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+    )
+    cellerator_enable_perf(cellerator_compute_model_ops)
 endif()
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/matrix/matrix_io.cu)
@@ -210,6 +244,9 @@ add_library(cellerator_workbench
 target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
 target_link_libraries(cellerator_workbench PRIVATE CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+if(NCCL_LIBRARY)
+    target_link_libraries(cellerator_workbench PRIVATE ${NCCL_LIBRARY})
+endif()
 set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 
 add_executable(seriesWorkbenchRuntimeTest
@@ -222,6 +259,9 @@ set_source_files_properties(
 target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${HDF5_INCLUDE_DIRS})
 target_link_libraries(seriesWorkbenchRuntimeTest PRIVATE cellerator_workbench CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+if(NCCL_LIBRARY)
+    target_link_libraries(seriesWorkbenchRuntimeTest PRIVATE ${NCCL_LIBRARY})
+endif()
 set_target_properties(seriesWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
@@ -261,19 +301,19 @@ target_link_libraries(trajectoryRuntimeTest PRIVATE CUDA::cudart)
 set_target_properties(trajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(trajectoryRuntimeTest)
 
-add_library(cellerator_forward_neighbors STATIC
-    src/models/forward_neighbors/forward_neighbors.cu
+add_library(cellerator_compute_forward_neighbors STATIC
+    src/compute/neighbors/forward_neighbors/forward_neighbors.cu
 )
-target_include_directories(cellerator_forward_neighbors PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_forward_neighbors PRIVATE CUDA::cudart)
-set_target_properties(cellerator_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(cellerator_forward_neighbors)
+target_include_directories(cellerator_compute_forward_neighbors PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_compute_forward_neighbors PRIVATE CUDA::cudart)
+set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
 add_executable(forwardNeighborsCompileTest
     tests/forward_neighbors_compile_test.cc
 )
 target_include_directories(forwardNeighborsCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(forwardNeighborsCompileTest PRIVATE cellerator_forward_neighbors CUDA::cudart)
+target_link_libraries(forwardNeighborsCompileTest PRIVATE cellerator_compute_forward_neighbors CUDA::cudart)
 set_target_properties(forwardNeighborsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(forwardNeighborsCompileTest)
 
@@ -282,7 +322,7 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
         tests/developmental_time_compile_test.cc
     )
     target_include_directories(developmentalTimeCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(developmentalTimeCompileTest PRIVATE cellerator_torch)
+    target_link_libraries(developmentalTimeCompileTest PRIVATE cellerator_torch cellerator_compute_model_ops)
     set_target_properties(developmentalTimeCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(developmentalTimeCompileTest)
 
@@ -298,7 +338,7 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
         tests/dense_reduce_compile_test.cc
     )
     target_include_directories(denseReduceCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(denseReduceCompileTest PRIVATE cellerator_torch)
+    target_link_libraries(denseReduceCompileTest PRIVATE cellerator_torch cellerator_compute_model_ops)
     set_target_properties(denseReduceCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(denseReduceCompileTest)
 
@@ -306,7 +346,15 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
         tests/quantize_model_test.cc
     )
     target_include_directories(quantizeModelTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch cellerator_forward_neighbors CUDA::cudart)
+    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch cellerator_compute_model_ops cellerator_compute_forward_neighbors CUDA::cudart)
     set_target_properties(quantizeModelTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(quantizeModelTest)
+
+    add_executable(modelCustomOpsTest
+        tests/model_custom_ops_test.cc
+    )
+    target_include_directories(modelCustomOpsTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(modelCustomOpsTest PRIVATE cellerator_torch cellerator_compute_model_ops)
+    set_target_properties(modelCustomOpsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(modelCustomOpsTest)
 endif()

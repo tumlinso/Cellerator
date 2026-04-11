@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace cellerator::models::forward_neighbors {
+namespace cellerator::compute::neighbors::forward_neighbors {
 
 enum class ForwardNeighborBackend {
     exact_windowed,
@@ -146,4 +146,4 @@ inline ForwardNeighborSearchResult empty_forward_neighbor_result_(std::int64_t t
 
 } // namespace detail
 
-} // namespace cellerator::models::forward_neighbors
+} // namespace cellerator::compute::neighbors::forward_neighbors

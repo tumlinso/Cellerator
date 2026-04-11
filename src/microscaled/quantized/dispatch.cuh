@@ -8,11 +8,15 @@
 
 namespace cellerator::microscaled::quantized {
 
+// Runtime bit-width validation is host-side control logic and negligible next
+// to even one kernel launch.
 __host__ __device__ __forceinline__ bool valid_bits(int bits) {
     return bits == 1 || bits == 2 || bits == 4 || bits == 8;
 }
 
 template<typename Functor>
+// Keep the public API runtime-configurable while the kernels remain fully
+// specialized per bit width.
 decltype(auto) dispatch_bits(int bits, Functor&& fn) {
     switch (bits) {
         case 1:
@@ -41,6 +45,8 @@ inline cudaError_t launch_quantize_block(
         return cudaErrorInvalidValue;
     }
 
+    // One launch per block keeps scheduling simple, but very small blocks are
+    // fixed-overhead dominated rather than bandwidth dominated.
     quantize_block_kernel<Bits><<<blocks, v100_launch_policy::threads, 0, stream>>>(
         *matrix,
         block,
@@ -61,6 +67,7 @@ inline cudaError_t launch_dequantize_block(
         return cudaErrorInvalidValue;
     }
 
+    // Dequantization shares the same launch economics as quantization.
     dequantize_block_kernel<Bits><<<blocks, v100_launch_policy::threads, 0, stream>>>(
         *matrix,
         block,
@@ -74,6 +81,8 @@ inline cudaError_t launch_quantize_block_v100(
     csr_block block,
     const Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
+    // Prefer L1 on Volta because row-local metadata and packed writes are
+    // reused within the same block.
     cudaError_t status = cudaFuncSetCacheConfig(quantize_block_kernel<Bits, Real, Metadata>, cudaFuncCachePreferL1);
 
     if (status != cudaSuccess) {
@@ -88,6 +97,7 @@ inline cudaError_t launch_dequantize_block_v100(
     csr_block block,
     Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
+    // Match the encode path so paired benchmarks see the same cache policy.
     cudaError_t status = cudaFuncSetCacheConfig(dequantize_block_kernel<Bits, Real, Metadata>, cudaFuncCachePreferL1);
 
     if (status != cudaSuccess) {

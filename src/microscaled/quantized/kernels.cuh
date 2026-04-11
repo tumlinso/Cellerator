@@ -6,6 +6,8 @@ namespace cellerator::microscaled::quantized {
 
 struct v100_launch_policy {
     enum {
+        // One thread owns one row. 128 threads keeps launch overhead low while
+        // leaving enough warps resident for typical V100 row-skew patterns.
         threads = 128,
         min_blocks_per_sm = 4
     };

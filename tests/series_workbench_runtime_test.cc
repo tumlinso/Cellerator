@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -73,11 +74,15 @@ int main() {
     const std::string barcode_path = base + ".barcodes.tsv";
     const std::string metadata_path = base + ".metadata.tsv";
     const std::string series_path = base + ".series.csh5";
+    const std::string converted_series_path = base + ".converted.series.csh5";
     cellshard::sparse::compressed part;
     cellshard::series_codec_descriptor codec;
     cellshard::series_layout_view layout;
     cellshard::series_dataset_table_view dataset_view;
     cellshard::series_provenance_view provenance_view;
+    cellshard::series_metadata_table_view metadata_table_view;
+    cellshard::series_embedded_metadata_view embedded_metadata_view;
+    cellshard::series_browse_cache_view browse_view;
     owned_text_column dataset_ids = make_column({"sample_a"});
     owned_text_column matrix_paths = make_column({matrix_path.c_str()});
     owned_text_column feature_paths = make_column({feature_path.c_str()});
@@ -87,6 +92,8 @@ int main() {
     owned_text_column feature_ids = make_column({"g0", "g1", "g2"});
     owned_text_column feature_names = make_column({"MT-CO1", "GeneB", "GeneC"});
     owned_text_column feature_types = make_column({"gene", "gene", "gene"});
+    owned_text_column metadata_column_names = make_column({"stage", "batch"});
+    owned_text_column metadata_field_values = make_column({"E8", "A", "E9", "A"});
     std::vector<std::uint32_t> dataset_formats = { (std::uint32_t) cellerator::ingest::series::source_mtx };
     std::vector<std::uint64_t> dataset_row_begin = { 0u };
     std::vector<std::uint64_t> dataset_row_end = { 2u };
@@ -106,6 +113,19 @@ int main() {
     std::vector<std::uint64_t> feature_local_indices = { 0u, 1u, 2u };
     std::vector<std::uint64_t> dataset_feature_offsets = { 0u, 3u };
     std::vector<std::uint32_t> dataset_feature_to_global = { 0u, 1u, 2u };
+    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 2u, 4u };
+    std::vector<std::uint32_t> metadata_dataset_indices = { 0u };
+    std::vector<std::uint64_t> metadata_global_row_begin = { 0u };
+    std::vector<std::uint64_t> metadata_global_row_end = { 2u };
+    std::vector<std::uint32_t> browse_feature_indices = { 0u, 1u };
+    std::vector<float> browse_gene_sum = { 5.0f, 7.0f };
+    std::vector<float> browse_gene_detected = { 1.0f, 1.0f };
+    std::vector<float> browse_gene_sq_sum = { 25.0f, 49.0f };
+    std::vector<float> browse_dataset_mean = { 2.5f, 3.5f };
+    std::vector<float> browse_shard_mean = { 2.5f, 3.5f };
+    std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u };
+    std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u };
+    std::vector<float> browse_part_sample_values = { 5.0f, 0.0f, 0.0f, 7.0f };
 
     std::remove(manifest_path.c_str());
     std::remove(matrix_path.c_str());
@@ -113,6 +133,7 @@ int main() {
     std::remove(barcode_path.c_str());
     std::remove(metadata_path.c_str());
     std::remove(series_path.c_str());
+    std::remove(converted_series_path.c_str());
 
     if (!write_file(matrix_path,
                     "%%MatrixMarket matrix coordinate integer general\n"
@@ -187,13 +208,46 @@ int main() {
     provenance_view.dataset_feature_offsets = dataset_feature_offsets.data();
     provenance_view.dataset_feature_to_global = dataset_feature_to_global.data();
 
+    metadata_table_view.rows = 2u;
+    metadata_table_view.cols = 2u;
+    metadata_table_view.column_names = metadata_column_names.view();
+    metadata_table_view.field_values = metadata_field_values.view();
+    metadata_table_view.row_offsets = metadata_row_offsets.data();
+
+    embedded_metadata_view.count = 1u;
+    embedded_metadata_view.dataset_indices = metadata_dataset_indices.data();
+    embedded_metadata_view.global_row_begin = metadata_global_row_begin.data();
+    embedded_metadata_view.global_row_end = metadata_global_row_end.data();
+    embedded_metadata_view.tables = &metadata_table_view;
+
+    browse_view.selected_feature_count = 2u;
+    browse_view.selected_feature_indices = browse_feature_indices.data();
+    browse_view.gene_sum = browse_gene_sum.data();
+    browse_view.gene_detected = browse_gene_detected.data();
+    browse_view.gene_sq_sum = browse_gene_sq_sum.data();
+    browse_view.dataset_count = 1u;
+    browse_view.dataset_feature_mean = browse_dataset_mean.data();
+    browse_view.shard_count = 1u;
+    browse_view.shard_feature_mean = browse_shard_mean.data();
+    browse_view.part_count = 1u;
+    browse_view.sample_rows_per_part = 2u;
+    browse_view.part_sample_row_offsets = browse_part_sample_offsets.data();
+    browse_view.part_sample_global_rows = browse_part_sample_rows.data();
+    browse_view.part_sample_values = browse_part_sample_values.data();
+
     if (!cellshard::create_series_compressed_h5(series_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
     if (!cellshard::append_standard_csr_part_h5(series_path.c_str(), 0u, &part)) return 1;
+    if (!cellshard::append_series_embedded_metadata_h5(series_path.c_str(), &embedded_metadata_view)) return 1;
+    if (!cellshard::append_series_browse_cache_h5(series_path.c_str(), &browse_view)) return 1;
 
     wb::series_summary summary = wb::summarize_series_csh5(series_path);
     if (!summary.ok) return 1;
     if (summary.rows != 2u || summary.cols != 3u || summary.datasets.size() != 1u || summary.parts.size() != 1u) return 1;
     if (summary.feature_names.size() != 3u || summary.feature_names[0] != "MT-CO1") return 1;
+    if (summary.embedded_metadata.size() != 1u) return 1;
+    if (summary.embedded_metadata[0].column_names.size() != 2u || summary.embedded_metadata[0].column_names[0] != "stage") return 1;
+    if (!summary.browse.available || summary.browse.selected_feature_indices.size() != 2u) return 1;
+    if (summary.browse.selected_feature_names.size() != 2u || summary.browse.selected_feature_names[0] != "MT-CO1") return 1;
 
     int device_count = 0;
     if (cudaGetDeviceCount(&device_count) == cudaSuccess && device_count > 0) {
@@ -210,6 +264,43 @@ int main() {
         if (preprocess_summary.parts_processed != 1u || preprocess_summary.kept_genes == 0u) return 1;
     }
 
+    if (device_count >= 4) {
+        policy.output_path = converted_series_path;
+        policy.embed_metadata = true;
+        policy.build_browse_cache = true;
+        policy.browse_top_features = 2u;
+        policy.browse_sample_rows_per_part = 2u;
+        wb::ingest_plan converted_plan = wb::plan_series_ingest(inspection.sources, policy);
+        if (!converted_plan.ok) {
+            std::fprintf(stderr, "converted_plan not ok\n");
+            return 1;
+        }
+        wb::conversion_report report = wb::convert_plan_to_series_csh5(converted_plan);
+        if (!report.ok) {
+            std::fprintf(stderr, "convert_plan_to_series_csh5 failed\n");
+            for (const wb::issue &entry : report.issues) {
+                std::fprintf(stderr, "%s %s: %s\n",
+                             wb::severity_name(entry.severity).c_str(),
+                             entry.scope.c_str(),
+                             entry.message.c_str());
+            }
+            return 1;
+        }
+        wb::series_summary converted_summary = wb::summarize_series_csh5(converted_series_path);
+        if (!converted_summary.ok) {
+            std::fprintf(stderr, "converted summary not ok\n");
+            return 1;
+        }
+        if (converted_summary.embedded_metadata.empty()) {
+            std::fprintf(stderr, "converted summary missing embedded metadata\n");
+            return 1;
+        }
+        if (!converted_summary.browse.available || converted_summary.browse.selected_feature_indices.size() != 2u) {
+            std::fprintf(stderr, "converted summary missing browse cache\n");
+            return 1;
+        }
+    }
+
     cellshard::sparse::clear(&part);
     std::remove(manifest_path.c_str());
     std::remove(matrix_path.c_str());
@@ -217,5 +308,6 @@ int main() {
     std::remove(barcode_path.c_str());
     std::remove(metadata_path.c_str());
     std::remove(series_path.c_str());
+    std::remove(converted_series_path.c_str());
     return 0;
 }

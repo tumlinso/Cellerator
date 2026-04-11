@@ -22,6 +22,8 @@ __host__ __device__ __forceinline__ csr_block get_block(
         return block;
     }
 
+    // Missing block metadata means "treat the whole matrix as one block". That
+    // keeps the access layer usable for small host-side helpers.
     if (matrix->block_row_ptr == nullptr || matrix->block_count <= 0) {
         block.block_index = 0;
         block.row_begin = 0;
@@ -55,6 +57,8 @@ __host__ __device__ __forceinline__ int find_in_row(
 
     cursor = load_scalar(matrix->rowPtr + row);
     end = load_scalar(matrix->rowPtr + row + 1);
+    // Linear scan by design. This is fine for debug, tests, and sparse random
+    // access helpers, but not intended as a high-throughput lookup primitive.
     while (cursor < end) {
         if (load_scalar(matrix->colIdx + cursor) == column) {
             return cursor;
@@ -113,6 +117,8 @@ __host__ __device__ __forceinline__ unsigned int quantize_code(
         return 0u;
     }
 
+    // Quantization is intentionally branch-light: center, divide by scale,
+    // round, then clamp into the legal code range.
     q = fast_div(centered, scale);
     rounded = q >= 0.0f ? static_cast<int>(q + 0.5f) : static_cast<int>(q - 0.5f);
     if (rounded < 0) {

@@ -58,7 +58,7 @@ static inline int append(feature_table *t,
     return 1;
 }
 
-// Full synchronous feature TSV ingest into host-owned columns.
+// Full synchronous feature TSV ingest into host-owned packed columns.
 static inline int load_tsv(const char *path, feature_table *t, int skip_header = 0) {
     scan::buffered_file_reader reader;
     int rc = 0;

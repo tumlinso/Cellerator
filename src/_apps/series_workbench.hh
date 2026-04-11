@@ -53,6 +53,10 @@ struct ingest_policy {
     std::string output_path;
     bool verify_after_write = true;
     int device = 0;
+    bool embed_metadata = true;
+    bool build_browse_cache = true;
+    unsigned int browse_top_features = 16u;
+    unsigned int browse_sample_rows_per_part = 8u;
 };
 
 struct planned_dataset {
@@ -159,6 +163,31 @@ struct codec_summary {
     std::uint32_t flags = 0;
 };
 
+struct embedded_metadata_dataset_summary {
+    std::uint32_t dataset_index = 0;
+    std::uint64_t row_begin = 0;
+    std::uint64_t row_end = 0;
+    std::uint32_t rows = 0;
+    std::uint32_t cols = 0;
+    std::vector<std::string> column_names;
+};
+
+struct browse_cache_summary {
+    bool available = false;
+    std::uint32_t selected_feature_count = 0;
+    std::uint32_t sample_rows_per_part = 0;
+    std::vector<std::uint32_t> selected_feature_indices;
+    std::vector<std::string> selected_feature_names;
+    std::vector<float> gene_sum;
+    std::vector<float> gene_detected;
+    std::vector<float> gene_sq_sum;
+    std::vector<float> dataset_feature_mean;
+    std::vector<float> shard_feature_mean;
+    std::vector<std::uint32_t> part_sample_row_offsets;
+    std::vector<std::uint64_t> part_sample_global_rows;
+    std::vector<float> part_sample_values;
+};
+
 struct series_summary {
     std::string path;
     std::vector<issue> issues;
@@ -167,6 +196,8 @@ struct series_summary {
     std::vector<series_shard_summary> shards;
     std::vector<codec_summary> codecs;
     std::vector<std::string> feature_names;
+    std::vector<embedded_metadata_dataset_summary> embedded_metadata;
+    browse_cache_summary browse;
     std::uint64_t rows = 0;
     std::uint64_t cols = 0;
     std::uint64_t nnz = 0;

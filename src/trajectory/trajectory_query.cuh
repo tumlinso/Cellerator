@@ -13,6 +13,7 @@ namespace cg = ::cellerator::compute::graph;
 
 inline std::vector<std::uint32_t> subtree_supernodes(const cg::TreeOverlay &tree, std::uint32_t root) {
     if (root >= tree.nodes) throw std::out_of_range("subtree root out of range");
+    // Linear scan using Euler-tour intervals.
     std::vector<std::uint32_t> nodes;
     nodes.reserve(tree.nodes);
     for (std::uint32_t node = 0; node < tree.nodes; ++node) {
@@ -25,6 +26,7 @@ inline std::vector<std::uint32_t> subtree_supernodes(const cg::TreeOverlay &tree
 
 inline std::vector<std::uint32_t> path_to_root(const cg::TreeOverlay &tree, std::uint32_t node) {
     if (node >= tree.nodes) throw std::out_of_range("path_to_root node out of range");
+    // O(depth) host helper.
     std::vector<std::uint32_t> path;
     std::uint32_t current = node;
     while (true) {
@@ -38,6 +40,7 @@ inline std::vector<std::uint32_t> path_to_root(const cg::TreeOverlay &tree, std:
 
 inline std::vector<std::uint32_t> supernode_cells(const cg::SupernodeTable &table, std::uint32_t supernode_id) {
     if (supernode_id >= table.count) throw std::out_of_range("supernode id out of range");
+    // Materializes a fresh host vector of member ids.
     std::vector<std::uint32_t> cells;
     const std::uint32_t begin = table.member_row_ptr[supernode_id];
     const std::uint32_t end = table.member_row_ptr[supernode_id + 1u];

@@ -177,6 +177,8 @@ static inline int scan_row_nnz(scan::buffered_file_reader *reader, const header 
     int have_prev = 0;
     float value = 0.0f;
 
+    // This is the dominant planning pass: one full text parse, one counter
+    // update per entry, and no GPU overlap.
     while ((rc = scan::next_line(reader, &line, &line_len)) > 0) {
         if (line_len == 0 || line[0] == '%') continue;
         if (!read_triplet(line, h, &row, &col, &value)) return 0;
@@ -231,6 +233,7 @@ static inline int build_part_nnz_from_row_nnz(const unsigned long *row_nnz,
     if (num_parts == 0) return 1;
     part_nnz = (unsigned long *) std::calloc((std::size_t) num_parts, sizeof(unsigned long));
     if (part_nnz == 0) return 0;
+    // Pure host metadata reduction. Cost is linear in rows, not nnz.
     for (part = 0; part < num_parts; ++part) {
         for (row = row_offsets[part]; row < row_offsets[part + 1]; ++row) {
             part_nnz[part] += row_nnz[row];
@@ -258,6 +261,8 @@ static inline int plan_row_partitions_by_nnz(const unsigned long *row_nnz,
     if (offsets == 0) return 0;
 
     offsets[0] = 0;
+    // Greedy one-pass planner. It is only meant to keep later convert/store
+    // windows within budget, not solve a global balancing problem.
     for (row = 0; row < rows; ++row) {
         if (max_nnz != 0 && shard_nnz != 0 && shard_nnz + row_nnz[row] > max_nnz) {
             ++part_count;

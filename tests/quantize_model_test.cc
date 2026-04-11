@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 namespace quant = ::cellerator::models::quantize;
-namespace fn = ::cellerator::models::forward_neighbors;
+namespace fn = ::cellerator::compute::neighbors::forward_neighbors;
 
 namespace {
 

@@ -42,6 +42,8 @@ inline DenseReduceTrainStep train_dense_reduce_step(
     model->train();
     optimizer.zero_grad();
 
+    // Extra step overhead comes from manual unscale, optional finite-gradient
+    // checks, and optional full-parameter gradient clipping.
     DenseReduceOutput output = model->forward(batch.features);
     DenseReduceLoss loss = compute_dense_reduce_loss(output, batch, loss_config);
     (loss.total * train_config.loss_scale).backward();

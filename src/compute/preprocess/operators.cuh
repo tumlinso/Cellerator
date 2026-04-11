@@ -22,6 +22,7 @@ static inline int compute_cell_metrics(const csv::compressed_view *src,
     if (blocks < 1u) blocks = 1u;
     if (blocks > 4096u) blocks = 4096u;
 
+    // Row-parallel pass over CSR metadata and values; usually memory-bound, so launch overhead matters when parts are tiny.
     kernels::compute_cell_metrics_kernel<<<blocks, threads, 0, ws->stream>>>(
         *src,
         ws->d_gene_flags,
@@ -53,6 +54,7 @@ static inline int normalize_log1p_inplace(csv::compressed_view *src,
     if (blocks < 1u) blocks = 1u;
     if (blocks > 4096u) blocks = 4096u;
 
+    // In-place nnz transform with one row block schedule; cost scales with row span and nnz traffic, not with much arithmetic.
     kernels::normalize_log1p_kernel<<<blocks, threads, 0, ws->stream>>>(
         *src,
         d_total_counts,
@@ -79,9 +81,11 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
     if (blocks_rows > 4096u) blocks_rows = 4096u;
 
     if (d_keep_cells != 0) {
+        // Cheap mask expansion, but still a full-row launch before the heavier cuSPARSE reductions.
         kernels::expand_keep_mask_kernel<<<blocks_rows, threads, 0, ws->stream>>>(src->rows, d_keep_cells, ws->d_ones_rows);
         if (!cscu::cuda_check(cudaGetLastError(), "expand_keep_mask_kernel")) return 0;
     } else {
+        // Pure fill pass; launch overhead dominates unless the part has enough rows to amortize it.
         kernels::fill_ones_kernel<<<blocks_rows, threads, 0, ws->stream>>>(src->rows, ws->d_ones_rows);
         if (!cscu::cuda_check(cudaGetLastError(), "fill_ones_kernel rows")) return 0;
     }
@@ -96,6 +100,7 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
         std::fprintf(stderr, "CUB error at DeviceReduce::Sum kept rows\n");
         return 0;
     }
+    // Single-warp scalar fold after CUB; the math is trivial, so this launch mostly exists to keep the result on device.
     kernels::add_scalar_kernel<<<1, 32, 0, ws->stream>>>(ws->d_active_rows, ws->d_kept_cells_tmp);
     if (!cscu::cuda_check(cudaGetLastError(), "add_scalar_kernel active rows")) return 0;
 
@@ -103,14 +108,17 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
     if (blocks_nnz < 1u) blocks_nnz = 1u;
     if (blocks_nnz > 4096u) blocks_nnz = 4096u;
 
+    // Dense staging of nnz values for SpMV; bandwidth-bound and paid three times in this routine.
     kernels::convert_values_kernel<<<blocks_nnz, threads, 0, ws->stream>>>(src->nnz, src->val, ws->d_tmp_nnz);
     if (!cscu::cuda_check(cudaGetLastError(), "convert_values_kernel")) return 0;
     if (!run_spmv_transpose(ws, src, CUDA_R_32F, ws->d_tmp_nnz, ws->d_ones_rows, ws->d_gene_sum)) return 0;
 
+    // Second full nnz pass for squared values; this is another read/write sweep before the transpose SpMV.
     kernels::square_values_kernel<<<blocks_nnz, threads, 0, ws->stream>>>(src->nnz, src->val, ws->d_tmp_nnz);
     if (!cscu::cuda_check(cudaGetLastError(), "square_values_kernel")) return 0;
     if (!run_spmv_transpose(ws, src, CUDA_R_32F, ws->d_tmp_nnz, ws->d_ones_rows, ws->d_gene_sq_sum)) return 0;
 
+    // Third nnz pass builds detection counts; if this path gets hot, fusion pressure should focus here first.
     kernels::fill_ones_kernel<<<blocks_nnz, threads, 0, ws->stream>>>(src->nnz, ws->d_tmp_nnz);
     if (!cscu::cuda_check(cudaGetLastError(), "fill_ones_kernel nnz")) return 0;
     if (!run_spmv_transpose(ws, src, CUDA_R_32F, ws->d_tmp_nnz, ws->d_ones_rows, ws->d_gene_detected)) return 0;
@@ -164,6 +172,7 @@ static inline int build_gene_filter_mask(device_workspace *ws,
     if (ws == 0) return 0;
     if (!reserve(ws, ws->rows_capacity, cols, ws->nnz_capacity)) return 0;
     if (!cscu::cuda_check(cudaMemsetAsync(ws->d_keep_genes, 0, (std::size_t) cols * sizeof(unsigned char), ws->stream), "cudaMemsetAsync gene keep rebuild")) return 0;
+    // Host readback of one scalar forces stream completion; cheap in bytes, expensive in overlap.
     if (!cscu::cuda_check(cudaMemcpyAsync(&active_rows,
                                           ws->d_active_rows,
                                           sizeof(float),
@@ -177,6 +186,7 @@ static inline int build_gene_filter_mask(device_workspace *ws,
     if (blocks < 1u) blocks = 1u;
     if (blocks > 4096u) blocks = 4096u;
 
+    // Column-parallel thresholding over aggregate metrics; usually light compared with the earlier SpMV passes.
     kernels::build_gene_filter_mask_kernel<<<blocks, 256, 0, ws->stream>>>(
         cols,
         inv_cells,

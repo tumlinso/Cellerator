@@ -1,9 +1,9 @@
-#include "../src/models/forward_neighbors/forwardNeighbors.hh"
+#include "../src/compute/neighbors/forward_neighbors/forwardNeighbors.hh"
 
 #include <cmath>
 
 int main() {
-    using namespace cellerator::models::forward_neighbors;
+    using namespace cellerator::compute::neighbors::forward_neighbors;
 
     ForwardNeighborRecordBatch records{
         {10, 11, 12, 13, 14, 15},

@@ -1,5 +1,8 @@
 #pragma once
 
+// Full active quantized backend surface. Include narrower headers in hot
+// compile units if compile time matters more than convenience.
+
 #include "format.cuh"
 #include "numeric.cuh"
 #include "metadata.cuh"

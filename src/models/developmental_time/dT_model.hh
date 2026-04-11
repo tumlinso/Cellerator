@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dT_dataloader.hh"
+#include "../../compute/model_ops/model_ops.hh"
 
 #include <torch/torch.h>
 
@@ -15,6 +16,8 @@
 #include <vector>
 
 namespace cellerator::models::developmental_time {
+
+namespace model_ops = ::cellerator::compute::model_ops;
 
 struct SparseTimeEncoderConfig {
     std::int64_t input_genes = 0;
@@ -134,6 +137,9 @@ public:
             throw std::invalid_argument("SparseTimeEncoder expects sparse COO or CSR input");
         }
 
+        // Main overhead is sparse dtype/layout churn before the first
+        // sparse-dense projection: values widen to f32 and CSR batches become
+        // COO before matmul.
         torch::Tensor sparse_input = sparse_csr_batch.to(torch::kFloat32);
         if (sparse_input.layout() == torch::kSparseCsr) sparse_input = sparse_input.to_sparse();
 
@@ -179,6 +185,7 @@ public:
     DevelopmentalStageOutput forward(const torch::Tensor &embedding) {
         if (embedding.dim() != 2) throw std::invalid_argument("DevelopmentalStageHead expects a rank-2 embedding tensor");
 
+        // Dense head; cheaper than the sparse encoder path above.
         torch::Tensor hidden = hidden_(embedding.to(torch::kFloat32));
         hidden = hidden_norm_(hidden);
         hidden = torch::nn::functional::silu(hidden);
@@ -241,8 +248,6 @@ inline DevelopmentalStageLoss compute_developmental_stage_loss(
     torch::Tensor ranking = scalar_zero.clone();
     torch::Tensor anchor = scalar_zero.clone();
     torch::Tensor spread = scalar_zero.clone();
-    torch::Tensor min_std = torch::full({}, config.min_within_day_std, scalar_zero.options());
-    torch::Tensor margin = torch::full({}, config.ranking_margin, scalar_zero.options());
     std::vector<std::int64_t> bucket_ids;
     std::vector<torch::Tensor> bucket_means;
     std::size_t ranking_pairs = 0;
@@ -254,7 +259,26 @@ inline DevelopmentalStageLoss compute_developmental_stage_loss(
         return DevelopmentalStageLoss{ scalar_zero.clone(), scalar_zero.clone(), scalar_zero.clone(), scalar_zero.clone() };
     }
 
+    // Prefer the CUDA custom-op path when tensors stay on device.
+    if (stage.is_cuda() && day_buckets.is_cuda()) {
+        std::tie(ranking, anchor, spread) = model_ops::developmental_stage_bucket_losses(
+            stage.contiguous(),
+            day_buckets.contiguous(),
+            config.ranking_margin,
+            config.min_within_day_std,
+            config.use_neighbor_day_pairs_only,
+            config.num_day_buckets);
+        torch::Tensor total = config.ranking_weight * ranking
+            + config.anchor_weight * anchor
+            + config.spread_weight * spread;
+        return DevelopmentalStageLoss{ std::move(total), std::move(ranking), std::move(anchor), std::move(spread) };
+    }
+
+    torch::Tensor min_std = torch::full({}, config.min_within_day_std, scalar_zero.options());
+    torch::Tensor margin = torch::full({}, config.ranking_margin, scalar_zero.options());
+
     {
+        // CPU fallback pays for bucket copy, sorting, and eager masked selects.
         torch::Tensor bucket_cpu = day_buckets.to(torch::kCPU).contiguous();
         bucket_ids.resize(static_cast<std::size_t>(bucket_cpu.numel()));
         std::memcpy(bucket_ids.data(), bucket_cpu.data_ptr<std::int64_t>(), bucket_ids.size() * sizeof(std::int64_t));

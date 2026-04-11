@@ -7,6 +7,8 @@
 
 namespace cellerator::microscaled::quantized {
 
+// Align packed rows so repeated row starts stay friendly to Volta global
+// transactions and packed-allocation slicing.
 inline constexpr int packed_storage_alignment = 16;
 
 template<int Bits>
@@ -29,6 +31,8 @@ struct format_traits {
         int alignment = packed_storage_alignment) {
         const int bytes = row_bytes(row_nnz);
 
+        // Padding costs a few bytes per row, but it avoids ragged starts that
+        // make row-local decode and writeback harder to coalesce.
         return alignment <= 1 ? bytes : ((bytes + alignment - 1) / alignment) * alignment;
     }
 
@@ -39,10 +43,13 @@ struct format_traits {
         const int lane = local_index & (codes_per_byte - 1);
         const int shift = lane * Bits;
 
+        // Scalar unpack is the cheap row-local helper, not a vector decode path.
         return (static_cast<unsigned int>(packed[slot]) >> shift) & static_cast<unsigned int>(code_mask);
     }
 
     __host__ __device__ __forceinline__ static unsigned char pack_byte(unsigned int packed_byte) {
+        // Callers assemble the packed byte explicitly; this helper just clamps
+        // the final store value.
         return static_cast<unsigned char>(packed_byte & 0xffu);
     }
 };

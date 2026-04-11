@@ -10,6 +10,7 @@ struct alignas(16) per_gene_affine {
     const Real* scales;
     const Real* offsets;
 
+    // No row-local state, so prepare_row() compiles away.
     struct row_cache {
     };
 
@@ -32,6 +33,8 @@ struct alignas(16) column_scale_row_offset {
     const Real* column_scales;
     const Real* row_offsets;
 
+    // Cache the row offset once per row so the hot inner loop reloads only the
+    // per-column scale.
     struct row_cache {
         Real offset;
     };

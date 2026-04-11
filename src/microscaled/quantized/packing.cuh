@@ -22,6 +22,8 @@ __host__ __device__ __forceinline__ void pack_row_values(
     const auto row_cache = matrix->metadata.prepare_row(row);
 
     if constexpr (Bits == 8) {
+        // The 8-bit path earns a wider vectorized fast path on aligned output
+        // because one code maps cleanly to one byte.
         while (index < end && !is_aligned_16(out)) {
             const int column = load_scalar(matrix->colIdx + index);
 
@@ -115,6 +117,8 @@ __host__ __device__ __forceinline__ void pack_row_values(
             ++out;
         }
     } else {
+        // Sub-byte formats trade a little extra bit packing work for much
+        // smaller payloads. The loop stays row-local to avoid extra staging.
         while (index < end) {
             unsigned int packed_byte = 0u;
 
@@ -263,6 +267,8 @@ inline int pack_nnz_values(const csr_matrix<Bits, Real, Metadata>* matrix, const
         return -1;
     }
 
+    // Host helper for export/build code. Steady-state device work should use
+    // the block launchers instead of walking rows serially on the host.
     while (row < matrix->rows) {
         pack_row_values(matrix, row, 0, values_by_nnz);
         ++row;

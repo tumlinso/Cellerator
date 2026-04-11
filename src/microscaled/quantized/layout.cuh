@@ -28,6 +28,8 @@ struct alignas(16) csr_matrix {
     int nnz;
     int format;
     int block_count;
+    // rowPtr and packed_row_ptr stay separate so the backend can preserve
+    // original sparse structure while compacting only the quantized payload.
     const int* rowPtr;
     const int* packed_row_ptr;
     const int* colIdx;
@@ -114,6 +116,8 @@ inline int build_packed_row_ptr(const int* row_ptr, int rows, int* packed_row_pt
         return -1;
     }
 
+    // One linear host pass to precompute packed byte offsets. This setup cost
+    // is cheap enough to pay once during export/build, not per kernel launch.
     packed_row_ptr[0] = 0;
     while (row < rows) {
         const int row_nnz = row_ptr[row + 1] - row_ptr[row];
