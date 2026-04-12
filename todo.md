@@ -4,15 +4,14 @@
 
 - `Cellerator` is aiming to be the single-cell pipeline and modeling layer on top of `CellShard`.
 - The most real code today is in:
+  - `src/apps/*`
+  - `src/compute/neighbors/*` and `src/compute/preprocess/*`
   - `src/ingest/series/*` and `src/ingest/mtx/*`
-  - `src/compute/preprocess/*`
+  - `src/quantized/*`
   - `bench/scrna_preprocess_bench.cu`
   - `tests/cellshard_series_h5_test.cu`
 - The tree is still mid-migration:
-  - old monolithic ingest code still exists in `src/load_embryo_mtx_shards.cu` and `src/load_embryo_series.cuh`
-  - `src/rna/preprocess.cuh` is only a thin alias over `compute/preprocess`
-  - `src/_rna/*`, `src/_models/*`, and `src/_apps/*` are mostly scaffold docs
-  - `src/normalize.hh`, `src/normalize.cc`, and `src/targets/preprocess.cuh` are empty placeholders
+  - legacy matrix-format monoliths have been quarantined under `src/legacy/monoliths/*`
 - There is active local work in progress in this checkout, so cleanup should avoid broad churn until the intended migration path is explicit.
 
 ## What Looks Important Right Now
@@ -36,14 +35,10 @@
 
 ### 2. Pick the active ingest path
 
-- Decide whether `src/load_embryo_mtx_shards.cu` is still the real executable or whether `src/ingest/series/series_ingest.cuh` is the future center of gravity.
-- If the modular path is the one to keep:
-  - add a real executable target around `series_ingest`
-  - move users and docs toward that path
-  - mark the monolithic embryo loader as legacy
-- If the monolith still matters short-term:
-  - say so in the README
-  - avoid implying that the modular series ingest has already replaced it
+- Keep `src/ingest/series/series_ingest.cuh` as the canonical ingest path.
+- If a standalone ingest executable is needed:
+  - add it around `src/ingest/series/*`
+  - keep the old matrix-format monoliths under `src/legacy/monoliths/*`
 
 ### 3. Promote preprocess from module to workflow
 
@@ -54,18 +49,13 @@
   - in-place normalize/log1p
   - gene metrics accumulation
   - gene filter mask
-- Decide whether `src/rna/preprocess.cuh` should remain a compatibility alias or become the public API layer.
 - Wire preprocess into an end-to-end path that can run on data loaded from `CellShard`, not only synthetic benchmark inputs.
 
 ### 4. Remove ambiguity in the repository structure
 
 - Update `README.md` so the “current state” section matches the actual active code and tests.
 - Either restore or intentionally drop the deleted `_ingest` scaffold docs.
-- Move executable front-ends toward the advertised `_apps` layout, or stop promising that layout until the move starts.
-- Mark empty placeholders clearly or delete them if they are only creating confusion:
-  - `src/normalize.hh`
-  - `src/normalize.cc`
-  - `src/targets/preprocess.cuh`
+- Keep front-ends under `src/apps/*` and avoid reintroducing scaffold-only directory trees.
 
 ## Near-Term Deliverables
 

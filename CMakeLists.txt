@@ -171,7 +171,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/matrix/matrix_io.cu)
     cellerator_enable_perf(matrixTest)
 
     add_executable(convertEmbryoMtxShards
-        src/load_embryo_mtx_shards.cu
+        src/legacy/monoliths/load_embryo_mtx_shards.cu
         src/matrix/matrix_io.cu
     )
     target_include_directories(convertEmbryoMtxShards PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -234,8 +234,8 @@ set_target_properties(seriesIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_STA
 cellerator_enable_perf(seriesIngestCompileTest)
 
 add_library(cellerator_workbench
-    src/_apps/series_workbench.cc
-    src/_apps/series_workbench_cuda.cu
+    src/apps/series_workbench.cc
+    src/apps/series_workbench_cuda.cu
     extern/CellShard/src/disk/matrix.cu
     extern/CellShard/src/sharded/disk.cu
     extern/CellShard/src/sharded/shard_paths.cu
@@ -266,7 +266,7 @@ set_target_properties(seriesWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
     add_executable(celleratorWorkbench
-        src/_apps/series_workbench_main.cc
+        src/apps/series_workbench_main.cc
     )
     target_include_directories(celleratorWorkbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(celleratorWorkbench PRIVATE ${HDF5_INCLUDE_DIRS})
@@ -309,6 +309,30 @@ target_link_libraries(cellerator_compute_forward_neighbors PRIVATE CUDA::cudart)
 set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
+add_library(cellerator_compute_autograd STATIC
+    src/compute/autograd/runtime.cu
+    src/compute/autograd/kernels/base_sparse.cu
+    src/compute/autograd/kernels/dist_sparse.cu
+)
+target_include_directories(cellerator_compute_autograd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_compute_autograd PRIVATE CUDA::cudart CUDA::cusparse)
+if(NCCL_LIBRARY)
+    target_link_libraries(cellerator_compute_autograd PRIVATE ${NCCL_LIBRARY})
+endif()
+set_target_properties(cellerator_compute_autograd PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_autograd)
+
+add_executable(computeAutogradBench
+    bench/compute_autograd_bench.cu
+)
+target_include_directories(computeAutogradBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(computeAutogradBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
+if(NCCL_LIBRARY)
+    target_link_libraries(computeAutogradBench PRIVATE ${NCCL_LIBRARY})
+endif()
+set_target_properties(computeAutogradBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(computeAutogradBench)
+
 add_executable(forwardNeighborsCompileTest
     tests/forward_neighbors_compile_test.cc
 )
@@ -316,6 +340,17 @@ target_include_directories(forwardNeighborsCompileTest PRIVATE ${CMAKE_CURRENT_S
 target_link_libraries(forwardNeighborsCompileTest PRIVATE cellerator_compute_forward_neighbors CUDA::cudart)
 set_target_properties(forwardNeighborsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(forwardNeighborsCompileTest)
+
+add_executable(computeAutogradRuntimeTest
+    tests/compute_autograd_runtime_test.cu
+)
+target_include_directories(computeAutogradRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(computeAutogradRuntimeTest PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
+if(NCCL_LIBRARY)
+    target_link_libraries(computeAutogradRuntimeTest PRIVATE ${NCCL_LIBRARY})
+endif()
+set_target_properties(computeAutogradRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(computeAutogradRuntimeTest)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_executable(developmentalTimeCompileTest

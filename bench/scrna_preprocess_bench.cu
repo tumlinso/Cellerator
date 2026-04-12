@@ -13,14 +13,14 @@
 #include <nvtx3/nvToolsExt.h>
 
 #include "../extern/CellShard/src/CellShard.hh"
-#include "../src/rna/preprocess.cuh"
+#include "../src/compute/preprocess/preprocess.cuh"
 
 namespace {
 
 namespace cs = ::cellshard;
 namespace csd = ::cellshard::distributed;
 namespace csv = ::cellshard::device;
-namespace crp = ::cellerator::rna::preprocess;
+namespace crp = ::cellerator::compute::preprocess;
 
 struct config {
     unsigned int parts = 32;

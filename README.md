@@ -1,222 +1,213 @@
 # Cellerator
 
-Cellerator is the active single-cell bioinformatics pipeline in this repository.
+Cellerator is the active single-cell compute and modeling stack in this repository.
 
-It has two jobs:
+It sits on top of `CellShard`, which owns storage, packfile layout, fetch/drop, and staging substrate. Cellerator owns the computation that acts on that data: ingest orchestration, sparse preprocessing, neighbor and trajectory operators, model code, and the quantized runtime surfaces that support those workflows.
 
-1. provide the standard high-performance single-cell RNA toolkit pieces
-2. host the Cellerator-specific modeling stack, especially state-based and quantized representations of cell state
-
-`CellShard` is the storage substrate. `Cellerator` should read, write, stage, and operate on `CellShard` data, but the biological pipeline logic and model logic live here.
+This is a low-level, performance-first codebase. The goal is not to hide the runtime behind abstracted-away building blocks. The goal is to expose the real hot-path choices clearly enough that layout, residency, transfer, launch, and kernel decisions can be made deliberately and optimized for the actual V100 target.
 
 ## Scope
 
 `Cellerator` owns:
 
-- dataset ingest and conversion
-- preprocessing and normalization
-- feature selection
-- dimensional reduction
-- nearest-neighbor search and graph construction
-- clustering, embedding, and marker workflows
-- low-level quantization code used by the pipeline
-- Cellerator-specific models such as the state quantizer
+- source-format ingest and series conversion built on `CellShard`
+- sparse preprocessing and normalization operators
+- reusable compute kernels, workspaces, and multi-GPU compute surfaces
+- trajectory and forward-neighbor search operators
+- libtorch-facing model code
+- the explicit Torch interop boundary
+- low-level quantized matrix backends used by the model stack
 
 `CellShard` owns:
 
-- durable disk layouts
+- durable on-disk matrix layouts
 - sharded storage metadata
-- packfile/container layout
-- low-level persisted matrix formats
+- packfile and container layout
+- fetch/drop and staging primitives
+- low-level persisted sparse formats
 
 Short version:
 
-- `Cellerator` transforms data
-- `CellShard` stores data
+- `CellShard` stores and stages data
+- `Cellerator` computes on it
 
-## Current State
+## Current Layout
 
-The current source tree is still early and ingest-heavy:
+The active tree is no longer just ingest-heavy. Current non-scaffold homes include:
 
-- `src/ingest/`: active extracted ingest subtree owned by `Cellerator`
-- `src/load_embryo_mtx_shards.cu`: main ingest/conversion executable today
-- `src/load_embryo_series.cuh`: large ingest path for embryo series work
-- `src/normalize.*`: placeholder normalization slot
-
-`CellShard` now owns the reusable high-performance storage, packfile, and conversion substrate. `Cellerator` owns the source-format readers and ingest orchestration built on top of it.
-
-## Target `src/` Layout
-
-The intended long-term layout should separate infrastructure, standard RNA pipeline code, and Cellerator-specific modeling code.
-
-Underscore rule:
-
-- directories with a leading underscore are scaffolded but not yet migrated
-- directories without a leading underscore are active homes for code that already lives there
-
-Right now the extracted `src/ingest/` subtree is active, while the other top-level homes still act as scaffold directories:
-
-```text
-src/
-├── _apps/
-│   ├── _convert/
-│   ├── _inspect/
-│   ├── _benchmark/
-│   └── _verify/
-├── _core/
-│   ├── _cuda/
-│   ├── _runtime/
-│   ├── _types/
-│   └── _util/
-├── _ingest/
-│   ├── _mtx/
-│   ├── _h5ad/
-│   └── _loom/
-├── ingest/
-│   ├── common/
-│   ├── mtx/
-│   └── series/
-├── _rna/
-│   ├── _qc/
-│   ├── _normalize/
-│   ├── _features/
-│   ├── _reduce/
-│   ├── _neighbors/
-│   ├── _graph/
-│   ├── _cluster/
-│   ├── _embed/
-│   ├── _markers/
-│   └── _pipeline/
-└── _models/
-    ├── _state_quantizer/
-    ├── _states/
-    ├── _objectives/
-    ├── _train/
-    └── _infer/
-```
+- `src/apps/`: ncurses workbench and command-line entrypoints
+- `src/compute/`: authoritative home for reusable computation, including preprocess, neighbors, model ops, and the pointer-first sparse autograd building-block layer
+- `src/ingest/`: source-format readers plus MTX and series ingest/orchestration
+- `src/quantized/`: CUDA-first quantized CSR backend
+- `src/models/`: header-first libtorch workflows such as `developmental_time`, `dense_reduce`, and `quantize`
+- `src/support/`: small shared support headers used across active compute modules
+- `src/torch/`: explicit, intentionally expensive Torch export boundary
+- `src/trajectory/`: trajectory record, candidate, prune, and tree-building logic
+- `src/legacy/`: quarantine area for old monolithic entrypoints while reusable code is extracted outward
 
 ## Directory Roles
 
-### `src/_apps/`
+### `src/compute/`
 
-Command-line entry points only.
+This is the main reusable compute surface in Cellerator.
 
-This is where current one-off executables should migrate over time.
+It owns:
 
-Examples:
+- sparse preprocess operators and workspaces
+- exact and approximate neighbor search operators
+- forward-neighbor index and query operators
+- framework-independent sparse autograd/runtime code
+- Torch custom CUDA model ops
 
-- `convert_embryo_mtx_shards.cu`
-- `verify_packfile.cu`
-- `benchmark_neighbors.cu`
+This directory should stay concrete. Reusable kernels and operators belong here; one-off orchestration and abstraction-heavy wrappers do not.
 
-### `src/_core/`
+`src/compute/autograd/` is a particularly important example of that rule. It is not a generic framework surface. It is a pointer-first sparse building-block library with:
 
-Project-wide low-level support code that is not specific to matrices or RNA.
+- explicit CSR-first APIs
+- FP16 storage with FP32 accumulate on the main path
+- single-GPU `base::` kernels
+- distributed `dist::launch_*` entrypoints over selected device slots
+- explicit pair-local and leader-merge reductions for the real 4-GPU topology
 
-This is where helpers such as CUDA utility code, shared scalar policy, small runtime helpers, and verification primitives should live.
+That layer exists so sparse model math can stay close to the actual layout, stream, and device-topology costs instead of being abstracted upward behind a heavier runtime.
 
-### `src/_ingest/`
+### `src/apps/`
 
-Dataset readers and conversion front-ends.
+Interactive and command-line frontends live here.
 
-This layer should understand source file formats and how to turn them into working matrix views, but not contain the actual modeling logic.
+Current code includes the ncurses series workbench plus its supporting ingest inspection and preprocess orchestration helpers.
 
-Today the extracted implementation still lives under `src/ingest/`. Treat that as the active Cellerator-owned home while the cleanup toward `src/_ingest/` is still in progress.
+### `src/ingest/`
 
-For now, this layer should only cover:
+This is the active source-format ingest home.
 
-- `_mtx`
-- `_h5ad`
-- `_loom`
+It covers:
 
-Important split:
+- MTX parsing and partition planning
+- compressed-part conversion workspace
+- manifest-driven series ingest and HDF5 emission
+- shared ingest tables for features, barcodes, and metadata
 
-- `Cellerator` ingests source formats
-- `CellShard` owns durable storage layout and container details
+This layer should remain explicit about CPU parsing, pinned staging, transfer boundaries, and file-format constraints.
 
-### `src/_rna/`
+### `src/models/`
 
-All of the standard single-cell RNA pipeline work should live here.
+This is the active libtorch model surface.
 
-This is the toolkit side of Cellerator.
+Current modules include:
 
-Suggested subareas:
+- `developmental_time/`
+- `dense_reduce/`
+- `quantize/`
 
-- `qc/`: cell and gene filtering, mitochondrial/ribosomal stats, count thresholds
-- `normalize/`: library-size normalization, log transforms, residual normalization
-- `features/`: HVG selection, gene masks, feature curation
-- `reduce/`: PCA and related reductions
-- `neighbors/`: exact/approximate kNN
-- `graph/`: SNN, kNN graphs, graph utilities
-- `cluster/`: Leiden/Louvain-style clustering
-- `embed/`: UMAP or similar layouts
-- `markers/`: marker scoring and DE-style summaries
-- `pipeline/`: orchestration of standard RNA workflows
+Each workflow follows the header-first split already in the tree:
 
-### `src/_models/`
+- `*_dataloader.hh`
+- `*_model.hh`
+- `*_train.hh`
+- `*_infer.hh`
+- one umbrella header per workflow
 
-This is the Cellerator-specific layer.
+Forward-neighbor retrieval is not a `src/models/` module. It lives under `src/compute/neighbors/forward_neighbors/` because it is a reusable compute operator rather than a model wrapper.
 
-It should contain the new things that make the project distinct, not the generic toolkit pieces.
+### `src/trajectory/`
 
-The first major resident here should be:
+Trajectory code currently combines GPU candidate scoring with CPU-side graph assembly and pruning. It is an active subsystem, not a placeholder.
 
-- `state_quantizer/`
+### `src/torch/`
 
-This is where biologically meaningful state coding belongs: on/off-aware gene state estimation, code assignment policy, latent state construction, objectives, training loops, and inference rules.
+This is a narrow, explicit interoperability boundary. It should not become the core execution model of the repo. Export here is intentionally copy-based and expensive so ownership and performance costs stay visible.
 
-Important distinction:
+### `src/quantized/`
 
-- generic low-level quantized matrix layouts belong in `src/matrix/microscaled/`
-- biologically meaningful state quantization belongs in `src/_models/_state_quantizer/`
+This is the low-level quantized backend. It is intentionally CUDA-first and layout-explicit. It should not be replaced with a more generic abstraction just to make the code look cleaner at the cost of hot-path control.
 
-Both belong in `Cellerator`, but they should not be mixed together.
+Near-term direction: this quantized path is the first intended consumer of a hand-rolled gradient calculator. If custom gradient work starts somewhere in the repo, it should start here rather than by wrapping the quantized path in a more abstract training surface.
 
-## Placement Rules
+Public includes should come from `src/quantized/api.cuh` rather than the removed legacy camel-case umbrellas.
 
-Use these rules when deciding where a new file should go:
+## Design Direction
 
-1. If it is a reusable storage/kernel primitive, put it in `CellShard`.
-2. If it is source-format ingest code for `mtx`, `h5ad`, or `loom`, put it in `src/ingest/` today and migrate it toward `src/_ingest/` later.
-3. If it is standard single-cell RNA workflow logic, put it in `src/_rna/` until migrated.
-4. If it is specific to Cellerator’s biological modeling ideas, put it in `src/_models/` until migrated.
-5. If it is only an executable front-end, put it in `src/_apps/` until migrated.
+Cellerator is trying to be a serious sparse runtime and modeling engine, not a generic high-level framework.
 
-## Near-Term Migration
+That means:
 
-The tree does not need a big bang rewrite. The right move is gradual migration:
+- low-level optimization is a feature, not technical debt
+- hot paths should stay honest about memory layout, allocation, transfers, and synchronization
+- reusable building blocks should remain concrete enough that they can still be profiled and tuned
+- “abstracting away” kernels, residency, or sparse layout boundaries is usually the wrong direction for this repo
 
-- keep source-format ingest under the Cellerator-owned `src/ingest/` subtree
-- move standalone executables under `src/_apps/`
-- fold `src/ingest/` toward `src/_ingest/` over time
-- build standard toolkit pieces under `src/_rna/`
-- build the state quantizer under `src/_models/_state_quantizer/`
-
-Concrete examples:
-
-- `src/load_embryo_mtx_shards.cu` -> `src/_apps/_convert/embryo_mtx_to_cellshard.cu`
-- `src/load_embryo_series.cuh` -> `src/ingest/series/series_ingest.cuh` first, then later to `src/_ingest/_mtx/`
-- `src/normalize.hh` / `src/normalize.cc` -> `src/_rna/_normalize/`
+If a simpler abstraction blocks the fastest reasonable Volta path, the abstraction should lose.
 
 ## Build
 
-Current targets:
+Configure with:
 
-- `matrixTest`
-- `convertEmbryoMtxShards`
+```bash
+cmake -S . -B build
+```
 
-As the tree grows, build targets should follow the new directory split:
+Build with:
 
-- libraries or object groups for `core`, `ingest`, `rna`, `models`
-- small executables under `src/_apps/`
+```bash
+cmake --build build -j 4
+```
 
-## Direction
+Useful current targets include:
 
-Cellerator should read like a serious single-cell toolkit with an attached research/modeling engine:
+- `scrnaPreprocessBench`
+- `cellShardSeriesH5Test`
+- `quantizedMatrixTest`
+- `seriesIngestCompileTest`
+- `seriesWorkbenchRuntimeTest`
+- `celleratorWorkbench`
+- `trajectoryCompileTest`
+- `trajectoryRuntimeTest`
+- `forwardNeighborsCompileTest`
+- `computeAutogradRuntimeTest`
+- `developmentalTimeCompileTest`
+- `denseReduceCompileTest`
+- `quantizeModelTest`
+- `torchBindingsCompileTest`
+- `modelCustomOpsTest`
 
-- strong standard RNA pipeline support
-- direct compatibility with `CellShard`
-- room for novel Cellerator-specific modeling tools
-- clear separation between toolkit code and model code
+Legacy `matrixTest` and `convertEmbryoMtxShards` targets are only built when `src/matrix/matrix_io.cu` exists in the checkout. Their monolithic source now lives under `src/legacy/monoliths/`.
 
-That is the layout to optimize for.
+## Torch And Toolchain Notes
+
+Torch-enabled builds prefer the source-built libtorch installation under `/usr/local/share/cmake/Torch`. If libtorch is unavailable, configure with:
+
+```bash
+cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+```
+
+Only override the default libtorch with `Torch_DIR` or `LIBTORCH_PATH` when you intentionally want a different build.
+
+CMake defaults to the local HPC SDK CUDA toolchain and `g++-12` host compiler when no override is supplied. Use `CUDACXX` and `CUDAHOSTCXX` for explicit overrides.
+
+## Testing
+
+`ctest` is not configured. Run built targets directly, for example:
+
+```bash
+./build/cellShardSeriesH5Test
+./build/forwardNeighborsCompileTest
+./build/computeAutogradRuntimeTest
+./build/quantizeModelTest
+```
+
+When touching a GPU-facing path, prefer reporting the exact build and run commands used rather than relying on a generic “tests passed” summary.
+
+## Optimization Posture
+
+The repository target is Volta `sm_70` on Tesla V100 16 GB GPUs.
+
+Optimization priorities here are mostly:
+
+- keep sparse data in one useful layout
+- keep it resident on device when possible
+- preallocate and reuse workspaces
+- avoid needless host round-trips
+- avoid format churn across model and compute boundaries
+
+Do not assume the right answer is to wrap low-level pieces in more generic infrastructure. In this repo, the building blocks are supposed to stay visible enough to optimize.

@@ -7,9 +7,9 @@
 
 #include <cuda_runtime.h>
 
-#include "../src/microscaled/quantizedMatrix.cuh"
+#include "../src/quantized/api.cuh"
 
-namespace msq = ::cellerator::microscaled::quantized;
+namespace msq = ::cellerator::quantized;
 
 namespace {
 

@@ -76,8 +76,8 @@ public:
 
     TimeBatch sample_sparse_csr(std::size_t cells_per_day) {
         std::lock_guard<std::mutex> lock(mutex_);
-        std::vector<unsigned long> fetched_parts;
-        std::vector<sampled_row_span> sampled_rows;
+        host_buffer<unsigned long> fetched_parts;
+        host_buffer<sampled_row_span> sampled_rows;
         std::int64_t total_nnz = 0;
 
         if (cells_per_day == 0) throw std::invalid_argument("sample_sparse_csr requires cells_per_day > 0");
@@ -85,12 +85,12 @@ public:
         // Host-side batch assembly: bucket selection, optional part fetch, then
         // copy sampled rows into a fresh CPU sparse CSR tensor.
         try {
-            const std::vector<std::int64_t> selected_days = select_day_buckets_();
+            const host_buffer<std::int64_t> selected_days = select_day_buckets_();
             sampled_rows.reserve(selected_days.size() * cells_per_day);
 
             for (const std::int64_t bucket_id : selected_days) {
-                const std::vector<unsigned long> local_positions = row_fetchers_[static_cast<std::size_t>(bucket_id)].next(cells_per_day);
-                const std::vector<unsigned long> &bucket_rows = rows_by_bucket_[static_cast<std::size_t>(bucket_id)];
+                const host_buffer<unsigned long> local_positions = row_fetchers_[static_cast<std::size_t>(bucket_id)].next(cells_per_day);
+                const unsigned long *bucket_rows = bucket_rows_begin_(static_cast<std::size_t>(bucket_id));
                 for (const unsigned long local_pos : local_positions) {
                     const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
                     const unsigned long part_id = cellshard::find_part(matrix_, global_row);
@@ -138,7 +138,7 @@ private:
         return static_cast<std::int64_t>(value);
     }
 
-    static torch::Tensor copy_i64_tensor_(const std::vector<std::int64_t> &values) {
+    static torch::Tensor copy_i64_tensor_(const host_buffer<std::int64_t> &values) {
         torch::Tensor tensor = torch::empty(
             { static_cast<std::int64_t>(values.size()) },
             torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
@@ -146,7 +146,7 @@ private:
         return tensor;
     }
 
-    static torch::Tensor copy_f32_tensor_(const std::vector<float> &values) {
+    static torch::Tensor copy_f32_tensor_(const host_buffer<float> &values) {
         torch::Tensor tensor = torch::empty(
             { static_cast<std::int64_t>(values.size()) },
             torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
@@ -186,55 +186,71 @@ private:
             return lhs.second < rhs.second;
         });
 
-        rows_by_bucket_.clear();
         day_values_.clear();
-        bucket_by_row_.assign(day_labels_.size(), 0);
+        bucket_rows_.clear();
+        bucket_row_offsets_.clear();
+        bucket_by_row_.assign_fill(day_labels_.size(), 0);
+        host_buffer<std::size_t> bucket_counts;
 
         for (const auto &entry : labeled_rows) {
             if (day_values_.empty() || entry.first != day_values_.back()) {
                 day_values_.push_back(entry.first);
-                rows_by_bucket_.emplace_back();
+                bucket_counts.push_back(0u);
             }
             const std::int64_t bucket_id = static_cast<std::int64_t>(day_values_.size() - 1u);
-            rows_by_bucket_.back().push_back(entry.second);
+            ++bucket_counts.back();
             bucket_by_row_[static_cast<std::size_t>(entry.second)] = bucket_id;
         }
 
+        bucket_row_offsets_.resize(day_values_.size() + 1u);
+        bucket_row_offsets_[0] = 0u;
+        for (std::size_t bucket = 0; bucket < day_values_.size(); ++bucket) {
+            bucket_row_offsets_[bucket + 1u] = bucket_row_offsets_[bucket] + bucket_counts[bucket];
+        }
+        bucket_rows_.resize(labeled_rows.size());
+        bucket_counts.assign_fill(day_values_.size(), 0u);
+        for (const auto &entry : labeled_rows) {
+            const std::size_t bucket = static_cast<std::size_t>(bucket_by_row_[static_cast<std::size_t>(entry.second)]);
+            const std::size_t write = bucket_row_offsets_[bucket] + bucket_counts[bucket];
+            bucket_rows_[write] = entry.second;
+            ++bucket_counts[bucket];
+        }
+
         row_fetchers_.clear();
-        row_fetchers_.reserve(rows_by_bucket_.size());
-        for (std::size_t bucket = 0; bucket < rows_by_bucket_.size(); ++bucket) {
+        row_fetchers_.reserve(day_values_.size());
+        for (std::size_t bucket = 0; bucket < day_values_.size(); ++bucket) {
             row_fetchers_.emplace_back(
-                static_cast<unsigned long>(rows_by_bucket_[bucket].size()),
+                static_cast<unsigned long>(bucket_row_count_(bucket)),
                 RngFetchOptions{ options_.with_replacement, options_.seed + static_cast<std::uint64_t>(bucket) + 1u });
         }
 
         day_bucket_fetch_.reset();
-        if (options_.max_days_per_batch != 0 && options_.max_days_per_batch < rows_by_bucket_.size()) {
+        if (options_.max_days_per_batch != 0 && options_.max_days_per_batch < day_values_.size()) {
             day_bucket_fetch_ = std::make_unique<RngFetch>(
-                static_cast<unsigned long>(rows_by_bucket_.size()),
+                static_cast<unsigned long>(day_values_.size()),
                 RngFetchOptions{ false, options_.seed ^ 0x9e3779b97f4a7c15ULL });
         }
     }
 
-    std::vector<std::int64_t> select_day_buckets_() {
-        std::vector<std::int64_t> buckets;
+    host_buffer<std::int64_t> select_day_buckets_() {
+        host_buffer<std::int64_t> buckets;
 
         if (!day_bucket_fetch_) {
-            buckets.reserve(day_values_.size());
-            for (std::size_t i = 0; i < day_values_.size(); ++i) buckets.push_back(static_cast<std::int64_t>(i));
+            buckets.resize(day_values_.size());
+            for (std::size_t i = 0; i < day_values_.size(); ++i) buckets[i] = static_cast<std::int64_t>(i);
             return buckets;
         }
 
         {
-            const std::vector<unsigned long> sampled = day_bucket_fetch_->next(options_.max_days_per_batch);
-            buckets.reserve(sampled.size());
-            for (const unsigned long idx : sampled) buckets.push_back(static_cast<std::int64_t>(idx));
+            const host_buffer<unsigned long> sampled = day_bucket_fetch_->next(options_.max_days_per_batch);
+            buckets.resize(sampled.size());
+            for (std::size_t i = 0; i < sampled.size(); ++i) buckets[i] = static_cast<std::int64_t>(sampled[i]);
         }
         std::sort(buckets.begin(), buckets.end());
         return buckets;
     }
 
-    part_type *require_part_(unsigned long part_id, std::vector<unsigned long> *fetched_parts) {
+    part_type *require_part_(unsigned long part_id, host_buffer<unsigned long> *fetched_parts) {
         if (part_id >= matrix_->num_parts) throw std::out_of_range("sampled row resolved to an invalid CellShard part");
 
         if (!cellshard::part_loaded(matrix_, part_id)) {
@@ -259,24 +275,24 @@ private:
         return part;
     }
 
-    void drop_fetched_parts_(const std::vector<unsigned long> &fetched_parts) {
+    void drop_fetched_parts_(const host_buffer<unsigned long> &fetched_parts) {
         if (!options_.drop_fetched_parts) return;
-        for (auto it = fetched_parts.rbegin(); it != fetched_parts.rend(); ++it) {
-            cellshard::drop_part(matrix_, *it);
+        for (std::size_t i = fetched_parts.size(); i != 0u; --i) {
+            cellshard::drop_part(matrix_, fetched_parts[i - 1u]);
         }
     }
 
-    TimeBatch build_sparse_batch_(const std::vector<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
+    TimeBatch build_sparse_batch_(const host_buffer<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
         static_assert(sizeof(at::Half) == sizeof(::real::storage_t), "ATen half type must match CellShard half storage");
 
         // Expensive boundary: widen CSR metadata to int64 and copy sampled nnz
         // into a brand-new Torch-owned CPU sparse tensor every batch.
         const std::int64_t batch_rows = static_cast<std::int64_t>(sampled_rows.size());
         const std::int64_t feature_cols = checked_i64_(matrix_->cols, "cols");
-        std::vector<std::int64_t> crow_indices;
-        std::vector<std::int64_t> day_buckets;
-        std::vector<std::int64_t> cell_indices;
-        std::vector<float> batch_day_labels;
+        host_buffer<std::int64_t> crow_indices;
+        host_buffer<std::int64_t> day_buckets;
+        host_buffer<std::int64_t> cell_indices;
+        host_buffer<float> batch_day_labels;
         torch::Tensor col_tensor = torch::empty(
             { total_nnz },
             torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
@@ -327,13 +343,22 @@ private:
         };
     }
 
+    std::size_t bucket_row_count_(std::size_t bucket) const {
+        return bucket_row_offsets_[bucket + 1u] - bucket_row_offsets_[bucket];
+    }
+
+    const unsigned long *bucket_rows_begin_(std::size_t bucket) const {
+        return bucket_rows_.data() + bucket_row_offsets_[bucket];
+    }
+
     matrix_type *matrix_;
     const storage_type *storage_;
     std::vector<float> day_labels_;
     Options options_;
     std::vector<float> day_values_;
-    std::vector<std::vector<unsigned long>> rows_by_bucket_;
-    std::vector<std::int64_t> bucket_by_row_;
+    host_buffer<unsigned long> bucket_rows_;
+    host_buffer<std::size_t> bucket_row_offsets_;
+    host_buffer<std::int64_t> bucket_by_row_;
     std::vector<RngFetch> row_fetchers_;
     std::unique_ptr<RngFetch> day_bucket_fetch_;
     std::mutex mutex_;

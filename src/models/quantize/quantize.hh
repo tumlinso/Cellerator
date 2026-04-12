@@ -2,8 +2,8 @@
 
 #include "../../compute/neighbors/forward_neighbors/forwardNeighbors.hh"
 #include "../../compute/model_ops/model_ops.hh"
-#include "../../microscaled/quantized/layout.cuh"
-#include "../../microscaled/quantized/packing.cuh"
+#include "../../quantized/layout.cuh"
+#include "../../quantized/packing.cuh"
 
 #include <torch/torch.h>
 
@@ -20,12 +20,12 @@
 
 namespace cellerator::models::quantize {
 
-namespace msq = ::cellerator::microscaled::quantized;
+namespace msq = ::cellerator::quantized;
 namespace fn = ::cellerator::compute::neighbors::forward_neighbors;
 namespace model_ops = ::cellerator::compute::model_ops;
 
 // Model/training wrapper around forward-neighbor supervision and the lower-level
-// microscaled quantized backend.
+// quantized backend.
 
 struct GeneQuantizerConfig {
     std::int64_t input_genes = 0;
@@ -367,12 +367,11 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
     // Mixed CPU/GPU supervision path: CPU row lookup and weight assembly, then
     // optional GPU weighted-target blending.
     const auto lookup = detail::build_cell_lookup_(reference_ids);
-    std::vector<std::int64_t> query_ids_vec(static_cast<std::size_t>(query_ids.size(0)), -1);
-    if (!query_ids_vec.empty()) {
-        std::memcpy(query_ids_vec.data(), query_ids.data_ptr<std::int64_t>(), query_ids_vec.size() * sizeof(std::int64_t));
-    }
     const fn::ForwardNeighborSearchResult neighbors =
-        supervision.neighbor_index->search_future_neighbors_by_cell_index(query_ids_vec, supervision.search_config);
+        supervision.neighbor_index->search_future_neighbors_by_cell_index(
+            query_ids.numel() != 0 ? query_ids.data_ptr<std::int64_t>() : nullptr,
+            static_cast<std::size_t>(query_ids.size(0)),
+            supervision.search_config);
 
     const std::int64_t rows = query_ids.size(0);
     const std::int64_t genes = reference_dense.size(1);
@@ -393,7 +392,7 @@ inline ForwardNeighborTarget build_forward_neighbor_target(
     float *weight_ptr = neighbor_weights.data_ptr<float>();
 
     // Later branch-aware logic belongs here: replace this weighted future average
-    // without changing the quantizer parameters or microscaled storage path.
+    // without changing the quantizer parameters or quantized storage path.
     for (std::int64_t row = 0; row < rows; ++row) {
         std::vector<std::pair<std::int64_t, std::int64_t>> selected_neighbors;
         std::vector<float> raw_weights;

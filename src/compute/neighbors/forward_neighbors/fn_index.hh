@@ -10,20 +10,19 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 namespace cellerator::compute::neighbors::forward_neighbors {
 
 struct ForwardNeighborRecordBatch {
-    std::vector<std::int64_t> cell_indices;
-    std::vector<float> developmental_time;
-    std::vector<float> latent_unit;
-    std::vector<std::int64_t> embryo_ids;
+    host_array<std::int64_t> cell_indices;
+    host_array<float> developmental_time;
+    host_array<float> latent_unit;
+    host_array<std::int64_t> embryo_ids;
     std::int64_t latent_dim = 0;
 };
 
 struct ForwardNeighborBuildConfig {
-    std::vector<int> shard_devices;
+    host_array<int> shard_devices;
     std::int64_t target_shard_count = 0;
     std::int64_t max_rows_per_segment = 0;
     std::int64_t ann_rows_per_list = 4096;
@@ -63,7 +62,7 @@ public:
 
 private:
     ForwardNeighborBuildConfig config_;
-    std::vector<ForwardNeighborRecordBatch> batches_;
+    ForwardNeighborRecordBatch records_;
 };
 
 class ForwardNeighborIndex {
@@ -79,12 +78,13 @@ public:
     std::size_t shard_count() const;
     std::int64_t latent_dim() const;
 
-    ForwardNeighborQueryBatch query_batch_from_cell_indices(const std::vector<std::int64_t> &cell_indices) const;
+    ForwardNeighborQueryBatch query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const;
     ForwardNeighborSearchResult search_future_neighbors(
         const ForwardNeighborQueryBatch &query,
         const ForwardNeighborSearchConfig &config = ForwardNeighborSearchConfig()) const;
     ForwardNeighborSearchResult search_future_neighbors_by_cell_index(
-        const std::vector<std::int64_t> &cell_indices,
+        const std::int64_t *cell_indices,
+        std::size_t cell_count,
         const ForwardNeighborSearchConfig &config = ForwardNeighborSearchConfig()) const;
 
 private:
@@ -124,6 +124,18 @@ inline std::int64_t default_segment_rows_(const ForwardNeighborBuildConfig &conf
     if (rows == 0 || shard_count <= 0) return rows;
     const std::int64_t target = std::max<std::int64_t>(1, (rows + shard_count - 1) / shard_count);
     return std::max<std::int64_t>(target, config.ann_rows_per_list > 0 ? config.ann_rows_per_list : 1);
+}
+
+inline void append_i64_(host_array<std::int64_t> *dst, const host_array<std::int64_t> &src) {
+    const std::size_t old_size = dst->size();
+    dst->resize(old_size + src.size());
+    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data(), src.size() * sizeof(std::int64_t));
+}
+
+inline void append_f32_(host_array<float> *dst, const host_array<float> &src) {
+    const std::size_t old_size = dst->size();
+    dst->resize(old_size + src.size());
+    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data(), src.size() * sizeof(float));
 }
 
 } // namespace detail

@@ -176,7 +176,7 @@ int main() {
         unpacked_four_bit,
         four_bit_with_future.reconstruction.to(torch::kCPU),
         1.0e-5,
-        1.0e-5), "4-bit microscaled pack/unpack should match quantizer reconstruction");
+        1.0e-5), "4-bit quantized pack/unpack should match quantizer reconstruction");
 
     const quant::GeneQuantizerOutput binary_output = train_model(1, batch, &supervision, 1.0, 200);
     require(binary_output.codes.min().item<std::int64_t>() >= 0, "binary codes must be non-negative");
@@ -193,7 +193,7 @@ int main() {
         unpacked_binary,
         binary_output.reconstruction.to(torch::kCPU),
         1.0e-5,
-        1.0e-5), "binary microscaled pack/unpack should match quantizer reconstruction");
+        1.0e-5), "binary quantized pack/unpack should match quantizer reconstruction");
 
     return 0;
 }

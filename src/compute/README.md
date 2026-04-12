@@ -10,3 +10,4 @@ Rules:
 - treat `extern/CellShard` as the storage and staging substrate, not as the home for Cellerator compute
 - document launch and transfer costs at the host call site; comments should say whether a call is launch-bound, bandwidth-bound, synchronization-heavy, or amortized across a shard/part
 - call out any hidden host round-trip such as `.to(torch::kCPU)`, `cudaDeviceSynchronize`, or blocking `cudaMemcpy`, because those often dominate small V100 workloads more than the math does
+- keep framework-independent differentiation code under `compute/autograd`; libtorch-facing wrappers belong above that layer, not inside the runtime core

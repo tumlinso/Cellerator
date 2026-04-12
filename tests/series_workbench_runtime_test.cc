@@ -1,14 +1,16 @@
-#include "../src/_apps/series_workbench.hh"
+#include "../src/apps/series_workbench.hh"
 
 #include "../extern/CellShard/src/CellShard.hh"
 
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
 #include <limits>
 #include <string>
 #include <vector>
 
 namespace wb = ::cellerator::apps::workbench;
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -75,6 +77,8 @@ int main() {
     const std::string metadata_path = base + ".metadata.tsv";
     const std::string series_path = base + ".series.csh5";
     const std::string converted_series_path = base + ".converted.series.csh5";
+    const std::string builder_dir = base + ".builder";
+    const std::string exported_manifest_path = base + ".builder.manifest.tsv";
     cellshard::sparse::compressed part;
     cellshard::series_codec_descriptor codec;
     cellshard::series_layout_view layout;
@@ -134,6 +138,11 @@ int main() {
     std::remove(metadata_path.c_str());
     std::remove(series_path.c_str());
     std::remove(converted_series_path.c_str());
+    std::remove(exported_manifest_path.c_str());
+    std::error_code dir_ec;
+    fs::remove_all(builder_dir, dir_ec);
+    fs::create_directories(builder_dir, dir_ec);
+    if (dir_ec) return 1;
 
     if (!write_file(matrix_path,
                     "%%MatrixMarket matrix coordinate integer general\n"
@@ -147,10 +156,39 @@ int main() {
     if (!write_file(manifest_path,
                     ("dataset\tpath\tformat\tfeatures\tbarcodes\tmetadata\trows\tcols\tnnz\n"
                      "sample_a\t" + matrix_path + "\tmtx\t" + feature_path + "\t" + barcode_path + "\t" + metadata_path + "\t2\t3\t3\n").c_str())) return 1;
+    if (!write_file(builder_dir + "/matrix.mtx",
+                    "%%MatrixMarket matrix coordinate integer general\n"
+                    "2 3 3\n"
+                    "1 1 5\n"
+                    "1 3 1\n"
+                    "2 2 7\n")) return 1;
+    if (!write_file(builder_dir + "/features.tsv", "g0\tMT-CO1\tgene\ng1\tGeneB\tgene\ng2\tGeneC\tgene\n")) return 1;
+    if (!write_file(builder_dir + "/barcodes.tsv", "bc0\nbc1\n")) return 1;
+    if (!write_file(builder_dir + "/metadata.tsv", "stage\tbatch\nE8\tA\nE9\tA\n")) return 1;
 
     wb::manifest_inspection inspection = wb::inspect_manifest_tsv(manifest_path);
     if (!inspection.ok || inspection.sources.size() != 1u) return 1;
     if (inspection.sources[0].rows != 2u || inspection.sources[0].feature_count != 3u || inspection.sources[0].barcode_count != 2u) return 1;
+
+    std::vector<wb::issue> builder_issues;
+    const std::vector<wb::draft_dataset> drafts = wb::discover_dataset_drafts(builder_dir, &builder_issues);
+    if (drafts.size() != 1u) return 1;
+    if (drafts[0].matrix_path != builder_dir + "/matrix.mtx") return 1;
+    if (drafts[0].feature_path != builder_dir + "/features.tsv") return 1;
+    if (drafts[0].barcode_path != builder_dir + "/barcodes.tsv") return 1;
+    if (drafts[0].metadata_path != builder_dir + "/metadata.tsv") return 1;
+
+    const std::vector<wb::source_entry> builder_sources = wb::sources_from_dataset_drafts(drafts);
+    if (builder_sources.size() != 1u) return 1;
+    wb::manifest_inspection builder_inspection = wb::inspect_source_entries(builder_sources, "<builder>");
+    if (!builder_inspection.ok || builder_inspection.sources.size() != 1u) return 1;
+    if (builder_inspection.sources[0].rows != 2u || builder_inspection.sources[0].cols != 3u || builder_inspection.sources[0].nnz != 3u) return 1;
+
+    std::vector<wb::issue> export_issues;
+    if (!wb::export_manifest_tsv(exported_manifest_path, drafts, (std::size_t) 8u << 20u, &export_issues)) return 1;
+    wb::manifest_inspection exported_inspection = wb::inspect_manifest_tsv(exported_manifest_path);
+    if (!exported_inspection.ok || exported_inspection.sources.size() != 1u) return 1;
+    if (exported_inspection.sources[0].matrix_path != builder_dir + "/matrix.mtx") return 1;
 
     wb::ingest_policy policy;
     policy.max_part_nnz = 2u;
@@ -246,6 +284,10 @@ int main() {
     if (summary.feature_names.size() != 3u || summary.feature_names[0] != "MT-CO1") return 1;
     if (summary.embedded_metadata.size() != 1u) return 1;
     if (summary.embedded_metadata[0].column_names.size() != 2u || summary.embedded_metadata[0].column_names[0] != "stage") return 1;
+    wb::embedded_metadata_table loaded_metadata = wb::load_embedded_metadata_table(series_path, 0u);
+    if (!loaded_metadata.available) return 1;
+    if (loaded_metadata.field_values.size() != 4u || loaded_metadata.field_values[0] != "E8" || loaded_metadata.field_values[2] != "E9") return 1;
+    if (loaded_metadata.row_offsets.size() != 3u || loaded_metadata.row_offsets[1] != 2u) return 1;
     if (!summary.browse.available || summary.browse.selected_feature_indices.size() != 2u) return 1;
     if (summary.browse.selected_feature_names.size() != 2u || summary.browse.selected_feature_names[0] != "MT-CO1") return 1;
 

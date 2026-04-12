@@ -14,7 +14,14 @@
 - No Nsight Systems or Nsight Compute captures were run during this pass.
 - All absolute timing numbers below are estimates, not measured results. Treat them as call-shape guidance for triage, not as benchmark truth.
 
-### 1.3 What The Estimates Mean
+### 1.3 Design Posture
+
+- This repo is intentionally built from low-level, performance-visible pieces.
+- The goal is not to abstract kernels, sparse layouts, residency boundaries, or transfer structure away behind generic convenience layers.
+- When this document recommends a refactor, it is recommending a better low-level surface or a more reusable concrete operator, not a move toward a more opaque framework.
+- In this codebase, reusable building blocks should stay explicit enough that their memory traffic, synchronization points, and launch structure can still be reasoned about directly.
+
+### 1.4 What The Estimates Mean
 
 - `fixed overhead` means cost paid even when tensors are small: launch latency, descriptor creation, alloc/free, sync, tensor conversion, map lookup, host parsing setup.
 - `streaming overhead` means bytes moved or touched: PCIe transfers, HBM passes, CPU memory copies, sort passes, tensor densification.
@@ -50,7 +57,7 @@
 
 - `src/compute/preprocess/workspace.cuh` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
-- The quantized backend under `src/microscaled/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
+- The quantized backend under `src/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
 - The torch binding layer is explicit about being a copy boundary instead of hiding expensive aliasing semantics.
 
@@ -84,12 +91,13 @@
 - The target list is useful because it exposes three major performance domains:
   - ingest and preprocessing
   - quantization backend
-  - libtorch model and custom-op surfaces
+  - libtorch model, custom-op, and compute-native sparse runtime surfaces
 
 ### 4.2 Optimization Interpretation
 
 - The build is already declaring Volta intent correctly.
 - The major remaining wins are algorithmic and residency related, not compiler-flag related.
+- The right optimization direction is usually a more explicit low-level operator or workspace, not a more abstract façade.
 
 ## 5. Ingest And Series Conversion
 
@@ -616,7 +624,7 @@ Observations:
 Interpretation:
 
 - This is fine as a training or export scaffold.
-- The actual hot backend lives in `src/microscaled/quantized/`, not in the model wrapper.
+- The actual hot backend lives in `src/quantized/`, not in the model wrapper.
 
 ## 8. Custom Model Ops
 
@@ -670,6 +678,66 @@ Observations:
 Interpretation:
 
 - This is library-independent custom glue and belongs here.
+
+### 8.5 Compute-Native Sparse Autograd Runtime
+
+Relevant files:
+
+- `src/compute/autograd/autograd.hh`
+- `src/compute/autograd/runtime.cu`
+- `src/compute/autograd/kernels/base_sparse.cu`
+- `src/compute/autograd/kernels/dist_sparse.cu`
+- `src/compute/autograd/primitives/common.cuh`
+
+Observations:
+
+- this surface is lower-level than a framework runtime: it is pointer-first, CSR-first, and explicit about streams, scratch, cuSPARSE caches, and fleet topology
+- `autograd.hh` exposes raw-buffer contexts rather than tensor-wrapper-heavy hot paths
+- `base_sparse.cu` provides the single-GPU reference kernels and cuSPARSE-backed library paths for:
+  - CSR row scaling with custom backward
+  - sparse value reduction with CUB
+  - CSR SpMV with custom value-grad and library-backed vector-grad
+  - CSR SpMM with custom value-grad and library-backed rhs-grad
+- `dist_sparse.cu` launches one base copy per selected slot and performs explicit leader-merge reduction instead of hiding cross-device traffic behind a framework boundary
+- the distributed policy matches the host assumptions in the repo: pair-local work first, then leader merge across the real 4-GPU topology
+
+Interpretation:
+
+- this is the correct direction for sparse model code that would otherwise pay Torch layout conversion and boxed autograd overhead
+- this is not trying to become a generic autograd framework; it is trying to expose reusable low-level sparse building blocks without abstracting their cost model away
+- the runtime is not yet a full training system, but it already demonstrates the right split:
+  - library-backed sparse linear algebra where the library is clearly best
+  - custom kernels for sparse glue and fused value-gradient logic
+- the highest-value model-facing use is sparse projection, because `dense_reduce` and `developmental_time` both currently pay sparse layout churn around `torch::matmul`
+
+Estimated overhead when called:
+
+- `csr_row_scale`
+  - Fixed: `1` forward launch, up to `2` backward launches
+  - Variable: O(`rows + nnz`)
+  - Limiter: HBM traffic over CSR value segments
+- `sparse_value_sum`
+  - Fixed: CUB dispatch plus scratch-size query
+  - Variable: O(`nnz`)
+  - Limiter: contiguous value-array bandwidth
+- `csr_spmv`
+  - Fixed first use: cached CSR descriptor create plus `cusparseSpMV_bufferSize`
+  - Fixed steady state: dense vector descriptor create/destroy plus one SpMV call
+  - Variable: O(`nnz`)
+  - Limiter: HBM bandwidth for CSR walk, not launch count
+- `csr_spmm`
+  - Fixed: dense matrix descriptor create/destroy plus `cusparseSpMM_bufferSize`
+  - Variable forward and weight-grad: O(`nnz * out_dim`) sparse-dense streaming work
+  - Variable value-grad: O(`nnz * out_dim`) dot products over the touched dense feature rows
+  - Limiter: usually HBM traffic once `out_dim` is moderate; on tiny `out_dim`, descriptor churn becomes visible
+  - Note: the custom value-gradient path avoids recovering sparse value grads from a dense outer-product formulation
+
+Optimization comment:
+
+- `csr_spmv` is already on the correct backend for V100 and now caches the CSR descriptor plus workspace-size query; the next win is caching dense vector descriptors only if repeated vector shapes dominate host overhead
+- the value-gradient kernel is intentionally custom because sparse value gradients are cheaper to emit directly than to recover from a dense outer-product path
+- `csr_spmm` is the more important projection primitive for this repo because it matches sparse batch to hidden-feature projection; the next likely optimization is fusing bias or a lightweight epilogue only if it removes a full output pass without causing register spill problems
+- this runtime should be the preferred home for future sparse training ops that currently cross the libtorch boundary only to come back to explicit CUDA
 
 ## 9. Forward-Neighbor Index And Search
 
@@ -886,9 +954,9 @@ Optimization comment:
 
 Relevant files:
 
-- `src/microscaled/quantized/README.md`
-- `src/microscaled/quantized/kernels.cuh`
-- `src/microscaled/quantized/packing.cuh`
+- `src/quantized/README.md`
+- `src/quantized/kernels.cuh`
+- `src/quantized/packing.cuh`
 
 This subsystem is architecturally aligned with the repo goals.
 
@@ -1012,6 +1080,8 @@ Divergence note:
 
 The repo already has the right strategic bias for Volta: explicit workspaces, explicit sparse layouts, custom kernels where library paths do not fit, and a refusal to hide expensive boundaries. The biggest remaining performance problems are not “missing CUDA” in the abstract. They are repeated format conversion, repeated device setup work, repeated host synchronization boundaries, and a few places where a sparse workload is being forced through dense or host-centric surfaces.
 
+This should not be misread as an argument for abstracting the system upward. In this repository, the low-level building blocks are the product. They should become more reusable and better-factored where needed, but they should not be abstracted so aggressively that layout control, residency control, and cost visibility disappear.
+
 If only one principle is carried forward from this document, it should be this:
 
 - keep data in one useful layout
@@ -1023,7 +1093,7 @@ If only one principle is carried forward from this document, it should be this:
 
 ### 15.1 Commented Active Surfaces
 
-- `src/models/*`, `src/microscaled/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
+- `src/models/*`, `src/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
 - The comments are intentionally short and mostly attached to:
   - host versus device materialization boundaries
   - alloc/free or realloc/copy points

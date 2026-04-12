@@ -36,8 +36,10 @@ int main() {
     exact_config.time_window.min_delta = 0.0f;
     exact_config.time_window.max_delta = 0.10f;
 
+    const std::int64_t exact_query_ids[] = {10, 12};
     ForwardNeighborSearchResult exact_by_id = index.search_future_neighbors_by_cell_index(
-        {10, 12},
+        exact_query_ids,
+        2u,
         exact_config);
 
     ForwardNeighborSearchConfig ann_config = exact_config;
