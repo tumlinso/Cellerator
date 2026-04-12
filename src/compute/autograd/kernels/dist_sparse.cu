@@ -263,6 +263,46 @@ void launch_csr_spmm_fwd_f16_f32(
     }
 }
 
+void launch_blocked_ell_spmm_fwd_f16_f32_lib(
+    fleet_context *fleet,
+    cusparse_cache *cache_per_slot,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const void *const *matrix_token,
+    const std::uint32_t *const *block_col_idx,
+    const __half *const *values,
+    const std::uint32_t *rows,
+    const std::uint32_t *cols,
+    const std::uint32_t *block_size,
+    const std::uint32_t *ell_cols,
+    const float *const *rhs,
+    const std::int64_t *rhs_ld,
+    const std::int64_t *out_cols,
+    float *const *out,
+    const std::int64_t *out_ld) {
+    if (fleet == nullptr) throw std::invalid_argument("launch_blocked_ell_spmm_fwd_f16_f32_lib requires a fleet");
+    if (cache_per_slot == nullptr && slot_count != 0u) throw std::invalid_argument("launch_blocked_ell_spmm_fwd_f16_f32_lib requires cache storage");
+    require_slots_(*fleet, slots, slot_count);
+    for (unsigned int i = 0; i < slot_count; ++i) {
+        const execution_context ctx = slot_context_(*fleet, slots[i]);
+        base::blocked_ell_spmm_fwd_f16_f32_lib(
+            ctx,
+            cache_per_slot + i,
+            matrix_token != nullptr ? matrix_token[i] : values[i],
+            block_col_idx[i],
+            values[i],
+            rows[i],
+            cols[i],
+            block_size[i],
+            ell_cols[i],
+            rhs[i],
+            rhs_ld[i],
+            out_cols[i],
+            out[i],
+            out_ld[i]);
+    }
+}
+
 void launch_csr_spmm_bwd_values_f16_f32(
     fleet_context *fleet,
     const unsigned int *slots,

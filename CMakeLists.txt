@@ -352,6 +352,14 @@ endif()
 set_target_properties(computeAutogradRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(computeAutogradRuntimeTest)
 
+add_executable(cellShardBlockedEllTest
+    tests/cellshard_blocked_ell_test.cu
+)
+target_include_directories(cellShardBlockedEllTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellShardBlockedEllTest PRIVATE CUDA::cudart CUDA::cusparse)
+set_target_properties(cellShardBlockedEllTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardBlockedEllTest)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_executable(developmentalTimeCompileTest
         tests/developmental_time_compile_test.cc

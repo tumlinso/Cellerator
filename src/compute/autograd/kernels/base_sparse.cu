@@ -74,6 +74,12 @@ __global__ void widen_half_to_float_kernel_(const __half *src, std::uint32_t cou
     dst[idx] = primitives::load_f16_as_f32(src, idx);
 }
 
+__global__ void narrow_float_to_half_kernel_(const float *src, std::uint32_t count, __half *dst) {
+    const std::uint32_t idx = static_cast<std::uint32_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (idx >= count) return;
+    dst[idx] = __float2half(src[idx]);
+}
+
 __global__ void fill_from_scalar_kernel_(const float *grad_scalar, std::uint32_t count, float *dst) {
     const std::uint32_t idx = static_cast<std::uint32_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     if (idx >= count) return;
@@ -151,6 +157,40 @@ __global__ void csr_spmm_fwd_kernel_(
     const std::uint32_t end = major_ptr[row + 1u];
     for (std::uint32_t idx = begin; idx < end; ++idx) {
         accum += primitives::load_f16_as_f32(values, idx) * rhs[static_cast<std::int64_t>(minor_idx[idx]) * rhs_ld + col];
+    }
+    out[static_cast<std::int64_t>(row) * out_ld + col] = accum;
+}
+
+__global__ void blocked_ell_spmm_fwd_kernel_(
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x);
+    const std::int64_t col = static_cast<std::int64_t>(threadIdx.x) + static_cast<std::int64_t>(blockIdx.y) * blockDim.x;
+    if (row >= rows || col >= out_cols || block_size == 0u || ell_cols == 0u) return;
+
+    const std::uint32_t row_block = row / block_size;
+    const std::uint32_t ell_width = ell_cols / block_size;
+    float accum = 0.0f;
+
+    for (std::uint32_t slot = 0u; slot < ell_width; ++slot) {
+        const std::uint32_t block_col = block_col_idx[static_cast<std::size_t>(row_block) * ell_width + slot];
+        if (block_col == cs::sparse::blocked_ell_invalid_col) continue;
+        const std::int64_t rhs_base = static_cast<std::int64_t>(block_col) * static_cast<std::int64_t>(block_size);
+        const std::size_t values_base = static_cast<std::size_t>(row) * ell_cols + static_cast<std::size_t>(slot) * block_size;
+        for (std::uint32_t col_in_block = 0u; col_in_block < block_size; ++col_in_block) {
+            const std::int64_t rhs_col = rhs_base + static_cast<std::int64_t>(col_in_block);
+            if (rhs_col >= cols) break;
+            accum += primitives::load_f16_as_f32(values, values_base + col_in_block) * rhs[rhs_col * rhs_ld + col];
+        }
     }
     out[static_cast<std::int64_t>(row) * out_ld + col] = accum;
 }
@@ -352,6 +392,26 @@ void csr_spmm_fwd_f16_f32(
     cuda_require(cudaGetLastError(), "csr_spmm_fwd_kernel");
 }
 
+void blocked_ell_spmm_fwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(blocked_ell_spmm_fwd)");
+    if (rows == 0 || cols == 0 || out_cols == 0 || block_size == 0u || ell_cols == 0u) return;
+    const dim3 grid(rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
+    blocked_ell_spmm_fwd_kernel_<<<grid, kSpmmColsThreads, 0, ctx.stream>>>(block_col_idx, values, rows, cols, block_size, ell_cols, rhs, rhs_ld, out_cols, out, out_ld);
+    cuda_require(cudaGetLastError(), "blocked_ell_spmm_fwd_kernel");
+}
+
 void csr_spmm_bwd_values_f16_f32(
     const execution_context &ctx,
     const std::uint32_t *major_ptr,
@@ -466,6 +526,94 @@ void csr_spmm_fwd_f32_lib(
     cusparse_require_(
         cusparseSpMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, b, &beta, c, CUDA_R_32F, CUSPARSE_SPMM_ALG_DEFAULT, scratch),
         "cusparseSpMM");
+    clear(&arena);
+    if (c != nullptr) cusparseDestroyDnMat(c);
+    if (b != nullptr) cusparseDestroyDnMat(b);
+}
+
+void blocked_ell_spmm_fwd_f16_f32_lib(
+    const execution_context &ctx,
+    cusparse_cache *cache,
+    const void *matrix_token,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    static thread_local scratch_arena rhs_half_arena;
+    static thread_local int rhs_half_device = -1;
+    if (rhs_half_device != ctx.device) {
+        clear(&rhs_half_arena);
+        init(&rhs_half_arena);
+        rhs_half_device = ctx.device;
+    } else if (rhs_half_arena.data == nullptr && rhs_half_arena.bytes == 0u) {
+        init(&rhs_half_arena);
+    }
+    const std::uint32_t rhs_count = static_cast<std::uint32_t>(static_cast<std::uint64_t>(cols) * static_cast<std::uint64_t>(rhs_ld));
+    __half *rhs_half = static_cast<__half *>(request_scratch(&rhs_half_arena, (std::size_t) rhs_count * sizeof(__half)));
+    const int narrow_blocks = static_cast<int>((static_cast<std::size_t>(rhs_count) + kValueThreads - 1u) / kValueThreads);
+    narrow_float_to_half_kernel_<<<narrow_blocks, kValueThreads, 0, ctx.stream>>>(rhs, rhs_count, rhs_half);
+    cuda_require(cudaGetLastError(), "narrow_float_to_half_kernel(blocked ell rhs)");
+    blocked_ell_spmm_fwd_f16_f16_f32_lib(
+        ctx,
+        cache,
+        matrix_token,
+        block_col_idx,
+        values,
+        rows,
+        cols,
+        block_size,
+        ell_cols,
+        rhs_half,
+        rhs_ld,
+        out_cols,
+        out,
+        out_ld);
+}
+
+void blocked_ell_spmm_fwd_f16_f16_f32_lib(
+    const execution_context &ctx,
+    cusparse_cache *cache,
+    const void *matrix_token,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const __half *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    if (rows == 0 || cols == 0 || out_cols == 0 || block_size == 0u || ell_cols == 0u) return;
+    cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(blocked_ell_spmm_fwd_f16_f32_lib)");
+    cusparseHandle_t handle = acquire_cusparse(cache, ctx);
+    cusparseSpMatDescr_t mat = acquire_blocked_ell_f16_descriptor(cache, ctx, matrix_token, rows, cols, block_size, ell_cols, block_col_idx, values);
+    cusparseDnMatDescr_t b = nullptr;
+    cusparseDnMatDescr_t c = nullptr;
+    const float alpha = 1.0f;
+    const float beta = 0.0f;
+    cusparse_require_(cusparseCreateDnMat(&b, static_cast<std::int64_t>(cols), out_cols, rhs_ld, const_cast<__half *>(rhs), CUDA_R_16F, CUSPARSE_ORDER_ROW), "cusparseCreateDnMat(blocked ell rhs)");
+    cusparse_require_(cusparseCreateDnMat(&c, static_cast<std::int64_t>(rows), out_cols, out_ld, out, CUDA_R_32F, CUSPARSE_ORDER_ROW), "cusparseCreateDnMat(blocked ell out)");
+    std::size_t &bytes = cached_blocked_ell_spmm_bytes(cache, CUSPARSE_OPERATION_NON_TRANSPOSE);
+    if (bytes == 0u) {
+        cusparse_require_(
+            cusparseSpMM_bufferSize(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, b, &beta, c, CUDA_R_32F, CUSPARSE_SPMM_ALG_DEFAULT, &bytes),
+            "cusparseSpMM_bufferSize(blocked ell)");
+    }
+    scratch_arena arena;
+    init(&arena);
+    void *scratch = request_scratch(&arena, bytes);
+    cusparse_require_(
+        cusparseSpMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, mat, b, &beta, c, CUDA_R_32F, CUSPARSE_SPMM_ALG_DEFAULT, scratch),
+        "cusparseSpMM(blocked ell)");
     clear(&arena);
     if (c != nullptr) cusparseDestroyDnMat(c);
     if (b != nullptr) cusparseDestroyDnMat(b);

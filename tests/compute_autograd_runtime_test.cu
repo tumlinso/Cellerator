@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 namespace autograd = ::cellerator::compute::autograd;
+namespace cs = ::cellshard;
 
 namespace {
 
@@ -204,6 +205,63 @@ int main() {
     require(close_value(spmm_out_host[3], 860.0f), "spmm out 3 mismatch");
     require(close_value(spmm_out_host[4], 5.0f), "spmm out 4 mismatch");
     require(close_value(spmm_out_host[5], 10.0f), "spmm out 5 mismatch");
+
+    cs::sparse::compressed blocked_src;
+    cs::sparse::blocked_ell blocked_host;
+    cs::sparse::init(&blocked_src, 3u, 3u, 5u, cs::sparse::compressed_by_row);
+    cs::sparse::init(&blocked_host);
+    blocked_src.majorPtr = const_cast<std::uint32_t *>(major_ptr_host);
+    blocked_src.minorIdx = const_cast<std::uint32_t *>(minor_idx_host);
+    blocked_src.val = const_cast<__half *>(values_host);
+    require(cs::convert::blocked_ell_from_compressed(&blocked_src, 1u, &blocked_host) != 0, "blocked_ell_from_compressed runtime setup failed");
+    auto blocked_idx = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
+    auto blocked_values = autograd::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols);
+    autograd::upload_device_buffer(&blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
+    autograd::upload_device_buffer(&blocked_values, blocked_host.val, static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols);
+
+    auto blocked_spmm_ref = autograd::allocate_device_buffer<float>(6);
+    autograd::base::blocked_ell_spmm_fwd_f16_f32(
+        ctx,
+        blocked_idx.data,
+        blocked_values.data,
+        blocked_host.rows,
+        blocked_host.cols,
+        blocked_host.block_size,
+        blocked_host.ell_cols,
+        rhs.data,
+        2,
+        2,
+        blocked_spmm_ref.data,
+        2);
+    float blocked_spmm_ref_host[6] = {};
+    autograd::download_device_buffer(blocked_spmm_ref, blocked_spmm_ref_host, 6);
+    require(close_value(blocked_spmm_ref_host[0], 201.0f), "blocked ell ref out 0 mismatch");
+    require(close_value(blocked_spmm_ref_host[3], 860.0f), "blocked ell ref out 3 mismatch");
+
+    autograd::cusparse_cache blocked_cache;
+    autograd::init(&blocked_cache);
+    auto blocked_spmm_lib = autograd::allocate_device_buffer<float>(6);
+    autograd::base::blocked_ell_spmm_fwd_f16_f32_lib(
+        ctx,
+        &blocked_cache,
+        blocked_host.val,
+        blocked_idx.data,
+        blocked_values.data,
+        blocked_host.rows,
+        blocked_host.cols,
+        blocked_host.block_size,
+        blocked_host.ell_cols,
+        rhs.data,
+        2,
+        2,
+        blocked_spmm_lib.data,
+        2);
+    float blocked_spmm_lib_host[6] = {};
+    autograd::download_device_buffer(blocked_spmm_lib, blocked_spmm_lib_host, 6);
+    require(close_value(blocked_spmm_lib_host[0], 201.0f), "blocked ell lib out 0 mismatch");
+    require(close_value(blocked_spmm_lib_host[5], 10.0f), "blocked ell lib out 5 mismatch");
+    autograd::clear(&blocked_cache);
+    cs::sparse::clear(&blocked_host);
 
     auto spmm_grad_values = autograd::allocate_device_buffer<float>(5);
     autograd::base::csr_spmm_bwd_values_f16_f32(

@@ -13,7 +13,6 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <vector>
 
 namespace cellerator::models::dense_reduce {
 
@@ -44,7 +43,7 @@ inline std::int64_t checked_i64_dense_reduce_(unsigned long value, const char *l
     return static_cast<std::int64_t>(value);
 }
 
-inline torch::Tensor copy_i64_tensor_dense_reduce_(const std::vector<std::int64_t> &values) {
+inline torch::Tensor copy_i64_tensor_dense_reduce_(const host_buffer<std::int64_t> &values) {
     torch::Tensor tensor = torch::empty(
         { static_cast<std::int64_t>(values.size()) },
         torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
@@ -54,7 +53,7 @@ inline torch::Tensor copy_i64_tensor_dense_reduce_(const std::vector<std::int64_
     return tensor;
 }
 
-inline torch::Tensor copy_f32_tensor_dense_reduce_(const std::vector<float> &values) {
+inline torch::Tensor copy_f32_tensor_dense_reduce_(const host_buffer<float> &values) {
     torch::Tensor tensor = torch::empty(
         { static_cast<std::int64_t>(values.size()) },
         torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
@@ -66,18 +65,19 @@ inline torch::Tensor copy_f32_tensor_dense_reduce_(const std::vector<float> &val
 
 inline void validate_dense_reduce_infer_inputs_(
     BalancedDenseReduceSampler::matrix_type *matrix,
-    const std::vector<float> &developmental_time) {
+    const float *developmental_time,
+    std::size_t developmental_time_count) {
     if (matrix == nullptr) throw std::invalid_argument("dense reduce inference requires a non-null CellShard matrix");
     if (matrix->num_parts == 0 || matrix->part_offsets == nullptr || matrix->part_rows == nullptr || matrix->part_aux == nullptr) {
         throw std::invalid_argument("dense reduce inference requires initialized sharded CSR metadata");
     }
-    if (developmental_time.size() != static_cast<std::size_t>(matrix->rows)) {
+    if (developmental_time_count != static_cast<std::size_t>(matrix->rows)) {
         throw std::invalid_argument("developmental_time length must match the number of rows in the CellShard matrix");
     }
 }
 
 inline DenseReduceEmbeddingTable materialize_dense_reduce_batches_(
-    const std::vector<DenseReduceEncodedBatch> &batches) {
+    const host_buffer<DenseReduceEncodedBatch> &batches) {
     if (batches.empty()) {
         return DenseReduceEmbeddingTable{
             torch::empty({ 0 }, torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)),
@@ -86,9 +86,9 @@ inline DenseReduceEmbeddingTable materialize_dense_reduce_batches_(
         };
     }
 
-    std::vector<torch::Tensor> all_indices;
-    std::vector<torch::Tensor> all_times;
-    std::vector<torch::Tensor> all_latents;
+    host_buffer<torch::Tensor> all_indices;
+    host_buffer<torch::Tensor> all_times;
+    host_buffer<torch::Tensor> all_latents;
     all_indices.reserve(batches.size());
     all_times.reserve(batches.size());
     all_latents.reserve(batches.size());
@@ -98,9 +98,9 @@ inline DenseReduceEmbeddingTable materialize_dense_reduce_batches_(
         all_latents.push_back(batch.latent_unit);
     }
     return DenseReduceEmbeddingTable{
-        torch::cat(all_indices, 0).contiguous(),
-        torch::cat(all_times, 0).contiguous(),
-        torch::cat(all_latents, 0).contiguous()
+        torch::cat(c10::ArrayRef<torch::Tensor>(all_indices.data(), all_indices.size()), 0).contiguous(),
+        torch::cat(c10::ArrayRef<torch::Tensor>(all_times.data(), all_times.size()), 0).contiguous(),
+        torch::cat(c10::ArrayRef<torch::Tensor>(all_latents.data(), all_latents.size()), 0).contiguous()
     };
 }
 
@@ -110,11 +110,12 @@ template<typename Callback>
 void for_each_dense_reduce_encoded_batch(
     DenseReduceModel &model,
     BalancedDenseReduceSampler::matrix_type *matrix,
-    const std::vector<float> &developmental_time,
+    const float *developmental_time,
+    std::size_t developmental_time_count,
     const BalancedDenseReduceSampler::storage_type *storage,
     Callback &&callback,
     const DenseReduceInferConfig &config = DenseReduceInferConfig()) {
-    detail::validate_dense_reduce_infer_inputs_(matrix, developmental_time);
+    detail::validate_dense_reduce_infer_inputs_(matrix, developmental_time, developmental_time_count);
 
     torch::NoGradGuard no_grad;
     model->eval();
@@ -147,8 +148,8 @@ void for_each_dense_reduce_encoded_batch(
         features = features.to(config.device);
         torch::Tensor latent = model->encode(features).to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
 
-        std::vector<std::int64_t> batch_indices(static_cast<std::size_t>(row_count));
-        std::vector<float> batch_time(static_cast<std::size_t>(row_count));
+        host_buffer<std::int64_t> batch_indices(static_cast<std::size_t>(row_count));
+        host_buffer<float> batch_time(static_cast<std::size_t>(row_count));
         for (std::int64_t local_row = 0; local_row < row_count; ++local_row) {
             const unsigned long global_row = row_begin_ul + static_cast<unsigned long>(local_row);
             batch_indices[static_cast<std::size_t>(local_row)] = detail::checked_i64_dense_reduce_(global_row, "global row");
@@ -170,14 +171,16 @@ void for_each_dense_reduce_encoded_batch(
 inline DenseReduceEmbeddingTable infer_dense_reduce_embeddings(
     DenseReduceModel &model,
     BalancedDenseReduceSampler::matrix_type *matrix,
-    const std::vector<float> &developmental_time,
+    const float *developmental_time,
+    std::size_t developmental_time_count,
     const BalancedDenseReduceSampler::storage_type *storage = nullptr,
     const DenseReduceInferConfig &config = DenseReduceInferConfig()) {
-    std::vector<DenseReduceEncodedBatch> batches;
+    host_buffer<DenseReduceEncodedBatch> batches;
     for_each_dense_reduce_encoded_batch(
         model,
         matrix,
         developmental_time,
+        developmental_time_count,
         storage,
         [&batches](DenseReduceEncodedBatch batch) { batches.push_back(std::move(batch)); },
         config);

@@ -155,6 +155,8 @@ struct RngFetchOptions {
 
 class RngFetch {
 public:
+    RngFetch() = default;
+
     explicit RngFetch(unsigned long population_size, RngFetchOptions options = RngFetchOptions())
         : population_size_(population_size),
           options_(options),

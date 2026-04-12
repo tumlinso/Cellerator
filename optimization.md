@@ -10,9 +10,9 @@
 
 ### 1.2 Method
 
-- This pass is based on static code inspection, target layout inspection, and the existing benchmark/test surfaces.
-- No Nsight Systems or Nsight Compute captures were run during this pass.
-- All absolute timing numbers below are estimates, not measured results. Treat them as call-shape guidance for triage, not as benchmark truth.
+- This pass is based on static code inspection, target layout inspection, and focused benchmark/profiler work on the sparse autograd surface.
+- Nsight Systems and Nsight Compute were used on representative large `SpMV` runs in `computeAutogradBench`.
+- Where a section is still call-shape guidance rather than measured truth, it is called out explicitly.
 
 ### 1.3 Design Posture
 
@@ -81,6 +81,16 @@
 - Keep query centroids, query latent blocks, and top-k scratch on device across neighbor-search blocks instead of rebuilding them per block.
 - Keep ingest pinned slabs alive across windows and use them in double-buffered parse/convert/store pipelines if ingest throughput becomes a priority.
 - Keep model-facing sparse batches in one sparse layout if possible; the current CSR->COO path is paying extra metadata traffic for no obvious end-to-end win.
+
+### 3.5 Sparse Autograd Findings
+
+- Large CSR `SpMV` on V100 is decisively memory-bound, not Tensor Core-bound. The hot kernel reached high DRAM pressure and low SM math utilization in Nsight Compute.
+- Pair-local row sharding across the real NVLink pairs scales well for CSR `SpMV` because it keeps the workload bandwidth-heavy and avoids expensive global merges.
+- Four-way feature-sharded CSR `SpMV` improves latency, but it does not drive all four V100s like a Tensor Core GEMM. The per-GPU shards become too thin and the math intensity stays low.
+- If the goal is high sustained board power and Tensor Core usage, CSR `SpMV` is the wrong target. The sparse Tensor Core direction for this host class is Blocked-ELL `SpMM`.
+- That makes the right storage strategy dual-path:
+  - keep CSR/row-compressed as the canonical sparse storage and general bioinformatics path
+  - add Blocked-ELL as the preferred resident execution layout for repeated sparse x dense-matrix projection
 
 ## 4. Build And Configuration Surface
 

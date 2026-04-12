@@ -17,7 +17,6 @@
 #include <mutex>
 #include <stdexcept>
 #include <utility>
-#include <vector>
 
 namespace cellerator::models::developmental_time {
 
@@ -42,18 +41,20 @@ public:
     };
 
     BalancedTimeSampler(matrix_type *matrix,
-                        std::vector<float> day_labels,
+                        const float *day_labels,
+                        std::size_t day_count,
                         const storage_type *storage = 0)
-        : BalancedTimeSampler(matrix, std::move(day_labels), storage, Options{}) {}
+        : BalancedTimeSampler(matrix, day_labels, day_count, storage, Options{}) {}
 
     BalancedTimeSampler(matrix_type *matrix,
-                        std::vector<float> day_labels,
+                        const float *day_labels,
+                        std::size_t day_count,
                         const storage_type *storage,
                         Options options)
         : matrix_(matrix),
           storage_(storage),
-          day_labels_(std::move(day_labels)),
           options_(options) {
+        day_labels_.assign_copy(day_labels, day_count);
         validate_constructor_state_();
         build_day_buckets_();
     }
@@ -70,7 +71,7 @@ public:
         return day_values_.size();
     }
 
-    const std::vector<float> &day_values() const {
+    const host_buffer<float> &day_values() const {
         return day_values_;
     }
 
@@ -173,12 +174,12 @@ private:
     }
 
     void build_day_buckets_() {
-        std::vector<std::pair<float, unsigned long>> labeled_rows;
+        host_buffer<std::pair<float, unsigned long>> labeled_rows;
 
         // One-time O(rows log rows) sort so later draws are O(sampled rows).
         labeled_rows.reserve(day_labels_.size());
         for (unsigned long row = 0; row < static_cast<unsigned long>(day_labels_.size()); ++row) {
-            labeled_rows.emplace_back(day_labels_[static_cast<std::size_t>(row)], row);
+            labeled_rows.push_back(std::pair<float, unsigned long>{ day_labels_[static_cast<std::size_t>(row)], row });
         }
         std::sort(labeled_rows.begin(), labeled_rows.end(), [](const auto &lhs, const auto &rhs) {
             if (lhs.first < rhs.first) return true;
@@ -216,10 +217,9 @@ private:
             ++bucket_counts[bucket];
         }
 
-        row_fetchers_.clear();
-        row_fetchers_.reserve(day_values_.size());
+        row_fetchers_.resize(day_values_.size());
         for (std::size_t bucket = 0; bucket < day_values_.size(); ++bucket) {
-            row_fetchers_.emplace_back(
+            row_fetchers_[bucket] = RngFetch(
                 static_cast<unsigned long>(bucket_row_count_(bucket)),
                 RngFetchOptions{ options_.with_replacement, options_.seed + static_cast<std::uint64_t>(bucket) + 1u });
         }
@@ -353,13 +353,13 @@ private:
 
     matrix_type *matrix_;
     const storage_type *storage_;
-    std::vector<float> day_labels_;
+    host_buffer<float> day_labels_;
     Options options_;
-    std::vector<float> day_values_;
+    host_buffer<float> day_values_;
     host_buffer<unsigned long> bucket_rows_;
     host_buffer<std::size_t> bucket_row_offsets_;
     host_buffer<std::int64_t> bucket_by_row_;
-    std::vector<RngFetch> row_fetchers_;
+    host_buffer<RngFetch> row_fetchers_;
     std::unique_ptr<RngFetch> day_bucket_fetch_;
     std::mutex mutex_;
 };

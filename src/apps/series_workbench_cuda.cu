@@ -15,8 +15,10 @@
 #include <cctype>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -30,6 +32,134 @@ namespace csd = ::cellshard::distributed;
 namespace csv = ::cellshard::device;
 
 namespace {
+
+template<typename T>
+class host_buffer {
+public:
+    host_buffer() = default;
+
+    explicit host_buffer(std::size_t count) {
+        resize(count);
+    }
+
+    host_buffer(const host_buffer &other) {
+        assign_copy(other.data(), other.size());
+    }
+
+    host_buffer(host_buffer &&other) noexcept
+        : data_(std::move(other.data_)),
+          size_(other.size_),
+          capacity_(other.capacity_) {
+        other.size_ = 0u;
+        other.capacity_ = 0u;
+    }
+
+    host_buffer &operator=(const host_buffer &other) {
+        if (this != &other) assign_copy(other.data(), other.size());
+        return *this;
+    }
+
+    host_buffer &operator=(host_buffer &&other) noexcept {
+        if (this == &other) return *this;
+        data_ = std::move(other.data_);
+        size_ = other.size_;
+        capacity_ = other.capacity_;
+        other.size_ = 0u;
+        other.capacity_ = 0u;
+        return *this;
+    }
+
+    void clear() {
+        size_ = 0u;
+    }
+
+    void reserve(std::size_t capacity) {
+        if (capacity <= capacity_) return;
+        std::unique_ptr<T[]> next(new T[capacity]);
+        if constexpr (std::is_trivially_copyable_v<T>) {
+            if (size_ != 0u) std::memcpy(next.get(), data_.get(), size_ * sizeof(T));
+        } else {
+            for (std::size_t i = 0; i < size_; ++i) next[i] = std::move(data_[i]);
+        }
+        data_ = std::move(next);
+        capacity_ = capacity;
+    }
+
+    void resize(std::size_t count) {
+        if (count > capacity_) reserve(count);
+        size_ = count;
+    }
+
+    void assign_copy(const T *src, std::size_t count) {
+        resize(count);
+        if (count == 0u || src == nullptr) return;
+        if constexpr (std::is_trivially_copyable_v<T>) {
+            std::memcpy(data_.get(), src, count * sizeof(T));
+        } else {
+            for (std::size_t i = 0; i < count; ++i) data_[i] = src[i];
+        }
+    }
+
+    void assign_fill(std::size_t count, const T &value) {
+        resize(count);
+        for (std::size_t i = 0; i < count; ++i) data_[i] = value;
+    }
+
+    void push_back(const T &value) {
+        if (size_ == capacity_) reserve(capacity_ != 0u ? capacity_ * 2u : 1u);
+        data_[size_++] = value;
+    }
+
+    void push_back(T &&value) {
+        if (size_ == capacity_) reserve(capacity_ != 0u ? capacity_ * 2u : 1u);
+        data_[size_++] = std::move(value);
+    }
+
+    T *data() {
+        return data_.get();
+    }
+
+    const T *data() const {
+        return data_.get();
+    }
+
+    std::size_t size() const {
+        return size_;
+    }
+
+    bool empty() const {
+        return size_ == 0u;
+    }
+
+    T &operator[](std::size_t idx) {
+        return data_[idx];
+    }
+
+    const T &operator[](std::size_t idx) const {
+        return data_[idx];
+    }
+
+    T *begin() {
+        return data_.get();
+    }
+
+    const T *begin() const {
+        return data_.get();
+    }
+
+    T *end() {
+        return data_.get() + size_;
+    }
+
+    const T *end() const {
+        return data_.get() + size_;
+    }
+
+private:
+    std::unique_ptr<T[]> data_;
+    std::size_t size_ = 0u;
+    std::size_t capacity_ = 0u;
+};
 
 inline void push_issue(std::vector<issue> *issues,
                        issue_severity severity,
@@ -56,9 +186,10 @@ inline std::string normalized_upper(std::string value) {
     return value;
 }
 
-inline std::vector<unsigned char> build_gene_flags(const series_summary &summary,
+inline host_buffer<unsigned char> build_gene_flags(const series_summary &summary,
                                                    const preprocess_config &config) {
-    std::vector<unsigned char> flags(summary.cols, 0u);
+    host_buffer<unsigned char> flags;
+    flags.assign_fill(summary.cols, static_cast<unsigned char>(0u));
     if (!config.mark_mito_from_feature_names || config.mito_prefix.empty()) return flags;
     const std::string prefix = normalized_upper(config.mito_prefix);
     for (std::size_t i = 0; i < summary.feature_names.size() && i < flags.size(); ++i) {
@@ -99,28 +230,28 @@ struct owned_metadata_table {
 };
 
 struct browse_cache_owned {
-    std::vector<std::uint32_t> selected_feature_indices;
-    std::vector<float> gene_sum;
-    std::vector<float> gene_detected;
-    std::vector<float> gene_sq_sum;
-    std::vector<float> dataset_feature_mean;
-    std::vector<float> shard_feature_mean;
-    std::vector<std::uint32_t> part_sample_row_offsets;
-    std::vector<std::uint64_t> part_sample_global_rows;
-    std::vector<float> part_sample_values;
+    host_buffer<std::uint32_t> selected_feature_indices;
+    host_buffer<float> gene_sum;
+    host_buffer<float> gene_detected;
+    host_buffer<float> gene_sq_sum;
+    host_buffer<float> dataset_feature_mean;
+    host_buffer<float> shard_feature_mean;
+    host_buffer<std::uint32_t> part_sample_row_offsets;
+    host_buffer<std::uint64_t> part_sample_global_rows;
+    host_buffer<float> part_sample_values;
 };
 
 struct gene_metric_partial {
-    std::vector<float> gene_sum;
-    std::vector<float> gene_detected;
-    std::vector<float> gene_sq_sum;
+    host_buffer<float> gene_sum;
+    host_buffer<float> gene_detected;
+    host_buffer<float> gene_sq_sum;
     float active_rows = 0.0f;
     bool ok = false;
 };
 
 struct selected_feature_partial {
-    std::vector<float> dataset_feature_sum;
-    std::vector<float> shard_feature_sum;
+    host_buffer<float> dataset_feature_sum;
+    host_buffer<float> shard_feature_sum;
     bool ok = false;
 };
 
@@ -246,8 +377,9 @@ inline bool append_embedded_metadata_tables(const ingest_plan &plan,
     return ok;
 }
 
-inline std::vector<unsigned int> choose_sample_rows(unsigned int rows, unsigned int sample_rows) {
-    std::vector<unsigned int> out(sample_rows, std::numeric_limits<unsigned int>::max());
+inline host_buffer<unsigned int> choose_sample_rows(unsigned int rows, unsigned int sample_rows) {
+    host_buffer<unsigned int> out;
+    out.assign_fill(sample_rows, std::numeric_limits<unsigned int>::max());
     if (rows == 0 || sample_rows == 0) return out;
     if (rows <= sample_rows) {
         for (unsigned int i = 0; i < rows; ++i) out[i] = i;
@@ -261,7 +393,7 @@ inline std::vector<unsigned int> choose_sample_rows(unsigned int rows, unsigned 
 }
 
 inline bool build_gene_metric_partials(const std::string &path,
-                                       const std::vector<int> &shard_owner,
+                                       const host_buffer<int> &shard_owner,
                                        unsigned int worker_slot,
                                        int device_id,
                                        unsigned int cols,
@@ -306,9 +438,9 @@ inline bool build_gene_metric_partials(const std::string &path,
         }
     }
 
-    out->gene_sum.assign(cols, 0.0f);
-    out->gene_detected.assign(cols, 0.0f);
-    out->gene_sq_sum.assign(cols, 0.0f);
+    out->gene_sum.assign_fill(cols, 0.0f);
+    out->gene_detected.assign_fill(cols, 0.0f);
+    out->gene_sq_sum.assign_fill(cols, 0.0f);
     if (!check_cuda(cudaMemcpy(out->gene_sum.data(), workspace.d_gene_sum, (std::size_t) cols * sizeof(float), cudaMemcpyDeviceToHost),
                     issues, "browse", "cudaMemcpy gene_sum")
         || !check_cuda(cudaMemcpy(out->gene_detected.data(), workspace.d_gene_detected, (std::size_t) cols * sizeof(float), cudaMemcpyDeviceToHost),
@@ -330,18 +462,18 @@ done:
 }
 
 inline bool build_selected_feature_partials(const std::string &path,
-                                            const std::vector<int> &shard_owner,
+                                            const host_buffer<int> &shard_owner,
                                             unsigned int worker_slot,
                                             int device_id,
-                                            const std::vector<std::uint32_t> &part_dataset_indices,
+                                            const host_buffer<std::uint32_t> &part_dataset_indices,
                                             unsigned int dataset_count,
                                             unsigned int shard_count,
-                                            const std::vector<std::uint32_t> &selected_features,
+                                            const host_buffer<std::uint32_t> &selected_features,
                                             unsigned int sample_rows_per_part,
-                                            std::vector<float> *dataset_feature_sum,
-                                            std::vector<float> *shard_feature_sum,
-                                            std::vector<std::uint64_t> *part_sample_global_rows,
-                                            std::vector<float> *part_sample_values,
+                                            host_buffer<float> *dataset_feature_sum,
+                                            host_buffer<float> *shard_feature_sum,
+                                            host_buffer<std::uint64_t> *part_sample_global_rows,
+                                            host_buffer<float> *part_sample_values,
                                             std::vector<issue> *issues) {
     cs::sharded<cs::sparse::compressed> matrix;
     cs::shard_storage storage;
@@ -392,8 +524,8 @@ inline bool build_selected_feature_partials(const std::string &path,
                                   (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float)),
                        issues, "browse", "cudaMalloc sample tile")) goto done;
 
-    dataset_feature_sum->assign((std::size_t) dataset_count * selected_features.size(), 0.0f);
-    shard_feature_sum->assign((std::size_t) shard_count * selected_features.size(), 0.0f);
+    dataset_feature_sum->assign_fill((std::size_t) dataset_count * selected_features.size(), 0.0f);
+    shard_feature_sum->assign_fill((std::size_t) shard_count * selected_features.size(), 0.0f);
 
     for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
         if (shard_id >= shard_owner.size() || shard_owner[shard_id] != (int) worker_slot) continue;
@@ -405,7 +537,7 @@ inline bool build_selected_feature_partials(const std::string &path,
             const std::size_t row_offset = (std::size_t) part_id * sample_rows_per_part;
             const std::uint32_t dataset_id = part_id < part_dataset_indices.size() ? part_dataset_indices[part_id] : 0u;
             const unsigned int blocks = (unsigned int) std::min<unsigned long>(4096ul, (matrix.part_nnz[part_id] + 255ul) / 256ul);
-            std::vector<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.part_rows[part_id], sample_rows_per_part);
+            const host_buffer<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.part_rows[part_id], sample_rows_per_part);
 
             if (!cs::fetch_part(&matrix, &storage, part_id)
                 || !check_cuda(csv::upload_part(&device_state, &matrix, part_id, device_id), issues, "browse", "upload_part selected features")
@@ -526,15 +658,18 @@ inline bool build_browse_cache_multigpu(const std::string &path,
     }
 
     {
-        std::vector<int> shard_owner(matrix.num_shards, -1);
-        std::vector<gene_metric_partial> partials(ctx.device_count);
-        std::vector<std::thread> workers;
+        host_buffer<int> shard_owner;
+        host_buffer<gene_metric_partial> partials;
+        host_buffer<std::thread> workers;
+        shard_owner.assign_fill(matrix.num_shards, -1);
+        partials.resize(ctx.device_count);
+        workers.reserve(ctx.device_count);
         for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
             shard_owner[shard_id] = shard_map.device_slot[shard_id];
         }
 
         for (unsigned int slot = 0; slot < ctx.device_count; ++slot) {
-            workers.emplace_back([&, slot]() {
+            workers.push_back(std::thread([&, slot]() {
                 (void) build_gene_metric_partials(path,
                                                   shard_owner,
                                                   slot,
@@ -544,13 +679,13 @@ inline bool build_browse_cache_multigpu(const std::string &path,
                                                   max_nnz,
                                                   partials.data() + slot,
                                                   issues);
-            });
+            }));
         }
         for (std::thread &worker : workers) worker.join();
 
-        owned.gene_sum.assign((std::size_t) matrix.cols, 0.0f);
-        owned.gene_detected.assign((std::size_t) matrix.cols, 0.0f);
-        owned.gene_sq_sum.assign((std::size_t) matrix.cols, 0.0f);
+        owned.gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
+        owned.gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
+        owned.gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
         for (const gene_metric_partial &partial : partials) {
             if (!partial.ok) goto done;
             for (std::size_t gene = 0; gene < owned.gene_sum.size(); ++gene) {
@@ -562,10 +697,10 @@ inline bool build_browse_cache_multigpu(const std::string &path,
     }
 
     {
-        std::vector<std::pair<float, std::uint32_t>> ranked;
+        host_buffer<std::pair<float, std::uint32_t>> ranked;
         ranked.reserve(owned.gene_sum.size());
         for (std::uint32_t gene = 0; gene < owned.gene_sum.size(); ++gene) {
-            ranked.emplace_back(owned.gene_sum[gene], gene);
+            ranked.push_back(std::pair<float, std::uint32_t>{ owned.gene_sum[gene], gene });
         }
         std::partial_sort(ranked.begin(),
                           ranked.begin() + std::min<std::size_t>(plan.policy.browse_top_features, ranked.size()),
@@ -575,7 +710,7 @@ inline bool build_browse_cache_multigpu(const std::string &path,
                               return lhs.second < rhs.second;
                           });
         const std::size_t count = std::min<std::size_t>(plan.policy.browse_top_features, ranked.size());
-        owned.selected_feature_indices.resize(count, 0u);
+        owned.selected_feature_indices.assign_fill(count, 0u);
         for (std::size_t i = 0; i < count; ++i) owned.selected_feature_indices[i] = ranked[i].second;
     }
 
@@ -585,27 +720,31 @@ inline bool build_browse_cache_multigpu(const std::string &path,
         goto done;
     }
 
-    owned.dataset_feature_mean.assign(plan.datasets.size() * owned.selected_feature_indices.size(), 0.0f);
-    owned.shard_feature_mean.assign((std::size_t) matrix.num_shards * owned.selected_feature_indices.size(), 0.0f);
-    owned.part_sample_row_offsets.resize((std::size_t) matrix.num_parts + 1u, 0u);
+    owned.dataset_feature_mean.assign_fill(plan.datasets.size() * owned.selected_feature_indices.size(), 0.0f);
+    owned.shard_feature_mean.assign_fill((std::size_t) matrix.num_shards * owned.selected_feature_indices.size(), 0.0f);
+    owned.part_sample_row_offsets.assign_fill((std::size_t) matrix.num_parts + 1u, 0u);
     for (unsigned long part_id = 0; part_id < matrix.num_parts; ++part_id) {
         owned.part_sample_row_offsets[part_id + 1u] =
             owned.part_sample_row_offsets[part_id] + plan.policy.browse_sample_rows_per_part;
     }
-    owned.part_sample_global_rows.assign((std::size_t) matrix.num_parts * plan.policy.browse_sample_rows_per_part,
-                                         std::numeric_limits<std::uint64_t>::max());
-    owned.part_sample_values.assign((std::size_t) matrix.num_parts
-                                        * plan.policy.browse_sample_rows_per_part
-                                        * owned.selected_feature_indices.size(),
-                                    0.0f);
+    owned.part_sample_global_rows.assign_fill((std::size_t) matrix.num_parts * plan.policy.browse_sample_rows_per_part,
+                                              std::numeric_limits<std::uint64_t>::max());
+    owned.part_sample_values.assign_fill((std::size_t) matrix.num_parts
+                                             * plan.policy.browse_sample_rows_per_part
+                                             * owned.selected_feature_indices.size(),
+                                         0.0f);
 
     {
-        std::vector<int> shard_owner(matrix.num_shards, -1);
-        std::vector<std::uint32_t> part_dataset_indices(plan.parts.size(), 0u);
-        std::vector<std::vector<float>> dataset_partials(ctx.device_count);
-        std::vector<std::vector<float>> shard_partials(ctx.device_count);
-        std::vector<std::thread> workers;
-        std::vector<std::uint32_t> source_to_dataset(plan.sources.size(), std::numeric_limits<std::uint32_t>::max());
+        host_buffer<int> shard_owner;
+        host_buffer<std::uint32_t> part_dataset_indices;
+        host_buffer<selected_feature_partial> partials;
+        host_buffer<std::thread> workers;
+        host_buffer<std::uint32_t> source_to_dataset;
+        shard_owner.assign_fill(matrix.num_shards, -1);
+        part_dataset_indices.assign_fill(plan.parts.size(), 0u);
+        partials.resize(ctx.device_count);
+        workers.reserve(ctx.device_count);
+        source_to_dataset.assign_fill(plan.sources.size(), std::numeric_limits<std::uint32_t>::max());
         for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
             shard_owner[shard_id] = shard_map.device_slot[shard_id];
         }
@@ -620,32 +759,37 @@ inline bool build_browse_cache_multigpu(const std::string &path,
         }
 
         for (unsigned int slot = 0; slot < ctx.device_count; ++slot) {
-            workers.emplace_back([&, slot]() {
-                (void) build_selected_feature_partials(path,
-                                                       shard_owner,
-                                                       slot,
-                                                       ctx.device_ids[slot],
-                                                       part_dataset_indices,
-                                                       (unsigned int) plan.datasets.size(),
-                                                       (unsigned int) matrix.num_shards,
-                                                       owned.selected_feature_indices,
-                                                       plan.policy.browse_sample_rows_per_part,
-                                                       dataset_partials.data() + slot,
-                                                       shard_partials.data() + slot,
-                                                       &owned.part_sample_global_rows,
-                                                       &owned.part_sample_values,
-                                                       issues);
-            });
+            workers.push_back(std::thread([&, slot]() {
+                partials[slot].ok = build_selected_feature_partials(path,
+                                                                    shard_owner,
+                                                                    slot,
+                                                                    ctx.device_ids[slot],
+                                                                    part_dataset_indices,
+                                                                    (unsigned int) plan.datasets.size(),
+                                                                    (unsigned int) matrix.num_shards,
+                                                                    owned.selected_feature_indices,
+                                                                    plan.policy.browse_sample_rows_per_part,
+                                                                    &partials[slot].dataset_feature_sum,
+                                                                    &partials[slot].shard_feature_sum,
+                                                                    &owned.part_sample_global_rows,
+                                                                    &owned.part_sample_values,
+                                                                    issues);
+            }));
         }
         for (std::thread &worker : workers) worker.join();
 
-        for (const std::vector<float> &partial : dataset_partials) {
-            if (partial.empty()) continue;
-            for (std::size_t i = 0; i < owned.dataset_feature_mean.size(); ++i) owned.dataset_feature_mean[i] += partial[i];
+        for (const selected_feature_partial &partial : partials) {
+            if (!partial.ok) goto done;
+            if (partial.dataset_feature_sum.empty()) continue;
+            for (std::size_t i = 0; i < owned.dataset_feature_mean.size(); ++i) {
+                owned.dataset_feature_mean[i] += partial.dataset_feature_sum[i];
+            }
         }
-        for (const std::vector<float> &partial : shard_partials) {
-            if (partial.empty()) continue;
-            for (std::size_t i = 0; i < owned.shard_feature_mean.size(); ++i) owned.shard_feature_mean[i] += partial[i];
+        for (const selected_feature_partial &partial : partials) {
+            if (partial.shard_feature_sum.empty()) continue;
+            for (std::size_t i = 0; i < owned.shard_feature_mean.size(); ++i) {
+                owned.shard_feature_mean[i] += partial.shard_feature_sum[i];
+            }
         }
     }
 
@@ -801,9 +945,9 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
     csv::sharded_device<cs::sparse::compressed> device_state;
     cpre::device_workspace workspace;
     series_summary series = summarize_series_csh5(path);
-    std::vector<unsigned char> gene_flags;
-    std::vector<unsigned char> host_keep_genes;
-    std::vector<float> host_gene_sum;
+    host_buffer<unsigned char> gene_flags;
+    host_buffer<unsigned char> host_keep_genes;
+    host_buffer<float> host_gene_sum;
     float kept_cells = 0.0f;
     const cpre::cell_filter_params cell_filter = {
         config.min_counts,
@@ -894,8 +1038,8 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         goto done;
     }
 
-    host_keep_genes.assign((std::size_t) matrix.cols, 0u);
-    host_gene_sum.assign((std::size_t) matrix.cols, 0.0f);
+    host_keep_genes.assign_fill((std::size_t) matrix.cols, static_cast<unsigned char>(0u));
+    host_gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
     if (!check_cuda(cudaMemcpy(host_keep_genes.data(),
                                workspace.d_keep_genes,
                                host_keep_genes.size() * sizeof(unsigned char),

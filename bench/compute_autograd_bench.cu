@@ -12,14 +12,19 @@
 #include <string>
 
 namespace autograd = ::cellerator::compute::autograd;
+namespace cs = ::cellshard;
 
 namespace {
 
 struct bench_config {
     std::string mode = "base-spmv";
+    std::string generator = "random";
     std::uint32_t rows = 262144u;
     std::uint32_t cols = 65536u;
     std::uint32_t nnz_per_row = 64u;
+    std::uint32_t out_cols = 128u;
+    std::uint32_t block_size = 16u;
+    std::uint32_t blocks_per_row_block = 4u;
     std::uint32_t warmup = 5u;
     std::uint32_t iters = 25u;
 };
@@ -48,21 +53,30 @@ bench_config parse_args(int argc, char **argv) {
         };
         if (arg == "--mode") {
             cfg.mode = require_value("--mode");
+        } else if (arg == "--generator") {
+            cfg.generator = require_value("--generator");
         } else if (arg == "--rows") {
             cfg.rows = parse_u32(require_value("--rows"), "--rows");
         } else if (arg == "--cols") {
             cfg.cols = parse_u32(require_value("--cols"), "--cols");
         } else if (arg == "--nnz-row") {
             cfg.nnz_per_row = parse_u32(require_value("--nnz-row"), "--nnz-row");
+        } else if (arg == "--out-cols") {
+            cfg.out_cols = parse_u32(require_value("--out-cols"), "--out-cols");
+        } else if (arg == "--block-size") {
+            cfg.block_size = parse_u32(require_value("--block-size"), "--block-size");
+        } else if (arg == "--blocks-per-row-block") {
+            cfg.blocks_per_row_block = parse_u32(require_value("--blocks-per-row-block"), "--blocks-per-row-block");
         } else if (arg == "--warmup") {
             cfg.warmup = parse_u32(require_value("--warmup"), "--warmup");
         } else if (arg == "--iters") {
             cfg.iters = parse_u32(require_value("--iters"), "--iters");
         } else if (arg == "-h" || arg == "--help") {
             std::cout
-                << "Usage: computeAutogradBench [--mode base-spmv|pair-row-spmv|fleet-feature-spmv] "
-                << "[--rows N] [--cols N] [--nnz-row N] [--warmup N] [--iters N]\n";
-            std::exit(0);
+                << "Usage: computeAutogradBench [--mode base-spmv|pair-row-spmv|fleet-feature-spmv|base-csr-spmm|base-blocked-ell-spmm] "
+                << "[--generator random|block-structured] [--rows N] [--cols N] [--nnz-row N] [--out-cols N] "
+                << "[--block-size N] [--blocks-per-row-block N] [--warmup N] [--iters N]\n";
+                std::exit(0);
         } else {
             throw std::invalid_argument(std::string("unknown argument: ") + arg);
         }
@@ -70,6 +84,7 @@ bench_config parse_args(int argc, char **argv) {
     require(cfg.nnz_per_row != 0u, "nnz_per_row must be positive");
     require(cfg.cols >= cfg.nnz_per_row, "cols must be at least nnz_per_row");
     require(cfg.iters != 0u, "iters must be positive");
+    require(cfg.block_size != 0u, "block_size must be positive");
     return cfg;
 }
 
@@ -104,10 +119,84 @@ csr_host_matrix make_host_csr(std::uint32_t rows, std::uint32_t cols, std::uint3
     return out;
 }
 
+csr_host_matrix make_host_block_sparse_csr(
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t blocks_per_row_block,
+    std::uint32_t column_seed) {
+    csr_host_matrix out;
+    const std::uint32_t row_blocks = (rows + block_size - 1u) / block_size;
+    const std::uint32_t col_blocks = (cols + block_size - 1u) / block_size;
+
+    require((rows % block_size) == 0u, "block-structured generator requires rows divisible by block_size");
+    require((cols % block_size) == 0u, "block-structured generator requires cols divisible by block_size");
+    require(blocks_per_row_block != 0u, "blocks_per_row_block must be positive");
+    require(col_blocks >= blocks_per_row_block, "cols too small for requested block pattern");
+
+    out.rows = rows;
+    out.cols = cols;
+    out.nnz = rows * block_size * blocks_per_row_block;
+    out.major_ptr = std::make_unique<std::uint32_t[]>(static_cast<std::size_t>(rows) + 1u);
+    out.minor_idx = std::make_unique<std::uint32_t[]>(out.nnz);
+    out.values = std::make_unique<__half[]>(out.nnz);
+    out.major_ptr[0] = 0u;
+
+    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
+        std::unique_ptr<std::uint32_t[]> block_cols(new std::uint32_t[blocks_per_row_block]);
+        const std::uint32_t start = (rb * 2654435761u + column_seed * 40503u) % col_blocks;
+        for (std::uint32_t slot = 0u; slot < blocks_per_row_block; ++slot) {
+            block_cols[slot] = (start + slot * 3u) % col_blocks;
+        }
+        for (std::uint32_t r_in = 0u; r_in < block_size; ++r_in) {
+            const std::uint32_t row = rb * block_size + r_in;
+            const std::uint32_t base = row * block_size * blocks_per_row_block;
+            out.major_ptr[row + 1u] = base + block_size * blocks_per_row_block;
+            std::uint32_t cursor = base;
+            for (std::uint32_t slot = 0u; slot < blocks_per_row_block; ++slot) {
+                const std::uint32_t col_block = block_cols[slot];
+                for (std::uint32_t c_in = 0u; c_in < block_size; ++c_in) {
+                    out.minor_idx[cursor] = col_block * block_size + c_in;
+                    out.values[cursor] = __float2half(0.5f + static_cast<float>((cursor + column_seed) % 17u) * 0.0625f);
+                    ++cursor;
+                }
+            }
+        }
+    }
+    return out;
+}
+
+csr_host_matrix make_host_matrix_for_cfg(const bench_config &cfg, std::uint32_t column_seed) {
+    if (cfg.generator == "block-structured") {
+        return make_host_block_sparse_csr(cfg.rows, cfg.cols, cfg.block_size, cfg.blocks_per_row_block, column_seed);
+    }
+    return make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, column_seed);
+}
+
 std::unique_ptr<float[]> make_host_vector(std::uint32_t count, std::uint32_t seed) {
     auto out = std::make_unique<float[]>(count);
     for (std::uint32_t i = 0; i < count; ++i) {
         out[i] = 0.25f + static_cast<float>((i + seed) % 31u) * 0.03125f;
+    }
+    return out;
+}
+
+std::unique_ptr<float[]> make_host_matrix(std::uint32_t rows, std::uint32_t cols, std::uint32_t seed) {
+    auto out = std::make_unique<float[]>(static_cast<std::size_t>(rows) * cols);
+    for (std::uint32_t r = 0; r < rows; ++r) {
+        for (std::uint32_t c = 0; c < cols; ++c) {
+            out[static_cast<std::size_t>(r) * cols + c] = 0.125f + static_cast<float>((r * 17u + c + seed) % 29u) * 0.0625f;
+        }
+    }
+    return out;
+}
+
+std::unique_ptr<__half[]> make_host_half_matrix(std::uint32_t rows, std::uint32_t cols, std::uint32_t seed) {
+    auto out = std::make_unique<__half[]>(static_cast<std::size_t>(rows) * cols);
+    for (std::uint32_t r = 0; r < rows; ++r) {
+        for (std::uint32_t c = 0; c < cols; ++c) {
+            out[static_cast<std::size_t>(r) * cols + c] = __float2half(0.125f + static_cast<float>((r * 17u + c + seed) % 29u) * 0.0625f);
+        }
     }
     return out;
 }
@@ -134,10 +223,14 @@ void print_summary(const bench_config &cfg, double total_ms, std::uint64_t total
     const double out_per_s = static_cast<double>(output_elements) * static_cast<double>(cfg.iters) / (total_ms * 1.0e-3);
     std::cout
         << "mode=" << cfg.mode
+        << " generator=" << cfg.generator
         << " devices=" << device_count_used
         << " rows=" << cfg.rows
         << " cols=" << cfg.cols
         << " nnz_per_row=" << cfg.nnz_per_row
+        << " out_cols=" << cfg.out_cols
+        << " block_size=" << cfg.block_size
+        << " blocks_per_row_block=" << cfg.blocks_per_row_block
         << " warmup=" << cfg.warmup
         << " iters=" << cfg.iters
         << " avg_ms=" << avg_ms
@@ -146,11 +239,25 @@ void print_summary(const bench_config &cfg, double total_ms, std::uint64_t total
         << '\n';
 }
 
+void print_blocked_ell_meta(const cs::sparse::blocked_ell &blocked, double convert_ms) {
+    const double logical = static_cast<double>(blocked.nnz);
+    const double resident = static_cast<double>(blocked.rows) * blocked.ell_cols;
+    const double fill = resident > 0.0 ? logical / resident : 1.0;
+    std::cout
+        << "blocked_ell"
+        << " convert_ms=" << convert_ms
+        << " block_size=" << blocked.block_size
+        << " ell_cols=" << blocked.ell_cols
+        << " ell_width_blocks=" << cs::sparse::ell_width_blocks(&blocked)
+        << " fill_ratio=" << fill
+        << '\n';
+}
+
 void run_base_spmv(const bench_config &cfg) {
     autograd::execution_context ctx;
     autograd::init(&ctx, 0);
 
-    const csr_host_matrix matrix = make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, 0u);
+    const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto vector = make_host_vector(cfg.cols, 0u);
 
     auto major_ptr = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cfg.rows) + 1u);
@@ -181,6 +288,96 @@ void run_base_spmv(const bench_config &cfg) {
     autograd::clear(&ctx);
 }
 
+void run_base_csr_spmm(const bench_config &cfg) {
+    autograd::execution_context ctx;
+    autograd::init(&ctx, 0);
+
+    const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
+    const auto rhs = make_host_matrix(cfg.cols, cfg.out_cols, 7u);
+
+    auto major_ptr = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cfg.rows) + 1u);
+    auto minor_idx = autograd::allocate_device_buffer<std::uint32_t>(matrix.nnz);
+    auto values = autograd::allocate_device_buffer<__half>(matrix.nnz);
+    auto dense = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    auto out = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.rows) * cfg.out_cols);
+
+    autograd::upload_device_buffer(&major_ptr, matrix.major_ptr.get(), static_cast<std::size_t>(cfg.rows) + 1u);
+    autograd::upload_device_buffer(&minor_idx, matrix.minor_idx.get(), matrix.nnz);
+    autograd::upload_device_buffer(&values, matrix.values.get(), matrix.nnz);
+    autograd::upload_device_buffer(&dense, rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm setup)");
+
+    for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
+        autograd::base::csr_spmm_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, cfg.cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+    }
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm warmup)");
+
+    const auto start = std::chrono::steady_clock::now();
+    for (std::uint32_t i = 0; i < cfg.iters; ++i) {
+        autograd::base::csr_spmm_fwd_f16_f32(ctx, major_ptr.data, minor_idx.data, values.data, cfg.rows, cfg.cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+    }
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(csr spmm timed)");
+    const auto stop = std::chrono::steady_clock::now();
+
+    print_summary(cfg, elapsed_ms(start, stop), matrix.nnz, static_cast<std::uint64_t>(cfg.rows) * cfg.out_cols, 1u);
+    autograd::clear(&ctx);
+}
+
+void run_base_blocked_ell_spmm(const bench_config &cfg) {
+    autograd::execution_context ctx;
+    autograd::init(&ctx, 0);
+
+    const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
+    const auto rhs = make_host_half_matrix(cfg.cols, cfg.out_cols, 7u);
+    const unsigned int candidates[] = { cfg.block_size, 8u, 16u, 32u };
+    cs::convert::blocked_ell_tune_result tune = {};
+    cs::sparse::compressed host_csr;
+    cs::sparse::blocked_ell blocked;
+    const auto convert_start = std::chrono::steady_clock::now();
+    cs::sparse::init(&host_csr, cfg.rows, cfg.cols, matrix.nnz, cs::sparse::compressed_by_row);
+    cs::sparse::init(&blocked);
+    host_csr.majorPtr = matrix.major_ptr.get();
+    host_csr.minorIdx = matrix.minor_idx.get();
+    host_csr.val = matrix.values.get();
+    if (cfg.generator == "block-structured") {
+        require(cs::convert::blocked_ell_from_compressed(&host_csr, cfg.block_size, &blocked) != 0, "blocked ell fixed conversion failed");
+        tune.block_size = cfg.block_size;
+    } else {
+        require(cs::convert::blocked_ell_from_compressed_auto(&host_csr, candidates, 4u, &blocked, &tune) != 0, "blocked ell conversion failed");
+    }
+    const auto convert_stop = std::chrono::steady_clock::now();
+
+    auto block_col_idx = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
+    auto blocked_values = autograd::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
+    auto dense = autograd::allocate_device_buffer<__half>(static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    auto out = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(cfg.rows) * cfg.out_cols);
+    autograd::cusparse_cache cache;
+    autograd::init(&cache);
+
+    autograd::upload_device_buffer(&block_col_idx, blocked.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
+    autograd::upload_device_buffer(&blocked_values, blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
+    autograd::upload_device_buffer(&dense, rhs.get(), static_cast<std::size_t>(cfg.cols) * cfg.out_cols);
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm setup)");
+    print_blocked_ell_meta(blocked, elapsed_ms(convert_start, convert_stop));
+
+    for (std::uint32_t i = 0; i < cfg.warmup; ++i) {
+        autograd::base::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data, blocked_values.data, blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+    }
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm warmup)");
+
+    const auto start = std::chrono::steady_clock::now();
+    for (std::uint32_t i = 0; i < cfg.iters; ++i) {
+        autograd::base::blocked_ell_spmm_fwd_f16_f16_f32_lib(ctx, &cache, blocked.val, block_col_idx.data, blocked_values.data, blocked.rows, blocked.cols, blocked.block_size, blocked.ell_cols, dense.data, cfg.out_cols, cfg.out_cols, out.data, cfg.out_cols);
+    }
+    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked ell spmm timed)");
+    const auto stop = std::chrono::steady_clock::now();
+
+    print_summary(cfg, elapsed_ms(start, stop), matrix.nnz, static_cast<std::uint64_t>(cfg.rows) * cfg.out_cols, 1u);
+    autograd::clear(&cache);
+    cs::sparse::clear(&blocked);
+    autograd::clear(&ctx);
+}
+
 void run_pair_row_spmv(const bench_config &cfg) {
     autograd::fleet_context fleet;
     autograd::init(&fleet);
@@ -190,8 +387,12 @@ void run_pair_row_spmv(const bench_config &cfg) {
     const unsigned int slots[2] = { 0u, 2u };
     const std::uint32_t rows0 = cfg.rows / 2u;
     const std::uint32_t rows1 = cfg.rows - rows0;
-    const csr_host_matrix matrix0 = make_host_csr(rows0, cfg.cols, cfg.nnz_per_row, 0u);
-    const csr_host_matrix matrix1 = make_host_csr(rows1, cfg.cols, cfg.nnz_per_row, 17u);
+    bench_config cfg0 = cfg;
+    bench_config cfg1 = cfg;
+    cfg0.rows = rows0;
+    cfg1.rows = rows1;
+    const csr_host_matrix matrix0 = make_host_matrix_for_cfg(cfg0, 0u);
+    const csr_host_matrix matrix1 = make_host_matrix_for_cfg(cfg1, 17u);
     const auto vector = make_host_vector(cfg.cols, 0u);
 
     const int device0 = autograd::fleet_device_id(fleet, slots[0]);
@@ -254,11 +455,13 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     require(autograd::default_fleet_slots(slots, 4u) == 4u, "default fleet slots unavailable");
     const std::uint32_t cols_per_slot = cfg.cols / 4u;
 
+    bench_config shard_cfg = cfg;
+    shard_cfg.cols = cols_per_slot;
     csr_host_matrix matrices[4] = {
-        make_host_csr(cfg.rows, cols_per_slot, cfg.nnz_per_row, 0u),
-        make_host_csr(cfg.rows, cols_per_slot, cfg.nnz_per_row, 11u),
-        make_host_csr(cfg.rows, cols_per_slot, cfg.nnz_per_row, 23u),
-        make_host_csr(cfg.rows, cols_per_slot, cfg.nnz_per_row, 37u)
+        make_host_matrix_for_cfg(shard_cfg, 0u),
+        make_host_matrix_for_cfg(shard_cfg, 11u),
+        make_host_matrix_for_cfg(shard_cfg, 23u),
+        make_host_matrix_for_cfg(shard_cfg, 37u)
     };
     auto vectors0 = make_host_vector(cols_per_slot, 0u);
     auto vectors1 = make_host_vector(cols_per_slot, 11u);
@@ -346,6 +549,14 @@ int main(int argc, char **argv) {
     const bench_config cfg = parse_args(argc, argv);
     if (cfg.mode == "base-spmv") {
         run_base_spmv(cfg);
+        return 0;
+    }
+    if (cfg.mode == "base-csr-spmm") {
+        run_base_csr_spmm(cfg);
+        return 0;
+    }
+    if (cfg.mode == "base-blocked-ell-spmm") {
+        run_base_blocked_ell_spmm(cfg);
         return 0;
     }
     if (cfg.mode == "pair-row-spmv") {

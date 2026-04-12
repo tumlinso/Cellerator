@@ -73,6 +73,10 @@ void init(cusparse_cache *cache) {
 
 void clear(cusparse_cache *cache) {
     if (cache == nullptr) return;
+    if (cache->blocked_ell_f16 != nullptr) {
+        cusparseDestroySpMat(cache->blocked_ell_f16);
+        cache->blocked_ell_f16 = nullptr;
+    }
     if (cache->csr_f32 != nullptr) {
         cusparseDestroySpMat(cache->csr_f32);
         cache->csr_f32 = nullptr;
@@ -84,10 +88,12 @@ void clear(cusparse_cache *cache) {
     cache->device = -1;
     cache->owns_handle = false;
     cache->matrix_token = nullptr;
+    cache->blocked_ell_token = nullptr;
     cache->spmv_bytes_non_transpose = 0;
     cache->spmv_bytes_transpose = 0;
     cache->spmm_bytes_non_transpose = 0;
     cache->spmm_bytes_transpose = 0;
+    cache->blocked_ell_spmm_bytes_non_transpose = 0;
 }
 
 cusparseHandle_t acquire_cusparse(cusparse_cache *cache, const execution_context &ctx) {
@@ -153,6 +159,41 @@ cusparseSpMatDescr_t acquire_csr_f32_descriptor(
     return cache->csr_f32;
 }
 
+cusparseSpMatDescr_t acquire_blocked_ell_f16_descriptor(
+    cusparse_cache *cache,
+    const execution_context &ctx,
+    const void *matrix_token,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const std::uint32_t *block_col_idx,
+    const __half *values) {
+    if (cache == nullptr) throw std::invalid_argument("acquire_blocked_ell_f16_descriptor requires a cache");
+    acquire_cusparse(cache, ctx);
+    if (cache->blocked_ell_token == matrix_token && cache->blocked_ell_f16 != nullptr) return cache->blocked_ell_f16;
+    if (cache->blocked_ell_f16 != nullptr) {
+        cusparseDestroySpMat(cache->blocked_ell_f16);
+        cache->blocked_ell_f16 = nullptr;
+    }
+    if (cusparseCreateBlockedEll(
+            &cache->blocked_ell_f16,
+            static_cast<std::int64_t>(rows),
+            static_cast<std::int64_t>(cols),
+            static_cast<std::int64_t>(block_size),
+            static_cast<std::int64_t>(ell_cols),
+            const_cast<std::uint32_t *>(block_col_idx),
+            const_cast<__half *>(values),
+            CUSPARSE_INDEX_32I,
+            CUSPARSE_INDEX_BASE_ZERO,
+            CUDA_R_16F) != CUSPARSE_STATUS_SUCCESS) {
+        throw std::runtime_error("cusparseCreateBlockedEll(autograd cache) failed");
+    }
+    cache->blocked_ell_token = matrix_token;
+    cache->blocked_ell_spmm_bytes_non_transpose = 0;
+    return cache->blocked_ell_f16;
+}
+
 std::size_t &cached_spmv_bytes(cusparse_cache *cache, cusparseOperation_t op) {
     if (cache == nullptr) throw std::invalid_argument("cached_spmv_bytes requires a cache");
     return op == CUSPARSE_OPERATION_NON_TRANSPOSE
@@ -165,6 +206,12 @@ std::size_t &cached_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op) {
     return op == CUSPARSE_OPERATION_NON_TRANSPOSE
         ? cache->spmm_bytes_non_transpose
         : cache->spmm_bytes_transpose;
+}
+
+std::size_t &cached_blocked_ell_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op) {
+    if (cache == nullptr) throw std::invalid_argument("cached_blocked_ell_spmm_bytes requires a cache");
+    (void) op;
+    return cache->blocked_ell_spmm_bytes_non_transpose;
 }
 
 void init(fleet_context *fleet) {

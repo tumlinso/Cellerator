@@ -18,7 +18,6 @@
 #include <mutex>
 #include <stdexcept>
 #include <utility>
-#include <vector>
 
 namespace cellerator::models::dense_reduce {
 
@@ -45,19 +44,21 @@ public:
 
     BalancedDenseReduceSampler(
         matrix_type *matrix,
-        std::vector<float> developmental_time,
+        const float *developmental_time,
+        std::size_t developmental_time_count,
         const storage_type *storage = 0)
-        : BalancedDenseReduceSampler(matrix, std::move(developmental_time), storage, Options{}) {}
+        : BalancedDenseReduceSampler(matrix, developmental_time, developmental_time_count, storage, Options{}) {}
 
     BalancedDenseReduceSampler(
         matrix_type *matrix,
-        std::vector<float> developmental_time,
+        const float *developmental_time,
+        std::size_t developmental_time_count,
         const storage_type *storage,
         Options options)
         : matrix_(matrix),
           storage_(storage),
-          developmental_time_(std::move(developmental_time)),
           options_(options) {
+        developmental_time_.assign_copy(developmental_time, developmental_time_count);
         validate_constructor_state_();
         build_time_buckets_();
     }
@@ -182,12 +183,12 @@ private:
     }
 
     void build_time_buckets_() {
-        std::vector<std::pair<float, unsigned long>> labeled_rows;
+        host_buffer<std::pair<float, unsigned long>> labeled_rows;
 
         // One-time O(rows log rows) sort so later draws are O(sampled rows).
         labeled_rows.reserve(developmental_time_.size());
         for (unsigned long row = 0; row < static_cast<unsigned long>(developmental_time_.size()); ++row) {
-            labeled_rows.emplace_back(developmental_time_[static_cast<std::size_t>(row)], row);
+            labeled_rows.push_back(std::pair<float, unsigned long>{ developmental_time_[static_cast<std::size_t>(row)], row });
         }
         std::sort(labeled_rows.begin(), labeled_rows.end(), [](const auto &lhs, const auto &rhs) {
             if (lhs.first < rhs.first) return true;
@@ -224,10 +225,9 @@ private:
             ++bucket_counts[bucket];
         }
 
-        row_fetchers_.clear();
-        row_fetchers_.reserve(bucket_count);
+        row_fetchers_.resize(bucket_count);
         for (std::size_t bucket = 0; bucket < bucket_count; ++bucket) {
-            row_fetchers_.emplace_back(
+            row_fetchers_[bucket] = RngFetch(
                 static_cast<unsigned long>(bucket_row_count_(bucket)),
                 RngFetchOptions{ options_.with_replacement, options_.seed + static_cast<std::uint64_t>(bucket) + 1u });
         }
@@ -284,8 +284,8 @@ private:
 
     void drop_fetched_parts_(const host_buffer<unsigned long> &fetched_parts) {
         if (!options_.drop_fetched_parts) return;
-        for (auto it = fetched_parts.rbegin(); it != fetched_parts.rend(); ++it) {
-            cellshard::drop_part(matrix_, *it);
+        for (std::size_t i = fetched_parts.size(); i != 0u; --i) {
+            cellshard::drop_part(matrix_, fetched_parts[i - 1u]);
         }
     }
 
@@ -361,12 +361,12 @@ private:
 
     matrix_type *matrix_;
     const storage_type *storage_;
-    std::vector<float> developmental_time_;
+    host_buffer<float> developmental_time_;
     Options options_;
     host_buffer<unsigned long> bucket_rows_;
     host_buffer<std::size_t> bucket_row_offsets_;
     host_buffer<std::int64_t> bucket_by_row_;
-    std::vector<RngFetch> row_fetchers_;
+    host_buffer<RngFetch> row_fetchers_;
     std::unique_ptr<RngFetch> bucket_fetch_;
     std::mutex mutex_;
 };

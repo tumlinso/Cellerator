@@ -13,7 +13,6 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <vector>
 
 namespace cellerator::models::developmental_time {
 
@@ -45,7 +44,7 @@ inline std::int64_t checked_i64_developmental_time_(unsigned long value, const c
     return static_cast<std::int64_t>(value);
 }
 
-inline torch::Tensor copy_i64_tensor_developmental_time_(const std::vector<std::int64_t> &values) {
+inline torch::Tensor copy_i64_tensor_developmental_time_(const host_buffer<std::int64_t> &values) {
     torch::Tensor tensor = torch::empty(
         { static_cast<std::int64_t>(values.size()) },
         torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
@@ -55,7 +54,7 @@ inline torch::Tensor copy_i64_tensor_developmental_time_(const std::vector<std::
     return tensor;
 }
 
-inline torch::Tensor copy_f32_tensor_developmental_time_(const std::vector<float> &values) {
+inline torch::Tensor copy_f32_tensor_developmental_time_(const host_buffer<float> &values) {
     torch::Tensor tensor = torch::empty(
         { static_cast<std::int64_t>(values.size()) },
         torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
@@ -73,7 +72,7 @@ inline void validate_developmental_time_infer_inputs_(BalancedTimeSampler::matri
 }
 
 inline DevelopmentalTimeTable materialize_developmental_time_batches_(
-    const std::vector<DevelopmentalTimeBatchPrediction> &batches) {
+    const host_buffer<DevelopmentalTimeBatchPrediction> &batches) {
     if (batches.empty()) {
         return DevelopmentalTimeTable{
             torch::empty({ 0 }, torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)),
@@ -81,8 +80,8 @@ inline DevelopmentalTimeTable materialize_developmental_time_batches_(
         };
     }
 
-    std::vector<torch::Tensor> all_indices;
-    std::vector<torch::Tensor> all_time;
+    host_buffer<torch::Tensor> all_indices;
+    host_buffer<torch::Tensor> all_time;
     all_indices.reserve(batches.size());
     all_time.reserve(batches.size());
     for (const DevelopmentalTimeBatchPrediction &batch : batches) {
@@ -90,8 +89,8 @@ inline DevelopmentalTimeTable materialize_developmental_time_batches_(
         all_time.push_back(batch.developmental_time);
     }
     return DevelopmentalTimeTable{
-        torch::cat(all_indices, 0).contiguous(),
-        torch::cat(all_time, 0).contiguous()
+        torch::cat(c10::ArrayRef<torch::Tensor>(all_indices.data(), all_indices.size()), 0).contiguous(),
+        torch::cat(c10::ArrayRef<torch::Tensor>(all_time.data(), all_time.size()), 0).contiguous()
     };
 }
 
@@ -144,7 +143,7 @@ void for_each_developmental_time_batch(
         }
         predicted_time = predicted_time.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
 
-        std::vector<std::int64_t> batch_indices(static_cast<std::size_t>(row_count));
+        host_buffer<std::int64_t> batch_indices(static_cast<std::size_t>(row_count));
         for (std::int64_t local_row = 0; local_row < row_count; ++local_row) {
             const unsigned long global_row = row_begin_ul + static_cast<unsigned long>(local_row);
             batch_indices[static_cast<std::size_t>(local_row)] = detail::checked_i64_developmental_time_(global_row, "global row");
@@ -166,7 +165,7 @@ inline DevelopmentalTimeTable infer_developmental_time(
     BalancedTimeSampler::matrix_type *matrix,
     const BalancedTimeSampler::storage_type *storage = nullptr,
     const DevelopmentalTimeInferConfig &config = DevelopmentalTimeInferConfig()) {
-    std::vector<DevelopmentalTimeBatchPrediction> batches;
+    host_buffer<DevelopmentalTimeBatchPrediction> batches;
     for_each_developmental_time_batch(
         model,
         matrix,

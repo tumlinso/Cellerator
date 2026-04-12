@@ -11,6 +11,7 @@ What lives here:
 - tiny device helpers under `primitives/`
 - minimal non-hot runtime support for streams, scratch, cuSPARSE caches, and multi-GPU launch plumbing
 - base single-GPU copies and distributed pair / 4-GPU reference copies
+- Blocked-ELL `SpMM` reference copies for Tensor Core-oriented sparse projection work on Volta
 
 What does not live here:
 
@@ -24,12 +25,14 @@ Design rules:
 - raw pointers first
 - FP16 storage with FP32 accumulate is the primary path
 - row-compressed CSR is the optimized default
+- Blocked-ELL is the preferred execution layout for repeated `SpMM` when conversion can amortize
 - distributed traffic is pair-local first on `0 <-> 2` and `1 <-> 3`
 - 4-GPU reduction is hierarchical: pair-local work first, then leader merge
 
 How to use it:
 
 - `base::` functions are single-GPU reference copies
+- `base::blocked_ell_spmm_fwd_f16_f32_lib()` is the library-backed Volta sparse Tensor Core path
 - `dist::launch_*` functions launch one base copy per selected device slot
 - `dist::reduce_sum_to_leader_f32()` performs the explicit leader merge step for feature-sharded forwards or row-sharded dense-gradient reductions
 

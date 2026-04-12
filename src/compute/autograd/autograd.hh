@@ -61,6 +61,7 @@ template<typename T>
 inline void download_device_buffer(const device_buffer<T> &src, T *dst, std::size_t count) {
     if (count > src.count) throw std::out_of_range("download_device_buffer exceeds allocation");
     if (count == 0) return;
+    cuda_require(cudaDeviceSynchronize(), "cudaDeviceSynchronize(download_device_buffer)");
     cuda_require(
         cudaMemcpy(dst, src.data, count * sizeof(T), cudaMemcpyDeviceToHost),
         "cudaMemcpy(D2H autograd)");
@@ -82,11 +83,14 @@ struct cusparse_cache {
     cusparseHandle_t handle = nullptr;
     bool owns_handle = false;
     const void *matrix_token = nullptr;
+    const void *blocked_ell_token = nullptr;
     cusparseSpMatDescr_t csr_f32 = nullptr;
+    cusparseSpMatDescr_t blocked_ell_f16 = nullptr;
     std::size_t spmv_bytes_non_transpose = 0;
     std::size_t spmv_bytes_transpose = 0;
     std::size_t spmm_bytes_non_transpose = 0;
     std::size_t spmm_bytes_transpose = 0;
+    std::size_t blocked_ell_spmm_bytes_non_transpose = 0;
 };
 
 struct fleet_context {
@@ -115,8 +119,19 @@ cusparseSpMatDescr_t acquire_csr_f32_descriptor(
     const std::uint32_t *major_ptr,
     const std::uint32_t *minor_idx,
     const float *values);
+cusparseSpMatDescr_t acquire_blocked_ell_f16_descriptor(
+    cusparse_cache *cache,
+    const execution_context &ctx,
+    const void *matrix_token,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const std::uint32_t *block_col_idx,
+    const __half *values);
 std::size_t &cached_spmv_bytes(cusparse_cache *cache, cusparseOperation_t op);
 std::size_t &cached_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op);
+std::size_t &cached_blocked_ell_spmm_bytes(cusparse_cache *cache, cusparseOperation_t op);
 
 void init(fleet_context *fleet);
 void clear(fleet_context *fleet);
@@ -285,6 +300,52 @@ void csr_spmm_fwd_f32_lib(
     float *out,
     std::int64_t out_ld);
 
+void blocked_ell_spmm_fwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld);
+
+void blocked_ell_spmm_fwd_f16_f32_lib(
+    const execution_context &ctx,
+    cusparse_cache *cache,
+    const void *matrix_token,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld);
+
+void blocked_ell_spmm_fwd_f16_f16_f32_lib(
+    const execution_context &ctx,
+    cusparse_cache *cache,
+    const void *matrix_token,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const __half *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld);
+
 } // namespace base
 
 namespace dist {
@@ -379,6 +440,24 @@ void launch_csr_spmm_fwd_f16_f32(
     const __half *const *values,
     const std::uint32_t *rows,
     const std::uint32_t *cols,
+    const float *const *rhs,
+    const std::int64_t *rhs_ld,
+    const std::int64_t *out_cols,
+    float *const *out,
+    const std::int64_t *out_ld);
+
+void launch_blocked_ell_spmm_fwd_f16_f32_lib(
+    fleet_context *fleet,
+    cusparse_cache *cache_per_slot,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const void *const *matrix_token,
+    const std::uint32_t *const *block_col_idx,
+    const __half *const *values,
+    const std::uint32_t *rows,
+    const std::uint32_t *cols,
+    const std::uint32_t *block_size,
+    const std::uint32_t *ell_cols,
     const float *const *rhs,
     const std::int64_t *rhs_ld,
     const std::int64_t *out_cols,
