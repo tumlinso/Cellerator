@@ -27,9 +27,9 @@ The current largest `std::vector` concentrations are:
 
 - `src/compute/neighbors/forward_neighbors/forward_neighbors.cu`
 - `src/compute/neighbors/cuvs_sharded_knn.cu`
-- `src/apps/series_workbench.cc`
-- `src/apps/series_workbench_cuda.cu`
-- `src/apps/series_workbench.hh`
+- `src/workbench/series_workbench.cc`
+- `src/workbench/series_workbench_cuda.cu`
+- `src/workbench/series_workbench.hh`
 - `src/ingest/series/series_ingest.cuh`
 - `src/models/developmental_time/dT_dataloader.hh`
 - `src/models/dense_reduce/dR_dataloader.hh`
@@ -116,7 +116,7 @@ Exit criteria:
 Scope:
 
 - `src/ingest/series/*`
-- hot ingest-adjacent paths in `src/apps/series_workbench_cuda.cu`
+- hot ingest-adjacent paths in `src/workbench/series_workbench_cuda.cu`
 
 Required changes:
 
@@ -151,8 +151,8 @@ Exit criteria:
 
 Scope:
 
-- `src/apps/series_workbench.hh`
-- `src/apps/series_workbench.cc`
+- `src/workbench/series_workbench.hh`
+- `src/workbench/series_workbench.cc`
 
 Required changes:
 

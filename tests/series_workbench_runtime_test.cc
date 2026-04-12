@@ -1,4 +1,4 @@
-#include "../src/apps/series_workbench.hh"
+#include "../src/workbench/series_workbench.hh"
 
 #include "../extern/CellShard/src/CellShard.hh"
 

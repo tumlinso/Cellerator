@@ -234,8 +234,8 @@ set_target_properties(seriesIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_STA
 cellerator_enable_perf(seriesIngestCompileTest)
 
 add_library(cellerator_workbench
-    src/apps/series_workbench.cc
-    src/apps/series_workbench_cuda.cu
+    src/workbench/series_workbench.cc
+    src/workbench/series_workbench_cuda.cu
     extern/CellShard/src/disk/matrix.cu
     extern/CellShard/src/sharded/disk.cu
     extern/CellShard/src/sharded/shard_paths.cu
@@ -266,7 +266,7 @@ set_target_properties(seriesWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
     add_executable(celleratorWorkbench
-        src/apps/series_workbench_main.cc
+        src/workbench/series_workbench_main.cc
     )
     target_include_directories(celleratorWorkbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(celleratorWorkbench PRIVATE ${HDF5_INCLUDE_DIRS})
