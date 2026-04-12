@@ -24,8 +24,8 @@ Design rules:
 
 - raw pointers first
 - FP16 storage with FP32 accumulate is the primary path
-- row-compressed CSR is the optimized default
-- Blocked-ELL is the preferred execution layout for repeated `SpMM` when conversion can amortize
+- Blocked-ELL is the native sparse execution layout
+- row-compressed CSR exists as a secondary compatibility and fallback path
 - distributed traffic is pair-local first on `0 <-> 2` and `1 <-> 3`
 - 4-GPU reduction is hierarchical: pair-local work first, then leader merge
 

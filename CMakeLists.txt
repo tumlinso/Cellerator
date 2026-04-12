@@ -333,6 +333,17 @@ endif()
 set_target_properties(computeAutogradBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(computeAutogradBench)
 
+add_executable(cellShardRealSpmmBench
+    bench/cellshard_real_spmm_bench.cu
+)
+target_include_directories(cellShardRealSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellShardRealSpmmBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
+if(NCCL_LIBRARY)
+    target_link_libraries(cellShardRealSpmmBench PRIVATE ${NCCL_LIBRARY})
+endif()
+set_target_properties(cellShardRealSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardRealSpmmBench)
+
 add_executable(forwardNeighborsCompileTest
     tests/forward_neighbors_compile_test.cc
 )
@@ -354,13 +365,26 @@ cellerator_enable_perf(computeAutogradRuntimeTest)
 
 add_executable(cellShardBlockedEllTest
     tests/cellshard_blocked_ell_test.cu
+    extern/CellShard/src/disk/matrix.cu
+    extern/CellShard/src/sharded/disk.cu
+    extern/CellShard/src/sharded/shard_paths.cu
+    extern/CellShard/src/sharded/series_h5.cc
 )
 target_include_directories(cellShardBlockedEllTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellShardBlockedEllTest PRIVATE CUDA::cudart CUDA::cusparse)
+target_include_directories(cellShardBlockedEllTest PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(cellShardBlockedEllTest PRIVATE CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
 set_target_properties(cellShardBlockedEllTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardBlockedEllTest)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
+    add_library(cellerator_quantize_cuda STATIC
+        src/models/quantize/quantize_cuda.cu
+    )
+    target_include_directories(cellerator_quantize_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(cellerator_quantize_cuda PRIVATE cellerator_torch cellerator_compute_autograd CUDA::cudart)
+    set_target_properties(cellerator_quantize_cuda PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(cellerator_quantize_cuda)
+
     add_executable(developmentalTimeCompileTest
         tests/developmental_time_compile_test.cc
     )
@@ -389,7 +413,7 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
         tests/quantize_model_test.cc
     )
     target_include_directories(quantizeModelTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch cellerator_compute_model_ops cellerator_compute_forward_neighbors CUDA::cudart)
+    target_link_libraries(quantizeModelTest PRIVATE cellerator_torch cellerator_compute_model_ops cellerator_compute_forward_neighbors cellerator_quantize_cuda CUDA::cudart)
     set_target_properties(quantizeModelTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(quantizeModelTest)
 

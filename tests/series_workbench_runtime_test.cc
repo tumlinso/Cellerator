@@ -196,6 +196,8 @@ int main() {
     policy.output_path = series_path;
     wb::ingest_plan plan = wb::plan_series_ingest(inspection.sources, policy);
     if (!plan.ok || plan.parts.size() != 2u || plan.shards.empty()) return 1;
+    if (plan.parts[0].execution_bytes == 0u || plan.shards[0].execution_bytes == 0u) return 1;
+    if (plan.parts[0].preferred_format == wb::execution_format::unknown) return 1;
 
     cellshard::sparse::init(&part);
     if (!populate_part(&part, 2u, 3u, {0u, 2u, 3u}, {0u, 2u, 1u}, {5.0f, 1.0f, 7.0f})) return 1;
@@ -339,6 +341,10 @@ int main() {
         }
         if (!converted_summary.browse.available || converted_summary.browse.selected_feature_indices.size() != 2u) {
             std::fprintf(stderr, "converted summary missing browse cache\n");
+            return 1;
+        }
+        if (converted_summary.parts.empty() || converted_summary.parts[0].execution_format == 0u) {
+            std::fprintf(stderr, "converted summary missing execution metadata\n");
             return 1;
         }
     }

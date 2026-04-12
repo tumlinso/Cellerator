@@ -26,6 +26,11 @@ This is a low-level, performance-first codebase. The goal is not to hide the run
 - fetch/drop and staging primitives
 - low-level persisted sparse formats
 
+Native sparse posture:
+
+- Blocked-ELL is the native sparse layout the repo is actively optimizing around
+- compressed / CSR remains available as a secondary fallback and interop path where a subsystem still requires it
+
 Short version:
 
 - `CellShard` stores and stages data
@@ -63,7 +68,7 @@ This directory should stay concrete. Reusable kernels and operators belong here;
 
 `src/compute/autograd/` is a particularly important example of that rule. It is not a generic framework surface. It is a pointer-first sparse building-block library with:
 
-- explicit CSR-first APIs
+- explicit pointer-first sparse APIs with Blocked-ELL-first execution posture
 - FP16 storage with FP32 accumulate on the main path
 - single-GPU `base::` kernels
 - distributed `dist::launch_*` entrypoints over selected device slots
@@ -84,7 +89,7 @@ This is the active source-format ingest home.
 It covers:
 
 - MTX parsing and partition planning
-- compressed-part conversion workspace
+- Blocked-ELL-native series conversion and emission
 - manifest-driven series ingest and HDF5 emission
 - shared ingest tables for features, barcodes, and metadata
 
@@ -209,5 +214,7 @@ Optimization priorities here are mostly:
 - preallocate and reuse workspaces
 - avoid needless host round-trips
 - avoid format churn across model and compute boundaries
+
+For sparse matrices in this repo, the intended “one useful layout” is Blocked-ELL unless a caller is intentionally crossing into a fallback compressed-only surface.
 
 Do not assume the right answer is to wrap low-level pieces in more generic infrastructure. In this repo, the building blocks are supposed to stay visible enough to optimize.

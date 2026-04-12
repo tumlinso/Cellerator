@@ -88,9 +88,9 @@
 - Pair-local row sharding across the real NVLink pairs scales well for CSR `SpMV` because it keeps the workload bandwidth-heavy and avoids expensive global merges.
 - Four-way feature-sharded CSR `SpMV` improves latency, but it does not drive all four V100s like a Tensor Core GEMM. The per-GPU shards become too thin and the math intensity stays low.
 - If the goal is high sustained board power and Tensor Core usage, CSR `SpMV` is the wrong target. The sparse Tensor Core direction for this host class is Blocked-ELL `SpMM`.
-- That makes the right storage strategy dual-path:
-  - keep CSR/row-compressed as the canonical sparse storage and general bioinformatics path
-  - add Blocked-ELL as the preferred resident execution layout for repeated sparse x dense-matrix projection
+- That makes the right storage strategy Blocked-ELL-first:
+  - make Blocked-ELL the native sparse layout for persisted execution and hot-path staging
+  - retain CSR/row-compressed as the secondary fallback path for algorithms that still require row-compressed semantics
 
 ## 4. Build And Configuration Surface
 
@@ -701,7 +701,7 @@ Relevant files:
 
 Observations:
 
-- this surface is lower-level than a framework runtime: it is pointer-first, CSR-first, and explicit about streams, scratch, cuSPARSE caches, and fleet topology
+- this surface is lower-level than a framework runtime: it is pointer-first, Blocked-ELL-first, and explicit about streams, scratch, cuSPARSE caches, and fleet topology
 - `autograd.hh` exposes raw-buffer contexts rather than tensor-wrapper-heavy hot paths
 - `base_sparse.cu` provides the single-GPU reference kernels and cuSPARSE-backed library paths for:
   - CSR row scaling with custom backward
@@ -1086,7 +1086,71 @@ Divergence note:
 - divergence as bottleneck: workload dependent, usually not first-order for dense-row reconstructions
 - critical intermediates should live in: packed device buffers, not host scaffolding
 
-## 14. Final Read
+### 13.7 CellShard Real-Data SpMM
+
+- library-backed or custom-kernel: mixed; compressed baseline is custom-kernel CSR `SpMM`, promoted path is cuSPARSE Blocked-ELL `SpMM`
+- dominant limiter: steady-state projection is compute-friendly once promoted, but one-time repack remains a real host-side cost
+- divergence as bottleneck: no
+- critical intermediates should live in: block-aligned row shards plus padded dense RHS slabs on device
+
+## 14. Real-Data Blocked-ELL Findings
+
+### 14.1 Benchmark Setup
+
+- Target: `./build/cellShardRealSpmmBench --warmup 2 --iters 5`
+- Data tier: `real`
+- Manifest: `bench/real_data/embryo_spmm_manifest.tsv`
+- Host: 4x Tesla V100 16 GB, pair-local topology `0<->2` and `1<->3`
+- Timed loop: steady-state `SpMM` only; `convert_ms` is reported separately and excluded from `avg_ms`
+- Important execution constraints for cuSPARSE Blocked-ELL on this host:
+  - shard row counts must be multiples of the promoted block size
+  - descriptor column count must be padded to the block size
+  - dense RHS must be uploaded in padded feature slabs with zero-filled tail columns
+
+### 14.2 Why The Earlier Whole-Matrix Fill Estimate Was Misleading
+
+- A naive whole-matrix block-fill estimate on raw embryo matrices made Blocked-ELL look unattractive.
+- The real execution path is different: it cuts row shards on block boundaries, repacks each shard independently, and chooses the block size per shard family.
+- On the measured replay slices, that produced much higher realized fill ratios than the earlier whole-matrix estimate:
+  - `embryo_1_exon`: `~0.947`
+  - `embryo_1_intron`: `~0.943`
+  - `embryo_10_exon`: `~0.947`
+  - `embryo_18_intron`: `~0.915-0.922`
+
+### 14.3 Measured Results
+
+| Dataset | Slice | RHS cols | GPUs | Compressed avg ms | Blocked-ELL avg ms | Speedup | Convert ms | Fill ratio |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `embryo_1_exon` | `16384` rows | `256` | 2 | `2.086` | `1.009` | `2.07x` | `317.5` | `0.947` |
+| `embryo_1_exon` | `16384` rows | `256` | 4 | `1.497` | `0.515` | `2.91x` | `316.1` | `0.947` |
+| `embryo_1_intron` | `16384` rows | `256` | 2 | `1.808` | `1.004` | `1.80x` | `300.4` | `0.943` |
+| `embryo_1_intron` | `16384` rows | `256` | 4 | `1.245` | `0.513` | `2.43x` | `300.8` | `0.942` |
+| `embryo_10_exon` | `16384` rows | `256` | 2 | `7.950` | `2.577` | `3.09x` | `835.0` | `0.947` |
+| `embryo_10_exon` | `16384` rows | `256` | 4 | `5.304` | `1.321` | `4.02x` | `837.0` | `0.947` |
+| `embryo_18_intron` | `8192` rows | `256` | 2 | `10.515` | `2.944` | `3.57x` | `857.0` | `0.922` |
+| `embryo_18_intron` | `8192` rows | `256` | 4 | `8.085` | `1.831` | `4.42x` | `857.5` | `0.915` |
+
+### 14.4 Interpretation
+
+- For repeated sparse x dense-matrix projection on these real embryo slices, Blocked-ELL is the correct execution layout on V100.
+- The gain is not marginal. The steady-state speedup range on the measured slices is about `1.75x` to `4.54x`.
+- Re-running the benchmark after the native Blocked-ELL persistence and lazy-fetch rewrite did not change the conclusion. The steady-state replay numbers stayed in the same range, so the storage rewrite did not introduce a new hot-path penalty.
+- Four-GPU hierarchical replay helps, but the bigger structural win is the layout promotion itself. The 4-GPU compressed path is still meaningfully slower than the 2-GPU promoted path on larger feature counts.
+- Promotion still has to be benchmark-gated because repack cost is large:
+  - measured one-time repack cost ranged from about `303 ms` to `877 ms`
+  - rough amortization on the measured slices is about `112` to `403` repeated `SpMM` calls depending on dataset and GPU count
+
+### 14.5 Design Decision
+
+- Blocked-ELL should be treated as the native sparse layout for CellShard and Cellerator.
+- Compressed should remain available as a secondary fallback for preprocessing, indexing, Torch export, and any other subsystem that still requires row-compressed semantics.
+- The ingest planner should optimize shard cuts for the native Blocked-ELL execution path:
+  - cut row shards on the maximum supported block boundary
+  - plan pair-local resident bytes around the real V100 pairs
+  - persist execution metadata so replay can materialize padded Blocked-ELL directly
+- Compressed should now be considered an opt-in compatibility path, not the baseline design center.
+- When a surface still relies on compressed, that dependency should be documented explicitly so it can be ported or intentionally retained.
+## 15. Final Read
 
 The repo already has the right strategic bias for Volta: explicit workspaces, explicit sparse layouts, custom kernels where library paths do not fit, and a refusal to hide expensive boundaries. The biggest remaining performance problems are not “missing CUDA” in the abstract. They are repeated format conversion, repeated device setup work, repeated host synchronization boundaries, and a few places where a sparse workload is being forced through dense or host-centric surfaces.
 
@@ -1099,9 +1163,9 @@ If only one principle is carried forward from this document, it should be this:
 - pay setup once
 - make every full-memory pass justify itself
 
-## 15. Inline Comment Coverage
+## 16. Inline Comment Coverage
 
-### 15.1 Commented Active Surfaces
+### 16.1 Commented Active Surfaces
 
 - `src/models/*`, `src/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
 - The comments are intentionally short and mostly attached to:
@@ -1110,7 +1174,7 @@ If only one principle is carried forward from this document, it should be this:
   - fixed-overhead call sites such as launches, descriptor setup, fetch/drop, and tensor export
   - places where a path is linear metadata work versus a real hot-path data pass
 
-### 15.2 What The Inline Comments Are For
+### 16.2 What The Inline Comments Are For
 
 - They are meant to speed up code review and profiling triage on this V100-targeted codebase.
 - They are not intended to replace measurement. Estimated overhead notes inside the code should still be treated as structural guidance until Nsight or benchmark data confirms them.

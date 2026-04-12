@@ -78,6 +78,9 @@ struct ingest_policy {
     unsigned long max_part_nnz = 1ul << 26ul;
     unsigned long max_window_bytes = 1ul << 30ul;
     std::size_t reader_bytes = (std::size_t) 8u << 20u;
+    unsigned int blocked_ell_block_sizes[3] = {8u, 16u, 32u};
+    unsigned int blocked_ell_candidate_count = 3u;
+    double blocked_ell_min_fill_ratio = 0.30;
     std::string output_path;
     bool verify_after_write = true;
     int device = 0;
@@ -101,6 +104,13 @@ struct planned_dataset {
     unsigned long barcode_count = 0;
 };
 
+enum class execution_format : std::uint32_t {
+    unknown = 0u,
+    compressed = 1u,
+    blocked_ell = 2u,
+    mixed = 3u
+};
+
 struct planned_part {
     unsigned long part_id = 0;
     std::size_t source_index = 0;
@@ -110,6 +120,11 @@ struct planned_part {
     unsigned long rows = 0;
     unsigned long nnz = 0;
     std::size_t estimated_bytes = 0;
+    std::size_t execution_bytes = 0;
+    std::size_t blocked_ell_bytes = 0;
+    double blocked_ell_fill_ratio = 0.0;
+    unsigned int blocked_ell_block_size = 0u;
+    execution_format preferred_format = execution_format::blocked_ell;
     unsigned long shard_id = 0;
 };
 
@@ -122,6 +137,12 @@ struct planned_shard {
     unsigned long rows = 0;
     unsigned long nnz = 0;
     std::size_t estimated_bytes = 0;
+    std::size_t execution_bytes = 0;
+    std::size_t blocked_ell_bytes = 0;
+    double blocked_ell_fill_ratio = 0.0;
+    unsigned int blocked_ell_block_size = 0u;
+    std::uint32_t preferred_pair = 0u;
+    execution_format preferred_format = execution_format::blocked_ell;
 };
 
 struct ingest_plan {
@@ -172,6 +193,11 @@ struct series_part_summary {
     std::uint32_t dataset_id = 0;
     std::uint32_t axis = 0;
     std::uint32_t codec_id = 0;
+    std::uint32_t execution_format = 0;
+    std::uint32_t blocked_ell_block_size = 0;
+    float blocked_ell_fill_ratio = 0.0f;
+    std::uint64_t execution_bytes = 0;
+    std::uint64_t blocked_ell_bytes = 0;
 };
 
 struct series_shard_summary {
@@ -180,6 +206,11 @@ struct series_shard_summary {
     std::uint64_t part_end = 0;
     std::uint64_t row_begin = 0;
     std::uint64_t row_end = 0;
+    std::uint32_t execution_format = 0;
+    std::uint32_t blocked_ell_block_size = 0;
+    float blocked_ell_fill_ratio = 0.0f;
+    std::uint64_t execution_bytes = 0;
+    std::uint32_t preferred_pair = 0;
 };
 
 struct codec_summary {
@@ -278,6 +309,7 @@ struct preprocess_summary {
 
 std::string format_name(unsigned int format);
 std::string severity_name(issue_severity severity);
+std::string execution_format_name(execution_format format);
 std::string builder_path_role_name(builder_path_role role);
 
 builder_path_role infer_builder_path_role(const std::string &path);

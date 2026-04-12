@@ -10,6 +10,7 @@ namespace {
 constexpr int kRowThreads = 256;
 constexpr int kValueThreads = 256;
 constexpr int kSpmmColsThreads = 128;
+constexpr int kFeatureThreads = 256;
 
 inline void cusparse_require_(cusparseStatus_t status, const char *label) {
     if (status == CUSPARSE_STATUS_SUCCESS) return;
@@ -19,6 +20,46 @@ inline void cusparse_require_(cusparseStatus_t status, const char *label) {
 inline std::size_t align_up_(std::size_t value, std::size_t alignment) {
     const std::size_t mask = alignment - 1u;
     return (value + mask) & ~mask;
+}
+
+__device__ inline float softplus_f32_(float value) {
+    if (value > 20.0f) return value;
+    if (value < -20.0f) return expf(value);
+    return log1pf(expf(value));
+}
+
+__device__ inline float sigmoid_f32_(float value) {
+    if (value >= 0.0f) {
+        const float z = expf(-value);
+        return 1.0f / (1.0f + z);
+    }
+    const float z = expf(value);
+    return z / (1.0f + z);
+}
+
+struct quantize_entry_eval_ {
+    float squared_error = 0.0f;
+    float grad_offset = 0.0f;
+    float grad_scale = 0.0f;
+};
+
+__device__ inline quantize_entry_eval_ eval_quantize_entry_(
+    float value,
+    float scale,
+    float offset,
+    float max_code) {
+    const float relaxed = (value - offset) / scale;
+    const float clamped = fminf(fmaxf(relaxed, 0.0f), max_code);
+    const float code = nearbyintf(clamped);
+    const float reconstruction = offset + code * scale;
+    const float error = reconstruction - value;
+    const bool active = relaxed > 0.0f && relaxed < max_code;
+    const float active_value = active ? relaxed : 0.0f;
+    return quantize_entry_eval_{
+        error * error,
+        2.0f * error * (1.0f - (active ? 1.0f : 0.0f)),
+        2.0f * error * (code - active_value)
+    };
 }
 
 __global__ void csr_row_scale_fwd_kernel_(
@@ -193,6 +234,153 @@ __global__ void blocked_ell_spmm_fwd_kernel_(
         }
     }
     out[static_cast<std::int64_t>(row) * out_ld + col] = accum;
+}
+
+__global__ void feature_affine_quantize_baseline_kernel_(
+    std::uint32_t rows,
+    std::uint32_t cols,
+    const float *log_scale,
+    const float *offset,
+    float scale_floor,
+    float max_code,
+    float reconstruction_weight,
+    float range_weight,
+    float min_dynamic_range,
+    float inv_elements,
+    float inv_features,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    const std::uint32_t col = static_cast<std::uint32_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (col >= cols) return;
+
+    const float log_scale_value = log_scale[col];
+    const float offset_value = offset[col];
+    const float scale = softplus_f32_(log_scale_value) + scale_floor;
+    const float scale_grad_factor = sigmoid_f32_(log_scale_value);
+    const quantize_entry_eval_ zero_eval = eval_quantize_entry_(0.0f, scale, offset_value, max_code);
+
+    const float rows_f = static_cast<float>(rows);
+    const float reconstruction_loss_value = rows_f * zero_eval.squared_error * inv_elements;
+
+    float range_loss_value = offset_value * offset_value * inv_features;
+    float grad_offset_value = rows_f * zero_eval.grad_offset * inv_elements * reconstruction_weight
+        + 2.0f * offset_value * inv_features * range_weight;
+    float grad_scale_value = rows_f * zero_eval.grad_scale * inv_elements * reconstruction_weight;
+
+    const float dynamic_range = scale * max_code;
+    if (dynamic_range < min_dynamic_range) {
+        const float diff = min_dynamic_range - dynamic_range;
+        range_loss_value += diff * diff * inv_features;
+        grad_scale_value += -2.0f * diff * max_code * inv_features * range_weight;
+    }
+
+    grad_log_scale[col] = grad_scale_value * scale_grad_factor;
+    grad_offset[col] = grad_offset_value;
+    atomicAdd(reconstruction_loss, reconstruction_loss_value);
+    atomicAdd(range_loss, range_loss_value);
+}
+
+__global__ void csr_feature_affine_quantize_correction_kernel_(
+    const std::uint32_t *major_ptr,
+    const std::uint32_t *minor_idx,
+    const __half *values,
+    std::uint32_t rows,
+    const float *log_scale,
+    const float *offset,
+    float scale_floor,
+    float max_code,
+    float reconstruction_weight,
+    float inv_elements,
+    float *reconstruction_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (row >= rows) return;
+
+    const std::uint32_t begin = major_ptr[row];
+    const std::uint32_t end = major_ptr[row + 1u];
+    for (std::uint32_t idx = begin; idx < end; ++idx) {
+        const std::uint32_t col = minor_idx[idx];
+        const float log_scale_value = log_scale[col];
+        const float offset_value = offset[col];
+        const float scale = softplus_f32_(log_scale_value) + scale_floor;
+        const float scale_grad_factor = sigmoid_f32_(log_scale_value);
+        const quantize_entry_eval_ zero_eval = eval_quantize_entry_(0.0f, scale, offset_value, max_code);
+        const quantize_entry_eval_ value_eval = eval_quantize_entry_(
+            primitives::load_f16_as_f32(values, idx),
+            scale,
+            offset_value,
+            max_code);
+
+        atomicAdd(
+            reconstruction_loss,
+            (value_eval.squared_error - zero_eval.squared_error) * inv_elements);
+        atomicAdd(
+            grad_offset + col,
+            (value_eval.grad_offset - zero_eval.grad_offset) * inv_elements * reconstruction_weight);
+        atomicAdd(
+            grad_log_scale + col,
+            (value_eval.grad_scale - zero_eval.grad_scale) * inv_elements * reconstruction_weight * scale_grad_factor);
+    }
+}
+
+__global__ void blocked_ell_feature_affine_quantize_correction_kernel_(
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *log_scale,
+    const float *offset,
+    float scale_floor,
+    float max_code,
+    float reconstruction_weight,
+    float inv_elements,
+    float *reconstruction_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (row >= rows || block_size == 0u || ell_cols == 0u) return;
+
+    const std::uint32_t row_block = row / block_size;
+    const std::uint32_t ell_width = ell_cols / block_size;
+    const std::size_t row_values_base = static_cast<std::size_t>(row) * ell_cols;
+    const std::size_t row_block_base = static_cast<std::size_t>(row_block) * ell_width;
+
+    for (std::uint32_t slot = 0u; slot < ell_width; ++slot) {
+        const std::uint32_t block_col = block_col_idx[row_block_base + slot];
+        if (block_col == cs::sparse::blocked_ell_invalid_col) continue;
+        const std::uint32_t col_base = block_col * block_size;
+        const std::size_t values_base = row_values_base + static_cast<std::size_t>(slot) * block_size;
+        for (std::uint32_t col_in_block = 0u; col_in_block < block_size; ++col_in_block) {
+            const std::uint32_t col = col_base + col_in_block;
+            if (col >= cols) break;
+
+            const float log_scale_value = log_scale[col];
+            const float offset_value = offset[col];
+            const float scale = softplus_f32_(log_scale_value) + scale_floor;
+            const float scale_grad_factor = sigmoid_f32_(log_scale_value);
+            const quantize_entry_eval_ zero_eval = eval_quantize_entry_(0.0f, scale, offset_value, max_code);
+            const quantize_entry_eval_ value_eval = eval_quantize_entry_(
+                primitives::load_f16_as_f32(values, values_base + col_in_block),
+                scale,
+                offset_value,
+                max_code);
+
+            atomicAdd(
+                reconstruction_loss,
+                (value_eval.squared_error - zero_eval.squared_error) * inv_elements);
+            atomicAdd(
+                grad_offset + col,
+                (value_eval.grad_offset - zero_eval.grad_offset) * inv_elements * reconstruction_weight);
+            atomicAdd(
+                grad_log_scale + col,
+                (value_eval.grad_scale - zero_eval.grad_scale) * inv_elements * reconstruction_weight * scale_grad_factor);
+        }
+    }
 }
 
 __global__ void csr_spmm_bwd_values_kernel_(
@@ -410,6 +598,149 @@ void blocked_ell_spmm_fwd_f16_f32(
     const dim3 grid(rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
     blocked_ell_spmm_fwd_kernel_<<<grid, kSpmmColsThreads, 0, ctx.stream>>>(block_col_idx, values, rows, cols, block_size, ell_cols, rhs, rhs_ld, out_cols, out, out_ld);
     cuda_require(cudaGetLastError(), "blocked_ell_spmm_fwd_kernel");
+}
+
+void csr_feature_affine_quantize_fwd_bwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *major_ptr,
+    const std::uint32_t *minor_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    const float *log_scale,
+    const float *offset,
+    const feature_affine_quantize_config &config,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_feature_affine_quantize)");
+    if (cols == 0u) return;
+    if (config.bits != 1u && config.bits != 2u && config.bits != 4u && config.bits != 8u) {
+        throw std::invalid_argument("csr_feature_affine_quantize requires 1/2/4/8-bit quantization");
+    }
+    if (config.scale_floor <= 0.0f) throw std::invalid_argument("csr_feature_affine_quantize requires scale_floor > 0");
+    if (reconstruction_loss == nullptr || range_loss == nullptr || grad_log_scale == nullptr || grad_offset == nullptr) {
+        throw std::invalid_argument("csr_feature_affine_quantize requires output storage");
+    }
+
+    cuda_require(cudaMemsetAsync(reconstruction_loss, 0, sizeof(float), ctx.stream), "cudaMemsetAsync(csr_feature_affine_quantize reconstruction)");
+    cuda_require(cudaMemsetAsync(range_loss, 0, sizeof(float), ctx.stream), "cudaMemsetAsync(csr_feature_affine_quantize range)");
+    const float inv_elements = rows == 0u
+        ? 0.0f
+        : 1.0f / static_cast<float>(static_cast<double>(rows) * static_cast<double>(cols));
+    const float inv_features = 1.0f / static_cast<float>(cols);
+    const float max_code = static_cast<float>((1u << config.bits) - 1u);
+
+    const int feature_blocks = static_cast<int>((static_cast<std::size_t>(cols) + kFeatureThreads - 1u) / kFeatureThreads);
+    feature_affine_quantize_baseline_kernel_<<<feature_blocks, kFeatureThreads, 0, ctx.stream>>>(
+        rows,
+        cols,
+        log_scale,
+        offset,
+        config.scale_floor,
+        max_code,
+        config.reconstruction_weight,
+        config.range_weight,
+        config.min_dynamic_range,
+        inv_elements,
+        inv_features,
+        reconstruction_loss,
+        range_loss,
+        grad_log_scale,
+        grad_offset);
+    cuda_require(cudaGetLastError(), "feature_affine_quantize_baseline_kernel(csr)");
+
+    if (rows == 0u) return;
+    const int row_blocks = static_cast<int>((static_cast<std::size_t>(rows) + kRowThreads - 1u) / kRowThreads);
+    csr_feature_affine_quantize_correction_kernel_<<<row_blocks, kRowThreads, 0, ctx.stream>>>(
+        major_ptr,
+        minor_idx,
+        values,
+        rows,
+        log_scale,
+        offset,
+        config.scale_floor,
+        max_code,
+        config.reconstruction_weight,
+        inv_elements,
+        reconstruction_loss,
+        grad_log_scale,
+        grad_offset);
+    cuda_require(cudaGetLastError(), "csr_feature_affine_quantize_correction_kernel");
+}
+
+void blocked_ell_feature_affine_quantize_fwd_bwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *log_scale,
+    const float *offset,
+    const feature_affine_quantize_config &config,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(blocked_ell_feature_affine_quantize)");
+    if (cols == 0u || block_size == 0u || ell_cols == 0u) return;
+    if (config.bits != 1u && config.bits != 2u && config.bits != 4u && config.bits != 8u) {
+        throw std::invalid_argument("blocked_ell_feature_affine_quantize requires 1/2/4/8-bit quantization");
+    }
+    if (config.scale_floor <= 0.0f) throw std::invalid_argument("blocked_ell_feature_affine_quantize requires scale_floor > 0");
+    if (reconstruction_loss == nullptr || range_loss == nullptr || grad_log_scale == nullptr || grad_offset == nullptr) {
+        throw std::invalid_argument("blocked_ell_feature_affine_quantize requires output storage");
+    }
+
+    cuda_require(cudaMemsetAsync(reconstruction_loss, 0, sizeof(float), ctx.stream), "cudaMemsetAsync(blocked_ell_feature_affine_quantize reconstruction)");
+    cuda_require(cudaMemsetAsync(range_loss, 0, sizeof(float), ctx.stream), "cudaMemsetAsync(blocked_ell_feature_affine_quantize range)");
+    const float inv_elements = rows == 0u
+        ? 0.0f
+        : 1.0f / static_cast<float>(static_cast<double>(rows) * static_cast<double>(cols));
+    const float inv_features = 1.0f / static_cast<float>(cols);
+    const float max_code = static_cast<float>((1u << config.bits) - 1u);
+
+    const int feature_blocks = static_cast<int>((static_cast<std::size_t>(cols) + kFeatureThreads - 1u) / kFeatureThreads);
+    feature_affine_quantize_baseline_kernel_<<<feature_blocks, kFeatureThreads, 0, ctx.stream>>>(
+        rows,
+        cols,
+        log_scale,
+        offset,
+        config.scale_floor,
+        max_code,
+        config.reconstruction_weight,
+        config.range_weight,
+        config.min_dynamic_range,
+        inv_elements,
+        inv_features,
+        reconstruction_loss,
+        range_loss,
+        grad_log_scale,
+        grad_offset);
+    cuda_require(cudaGetLastError(), "feature_affine_quantize_baseline_kernel(blocked ell)");
+
+    if (rows == 0u) return;
+    const int row_blocks = static_cast<int>((static_cast<std::size_t>(rows) + kRowThreads - 1u) / kRowThreads);
+    blocked_ell_feature_affine_quantize_correction_kernel_<<<row_blocks, kRowThreads, 0, ctx.stream>>>(
+        block_col_idx,
+        values,
+        rows,
+        cols,
+        block_size,
+        ell_cols,
+        log_scale,
+        offset,
+        config.scale_floor,
+        max_code,
+        config.reconstruction_weight,
+        inv_elements,
+        reconstruction_loss,
+        grad_log_scale,
+        grad_offset);
+    cuda_require(cudaGetLastError(), "blocked_ell_feature_affine_quantize_correction_kernel");
 }
 
 void csr_spmm_bwd_values_f16_f32(

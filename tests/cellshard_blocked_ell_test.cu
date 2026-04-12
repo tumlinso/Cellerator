@@ -3,8 +3,10 @@
 #include <cuda_runtime.h>
 
 #include <cmath>
+#include <cstdio>
 #include <cstdint>
 #include <stdexcept>
+#include <unistd.h>
 
 namespace cs = ::cellshard;
 
@@ -83,6 +85,32 @@ int main() {
     require(cs::device::upload(blocked.parts[0], &record) == cudaSuccess, "blocked ell upload failed");
     require(record.view != 0 && record.a0 != 0 && record.a1 != 0, "blocked ell upload pointers missing");
     require(cs::device::release(&record) == cudaSuccess, "blocked ell release failed");
+
+    {
+        char path[] = "/tmp/cellshard_blocked_ell_packXXXXXX";
+        const int fd = ::mkstemp(path);
+        require(fd >= 0, "mkstemp failed");
+        ::close(fd);
+
+        cs::shard_storage storage;
+        cs::sharded<cs::sparse::blocked_ell> loaded;
+        cs::init(&storage);
+        cs::init(&loaded);
+        require(cs::store(path, &blocked, &storage) != 0, "blocked ell packfile store failed");
+        cs::clear(&storage);
+        require(cs::load_header(path, &loaded, &storage) != 0, "blocked ell packfile load_header failed");
+        require(loaded.num_parts == blocked.num_parts, "blocked ell loaded part count mismatch");
+        require(loaded.part_aux[0] == blocked.part_aux[0], "blocked ell loaded aux mismatch");
+        require(cs::fetch_part(&loaded, &storage, 0ul) != 0, "blocked ell fetch_part failed");
+        require(loaded.parts[0] != nullptr, "blocked ell loaded part missing");
+        require(loaded.parts[0]->block_size == blocked.parts[0]->block_size, "blocked ell loaded block size mismatch");
+        require(loaded.parts[0]->ell_cols == blocked.parts[0]->ell_cols, "blocked ell loaded ell_cols mismatch");
+        require(loaded.parts[0]->blockColIdx[0] == blocked.parts[0]->blockColIdx[0], "blocked ell loaded block col mismatch");
+        require(close_half(loaded.parts[0]->val[0], __half2float(blocked.parts[0]->val[0])), "blocked ell loaded value mismatch");
+        cs::clear(&storage);
+        cs::clear(&loaded);
+        std::remove(path);
+    }
 
     cs::clear(&blocked);
     cs::clear(&src);

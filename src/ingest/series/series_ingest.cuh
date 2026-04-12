@@ -13,6 +13,7 @@
 #include "../common/feature_table.cuh"
 #include "../mtx/mtx_reader.cuh"
 #include "../mtx/compressed_parts.cuh"
+#include "../../../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
 #include "../../../extern/CellShard/src/sharded/series_h5.cuh"
 
 namespace cellerator {
@@ -95,6 +96,7 @@ struct series_dataset_plan {
     std::vector<unsigned long> part_rows;
     std::vector<unsigned long> part_nnz;
     std::vector<unsigned long> part_bytes;
+    std::vector<unsigned long> part_aux;
     std::vector<std::uint32_t> feature_to_global;
     unsigned long global_row_begin;
     unsigned long global_part_begin;
@@ -128,6 +130,37 @@ static inline int convert_coo_part_to_csr(const sparse::coo *src,
         std::memcpy(dst->val, ws->h_out_val, (std::size_t) src->nnz * sizeof(__half));
     }
     return 1;
+}
+
+static inline int convert_coo_part_to_blocked_ell_auto(const sparse::coo *src,
+                                                       mtx::compressed_workspace *ws,
+                                                       std::uint32_t global_cols,
+                                                       const std::uint32_t *feature_to_global,
+                                                       sparse::blocked_ell *dst,
+                                                       cellshard::convert::blocked_ell_tune_result *tune) {
+    static constexpr unsigned int candidates[] = { 8u, 16u, 32u };
+    sparse::compressed compressed;
+    unsigned long nnz_i = 0;
+    int ok = 0;
+
+    sparse::init(&compressed);
+    sparse::clear(dst);
+    sparse::init(dst);
+    if (!convert_coo_part_to_csr(src, ws, &compressed)) goto done;
+    compressed.cols = global_cols;
+    for (nnz_i = 0; nnz_i < compressed.nnz; ++nnz_i) {
+        compressed.minorIdx[nnz_i] = feature_to_global[compressed.minorIdx[nnz_i]];
+    }
+    if (!cellshard::convert::blocked_ell_from_compressed_auto(&compressed,
+                                                              candidates,
+                                                              sizeof(candidates) / sizeof(candidates[0]),
+                                                              dst,
+                                                              tune)) goto done;
+    ok = 1;
+
+done:
+    sparse::clear(&compressed);
+    return ok;
 }
 
 static inline cellshard::series_text_column_view as_text_view(const common::text_column *c) {
@@ -167,6 +200,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     std::vector<std::uint64_t> part_rows;
     std::vector<std::uint64_t> part_nnz;
     std::vector<std::uint32_t> part_axes;
+    std::vector<std::uint64_t> part_aux;
     std::vector<std::uint64_t> part_row_offsets;
     std::vector<std::uint32_t> part_dataset_ids;
     std::vector<std::uint32_t> part_codec_ids;
@@ -290,6 +324,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
         plan.part_nnz.assign(part_nnz_raw, part_nnz_raw + num_parts);
         plan.part_rows.resize((std::size_t) num_parts);
         plan.part_bytes.resize((std::size_t) num_parts);
+        plan.part_aux.resize((std::size_t) num_parts);
         plan.feature_to_global.resize((std::size_t) header.cols);
 
         for (local_part = 0; local_part < num_parts; ++local_part) {
@@ -298,7 +333,8 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
             plan.part_bytes[local_part] = (unsigned long) standard_csr_bytes(rows, part_nnz_raw[local_part]);
             part_rows.push_back((std::uint64_t) rows);
             part_nnz.push_back((std::uint64_t) part_nnz_raw[local_part]);
-            part_axes.push_back((std::uint32_t) sparse::compressed_by_row);
+            part_axes.push_back(0u);
+            part_aux.push_back(0ull);
             part_dataset_ids.push_back((std::uint32_t) dataset_idx);
             part_codec_ids.push_back(0u);
             part_bytes.push_back((std::uint64_t) plan.part_bytes[local_part]);
@@ -369,6 +405,71 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
 
     if (plans.empty()) goto done;
     dataset_feature_offsets.push_back((std::uint64_t) dataset_feature_to_global.size());
+    for (manifest_i = 0; manifest_i < plans.size(); ++manifest_i) {
+        partition windows;
+        sharded<sparse::coo> window_view;
+        sparse::blocked_ell blocked_part;
+        unsigned long window_i = 0;
+
+        init(&windows);
+        init(&window_view);
+        sparse::init(&blocked_part);
+        if (!build_by_bytes(&windows,
+                            plans[manifest_i].part_rows.data(),
+                            plans[manifest_i].part_bytes.data(),
+                            (unsigned long) plans[manifest_i].part_rows.size(),
+                            opts->max_window_bytes)) {
+            clear(&windows);
+            goto done;
+        }
+
+        for (window_i = 0; window_i < windows.count; ++window_i) {
+            unsigned long local_part = 0;
+            if (!mtx::load_part_window_coo(matrix_path_at(m, plans[manifest_i].manifest_idx),
+                                           &plans[manifest_i].header,
+                                           plans[manifest_i].row_offsets.data(),
+                                           plans[manifest_i].part_nnz.data(),
+                                           (unsigned long) plans[manifest_i].part_rows.size(),
+                                           windows.ranges[window_i].part_begin,
+                                           windows.ranges[window_i].part_end,
+                                           &window_view,
+                                           opts->reader_bytes)) {
+                clear(&windows);
+                clear(&window_view);
+                sparse::clear(&blocked_part);
+                goto done;
+            }
+
+            for (local_part = 0; local_part < window_view.num_parts; ++local_part) {
+                const unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
+                cellshard::convert::blocked_ell_tune_result tune = {};
+                if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
+                                                          &ws,
+                                                          (std::uint32_t) feature_dataset_ids.size(),
+                                                          plans[manifest_i].feature_to_global.data(),
+                                                          &blocked_part,
+                                                          &tune)) {
+                    clear(&windows);
+                    clear(&window_view);
+                    sparse::clear(&blocked_part);
+                    goto done;
+                }
+                plans[manifest_i].part_aux[(std::size_t) (windows.ranges[window_i].part_begin + local_part)] =
+                    cellshard::sparse::pack_blocked_ell_aux(blocked_part.block_size, cellshard::sparse::ell_width_blocks(&blocked_part));
+                plans[manifest_i].part_bytes[(std::size_t) (windows.ranges[window_i].part_begin + local_part)] =
+                    (unsigned long) cellshard::packed_blocked_ell_bytes(blocked_part.rows, blocked_part.ell_cols, blocked_part.block_size, sizeof(::real::storage_t));
+                part_aux[(std::size_t) global_part_id] = plans[manifest_i].part_aux[(std::size_t) (windows.ranges[window_i].part_begin + local_part)];
+                part_bytes[(std::size_t) global_part_id] = (std::uint64_t) plans[manifest_i].part_bytes[(std::size_t) (windows.ranges[window_i].part_begin + local_part)];
+                sparse::clear(&blocked_part);
+                sparse::init(&blocked_part);
+            }
+            clear(&window_view);
+            init(&window_view);
+        }
+
+        clear(&windows);
+        sparse::clear(&blocked_part);
+    }
     if (!build_by_bytes(&shard_plan,
                         (const unsigned long *) part_rows.data(),
                         (const unsigned long *) part_bytes.data(),
@@ -381,7 +482,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     shard_offsets[shard_plan.count] = (std::uint64_t) global_rows;
 
     codec.codec_id = 0u;
-    codec.family = cellshard::series_codec_family_standard_csr;
+    codec.family = cellshard::series_codec_family_blocked_ell;
     codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
@@ -396,6 +497,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     layout.part_rows = part_rows.data();
     layout.part_nnz = part_nnz.data();
     layout.part_axes = part_axes.data();
+    layout.part_aux = part_aux.data();
     layout.part_row_offsets = part_row_offsets.data();
     layout.part_dataset_ids = part_dataset_ids.data();
     layout.part_codec_ids = part_codec_ids.data();
@@ -427,17 +529,17 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     provenance_view.dataset_feature_offsets = dataset_feature_offsets.data();
     provenance_view.dataset_feature_to_global = dataset_feature_to_global.data();
 
-    if (!cellshard::create_series_compressed_h5(out_path, &layout, &dataset_view, &provenance_view)) goto done;
+    if (!cellshard::create_series_blocked_ell_h5(out_path, &layout, &dataset_view, &provenance_view)) goto done;
 
     for (manifest_i = 0; manifest_i < plans.size(); ++manifest_i) {
         partition windows;
         sharded<sparse::coo> window_view;
-        sparse::compressed compressed_part;
+        sparse::blocked_ell blocked_part;
         unsigned long window_i = 0;
 
         init(&windows);
         init(&window_view);
-        sparse::init(&compressed_part);
+        sparse::init(&blocked_part);
         if (!build_by_bytes(&windows,
                             plans[manifest_i].part_rows.data(),
                             plans[manifest_i].part_bytes.data(),
@@ -460,36 +562,39 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                                            opts->reader_bytes)) {
                 clear(&windows);
                 clear(&window_view);
-                sparse::clear(&compressed_part);
+                sparse::clear(&blocked_part);
                 goto done;
             }
 
             for (local_part = 0; local_part < window_view.num_parts; ++local_part) {
                 unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
-                unsigned long nnz_i = 0;
-                if (!convert_coo_part_to_csr(window_view.parts[local_part], &ws, &compressed_part)) {
+                cellshard::convert::blocked_ell_tune_result tune = {};
+                if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
+                                                          &ws,
+                                                          (std::uint32_t) feature_dataset_ids.size(),
+                                                          plans[manifest_i].feature_to_global.data(),
+                                                          &blocked_part,
+                                                          &tune)) {
                     clear(&windows);
                     clear(&window_view);
-                    sparse::clear(&compressed_part);
+                    sparse::clear(&blocked_part);
                     goto done;
                 }
-                for (nnz_i = 0; nnz_i < compressed_part.nnz; ++nnz_i) {
-                    compressed_part.minorIdx[nnz_i] = plans[manifest_i].feature_to_global[compressed_part.minorIdx[nnz_i]];
-                }
-                if (!cellshard::append_standard_csr_part_h5(out_path, global_part_id, &compressed_part)) {
+                if (!cellshard::append_blocked_ell_part_h5(out_path, global_part_id, &blocked_part)) {
                     clear(&windows);
                     clear(&window_view);
-                    sparse::clear(&compressed_part);
+                    sparse::clear(&blocked_part);
                     goto done;
                 }
-                sparse::clear(&compressed_part);
+                sparse::clear(&blocked_part);
+                sparse::init(&blocked_part);
             }
             clear(&window_view);
             init(&window_view);
         }
 
         clear(&windows);
-        sparse::clear(&compressed_part);
+        sparse::clear(&blocked_part);
     }
 
     ok = 1;

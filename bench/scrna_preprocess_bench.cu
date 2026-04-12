@@ -12,6 +12,7 @@
 #include <cuda_runtime.h>
 #include <nvtx3/nvToolsExt.h>
 
+#include "benchmark_mutex.hh"
 #include "../extern/CellShard/src/CellShard.hh"
 #include "../src/compute/preprocess/preprocess.cuh"
 
@@ -461,6 +462,7 @@ done:
 } // namespace
 
 int main(int argc, char **argv) {
+    cellerator::bench::benchmark_mutex_guard benchmark_mutex("scrnaPreprocessBench");
     config cfg;
 
     if (!parse_args(argc, argv, &cfg)) {

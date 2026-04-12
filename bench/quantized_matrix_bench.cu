@@ -7,6 +7,7 @@
 
 #include <cuda_runtime.h>
 
+#include "benchmark_mutex.hh"
 #include "../src/quantized/api.cuh"
 
 namespace msq = ::cellerator::quantized;
@@ -439,6 +440,7 @@ static bool run_policy_suite(const bench_fixture& fixture, const bench_options& 
 } // namespace
 
 int main(int argc, char** argv) {
+    cellerator::bench::benchmark_mutex_guard benchmark_mutex("quantizedMatrixBench");
     bench_options options;
     bench_fixture fixture = make_fixture();
     device_workspace workspace;

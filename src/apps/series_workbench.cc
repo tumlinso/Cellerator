@@ -7,11 +7,13 @@
 #include "../ingest/common/metadata_table.cuh"
 #include "../ingest/mtx/mtx_reader.cuh"
 #include "../ingest/series/series_partition.cuh"
+#include "../../extern/CellShard/src/disk/matrix.cuh"
 
 #include <hdf5.h>
 
 #include <algorithm>
 #include <cctype>
+#include <climits>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -25,6 +27,7 @@ namespace cellerator::apps::workbench {
 
 namespace ccommon = ::cellerator::ingest::common;
 namespace cmtx = ::cellerator::ingest::mtx;
+namespace cscan = ::cellerator::ingest::scan;
 namespace cseries = ::cellerator::ingest::series;
 namespace fs = std::filesystem;
 
@@ -57,6 +60,192 @@ inline unsigned int infer_format(const source_entry &source) {
     if (source.format != cseries::source_unknown) return source.format;
     if (source.matrix_path.find(".mtx") != std::string::npos) return cseries::source_mtx;
     return cseries::source_unknown;
+}
+
+struct blocked_ell_candidate_stream {
+    unsigned int block_size = 0u;
+    unsigned long current_part = ULONG_MAX;
+    unsigned long current_row_block = ULONG_MAX;
+    unsigned int active_unique = 0u;
+    std::uint32_t epoch = 1u;
+    std::vector<std::uint32_t> marks;
+    std::vector<unsigned long> total_unique_blocks;
+    std::vector<unsigned int> ell_width;
+};
+
+inline void flush_candidate_row_block(blocked_ell_candidate_stream *stream) {
+    if (stream == nullptr || stream->current_part == ULONG_MAX) return;
+    stream->total_unique_blocks[stream->current_part] += (unsigned long) stream->active_unique;
+    stream->ell_width[stream->current_part] = std::max(stream->ell_width[stream->current_part], stream->active_unique);
+    stream->active_unique = 0u;
+}
+
+inline bool start_candidate_row_block(blocked_ell_candidate_stream *stream,
+                                      unsigned long part_index,
+                                      unsigned long row_block) {
+    if (stream == nullptr) return false;
+    flush_candidate_row_block(stream);
+    stream->current_part = part_index;
+    stream->current_row_block = row_block;
+    ++stream->epoch;
+    if (stream->epoch == 0u) {
+        std::fill(stream->marks.begin(), stream->marks.end(), 0u);
+        stream->epoch = 1u;
+    }
+    return true;
+}
+
+inline bool accumulate_candidate_entry(blocked_ell_candidate_stream *stream,
+                                       unsigned long part_index,
+                                       unsigned long local_row,
+                                       unsigned long col) {
+    if (stream == nullptr || stream->block_size == 0u) return false;
+    const unsigned long row_block = local_row / stream->block_size;
+    const unsigned long block_col = col / stream->block_size;
+    if (block_col >= stream->marks.size() || part_index >= stream->total_unique_blocks.size()) return false;
+    if (stream->current_part != part_index || stream->current_row_block != row_block) {
+        if (!start_candidate_row_block(stream, part_index, row_block)) return false;
+    }
+    if (stream->marks[block_col] != stream->epoch) {
+        stream->marks[block_col] = stream->epoch;
+        ++stream->active_unique;
+    }
+    return true;
+}
+
+inline std::size_t choose_blocked_ell_candidate_count(const ingest_policy &policy) {
+    return std::min<std::size_t>(
+        policy.blocked_ell_candidate_count,
+        sizeof(policy.blocked_ell_block_sizes) / sizeof(policy.blocked_ell_block_sizes[0]));
+}
+
+inline void choose_part_execution_layout(const ingest_policy &policy,
+                                         unsigned long rows,
+                                         std::size_t compressed_bytes,
+                                         const std::vector<blocked_ell_candidate_stream> &candidates,
+                                         unsigned long part_index,
+                                         execution_format *preferred_format,
+                                         unsigned int *block_size,
+                                         double *fill_ratio,
+                                         std::size_t *blocked_ell_bytes,
+                                         std::size_t *execution_bytes) {
+    execution_format chosen_format = execution_format::compressed;
+    unsigned int chosen_block = 0u;
+    double chosen_fill = 0.0;
+    std::size_t chosen_blocked_ell_bytes = 0u;
+
+    for (const blocked_ell_candidate_stream &candidate : candidates) {
+        const unsigned long row_blocks = candidate.block_size == 0u
+            ? 0ul
+            : (rows + (unsigned long) candidate.block_size - 1ul) / (unsigned long) candidate.block_size;
+        const unsigned int ell_width_blocks = part_index < candidate.ell_width.size() ? candidate.ell_width[part_index] : 0u;
+        const double candidate_fill = row_blocks == 0ul || ell_width_blocks == 0u
+            ? 1.0
+            : (double) candidate.total_unique_blocks[part_index] / (double) (row_blocks * (unsigned long) ell_width_blocks);
+        const std::size_t candidate_bytes = cellshard::packed_blocked_ell_bytes(
+            (cellshard::types::dim_t) rows,
+            ell_width_blocks * candidate.block_size,
+            candidate.block_size,
+            sizeof(::real::storage_t));
+
+        if (candidate_fill + 1.0e-9 < policy.blocked_ell_min_fill_ratio) continue;
+        if (chosen_block == 0u
+            || candidate_fill > chosen_fill + 1.0e-9
+            || (candidate_fill + 1.0e-9 >= chosen_fill && candidate_bytes < chosen_blocked_ell_bytes)
+            || (candidate_fill + 1.0e-9 >= chosen_fill && candidate_bytes == chosen_blocked_ell_bytes && candidate.block_size > chosen_block)) {
+            chosen_block = candidate.block_size;
+            chosen_fill = candidate_fill;
+            chosen_blocked_ell_bytes = candidate_bytes;
+            chosen_format = execution_format::blocked_ell;
+        }
+    }
+
+    if (preferred_format != nullptr) *preferred_format = chosen_format;
+    if (block_size != nullptr) *block_size = chosen_block;
+    if (fill_ratio != nullptr) *fill_ratio = chosen_fill;
+    if (blocked_ell_bytes != nullptr) *blocked_ell_bytes = chosen_blocked_ell_bytes;
+    if (execution_bytes != nullptr) {
+        *execution_bytes = chosen_format == execution_format::blocked_ell && chosen_blocked_ell_bytes != 0u
+            ? chosen_blocked_ell_bytes
+            : compressed_bytes;
+    }
+}
+
+inline bool collect_row_sorted_blocked_ell_metrics(const source_entry &source,
+                                                   const cmtx::header &header,
+                                                   const unsigned long *row_offsets,
+                                                   unsigned long num_parts,
+                                                   const ingest_policy &policy,
+                                                   std::vector<blocked_ell_candidate_stream> *out_candidates) {
+    cscan::buffered_file_reader reader;
+    cmtx::header verify;
+    int rc = 0;
+    char *line = nullptr;
+    std::size_t line_len = 0u;
+    unsigned long row = 0ul;
+    unsigned long col = 0ul;
+    float value = 0.0f;
+    std::vector<blocked_ell_candidate_stream> candidates;
+    const std::size_t candidate_count = choose_blocked_ell_candidate_count(policy);
+
+    if (out_candidates == nullptr || row_offsets == nullptr || num_parts == 0ul) return false;
+    out_candidates->clear();
+    if (!header.row_sorted || header.symmetric || candidate_count == 0u) return false;
+
+    candidates.reserve(candidate_count);
+    for (std::size_t i = 0; i < candidate_count; ++i) {
+        const unsigned int block_size = policy.blocked_ell_block_sizes[i];
+        const unsigned long col_blocks = block_size == 0u
+            ? 0ul
+            : (header.cols + (unsigned long) block_size - 1ul) / (unsigned long) block_size;
+        blocked_ell_candidate_stream candidate;
+        if (block_size == 0u || col_blocks == 0ul) continue;
+        candidate.block_size = block_size;
+        candidate.marks.assign(col_blocks, 0u);
+        candidate.total_unique_blocks.assign(num_parts, 0ul);
+        candidate.ell_width.assign(num_parts, 0u);
+        candidates.push_back(std::move(candidate));
+    }
+    if (candidates.empty()) return false;
+
+    cscan::init(&reader);
+    cmtx::init(&verify);
+    if (!cscan::open(&reader, source.matrix_path.c_str(), policy.reader_bytes)) {
+        cscan::clear(&reader);
+        return false;
+    }
+    if (!cmtx::read_header(&reader, &verify)
+        || verify.rows != header.rows
+        || verify.cols != header.cols
+        || verify.nnz_file != header.nnz_file) {
+        cscan::clear(&reader);
+        return false;
+    }
+
+    while ((rc = cscan::next_line(&reader, &line, &line_len)) > 0) {
+        if (line_len == 0u || line[0] == '%') continue;
+        if (!cmtx::read_triplet(line, &verify, &row, &col, &value)) {
+            cscan::clear(&reader);
+            return false;
+        }
+        const unsigned long part_index = cellshard::find_offset_span(row, row_offsets, num_parts);
+        if (part_index >= num_parts) {
+            cscan::clear(&reader);
+            return false;
+        }
+        const unsigned long local_row = row - row_offsets[part_index];
+        for (blocked_ell_candidate_stream &candidate : candidates) {
+            if (!accumulate_candidate_entry(&candidate, part_index, local_row, col)) {
+                cscan::clear(&reader);
+                return false;
+            }
+        }
+    }
+    cscan::clear(&reader);
+    if (rc < 0) return false;
+    for (blocked_ell_candidate_stream &candidate : candidates) flush_candidate_row_block(&candidate);
+    *out_candidates = std::move(candidates);
+    return true;
 }
 
 inline source_entry probe_source_entry(const source_entry &input,
@@ -173,6 +362,14 @@ inline std::size_t estimate_standard_csr_bytes(unsigned long rows, unsigned long
 
 inline hid_t open_group(hid_t parent, const char *path) {
     return H5Gopen2(parent, path, H5P_DEFAULT);
+}
+
+inline hid_t open_optional_group(hid_t parent, const char *path) {
+    hid_t group = (hid_t) -1;
+    H5E_BEGIN_TRY {
+        group = H5Gopen2(parent, path, H5P_DEFAULT);
+    } H5E_END_TRY;
+    return group;
 }
 
 inline bool read_attr_u64(hid_t obj, const char *name, std::uint64_t *value) {
@@ -430,6 +627,16 @@ std::string severity_name(issue_severity severity) {
         case issue_severity::error: return "error";
     }
     return "info";
+}
+
+std::string execution_format_name(execution_format format) {
+    switch (format) {
+        case execution_format::compressed: return "compressed";
+        case execution_format::blocked_ell: return "blocked_ell";
+        case execution_format::mixed: return "mixed";
+        case execution_format::unknown: return "unknown";
+    }
+    return "unknown";
 }
 
 std::string builder_path_role_name(builder_path_role role) {
@@ -713,6 +920,7 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
         unsigned long *row_offsets = 0;
         unsigned long *part_nnz_raw = 0;
         unsigned long num_parts = 0;
+        std::vector<blocked_ell_candidate_stream> blocked_candidates;
         const unsigned long global_row_begin = plan.total_rows;
         const unsigned long global_part_begin = (unsigned long) plan.parts.size();
         cmtx::init(&header);
@@ -741,11 +949,37 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             ccommon::clear(&features);
         }
 
+        const bool have_blocked_ell_metrics = collect_row_sorted_blocked_ell_metrics(
+            source,
+            header,
+            row_offsets,
+            num_parts,
+            policy,
+            &blocked_candidates);
+
         for (unsigned long local_part = 0; local_part < num_parts; ++local_part) {
             const unsigned long rows = row_offsets[local_part + 1u] - row_offsets[local_part];
             const unsigned long nnz = part_nnz_raw[local_part];
-            const std::size_t bytes = estimate_standard_csr_bytes(rows, nnz);
+            const std::size_t compressed_bytes = estimate_standard_csr_bytes(rows, nnz);
+            execution_format preferred_format = execution_format::compressed;
+            unsigned int blocked_ell_block_size = 0u;
+            double blocked_ell_fill_ratio = 0.0;
+            std::size_t blocked_ell_bytes = 0u;
+            std::size_t execution_bytes = compressed_bytes;
             planned_part part;
+            if (have_blocked_ell_metrics) {
+                choose_part_execution_layout(
+                    policy,
+                    rows,
+                    compressed_bytes,
+                    blocked_candidates,
+                    local_part,
+                    &preferred_format,
+                    &blocked_ell_block_size,
+                    &blocked_ell_fill_ratio,
+                    &blocked_ell_bytes,
+                    &execution_bytes);
+            }
             part.part_id = (unsigned long) plan.parts.size();
             part.source_index = source_index;
             part.dataset_id = source.dataset_id;
@@ -753,12 +987,17 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             part.row_end = global_row_begin + row_offsets[local_part + 1u];
             part.rows = rows;
             part.nnz = nnz;
-            part.estimated_bytes = bytes;
+            part.estimated_bytes = compressed_bytes;
+            part.execution_bytes = execution_bytes;
+            part.blocked_ell_bytes = blocked_ell_bytes;
+            part.blocked_ell_fill_ratio = blocked_ell_fill_ratio;
+            part.blocked_ell_block_size = blocked_ell_block_size;
+            part.preferred_format = preferred_format;
             plan.parts.push_back(part);
             part_rows.push_back(rows);
             part_nnz.push_back(nnz);
-            part_bytes.push_back((unsigned long) bytes);
-            plan.total_estimated_bytes += bytes;
+            part_bytes.push_back((unsigned long) execution_bytes);
+            plan.total_estimated_bytes += execution_bytes;
         }
 
         planned_dataset dataset;
@@ -805,6 +1044,12 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             for (unsigned long shard_id = 0; shard_id < shard_plan.count; ++shard_id) {
                 const cseries::shard_range &range = shard_plan.ranges[shard_id];
                 planned_shard shard;
+                std::size_t blocked_ell_bytes = 0u;
+                std::size_t execution_bytes = 0u;
+                std::size_t fill_weight = 0u;
+                double fill_weighted_sum = 0.0;
+                unsigned int shard_block_size = 0u;
+                execution_format shard_format = execution_format::unknown;
                 shard.shard_id = shard_id;
                 shard.part_begin = range.part_begin;
                 shard.part_end = range.part_end;
@@ -813,10 +1058,32 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
                 shard.rows = range.row_end - range.row_begin;
                 shard.nnz = range.nnz;
                 shard.estimated_bytes = (std::size_t) range.bytes;
+                shard.preferred_pair = (std::uint32_t) (shard_id & 1ul);
                 plan.shards.push_back(shard);
                 for (unsigned long part_id = range.part_begin; part_id < range.part_end && part_id < plan.parts.size(); ++part_id) {
                     plan.parts[part_id].shard_id = shard_id;
+                    execution_bytes += plan.parts[part_id].execution_bytes;
+                    blocked_ell_bytes += plan.parts[part_id].blocked_ell_bytes;
+                    fill_weight += (std::size_t) plan.parts[part_id].rows;
+                    fill_weighted_sum += plan.parts[part_id].blocked_ell_fill_ratio * (double) plan.parts[part_id].rows;
+                    if (shard_format == execution_format::unknown) {
+                        shard_format = plan.parts[part_id].preferred_format;
+                    } else if (shard_format != plan.parts[part_id].preferred_format) {
+                        shard_format = execution_format::mixed;
+                    }
+                    if (shard_block_size == 0u) {
+                        shard_block_size = plan.parts[part_id].blocked_ell_block_size;
+                    } else if (shard_block_size != plan.parts[part_id].blocked_ell_block_size) {
+                        shard_block_size = 0u;
+                    }
                 }
+                plan.shards.back().execution_bytes = execution_bytes;
+                plan.shards.back().blocked_ell_bytes = blocked_ell_bytes;
+                plan.shards.back().blocked_ell_fill_ratio = fill_weight != 0u ? (fill_weighted_sum / (double) fill_weight) : 0.0;
+                plan.shards.back().blocked_ell_block_size = shard_block_size;
+                plan.shards.back().preferred_format = shard_format == execution_format::unknown
+                    ? execution_format::compressed
+                    : shard_format;
             }
         }
     }
@@ -835,6 +1102,7 @@ series_summary summarize_series_csh5(const std::string &path) {
     hid_t codecs = (hid_t) -1;
     hid_t embedded_metadata = (hid_t) -1;
     hid_t browse = (hid_t) -1;
+    hid_t execution = (hid_t) -1;
     std::vector<std::uint32_t> dataset_formats;
     std::vector<std::uint64_t> dataset_row_begin;
     std::vector<std::uint64_t> dataset_row_end;
@@ -859,6 +1127,16 @@ series_summary summarize_series_csh5(const std::string &path) {
     std::vector<std::uint32_t> codec_scale_codes;
     std::vector<std::uint32_t> codec_bits;
     std::vector<std::uint32_t> codec_flags;
+    std::vector<std::uint32_t> part_execution_formats;
+    std::vector<std::uint32_t> part_block_sizes;
+    std::vector<float> part_fill_ratios;
+    std::vector<std::uint64_t> part_execution_bytes;
+    std::vector<std::uint64_t> part_blocked_ell_bytes;
+    std::vector<std::uint32_t> shard_execution_formats;
+    std::vector<std::uint32_t> shard_block_sizes;
+    std::vector<float> shard_fill_ratios;
+    std::vector<std::uint64_t> shard_execution_bytes;
+    std::vector<std::uint32_t> shard_pair_ids;
 
     summary.path = path;
     if (path.empty()) {
@@ -944,7 +1222,12 @@ series_summary summarize_series_csh5(const std::string &path) {
             i < part_nnz.size() ? part_nnz[i] : 0ull,
             i < part_dataset_ids.size() ? part_dataset_ids[i] : 0u,
             i < part_axes.size() ? part_axes[i] : 0u,
-            i < part_codec_ids.size() ? part_codec_ids[i] : 0u
+            i < part_codec_ids.size() ? part_codec_ids[i] : 0u,
+            0u,
+            0u,
+            0.0f,
+            0ull,
+            0ull
         });
     }
 
@@ -959,7 +1242,12 @@ series_summary summarize_series_csh5(const std::string &path) {
             part_begin,
             row_end == row_begin ? part_begin : std::max<unsigned long>(part_begin, part_end),
             row_begin,
-            row_end
+            row_end,
+            0u,
+            0u,
+            0.0f,
+            0ull,
+            0u
         });
     }
 
@@ -987,7 +1275,7 @@ series_summary summarize_series_csh5(const std::string &path) {
         push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read feature names");
     }
 
-    embedded_metadata = open_group(file, "/embedded_metadata");
+    embedded_metadata = open_optional_group(file, "/embedded_metadata");
     if (embedded_metadata >= 0) {
         std::uint32_t metadata_count = 0;
         std::vector<std::uint32_t> dataset_indices;
@@ -1029,7 +1317,7 @@ series_summary summarize_series_csh5(const std::string &path) {
         }
     }
 
-    browse = open_group(file, "/browse");
+    browse = open_optional_group(file, "/browse");
     if (browse >= 0) {
         browse_cache_summary browse_summary;
         if (!read_attr_u32(browse, "selected_feature_count", &browse_summary.selected_feature_count)
@@ -1058,9 +1346,41 @@ series_summary summarize_series_csh5(const std::string &path) {
         }
     }
 
+    execution = open_optional_group(file, "/execution");
+    if (execution >= 0) {
+        if (!read_dataset_vector(execution, "part_execution_formats", H5T_NATIVE_UINT32, &part_execution_formats)
+            || !read_dataset_vector(execution, "part_blocked_ell_block_sizes", H5T_NATIVE_UINT32, &part_block_sizes)
+            || !read_dataset_vector(execution, "part_blocked_ell_fill_ratios", H5T_NATIVE_FLOAT, &part_fill_ratios)
+            || !read_dataset_vector(execution, "part_execution_bytes", H5T_NATIVE_UINT64, &part_execution_bytes)
+            || !read_dataset_vector(execution, "part_blocked_ell_bytes", H5T_NATIVE_UINT64, &part_blocked_ell_bytes)
+            || !read_dataset_vector(execution, "shard_execution_formats", H5T_NATIVE_UINT32, &shard_execution_formats)
+            || !read_dataset_vector(execution, "shard_blocked_ell_block_sizes", H5T_NATIVE_UINT32, &shard_block_sizes)
+            || !read_dataset_vector(execution, "shard_blocked_ell_fill_ratios", H5T_NATIVE_FLOAT, &shard_fill_ratios)
+            || !read_dataset_vector(execution, "shard_execution_bytes", H5T_NATIVE_UINT64, &shard_execution_bytes)
+            || !read_dataset_vector(execution, "shard_preferred_pair_ids", H5T_NATIVE_UINT32, &shard_pair_ids)) {
+            push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read execution layout metadata");
+        } else {
+            for (std::size_t i = 0; i < summary.parts.size(); ++i) {
+                summary.parts[i].execution_format = i < part_execution_formats.size() ? part_execution_formats[i] : 0u;
+                summary.parts[i].blocked_ell_block_size = i < part_block_sizes.size() ? part_block_sizes[i] : 0u;
+                summary.parts[i].blocked_ell_fill_ratio = i < part_fill_ratios.size() ? part_fill_ratios[i] : 0.0f;
+                summary.parts[i].execution_bytes = i < part_execution_bytes.size() ? part_execution_bytes[i] : 0ull;
+                summary.parts[i].blocked_ell_bytes = i < part_blocked_ell_bytes.size() ? part_blocked_ell_bytes[i] : 0ull;
+            }
+            for (std::size_t i = 0; i < summary.shards.size(); ++i) {
+                summary.shards[i].execution_format = i < shard_execution_formats.size() ? shard_execution_formats[i] : 0u;
+                summary.shards[i].blocked_ell_block_size = i < shard_block_sizes.size() ? shard_block_sizes[i] : 0u;
+                summary.shards[i].blocked_ell_fill_ratio = i < shard_fill_ratios.size() ? shard_fill_ratios[i] : 0.0f;
+                summary.shards[i].execution_bytes = i < shard_execution_bytes.size() ? shard_execution_bytes[i] : 0ull;
+                summary.shards[i].preferred_pair = i < shard_pair_ids.size() ? shard_pair_ids[i] : 0u;
+            }
+        }
+    }
+
     summary.ok = !has_errors(summary.issues);
 
 done:
+    if (execution >= 0) H5Gclose(execution);
     if (browse >= 0) H5Gclose(browse);
     if (embedded_metadata >= 0) H5Gclose(embedded_metadata);
     if (codecs >= 0) H5Gclose(codecs);

@@ -86,5 +86,31 @@
   pair-local distributed execution uses `0 <-> 2` and `1 <-> 3`
   4-GPU reduction is hierarchical through pair leaders
   FP16 storage with FP32 accumulation is the primary path
-  CSR metadata follows CellShard row-compressed layout
+  Blocked-ELL is the native sparse execution layout and CSR metadata is the secondary fallback layout
 - Status: implemented pointer-first base and distributed reference copies
+
+## `quantize_sparse_feature_affine`
+
+- Purpose: move quantizer reconstruction and range gradients for sparse CUDA CSR batches into fused kernels under `src/compute/autograd` instead of dense libtorch math.
+- Owner: `src/models/quantize/`
+- Boundary:
+  model-facing wrapper in [`src/models/quantize/quantize.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/quantize/quantize.hh:1)
+  fused sparse kernels in [`src/compute/autograd/kernels/base_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/kernels/base_sparse.cu:1)
+  low-level runtime surface in [`src/compute/autograd/autograd.hh`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/autograd.hh:1)
+- Inputs:
+  CUDA sparse CSR batch with cell-major rows and gene-major columns
+  contiguous CUDA `float32` `log_scale` and `offset`
+  scalar bit width, scale floor, and loss weights
+- Outputs:
+  CUDA scalar reconstruction loss
+  CUDA scalar range loss
+  CUDA `float32` gradients for `log_scale` and `offset`
+- Backend: custom CUDA fused zero-baseline plus sparse-correction kernels for CSR and Blocked-ELL layouts
+- Backward:
+  custom backward for quantizer parameters
+  no gradients for sparse batch metadata or sparse feature values in the model-facing path
+- Assumptions:
+  Volta `sm_70`
+  sparse batches are implicit-zero expression matrices
+  offset anchor in the sparse CUDA path treats the dense floor as zero
+- Status: implemented for sparse CUDA reconstruction/range training path

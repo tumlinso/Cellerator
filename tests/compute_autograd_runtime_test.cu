@@ -17,6 +17,86 @@ bool close_value(float lhs, float rhs, float tol = 1.0e-4f) {
     return std::fabs(lhs - rhs) <= tol;
 }
 
+float softplus_host(float value) {
+    if (value > 20.0f) return value;
+    if (value < -20.0f) return std::exp(value);
+    return std::log1p(std::exp(value));
+}
+
+float sigmoid_host(float value) {
+    if (value >= 0.0f) {
+        const float z = std::exp(-value);
+        return 1.0f / (1.0f + z);
+    }
+    const float z = std::exp(value);
+    return z / (1.0f + z);
+}
+
+struct quantize_eval_host {
+    float loss = 0.0f;
+    float grad_offset = 0.0f;
+    float grad_scale = 0.0f;
+};
+
+quantize_eval_host eval_quantize_host(float value, float scale, float offset, float max_code) {
+    const float relaxed = (value - offset) / scale;
+    const float clamped = std::fmin(std::fmax(relaxed, 0.0f), max_code);
+    const float code = std::nearbyint(clamped);
+    const float reconstruction = offset + code * scale;
+    const float error = reconstruction - value;
+    const bool active = relaxed > 0.0f && relaxed < max_code;
+    return {
+        error * error,
+        2.0f * error * (1.0f - (active ? 1.0f : 0.0f)),
+        2.0f * error * (code - (active ? relaxed : 0.0f))
+    };
+}
+
+void compute_quantize_reference(
+    const float *dense,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    const float *log_scale,
+    const float *offset,
+    const autograd::feature_affine_quantize_config &config,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset) {
+    const float inv_elements = rows == 0u
+        ? 0.0f
+        : 1.0f / static_cast<float>(static_cast<double>(rows) * static_cast<double>(cols));
+    const float inv_features = cols == 0u ? 0.0f : 1.0f / static_cast<float>(cols);
+    const float max_code = static_cast<float>((1u << config.bits) - 1u);
+    *reconstruction_loss = 0.0f;
+    *range_loss = 0.0f;
+    for (std::uint32_t col = 0; col < cols; ++col) {
+        grad_log_scale[col] = 0.0f;
+        grad_offset[col] = 0.0f;
+    }
+
+    for (std::uint32_t col = 0; col < cols; ++col) {
+        const float scale = softplus_host(log_scale[col]) + config.scale_floor;
+        const float scale_grad_factor = sigmoid_host(log_scale[col]);
+        for (std::uint32_t row = 0; row < rows; ++row) {
+            const float value = dense[static_cast<std::size_t>(row) * cols + col];
+            const quantize_eval_host eval = eval_quantize_host(value, scale, offset[col], max_code);
+            *reconstruction_loss += eval.loss * inv_elements;
+            grad_offset[col] += eval.grad_offset * inv_elements * config.reconstruction_weight;
+            grad_log_scale[col] += eval.grad_scale * inv_elements * config.reconstruction_weight * scale_grad_factor;
+        }
+
+        const float dynamic_range = scale * max_code;
+        if (dynamic_range < config.min_dynamic_range) {
+            const float diff = config.min_dynamic_range - dynamic_range;
+            *range_loss += diff * diff * inv_features;
+            grad_log_scale[col] += -2.0f * diff * max_code * inv_features * config.range_weight * scale_grad_factor;
+        }
+        *range_loss += offset[col] * offset[col] * inv_features;
+        grad_offset[col] += 2.0f * offset[col] * inv_features * config.range_weight;
+    }
+}
+
 template<typename T>
 autograd::device_buffer<T> allocate_on_device(int device, std::size_t count) {
     autograd::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_on_device)");
@@ -260,6 +340,102 @@ int main() {
     autograd::download_device_buffer(blocked_spmm_lib, blocked_spmm_lib_host, 6);
     require(close_value(blocked_spmm_lib_host[0], 201.0f), "blocked ell lib out 0 mismatch");
     require(close_value(blocked_spmm_lib_host[5], 10.0f), "blocked ell lib out 5 mismatch");
+
+    const float quantize_dense_host[] = {
+        1.0f, 0.0f, 2.0f,
+        0.0f, 3.0f, 4.0f,
+        5.0f, 0.0f, 0.0f
+    };
+    const float quantize_log_scale_host[] = { -0.35f, 0.15f, 0.55f };
+    const float quantize_offset_host[] = { 0.25f, 0.10f, 0.50f };
+    autograd::feature_affine_quantize_config quantize_config;
+    quantize_config.bits = 2u;
+    quantize_config.scale_floor = 1.0e-3f;
+    quantize_config.reconstruction_weight = 1.0f;
+    quantize_config.range_weight = 0.05f;
+    quantize_config.min_dynamic_range = 1.25f;
+
+    auto quantize_log_scale = autograd::allocate_device_buffer<float>(3);
+    auto quantize_offset = autograd::allocate_device_buffer<float>(3);
+    auto quantize_reconstruction = autograd::allocate_device_buffer<float>(1);
+    auto quantize_range = autograd::allocate_device_buffer<float>(1);
+    auto quantize_grad_log = autograd::allocate_device_buffer<float>(3);
+    auto quantize_grad_offset = autograd::allocate_device_buffer<float>(3);
+    autograd::upload_device_buffer(&quantize_log_scale, quantize_log_scale_host, 3);
+    autograd::upload_device_buffer(&quantize_offset, quantize_offset_host, 3);
+
+    float quantize_ref_reconstruction = 0.0f;
+    float quantize_ref_range = 0.0f;
+    float quantize_ref_grad_log[3] = {};
+    float quantize_ref_grad_offset[3] = {};
+    compute_quantize_reference(
+        quantize_dense_host,
+        3u,
+        3u,
+        quantize_log_scale_host,
+        quantize_offset_host,
+        quantize_config,
+        &quantize_ref_reconstruction,
+        &quantize_ref_range,
+        quantize_ref_grad_log,
+        quantize_ref_grad_offset);
+
+    autograd::base::csr_feature_affine_quantize_fwd_bwd_f16_f32(
+        ctx,
+        major_ptr.data,
+        minor_idx.data,
+        values.data,
+        3u,
+        3u,
+        quantize_log_scale.data,
+        quantize_offset.data,
+        quantize_config,
+        quantize_reconstruction.data,
+        quantize_range.data,
+        quantize_grad_log.data,
+        quantize_grad_offset.data);
+
+    float quantize_reconstruction_host = 0.0f;
+    float quantize_range_host = 0.0f;
+    float quantize_grad_log_host[3] = {};
+    float quantize_grad_offset_host[3] = {};
+    autograd::download_device_buffer(quantize_reconstruction, &quantize_reconstruction_host, 1);
+    autograd::download_device_buffer(quantize_range, &quantize_range_host, 1);
+    autograd::download_device_buffer(quantize_grad_log, quantize_grad_log_host, 3);
+    autograd::download_device_buffer(quantize_grad_offset, quantize_grad_offset_host, 3);
+    require(close_value(quantize_reconstruction_host, quantize_ref_reconstruction, 1.0e-4f), "csr quantize reconstruction loss mismatch");
+    require(close_value(quantize_range_host, quantize_ref_range, 1.0e-4f), "csr quantize range loss mismatch");
+    for (int i = 0; i < 3; ++i) {
+        require(close_value(quantize_grad_log_host[i], quantize_ref_grad_log[i], 2.0e-4f), "csr quantize grad log mismatch");
+        require(close_value(quantize_grad_offset_host[i], quantize_ref_grad_offset[i], 2.0e-4f), "csr quantize grad offset mismatch");
+    }
+
+    autograd::base::blocked_ell_feature_affine_quantize_fwd_bwd_f16_f32(
+        ctx,
+        blocked_idx.data,
+        blocked_values.data,
+        blocked_host.rows,
+        blocked_host.cols,
+        blocked_host.block_size,
+        blocked_host.ell_cols,
+        quantize_log_scale.data,
+        quantize_offset.data,
+        quantize_config,
+        quantize_reconstruction.data,
+        quantize_range.data,
+        quantize_grad_log.data,
+        quantize_grad_offset.data);
+    autograd::download_device_buffer(quantize_reconstruction, &quantize_reconstruction_host, 1);
+    autograd::download_device_buffer(quantize_range, &quantize_range_host, 1);
+    autograd::download_device_buffer(quantize_grad_log, quantize_grad_log_host, 3);
+    autograd::download_device_buffer(quantize_grad_offset, quantize_grad_offset_host, 3);
+    require(close_value(quantize_reconstruction_host, quantize_ref_reconstruction, 1.0e-4f), "blocked ell quantize reconstruction loss mismatch");
+    require(close_value(quantize_range_host, quantize_ref_range, 1.0e-4f), "blocked ell quantize range loss mismatch");
+    for (int i = 0; i < 3; ++i) {
+        require(close_value(quantize_grad_log_host[i], quantize_ref_grad_log[i], 2.0e-4f), "blocked ell quantize grad log mismatch");
+        require(close_value(quantize_grad_offset_host[i], quantize_ref_grad_offset[i], 2.0e-4f), "blocked ell quantize grad offset mismatch");
+    }
+
     autograd::clear(&blocked_cache);
     cs::sparse::clear(&blocked_host);
 

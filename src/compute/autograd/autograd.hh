@@ -99,6 +99,14 @@ struct fleet_context {
     std::size_t *reduce_scratch_bytes = nullptr;
 };
 
+struct feature_affine_quantize_config {
+    std::uint32_t bits = 1u;
+    float scale_floor = 1.0e-4f;
+    float reconstruction_weight = 1.0f;
+    float range_weight = 0.01f;
+    float min_dynamic_range = 0.25f;
+};
+
 void init(execution_context *ctx, int device = -1, cudaStream_t stream = nullptr);
 void clear(execution_context *ctx);
 
@@ -346,6 +354,37 @@ void blocked_ell_spmm_fwd_f16_f16_f32_lib(
     float *out,
     std::int64_t out_ld);
 
+void csr_feature_affine_quantize_fwd_bwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *major_ptr,
+    const std::uint32_t *minor_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    const float *log_scale,
+    const float *offset,
+    const feature_affine_quantize_config &config,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset);
+
+void blocked_ell_feature_affine_quantize_fwd_bwd_f16_f32(
+    const execution_context &ctx,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    std::uint32_t rows,
+    std::uint32_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const float *log_scale,
+    const float *offset,
+    const feature_affine_quantize_config &config,
+    float *reconstruction_loss,
+    float *range_loss,
+    float *grad_log_scale,
+    float *grad_offset);
+
 } // namespace base
 
 namespace dist {
@@ -459,6 +498,24 @@ void launch_blocked_ell_spmm_fwd_f16_f32_lib(
     const std::uint32_t *block_size,
     const std::uint32_t *ell_cols,
     const float *const *rhs,
+    const std::int64_t *rhs_ld,
+    const std::int64_t *out_cols,
+    float *const *out,
+    const std::int64_t *out_ld);
+
+void launch_blocked_ell_spmm_fwd_f16_f16_f32_lib(
+    fleet_context *fleet,
+    cusparse_cache *cache_per_slot,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const void *const *matrix_token,
+    const std::uint32_t *const *block_col_idx,
+    const __half *const *values,
+    const std::uint32_t *rows,
+    const std::uint32_t *cols,
+    const std::uint32_t *block_size,
+    const std::uint32_t *ell_cols,
+    const __half *const *rhs,
     const std::int64_t *rhs_ld,
     const std::int64_t *out_cols,
     float *const *out,

@@ -336,8 +336,20 @@ public:
         return offset_;
     }
 
+    torch::Tensor log_scale_parameter() const {
+        return log_scale_;
+    }
+
+    torch::Tensor offset_parameter() const {
+        return offset_;
+    }
+
     std::int64_t bits() const {
         return config_.bits;
+    }
+
+    double scale_floor() const {
+        return config_.scale_floor;
     }
 
 private:
@@ -347,6 +359,27 @@ private:
 };
 
 TORCH_MODULE(GeneQuantizerModel);
+
+namespace detail {
+
+inline bool can_use_sparse_cuda_quantizer_(const torch::Tensor &features) {
+    return features.defined()
+        && features.is_cuda()
+        && features.layout() == torch::kSparseCsr
+        && features.dim() == 2;
+}
+
+struct SparseCudaLossBundle {
+    torch::Tensor reconstruction;
+    torch::Tensor range_regularization;
+};
+
+SparseCudaLossBundle sparse_cuda_reconstruction_range_backward_(
+    GeneQuantizerModel &model,
+    const QuantizerBatch &batch,
+    const GeneQuantizerLossConfig &config);
+
+} // namespace detail
 
 inline ForwardNeighborTarget build_forward_neighbor_target(
     const torch::Tensor &query_cell_indices,
@@ -494,24 +527,34 @@ inline GeneQuantizerLoss compute_gene_quantizer_loss(
         throw std::invalid_argument("GeneQuantizerLossConfig.min_dynamic_range must be >= 0");
     }
 
-    // Reconstruction loss is dense; sparse batches pay the densification cost
-    // here before the actual objective is evaluated.
     torch::Tensor reconstruction = output.reconstruction.to(torch::kFloat32);
-    torch::Tensor target = detail::dense_f32_(batch.features).to(reconstruction.device(), torch::kFloat32);
-    if (target.dim() != 2 || target.sizes() != reconstruction.sizes()) {
-        throw std::invalid_argument("QuantizerBatch.features must densify to the same shape as reconstruction");
+    torch::Tensor scalar_zero = torch::zeros({}, torch::TensorOptions().dtype(torch::kFloat32).device(reconstruction.device()));
+    torch::Tensor future_loss = scalar_zero.clone();
+    torch::Tensor reconstruction_loss = scalar_zero.clone();
+    torch::Tensor range_loss = scalar_zero.clone();
+    torch::Tensor target;
+
+    const bool need_dense_target = config.reconstruction_weight > 0.0 || config.range_weight > 0.0;
+    if (need_dense_target) {
+        target = detail::dense_f32_(batch.features).to(reconstruction.device(), torch::kFloat32);
+        if (target.dim() != 2 || target.sizes() != reconstruction.sizes()) {
+            throw std::invalid_argument("QuantizerBatch.features must densify to the same shape as reconstruction");
+        }
     }
 
-    torch::Tensor scalar_zero = torch::zeros({}, torch::TensorOptions().dtype(torch::kFloat32).device(reconstruction.device()));
-    torch::Tensor reconstruction_loss = torch::pow(reconstruction - target, 2).mean();
-    torch::Tensor future_loss = scalar_zero.clone();
-    torch::Tensor dynamic_range = output.scale.to(torch::kFloat32)
-        * static_cast<float>(std::max<std::int64_t>(1, detail::max_code_for_bits_(output.bits)));
-    torch::Tensor dynamic_range_loss = torch::pow(torch::relu(
-        torch::full_like(dynamic_range, static_cast<float>(config.min_dynamic_range)) - dynamic_range), 2).mean();
-    torch::Tensor gene_floor = std::get<0>(target.min(0, false));
-    torch::Tensor offset_anchor_loss = torch::pow(output.offset.to(torch::kFloat32) - gene_floor, 2).mean();
-    torch::Tensor range_loss = dynamic_range_loss + offset_anchor_loss;
+    if (config.reconstruction_weight > 0.0) {
+        reconstruction_loss = torch::pow(reconstruction - target, 2).mean();
+    }
+
+    if (config.range_weight > 0.0) {
+        torch::Tensor dynamic_range = output.scale.to(torch::kFloat32)
+            * static_cast<float>(std::max<std::int64_t>(1, detail::max_code_for_bits_(output.bits)));
+        torch::Tensor dynamic_range_loss = torch::pow(torch::relu(
+            torch::full_like(dynamic_range, static_cast<float>(config.min_dynamic_range)) - dynamic_range), 2).mean();
+        torch::Tensor gene_floor = std::get<0>(target.min(0, false));
+        torch::Tensor offset_anchor_loss = torch::pow(output.offset.to(torch::kFloat32) - gene_floor, 2).mean();
+        range_loss = dynamic_range_loss + offset_anchor_loss;
+    }
 
     if (forward_supervision != nullptr && forward_supervision->neighbor_index != nullptr && config.future_weight > 0.0) {
         // Future supervision adds neighbor search, target assembly, and one
@@ -555,6 +598,69 @@ inline GeneQuantizerTrainStep train_gene_quantizer_step(
 
     model->train();
     optimizer.zero_grad();
+
+    if (detail::can_use_sparse_cuda_quantizer_(batch.features)) {
+        detail::SparseCudaLossBundle sparse_loss =
+            detail::sparse_cuda_reconstruction_range_backward_(model, batch, loss_config);
+        torch::Tensor future_loss = torch::zeros(
+            {},
+            torch::TensorOptions().dtype(torch::kFloat32).device(batch.features.device()));
+
+        if (forward_supervision != nullptr
+            && forward_supervision->neighbor_index != nullptr
+            && loss_config.future_weight > 0.0) {
+            GeneQuantizerOutput future_output = model->forward(batch.features);
+            GeneQuantizerLossConfig future_only = loss_config;
+            future_only.reconstruction_weight = 0.0;
+            future_only.range_weight = 0.0;
+            GeneQuantizerLoss future_components =
+                compute_gene_quantizer_loss(future_output, batch, future_only, forward_supervision);
+            future_loss = future_components.future_consistency;
+            future_components.total.backward();
+        }
+
+        if (train_config.skip_non_finite_updates) {
+            for (const torch::Tensor &param : model->parameters()) {
+                if (param.grad().defined() && !torch::isfinite(param.grad()).all().item<bool>()) {
+                    optimizer.zero_grad();
+                    torch::NoGradGuard no_grad;
+                    GeneQuantizerOutput output = model->forward(batch.features);
+                    torch::Tensor total = loss_config.reconstruction_weight * sparse_loss.reconstruction
+                        + loss_config.future_weight * future_loss
+                        + loss_config.range_weight * sparse_loss.range_regularization;
+                    return GeneQuantizerTrainStep{
+                        std::move(output),
+                        GeneQuantizerLoss{
+                            std::move(total),
+                            std::move(sparse_loss.reconstruction),
+                            std::move(future_loss),
+                            std::move(sparse_loss.range_regularization)
+                        }
+                    };
+                }
+            }
+        }
+
+        if (train_config.clip_gradients) {
+            torch::nn::utils::clip_grad_norm_(model->parameters(), train_config.max_grad_norm);
+        }
+        optimizer.step();
+
+        torch::NoGradGuard no_grad;
+        GeneQuantizerOutput output = model->forward(batch.features);
+        torch::Tensor total = loss_config.reconstruction_weight * sparse_loss.reconstruction
+            + loss_config.future_weight * future_loss
+            + loss_config.range_weight * sparse_loss.range_regularization;
+        return GeneQuantizerTrainStep{
+            std::move(output),
+            GeneQuantizerLoss{
+                std::move(total),
+                std::move(sparse_loss.reconstruction),
+                std::move(future_loss),
+                std::move(sparse_loss.range_regularization)
+            }
+        };
+    }
 
     // Extra step overhead comes from manual unscale, optional finite-gradient
     // checks, and optional full-parameter gradient clipping.

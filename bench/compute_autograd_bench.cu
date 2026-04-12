@@ -1,4 +1,5 @@
 #include "../src/compute/autograd/autograd.hh"
+#include "benchmark_mutex.hh"
 
 #include <cuda_fp16.h>
 
@@ -546,6 +547,7 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
 } // namespace
 
 int main(int argc, char **argv) {
+    cellerator::bench::benchmark_mutex_guard benchmark_mutex("computeAutogradBench");
     const bench_config cfg = parse_args(argc, argv);
     if (cfg.mode == "base-spmv") {
         run_base_spmv(cfg);

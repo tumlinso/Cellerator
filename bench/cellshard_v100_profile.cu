@@ -11,6 +11,7 @@
 #include <cuda_runtime.h>
 #include <nvtx3/nvToolsExt.h>
 
+#include "benchmark_mutex.hh"
 #include "../extern/CellShard/src/CellShard.hh"
 #include "../src/ingest/mtx/compressed_parts.cuh"
 
@@ -593,6 +594,7 @@ done:
 } // namespace
 
 int main(int argc, char **argv) {
+    cellerator::bench::benchmark_mutex_guard benchmark_mutex("cellshardV100Profile");
     config cfg;
     int device_count = 0;
 
