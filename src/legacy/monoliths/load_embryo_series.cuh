@@ -192,115 +192,10 @@ __device__ __forceinline__ int atomic_max_float(float *addr, float value) {
     return old;
 }
 
-__global__ void csr_count_rows_kernel(matrix::Index nnz,
-                                      const matrix::Index * __restrict__ row_idx,
-                                      matrix::Index * __restrict__ row_ptr_shifted) {
-    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
-    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
-    matrix::Index i = tid;
-    while (i < nnz) {
-        atomicAdd(row_ptr_shifted + row_idx[i] + 1, 1u);
-        i += stride;
-    }
-}
-
-__global__ void csr_init_heads_kernel(matrix::Index rows,
-                                      const matrix::Index * __restrict__ row_ptr,
-                                      matrix::Index * __restrict__ heads) {
-    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
-    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
-    matrix::Index i = tid;
-    while (i < rows) {
-        heads[i] = row_ptr[i];
-        i += stride;
-    }
-}
-
-__global__ void csr_scatter_kernel(matrix::Index nnz,
-                                   const matrix::Index * __restrict__ row_idx,
-                                   const matrix::Index * __restrict__ col_idx,
-                                   const matrix::Real * __restrict__ val,
-                                   matrix::Index * __restrict__ heads,
-                                   matrix::Index * __restrict__ out_col,
-                                   matrix::Real * __restrict__ out_val) {
-    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
-    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
-    matrix::Index i = tid;
-    while (i < nnz) {
-        const matrix::Index dst = atomicAdd(heads + row_idx[i], 1u);
-        out_col[dst] = col_idx[i];
-        out_val[dst] = val[i];
-        i += stride;
-    }
-}
-
-__global__ void verify_csr_samples_kernel(matrix::Index samples,
-                                          const matrix::Index * __restrict__ row_ptr,
-                                          const matrix::Index * __restrict__ col_idx,
-                                          const matrix::Real * __restrict__ val,
-                                          const matrix::Index * __restrict__ sample_rows,
-                                          const matrix::Index * __restrict__ sample_cols,
-                                          const int * __restrict__ sample_original,
-                                          gpu_verify_accum * __restrict__ stats) {
-    const matrix::Index tid = (matrix::Index) (blockIdx.x * blockDim.x + threadIdx.x);
-    const matrix::Index stride = (matrix::Index) (gridDim.x * blockDim.x);
-    matrix::Index i = tid;
-
-    while (i < samples) {
-        const matrix::Index row = sample_rows[i];
-        const matrix::Index col = sample_cols[i];
-        const int original = sample_original[i];
-        const float expected_cast = matrix::real_to_float(matrix::real_from_float((float) original));
-        const float original_float = (float) original;
-        const matrix::Index begin = row_ptr[row];
-        const matrix::Index end = row_ptr[row + 1];
-        float stored = 0.0f;
-        int found = 0;
-        matrix::Index j = begin;
-
-        while (j < end) {
-            if (col_idx[j] == col) {
-                stored = matrix::real_to_float(val[j]);
-                found = 1;
-                break;
-            }
-            ++j;
-        }
-
-        atomicAdd(&stats->samples, 1ull);
-        if (!found) atomicAdd(&stats->missing_nonzero, 1ull);
-        if (stored == expected_cast) atomicAdd(&stats->pipeline_match, 1ull);
-        else atomicAdd(&stats->pipeline_mismatch, 1ull);
-
-        if (!isfinite(expected_cast)) {
-            atomicAdd(&stats->overflow_cast, 1ull);
-            i += stride;
-            continue;
-        }
-
-        if (expected_cast == original_float) atomicAdd(&stats->exact_cast, 1ull);
-        else atomicAdd(&stats->rounded_cast, 1ull);
-
-        {
-            const float abs_err = fabsf(expected_cast - original_float);
-            const float denom = fabsf(original_float) > 1.0f ? fabsf(original_float) : 1.0f;
-            const float rel_err = abs_err / denom;
-
-            atomicAdd(&stats->finite_samples, 1ull);
-            atomic_add_double_bits(&stats->mean_abs_err_sum, (double) abs_err);
-            atomic_add_double_bits(&stats->mean_rel_err_sum, (double) rel_err);
-            atomic_max_float(&stats->max_abs_err, abs_err);
-            atomic_max_float(&stats->max_rel_err, rel_err);
-            if (rel_err <= 0.00001f) atomicAdd(&stats->rel_le_001pct, 1ull);
-            else if (rel_err <= 0.0001f) atomicAdd(&stats->rel_le_01pct, 1ull);
-            else if (rel_err <= 0.01f) atomicAdd(&stats->rel_le_1pct, 1ull);
-            else if (rel_err <= 0.05f) atomicAdd(&stats->rel_le_5pct, 1ull);
-            else atomicAdd(&stats->rel_gt_5pct, 1ull);
-        }
-
-        i += stride;
-    }
-}
+#include "load_embryo_series/csr_count_rows_kernel.cuh"
+#include "load_embryo_series/csr_init_heads_kernel.cuh"
+#include "load_embryo_series/csr_scatter_kernel.cuh"
+#include "load_embryo_series/verify_csr_samples_kernel.cuh"
 
 static void init_part_plan(part_plan *plan);
 static void clear_part_plan(part_plan *plan);
@@ -1452,8 +1347,8 @@ static int build_view_layout(CsrSharded *view,
         }
     }
 
-    matrix::rebuild_part_offsets(view);
-    return matrix::set_shards_to_parts(view);
+    matrix::rebuild_partition_offsets(view);
+    return matrix::set_shards_to_partitions(view);
 }
 
 static int cuda_check(cudaError_t err, const char *label) {

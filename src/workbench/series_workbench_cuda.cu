@@ -249,12 +249,12 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
         preferred_base_format = cellshard::series_execution_format_blocked_ell;
     }
 
-    execution.part_count = (std::uint32_t) part_formats.size();
-    execution.part_execution_formats = part_formats.empty() ? nullptr : part_formats.data();
-    execution.part_blocked_ell_block_sizes = part_block_sizes.empty() ? nullptr : part_block_sizes.data();
-    execution.part_blocked_ell_fill_ratios = part_fill_ratios.empty() ? nullptr : part_fill_ratios.data();
-    execution.part_execution_bytes = part_execution_bytes.empty() ? nullptr : part_execution_bytes.data();
-    execution.part_blocked_ell_bytes = part_blocked_ell_bytes.empty() ? nullptr : part_blocked_ell_bytes.data();
+    execution.partition_count = (std::uint32_t) part_formats.size();
+    execution.partition_execution_formats = part_formats.empty() ? nullptr : part_formats.data();
+    execution.partition_blocked_ell_block_sizes = part_block_sizes.empty() ? nullptr : part_block_sizes.data();
+    execution.partition_blocked_ell_fill_ratios = part_fill_ratios.empty() ? nullptr : part_fill_ratios.data();
+    execution.partition_execution_bytes = part_execution_bytes.empty() ? nullptr : part_execution_bytes.data();
+    execution.partition_blocked_ell_bytes = part_blocked_ell_bytes.empty() ? nullptr : part_blocked_ell_bytes.data();
     execution.shard_count = (std::uint32_t) shard_formats.size();
     execution.shard_execution_formats = shard_formats.empty() ? nullptr : shard_formats.data();
     execution.shard_blocked_ell_block_sizes = shard_block_sizes.empty() ? nullptr : shard_block_sizes.data();
@@ -283,31 +283,31 @@ inline host_buffer<unsigned char> build_gene_flags(const series_summary &summary
     return flags;
 }
 
-inline unsigned int max_part_rows(const cs::sharded<cs::sparse::compressed> &view) {
+inline unsigned int max_partition_rows(const cs::sharded<cs::sparse::compressed> &view) {
     unsigned long best = 0;
-    for (unsigned long part = 0; part < view.num_parts; ++part) best = std::max(best, view.part_rows[part]);
+    for (unsigned long part = 0; part < view.num_partitions; ++part) best = std::max(best, view.partition_rows[part]);
     return (unsigned int) best;
 }
 
-inline unsigned int max_part_nnz(const cs::sharded<cs::sparse::compressed> &view) {
+inline unsigned int max_partition_nnz(const cs::sharded<cs::sparse::compressed> &view) {
     unsigned long best = 0;
-    for (unsigned long part = 0; part < view.num_parts; ++part) best = std::max(best, view.part_nnz[part]);
+    for (unsigned long part = 0; part < view.num_partitions; ++part) best = std::max(best, view.partition_nnz[part]);
     return (unsigned int) best;
 }
 
 inline int bind_uploaded_part_view(csv::blocked_ell_view *out,
                                    const cs::sharded<cs::sparse::blocked_ell> *host,
-                                   const csv::part_record<cs::sparse::blocked_ell> *record,
+                                   const csv::partition_record<cs::sparse::blocked_ell> *record,
                                    unsigned long part_id) {
     if (out == nullptr || host == nullptr || record == nullptr) return 0;
-    if (part_id >= host->num_parts) return 0;
-    if (record->a0 == nullptr && host->part_rows[part_id] != 0) return 0;
-    if (record->a1 == nullptr && host->part_rows[part_id] != 0) return 0;
-    out->rows = (unsigned int) host->part_rows[part_id];
+    if (part_id >= host->num_partitions) return 0;
+    if (record->a0 == nullptr && host->partition_rows[part_id] != 0) return 0;
+    if (record->a1 == nullptr && host->partition_rows[part_id] != 0) return 0;
+    out->rows = (unsigned int) host->partition_rows[part_id];
     out->cols = (unsigned int) host->cols;
-    out->nnz = (unsigned int) host->part_nnz[part_id];
-    out->block_size = cs::sparse::unpack_blocked_ell_block_size(host->part_aux[part_id]);
-    out->ell_cols = cs::sparse::unpack_blocked_ell_cols(host->part_aux[part_id]);
+    out->nnz = (unsigned int) host->partition_nnz[part_id];
+    out->block_size = cs::sparse::unpack_blocked_ell_block_size(host->partition_aux[part_id]);
+    out->ell_cols = cs::sparse::unpack_blocked_ell_cols(host->partition_aux[part_id]);
     out->blockColIdx = (unsigned int *) record->a0;
     out->val = (__half *) record->a1;
     return 1;
@@ -445,9 +445,9 @@ struct browse_cache_owned {
     host_buffer<float> gene_sq_sum;
     host_buffer<float> dataset_feature_mean;
     host_buffer<float> shard_feature_mean;
-    host_buffer<std::uint32_t> part_sample_row_offsets;
-    host_buffer<std::uint64_t> part_sample_global_rows;
-    host_buffer<float> part_sample_values;
+    host_buffer<std::uint32_t> partition_sample_row_offsets;
+    host_buffer<std::uint64_t> partition_sample_global_rows;
+    host_buffer<float> partition_sample_values;
 };
 
 struct gene_metric_partial {
@@ -464,171 +464,11 @@ struct selected_feature_partial {
     bool ok = false;
 };
 
-__global__ void accumulate_selected_feature_sums_kernel(csv::compressed_view src,
-                                                        const unsigned int * __restrict__ selected,
-                                                        unsigned int selected_count,
-                                                        float * __restrict__ dst_a,
-                                                        float * __restrict__ dst_b) {
-    const unsigned int tid = (unsigned int) (blockIdx.x * blockDim.x + threadIdx.x);
-    const unsigned int stride = (unsigned int) (gridDim.x * blockDim.x);
-    unsigned int nz = tid;
-
-    while (nz < src.nnz) {
-        const unsigned int gene = src.minorIdx[nz];
-        const float value = __half2float(src.val[nz]);
-        for (unsigned int k = 0; k < selected_count; ++k) {
-            if (selected[k] != gene) continue;
-            if (dst_a != nullptr) atomicAdd(dst_a + k, value);
-            if (dst_b != nullptr) atomicAdd(dst_b + k, value);
-            break;
-        }
-        nz += stride;
-    }
-}
-
-__global__ void extract_sample_tile_kernel(csv::compressed_view src,
-                                           const unsigned int * __restrict__ sample_rows,
-                                           unsigned int sample_count,
-                                           const unsigned int * __restrict__ selected,
-                                           unsigned int selected_count,
-                                           float * __restrict__ out) {
-    const unsigned int sample_idx = (unsigned int) blockIdx.x;
-    if (sample_idx >= sample_count) return;
-
-    const unsigned int row = sample_rows[sample_idx];
-    if (row >= src.rows) return;
-
-    for (unsigned int k = threadIdx.x; k < selected_count; k += blockDim.x) {
-        out[(std::size_t) sample_idx * selected_count + k] = 0.0f;
-    }
-    __syncthreads();
-
-    const unsigned int begin = src.majorPtr[row];
-    const unsigned int end = src.majorPtr[row + 1u];
-    for (unsigned int nz = begin + (unsigned int) threadIdx.x; nz < end; nz += (unsigned int) blockDim.x) {
-        const unsigned int gene = src.minorIdx[nz];
-        const float value = __half2float(src.val[nz]);
-        for (unsigned int k = 0; k < selected_count; ++k) {
-            if (selected[k] != gene) continue;
-            out[(std::size_t) sample_idx * selected_count + k] = value;
-            break;
-        }
-    }
-}
-
-__global__ void accumulate_gene_metrics_blocked_ell_kernel(csv::blocked_ell_view src,
-                                                           float * __restrict__ gene_sum,
-                                                           float * __restrict__ gene_detected,
-                                                           float * __restrict__ gene_sq_sum) {
-    const unsigned long tid = (unsigned long) (blockIdx.x * blockDim.x + threadIdx.x);
-    const unsigned long stride = (unsigned long) (gridDim.x * blockDim.x);
-    const unsigned long total = (unsigned long) src.rows * (unsigned long) src.ell_cols;
-    const unsigned int block_size = src.block_size;
-    const unsigned int ell_width_blocks = block_size != 0u ? src.ell_cols / block_size : 0u;
-    unsigned long linear = tid;
-
-    while (linear < total) {
-        const unsigned int row = (unsigned int) (linear / src.ell_cols);
-        const unsigned int ell_col = (unsigned int) (linear % src.ell_cols);
-        const unsigned int row_block = block_size != 0u ? row / block_size : 0u;
-        const unsigned int slot = block_size != 0u ? ell_col / block_size : 0u;
-        const unsigned int lane = block_size != 0u ? ell_col % block_size : 0u;
-        const unsigned int block_col = ell_width_blocks != 0u
-            ? src.blockColIdx[(unsigned long) row_block * ell_width_blocks + slot]
-            : cs::sparse::blocked_ell_invalid_col;
-        const unsigned int col = block_col != cs::sparse::blocked_ell_invalid_col
-            ? block_col * block_size + lane
-            : src.cols;
-        if (col < src.cols) {
-            const float value = __half2float(src.val[linear]);
-            if (value != 0.0f) {
-                atomicAdd(gene_sum + col, value);
-                atomicAdd(gene_detected + col, 1.0f);
-                atomicAdd(gene_sq_sum + col, value * value);
-            }
-        }
-        linear += stride;
-    }
-}
-
-__global__ void accumulate_selected_feature_sums_blocked_ell_kernel(csv::blocked_ell_view src,
-                                                                    const unsigned int * __restrict__ selected,
-                                                                    unsigned int selected_count,
-                                                                    float * __restrict__ dst_a,
-                                                                    float * __restrict__ dst_b) {
-    const unsigned long tid = (unsigned long) (blockIdx.x * blockDim.x + threadIdx.x);
-    const unsigned long stride = (unsigned long) (gridDim.x * blockDim.x);
-    const unsigned long total = (unsigned long) src.rows * (unsigned long) src.ell_cols;
-    const unsigned int block_size = src.block_size;
-    const unsigned int ell_width_blocks = block_size != 0u ? src.ell_cols / block_size : 0u;
-    unsigned long linear = tid;
-
-    while (linear < total) {
-        const unsigned int row = (unsigned int) (linear / src.ell_cols);
-        const unsigned int ell_col = (unsigned int) (linear % src.ell_cols);
-        const unsigned int row_block = block_size != 0u ? row / block_size : 0u;
-        const unsigned int slot = block_size != 0u ? ell_col / block_size : 0u;
-        const unsigned int lane = block_size != 0u ? ell_col % block_size : 0u;
-        const unsigned int block_col = ell_width_blocks != 0u
-            ? src.blockColIdx[(unsigned long) row_block * ell_width_blocks + slot]
-            : cs::sparse::blocked_ell_invalid_col;
-        const unsigned int gene = block_col != cs::sparse::blocked_ell_invalid_col
-            ? block_col * block_size + lane
-            : src.cols;
-        if (gene < src.cols) {
-            const float value = __half2float(src.val[linear]);
-            if (value != 0.0f) {
-                for (unsigned int k = 0; k < selected_count; ++k) {
-                    if (selected[k] != gene) continue;
-                    if (dst_a != nullptr) atomicAdd(dst_a + k, value);
-                    if (dst_b != nullptr) atomicAdd(dst_b + k, value);
-                    break;
-                }
-            }
-        }
-        linear += stride;
-    }
-}
-
-__global__ void extract_sample_tile_blocked_ell_kernel(csv::blocked_ell_view src,
-                                                       const unsigned int * __restrict__ sample_rows,
-                                                       unsigned int sample_count,
-                                                       const unsigned int * __restrict__ selected,
-                                                       unsigned int selected_count,
-                                                       float * __restrict__ out) {
-    const unsigned int sample_idx = (unsigned int) blockIdx.x;
-    const unsigned int block_size = src.block_size;
-    const unsigned int ell_width_blocks = block_size != 0u ? src.ell_cols / block_size : 0u;
-    if (sample_idx >= sample_count) return;
-
-    const unsigned int row = sample_rows[sample_idx];
-    if (row >= src.rows) return;
-
-    for (unsigned int k = threadIdx.x; k < selected_count; k += blockDim.x) {
-        out[(std::size_t) sample_idx * selected_count + k] = 0.0f;
-    }
-    __syncthreads();
-
-    const unsigned int row_block = block_size != 0u ? row / block_size : 0u;
-    for (unsigned int ell_col = (unsigned int) threadIdx.x; ell_col < src.ell_cols; ell_col += (unsigned int) blockDim.x) {
-        const unsigned int slot = block_size != 0u ? ell_col / block_size : 0u;
-        const unsigned int lane = block_size != 0u ? ell_col % block_size : 0u;
-        const unsigned int block_col = ell_width_blocks != 0u
-            ? src.blockColIdx[(unsigned long) row_block * ell_width_blocks + slot]
-            : cs::sparse::blocked_ell_invalid_col;
-        const unsigned int gene = block_col != cs::sparse::blocked_ell_invalid_col
-            ? block_col * block_size + lane
-            : src.cols;
-        if (gene >= src.cols) continue;
-        const float value = __half2float(src.val[(unsigned long) row * src.ell_cols + ell_col]);
-        if (value == 0.0f) continue;
-        for (unsigned int k = 0; k < selected_count; ++k) {
-            if (selected[k] != gene) continue;
-            out[(std::size_t) sample_idx * selected_count + k] = value;
-            break;
-        }
-    }
-}
+#include "series_workbench_cuda/accumulate_selected_feature_sums_kernel.cuh"
+#include "series_workbench_cuda/extract_sample_tile_kernel.cuh"
+#include "series_workbench_cuda/accumulate_gene_metrics_blocked_ell_kernel.cuh"
+#include "series_workbench_cuda/accumulate_selected_feature_sums_blocked_ell_kernel.cuh"
+#include "series_workbench_cuda/extract_sample_tile_blocked_ell_kernel.cuh"
 
 inline bool append_embedded_metadata_tables(const ingest_plan &plan,
                                             std::vector<issue> *issues) {
@@ -882,7 +722,7 @@ inline host_buffer<unsigned int> choose_sample_rows(unsigned int rows, unsigned 
     cpre::init(&workspace);
 
     if (!cs::load_header(path.c_str(), &matrix, &storage)
-        || !csv::reserve(&device_state, matrix.num_parts)
+        || !csv::reserve(&device_state, matrix.num_partitions)
         || !cpre::setup(&workspace, device_id, (cudaStream_t) 0)
         || !cpre::reserve(&workspace, max_rows, cols, max_nnz)
         || !cpre::zero_gene_metrics(&workspace, cols)) {
@@ -892,19 +732,19 @@ inline host_buffer<unsigned int> choose_sample_rows(unsigned int rows, unsigned 
 
     for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
         if (shard_id >= shard_owner.size() || shard_owner[shard_id] != (int) worker_slot) continue;
-        const unsigned long part_begin = cs::first_part_in_shard(&matrix, shard_id);
-        const unsigned long part_end = cs::last_part_in_shard(&matrix, shard_id);
+        const unsigned long part_begin = cs::first_partition_in_shard(&matrix, shard_id);
+        const unsigned long part_end = cs::last_partition_in_shard(&matrix, shard_id);
         for (unsigned long part_id = part_begin; part_id < part_end; ++part_id) {
             csv::compressed_view part_view;
-            if (!cs::fetch_part(&matrix, &storage, part_id)
-                || !check_cuda(csv::upload_part(&device_state, &matrix, part_id, device_id), issues, "browse", "upload_part gene metrics")
+            if (!cs::fetch_partition(&matrix, &storage, part_id)
+                || !check_cuda(csv::upload_partition(&device_state, &matrix, part_id, device_id), issues, "browse", "upload_partition gene metrics")
                 || !cpre::bind_uploaded_part_view(&part_view, &matrix, device_state.parts + part_id, part_id)
                 || !cpre::accumulate_gene_metrics(&part_view, &workspace, nullptr, nullptr)
                 || !check_cuda(cudaStreamSynchronize(workspace.stream), issues, "browse", "cudaStreamSynchronize gene metrics")
-                || !check_cuda(csv::release_part(&device_state, part_id), issues, "browse", "release_part gene metrics")) {
+                || !check_cuda(csv::release_partition(&device_state, part_id), issues, "browse", "release_partition gene metrics")) {
                 goto done;
             }
-            cs::drop_part(&matrix, part_id);
+            cs::drop_partition(&matrix, part_id);
         }
     }
 
@@ -947,7 +787,7 @@ inline bool build_gene_metric_partials_blocked_ell(const std::string &path,
     csv::init(&device_state);
 
     if (!cs::load_header(path.c_str(), &matrix, &storage)
-        || !csv::reserve(&device_state, matrix.num_parts)
+        || !csv::reserve(&device_state, matrix.num_partitions)
         || !check_cuda(cudaSetDevice(device_id), issues, "browse", "cudaSetDevice blocked_ell gene metrics")) {
         push_issue(issues, issue_severity::error, "browse", "failed to set up blocked-ell gene metric worker");
         goto done;
@@ -982,15 +822,15 @@ inline bool build_gene_metric_partials_blocked_ell(const std::string &path,
 
         for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
             if (shard_id >= shard_owner.size() || shard_owner[shard_id] != (int) worker_slot) continue;
-            const unsigned long part_begin = cs::first_part_in_shard(&matrix, shard_id);
-            const unsigned long part_end = cs::last_part_in_shard(&matrix, shard_id);
+            const unsigned long part_begin = cs::first_partition_in_shard(&matrix, shard_id);
+            const unsigned long part_end = cs::last_partition_in_shard(&matrix, shard_id);
             for (unsigned long part_id = part_begin; part_id < part_end; ++part_id) {
                 csv::blocked_ell_view part_view;
-                const unsigned long total = matrix.part_rows[part_id] * (unsigned long) cs::sparse::unpack_blocked_ell_cols(matrix.part_aux[part_id]);
+                const unsigned long total = matrix.partition_rows[part_id] * (unsigned long) cs::sparse::unpack_blocked_ell_cols(matrix.partition_aux[part_id]);
                 const unsigned int blocks = (unsigned int) std::max<unsigned long>(1ul, std::min<unsigned long>(4096ul, (total + 255ul) / 256ul));
-                if (!cs::fetch_part(&matrix, &storage, part_id)
-                    || !check_cuda(csv::upload_part(&device_state, &matrix, part_id, device_id),
-                                   issues, "browse", "upload_part blocked_ell gene metrics")
+                if (!cs::fetch_partition(&matrix, &storage, part_id)
+                    || !check_cuda(csv::upload_partition(&device_state, &matrix, part_id, device_id),
+                                   issues, "browse", "upload_partition blocked_ell gene metrics")
                     || !bind_uploaded_part_view(&part_view, &matrix, device_state.parts + part_id, part_id)) {
                     if (d_gene_sq_sum != nullptr) cudaFree(d_gene_sq_sum);
                     if (d_gene_detected != nullptr) cudaFree(d_gene_detected);
@@ -1005,15 +845,15 @@ inline bool build_gene_metric_partials_blocked_ell(const std::string &path,
                 );
                 if (!check_cuda(cudaGetLastError(), issues, "browse", "accumulate_gene_metrics_blocked_ell_kernel")
                     || !check_cuda(cudaDeviceSynchronize(), issues, "browse", "cudaDeviceSynchronize blocked_ell gene metrics")
-                    || !check_cuda(csv::release_part(&device_state, part_id),
-                                   issues, "browse", "release_part blocked_ell gene metrics")) {
+                    || !check_cuda(csv::release_partition(&device_state, part_id),
+                                   issues, "browse", "release_partition blocked_ell gene metrics")) {
                     if (d_gene_sq_sum != nullptr) cudaFree(d_gene_sq_sum);
                     if (d_gene_detected != nullptr) cudaFree(d_gene_detected);
                     if (d_gene_sum != nullptr) cudaFree(d_gene_sum);
                     goto done;
                 }
-                out->active_rows += (float) matrix.part_rows[part_id];
-                cs::drop_part(&matrix, part_id);
+                out->active_rows += (float) matrix.partition_rows[part_id];
+                cs::drop_partition(&matrix, part_id);
             }
         }
 
@@ -1051,11 +891,11 @@ done:
                                                              unsigned int dataset_count,
                                                              unsigned int shard_count,
                                                              const host_buffer<std::uint32_t> &selected_features,
-                                                             unsigned int sample_rows_per_part,
+                                                             unsigned int sample_rows_per_partition,
                                                              host_buffer<float> *dataset_feature_sum,
                                                              host_buffer<float> *shard_feature_sum,
-                                                             host_buffer<std::uint64_t> *part_sample_global_rows,
-                                                             host_buffer<float> *part_sample_values,
+                                                             host_buffer<std::uint64_t> *partition_sample_global_rows,
+                                                             host_buffer<float> *partition_sample_values,
                                                              std::vector<issue> *issues) {
     cs::sharded<cs::sparse::compressed> matrix;
     cs::shard_storage storage;
@@ -1072,7 +912,7 @@ done:
     csv::init(&device_state);
 
     if (!cs::load_header(path.c_str(), &matrix, &storage)
-        || !csv::reserve(&device_state, matrix.num_parts)
+        || !csv::reserve(&device_state, matrix.num_partitions)
         || !check_cuda(cudaSetDevice(device_id), issues, "browse", "cudaSetDevice selected features")) goto done;
 
     if (!selected_features.empty()
@@ -1083,8 +923,8 @@ done:
                                   selected_features.size() * sizeof(unsigned int),
                                   cudaMemcpyHostToDevice),
                        issues, "browse", "cudaMemcpy selected features")) goto done;
-    if (sample_rows_per_part != 0u
-        && !check_cuda(cudaMalloc((void **) &d_sample_rows, (std::size_t) sample_rows_per_part * sizeof(unsigned int)), issues, "browse", "cudaMalloc sample rows")) goto done;
+    if (sample_rows_per_partition != 0u
+        && !check_cuda(cudaMalloc((void **) &d_sample_rows, (std::size_t) sample_rows_per_partition * sizeof(unsigned int)), issues, "browse", "cudaMalloc sample rows")) goto done;
     if (!selected_features.empty()
         && dataset_count != 0u
         && !check_cuda(cudaMalloc((void **) &d_dataset,
@@ -1101,9 +941,9 @@ done:
     if (d_shards != nullptr
         && !check_cuda(cudaMemset(d_shards, 0, (std::size_t) shard_count * selected_features.size() * sizeof(float)),
                        issues, "browse", "cudaMemset shard feature sums")) goto done;
-    if (sample_rows_per_part != 0u && !selected_features.empty()
+    if (sample_rows_per_partition != 0u && !selected_features.empty()
         && !check_cuda(cudaMalloc((void **) &d_tile,
-                                  (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float)),
+                                  (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float)),
                        issues, "browse", "cudaMalloc sample tile")) goto done;
 
     dataset_feature_sum->assign_fill((std::size_t) dataset_count * selected_features.size(), 0.0f);
@@ -1111,18 +951,18 @@ done:
 
     for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
         if (shard_id >= shard_owner.size() || shard_owner[shard_id] != (int) worker_slot) continue;
-        const unsigned long part_begin = cs::first_part_in_shard(&matrix, shard_id);
-        const unsigned long part_end = cs::last_part_in_shard(&matrix, shard_id);
+        const unsigned long part_begin = cs::first_partition_in_shard(&matrix, shard_id);
+        const unsigned long part_end = cs::last_partition_in_shard(&matrix, shard_id);
         for (unsigned long part_id = part_begin; part_id < part_end; ++part_id) {
             csv::compressed_view part_view;
-            const std::size_t tile_offset = (std::size_t) part_id * sample_rows_per_part * selected_features.size();
-            const std::size_t row_offset = (std::size_t) part_id * sample_rows_per_part;
+            const std::size_t tile_offset = (std::size_t) part_id * sample_rows_per_partition * selected_features.size();
+            const std::size_t row_offset = (std::size_t) part_id * sample_rows_per_partition;
             const std::uint32_t dataset_id = part_id < part_dataset_indices.size() ? part_dataset_indices[part_id] : 0u;
-            const unsigned int blocks = (unsigned int) std::min<unsigned long>(4096ul, (matrix.part_nnz[part_id] + 255ul) / 256ul);
-            const host_buffer<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.part_rows[part_id], sample_rows_per_part);
+            const unsigned int blocks = (unsigned int) std::min<unsigned long>(4096ul, (matrix.partition_nnz[part_id] + 255ul) / 256ul);
+            const host_buffer<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.partition_rows[part_id], sample_rows_per_partition);
 
-            if (!cs::fetch_part(&matrix, &storage, part_id)
-                || !check_cuda(csv::upload_part(&device_state, &matrix, part_id, device_id), issues, "browse", "upload_part selected features")
+            if (!cs::fetch_partition(&matrix, &storage, part_id)
+                || !check_cuda(csv::upload_partition(&device_state, &matrix, part_id, device_id), issues, "browse", "upload_partition selected features")
                 || !cpre::bind_uploaded_part_view(&part_view, &matrix, device_state.parts + part_id, part_id)) {
                 goto done;
             }
@@ -1138,42 +978,42 @@ done:
                 if (!check_cuda(cudaGetLastError(), issues, "browse", "accumulate_selected_feature_sums_kernel")) goto done;
             }
 
-            if (sample_rows_per_part != 0u && !selected_features.empty()) {
+            if (sample_rows_per_partition != 0u && !selected_features.empty()) {
                 if (!check_cuda(cudaMemcpy(d_sample_rows,
                                            sample_rows.data(),
-                                           (std::size_t) sample_rows_per_part * sizeof(unsigned int),
+                                           (std::size_t) sample_rows_per_partition * sizeof(unsigned int),
                                            cudaMemcpyHostToDevice),
                                 issues, "browse", "cudaMemcpy sample rows")) goto done;
                 if (!check_cuda(cudaMemset(d_tile,
                                            0,
-                                           (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float)),
+                                           (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float)),
                                 issues, "browse", "cudaMemset sample tile")) goto done;
-                extract_sample_tile_kernel<<<sample_rows_per_part, 128>>>(
+                extract_sample_tile_kernel<<<sample_rows_per_partition, 128>>>(
                     part_view,
                     d_sample_rows,
-                    sample_rows_per_part,
+                    sample_rows_per_partition,
                     d_selected,
                     (unsigned int) selected_features.size(),
                     d_tile
                 );
                 if (!check_cuda(cudaGetLastError(), issues, "browse", "extract_sample_tile_kernel")) goto done;
-                if (!check_cuda(cudaMemcpy(part_sample_values->data() + tile_offset,
+                if (!check_cuda(cudaMemcpy(partition_sample_values->data() + tile_offset,
                                            d_tile,
-                                           (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float),
+                                           (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float),
                                            cudaMemcpyDeviceToHost),
                                 issues, "browse", "cudaMemcpy sample tile")) goto done;
             }
 
             if (!check_cuda(cudaDeviceSynchronize(), issues, "browse", "cudaDeviceSynchronize selected features")
-                || !check_cuda(csv::release_part(&device_state, part_id), issues, "browse", "release_part selected features")) goto done;
-            for (unsigned int row = 0; row < sample_rows_per_part; ++row) {
+                || !check_cuda(csv::release_partition(&device_state, part_id), issues, "browse", "release_partition selected features")) goto done;
+            for (unsigned int row = 0; row < sample_rows_per_partition; ++row) {
                 const unsigned int local_row = sample_rows[row];
-                (*part_sample_global_rows)[row_offset + row] =
-                    local_row < matrix.part_rows[part_id]
-                        ? (std::uint64_t) (matrix.part_offsets[part_id] + local_row)
+                (*partition_sample_global_rows)[row_offset + row] =
+                    local_row < matrix.partition_rows[part_id]
+                        ? (std::uint64_t) (matrix.partition_offsets[part_id] + local_row)
                         : std::numeric_limits<std::uint64_t>::max();
             }
-            cs::drop_part(&matrix, part_id);
+            cs::drop_partition(&matrix, part_id);
         }
     }
 
@@ -1212,11 +1052,11 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
                                                         unsigned int dataset_count,
                                                         unsigned int shard_count,
                                                         const host_buffer<std::uint32_t> &selected_features,
-                                                        unsigned int sample_rows_per_part,
+                                                        unsigned int sample_rows_per_partition,
                                                         host_buffer<float> *dataset_feature_sum,
                                                         host_buffer<float> *shard_feature_sum,
-                                                        host_buffer<std::uint64_t> *part_sample_global_rows,
-                                                        host_buffer<float> *part_sample_values,
+                                                        host_buffer<std::uint64_t> *partition_sample_global_rows,
+                                                        host_buffer<float> *partition_sample_values,
                                                         std::vector<issue> *issues) {
     cs::sharded<cs::sparse::blocked_ell> matrix;
     cs::shard_storage storage;
@@ -1233,7 +1073,7 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
     csv::init(&device_state);
 
     if (!cs::load_header(path.c_str(), &matrix, &storage)
-        || !csv::reserve(&device_state, matrix.num_parts)
+        || !csv::reserve(&device_state, matrix.num_partitions)
         || !check_cuda(cudaSetDevice(device_id), issues, "browse", "cudaSetDevice blocked_ell selected features")) goto done;
 
     if (!selected_features.empty()
@@ -1245,8 +1085,8 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
                                   selected_features.size() * sizeof(unsigned int),
                                   cudaMemcpyHostToDevice),
                        issues, "browse", "cudaMemcpy blocked_ell selected features")) goto done;
-    if (sample_rows_per_part != 0u
-        && !check_cuda(cudaMalloc((void **) &d_sample_rows, (std::size_t) sample_rows_per_part * sizeof(unsigned int)),
+    if (sample_rows_per_partition != 0u
+        && !check_cuda(cudaMalloc((void **) &d_sample_rows, (std::size_t) sample_rows_per_partition * sizeof(unsigned int)),
                        issues, "browse", "cudaMalloc blocked_ell sample rows")) goto done;
     if (!selected_features.empty()
         && dataset_count != 0u
@@ -1264,9 +1104,9 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
     if (d_shards != nullptr
         && !check_cuda(cudaMemset(d_shards, 0, (std::size_t) shard_count * selected_features.size() * sizeof(float)),
                        issues, "browse", "cudaMemset blocked_ell shard sums")) goto done;
-    if (sample_rows_per_part != 0u && !selected_features.empty()
+    if (sample_rows_per_partition != 0u && !selected_features.empty()
         && !check_cuda(cudaMalloc((void **) &d_tile,
-                                  (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float)),
+                                  (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float)),
                        issues, "browse", "cudaMalloc blocked_ell sample tile")) goto done;
 
     dataset_feature_sum->assign_fill((std::size_t) dataset_count * selected_features.size(), 0.0f);
@@ -1274,20 +1114,20 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
 
     for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
         if (shard_id >= shard_owner.size() || shard_owner[shard_id] != (int) worker_slot) continue;
-        const unsigned long part_begin = cs::first_part_in_shard(&matrix, shard_id);
-        const unsigned long part_end = cs::last_part_in_shard(&matrix, shard_id);
+        const unsigned long part_begin = cs::first_partition_in_shard(&matrix, shard_id);
+        const unsigned long part_end = cs::last_partition_in_shard(&matrix, shard_id);
         for (unsigned long part_id = part_begin; part_id < part_end; ++part_id) {
             csv::blocked_ell_view part_view;
-            const std::size_t tile_offset = (std::size_t) part_id * sample_rows_per_part * selected_features.size();
-            const std::size_t row_offset = (std::size_t) part_id * sample_rows_per_part;
+            const std::size_t tile_offset = (std::size_t) part_id * sample_rows_per_partition * selected_features.size();
+            const std::size_t row_offset = (std::size_t) part_id * sample_rows_per_partition;
             const std::uint32_t dataset_id = part_id < part_dataset_indices.size() ? part_dataset_indices[part_id] : 0u;
-            const unsigned long total = matrix.part_rows[part_id] * (unsigned long) cs::sparse::unpack_blocked_ell_cols(matrix.part_aux[part_id]);
+            const unsigned long total = matrix.partition_rows[part_id] * (unsigned long) cs::sparse::unpack_blocked_ell_cols(matrix.partition_aux[part_id]);
             const unsigned int blocks = (unsigned int) std::max<unsigned long>(1ul, std::min<unsigned long>(4096ul, (total + 255ul) / 256ul));
-            const host_buffer<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.part_rows[part_id], sample_rows_per_part);
+            const host_buffer<unsigned int> sample_rows = choose_sample_rows((unsigned int) matrix.partition_rows[part_id], sample_rows_per_partition);
 
-            if (!cs::fetch_part(&matrix, &storage, part_id)
-                || !check_cuda(csv::upload_part(&device_state, &matrix, part_id, device_id),
-                               issues, "browse", "upload_part blocked_ell selected features")
+            if (!cs::fetch_partition(&matrix, &storage, part_id)
+                || !check_cuda(csv::upload_partition(&device_state, &matrix, part_id, device_id),
+                               issues, "browse", "upload_partition blocked_ell selected features")
                 || !bind_uploaded_part_view(&part_view, &matrix, device_state.parts + part_id, part_id)) {
                 goto done;
             }
@@ -1303,43 +1143,43 @@ inline bool build_selected_feature_partials_blocked_ell(const std::string &path,
                 if (!check_cuda(cudaGetLastError(), issues, "browse", "accumulate_selected_feature_sums_blocked_ell_kernel")) goto done;
             }
 
-            if (sample_rows_per_part != 0u && !selected_features.empty()) {
+            if (sample_rows_per_partition != 0u && !selected_features.empty()) {
                 if (!check_cuda(cudaMemcpy(d_sample_rows,
                                            sample_rows.data(),
-                                           (std::size_t) sample_rows_per_part * sizeof(unsigned int),
+                                           (std::size_t) sample_rows_per_partition * sizeof(unsigned int),
                                            cudaMemcpyHostToDevice),
                                 issues, "browse", "cudaMemcpy blocked_ell sample rows")) goto done;
                 if (!check_cuda(cudaMemset(d_tile,
                                            0,
-                                           (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float)),
+                                           (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float)),
                                 issues, "browse", "cudaMemset blocked_ell sample tile")) goto done;
-                extract_sample_tile_blocked_ell_kernel<<<sample_rows_per_part, 128>>>(
+                extract_sample_tile_blocked_ell_kernel<<<sample_rows_per_partition, 128>>>(
                     part_view,
                     d_sample_rows,
-                    sample_rows_per_part,
+                    sample_rows_per_partition,
                     d_selected,
                     (unsigned int) selected_features.size(),
                     d_tile
                 );
                 if (!check_cuda(cudaGetLastError(), issues, "browse", "extract_sample_tile_blocked_ell_kernel")) goto done;
-                if (!check_cuda(cudaMemcpy(part_sample_values->data() + tile_offset,
+                if (!check_cuda(cudaMemcpy(partition_sample_values->data() + tile_offset,
                                            d_tile,
-                                           (std::size_t) sample_rows_per_part * selected_features.size() * sizeof(float),
+                                           (std::size_t) sample_rows_per_partition * selected_features.size() * sizeof(float),
                                            cudaMemcpyDeviceToHost),
                                 issues, "browse", "cudaMemcpy blocked_ell sample tile")) goto done;
             }
 
             if (!check_cuda(cudaDeviceSynchronize(), issues, "browse", "cudaDeviceSynchronize blocked_ell selected features")
-                || !check_cuda(csv::release_part(&device_state, part_id),
-                               issues, "browse", "release_part blocked_ell selected features")) goto done;
-            for (unsigned int row = 0; row < sample_rows_per_part; ++row) {
+                || !check_cuda(csv::release_partition(&device_state, part_id),
+                               issues, "browse", "release_partition blocked_ell selected features")) goto done;
+            for (unsigned int row = 0; row < sample_rows_per_partition; ++row) {
                 const unsigned int local_row = sample_rows[row];
-                (*part_sample_global_rows)[row_offset + row] =
-                    local_row < matrix.part_rows[part_id]
-                        ? (std::uint64_t) (matrix.part_offsets[part_id] + local_row)
+                (*partition_sample_global_rows)[row_offset + row] =
+                    local_row < matrix.partition_rows[part_id]
+                        ? (std::uint64_t) (matrix.partition_offsets[part_id] + local_row)
                         : std::numeric_limits<std::uint64_t>::max();
             }
-            cs::drop_part(&matrix, part_id);
+            cs::drop_partition(&matrix, part_id);
         }
     }
 
@@ -1464,15 +1304,15 @@ inline bool build_browse_cache_multigpu(const std::string &path,
 
     owned.dataset_feature_mean.assign_fill(plan.datasets.size() * owned.selected_feature_indices.size(), 0.0f);
     owned.shard_feature_mean.assign_fill((std::size_t) matrix.num_shards * owned.selected_feature_indices.size(), 0.0f);
-    owned.part_sample_row_offsets.assign_fill((std::size_t) matrix.num_parts + 1u, 0u);
-    for (unsigned long part_id = 0; part_id < matrix.num_parts; ++part_id) {
-        owned.part_sample_row_offsets[part_id + 1u] =
-            owned.part_sample_row_offsets[part_id] + plan.policy.browse_sample_rows_per_part;
+    owned.partition_sample_row_offsets.assign_fill((std::size_t) matrix.num_partitions + 1u, 0u);
+    for (unsigned long part_id = 0; part_id < matrix.num_partitions; ++part_id) {
+        owned.partition_sample_row_offsets[part_id + 1u] =
+            owned.partition_sample_row_offsets[part_id] + plan.policy.browse_sample_rows_per_partition;
     }
-    owned.part_sample_global_rows.assign_fill((std::size_t) matrix.num_parts * plan.policy.browse_sample_rows_per_part,
+    owned.partition_sample_global_rows.assign_fill((std::size_t) matrix.num_partitions * plan.policy.browse_sample_rows_per_partition,
                                               std::numeric_limits<std::uint64_t>::max());
-    owned.part_sample_values.assign_fill((std::size_t) matrix.num_parts
-                                             * plan.policy.browse_sample_rows_per_part
+    owned.partition_sample_values.assign_fill((std::size_t) matrix.num_partitions
+                                             * plan.policy.browse_sample_rows_per_partition
                                              * owned.selected_feature_indices.size(),
                                          0.0f);
 
@@ -1510,11 +1350,11 @@ inline bool build_browse_cache_multigpu(const std::string &path,
                                                                                 (unsigned int) plan.datasets.size(),
                                                                                 (unsigned int) matrix.num_shards,
                                                                                 owned.selected_feature_indices,
-                                                                                plan.policy.browse_sample_rows_per_part,
+                                                                                plan.policy.browse_sample_rows_per_partition,
                                                                                 &partials[slot].dataset_feature_sum,
                                                                                 &partials[slot].shard_feature_sum,
-                                                                                &owned.part_sample_global_rows,
-                                                                                &owned.part_sample_values,
+                                                                                &owned.partition_sample_global_rows,
+                                                                                &owned.partition_sample_values,
                                                                                 issues);
             }));
         }
@@ -1563,11 +1403,11 @@ inline bool build_browse_cache_multigpu(const std::string &path,
         view.dataset_feature_mean = owned.dataset_feature_mean.data();
         view.shard_count = (std::uint32_t) matrix.num_shards;
         view.shard_feature_mean = owned.shard_feature_mean.data();
-        view.part_count = (std::uint32_t) matrix.num_parts;
-        view.sample_rows_per_part = plan.policy.browse_sample_rows_per_part;
-        view.part_sample_row_offsets = owned.part_sample_row_offsets.data();
-        view.part_sample_global_rows = owned.part_sample_global_rows.data();
-        view.part_sample_values = owned.part_sample_values.data();
+        view.partition_count = (std::uint32_t) matrix.num_partitions;
+        view.sample_rows_per_partition = plan.policy.browse_sample_rows_per_partition;
+        view.partition_sample_row_offsets = owned.partition_sample_row_offsets.data();
+        view.partition_sample_global_rows = owned.partition_sample_global_rows.data();
+        view.partition_sample_values = owned.partition_sample_values.data();
         if (!cellshard::append_series_browse_cache_h5(path.c_str(), &view)) {
             push_issue(issues, issue_severity::error, "browse", "failed to append browse cache to series.csh5");
             goto done;
@@ -1674,7 +1514,7 @@ conversion_report convert_plan_to_series_csh5(const ingest_plan &plan) {
             cs::clear(&header);
             return report;
         }
-        if (header.rows != plan.total_rows || header.num_parts != plan.parts.size() || header.num_shards != plan.shards.size()) {
+        if (header.rows != plan.total_rows || header.num_partitions != plan.parts.size() || header.num_shards != plan.shards.size()) {
             push_issue(&report.issues, issue_severity::error, "verify", "written header does not match the planned layout");
             cseries::clear(&manifest);
             cs::clear(&storage);
@@ -1743,12 +1583,12 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         push_issue(&summary.issues, issue_severity::warning, "preprocess", "failed to bind requested cache directory");
     }
 
-    if (!csv::reserve(&device_state, matrix.num_parts)) {
+    if (!csv::reserve(&device_state, matrix.num_partitions)) {
         push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to reserve device part state");
         goto done;
     }
     if (!cpre::setup(&workspace, config.device, (cudaStream_t) 0)
-        || !cpre::reserve(&workspace, max_part_rows(matrix), (unsigned int) matrix.cols, max_part_nnz(matrix))) {
+        || !cpre::reserve(&workspace, max_partition_rows(matrix), (unsigned int) matrix.cols, max_partition_nnz(matrix))) {
         push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to set up preprocess workspace");
         goto done;
     }
@@ -1760,17 +1600,17 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         goto done;
     }
 
-    for (unsigned long part_id = 0; part_id < matrix.num_parts; ++part_id) {
+    for (unsigned long part_id = 0; part_id < matrix.num_partitions; ++part_id) {
         bool loaded_here = false;
         csv::compressed_view part_view;
-        if (!cs::part_loaded(&matrix, part_id)) {
-            if (!cs::fetch_part(&matrix, &storage, part_id)) {
+        if (!cs::partition_loaded(&matrix, part_id)) {
+            if (!cs::fetch_partition(&matrix, &storage, part_id)) {
                 push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to fetch matrix part from storage");
                 goto done;
             }
             loaded_here = true;
         }
-        if (!check_cuda(csv::upload_part(&device_state, &matrix, part_id, config.device), &summary.issues, "preprocess", "upload_part")) goto done;
+        if (!check_cuda(csv::upload_partition(&device_state, &matrix, part_id, config.device), &summary.issues, "preprocess", "upload_partition")) goto done;
         if (!cpre::bind_uploaded_part_view(&part_view, &matrix, device_state.parts + part_id, part_id)) {
             push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to bind uploaded device part view");
             goto done;
@@ -1780,9 +1620,9 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
             goto done;
         }
         if (!check_cuda(cudaStreamSynchronize(workspace.stream), &summary.issues, "preprocess", "cudaStreamSynchronize part")) goto done;
-        if (!check_cuda(csv::release_part(&device_state, part_id), &summary.issues, "preprocess", "release_part")) goto done;
+        if (!check_cuda(csv::release_partition(&device_state, part_id), &summary.issues, "preprocess", "release_partition")) goto done;
         ++summary.partitions_processed;
-        if (loaded_here && config.drop_host_parts) cs::drop_part(&matrix, part_id);
+        if (loaded_here && config.drop_host_parts) cs::drop_partition(&matrix, part_id);
     }
 
     if (!cpre::build_gene_filter_mask(&workspace, (unsigned int) matrix.cols, gene_filter, nullptr)

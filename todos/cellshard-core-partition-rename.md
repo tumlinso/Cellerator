@@ -1,11 +1,11 @@
 ---
 slug: "cellshard-core-partition-rename"
-status: "in_progress"
-execution: "ready"
+status: "done"
+execution: "closed"
 owner: "codex"
 created_at: "2026-04-13T14:45:32Z"
-last_heartbeat_at: "2026-04-13T14:47:06Z"
-last_reviewed_at: "2026-04-13T14:47:06Z"
+last_heartbeat_at: "2026-04-13T15:26:40Z"
+last_reviewed_at: "2026-04-13T15:26:40Z"
 stale_after_days: 14
 objective: "rename CellShard core storage runtime and schema terminology from part to partition without compatibility shims"
 ---
@@ -55,26 +55,25 @@ Complete the deep CellShard rename by moving the remaining storage, runtime, and
 
 ## Tasks
 - [x] Completed the source-facing partition rename for export, Python, and workbench summaries.
-- [~] Build a full inventory of part-named symbols and schema fields across extern/CellShard/src and the dependent Cellerator call sites.
-- [ ] Rename the core sharded data structures and helper APIs from part to partition.
-- [ ] Rename the csh5 schema attrs and datasets from num_parts and part_* to num_partitions and partition_*.
-- [ ] Update ingest, workbench, tests, and benchmark code to the renamed core schema.
-- [ ] Add targeted schema and runtime coverage for the renamed partition surface.
+- [x] Build a full inventory of part-named symbols and schema fields across extern/CellShard/src and the dependent Cellerator call sites.
+- [x] Rename the core sharded data structures and helper APIs from part to partition.
+- [x] Rename the csh5 schema attrs and datasets from num_parts and part_* to num_partitions and partition_*.
+- [x] Update ingest, workbench, tests, and benchmark code to the renamed core schema.
+- [x] Add targeted schema and runtime coverage for the renamed partition surface.
 
 ## Blockers
-- Avoid overlapping edits in extern/CellShard/src/sharded/{shard_paths,series_h5,sharded_host}* and extern/CellShard/src/sharded/disk* until the packfile-cache rewrite stream finishes.
+_None._
 
 ## Progress Notes
 - Completed the source-facing partition rename in export, Python, and workbench summaries, which now defines the target vocabulary for the remaining core layers.
 - The separate debug stream owns the current workbench runtime crash so this ledger can stay focused on the structural rename and schema sweep.
 - Inventory pass found roughly 1877 part-related matches concentrated in extern/CellShard/src/sharded/*, extern/CellShard/src/sharded/disk.*, extern/CellShard/src/sharded/series_h5.*, and extern/CellShard/src/convert/blocked_ell_from_compressed.cuh.
 - Paused overlapping storage-file edits while the dedicated packfile-cache rewrite stream owns shard_paths, sharded_host, series_h5, and disk surfaces.
+- Finished the deep rename sweep across the remaining sharded/HDF5 helpers, dependent ingest/workbench paths, and focused CellShard conversion/bucket operators.
+- Verified the renamed partition surface by building `cellShardSeriesH5Test`, `seriesWorkbenchRuntimeTest`, and `cellShardBlockedEllTest`, then running all three binaries successfully.
 
 ## Next Actions
-- Run a targeted ripgrep inventory over extern/CellShard/src/sharded and extern/CellShard/src/sharded/disk* to establish the rename order.
-- Start the first code patch in the core sharded type and helper headers before moving on to the HDF5 schema keys.
-- Rename order should start with sharded.cuh and sharded_host.cuh, then disk.cuh and disk.cu, then series_h5.cuh and series_h5.cc, and only then the dependent Cellerator surfaces and tests.
-- Resume the deep rename after the packfile-cache rewrite lands, starting from the rewritten storage backend instead of the old packfile code.
+- Optional: run `todo-cleanup --partial` when you want to remove the completed partition-rename ledger.
 
 ## Done Criteria
 - Core CellShard sharded structs, helpers, and fetch surfaces use partition terminology instead of part terminology.

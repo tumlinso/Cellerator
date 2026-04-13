@@ -87,7 +87,7 @@ struct ingest_policy {
     bool embed_metadata = true;
     bool build_browse_cache = true;
     unsigned int browse_top_features = 16u;
-    unsigned int browse_sample_rows_per_part = 8u;
+    unsigned int browse_sample_rows_per_partition = 8u;
 };
 
 struct planned_dataset {
@@ -98,8 +98,8 @@ struct planned_dataset {
     unsigned long rows = 0;
     unsigned long cols = 0;
     unsigned long nnz = 0;
-    unsigned long part_begin = 0;
-    unsigned long part_count = 0;
+    unsigned long partition_begin = 0;
+    unsigned long partition_count = 0;
     unsigned long feature_count = 0;
     unsigned long barcode_count = 0;
 };
@@ -112,7 +112,7 @@ enum class execution_format : std::uint32_t {
 };
 
 struct planned_part {
-    unsigned long part_id = 0;
+    unsigned long partition_id = 0;
     std::size_t source_index = 0;
     std::string dataset_id;
     unsigned long row_begin = 0;
@@ -130,8 +130,8 @@ struct planned_part {
 
 struct planned_shard {
     unsigned long shard_id = 0;
-    unsigned long part_begin = 0;
-    unsigned long part_end = 0;
+    unsigned long partition_begin = 0;
+    unsigned long partition_end = 0;
     unsigned long row_begin = 0;
     unsigned long row_end = 0;
     unsigned long rows = 0;
@@ -275,7 +275,7 @@ struct observation_metadata_table {
 struct browse_cache_summary {
     bool available = false;
     std::uint32_t selected_feature_count = 0;
-    std::uint32_t sample_rows_per_part = 0;
+    std::uint32_t sample_rows_per_partition = 0;
     std::vector<std::uint32_t> selected_feature_indices;
     std::vector<std::string> selected_feature_names;
     std::vector<float> gene_sum;
@@ -283,9 +283,9 @@ struct browse_cache_summary {
     std::vector<float> gene_sq_sum;
     std::vector<float> dataset_feature_mean;
     std::vector<float> shard_feature_mean;
-    std::vector<std::uint32_t> part_sample_row_offsets;
-    std::vector<std::uint64_t> part_sample_global_rows;
-    std::vector<float> part_sample_values;
+    std::vector<std::uint32_t> partition_sample_row_offsets;
+    std::vector<std::uint64_t> partition_sample_global_rows;
+    std::vector<float> partition_sample_values;
 };
 
 struct series_summary {

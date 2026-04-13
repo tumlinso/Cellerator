@@ -129,16 +129,16 @@ static inline int accumulate_gene_metrics(const csv::compressed_view *src,
 
 static inline int bind_uploaded_part_view(csv::compressed_view *out,
                                           const cs::sharded<cs::sparse::compressed> *host,
-                                          const csv::part_record<cs::sparse::compressed> *record,
+                                          const csv::partition_record<cs::sparse::compressed> *record,
                                           unsigned long part_id) {
     if (out == 0 || host == 0 || record == 0) return 0;
-    if (part_id >= host->num_parts) return 0;
-    if (record->a0 == 0 && host->part_rows[part_id] != 0) return 0;
-    if (record->a2 == 0 && host->part_nnz[part_id] != 0) return 0;
-    out->rows = (unsigned int) host->part_rows[part_id];
+    if (part_id >= host->num_partitions) return 0;
+    if (record->a0 == 0 && host->partition_rows[part_id] != 0) return 0;
+    if (record->a2 == 0 && host->partition_nnz[part_id] != 0) return 0;
+    out->rows = (unsigned int) host->partition_rows[part_id];
     out->cols = (unsigned int) host->cols;
-    out->nnz = (unsigned int) host->part_nnz[part_id];
-    out->axis = (unsigned int) host->part_aux[part_id];
+    out->nnz = (unsigned int) host->partition_nnz[part_id];
+    out->axis = (unsigned int) host->partition_aux[part_id];
     out->majorPtr = (unsigned int *) record->a0;
     out->minorIdx = (unsigned int *) record->a1;
     out->val = (__half *) record->a2;

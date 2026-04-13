@@ -54,8 +54,8 @@ int main() {
 
     cs::sharded<cs::sparse::compressed> src;
     cs::init(&src);
-    require(cs::append_part(&src, part0) != 0, "append part0 failed");
-    require(cs::append_part(&src, part1) != 0, "append part1 failed");
+    require(cs::append_partition(&src, part0) != 0, "append part0 failed");
+    require(cs::append_partition(&src, part1) != 0, "append part1 failed");
 
     const unsigned int candidates[] = { 2u, 4u };
     cs::convert::blocked_ell_tune_result tune = {};
@@ -75,12 +75,12 @@ int main() {
     cs::sharded<cs::sparse::blocked_ell> blocked;
     cs::init(&blocked);
     require(cs::convert::repack_sharded_compressed_to_blocked_ell(&src, 2u, 1ul, &blocked) != 0, "repack_sharded_compressed_to_blocked_ell failed");
-    require(blocked.num_parts == 2ul, "blocked ell repack part count mismatch");
-    require(blocked.part_aux[0] == cs::sparse::pack_blocked_ell_aux(2u, 2ul), "blocked ell aux mismatch");
+    require(blocked.num_partitions == 2ul, "blocked ell repack part count mismatch");
+    require(blocked.partition_aux[0] == cs::sparse::pack_blocked_ell_aux(2u, 2ul), "blocked ell aux mismatch");
     require(cs::device::set_shards_by_device_bytes(&blocked, 128u) != 0, "set_shards_by_device_bytes failed");
     require(blocked.num_shards >= 1ul, "blocked ell shard count mismatch");
 
-    cs::device::part_record<cs::sparse::blocked_ell> record;
+    cs::device::partition_record<cs::sparse::blocked_ell> record;
     cs::device::zero_record(&record);
     require(cudaSetDevice(0) == cudaSuccess, "cudaSetDevice failed");
     require(cs::device::upload(blocked.parts[0], &record) == cudaSuccess, "blocked ell upload failed");
@@ -95,22 +95,22 @@ int main() {
         std::remove(path);
         const std::string out_path = std::string(path) + ".csh5";
         const std::string cache_root = std::string(path) + ".cache";
-        std::vector<std::uint64_t> part_rows(blocked.num_parts, 0u);
-        std::vector<std::uint64_t> part_nnz(blocked.num_parts, 0u);
-        std::vector<std::uint64_t> part_aux(blocked.num_parts, 0u);
-        std::vector<std::uint64_t> part_row_offsets(blocked.num_parts + 1u, 0u);
-        std::vector<std::uint32_t> part_dataset_ids(blocked.num_parts, 0u);
-        std::vector<std::uint32_t> part_codec_ids(blocked.num_parts, 0u);
+        std::vector<std::uint64_t> partition_rows(blocked.num_partitions, 0u);
+        std::vector<std::uint64_t> partition_nnz(blocked.num_partitions, 0u);
+        std::vector<std::uint64_t> partition_aux(blocked.num_partitions, 0u);
+        std::vector<std::uint64_t> partition_row_offsets(blocked.num_partitions + 1u, 0u);
+        std::vector<std::uint32_t> partition_dataset_ids(blocked.num_partitions, 0u);
+        std::vector<std::uint32_t> partition_codec_ids(blocked.num_partitions, 0u);
         std::vector<std::uint64_t> shard_offsets(blocked.num_shards + 1u, 0u);
         cs::series_codec_descriptor codec{};
         cs::series_layout_view layout{};
-        for (unsigned long i = 0; i < blocked.num_parts; ++i) {
-            part_rows[i] = (std::uint64_t) blocked.part_rows[i];
-            part_nnz[i] = (std::uint64_t) blocked.part_nnz[i];
-            part_aux[i] = (std::uint64_t) blocked.part_aux[i];
-            part_row_offsets[i] = (std::uint64_t) blocked.part_offsets[i];
+        for (unsigned long i = 0; i < blocked.num_partitions; ++i) {
+            partition_rows[i] = (std::uint64_t) blocked.partition_rows[i];
+            partition_nnz[i] = (std::uint64_t) blocked.partition_nnz[i];
+            partition_aux[i] = (std::uint64_t) blocked.partition_aux[i];
+            partition_row_offsets[i] = (std::uint64_t) blocked.partition_offsets[i];
         }
-        part_row_offsets[blocked.num_parts] = (std::uint64_t) blocked.rows;
+        partition_row_offsets[blocked.num_partitions] = (std::uint64_t) blocked.rows;
         for (unsigned long i = 0; i <= blocked.num_shards; ++i) {
             shard_offsets[i] = (std::uint64_t) blocked.shard_offsets[i];
         }
@@ -125,15 +125,15 @@ int main() {
         layout.rows = (std::uint64_t) blocked.rows;
         layout.cols = (std::uint64_t) blocked.cols;
         layout.nnz = (std::uint64_t) blocked.nnz;
-        layout.num_parts = (std::uint64_t) blocked.num_parts;
+        layout.num_partitions = (std::uint64_t) blocked.num_partitions;
         layout.num_shards = (std::uint64_t) blocked.num_shards;
-        layout.part_rows = part_rows.data();
-        layout.part_nnz = part_nnz.data();
-        layout.part_axes = nullptr;
-        layout.part_aux = part_aux.data();
-        layout.part_row_offsets = part_row_offsets.data();
-        layout.part_dataset_ids = part_dataset_ids.data();
-        layout.part_codec_ids = part_codec_ids.data();
+        layout.partition_rows = partition_rows.data();
+        layout.partition_nnz = partition_nnz.data();
+        layout.partition_axes = nullptr;
+        layout.partition_aux = partition_aux.data();
+        layout.partition_row_offsets = partition_row_offsets.data();
+        layout.partition_dataset_ids = partition_dataset_ids.data();
+        layout.partition_codec_ids = partition_codec_ids.data();
         layout.shard_offsets = shard_offsets.data();
         layout.codecs = &codec;
         layout.num_codecs = 1u;
@@ -143,14 +143,14 @@ int main() {
         cs::init(&storage);
         cs::init(&loaded);
         require(cs::create_series_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr) != 0, "blocked ell csh5 create failed");
-        require(cs::append_blocked_ell_part_h5(out_path.c_str(), 0u, blocked.parts[0]) != 0, "append blocked ell part0 failed");
-        require(cs::append_blocked_ell_part_h5(out_path.c_str(), 1u, blocked.parts[1]) != 0, "append blocked ell part1 failed");
+        require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 0u, blocked.parts[0]) != 0, "append blocked ell part0 failed");
+        require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 1u, blocked.parts[1]) != 0, "append blocked ell part1 failed");
         require(cs::load_header(out_path.c_str(), &loaded, &storage) != 0, "blocked ell csh5 load_header failed");
         require(cs::bind_series_h5_cache(&storage, cache_root.c_str()) != 0, "blocked ell cache bind failed");
         require(cs::prefetch_series_blocked_ell_h5_shard_cache(&loaded, &storage, 0ul) != 0, "blocked ell shard cache prefetch failed");
-        require(loaded.num_parts == blocked.num_parts, "blocked ell loaded part count mismatch");
-        require(loaded.part_aux[0] == blocked.part_aux[0], "blocked ell loaded aux mismatch");
-        require(cs::fetch_part(&loaded, &storage, 0ul) != 0, "blocked ell fetch_part failed");
+        require(loaded.num_partitions == blocked.num_partitions, "blocked ell loaded part count mismatch");
+        require(loaded.partition_aux[0] == blocked.partition_aux[0], "blocked ell loaded aux mismatch");
+        require(cs::fetch_partition(&loaded, &storage, 0ul) != 0, "blocked ell fetch_partition failed");
         require(loaded.parts[0] != nullptr, "blocked ell loaded part missing");
         require(loaded.parts[0]->block_size == blocked.parts[0]->block_size, "blocked ell loaded block size mismatch");
         require(loaded.parts[0]->ell_cols == blocked.parts[0]->ell_cols, "blocked ell loaded ell_cols mismatch");

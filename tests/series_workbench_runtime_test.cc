@@ -131,12 +131,12 @@ int main() {
     std::vector<std::uint64_t> dataset_rows = { 2u };
     std::vector<std::uint64_t> dataset_cols = { 3u };
     std::vector<std::uint64_t> dataset_nnz = { 3u };
-    std::vector<std::uint64_t> part_rows = { 2u };
-    std::vector<std::uint64_t> part_nnz = { 3u };
-    std::vector<std::uint32_t> part_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row };
-    std::vector<std::uint64_t> part_row_offsets = { 0u, 2u };
-    std::vector<std::uint32_t> part_dataset_ids = { 0u };
-    std::vector<std::uint32_t> part_codec_ids = { 0u };
+    std::vector<std::uint64_t> partition_rows = { 2u };
+    std::vector<std::uint64_t> partition_nnz = { 3u };
+    std::vector<std::uint32_t> partition_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u };
     std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
     std::vector<std::uint32_t> cell_dataset_ids = { 0u, 0u };
     std::vector<std::uint64_t> cell_local_indices = { 0u, 1u };
@@ -156,7 +156,7 @@ int main() {
     std::vector<float> browse_shard_mean = { 2.5f, 3.5f };
     std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u };
     std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u };
-    std::vector<float> browse_part_sample_values = { 5.0f, 0.0f, 0.0f, 7.0f };
+    std::vector<float> browse_partition_sample_values = { 5.0f, 0.0f, 0.0f, 7.0f };
 
     std::remove(manifest_path.c_str());
     std::remove(matrix_path.c_str());
@@ -239,15 +239,15 @@ int main() {
     layout.rows = 2u;
     layout.cols = 3u;
     layout.nnz = 3u;
-    layout.num_parts = 1u;
+    layout.num_partitions = 1u;
     layout.num_shards = 1u;
-    layout.part_rows = part_rows.data();
-    layout.part_nnz = part_nnz.data();
-    layout.part_axes = part_axes.data();
-    layout.part_aux = nullptr;
-    layout.part_row_offsets = part_row_offsets.data();
-    layout.part_dataset_ids = part_dataset_ids.data();
-    layout.part_codec_ids = part_codec_ids.data();
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = partition_axes.data();
+    layout.partition_aux = nullptr;
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
     layout.shard_offsets = shard_offsets.data();
     layout.codecs = &codec;
     layout.num_codecs = 1u;
@@ -327,14 +327,14 @@ int main() {
     browse_view.dataset_feature_mean = browse_dataset_mean.data();
     browse_view.shard_count = 1u;
     browse_view.shard_feature_mean = browse_shard_mean.data();
-    browse_view.part_count = 1u;
-    browse_view.sample_rows_per_part = 2u;
-    browse_view.part_sample_row_offsets = browse_part_sample_offsets.data();
-    browse_view.part_sample_global_rows = browse_part_sample_rows.data();
-    browse_view.part_sample_values = browse_part_sample_values.data();
+    browse_view.partition_count = 1u;
+    browse_view.sample_rows_per_partition = 2u;
+    browse_view.partition_sample_row_offsets = browse_part_sample_offsets.data();
+    browse_view.partition_sample_global_rows = browse_part_sample_rows.data();
+    browse_view.partition_sample_values = browse_partition_sample_values.data();
 
     if (!cellshard::create_series_compressed_h5(series_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
-    if (!cellshard::append_standard_csr_part_h5(series_path.c_str(), 0u, &part)) return 1;
+    if (!cellshard::append_standard_csr_partition_h5(series_path.c_str(), 0u, &part)) return 1;
     if (!cellshard::append_series_embedded_metadata_h5(series_path.c_str(), &embedded_metadata_view)) return 1;
     if (!cellshard::append_series_observation_metadata_h5(series_path.c_str(), &observation_metadata_view)) return 1;
     if (!cellshard::append_series_browse_cache_h5(series_path.c_str(), &browse_view)) return 1;
@@ -381,7 +381,7 @@ int main() {
         policy.embed_metadata = true;
         policy.build_browse_cache = true;
         policy.browse_top_features = 2u;
-        policy.browse_sample_rows_per_part = 2u;
+        policy.browse_sample_rows_per_partition = 2u;
         wb::ingest_plan converted_plan = wb::plan_series_ingest(inspection.sources, policy);
         if (!converted_plan.ok) {
             std::fprintf(stderr, "converted_plan not ok\n");

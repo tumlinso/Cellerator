@@ -169,8 +169,8 @@ inline torch::Tensor export_as_tensor(
     std::int64_t row_cursor = 0;
 
     crow_ptr[0] = 0;
-    for (unsigned long part_id = 0; part_id < view.num_parts; ++part_id) {
-        const cellshard::sparse::compressed *part = view.parts != 0 ? view.parts[part_id] : 0;
+    for (unsigned long partition_id = 0; partition_id < view.num_partitions; ++partition_id) {
+        const cellshard::sparse::compressed *part = view.parts != 0 ? view.parts[partition_id] : 0;
         if (part == 0) {
             throw std::invalid_argument("export_as_tensor(sharded) requires every part to already be loaded on host");
         }

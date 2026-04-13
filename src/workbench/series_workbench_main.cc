@@ -866,9 +866,9 @@ void clamp_inspect_viewports(ui_state *ui, const ui_layout &layout) {
         const std::size_t part_index = inspect_part_global_index(*ui, ui->inspect_dataset_selection, local_part);
         std::size_t row_total = 0;
         if (part_index != std::numeric_limits<std::size_t>::max()
-            && part_index + 1u < ui->series.browse.part_sample_row_offsets.size()) {
-            row_total = (std::size_t) (ui->series.browse.part_sample_row_offsets[part_index + 1u]
-                                       - ui->series.browse.part_sample_row_offsets[part_index]);
+            && part_index + 1u < ui->series.browse.partition_sample_row_offsets.size()) {
+            row_total = (std::size_t) (ui->series.browse.partition_sample_row_offsets[part_index + 1u]
+                                       - ui->series.browse.partition_sample_row_offsets[part_index]);
         }
         const std::size_t visible = (std::size_t) inspect_heatmap_visible_rows(layout);
         if (row_total <= visible) ui->inspect_heatmap_row_scroll = 0;
@@ -1221,9 +1221,9 @@ std::size_t active_count(const ui_state &ui) {
                             const std::size_t part_index =
                                 inspect_part_global_index(ui, ui.inspect_dataset_selection, ui.inspect_part_selection);
                             if (part_index == std::numeric_limits<std::size_t>::max()
-                                || part_index + 1u >= ui.series.browse.part_sample_row_offsets.size()) return 0u;
-                            return (std::size_t) (ui.series.browse.part_sample_row_offsets[part_index + 1u]
-                                                  - ui.series.browse.part_sample_row_offsets[part_index]);
+                                || part_index + 1u >= ui.series.browse.partition_sample_row_offsets.size()) return 0u;
+                            return (std::size_t) (ui.series.browse.partition_sample_row_offsets[part_index + 1u]
+                                                  - ui.series.browse.partition_sample_row_offsets[part_index]);
                         }
                     }
                     break;
@@ -2032,7 +2032,7 @@ void render_datasets(WINDOW *win, const ui_runtime &runtime, const ui_state &ui)
             << "  rows=" << dataset.rows
             << " cols=" << dataset.cols
             << " nnz=" << dataset.nnz
-            << " partitions=" << dataset.part_count
+            << " partitions=" << dataset.partition_count
             << "  row=[" << dataset.global_row_begin << "," << dataset.global_row_end << ")";
         draw_list_row(win, runtime, 3 + row, index == ui.selected_dataset, oss.str());
     }
@@ -2052,7 +2052,7 @@ void render_parts(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
         const std::size_t index = ui.part_scroll + static_cast<std::size_t>(row);
         const wb::planned_part &part = ui.plan.parts[index];
         std::ostringstream oss;
-            oss << "partition " << part.part_id
+            oss << "partition " << part.partition_id
                 << "  " << part.dataset_id
                 << "  rows=" << part.rows
                 << " nnz=" << part.nnz
@@ -2077,7 +2077,7 @@ void render_shards(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
         const wb::planned_shard &shard = ui.plan.shards[index];
         std::ostringstream oss;
         oss << "s" << shard.shard_id
-            << "  partitions=[" << shard.part_begin << "," << shard.part_end << ")"
+            << "  partitions=[" << shard.partition_begin << "," << shard.partition_end << ")"
             << "  rows=" << shard.rows
             << " nnz=" << shard.nnz
             << "  bytes=" << compact_bytes(shard.estimated_bytes);
@@ -2315,9 +2315,9 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
         const std::size_t part_total = inspect_part_count_for_dataset(ui, ui.inspect_dataset_selection);
         const std::size_t part_index = inspect_part_global_index(ui, ui.inspect_dataset_selection, ui.inspect_part_selection);
         if (part_index != std::numeric_limits<std::size_t>::max()
-            && part_index + 1u < ui.series.browse.part_sample_row_offsets.size()) {
-            const std::size_t row_begin = ui.series.browse.part_sample_row_offsets[part_index];
-            const std::size_t row_end = ui.series.browse.part_sample_row_offsets[part_index + 1u];
+            && part_index + 1u < ui.series.browse.partition_sample_row_offsets.size()) {
+            const std::size_t row_begin = ui.series.browse.partition_sample_row_offsets[part_index];
+            const std::size_t row_end = ui.series.browse.partition_sample_row_offsets[part_index + 1u];
             std::ostringstream mode_line;
             mode_line << "Partition samples  selected=" << (ui.inspect_part_selection + 1u)
                       << "/" << std::max<std::size_t>(1u, part_total)
@@ -2329,8 +2329,8 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
                  row < row_end && row_labels.size() < (std::size_t) heatmap_rows;
                  ++row) {
                 const std::uint64_t global_row =
-                    row < ui.series.browse.part_sample_global_rows.size()
-                        ? ui.series.browse.part_sample_global_rows[row]
+                    row < ui.series.browse.partition_sample_global_rows.size()
+                        ? ui.series.browse.partition_sample_global_rows[row]
                         : std::numeric_limits<std::uint64_t>::max();
                 std::ostringstream label;
                 label << "row ";
@@ -2341,8 +2341,8 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
                 if (!metadata_value.empty()) label << " " << metadata_value;
                 row_labels.push_back(label.str());
                 const std::size_t value_offset = row * stride;
-                if (value_offset + feature_total <= ui.series.browse.part_sample_values.size()) {
-                    row_ptrs.push_back(ui.series.browse.part_sample_values.data() + value_offset);
+                if (value_offset + feature_total <= ui.series.browse.partition_sample_values.size()) {
+                    row_ptrs.push_back(ui.series.browse.partition_sample_values.data() + value_offset);
                 } else {
                     row_ptrs.push_back(nullptr);
                 }
@@ -2555,10 +2555,10 @@ void handle_action(ui_state *ui, ui_runtime *runtime, const ui_layout &layout, c
                 const std::size_t part_index =
                     inspect_part_global_index(*ui, ui->inspect_dataset_selection, ui->inspect_part_selection);
                 if (part_index != std::numeric_limits<std::size_t>::max()
-                    && part_index + 1u < ui->series.browse.part_sample_row_offsets.size()) {
+                    && part_index + 1u < ui->series.browse.partition_sample_row_offsets.size()) {
                     const std::size_t row_total =
-                        (std::size_t) (ui->series.browse.part_sample_row_offsets[part_index + 1u]
-                                       - ui->series.browse.part_sample_row_offsets[part_index]);
+                        (std::size_t) (ui->series.browse.partition_sample_row_offsets[part_index + 1u]
+                                       - ui->series.browse.partition_sample_row_offsets[part_index]);
                     const int delta = next.value * std::max(1, visible_rows_for_active(*ui, layout) - 1);
                     const int next_row = std::clamp((int) ui->inspect_heatmap_row_scroll + delta,
                                                     0,
@@ -2731,7 +2731,7 @@ void dump_plan(const wb::ingest_plan &plan) {
                     dataset.rows,
                     dataset.cols,
                     dataset.nnz,
-                    dataset.part_count,
+                    dataset.partition_count,
                     dataset.global_row_begin,
                     dataset.global_row_end);
     }

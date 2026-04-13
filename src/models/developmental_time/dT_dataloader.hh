@@ -102,9 +102,9 @@ public:
                 const unsigned long *bucket_rows = bucket_rows_begin_(static_cast<std::size_t>(bucket_id));
                 for (const unsigned long local_pos : local_positions) {
                     const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
-                    const unsigned long part_id = cellshard::find_part(matrix_, global_row);
-                    part_type *part = require_part_(part_id, &fetched_parts);
-                    const unsigned long part_row_base = matrix_->part_offsets[part_id];
+                    const unsigned long partition_id = cellshard::find_partition(matrix_, global_row);
+                    part_type *part = require_part_(partition_id, &fetched_parts);
+                    const unsigned long part_row_base = matrix_->partition_offsets[partition_id];
                     const cellshard::types::dim_t local_row = static_cast<cellshard::types::dim_t>(global_row - part_row_base);
                     const cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
                     const cellshard::types::ptr_t row_end = part->majorPtr[local_row + 1];
@@ -166,7 +166,7 @@ private:
     void validate_constructor_state_() const {
         if (matrix_ == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-null CellShard matrix");
         if (matrix_->rows == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-empty CellShard matrix");
-        if (matrix_->num_parts == 0 || matrix_->part_offsets == 0 || matrix_->part_rows == 0 || matrix_->part_aux == 0) {
+        if (matrix_->num_partitions == 0 || matrix_->partition_offsets == 0 || matrix_->partition_rows == 0 || matrix_->partition_aux == 0) {
             throw std::invalid_argument("BalancedTimeSampler requires sharded CSR metadata to be initialized");
         }
         if (day_labels_.size() != static_cast<std::size_t>(matrix_->rows)) {
@@ -174,8 +174,8 @@ private:
         }
         checked_i64_(matrix_->rows, "rows");
         checked_i64_(matrix_->cols, "cols");
-        for (unsigned long part_id = 0; part_id < matrix_->num_parts; ++part_id) {
-            if (matrix_->part_aux[part_id] != cellshard::sparse::compressed_by_row) {
+        for (unsigned long partition_id = 0; partition_id < matrix_->num_partitions; ++partition_id) {
+            if (matrix_->partition_aux[partition_id] != cellshard::sparse::compressed_by_row) {
                 throw std::invalid_argument("BalancedTimeSampler requires CSR parts compressed by row");
             }
         }
@@ -279,21 +279,21 @@ private:
         return buckets;
     }
 
-    part_type *require_part_(unsigned long part_id, host_buffer<unsigned long> *fetched_parts) {
-        if (part_id >= matrix_->num_parts) throw std::out_of_range("sampled row resolved to an invalid CellShard part");
+    part_type *require_part_(unsigned long partition_id, host_buffer<unsigned long> *fetched_parts) {
+        if (partition_id >= matrix_->num_partitions) throw std::out_of_range("sampled row resolved to an invalid CellShard part");
 
-        if (!cellshard::part_loaded(matrix_, part_id)) {
+        if (!cellshard::partition_loaded(matrix_, partition_id)) {
             if (storage_ == 0) {
                 throw std::runtime_error("sampled row lives in an unloaded CellShard part, but no shard_storage was provided");
             }
-            if (!cellshard::fetch_part(matrix_, storage_, part_id)) {
+            if (!cellshard::fetch_partition(matrix_, storage_, partition_id)) {
                 throw std::runtime_error("failed to fetch CellShard part for sampled row");
             }
             // Cold-part fetches dominate batch latency more than local row copy.
-            if (fetched_parts != 0) fetched_parts->push_back(part_id);
+            if (fetched_parts != 0) fetched_parts->push_back(partition_id);
         }
 
-        part_type *part = matrix_->parts[part_id];
+        part_type *part = matrix_->parts[partition_id];
         if (part == 0) throw std::runtime_error("CellShard part is still null after fetch");
         if (part->axis != cellshard::sparse::compressed_by_row) {
             throw std::runtime_error("BalancedTimeSampler only supports row-compressed CSR parts");
@@ -307,7 +307,7 @@ private:
     void drop_fetched_parts_(const host_buffer<unsigned long> &fetched_parts) {
         if (!options_.drop_fetched_parts) return;
         for (std::size_t i = fetched_parts.size(); i != 0u; --i) {
-            cellshard::drop_part(matrix_, fetched_parts[i - 1u]);
+            cellshard::drop_partition(matrix_, fetched_parts[i - 1u]);
         }
     }
 

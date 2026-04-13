@@ -56,7 +56,7 @@ inline torch::Tensor copy_i64_tensor_developmental_time_(const host_buffer<std::
 
 inline void validate_developmental_time_infer_inputs_(BalancedTimeSampler::matrix_type *matrix) {
     if (matrix == nullptr) throw std::invalid_argument("developmental time inference requires a non-null CellShard matrix");
-    if (matrix->num_parts == 0 || matrix->part_offsets == nullptr || matrix->part_rows == nullptr || matrix->part_aux == nullptr) {
+    if (matrix->num_partitions == 0 || matrix->partition_offsets == nullptr || matrix->partition_rows == nullptr || matrix->partition_aux == nullptr) {
         throw std::invalid_argument("developmental time inference requires initialized sharded CSR metadata");
     }
 }
@@ -102,23 +102,23 @@ void for_each_developmental_time_batch(
     model->eval();
     if (config.move_model_to_device) model->to(config.device);
 
-    for (unsigned long part_id = 0; part_id < matrix->num_parts; ++part_id) {
+    for (unsigned long partition_id = 0; partition_id < matrix->num_partitions; ++partition_id) {
         bool loaded_here = false;
-        const unsigned long row_begin_ul = matrix->part_offsets[part_id];
-        const unsigned long row_end_ul = matrix->part_offsets[part_id + 1];
+        const unsigned long row_begin_ul = matrix->partition_offsets[partition_id];
+        const unsigned long row_end_ul = matrix->partition_offsets[partition_id + 1];
         const std::int64_t row_count = detail::checked_i64_developmental_time_(row_end_ul - row_begin_ul, "part row count");
 
-        if (!cellshard::part_loaded(matrix, part_id)) {
+        if (!cellshard::partition_loaded(matrix, partition_id)) {
             if (storage == nullptr) {
                 throw std::runtime_error("developmental time inference encountered an unloaded part without shard storage");
             }
-            if (!cellshard::fetch_part(matrix, storage, part_id)) {
+            if (!cellshard::fetch_partition(matrix, storage, partition_id)) {
                 throw std::runtime_error("developmental time inference failed to fetch a CellShard part");
             }
             loaded_here = true;
         }
 
-        const cellshard::sparse::compressed *part = matrix->parts[part_id];
+        const cellshard::sparse::compressed *part = matrix->parts[partition_id];
         if (part == nullptr || part->axis != cellshard::sparse::compressed_by_row) {
             throw std::runtime_error("developmental time inference requires loaded row-compressed CSR parts");
         }
@@ -143,7 +143,7 @@ void for_each_developmental_time_batch(
         });
 
         if (loaded_here && config.drop_fetched_parts) {
-            cellshard::drop_part(matrix, part_id);
+            cellshard::drop_partition(matrix, partition_id);
         }
     }
 }

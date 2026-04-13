@@ -13,33 +13,12 @@ struct launch_policy {
     };
 };
 
-template<int Bits, typename Real, typename Metadata>
-__global__ __launch_bounds__(launch_policy::threads, launch_policy::min_blocks_per_sm)
-void quantize_block_kernel(
-    csr_matrix<Bits, Real, Metadata> matrix,
-    csr_block block,
-    const Real* __restrict__ values_by_nnz_block) {
-    const int row = static_cast<int>(blockIdx.x * blockDim.x + threadIdx.x) + block.row_begin;
+} // namespace cellerator::quantized::portable_backend
 
-    if (row >= block.row_end) {
-        return;
-    }
-    pack_row_values(&matrix, row, block.nnz_begin, values_by_nnz_block);
-}
+#include "portable_quantize_kernel.cuh"
+#include "portable_dequantize_kernel.cuh"
 
-template<int Bits, typename Real, typename Metadata>
-__global__ __launch_bounds__(launch_policy::threads, launch_policy::min_blocks_per_sm)
-void dequantize_block_kernel(
-    csr_matrix<Bits, Real, Metadata> matrix,
-    csr_block block,
-    Real* __restrict__ values_by_nnz_block) {
-    const int row = static_cast<int>(blockIdx.x * blockDim.x + threadIdx.x) + block.row_begin;
-
-    if (row >= block.row_end) {
-        return;
-    }
-    unpack_row_values(&matrix, row, block.nnz_begin, values_by_nnz_block);
-}
+namespace cellerator::quantized::portable_backend {
 
 template<int Bits, typename Real, typename Metadata>
 inline cudaError_t launch_quantize_block(
@@ -54,7 +33,7 @@ inline cudaError_t launch_quantize_block(
         return cudaErrorInvalidValue;
     }
 
-    quantize_block_kernel<Bits><<<blocks, launch_policy::threads, 0, stream>>>(
+    quantize_block_kernel<Bits, Real, Metadata><<<blocks, launch_policy::threads, 0, stream>>>(
         *matrix,
         block,
         values_by_nnz_block);
@@ -74,7 +53,7 @@ inline cudaError_t launch_dequantize_block(
         return cudaErrorInvalidValue;
     }
 
-    dequantize_block_kernel<Bits><<<blocks, launch_policy::threads, 0, stream>>>(
+    dequantize_block_kernel<Bits, Real, Metadata><<<blocks, launch_policy::threads, 0, stream>>>(
         *matrix,
         block,
         values_by_nnz_block);

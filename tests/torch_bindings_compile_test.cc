@@ -44,7 +44,7 @@ int main() {
     }
 
     cellshard::init(&view);
-    if (!cellshard::append_part(&view, part_a) || !cellshard::append_part(&view, part_b)) {
+    if (!cellshard::append_partition(&view, part_a) || !cellshard::append_partition(&view, part_b)) {
         cellshard::clear(&view);
         return 1;
     }

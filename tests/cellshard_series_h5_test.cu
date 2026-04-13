@@ -135,15 +135,15 @@ static int run_blocked_ell_roundtrip_test() {
     cellshard::sparse::blocked_ell part1;
     cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
     cellshard::shard_storage storage;
-    std::vector<std::uint64_t> part_rows = { 2u, 2u };
-    std::vector<std::uint64_t> part_nnz = { 8u, 8u };
-    std::vector<std::uint64_t> part_aux = {
+    std::vector<std::uint64_t> partition_rows = { 2u, 2u };
+    std::vector<std::uint64_t> partition_nnz = { 8u, 8u };
+    std::vector<std::uint64_t> partition_aux = {
         (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul),
         (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
     };
-    std::vector<std::uint64_t> part_row_offsets = { 0u, 2u, 4u };
-    std::vector<std::uint32_t> part_dataset_ids = { 0u, 0u };
-    std::vector<std::uint32_t> part_codec_ids = { 0u, 0u };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u, 4u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u, 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u, 0u };
     std::vector<std::uint64_t> shard_offsets = { 0u, 4u };
     cellshard::series_codec_descriptor codec{};
     cellshard::series_layout_view layout{};
@@ -180,22 +180,22 @@ static int run_blocked_ell_roundtrip_test() {
     layout.rows = 4u;
     layout.cols = 4u;
     layout.nnz = 16u;
-    layout.num_parts = 2u;
+    layout.num_partitions = 2u;
     layout.num_shards = 1u;
-    layout.part_rows = part_rows.data();
-    layout.part_nnz = part_nnz.data();
-    layout.part_axes = 0;
-    layout.part_aux = part_aux.data();
-    layout.part_row_offsets = part_row_offsets.data();
-    layout.part_dataset_ids = part_dataset_ids.data();
-    layout.part_codec_ids = part_codec_ids.data();
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = 0;
+    layout.partition_aux = partition_aux.data();
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
     layout.shard_offsets = shard_offsets.data();
     layout.codecs = &codec;
     layout.num_codecs = 1u;
 
     if (!cellshard::create_series_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
-    if (!cellshard::append_blocked_ell_part_h5(out_path.c_str(), 0u, &part0)) goto done;
-    if (!cellshard::append_blocked_ell_part_h5(out_path.c_str(), 1u, &part1)) goto done;
+    if (!cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
+    if (!cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 1u, &part1)) goto done;
 
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
         std::fprintf(stderr, "failed to load blocked ell series header\n");
@@ -213,7 +213,7 @@ static int run_blocked_ell_roundtrip_test() {
         std::fprintf(stderr, "failed to prefetch blocked ell shard to cache\n");
         goto done;
     }
-    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
         std::fprintf(stderr, "failed to fetch blocked ell part 0\n");
         goto done;
     }
@@ -221,11 +221,11 @@ static int run_blocked_ell_roundtrip_test() {
         std::fprintf(stderr, "blocked ell part 0 mismatch after fetch\n");
         goto done;
     }
-    if (!cellshard::drop_part(&loaded, 0u)) {
+    if (!cellshard::drop_partition(&loaded, 0u)) {
         std::fprintf(stderr, "failed to drop blocked ell part 0\n");
         goto done;
     }
-    if (!cellshard::fetch_part(&loaded, &storage, 1u)) {
+    if (!cellshard::fetch_partition(&loaded, &storage, 1u)) {
         std::fprintf(stderr, "failed to fetch blocked ell part 1\n");
         goto done;
     }
@@ -233,7 +233,7 @@ static int run_blocked_ell_roundtrip_test() {
         std::fprintf(stderr, "blocked ell part 1 mismatch after fetch\n");
         goto done;
     }
-    if (!cellshard::drop_all_parts(&loaded)) {
+    if (!cellshard::drop_all_partitions(&loaded)) {
         std::fprintf(stderr, "failed to drop blocked ell parts\n");
         goto done;
     }
@@ -297,12 +297,12 @@ int main() {
     std::vector<std::uint32_t> metadata_dataset_indices = { 0u };
     std::vector<std::uint64_t> metadata_global_row_begin = { 0u };
     std::vector<std::uint64_t> metadata_global_row_end = { 3u };
-    std::vector<std::uint64_t> part_rows = { 2u, 1u };
-    std::vector<std::uint64_t> part_nnz = { 3u, 1u };
-    std::vector<std::uint32_t> part_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row, (std::uint32_t) cellshard::sparse::compressed_by_row };
-    std::vector<std::uint64_t> part_row_offsets = { 0u, 2u, 3u };
-    std::vector<std::uint32_t> part_dataset_ids = { 0u, 1u };
-    std::vector<std::uint32_t> part_codec_ids = { 0u, 0u };
+    std::vector<std::uint64_t> partition_rows = { 2u, 1u };
+    std::vector<std::uint64_t> partition_nnz = { 3u, 1u };
+    std::vector<std::uint32_t> partition_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row, (std::uint32_t) cellshard::sparse::compressed_by_row };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u, 3u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u, 1u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u, 0u };
     std::vector<std::uint64_t> shard_offsets = { 0u, 2u, 3u };
     cellshard::series_codec_descriptor codec;
     cellshard::series_layout_view layout{};
@@ -324,7 +324,7 @@ int main() {
     std::vector<float> browse_shard_mean = { 0.5f, 1.0f, 0.0f, 4.0f };
     std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u, 4u };
     std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u, 2u, std::numeric_limits<std::uint64_t>::max() };
-    std::vector<float> browse_part_sample_values = {
+    std::vector<float> browse_partition_sample_values = {
         1.0f, 2.0f,
         0.0f, 0.0f,
         0.0f, 4.0f,
@@ -351,15 +351,15 @@ int main() {
     layout.rows = 3u;
     layout.cols = 3u;
     layout.nnz = 4u;
-    layout.num_parts = 2u;
+    layout.num_partitions = 2u;
     layout.num_shards = 2u;
-    layout.part_rows = part_rows.data();
-    layout.part_nnz = part_nnz.data();
-    layout.part_axes = part_axes.data();
-    layout.part_aux = nullptr;
-    layout.part_row_offsets = part_row_offsets.data();
-    layout.part_dataset_ids = part_dataset_ids.data();
-    layout.part_codec_ids = part_codec_ids.data();
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = partition_axes.data();
+    layout.partition_aux = nullptr;
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
     layout.shard_offsets = shard_offsets.data();
     layout.codecs = &codec;
     layout.num_codecs = 1u;
@@ -423,15 +423,15 @@ int main() {
     browse_view.dataset_feature_mean = browse_dataset_mean.data();
     browse_view.shard_count = 2u;
     browse_view.shard_feature_mean = browse_shard_mean.data();
-    browse_view.part_count = 2u;
-    browse_view.sample_rows_per_part = 2u;
-    browse_view.part_sample_row_offsets = browse_part_sample_offsets.data();
-    browse_view.part_sample_global_rows = browse_part_sample_rows.data();
-    browse_view.part_sample_values = browse_part_sample_values.data();
+    browse_view.partition_count = 2u;
+    browse_view.sample_rows_per_partition = 2u;
+    browse_view.partition_sample_row_offsets = browse_part_sample_offsets.data();
+    browse_view.partition_sample_global_rows = browse_part_sample_rows.data();
+    browse_view.partition_sample_values = browse_partition_sample_values.data();
 
     if (!cellshard::create_series_compressed_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view)) goto done;
-    if (!cellshard::append_standard_csr_part_h5(out_path.c_str(), 0u, &part0)) goto done;
-    if (!cellshard::append_standard_csr_part_h5(out_path.c_str(), 1u, &part1)) goto done;
+    if (!cellshard::append_standard_csr_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
+    if (!cellshard::append_standard_csr_partition_h5(out_path.c_str(), 1u, &part1)) goto done;
     if (!cellshard::append_series_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)) {
         std::fprintf(stderr, "failed to append embedded metadata\n");
         goto done;
@@ -469,11 +469,11 @@ int main() {
         std::fprintf(stderr, "failed to prefetch shard 1 to cache\n");
         goto done;
     }
-    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
         std::fprintf(stderr, "failed to fetch part 0 from series file\n");
         goto done;
     }
-    if (!cellshard::drop_part(&loaded, 0u)) {
+    if (!cellshard::drop_partition(&loaded, 0u)) {
         std::fprintf(stderr, "failed to drop part 0 after fetch\n");
         goto done;
     }
@@ -481,7 +481,7 @@ int main() {
         std::fprintf(stderr, "failed to fetch shard 1 from series file\n");
         goto done;
     }
-    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
         std::fprintf(stderr, "failed to refetch part 0 from series file\n");
         goto done;
     }

@@ -398,7 +398,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                 goto done;
             }
 
-            for (local_part = 0; local_part < window_view.num_parts; ++local_part) {
+            for (local_part = 0; local_part < window_view.num_partitions; ++local_part) {
                 const unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
                 cellshard::convert::blocked_ell_tune_result tune = {};
                 if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
@@ -449,15 +449,15 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     layout.cols = (std::uint64_t) feature_dataset_ids.size();
     layout.nnz = 0u;
     for (manifest_i = 0; manifest_i < part_nnz.size(); ++manifest_i) layout.nnz += part_nnz[manifest_i];
-    layout.num_parts = (std::uint64_t) part_rows.size();
+    layout.num_partitions = (std::uint64_t) part_rows.size();
     layout.num_shards = (std::uint64_t) shard_plan.count;
-    layout.part_rows = part_rows.data();
-    layout.part_nnz = part_nnz.data();
-    layout.part_axes = part_axes.data();
-    layout.part_aux = part_aux.data();
-    layout.part_row_offsets = part_row_offsets.data();
-    layout.part_dataset_ids = part_dataset_ids.data();
-    layout.part_codec_ids = part_codec_ids.data();
+    layout.partition_rows = part_rows.data();
+    layout.partition_nnz = part_nnz.data();
+    layout.partition_axes = part_axes.data();
+    layout.partition_aux = part_aux.data();
+    layout.partition_row_offsets = part_row_offsets.data();
+    layout.partition_dataset_ids = part_dataset_ids.data();
+    layout.partition_codec_ids = part_codec_ids.data();
     layout.shard_offsets = shard_offsets.data();
     layout.codecs = &codec;
     layout.num_codecs = 1u;
@@ -523,7 +523,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                 goto done;
             }
 
-            for (local_part = 0; local_part < window_view.num_parts; ++local_part) {
+            for (local_part = 0; local_part < window_view.num_partitions; ++local_part) {
                 unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
                 cellshard::convert::blocked_ell_tune_result tune = {};
                 if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
@@ -536,7 +536,7 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                     sparse::clear(&blocked_part);
                     goto done;
                 }
-                if (!cellshard::append_blocked_ell_part_h5(out_path, global_part_id, &blocked_part)) {
+                if (!cellshard::append_blocked_ell_partition_h5(out_path, global_part_id, &blocked_part)) {
                     clear(&windows);
                     clear(&window_view);
                     sparse::clear(&blocked_part);

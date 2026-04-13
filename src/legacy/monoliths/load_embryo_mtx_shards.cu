@@ -1305,8 +1305,8 @@ static int build_view_layout(CsrSharded *view,
         }
     }
 
-    matrix::rebuild_part_offsets(view);
-    return matrix::set_shards_to_parts(view);
+    matrix::rebuild_partition_offsets(view);
+    return matrix::set_shards_to_partitions(view);
 }
 
 static int cuda_check(cudaError_t err, const char *label) {

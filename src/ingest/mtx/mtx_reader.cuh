@@ -20,8 +20,8 @@ namespace mtx {
 using ::cellshard::clear;
 using ::cellshard::find_offset_span;
 using ::cellshard::init;
-using ::cellshard::reserve_parts;
-using ::cellshard::set_shards_to_parts;
+using ::cellshard::reserve_partitions;
+using ::cellshard::set_shards_to_partitions;
 using ::cellshard::sharded;
 namespace sparse = ::cellshard::sparse;
 
@@ -420,11 +420,11 @@ static inline int allocate_sharded_coo(const header *h,
 
     clear(out);
     init(out);
-    if (!reserve_parts(out, num_parts)) return 0;
+    if (!reserve_partitions(out, num_parts)) return 0;
 
     if (!cast_dim(h->cols, &cols_u32)) return 0;
 
-    out->num_parts = num_parts;
+    out->num_partitions = num_parts;
     out->cols = h->cols;
     for (i = 0; i < num_parts; ++i) {
         if (!cast_dim(row_offsets[i + 1] - row_offsets[i], &rows_u32)) return 0;
@@ -437,12 +437,12 @@ static inline int allocate_sharded_coo(const header *h,
             return 0;
         }
         out->parts[i] = part;
-        out->part_rows[i] = row_offsets[i + 1] - row_offsets[i];
-        out->part_nnz[i] = part_nnz[i];
-        out->part_aux[i] = 0;
+        out->partition_rows[i] = row_offsets[i + 1] - row_offsets[i];
+        out->partition_nnz[i] = part_nnz[i];
+        out->partition_aux[i] = 0;
     }
-    rebuild_part_offsets(out);
-    return set_shards_to_parts(out);
+    rebuild_partition_offsets(out);
+    return set_shards_to_partitions(out);
 }
 
 // Fill the preallocated sharded COO payload by streaming through the source MTX
@@ -547,7 +547,7 @@ static inline int load_coo(const char *path, sparse::coo *out) {
     row_offsets[0] = 0;
     row_offsets[1] = h.rows;
     if (!load_row_sharded_coo(path, row_offsets, 1, &tmp)) goto done;
-    if (tmp.num_parts != 1 || tmp.parts[0] == 0) goto done;
+    if (tmp.num_partitions != 1 || tmp.parts[0] == 0) goto done;
 
     sparse::clear(out);
     sparse::init(out);
@@ -581,9 +581,9 @@ static inline int allocate_part_window_coo(const header *h,
     init(out);
     if (part_begin >= part_end || part_end > num_parts) return 0;
     if (!cast_dim(h->cols, &cols_u32)) return 0;
-    if (!reserve_parts(out, part_end - part_begin)) return 0;
+    if (!reserve_partitions(out, part_end - part_begin)) return 0;
 
-    out->num_parts = part_end - part_begin;
+    out->num_partitions = part_end - part_begin;
     out->cols = h->cols;
     for (i = part_begin; i < part_end; ++i) {
         local = i - part_begin;
@@ -597,12 +597,12 @@ static inline int allocate_part_window_coo(const header *h,
             return 0;
         }
         out->parts[local] = part;
-        out->part_rows[local] = row_offsets[i + 1] - row_offsets[i];
-        out->part_nnz[local] = part_nnz[i];
-        out->part_aux[local] = 0;
+        out->partition_rows[local] = row_offsets[i + 1] - row_offsets[i];
+        out->partition_nnz[local] = part_nnz[i];
+        out->partition_aux[local] = 0;
     }
-    rebuild_part_offsets(out);
-    return set_shards_to_parts(out);
+    rebuild_partition_offsets(out);
+    return set_shards_to_partitions(out);
 }
 
 // Fill only a contiguous window of parts from the full MTX source.
@@ -624,8 +624,8 @@ static inline int fill_part_window_coo(scan::buffered_file_reader *reader,
     unsigned long *write_ptr = 0;
     float value = 0.0f;
 
-    write_ptr = (unsigned long *) std::calloc((std::size_t) out->num_parts, sizeof(unsigned long));
-    if (out->num_parts != 0 && write_ptr == 0) return 0;
+    write_ptr = (unsigned long *) std::calloc((std::size_t) out->num_partitions, sizeof(unsigned long));
+    if (out->num_partitions != 0 && write_ptr == 0) return 0;
 
     while ((rc = scan::next_line(reader, &line, &line_len)) > 0) {
         if (line_len == 0 || line[0] == '%') continue;

@@ -64,7 +64,7 @@ inline unsigned int infer_format(const source_entry &source) {
 
 struct blocked_ell_candidate_stream {
     unsigned int block_size = 0u;
-    unsigned long current_part = ULONG_MAX;
+    unsigned long current_partition = ULONG_MAX;
     unsigned long current_row_block = ULONG_MAX;
     unsigned int active_unique = 0u;
     std::uint32_t epoch = 1u;
@@ -74,18 +74,18 @@ struct blocked_ell_candidate_stream {
 };
 
 inline void flush_candidate_row_block(blocked_ell_candidate_stream *stream) {
-    if (stream == nullptr || stream->current_part == ULONG_MAX) return;
-    stream->total_unique_blocks[stream->current_part] += (unsigned long) stream->active_unique;
-    stream->ell_width[stream->current_part] = std::max(stream->ell_width[stream->current_part], stream->active_unique);
+    if (stream == nullptr || stream->current_partition == ULONG_MAX) return;
+    stream->total_unique_blocks[stream->current_partition] += (unsigned long) stream->active_unique;
+    stream->ell_width[stream->current_partition] = std::max(stream->ell_width[stream->current_partition], stream->active_unique);
     stream->active_unique = 0u;
 }
 
 inline bool start_candidate_row_block(blocked_ell_candidate_stream *stream,
-                                      unsigned long part_index,
+                                      unsigned long partition_index,
                                       unsigned long row_block) {
     if (stream == nullptr) return false;
     flush_candidate_row_block(stream);
-    stream->current_part = part_index;
+    stream->current_partition = partition_index;
     stream->current_row_block = row_block;
     ++stream->epoch;
     if (stream->epoch == 0u) {
@@ -96,15 +96,15 @@ inline bool start_candidate_row_block(blocked_ell_candidate_stream *stream,
 }
 
 inline bool accumulate_candidate_entry(blocked_ell_candidate_stream *stream,
-                                       unsigned long part_index,
+                                       unsigned long partition_index,
                                        unsigned long local_row,
                                        unsigned long col) {
     if (stream == nullptr || stream->block_size == 0u) return false;
     const unsigned long row_block = local_row / stream->block_size;
     const unsigned long block_col = col / stream->block_size;
-    if (block_col >= stream->marks.size() || part_index >= stream->total_unique_blocks.size()) return false;
-    if (stream->current_part != part_index || stream->current_row_block != row_block) {
-        if (!start_candidate_row_block(stream, part_index, row_block)) return false;
+    if (block_col >= stream->marks.size() || partition_index >= stream->total_unique_blocks.size()) return false;
+    if (stream->current_partition != partition_index || stream->current_row_block != row_block) {
+        if (!start_candidate_row_block(stream, partition_index, row_block)) return false;
     }
     if (stream->marks[block_col] != stream->epoch) {
         stream->marks[block_col] = stream->epoch;
@@ -123,7 +123,7 @@ inline void choose_part_execution_layout(const ingest_policy &policy,
                                          unsigned long rows,
                                          std::size_t compressed_bytes,
                                          const std::vector<blocked_ell_candidate_stream> &candidates,
-                                         unsigned long part_index,
+                                         unsigned long partition_index,
                                          execution_format *preferred_format,
                                          unsigned int *block_size,
                                          double *fill_ratio,
@@ -138,10 +138,10 @@ inline void choose_part_execution_layout(const ingest_policy &policy,
         const unsigned long row_blocks = candidate.block_size == 0u
             ? 0ul
             : (rows + (unsigned long) candidate.block_size - 1ul) / (unsigned long) candidate.block_size;
-        const unsigned int ell_width_blocks = part_index < candidate.ell_width.size() ? candidate.ell_width[part_index] : 0u;
+        const unsigned int ell_width_blocks = partition_index < candidate.ell_width.size() ? candidate.ell_width[partition_index] : 0u;
         const double candidate_fill = row_blocks == 0ul || ell_width_blocks == 0u
             ? 1.0
-            : (double) candidate.total_unique_blocks[part_index] / (double) (row_blocks * (unsigned long) ell_width_blocks);
+            : (double) candidate.total_unique_blocks[partition_index] / (double) (row_blocks * (unsigned long) ell_width_blocks);
         const std::size_t candidate_bytes = cellshard::packed_blocked_ell_bytes(
             (cellshard::types::dim_t) rows,
             ell_width_blocks * candidate.block_size,
@@ -174,7 +174,7 @@ inline void choose_part_execution_layout(const ingest_policy &policy,
 inline bool collect_row_sorted_blocked_ell_metrics(const source_entry &source,
                                                    const cmtx::header &header,
                                                    const unsigned long *row_offsets,
-                                                   unsigned long num_parts,
+                                                   unsigned long num_partitions,
                                                    const ingest_policy &policy,
                                                    std::vector<blocked_ell_candidate_stream> *out_candidates) {
     cscan::buffered_file_reader reader;
@@ -188,7 +188,7 @@ inline bool collect_row_sorted_blocked_ell_metrics(const source_entry &source,
     std::vector<blocked_ell_candidate_stream> candidates;
     const std::size_t candidate_count = choose_blocked_ell_candidate_count(policy);
 
-    if (out_candidates == nullptr || row_offsets == nullptr || num_parts == 0ul) return false;
+    if (out_candidates == nullptr || row_offsets == nullptr || num_partitions == 0ul) return false;
     out_candidates->clear();
     if (!header.row_sorted || header.symmetric || candidate_count == 0u) return false;
 
@@ -202,8 +202,8 @@ inline bool collect_row_sorted_blocked_ell_metrics(const source_entry &source,
         if (block_size == 0u || col_blocks == 0ul) continue;
         candidate.block_size = block_size;
         candidate.marks.assign(col_blocks, 0u);
-        candidate.total_unique_blocks.assign(num_parts, 0ul);
-        candidate.ell_width.assign(num_parts, 0u);
+        candidate.total_unique_blocks.assign(num_partitions, 0ul);
+        candidate.ell_width.assign(num_partitions, 0u);
         candidates.push_back(std::move(candidate));
     }
     if (candidates.empty()) return false;
@@ -228,14 +228,14 @@ inline bool collect_row_sorted_blocked_ell_metrics(const source_entry &source,
             cscan::clear(&reader);
             return false;
         }
-        const unsigned long part_index = cellshard::find_offset_span(row, row_offsets, num_parts);
-        if (part_index >= num_parts) {
+        const unsigned long partition_index = cellshard::find_offset_span(row, row_offsets, num_partitions);
+        if (partition_index >= num_partitions) {
             cscan::clear(&reader);
             return false;
         }
-        const unsigned long local_row = row - row_offsets[part_index];
+        const unsigned long local_row = row - row_offsets[partition_index];
         for (blocked_ell_candidate_stream &candidate : candidates) {
-            if (!accumulate_candidate_entry(&candidate, part_index, local_row, col)) {
+            if (!accumulate_candidate_entry(&candidate, partition_index, local_row, col)) {
                 cscan::clear(&reader);
                 return false;
             }
@@ -474,18 +474,18 @@ inline bool read_text_column_strings(hid_t parent, const char *name, std::vector
     return true;
 }
 
-inline unsigned long find_partition_index_for_row(const std::vector<std::uint64_t> &part_row_offsets,
+inline unsigned long find_partition_index_for_row(const std::vector<std::uint64_t> &partition_row_offsets,
                                                   std::uint64_t row_begin) {
-    if (part_row_offsets.size() < 2u) return 0;
-    const auto it = std::upper_bound(part_row_offsets.begin(), part_row_offsets.end(), row_begin);
-    if (it == part_row_offsets.begin()) return 0;
-    return (unsigned long) std::distance(part_row_offsets.begin(), it - 1);
+    if (partition_row_offsets.size() < 2u) return 0;
+    const auto it = std::upper_bound(partition_row_offsets.begin(), partition_row_offsets.end(), row_begin);
+    if (it == partition_row_offsets.begin()) return 0;
+    return (unsigned long) std::distance(partition_row_offsets.begin(), it - 1);
 }
 
-inline unsigned long find_partition_end_for_row(const std::vector<std::uint64_t> &part_row_offsets,
+inline unsigned long find_partition_end_for_row(const std::vector<std::uint64_t> &partition_row_offsets,
                                                 std::uint64_t row_end) {
-    const unsigned long begin = find_partition_index_for_row(part_row_offsets, row_end);
-    if (begin + 1u < part_row_offsets.size() && part_row_offsets[begin] < row_end) return begin + 1u;
+    const unsigned long begin = find_partition_index_for_row(partition_row_offsets, row_end);
+    if (begin + 1u < partition_row_offsets.size() && partition_row_offsets[begin] < row_end) return begin + 1u;
     return begin;
 }
 
@@ -916,9 +916,9 @@ manifest_inspection inspect_manifest_tsv(const std::string &manifest_path, std::
 
 ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const ingest_policy &policy) {
     ingest_plan plan;
-    std::vector<unsigned long> part_rows;
-    std::vector<unsigned long> part_nnz;
-    std::vector<unsigned long> part_bytes;
+    std::vector<unsigned long> partition_rows;
+    std::vector<unsigned long> partition_nnz;
+    std::vector<unsigned long> partition_bytes;
     cseries::partition shard_plan;
     std::unordered_set<std::string> unique_feature_ids;
 
@@ -945,7 +945,7 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
         unsigned long *row_nnz = 0;
         unsigned long *row_offsets = 0;
         unsigned long *part_nnz_raw = 0;
-        unsigned long num_parts = 0;
+        unsigned long num_partitions = 0;
         std::vector<blocked_ell_candidate_stream> blocked_candidates;
         const unsigned long global_row_begin = plan.total_rows;
         const unsigned long global_part_begin = (unsigned long) plan.parts.size();
@@ -954,8 +954,8 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             push_issue(&plan.issues, issue_severity::error, source.dataset_id, "failed to rescan matrix rows during plan generation");
             continue;
         }
-        if (!cmtx::plan_row_partitions_by_nnz(row_nnz, header.rows, policy.max_part_nnz, &row_offsets, &num_parts)
-            || !cmtx::build_part_nnz_from_row_nnz(row_nnz, row_offsets, num_parts, &part_nnz_raw)) {
+        if (!cmtx::plan_row_partitions_by_nnz(row_nnz, header.rows, policy.max_part_nnz, &row_offsets, &num_partitions)
+            || !cmtx::build_part_nnz_from_row_nnz(row_nnz, row_offsets, num_partitions, &part_nnz_raw)) {
             push_issue(&plan.issues, issue_severity::error, source.dataset_id, "failed to build row partitions");
             std::free(row_nnz);
             std::free(row_offsets);
@@ -979,11 +979,11 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             source,
             header,
             row_offsets,
-            num_parts,
+            num_partitions,
             policy,
             &blocked_candidates);
 
-        for (unsigned long local_part = 0; local_part < num_parts; ++local_part) {
+        for (unsigned long local_part = 0; local_part < num_partitions; ++local_part) {
             const unsigned long rows = row_offsets[local_part + 1u] - row_offsets[local_part];
             const unsigned long nnz = part_nnz_raw[local_part];
             const std::size_t compressed_bytes = estimate_standard_csr_bytes(rows, nnz);
@@ -1006,7 +1006,7 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
                     &blocked_ell_bytes,
                     &execution_bytes);
             }
-            part.part_id = (unsigned long) plan.parts.size();
+            part.partition_id = (unsigned long) plan.parts.size();
             part.source_index = source_index;
             part.dataset_id = source.dataset_id;
             part.row_begin = global_row_begin + row_offsets[local_part];
@@ -1020,9 +1020,9 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
             part.blocked_ell_block_size = blocked_ell_block_size;
             part.preferred_format = preferred_format;
             plan.parts.push_back(part);
-            part_rows.push_back(rows);
-            part_nnz.push_back(nnz);
-            part_bytes.push_back((unsigned long) execution_bytes);
+            partition_rows.push_back(rows);
+            partition_nnz.push_back(nnz);
+            partition_bytes.push_back((unsigned long) execution_bytes);
             plan.total_estimated_bytes += execution_bytes;
         }
 
@@ -1034,8 +1034,8 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
         dataset.rows = source.rows;
         dataset.cols = source.cols;
         dataset.nnz = source.nnz;
-        dataset.part_begin = global_part_begin;
-        dataset.part_count = num_parts;
+        dataset.partition_begin = global_part_begin;
+        dataset.partition_count = num_partitions;
         dataset.feature_count = source.feature_count;
         dataset.barcode_count = source.barcode_count;
         plan.datasets.push_back(dataset);
@@ -1059,11 +1059,11 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
         }
     }
 
-    if (!part_rows.empty()) {
+    if (!partition_rows.empty()) {
         if (!cseries::build_by_bytes(&shard_plan,
-                                     part_rows.data(),
-                                     part_bytes.data(),
-                                     (unsigned long) part_rows.size(),
+                                     partition_rows.data(),
+                                     partition_bytes.data(),
+                                     (unsigned long) partition_rows.size(),
                                      policy.max_window_bytes)) {
             push_issue(&plan.issues, issue_severity::error, "plan", "failed to build shard plan");
         } else {
@@ -1077,8 +1077,8 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
                 unsigned int shard_block_size = 0u;
                 execution_format shard_format = execution_format::unknown;
                 shard.shard_id = shard_id;
-                shard.part_begin = range.part_begin;
-                shard.part_end = range.part_end;
+                shard.partition_begin = range.part_begin;
+                shard.partition_end = range.part_end;
                 shard.row_begin = range.row_begin;
                 shard.row_end = range.row_end;
                 shard.rows = range.row_end - range.row_begin;
@@ -1086,20 +1086,20 @@ ingest_plan plan_series_ingest(const std::vector<source_entry> &sources, const i
                 shard.estimated_bytes = (std::size_t) range.bytes;
                 shard.preferred_pair = (std::uint32_t) (shard_id & 1ul);
                 plan.shards.push_back(shard);
-                for (unsigned long part_id = range.part_begin; part_id < range.part_end && part_id < plan.parts.size(); ++part_id) {
-                    plan.parts[part_id].shard_id = shard_id;
-                    execution_bytes += plan.parts[part_id].execution_bytes;
-                    blocked_ell_bytes += plan.parts[part_id].blocked_ell_bytes;
-                    fill_weight += (std::size_t) plan.parts[part_id].rows;
-                    fill_weighted_sum += plan.parts[part_id].blocked_ell_fill_ratio * (double) plan.parts[part_id].rows;
+                for (unsigned long partition_id = range.part_begin; partition_id < range.part_end && partition_id < plan.parts.size(); ++partition_id) {
+                    plan.parts[partition_id].shard_id = shard_id;
+                    execution_bytes += plan.parts[partition_id].execution_bytes;
+                    blocked_ell_bytes += plan.parts[partition_id].blocked_ell_bytes;
+                    fill_weight += (std::size_t) plan.parts[partition_id].rows;
+                    fill_weighted_sum += plan.parts[partition_id].blocked_ell_fill_ratio * (double) plan.parts[partition_id].rows;
                     if (shard_format == execution_format::unknown) {
-                        shard_format = plan.parts[part_id].preferred_format;
-                    } else if (shard_format != plan.parts[part_id].preferred_format) {
+                        shard_format = plan.parts[partition_id].preferred_format;
+                    } else if (shard_format != plan.parts[partition_id].preferred_format) {
                         shard_format = execution_format::mixed;
                     }
                     if (shard_block_size == 0u) {
-                        shard_block_size = plan.parts[part_id].blocked_ell_block_size;
-                    } else if (shard_block_size != plan.parts[part_id].blocked_ell_block_size) {
+                        shard_block_size = plan.parts[partition_id].blocked_ell_block_size;
+                    } else if (shard_block_size != plan.parts[partition_id].blocked_ell_block_size) {
                         shard_block_size = 0u;
                     }
                 }
@@ -1141,12 +1141,12 @@ series_summary summarize_series_csh5(const std::string &path) {
     std::vector<std::string> feature_paths;
     std::vector<std::string> barcode_paths;
     std::vector<std::string> metadata_paths;
-    std::vector<std::uint64_t> part_rows;
-    std::vector<std::uint64_t> part_nnz;
-    std::vector<std::uint32_t> part_axes;
-    std::vector<std::uint64_t> part_row_offsets;
-    std::vector<std::uint32_t> part_dataset_ids;
-    std::vector<std::uint32_t> part_codec_ids;
+    std::vector<std::uint64_t> partition_rows;
+    std::vector<std::uint64_t> partition_nnz;
+    std::vector<std::uint32_t> partition_axes;
+    std::vector<std::uint64_t> partition_row_offsets;
+    std::vector<std::uint32_t> partition_dataset_ids;
+    std::vector<std::uint32_t> partition_codec_ids;
     std::vector<std::uint64_t> shard_offsets;
     std::vector<std::uint32_t> codec_ids;
     std::vector<std::uint32_t> codec_families;
@@ -1154,11 +1154,11 @@ series_summary summarize_series_csh5(const std::string &path) {
     std::vector<std::uint32_t> codec_scale_codes;
     std::vector<std::uint32_t> codec_bits;
     std::vector<std::uint32_t> codec_flags;
-    std::vector<std::uint32_t> part_execution_formats;
+    std::vector<std::uint32_t> partition_execution_formats;
     std::vector<std::uint32_t> part_block_sizes;
     std::vector<float> part_fill_ratios;
-    std::vector<std::uint64_t> part_execution_bytes;
-    std::vector<std::uint64_t> part_blocked_ell_bytes;
+    std::vector<std::uint64_t> partition_execution_bytes;
+    std::vector<std::uint64_t> partition_blocked_ell_bytes;
     std::vector<std::uint32_t> shard_execution_formats;
     std::vector<std::uint32_t> shard_block_sizes;
     std::vector<float> shard_fill_ratios;
@@ -1180,7 +1180,7 @@ series_summary summarize_series_csh5(const std::string &path) {
     if (!read_attr_u64(file, "rows", &summary.rows)
         || !read_attr_u64(file, "cols", &summary.cols)
         || !read_attr_u64(file, "nnz", &summary.nnz)
-        || !read_attr_u64(file, "num_parts", &summary.num_partitions)
+        || !read_attr_u64(file, "num_partitions", &summary.num_partitions)
         || !read_attr_u64(file, "num_shards", &summary.num_shards)
         || !read_attr_u64(file, "num_datasets", &summary.num_datasets)) {
         push_issue(&summary.issues, issue_severity::error, "inspect", "failed to read top-level series attributes");
@@ -1228,28 +1228,28 @@ series_summary summarize_series_csh5(const std::string &path) {
         });
     }
 
-    if (!read_dataset_vector(matrix, "part_rows", H5T_NATIVE_UINT64, &part_rows)
-        || !read_dataset_vector(matrix, "part_nnz", H5T_NATIVE_UINT64, &part_nnz)
-        || !read_dataset_vector(matrix, "part_axes", H5T_NATIVE_UINT32, &part_axes)
-        || !read_dataset_vector(matrix, "part_row_offsets", H5T_NATIVE_UINT64, &part_row_offsets)
-        || !read_dataset_vector(matrix, "part_dataset_ids", H5T_NATIVE_UINT32, &part_dataset_ids)
-        || !read_dataset_vector(matrix, "part_codec_ids", H5T_NATIVE_UINT32, &part_codec_ids)
+    if (!read_dataset_vector(matrix, "partition_rows", H5T_NATIVE_UINT64, &partition_rows)
+        || !read_dataset_vector(matrix, "partition_nnz", H5T_NATIVE_UINT64, &partition_nnz)
+        || !read_dataset_vector(matrix, "partition_axes", H5T_NATIVE_UINT32, &partition_axes)
+        || !read_dataset_vector(matrix, "partition_row_offsets", H5T_NATIVE_UINT64, &partition_row_offsets)
+        || !read_dataset_vector(matrix, "partition_dataset_ids", H5T_NATIVE_UINT32, &partition_dataset_ids)
+        || !read_dataset_vector(matrix, "partition_codec_ids", H5T_NATIVE_UINT32, &partition_codec_ids)
         || !read_dataset_vector(matrix, "shard_offsets", H5T_NATIVE_UINT64, &shard_offsets)) {
         push_issue(&summary.issues, issue_severity::error, "inspect", "failed to read matrix layout metadata");
         goto done;
     }
 
-    summary.partitions.reserve(part_rows.size());
-    for (std::size_t i = 0; i < part_rows.size(); ++i) {
+    summary.partitions.reserve(partition_rows.size());
+    for (std::size_t i = 0; i < partition_rows.size(); ++i) {
         summary.partitions.push_back(series_partition_summary{
             (std::uint64_t) i,
-            i < part_row_offsets.size() ? part_row_offsets[i] : 0ull,
-            i + 1u < part_row_offsets.size() ? part_row_offsets[i + 1u] : 0ull,
-            i < part_rows.size() ? part_rows[i] : 0ull,
-            i < part_nnz.size() ? part_nnz[i] : 0ull,
-            i < part_dataset_ids.size() ? part_dataset_ids[i] : 0u,
-            i < part_axes.size() ? part_axes[i] : 0u,
-            i < part_codec_ids.size() ? part_codec_ids[i] : 0u,
+            i < partition_row_offsets.size() ? partition_row_offsets[i] : 0ull,
+            i + 1u < partition_row_offsets.size() ? partition_row_offsets[i + 1u] : 0ull,
+            i < partition_rows.size() ? partition_rows[i] : 0ull,
+            i < partition_nnz.size() ? partition_nnz[i] : 0ull,
+            i < partition_dataset_ids.size() ? partition_dataset_ids[i] : 0u,
+            i < partition_axes.size() ? partition_axes[i] : 0u,
+            i < partition_codec_ids.size() ? partition_codec_ids[i] : 0u,
             0u,
             0u,
             0.0f,
@@ -1262,8 +1262,8 @@ series_summary summarize_series_csh5(const std::string &path) {
     for (std::size_t i = 0; i + 1u < shard_offsets.size(); ++i) {
         const std::uint64_t row_begin = shard_offsets[i];
         const std::uint64_t row_end = shard_offsets[i + 1u];
-        const unsigned long partition_begin = find_partition_index_for_row(part_row_offsets, row_begin);
-        const unsigned long partition_end = find_partition_end_for_row(part_row_offsets, row_end);
+        const unsigned long partition_begin = find_partition_index_for_row(partition_row_offsets, row_begin);
+        const unsigned long partition_end = find_partition_end_for_row(partition_row_offsets, row_end);
         summary.shards.push_back(series_shard_summary{
             (std::uint64_t) i,
             partition_begin,
@@ -1377,7 +1377,7 @@ series_summary summarize_series_csh5(const std::string &path) {
     if (browse >= 0) {
         browse_cache_summary browse_summary;
         if (!read_attr_u32(browse, "selected_feature_count", &browse_summary.selected_feature_count)
-            || !read_attr_u32(browse, "sample_rows_per_part", &browse_summary.sample_rows_per_part)) {
+            || !read_attr_u32(browse, "sample_rows_per_partition", &browse_summary.sample_rows_per_partition)) {
             push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read browse cache header");
         } else if (browse_summary.selected_feature_count != 0u) {
             if (!read_dataset_vector(browse, "selected_feature_indices", H5T_NATIVE_UINT32, &browse_summary.selected_feature_indices)
@@ -1386,9 +1386,9 @@ series_summary summarize_series_csh5(const std::string &path) {
                 || !read_dataset_vector(browse, "gene_sq_sum", H5T_NATIVE_FLOAT, &browse_summary.gene_sq_sum)
                 || !read_dataset_vector(browse, "dataset_feature_mean", H5T_NATIVE_FLOAT, &browse_summary.dataset_feature_mean)
                 || !read_dataset_vector(browse, "shard_feature_mean", H5T_NATIVE_FLOAT, &browse_summary.shard_feature_mean)
-                || !read_dataset_vector(browse, "part_sample_row_offsets", H5T_NATIVE_UINT32, &browse_summary.part_sample_row_offsets)
-                || !read_dataset_vector(browse, "part_sample_global_rows", H5T_NATIVE_UINT64, &browse_summary.part_sample_global_rows)
-                || !read_dataset_vector(browse, "part_sample_values", H5T_NATIVE_FLOAT, &browse_summary.part_sample_values)) {
+                || !read_dataset_vector(browse, "partition_sample_row_offsets", H5T_NATIVE_UINT32, &browse_summary.partition_sample_row_offsets)
+                || !read_dataset_vector(browse, "partition_sample_global_rows", H5T_NATIVE_UINT64, &browse_summary.partition_sample_global_rows)
+                || !read_dataset_vector(browse, "partition_sample_values", H5T_NATIVE_FLOAT, &browse_summary.partition_sample_values)) {
                 push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read browse cache payload");
             } else {
                 browse_summary.selected_feature_names.reserve(browse_summary.selected_feature_indices.size());
@@ -1404,11 +1404,11 @@ series_summary summarize_series_csh5(const std::string &path) {
 
     execution = open_optional_group(file, "/execution");
     if (execution >= 0) {
-        if (!read_dataset_vector(execution, "part_execution_formats", H5T_NATIVE_UINT32, &part_execution_formats)
-            || !read_dataset_vector(execution, "part_blocked_ell_block_sizes", H5T_NATIVE_UINT32, &part_block_sizes)
-            || !read_dataset_vector(execution, "part_blocked_ell_fill_ratios", H5T_NATIVE_FLOAT, &part_fill_ratios)
-            || !read_dataset_vector(execution, "part_execution_bytes", H5T_NATIVE_UINT64, &part_execution_bytes)
-            || !read_dataset_vector(execution, "part_blocked_ell_bytes", H5T_NATIVE_UINT64, &part_blocked_ell_bytes)
+        if (!read_dataset_vector(execution, "partition_execution_formats", H5T_NATIVE_UINT32, &partition_execution_formats)
+            || !read_dataset_vector(execution, "partition_blocked_ell_block_sizes", H5T_NATIVE_UINT32, &part_block_sizes)
+            || !read_dataset_vector(execution, "partition_blocked_ell_fill_ratios", H5T_NATIVE_FLOAT, &part_fill_ratios)
+            || !read_dataset_vector(execution, "partition_execution_bytes", H5T_NATIVE_UINT64, &partition_execution_bytes)
+            || !read_dataset_vector(execution, "partition_blocked_ell_bytes", H5T_NATIVE_UINT64, &partition_blocked_ell_bytes)
             || !read_dataset_vector(execution, "shard_execution_formats", H5T_NATIVE_UINT32, &shard_execution_formats)
             || !read_dataset_vector(execution, "shard_blocked_ell_block_sizes", H5T_NATIVE_UINT32, &shard_block_sizes)
             || !read_dataset_vector(execution, "shard_blocked_ell_fill_ratios", H5T_NATIVE_FLOAT, &shard_fill_ratios)
@@ -1417,11 +1417,11 @@ series_summary summarize_series_csh5(const std::string &path) {
             push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read execution layout metadata");
         } else {
             for (std::size_t i = 0; i < summary.partitions.size(); ++i) {
-                summary.partitions[i].execution_format = i < part_execution_formats.size() ? part_execution_formats[i] : 0u;
+                summary.partitions[i].execution_format = i < partition_execution_formats.size() ? partition_execution_formats[i] : 0u;
                 summary.partitions[i].blocked_ell_block_size = i < part_block_sizes.size() ? part_block_sizes[i] : 0u;
                 summary.partitions[i].blocked_ell_fill_ratio = i < part_fill_ratios.size() ? part_fill_ratios[i] : 0.0f;
-                summary.partitions[i].execution_bytes = i < part_execution_bytes.size() ? part_execution_bytes[i] : 0ull;
-                summary.partitions[i].blocked_ell_bytes = i < part_blocked_ell_bytes.size() ? part_blocked_ell_bytes[i] : 0ull;
+                summary.partitions[i].execution_bytes = i < partition_execution_bytes.size() ? partition_execution_bytes[i] : 0ull;
+                summary.partitions[i].blocked_ell_bytes = i < partition_blocked_ell_bytes.size() ? partition_blocked_ell_bytes[i] : 0ull;
             }
             for (std::size_t i = 0; i < summary.shards.size(); ++i) {
                 summary.shards[i].execution_format = i < shard_execution_formats.size() ? shard_execution_formats[i] : 0u;

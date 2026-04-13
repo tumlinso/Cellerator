@@ -254,7 +254,7 @@ void build_source_matrix(const bench_config &cfg, cs::sharded<cs::sparse::blocke
         }
     }
     if (cfg.shards >= cfg.parts) {
-        if (!cs::set_shards_to_parts(out)) throw std::runtime_error("set_shards_to_parts failed");
+        if (!cs::set_shards_to_partitions(out)) throw std::runtime_error("set_shards_to_partitions failed");
     } else {
         if (!cs::set_equal_shards(out, cfg.shards)) throw std::runtime_error("set_equal_shards failed");
     }
@@ -388,7 +388,7 @@ void build_real_source_matrix(const bench_config &cfg,
         }
 
         if (cfg.shards >= out->num_parts) {
-            if (!cs::set_shards_to_parts(out)) throw std::runtime_error("set_shards_to_parts failed for real data");
+            if (!cs::set_shards_to_partitions(out)) throw std::runtime_error("set_shards_to_partitions failed for real data");
         } else {
             if (!cs::set_equal_shards(out, cfg.shards)) throw std::runtime_error("set_equal_shards failed for real data");
         }

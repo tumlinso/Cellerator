@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "codex"
 created_at: "2026-04-13T14:45:32Z"
-last_heartbeat_at: "2026-04-13T14:47:07Z"
-last_reviewed_at: "2026-04-13T14:47:07Z"
+last_heartbeat_at: "2026-04-13T15:19:47Z"
+last_reviewed_at: "2026-04-13T15:19:47Z"
 stale_after_days: 14
 objective: "add repo-wide portable and extreme V100 CUDA optimization modes with compile-time selection and first hotspot backends"
 ---
@@ -70,12 +70,17 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Added CUDA mode banner output to the quantized, autograd, forward-neighbor, and developmental-time benchmark entrypoints so run logs identify which build produced the numbers.
 - Verified separate `/tmp/cellerator-portable-build` and `/tmp/cellerator-extreme-build` configure passes, built `quantizedMatrixTest`, `quantizedMatrixBench`, and `forwardNeighborsCompileTest` in both trees, and ran `quantizedMatrixTest` successfully in both modes.
 - Ran a quick serialized `quantizedMatrixBench --host-iters 1 --gpu-iters 5 --bits 8 --policy per_gene_affine` sample in both modes; output now includes `cuda_mode=portable|extreme` and the current sample GPU timings were about 0.106 ms portable vs 0.111 ms extreme on that small run.
+- Split the quantized backend to one-kernel-per-file boundaries: `portable_quantize_kernel.cuh`, `portable_dequantize_kernel.cuh`, `extreme_quantize_kernel.cuh`, and `extreme_dequantize_kernel.cuh`, while keeping the existing launcher and dispatch API stable.
+- Kept the extreme PTX helpers isolated behind the split and reran the focused dump on `bench/quantized_extreme_ptx_hotspot.cu`; the post-split `sm_70` hotspot still compiles with focused artifacts, 20 registers, and no spills.
+- Rebuilt `quantizedMatrixTest` and `quantizedMatrixBench` in both portable and extreme trees after the split and reran `quantizedMatrixTest` successfully in both modes.
+- A fresh mutex-serialized `quantizedMatrixBench --host-iters 1 --gpu-iters 5 --bits 8 --policy per_gene_affine` run did not return on the expected timescale after the split, so that verification path is currently treated as bench-specific follow-up rather than a kernel-structure regression until the benchmark itself is checked.
 
 ## Next Actions
 - Patch `CMakeLists.txt` and add the internal mode config header plus target helper changes.
 - Create the quantized portable/extreme backend split and keep the public dispatch API stable.
 - Build focused portable/extreme targets and fix compile issues before touching broader hotspots.
 - Once the active CellShard storage rewrite lands or stabilizes enough to compile `cellerator_compute_autograd` again, extend the distinct extreme path into sparse autograd and the model CUDA surfaces that depend on it.
+- Check why the quantized benchmark binary stalled on the tiny post-split sample before using it as the next comparison point.
 - Add the next benchmark-backed extreme specialization to forward-neighbor or autograd hot kernels instead of broad alias-only coverage.
 
 ## Done Criteria
