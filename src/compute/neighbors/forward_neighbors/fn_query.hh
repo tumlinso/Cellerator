@@ -1,175 +1,31 @@
 #pragma once
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <type_traits>
-#include <utility>
+
+#include "../host_buffer.hh"
 
 namespace cellerator::compute::neighbors::forward_neighbors {
+template<typename T>
+using host_array = ::cellerator::compute::neighbors::host_buffer<T>;
 
 template<typename T>
-class host_array {
-public:
-    host_array() = default;
+using const_array_view = ::cellerator::compute::neighbors::const_buffer_view<T>;
 
-    explicit host_array(std::size_t count) {
-        resize(count);
-    }
-
-    host_array(std::initializer_list<T> values) {
-        assign_copy(values.begin(), values.size());
-    }
-
-    host_array(const host_array &other) {
-        assign_copy(other.data(), other.size());
-    }
-
-    host_array(host_array &&other) noexcept
-        : data_(std::move(other.data_)),
-          size_(other.size_),
-          capacity_(other.capacity_) {
-        other.size_ = 0u;
-        other.capacity_ = 0u;
-    }
-
-    host_array &operator=(const host_array &other) {
-        if (this != &other) assign_copy(other.data(), other.size());
-        return *this;
-    }
-
-    host_array &operator=(host_array &&other) noexcept {
-        if (this == &other) return *this;
-        data_ = std::move(other.data_);
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        other.size_ = 0u;
-        other.capacity_ = 0u;
-        return *this;
-    }
-
-    void clear() {
-        size_ = 0u;
-    }
-
-    void reserve(std::size_t capacity) {
-        if (capacity <= capacity_) return;
-        std::unique_ptr<T[]> next(new T[capacity]);
-        if constexpr (std::is_trivially_copyable_v<T>) {
-            if (size_ != 0u) std::memcpy(next.get(), data_.get(), size_ * sizeof(T));
-        } else {
-            for (std::size_t i = 0; i < size_; ++i) next[i] = std::move(data_[i]);
-        }
-        data_ = std::move(next);
-        capacity_ = capacity;
-    }
-
-    void resize(std::size_t count) {
-        if (count > capacity_) reserve(count);
-        size_ = count;
-    }
-
-    void assign_copy(const T *src, std::size_t count) {
-        resize(count);
-        if (count == 0u || src == nullptr) return;
-        if constexpr (std::is_trivially_copyable_v<T>) {
-            std::memcpy(data_.get(), src, count * sizeof(T));
-        } else {
-            for (std::size_t i = 0; i < count; ++i) data_[i] = src[i];
-        }
-    }
-
-    void assign_fill(std::size_t count, const T &value) {
-        resize(count);
-        for (std::size_t i = 0; i < count; ++i) data_[i] = value;
-    }
-
-    T *data() {
-        return data_.get();
-    }
-
-    const T *data() const {
-        return data_.get();
-    }
-
-    std::size_t size() const {
-        return size_;
-    }
-
-    std::size_t capacity() const {
-        return capacity_;
-    }
-
-    bool empty() const {
-        return size_ == 0u;
-    }
-
-    T &operator[](std::size_t idx) {
-        return data_[idx];
-    }
-
-    const T &operator[](std::size_t idx) const {
-        return data_[idx];
-    }
-
-    T &back() {
-        return data_[size_ - 1u];
-    }
-
-    const T &back() const {
-        return data_[size_ - 1u];
-    }
-
-    T *begin() {
-        return data_.get();
-    }
-
-    const T *begin() const {
-        return data_.get();
-    }
-
-    T *end() {
-        return data_.get() + size_;
-    }
-
-    const T *end() const {
-        return data_.get() + size_;
-    }
-
-private:
-    std::unique_ptr<T[]> data_;
-    std::size_t size_ = 0u;
-    std::size_t capacity_ = 0u;
-};
-
-template<typename T>
-struct const_array_view {
-    const T *data = nullptr;
-    std::size_t size = 0u;
-
-    const T &operator[](std::size_t idx) const {
-        return data[idx];
-    }
-
-    bool empty() const {
-        return size == 0u;
-    }
-};
-
-template<typename T>
-inline const_array_view<T> view_of(const host_array<T> &values) {
-    return const_array_view<T>{ values.data(), values.size() };
-}
+using ::cellerator::compute::neighbors::view_of;
 
 enum class ForwardNeighborBackend {
     exact_windowed,
     ann_windowed
+};
+
+enum class ForwardNeighborDirection {
+    forward
 };
 
 enum class ForwardNeighborEmbryoPolicy {
@@ -193,6 +49,7 @@ struct ForwardNeighborQueryBatch {
 
 struct ForwardNeighborSearchConfig {
     ForwardNeighborBackend backend = ForwardNeighborBackend::exact_windowed;
+    ForwardNeighborDirection direction = ForwardNeighborDirection::forward;
     ForwardNeighborEmbryoPolicy embryo_policy = ForwardNeighborEmbryoPolicy::any_embryo;
     std::int64_t top_k = 15;
     std::int64_t candidate_k = 15;
@@ -203,6 +60,23 @@ struct ForwardNeighborSearchConfig {
     ForwardTimeWindow time_window{};
 };
 
+struct ForwardNeighborExecutorConfig {
+    std::int64_t max_resident_shards_per_device = 2;
+    std::size_t resident_bytes_per_device = 0u;
+    bool enable_pair_pooling = true;
+    bool allow_cross_pair_merge = true;
+};
+
+struct ForwardNeighborRoutingPlan {
+    host_array<std::int64_t> block_query_begin;
+    host_array<std::int64_t> block_query_end;
+    host_array<float> block_window_lower;
+    host_array<float> block_window_upper;
+    host_array<std::uint32_t> block_route_offsets;
+    host_array<std::uint32_t> route_shard_indices;
+    host_array<int> route_device_ids;
+};
+
 struct ForwardNeighborSearchResult {
     std::int64_t query_count = 0;
     std::int64_t top_k = 0;
@@ -210,6 +84,7 @@ struct ForwardNeighborSearchResult {
     host_array<float> query_time;
     host_array<std::int64_t> query_embryo_ids;
     host_array<std::int64_t> neighbor_cell_indices;
+    host_array<std::int64_t> neighbor_shard_indices;
     host_array<float> neighbor_time;
     host_array<std::int64_t> neighbor_embryo_ids;
     host_array<float> neighbor_similarity;
@@ -248,6 +123,9 @@ inline host_array<std::int64_t> make_missing_i64_array_(std::size_t rows) {
 
 inline void validate_forward_neighbor_search_config_(const ForwardNeighborSearchConfig &config) {
     if (config.top_k <= 0) throw std::invalid_argument("ForwardNeighborSearchConfig.top_k must be > 0");
+    if (config.direction != ForwardNeighborDirection::forward) {
+        throw std::invalid_argument("ForwardNeighborSearchConfig.direction is not implemented");
+    }
     if (config.candidate_k < config.top_k) {
         throw std::invalid_argument("ForwardNeighborSearchConfig.candidate_k must be >= top_k");
     }

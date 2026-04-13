@@ -13,12 +13,15 @@
 #include <algorithm>
 #include <atomic>
 #include <cctype>
+#include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <string>
 #include <thread>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -328,6 +331,113 @@ struct owned_metadata_table {
     owned_metadata_table &operator=(const owned_metadata_table &) = delete;
 };
 
+struct owned_observation_text_column {
+    ccommon::text_column values;
+
+    owned_observation_text_column() { ccommon::init(&values); }
+    ~owned_observation_text_column() { ccommon::clear(&values); }
+    owned_observation_text_column(const owned_observation_text_column &) = delete;
+    owned_observation_text_column &operator=(const owned_observation_text_column &) = delete;
+};
+
+struct owned_observation_metadata_column {
+    std::string name;
+    std::uint32_t type = cs::series_observation_metadata_type_none;
+    std::unique_ptr<owned_observation_text_column> text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
+
+    cs::series_observation_metadata_column_view view() const {
+        cs::series_observation_metadata_column_view out{};
+        out.name = name.c_str();
+        out.type = type;
+        out.text_values = text_values != nullptr ? as_text_view(&text_values->values) : cs::series_text_column_view{};
+        out.float32_values = float32_values.empty() ? nullptr : float32_values.data();
+        out.uint8_values = uint8_values.empty() ? nullptr : uint8_values.data();
+        return out;
+    }
+};
+
+struct normalized_day_value {
+    std::string label;
+    float numeric = std::numeric_limits<float>::quiet_NaN();
+    std::uint8_t is_postnatal = 0u;
+    bool has_numeric = false;
+};
+
+struct loaded_observation_metadata {
+    std::unique_ptr<owned_metadata_table> table;
+    std::vector<std::string> column_names;
+    std::vector<int> global_text_to_local;
+    int day_column = -1;
+};
+
+inline std::string trim_copy(std::string value) {
+    std::size_t begin = 0u;
+    std::size_t end = value.size();
+    while (begin < end && std::isspace((unsigned char) value[begin])) ++begin;
+    while (end > begin && std::isspace((unsigned char) value[end - 1u])) --end;
+    return value.substr(begin, end - begin);
+}
+
+inline std::string lower_copy(std::string value) {
+    for (char &ch : value) ch = (char) std::tolower((unsigned char) ch);
+    return value;
+}
+
+inline std::string sanitize_metadata_column_name(const char *raw_name,
+                                                 unsigned int column_index) {
+    std::string name = trim_copy(raw_name != nullptr ? raw_name : "");
+    if (!name.empty()) return name;
+    if (column_index == 0u) return "row_id";
+    return "column_" + std::to_string(column_index);
+}
+
+inline std::vector<std::string> make_unique_metadata_column_names(const ccommon::metadata_table &table) {
+    std::unordered_map<std::string, unsigned int> counts;
+    std::vector<std::string> names;
+    names.reserve(table.num_cols);
+    for (unsigned int col = 0; col < table.num_cols; ++col) {
+        const std::string base = sanitize_metadata_column_name(ccommon::column_name(&table, col), col);
+        const unsigned int seen = counts[base]++;
+        if (seen == 0u) names.push_back(base);
+        else names.push_back(base + "_" + std::to_string(seen + 1u));
+    }
+    return names;
+}
+
+inline int find_day_column_index(const std::vector<std::string> &column_names) {
+    int stage_index = -1;
+    for (std::size_t i = 0; i < column_names.size(); ++i) {
+        const std::string name = lower_copy(column_names[i]);
+        if (name == "day" || name == "embryonic_day_label") return (int) i;
+        if (stage_index < 0 && name == "stage") stage_index = (int) i;
+    }
+    return stage_index;
+}
+
+inline normalized_day_value normalize_day_value(const char *raw_value) {
+    normalized_day_value out;
+    const std::string value = trim_copy(raw_value != nullptr ? raw_value : "");
+    if (value.empty()) return out;
+
+    out.label = value;
+    if (value == "P0" || value == "p0") {
+        out.is_postnatal = 1u;
+        return out;
+    }
+
+    if (value.size() > 1u && (value[0] == 'E' || value[0] == 'e')) {
+        char *end = nullptr;
+        const float parsed = std::strtof(value.c_str() + 1u, &end);
+        if (end != value.c_str() + 1u && end != nullptr && *end == '\0' && std::isfinite(parsed)) {
+            out.numeric = parsed;
+            out.has_numeric = true;
+        }
+    }
+    return out;
+}
+
 struct browse_cache_owned {
     host_buffer<std::uint32_t> selected_feature_indices;
     host_buffer<float> gene_sum;
@@ -588,6 +698,153 @@ inline bool append_embedded_metadata_tables(const ingest_plan &plan,
 
     for (owned_metadata_table *table : owned) delete table;
     return ok;
+}
+
+inline bool append_observation_metadata_table(const ingest_plan &plan,
+                                             std::vector<issue> *issues) {
+    std::vector<loaded_observation_metadata> dataset_metadata(plan.datasets.size());
+    std::vector<std::string> text_column_names;
+    std::unordered_map<std::string, std::size_t> text_column_indices;
+    std::vector<std::unique_ptr<owned_observation_metadata_column>> columns;
+    std::vector<cs::series_observation_metadata_column_view> views;
+    cs::series_observation_metadata_view metadata_view{};
+    bool saw_any_metadata = false;
+    bool need_day_columns = false;
+
+    if (plan.total_rows > (unsigned long) std::numeric_limits<std::uint32_t>::max()) {
+        push_issue(issues, issue_severity::error, "metadata", "typed observation metadata currently requires <= 2^32-1 rows");
+        return false;
+    }
+
+    for (std::size_t i = 0; i < plan.datasets.size(); ++i) {
+        const planned_dataset &dataset = plan.datasets[i];
+        const source_entry &source = plan.sources[dataset.source_index];
+        if (source.metadata_path.empty()) continue;
+
+        auto owned = std::make_unique<owned_metadata_table>();
+        if (!ccommon::load_tsv(source.metadata_path.c_str(), &owned->table, 1)) {
+            push_issue(issues, issue_severity::warning, "metadata", "failed to load typed observation metadata for " + dataset.dataset_id);
+            continue;
+        }
+        if (owned->table.num_rows != dataset.rows) {
+            push_issue(issues,
+                       issue_severity::error,
+                       "metadata",
+                       "metadata row count does not match barcodes for " + dataset.dataset_id);
+            return false;
+        }
+
+        loaded_observation_metadata loaded;
+        loaded.column_names = make_unique_metadata_column_names(owned->table);
+        loaded.day_column = find_day_column_index(loaded.column_names);
+        loaded.table = std::move(owned);
+        if (loaded.day_column >= 0) need_day_columns = true;
+        for (const std::string &name : loaded.column_names) {
+            if (text_column_indices.find(name) != text_column_indices.end()) continue;
+            text_column_indices.emplace(name, text_column_names.size());
+            text_column_names.push_back(name);
+        }
+        dataset_metadata[i] = std::move(loaded);
+        saw_any_metadata = true;
+    }
+
+    if (!saw_any_metadata) return true;
+
+    for (loaded_observation_metadata &loaded : dataset_metadata) {
+        loaded.global_text_to_local.assign(text_column_names.size(), -1);
+        for (std::size_t local = 0; local < loaded.column_names.size(); ++local) {
+            const auto it = text_column_indices.find(loaded.column_names[local]);
+            if (it != text_column_indices.end()) loaded.global_text_to_local[it->second] = (int) local;
+        }
+    }
+
+    columns.reserve(text_column_names.size() + (need_day_columns ? 3u : 0u));
+    for (const std::string &name : text_column_names) {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = name;
+        column->type = cs::series_observation_metadata_type_text;
+        column->text_values = std::make_unique<owned_observation_text_column>();
+        columns.push_back(std::move(column));
+    }
+
+    owned_observation_metadata_column *day_label_column = nullptr;
+    owned_observation_metadata_column *day_numeric_column = nullptr;
+    owned_observation_metadata_column *postnatal_column = nullptr;
+    if (need_day_columns) {
+        auto label = std::make_unique<owned_observation_metadata_column>();
+        label->name = "embryonic_day_label";
+        label->type = cs::series_observation_metadata_type_text;
+        label->text_values = std::make_unique<owned_observation_text_column>();
+        day_label_column = label.get();
+        columns.push_back(std::move(label));
+
+        auto numeric = std::make_unique<owned_observation_metadata_column>();
+        numeric->name = "embryonic_day";
+        numeric->type = cs::series_observation_metadata_type_float32;
+        numeric->float32_values.reserve(plan.total_rows);
+        day_numeric_column = numeric.get();
+        columns.push_back(std::move(numeric));
+
+        auto postnatal = std::make_unique<owned_observation_metadata_column>();
+        postnatal->name = "is_postnatal";
+        postnatal->type = cs::series_observation_metadata_type_uint8;
+        postnatal->uint8_values.reserve(plan.total_rows);
+        postnatal_column = postnatal.get();
+        columns.push_back(std::move(postnatal));
+    }
+
+    for (std::size_t dataset_index = 0; dataset_index < plan.datasets.size(); ++dataset_index) {
+        const planned_dataset &dataset = plan.datasets[dataset_index];
+        const loaded_observation_metadata &loaded = dataset_metadata[dataset_index];
+        for (unsigned long row = 0; row < dataset.rows; ++row) {
+            for (std::size_t global_col = 0; global_col < text_column_names.size(); ++global_col) {
+                const int local_col = global_col < loaded.global_text_to_local.size()
+                    ? loaded.global_text_to_local[global_col]
+                    : -1;
+                const char *value = (loaded.table != nullptr && local_col >= 0)
+                    ? ccommon::field(&loaded.table->table, (unsigned int) row, (unsigned int) local_col)
+                    : "";
+                if (!ccommon::append(&columns[global_col]->text_values->values,
+                                     value != nullptr ? value : "",
+                                     std::strlen(value != nullptr ? value : ""))) {
+                    push_issue(issues, issue_severity::error, "metadata", "failed to build observation metadata text column");
+                    return false;
+                }
+            }
+
+            if (need_day_columns) {
+                const char *raw_day = (loaded.table != nullptr && loaded.day_column >= 0)
+                    ? ccommon::field(&loaded.table->table, (unsigned int) row, (unsigned int) loaded.day_column)
+                    : "";
+                const normalized_day_value normalized = normalize_day_value(raw_day);
+                if (!ccommon::append(&day_label_column->text_values->values,
+                                     normalized.label.c_str(),
+                                     normalized.label.size())) {
+                    push_issue(issues, issue_severity::error, "metadata", "failed to build embryonic_day_label column");
+                    return false;
+                }
+                day_numeric_column->float32_values.push_back(
+                    normalized.has_numeric ? normalized.numeric : std::numeric_limits<float>::quiet_NaN());
+                postnatal_column->uint8_values.push_back(normalized.is_postnatal);
+            }
+        }
+    }
+
+    views.reserve(columns.size());
+    for (const std::unique_ptr<owned_observation_metadata_column> &column : columns) {
+        views.push_back(column->view());
+    }
+
+    metadata_view.rows = plan.total_rows;
+    metadata_view.cols = (std::uint32_t) views.size();
+    metadata_view.columns = views.empty() ? nullptr : views.data();
+
+    if (!cs::append_series_observation_metadata_h5(plan.policy.output_path.c_str(), &metadata_view)) {
+        push_issue(issues, issue_severity::error, "metadata", "failed to append typed observation metadata to series.csh5");
+        return false;
+    }
+
+    return true;
 }
 
 inline host_buffer<unsigned int> choose_sample_rows(unsigned int rows, unsigned int sample_rows) {
@@ -1387,6 +1644,11 @@ conversion_report convert_plan_to_series_csh5(const ingest_plan &plan) {
             cseries::clear(&manifest);
             return report;
         }
+        report.events.push_back({"metadata", "embedding typed observation metadata"});
+        if (!append_observation_metadata_table(plan, &report.issues)) {
+            cseries::clear(&manifest);
+            return report;
+        }
     }
 
     if (plan.policy.build_browse_cache) {
@@ -1519,7 +1781,7 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         }
         if (!check_cuda(cudaStreamSynchronize(workspace.stream), &summary.issues, "preprocess", "cudaStreamSynchronize part")) goto done;
         if (!check_cuda(csv::release_part(&device_state, part_id), &summary.issues, "preprocess", "release_part")) goto done;
-        ++summary.parts_processed;
+        ++summary.partitions_processed;
         if (loaded_here && config.drop_host_parts) cs::drop_part(&matrix, part_id);
     }
 

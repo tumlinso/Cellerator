@@ -252,7 +252,7 @@ constexpr int k_min_rows = 24;
 constexpr int k_min_cols = 92;
 constexpr std::size_t k_log_limit = 256u;
 constexpr std::array<const char *, 10> screen_names = {
-    "Home", "Builder", "Sources", "Datasets", "Parts", "Shards", "Output", "Run", "Inspect", "Preprocess"
+    "Home", "Builder", "Sources", "Datasets", "Partitions", "Shards", "Output", "Run", "Inspect", "Preprocess"
 };
 constexpr std::array<const char *, 5> output_labels = {
     "output_path", "max_part_nnz", "max_window_bytes", "reader_bytes", "verify_after_write"
@@ -653,8 +653,8 @@ std::size_t inspect_metadata_table_for_dataset(const ui_state &ui, std::size_t d
 
 std::size_t inspect_part_count_for_dataset(const ui_state &ui, std::size_t dataset_index) {
     std::size_t count = 0;
-    for (const wb::series_part_summary &part : ui.series.parts) {
-        if (part.dataset_id == dataset_index) ++count;
+    for (const wb::series_partition_summary &partition : ui.series.partitions) {
+        if (partition.dataset_id == dataset_index) ++count;
     }
     return count;
 }
@@ -663,8 +663,8 @@ std::size_t inspect_part_global_index(const ui_state &ui,
                                       std::size_t dataset_index,
                                       std::size_t local_index) {
     std::size_t cursor = 0;
-    for (std::size_t i = 0; i < ui.series.parts.size(); ++i) {
-        if (ui.series.parts[i].dataset_id != dataset_index) continue;
+    for (std::size_t i = 0; i < ui.series.partitions.size(); ++i) {
+        if (ui.series.partitions[i].dataset_id != dataset_index) continue;
         if (cursor == local_index) return i;
         ++cursor;
     }
@@ -1757,7 +1757,7 @@ void render_header(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
     } else {
         oss << "  Plan: " << (ui.plan.ok ? "ready" : "issues")
             << "  Datasets: " << ui.plan.datasets.size()
-            << "  Parts: " << ui.plan.parts.size()
+            << "  Partitions: " << ui.plan.parts.size()
             << "  Shards: " << ui.plan.shards.size();
     }
     draw_clipped(win, 2, 2, getmaxx(win) - 4, oss.str(), color_attr(runtime, cp_header));
@@ -1849,7 +1849,7 @@ void render_summary(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
     if (getmaxy(win) > 10) {
         const std::string series_line =
             ui.series.ok
-                ? ("Series rows=" + std::to_string(ui.series.rows) + " parts=" + std::to_string(ui.series.num_parts))
+                ? ("Series rows=" + std::to_string(ui.series.rows) + " partitions=" + std::to_string(ui.series.num_partitions))
                 : "Series not open";
         draw_clipped(win, 9, 2, getmaxx(win) - 4, series_line);
     }
@@ -2018,7 +2018,7 @@ void render_sources(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
 
 void render_datasets(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
     draw_panel(win, runtime, "Datasets");
-    draw_hint(win, runtime, 1, "Planned global row ranges and part counts");
+    draw_hint(win, runtime, 1, "Planned global row ranges and partition counts");
     if (ui.plan.datasets.empty()) {
         draw_clipped(win, 3, 2, getmaxx(win) - 4, "No datasets planned yet.", A_DIM);
         return;
@@ -2032,7 +2032,7 @@ void render_datasets(WINDOW *win, const ui_runtime &runtime, const ui_state &ui)
             << "  rows=" << dataset.rows
             << " cols=" << dataset.cols
             << " nnz=" << dataset.nnz
-            << " parts=" << dataset.part_count
+            << " partitions=" << dataset.part_count
             << "  row=[" << dataset.global_row_begin << "," << dataset.global_row_end << ")";
         draw_list_row(win, runtime, 3 + row, index == ui.selected_dataset, oss.str());
     }
@@ -2041,10 +2041,10 @@ void render_datasets(WINDOW *win, const ui_runtime &runtime, const ui_state &ui)
 }
 
 void render_parts(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
-    draw_panel(win, runtime, "Parts");
-    draw_hint(win, runtime, 1, "Per-part row windows and shard assignment");
+    draw_panel(win, runtime, "Partitions");
+    draw_hint(win, runtime, 1, "Per-partition row windows and shard assignment");
     if (ui.plan.parts.empty()) {
-        draw_clipped(win, 3, 2, getmaxx(win) - 4, "No parts planned yet.", A_DIM);
+        draw_clipped(win, 3, 2, getmaxx(win) - 4, "No partitions planned yet.", A_DIM);
         return;
     }
     const int visible = std::max(1, getmaxy(win) - 6);
@@ -2052,10 +2052,10 @@ void render_parts(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
         const std::size_t index = ui.part_scroll + static_cast<std::size_t>(row);
         const wb::planned_part &part = ui.plan.parts[index];
         std::ostringstream oss;
-        oss << "p" << part.part_id
-            << "  " << part.dataset_id
-            << "  rows=" << part.rows
-            << " nnz=" << part.nnz
+            oss << "partition " << part.part_id
+                << "  " << part.dataset_id
+                << "  rows=" << part.rows
+                << " nnz=" << part.nnz
             << " shard=" << part.shard_id
             << "  row=[" << part.row_begin << "," << part.row_end << ")";
         draw_list_row(win, runtime, 3 + row, index == ui.selected_part, oss.str());
@@ -2066,7 +2066,7 @@ void render_parts(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
 
 void render_shards(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
     draw_panel(win, runtime, "Shards");
-    draw_hint(win, runtime, 1, "Shard packing over planned parts");
+    draw_hint(win, runtime, 1, "Shard packing over planned partitions");
     if (ui.plan.shards.empty()) {
         draw_clipped(win, 3, 2, getmaxx(win) - 4, "No shards planned yet.", A_DIM);
         return;
@@ -2077,7 +2077,7 @@ void render_shards(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
         const wb::planned_shard &shard = ui.plan.shards[index];
         std::ostringstream oss;
         oss << "s" << shard.shard_id
-            << "  parts=[" << shard.part_begin << "," << shard.part_end << ")"
+            << "  partitions=[" << shard.part_begin << "," << shard.part_end << ")"
             << "  rows=" << shard.rows
             << " nnz=" << shard.nnz
             << "  bytes=" << compact_bytes(shard.estimated_bytes);
@@ -2141,7 +2141,7 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
     draw_clipped(win, 1, 2, getmaxx(win) - 4, "path: " + ui.series.path);
     std::ostringstream line2;
     line2 << "rows=" << ui.series.rows << " cols=" << ui.series.cols << " nnz=" << ui.series.nnz
-          << "  datasets=" << ui.series.num_datasets << " parts=" << ui.series.num_parts
+          << "  datasets=" << ui.series.num_datasets << " partitions=" << ui.series.num_partitions
           << " shards=" << ui.series.num_shards;
     draw_clipped(win, 2, 2, getmaxx(win) - 4, line2.str());
     std::ostringstream line3;
@@ -2150,7 +2150,7 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
           << "  browse=" << (ui.series.browse.available ? "ready" : "missing")
           << "  metadata_tables=" << ui.series.embedded_metadata.size();
     draw_clipped(win, 3, 2, getmaxx(win) - 4, line3.str(), A_BOLD);
-    draw_hint(win, runtime, 4, "[ and ] move focus, m switches dataset/shard/part heatmaps, , and . pan features");
+    draw_hint(win, runtime, 4, "[ and ] move focus, m switches dataset/shard/partition heatmaps, , and . pan features");
 
     const int inner_x = 2;
     const int inner_w = getmaxx(win) - 4;
@@ -2319,11 +2319,11 @@ void render_inspect(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) 
             const std::size_t row_begin = ui.series.browse.part_sample_row_offsets[part_index];
             const std::size_t row_end = ui.series.browse.part_sample_row_offsets[part_index + 1u];
             std::ostringstream mode_line;
-            mode_line << "Part samples  selected=" << (ui.inspect_part_selection + 1u)
+            mode_line << "Partition samples  selected=" << (ui.inspect_part_selection + 1u)
                       << "/" << std::max<std::size_t>(1u, part_total)
-                      << "  p" << ui.series.parts[part_index].part_id
-                      << " row=[" << ui.series.parts[part_index].row_begin
-                      << "," << ui.series.parts[part_index].row_end << ")";
+                      << "  partition " << ui.series.partitions[part_index].partition_id
+                      << " row=[" << ui.series.partitions[part_index].row_begin
+                      << "," << ui.series.partitions[part_index].row_end << ")";
             draw_hint(win, runtime, detail_row, mode_line.str());
             for (std::size_t row = row_begin + ui.inspect_heatmap_row_scroll;
                  row < row_end && row_labels.size() < (std::size_t) heatmap_rows;
@@ -2479,7 +2479,7 @@ void render_footer(WINDOW *win, const ui_runtime &runtime, const ui_state &ui) {
         case screen_id::builder: hint = "Builder uses browser, drafts, and detail focus to assemble sources without a prewritten manifest."; break;
         case screen_id::sources: hint = "Sources focus persists selection and scroll state."; break;
         case screen_id::datasets: hint = "Datasets view shows global row placement."; break;
-        case screen_id::parts: hint = "Parts view shows shard assignment and byte estimates."; break;
+        case screen_id::parts: hint = "Partitions view shows shard assignment and byte estimates."; break;
         case screen_id::shards: hint = "Shards view shows the packed output layout."; break;
         case screen_id::output: hint = "Output fields recompute the plan after edits."; break;
         case screen_id::run: hint = "Run uses the current plan and then opens the output series."; break;
@@ -2716,7 +2716,7 @@ void handle_action(ui_state *ui, ui_runtime *runtime, const ui_layout &layout, c
 }
 
 void dump_plan(const wb::ingest_plan &plan) {
-    std::printf("plan ok=%d datasets=%zu parts=%zu shards=%zu rows=%lu cols=%lu nnz=%lu bytes=%zu\n",
+    std::printf("plan ok=%d datasets=%zu partitions=%zu shards=%zu rows=%lu cols=%lu nnz=%lu bytes=%zu\n",
                 plan.ok ? 1 : 0,
                 plan.datasets.size(),
                 plan.parts.size(),
@@ -2726,7 +2726,7 @@ void dump_plan(const wb::ingest_plan &plan) {
                 plan.total_nnz,
                 plan.total_estimated_bytes);
     for (const wb::planned_dataset &dataset : plan.datasets) {
-        std::printf("dataset %s rows=%lu cols=%lu nnz=%lu parts=%lu row=[%lu,%lu)\n",
+        std::printf("dataset %s rows=%lu cols=%lu nnz=%lu partitions=%lu row=[%lu,%lu)\n",
                     dataset.dataset_id.c_str(),
                     dataset.rows,
                     dataset.cols,
@@ -2738,13 +2738,13 @@ void dump_plan(const wb::ingest_plan &plan) {
 }
 
 void dump_series(const wb::series_summary &summary) {
-    std::printf("series ok=%d rows=%llu cols=%llu nnz=%llu datasets=%llu parts=%llu shards=%llu\n",
+    std::printf("series ok=%d rows=%llu cols=%llu nnz=%llu datasets=%llu partitions=%llu shards=%llu\n",
                 summary.ok ? 1 : 0,
                 static_cast<unsigned long long>(summary.rows),
                 static_cast<unsigned long long>(summary.cols),
                 static_cast<unsigned long long>(summary.nnz),
                 static_cast<unsigned long long>(summary.num_datasets),
-                static_cast<unsigned long long>(summary.num_parts),
+                static_cast<unsigned long long>(summary.num_partitions),
                 static_cast<unsigned long long>(summary.num_shards));
     for (const wb::series_dataset_summary &dataset : summary.datasets) {
         std::printf("dataset %s rows=%llu cols=%llu nnz=%llu format=%s\n",

@@ -27,12 +27,12 @@ struct DevelopmentalTimeInferConfig {
 
 struct DevelopmentalTimeBatchPrediction {
     torch::Tensor cell_indices;
-    torch::Tensor developmental_time;
+    torch::Tensor predicted_time;
 };
 
 struct DevelopmentalTimeTable {
     torch::Tensor cell_indices;
-    torch::Tensor developmental_time;
+    torch::Tensor predicted_time;
 };
 
 namespace detail {
@@ -50,16 +50,6 @@ inline torch::Tensor copy_i64_tensor_developmental_time_(const host_buffer<std::
         torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
     if (!values.empty()) {
         std::memcpy(tensor.data_ptr<std::int64_t>(), values.data(), values.size() * sizeof(std::int64_t));
-    }
-    return tensor;
-}
-
-inline torch::Tensor copy_f32_tensor_developmental_time_(const host_buffer<float> &values) {
-    torch::Tensor tensor = torch::empty(
-        { static_cast<std::int64_t>(values.size()) },
-        torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
-    if (!values.empty()) {
-        std::memcpy(tensor.data_ptr<float>(), values.data(), values.size() * sizeof(float));
     }
     return tensor;
 }
@@ -86,7 +76,7 @@ inline DevelopmentalTimeTable materialize_developmental_time_batches_(
     all_time.reserve(batches.size());
     for (const DevelopmentalTimeBatchPrediction &batch : batches) {
         all_indices.push_back(batch.cell_indices);
-        all_time.push_back(batch.developmental_time);
+        all_time.push_back(batch.predicted_time);
     }
     return DevelopmentalTimeTable{
         torch::cat(c10::ArrayRef<torch::Tensor>(all_indices.data(), all_indices.size()), 0).contiguous(),
@@ -98,7 +88,7 @@ inline DevelopmentalTimeTable materialize_developmental_time_batches_(
 
 template<typename Callback>
 void for_each_developmental_time_batch(
-    DevelopmentalStageModel &model,
+    DevelopmentalTimeModel &model,
     BalancedTimeSampler::matrix_type *matrix,
     const BalancedTimeSampler::storage_type *storage,
     Callback &&callback,
@@ -133,11 +123,9 @@ void for_each_developmental_time_batch(
             throw std::runtime_error("developmental time inference requires loaded row-compressed CSR parts");
         }
 
-        // Part-wise inference crosses an explicit boundary: export host CSR to
-        // a CPU Torch tensor, move it to device, then bring predictions back.
         torch::Tensor features = cellerator::torch_bindings::export_as_tensor(*part);
         features = features.to(config.device);
-        torch::Tensor predicted_time = model->predict_stage(features);
+        torch::Tensor predicted_time = model->predict_time(features);
         if (config.calibrate_output) {
             predicted_time = config.calibrator->stage_to_time(predicted_time, config.species_id);
         }
@@ -161,7 +149,7 @@ void for_each_developmental_time_batch(
 }
 
 inline DevelopmentalTimeTable infer_developmental_time(
-    DevelopmentalStageModel &model,
+    DevelopmentalTimeModel &model,
     BalancedTimeSampler::matrix_type *matrix,
     const BalancedTimeSampler::storage_type *storage = nullptr,
     const DevelopmentalTimeInferConfig &config = DevelopmentalTimeInferConfig()) {

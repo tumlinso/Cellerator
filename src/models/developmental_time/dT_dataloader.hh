@@ -9,6 +9,7 @@
 #include <torch/torch.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -37,6 +38,9 @@ public:
         bool with_replacement = true;
         bool drop_fetched_parts = true;
         std::size_t max_days_per_batch = 0;
+        std::int64_t num_time_bins = 8;
+        float min_time_label = std::numeric_limits<float>::quiet_NaN();
+        float max_time_label = std::numeric_limits<float>::quiet_NaN();
         std::uint64_t seed = std::random_device{}();
     };
 
@@ -69,6 +73,10 @@ public:
 
     std::size_t num_days() const {
         return day_values_.size();
+    }
+
+    std::int64_t num_time_bins() const {
+        return num_time_bins_;
     }
 
     const host_buffer<float> &day_values() const {
@@ -230,6 +238,27 @@ private:
                 static_cast<unsigned long>(day_values_.size()),
                 RngFetchOptions{ false, options_.seed ^ 0x9e3779b97f4a7c15ULL });
         }
+
+        num_time_bins_ = std::max<std::int64_t>(options_.num_time_bins, 2);
+        time_label_min_ = !std::isnan(options_.min_time_label)
+            ? options_.min_time_label
+            : day_values_[0];
+        time_label_max_ = !std::isnan(options_.max_time_label)
+            ? options_.max_time_label
+            : day_values_.back();
+        if (!(time_label_max_ > time_label_min_)) {
+            time_label_max_ = time_label_min_ + 1.0f;
+        }
+    }
+
+    std::int64_t time_label_to_bin_(float value) const {
+        if (num_time_bins_ <= 1) return 0;
+        const float denom = time_label_max_ - time_label_min_;
+        if (!(denom > 0.0f)) return 0;
+        const float normalized = (value - time_label_min_) / denom;
+        const float scaled = normalized * static_cast<float>(num_time_bins_ - 1);
+        const float clamped = std::fmax(0.0f, std::fmin(static_cast<float>(num_time_bins_ - 1), scaled));
+        return static_cast<std::int64_t>(clamped + 1.0e-6f);
     }
 
     host_buffer<std::int64_t> select_day_buckets_() {
@@ -322,7 +351,7 @@ private:
             }
             nnz_cursor += row_nnz;
             crow_indices.push_back(nnz_cursor);
-            day_buckets.push_back(row.bucket_id);
+            day_buckets.push_back(time_label_to_bin_(row.day_label));
             cell_indices.push_back(static_cast<std::int64_t>(row.global_row));
             batch_day_labels.push_back(row.day_label);
         }
@@ -361,6 +390,9 @@ private:
     host_buffer<std::int64_t> bucket_by_row_;
     host_buffer<RngFetch> row_fetchers_;
     std::unique_ptr<RngFetch> day_bucket_fetch_;
+    std::int64_t num_time_bins_ = 8;
+    float time_label_min_ = 0.0f;
+    float time_label_max_ = 1.0f;
     std::mutex mutex_;
 };
 

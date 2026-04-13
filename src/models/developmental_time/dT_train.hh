@@ -4,50 +4,60 @@
 
 #include <torch/torch.h>
 
-#include <cmath>
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
 
 namespace cellerator::models::developmental_time {
 
-struct DevelopmentalStageTrainConfig {
-    double learning_rate = 1.0e-3;
+struct DevelopmentalTimeTrainConfig {
+    double learning_rate = 1.0e-2;
     double weight_decay = 1.0e-4;
+    double momentum = 0.0;
     double loss_scale = 128.0;
     double max_grad_norm = 1.0;
     bool clip_gradients = true;
     bool skip_non_finite_updates = true;
 };
 
-struct DevelopmentalStageTrainStep {
-    DevelopmentalStageOutput output;
-    DevelopmentalStageLoss loss;
+using DevelopmentalStageTrainConfig = DevelopmentalTimeTrainConfig;
+
+struct DevelopmentalTimeTrainStep {
+    DevelopmentalTimeOutput output;
+    DevelopmentalTimeLoss loss;
 };
 
-inline torch::optim::AdamW make_developmental_stage_optimizer(
-    DevelopmentalStageModel &model,
-    const DevelopmentalStageTrainConfig &config = DevelopmentalStageTrainConfig()) {
-    return torch::optim::AdamW(
+using DevelopmentalStageTrainStep = DevelopmentalTimeTrainStep;
+
+inline torch::optim::SGD make_developmental_time_optimizer(
+    DevelopmentalTimeModel &model,
+    const DevelopmentalTimeTrainConfig &config = DevelopmentalTimeTrainConfig()) {
+    return torch::optim::SGD(
         model->parameters(),
-        torch::optim::AdamWOptions(config.learning_rate).weight_decay(config.weight_decay));
+        torch::optim::SGDOptions(config.learning_rate)
+            .weight_decay(config.weight_decay)
+            .momentum(config.momentum));
 }
 
-inline DevelopmentalStageTrainStep train_developmental_stage_step(
+inline torch::optim::SGD make_developmental_stage_optimizer(
     DevelopmentalStageModel &model,
+    const DevelopmentalStageTrainConfig &config = DevelopmentalStageTrainConfig()) {
+    return make_developmental_time_optimizer(model, config);
+}
+
+inline DevelopmentalTimeTrainStep train_developmental_time_step(
+    DevelopmentalTimeModel &model,
     torch::optim::Optimizer &optimizer,
     const TimeBatch &batch,
-    const DevelopmentalStageLossConfig &loss_config = DevelopmentalStageLossConfig(),
-    const DevelopmentalStageTrainConfig &train_config = DevelopmentalStageTrainConfig()) {
+    const DevelopmentalTimeLossConfig &loss_config = DevelopmentalTimeLossConfig(),
+    const DevelopmentalTimeTrainConfig &train_config = DevelopmentalTimeTrainConfig()) {
     if (train_config.loss_scale <= 0.0) throw std::invalid_argument("loss_scale must be > 0");
 
     model->train();
     optimizer.zero_grad();
 
-    // Extra step overhead comes from manual unscale, optional finite-gradient
-    // checks, and optional full-parameter gradient clipping.
-    DevelopmentalStageOutput output = model->forward(batch.features);
-    DevelopmentalStageLoss loss = compute_developmental_stage_loss(output, batch, loss_config);
+    DevelopmentalTimeOutput output = model->forward(batch.features);
+    DevelopmentalTimeLoss loss = compute_developmental_time_loss(output, batch, loss_config);
     (loss.total * train_config.loss_scale).backward();
 
     for (torch::Tensor &param : model->parameters()) {
@@ -57,7 +67,7 @@ inline DevelopmentalStageTrainStep train_developmental_stage_step(
         for (const torch::Tensor &param : model->parameters()) {
             if (param.grad().defined() && !torch::isfinite(param.grad()).all().item<bool>()) {
                 optimizer.zero_grad();
-                return DevelopmentalStageTrainStep{ std::move(output), std::move(loss) };
+                return DevelopmentalTimeTrainStep{ std::move(output), std::move(loss) };
             }
         }
     }
@@ -65,19 +75,35 @@ inline DevelopmentalStageTrainStep train_developmental_stage_step(
         torch::nn::utils::clip_grad_norm_(model->parameters(), train_config.max_grad_norm);
     }
     optimizer.step();
-    return DevelopmentalStageTrainStep{ std::move(output), std::move(loss) };
+    return DevelopmentalTimeTrainStep{ std::move(output), std::move(loss) };
+}
+
+inline DevelopmentalStageTrainStep train_developmental_stage_step(
+    DevelopmentalStageModel &model,
+    torch::optim::Optimizer &optimizer,
+    const TimeBatch &batch,
+    const DevelopmentalStageLossConfig &loss_config = DevelopmentalStageLossConfig(),
+    const DevelopmentalStageTrainConfig &train_config = DevelopmentalStageTrainConfig()) {
+    return train_developmental_time_step(model, optimizer, batch, loss_config, train_config);
+}
+
+inline DevelopmentalTimeTrainStep evaluate_developmental_time_step(
+    DevelopmentalTimeModel &model,
+    const TimeBatch &batch,
+    const DevelopmentalTimeLossConfig &loss_config = DevelopmentalTimeLossConfig()) {
+    torch::NoGradGuard no_grad;
+    model->eval();
+
+    DevelopmentalTimeOutput output = model->forward(batch.features);
+    DevelopmentalTimeLoss loss = compute_developmental_time_loss(output, batch, loss_config);
+    return DevelopmentalTimeTrainStep{ std::move(output), std::move(loss) };
 }
 
 inline DevelopmentalStageTrainStep evaluate_developmental_stage_step(
     DevelopmentalStageModel &model,
     const TimeBatch &batch,
     const DevelopmentalStageLossConfig &loss_config = DevelopmentalStageLossConfig()) {
-    torch::NoGradGuard no_grad;
-    model->eval();
-
-    DevelopmentalStageOutput output = model->forward(batch.features);
-    DevelopmentalStageLoss loss = compute_developmental_stage_loss(output, batch, loss_config);
-    return DevelopmentalStageTrainStep{ std::move(output), std::move(loss) };
+    return evaluate_developmental_time_step(model, batch, loss_config);
 }
 
 } // namespace cellerator::models::developmental_time

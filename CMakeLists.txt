@@ -47,8 +47,28 @@ find_package(PkgConfig REQUIRED)
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect workbench" ON)
+option(CELLERATOR_ENABLE_CELLSHARD_PYTHON "Enable the optional CellShard pybind/H5AD surface." OFF)
 set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
     "Preferred root for the source-built libtorch installation")
+set(CUDABIOTYPES_BUILD_TESTS OFF CACHE BOOL "Disable nested cudaBioTypes tests in the root build" FORCE)
+if(DEFINED CELLSHARD_ENABLE_CUDA AND NOT CELLSHARD_ENABLE_CUDA)
+    message(FATAL_ERROR
+        "The integrated Cellerator build is accelerator-only. "
+        "Do not configure the root build with CELLSHARD_ENABLE_CUDA=OFF.")
+endif()
+set(CELLSHARD_ENABLE_CUDA ON CACHE BOOL
+    "Cellerator hard-wires the integrated CellShard dependency to the CUDA runtime path." FORCE)
+set(CELLSHARD_BUILD_EXPORT ON CACHE BOOL "Build CellShard export helpers in the root build." FORCE)
+set(CELLSHARD_ENABLE_PYTHON ${CELLERATOR_ENABLE_CELLSHARD_PYTHON} CACHE BOOL
+    "Build the optional CellShard Python bindings and H5AD export app." FORCE)
+set(CELLSHARD_BUILD_APPS ${CELLERATOR_ENABLE_CELLSHARD_PYTHON} CACHE BOOL
+    "Build optional CellShard applications from the root build." FORCE)
+set(CELLSHARD_BUILD_TESTS OFF CACHE BOOL "Disable nested CellShard tests in the root build." FORCE)
+set(CELLSHARD_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
+    "Emit CUDA line mapping for Nsight profiling inside CellShard." FORCE)
+
+add_subdirectory(extern/cudaBioTypes EXCLUDE_FROM_ALL)
+add_subdirectory(extern/CellShard EXCLUDE_FROM_ALL)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
@@ -101,6 +121,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+add_library(cellerator_semantics INTERFACE)
+target_include_directories(cellerator_semantics INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_semantics INTERFACE cudaBioTypes::cudaBioTypes)
+target_compile_features(cellerator_semantics INTERFACE cxx_std_23)
 
 function(cellerator_enable_perf target)
     set(cellerator_cuda_perf_flags
@@ -190,14 +215,9 @@ endif()
 
 add_executable(scrnaPreprocessBench
     bench/scrna_preprocess_bench.cu
-    extern/CellShard/src/disk/matrix.cu
-    extern/CellShard/src/sharded/disk.cu
-    extern/CellShard/src/sharded/shard_paths.cu
-    extern/CellShard/src/sharded/series_h5.cc
 )
 target_include_directories(scrnaPreprocessBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(scrnaPreprocessBench PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(scrnaPreprocessBench PRIVATE CUDA::cusparse ${HDF5_LIBRARIES})
+target_link_libraries(scrnaPreprocessBench PRIVATE CellShard::runtime CUDA::cusparse)
 if(NCCL_LIBRARY)
     target_link_libraries(scrnaPreprocessBench PRIVATE ${NCCL_LIBRARY})
 endif()
@@ -206,16 +226,19 @@ cellerator_enable_perf(scrnaPreprocessBench)
 
 add_executable(cellShardSeriesH5Test
     tests/cellshard_series_h5_test.cu
-    extern/CellShard/src/disk/matrix.cu
-    extern/CellShard/src/sharded/disk.cu
-    extern/CellShard/src/sharded/shard_paths.cu
-    extern/CellShard/src/sharded/series_h5.cc
 )
 target_include_directories(cellShardSeriesH5Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(cellShardSeriesH5Test PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(cellShardSeriesH5Test PRIVATE ${HDF5_LIBRARIES})
+target_link_libraries(cellShardSeriesH5Test PRIVATE CellShard::runtime)
 set_target_properties(cellShardSeriesH5Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardSeriesH5Test)
+
+add_executable(cellShardFetchBench
+    bench/cellshard_fetch_bench.cu
+)
+target_include_directories(cellShardFetchBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellShardFetchBench PRIVATE CellShard::runtime CUDA::cudart CUDA::cusparse)
+set_target_properties(cellShardFetchBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardFetchBench)
 
 add_executable(quantizedMatrixTest
     tests/quantized_matrix_test.cu
@@ -236,14 +259,10 @@ cellerator_enable_perf(seriesIngestCompileTest)
 add_library(cellerator_workbench
     src/workbench/series_workbench.cc
     src/workbench/series_workbench_cuda.cu
-    extern/CellShard/src/disk/matrix.cu
-    extern/CellShard/src/sharded/disk.cu
-    extern/CellShard/src/sharded/shard_paths.cu
-    extern/CellShard/src/sharded/series_h5.cc
 )
 target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(cellerator_workbench PRIVATE CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+target_link_libraries(cellerator_workbench PRIVATE CellShard::runtime CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
 if(NCCL_LIBRARY)
     target_link_libraries(cellerator_workbench PRIVATE ${NCCL_LIBRARY})
 endif()
@@ -309,6 +328,14 @@ target_link_libraries(cellerator_compute_forward_neighbors PRIVATE CUDA::cudart)
 set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
+add_executable(forwardNeighborsBench
+    bench/forward_neighbors_bench.cc
+)
+target_include_directories(forwardNeighborsBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(forwardNeighborsBench PRIVATE cellerator_compute_forward_neighbors CUDA::cudart)
+set_target_properties(forwardNeighborsBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(forwardNeighborsBench)
+
 add_library(cellerator_compute_autograd STATIC
     src/compute/autograd/runtime.cu
     src/compute/autograd/kernels/base_sparse.cu
@@ -365,16 +392,27 @@ cellerator_enable_perf(computeAutogradRuntimeTest)
 
 add_executable(cellShardBlockedEllTest
     tests/cellshard_blocked_ell_test.cu
-    extern/CellShard/src/disk/matrix.cu
-    extern/CellShard/src/sharded/disk.cu
-    extern/CellShard/src/sharded/shard_paths.cu
-    extern/CellShard/src/sharded/series_h5.cc
 )
 target_include_directories(cellShardBlockedEllTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(cellShardBlockedEllTest PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(cellShardBlockedEllTest PRIVATE CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+target_link_libraries(cellShardBlockedEllTest PRIVATE CellShard::runtime CUDA::cudart CUDA::cusparse)
 set_target_properties(cellShardBlockedEllTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardBlockedEllTest)
+
+add_executable(cellShardExportRuntimeTest
+    extern/CellShard/tests/cellshard_export_runtime_test.cu
+)
+target_include_directories(cellShardExportRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellShardExportRuntimeTest PRIVATE CellShard::export CUDA::cudart)
+set_target_properties(cellShardExportRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardExportRuntimeTest)
+
+add_executable(cudaBioTypesSemanticsTest
+    tests/cudabiotypes_semantics_test.cc
+)
+target_include_directories(cudaBioTypesSemanticsTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cudaBioTypesSemanticsTest PRIVATE cellerator_semantics CUDA::cudart)
+set_target_properties(cudaBioTypesSemanticsTest PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cudaBioTypesSemanticsTest)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_library(cellerator_quantize_cuda STATIC
@@ -385,13 +423,37 @@ if(CELLERATOR_ENABLE_TORCH_MODELS)
     set_target_properties(cellerator_quantize_cuda PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(cellerator_quantize_cuda)
 
+    add_library(cellerator_developmental_time_cuda STATIC
+        src/models/developmental_time_cuda/dtc_model.cu
+    )
+    target_include_directories(cellerator_developmental_time_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(cellerator_developmental_time_cuda PRIVATE cellerator_torch cellerator_compute_autograd CUDA::cudart)
+    set_target_properties(cellerator_developmental_time_cuda PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(cellerator_developmental_time_cuda)
+
     add_executable(developmentalTimeCompileTest
         tests/developmental_time_compile_test.cc
     )
     target_include_directories(developmentalTimeCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(developmentalTimeCompileTest PRIVATE cellerator_torch cellerator_compute_model_ops)
+    target_link_libraries(developmentalTimeCompileTest PRIVATE cellerator_torch)
     set_target_properties(developmentalTimeCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
     cellerator_enable_perf(developmentalTimeCompileTest)
+
+    add_executable(developmentalTimeCudaRuntimeTest
+        tests/developmental_time_cuda_runtime_test.cc
+    )
+    target_include_directories(developmentalTimeCudaRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(developmentalTimeCudaRuntimeTest PRIVATE cellerator_torch cellerator_developmental_time_cuda CUDA::cudart)
+    set_target_properties(developmentalTimeCudaRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(developmentalTimeCudaRuntimeTest)
+
+    add_executable(developmentalTimeABBench
+        bench/developmental_time_ab_bench.cc
+    )
+    target_include_directories(developmentalTimeABBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(developmentalTimeABBench PRIVATE cellerator_torch cellerator_developmental_time_cuda CUDA::cudart)
+    set_target_properties(developmentalTimeABBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(developmentalTimeABBench)
 
     add_executable(torchBindingsCompileTest
         tests/torch_bindings_compile_test.cc

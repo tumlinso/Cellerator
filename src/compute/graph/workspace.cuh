@@ -27,9 +27,11 @@ public:
 
     device_buffer(device_buffer &&other) noexcept
         : data_(other.data_),
-          size_(other.size_) {
+          size_(other.size_),
+          capacity_(other.capacity_) {
         other.data_ = nullptr;
         other.size_ = 0;
+        other.capacity_ = 0;
     }
 
     device_buffer &operator=(device_buffer &&other) noexcept {
@@ -37,8 +39,10 @@ public:
         reset();
         data_ = other.data_;
         size_ = other.size_;
+        capacity_ = other.capacity_;
         other.data_ = nullptr;
         other.size_ = 0;
+        other.capacity_ = 0;
         return *this;
     }
 
@@ -47,19 +51,24 @@ public:
     }
 
     void resize(std::size_t next_size) {
-        if (next_size == size_) return;
+        if (next_size <= capacity_) {
+            size_ = next_size;
+            return;
+        }
         reset();
         if (next_size == 0) return;
         cuda_require(cudaMalloc(reinterpret_cast<void **>(&data_), next_size * sizeof(T)), "cudaMalloc(device_buffer)");
         size_ = next_size;
+        capacity_ = next_size;
     }
 
     void reset() {
         if (data_ != nullptr) {
             cudaFree(data_);
             data_ = nullptr;
-            size_ = 0;
         }
+        size_ = 0;
+        capacity_ = 0;
     }
 
     void upload(const T *host_data, std::size_t count) {
@@ -79,10 +88,12 @@ public:
     T *data() { return data_; }
     const T *data() const { return data_; }
     std::size_t size() const { return size_; }
+    std::size_t capacity() const { return capacity_; }
 
 private:
     T *data_ = nullptr;
     std::size_t size_ = 0;
+    std::size_t capacity_ = 0;
 };
 
 } // namespace cellerator::compute::graph

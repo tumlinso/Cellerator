@@ -108,59 +108,21 @@ static inline std::size_t standard_csr_bytes(unsigned long rows, unsigned long n
         + (std::size_t) nnz * sizeof(::real::storage_t);
 }
 
-static inline int convert_coo_part_to_csr(const sparse::coo *src,
-                                          mtx::compressed_workspace *ws,
-                                          sparse::compressed *dst) {
-    if (src == 0 || ws == 0 || dst == 0) return 0;
-    // Full host->device->host conversion boundary for one part.
-    sparse::clear(dst);
-    sparse::init(dst);
-    if (!mtx::reserve(ws, src->rows, src->cols, src->nnz)) return 0;
-    if (src->nnz != 0) {
-        std::memcpy(ws->h_row_idx, src->rowIdx, (std::size_t) src->nnz * sizeof(unsigned int));
-        std::memcpy(ws->h_col_idx, src->colIdx, (std::size_t) src->nnz * sizeof(unsigned int));
-        std::memcpy(ws->h_in_val, src->val, (std::size_t) src->nnz * sizeof(__half));
-    }
-    if (!mtx::build_pinned_triplet_to_compressed(ws, src->rows, src->cols, src->nnz, sparse::compressed_by_row)) return 0;
-    sparse::init(dst, src->rows, src->cols, src->nnz, sparse::compressed_by_row);
-    if (!sparse::allocate(dst)) return 0;
-    std::memcpy(dst->majorPtr, ws->h_major_ptr, (std::size_t) (src->rows + 1u) * sizeof(unsigned int));
-    if (src->nnz != 0) {
-        std::memcpy(dst->minorIdx, ws->h_minor_idx, (std::size_t) src->nnz * sizeof(unsigned int));
-        std::memcpy(dst->val, ws->h_out_val, (std::size_t) src->nnz * sizeof(__half));
-    }
-    return 1;
-}
-
 static inline int convert_coo_part_to_blocked_ell_auto(const sparse::coo *src,
-                                                       mtx::compressed_workspace *ws,
                                                        std::uint32_t global_cols,
                                                        const std::uint32_t *feature_to_global,
                                                        sparse::blocked_ell *dst,
                                                        cellshard::convert::blocked_ell_tune_result *tune) {
     static constexpr unsigned int candidates[] = { 8u, 16u, 32u };
-    sparse::compressed compressed;
-    unsigned long nnz_i = 0;
-    int ok = 0;
-
-    sparse::init(&compressed);
     sparse::clear(dst);
     sparse::init(dst);
-    if (!convert_coo_part_to_csr(src, ws, &compressed)) goto done;
-    compressed.cols = global_cols;
-    for (nnz_i = 0; nnz_i < compressed.nnz; ++nnz_i) {
-        compressed.minorIdx[nnz_i] = feature_to_global[compressed.minorIdx[nnz_i]];
-    }
-    if (!cellshard::convert::blocked_ell_from_compressed_auto(&compressed,
-                                                              candidates,
-                                                              sizeof(candidates) / sizeof(candidates[0]),
-                                                              dst,
-                                                              tune)) goto done;
-    ok = 1;
-
-done:
-    sparse::clear(&compressed);
-    return ok;
+    return cellshard::convert::blocked_ell_from_coo_auto(src,
+                                                         global_cols,
+                                                         feature_to_global,
+                                                         candidates,
+                                                         sizeof(candidates) / sizeof(candidates[0]),
+                                                         dst,
+                                                         tune);
 }
 
 static inline cellshard::series_text_column_view as_text_view(const common::text_column *c) {
@@ -211,7 +173,6 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     cellshard::series_layout_view layout;
     cellshard::series_dataset_table_view dataset_view;
     cellshard::series_provenance_view provenance_view;
-    mtx::compressed_workspace ws;
     unsigned int manifest_i = 0;
     unsigned int dataset_idx = 0;
     unsigned long global_rows = 0;
@@ -230,11 +191,8 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
     common::init(&global_feature_ids);
     common::init(&global_feature_names);
     common::init(&global_feature_types);
-    mtx::init(&ws);
     init(&shard_plan);
     part_row_offsets.push_back(0ull);
-
-    if (!mtx::setup(&ws, opts->device, opts->stream)) goto done;
 
     for (manifest_i = 0; manifest_i < m->count; ++manifest_i) {
         common::barcode_table barcodes;
@@ -444,7 +402,6 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                 const unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
                 cellshard::convert::blocked_ell_tune_result tune = {};
                 if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
-                                                          &ws,
                                                           (std::uint32_t) feature_dataset_ids.size(),
                                                           plans[manifest_i].feature_to_global.data(),
                                                           &blocked_part,
@@ -570,7 +527,6 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
                 unsigned long global_part_id = plans[manifest_i].global_part_begin + windows.ranges[window_i].part_begin + local_part;
                 cellshard::convert::blocked_ell_tune_result tune = {};
                 if (!convert_coo_part_to_blocked_ell_auto(window_view.parts[local_part],
-                                                          &ws,
                                                           (std::uint32_t) feature_dataset_ids.size(),
                                                           plans[manifest_i].feature_to_global.data(),
                                                           &blocked_part,
@@ -601,7 +557,6 @@ static inline int convert_manifest_mtx_series_to_hdf5(const manifest *m,
 
 done:
     clear(&shard_plan);
-    mtx::clear(&ws);
     common::clear(&dataset_ids);
     common::clear(&matrix_paths);
     common::clear(&feature_paths);

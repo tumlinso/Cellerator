@@ -116,59 +116,71 @@ void check_dense_reduce_cuda_matches_cpu() {
 }
 
 void check_developmental_stage_cuda_matches_cpu() {
-    dt::DevelopmentalStageLossConfig config;
-    config.ranking_weight = 1.2;
-    config.anchor_weight = 0.8;
-    config.spread_weight = 0.3;
-    config.ranking_margin = 0.15;
-    config.min_within_day_std = 0.05;
-    config.use_neighbor_day_pairs_only = false;
-    config.num_day_buckets = 4;
+    dt::DevelopmentalTimeLossConfig config;
+    config.regression_weight = 1.2;
+    config.bin_weight = 0.4;
+    config.huber_delta = 0.15;
 
-    torch::Tensor stage_cpu = torch::tensor(
+    torch::Tensor predicted_time_cpu = torch::tensor(
         {0.10f, 0.15f, 0.55f, 0.60f, 0.92f},
         torch::TensorOptions().dtype(torch::kFloat32)).clone().set_requires_grad(true);
-    const torch::Tensor day_buckets_cpu = torch::tensor(
+    torch::Tensor logits_cpu = torch::tensor(
+        {
+            {2.5f, 0.1f, -0.2f, -1.0f},
+            {1.8f, 0.3f, -0.4f, -1.2f},
+            {-0.5f, 2.2f, 0.3f, -0.2f},
+            {-0.7f, 2.0f, 0.6f, -0.1f},
+            {-1.1f, -0.6f, 0.2f, 2.4f},
+        },
+        torch::TensorOptions().dtype(torch::kFloat32)).clone().set_requires_grad(true);
+    const torch::Tensor day_labels_cpu = torch::tensor(
+        {0.0f, 0.1f, 0.5f, 0.65f, 0.95f},
+        torch::TensorOptions().dtype(torch::kFloat32));
+    const torch::Tensor time_bins_cpu = torch::tensor(
         {0, 0, 1, 1, 3},
         torch::TensorOptions().dtype(torch::kInt64));
 
     dt::DevelopmentalStageOutput output_cpu{
-        torch::Tensor(),
-        stage_cpu,
+        predicted_time_cpu,
+        logits_cpu,
         torch::Tensor()
     };
     dt::TimeBatch batch_cpu{
         torch::Tensor(),
-        torch::Tensor(),
-        day_buckets_cpu,
+        day_labels_cpu,
+        time_bins_cpu,
         torch::Tensor()
     };
     dt::DevelopmentalStageLoss loss_cpu = dt::compute_developmental_stage_loss(output_cpu, batch_cpu, config);
     loss_cpu.total.backward();
-    const torch::Tensor grad_cpu = stage_cpu.grad().detach().clone();
+    const torch::Tensor grad_time_cpu = predicted_time_cpu.grad().detach().clone();
+    const torch::Tensor grad_logits_cpu = logits_cpu.grad().detach().clone();
 
-    torch::Tensor stage_cuda = stage_cpu.detach().clone().to(torch::kCUDA).set_requires_grad(true);
-    const torch::Tensor day_buckets_cuda = day_buckets_cpu.to(torch::kCUDA);
+    torch::Tensor predicted_time_cuda = predicted_time_cpu.detach().clone().to(torch::kCUDA).set_requires_grad(true);
+    torch::Tensor logits_cuda = logits_cpu.detach().clone().to(torch::kCUDA).set_requires_grad(true);
+    const torch::Tensor day_labels_cuda = day_labels_cpu.to(torch::kCUDA);
+    const torch::Tensor time_bins_cuda = time_bins_cpu.to(torch::kCUDA);
     dt::DevelopmentalStageOutput output_cuda{
-        torch::Tensor(),
-        stage_cuda,
+        predicted_time_cuda,
+        logits_cuda,
         torch::Tensor()
     };
     dt::TimeBatch batch_cuda{
         torch::Tensor(),
-        torch::Tensor(),
-        day_buckets_cuda,
+        day_labels_cuda,
+        time_bins_cuda,
         torch::Tensor()
     };
     dt::DevelopmentalStageLoss loss_cuda = dt::compute_developmental_stage_loss(output_cuda, batch_cuda, config);
     loss_cuda.total.backward();
-    const torch::Tensor grad_cuda = stage_cuda.grad().detach().to(torch::kCPU);
+    const torch::Tensor grad_time_cuda = predicted_time_cuda.grad().detach().to(torch::kCPU);
+    const torch::Tensor grad_logits_cuda = logits_cuda.grad().detach().to(torch::kCPU);
 
-    require(close_scalar(loss_cpu.ranking, loss_cuda.ranking, 1.0e-5, 1.0e-5), "developmental ranking mismatch");
-    require(close_scalar(loss_cpu.anchor, loss_cuda.anchor, 1.0e-5, 1.0e-5), "developmental anchor mismatch");
-    require(close_scalar(loss_cpu.spread, loss_cuda.spread, 1.0e-5, 1.0e-5), "developmental spread mismatch");
+    require(close_scalar(loss_cpu.regression, loss_cuda.regression, 1.0e-5, 1.0e-5), "developmental regression mismatch");
+    require(close_scalar(loss_cpu.bin_classification, loss_cuda.bin_classification, 1.0e-5, 1.0e-5), "developmental bin loss mismatch");
     require(close_scalar(loss_cpu.total, loss_cuda.total, 1.0e-5, 1.0e-5), "developmental total mismatch");
-    require(close_tensor(grad_cpu, grad_cuda, 2.0e-5, 2.0e-5), "developmental gradient mismatch");
+    require(close_tensor(grad_time_cpu, grad_time_cuda, 2.0e-5, 2.0e-5), "developmental time gradient mismatch");
+    require(close_tensor(grad_logits_cpu, grad_logits_cuda, 2.0e-5, 2.0e-5), "developmental logits gradient mismatch");
 }
 
 void check_weighted_future_target_cuda() {
@@ -205,7 +217,7 @@ void check_weighted_future_target_cuda() {
 } // namespace
 
 int main() {
-    if (!torch::cuda::is_available()) return 0;
+    require(torch::cuda::is_available(), "modelCustomOpsTest requires CUDA");
 
     torch::manual_seed(0);
     check_dense_reduce_cuda_matches_cpu();

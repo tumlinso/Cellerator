@@ -186,7 +186,8 @@ bool run_device_case() {
         return false;
     }
     if (device_count == 0) {
-        return true;
+        std::fprintf(stderr, "quantizedMatrixTest requires at least one visible CUDA device\n");
+        return false;
     }
 
     fixture.packed_row_ptr.resize(static_cast<std::size_t>(fixture.rows) + 1u, 0);

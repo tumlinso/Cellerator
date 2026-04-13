@@ -15,9 +15,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
-#include <vector>
 
 namespace cellerator::compute::neighbors::forward_neighbors {
 
@@ -34,6 +32,7 @@ struct Candidate {
     float developmental_time = INFINITY;
     std::int64_t embryo_id = -1;
     std::int64_t cell_index = -1;
+    std::int64_t shard_index = -1;
 };
 
 struct SegmentPlan {
@@ -51,10 +50,17 @@ struct ProbeCandidate {
 
 struct DeviceShardStorage {
     int device_id = 0;
+    std::int64_t row_begin = 0;
+    std::int64_t row_end = 0;
+    float time_begin = detail::quiet_nan_();
+    float time_end = detail::quiet_nan_();
+    std::size_t resident_bytes = 0u;
+    bool resident = false;
     host_array<std::int64_t> cell_indices_cpu;
     host_array<float> developmental_time_cpu;
     host_array<std::int64_t> embryo_ids_cpu;
     host_array<float> latent_unit_cpu;
+    host_array<__half> latent_unit_half_cpu;
     host_array<float> ann_centroids_cpu;
     cg::device_buffer<std::int64_t> cell_indices;
     cg::device_buffer<float> developmental_time;
@@ -76,6 +82,62 @@ struct ShardPlanTable {
     host_array<SegmentPlan> segments;
 };
 
+struct ForwardNeighborSearchWorkspaceStorage {
+    int active_device_id = -1;
+    host_array<float> normalized_query_latent;
+    host_array<Candidate> merged_best;
+    host_array<Candidate> shard_best;
+    host_array<std::int64_t> block_query_embryos;
+    host_array<std::int64_t> deferred_segment_order;
+    host_array<std::int64_t> segment_order;
+    host_array<std::pair<std::int64_t, std::int64_t>> intervals;
+    host_array<std::pair<std::int64_t, std::int64_t>> merged_intervals;
+    host_array<float> block_latent_f32;
+    host_array<__half> block_latent_half;
+    host_array<float> block_lower;
+    host_array<float> block_upper;
+    host_array<std::int64_t> block_embryo;
+    host_array<std::int64_t> eligible_lists;
+    host_array<float> eligible_centroids;
+    host_array<std::int64_t> eligible_embryo;
+    host_array<std::int64_t> eligible_row_begin;
+    host_array<std::int64_t> eligible_row_end;
+    host_array<std::int64_t> download_cell;
+    host_array<std::int64_t> download_shard;
+    host_array<float> download_time;
+    host_array<std::int64_t> download_embryo;
+    host_array<float> download_similarity;
+    host_array<std::int64_t> seen_neighbor_ids;
+    host_array<int> block_device_ids;
+    host_array<std::uint32_t> block_device_offsets;
+    host_array<std::uint32_t> block_device_shards;
+    cg::device_buffer<__half> d_query_latent;
+    cg::device_buffer<float> d_query_lower;
+    cg::device_buffer<float> d_query_upper;
+    cg::device_buffer<std::int64_t> d_query_embryo;
+    cg::device_buffer<std::int64_t> d_best_cell;
+    cg::device_buffer<std::int64_t> d_best_shard;
+    cg::device_buffer<float> d_best_time;
+    cg::device_buffer<std::int64_t> d_best_embryo;
+    cg::device_buffer<float> d_best_similarity;
+    cg::device_buffer<float> d_centroids;
+    cg::device_buffer<std::int64_t> d_list_embryo;
+    cg::device_buffer<std::int64_t> d_list_row_begin;
+    cg::device_buffer<std::int64_t> d_list_row_end;
+    cg::device_buffer<std::int32_t> d_selected_lists;
+};
+
+struct DeviceResidencyState {
+    int device_id = -1;
+    std::size_t resident_bytes = 0u;
+    host_array<std::uint32_t> resident_shards;
+};
+
+struct ForwardNeighborExecutorStorage {
+    ForwardNeighborExecutorConfig config;
+    host_array<DeviceResidencyState> residency;
+};
+
 __device__ inline bool candidate_valid_(const Candidate &candidate) {
     return isfinite(candidate.similarity) && candidate.cell_index >= 0;
 }
@@ -91,7 +153,9 @@ __device__ inline bool better_candidate_device_(const Candidate &lhs, const Cand
     if (lhs.developmental_time > rhs.developmental_time) return false;
     if (lhs.embryo_id < rhs.embryo_id) return true;
     if (lhs.embryo_id > rhs.embryo_id) return false;
-    return lhs.cell_index < rhs.cell_index;
+    if (lhs.cell_index < rhs.cell_index) return true;
+    if (lhs.cell_index > rhs.cell_index) return false;
+    return lhs.shard_index < rhs.shard_index;
 }
 
 inline bool better_candidate_host_(const Candidate &lhs, const Candidate &rhs) {
@@ -105,7 +169,9 @@ inline bool better_candidate_host_(const Candidate &lhs, const Candidate &rhs) {
     if (lhs.developmental_time > rhs.developmental_time) return false;
     if (lhs.embryo_id < rhs.embryo_id) return true;
     if (lhs.embryo_id > rhs.embryo_id) return false;
-    return lhs.cell_index < rhs.cell_index;
+    if (lhs.cell_index < rhs.cell_index) return true;
+    if (lhs.cell_index > rhs.cell_index) return false;
+    return lhs.shard_index < rhs.shard_index;
 }
 
 __device__ inline void init_candidates_device_(Candidate *best, int k) {
@@ -186,6 +252,7 @@ __device__ inline float dot_half_float_rows_(const __half *lhs, const float *rhs
 
 __global__ void init_best_kernel_(
     std::int64_t *best_cell,
+    std::int64_t *best_shard,
     float *best_time,
     std::int64_t *best_embryo,
     float *best_similarity,
@@ -195,6 +262,7 @@ __global__ void init_best_kernel_(
     const std::int64_t total = query_rows * static_cast<std::int64_t>(k);
     if (index >= total) return;
     best_cell[index] = -1;
+    best_shard[index] = -1;
     best_time[index] = INFINITY;
     best_embryo[index] = -1;
     best_similarity[index] = -INFINITY;
@@ -211,11 +279,13 @@ __global__ void exact_search_kernel_(
     const std::int64_t *index_cell,
     std::int64_t query_rows,
     int latent_dim,
+    std::int64_t shard_index,
     std::int64_t index_begin,
     std::int64_t index_count,
     int hard_same_embryo,
     int k,
     std::int64_t *best_cell,
+    std::int64_t *best_shard,
     float *best_time,
     std::int64_t *best_embryo,
     float *best_similarity) {
@@ -243,7 +313,8 @@ __global__ void exact_search_kernel_(
             dot_half_rows_(query_row, target_row, latent_dim),
             time,
             index_embryo[index_row],
-            index_cell[index_row]
+            index_cell[index_row],
+            shard_index
         }, local_best, k);
     }
 
@@ -261,7 +332,8 @@ __global__ void exact_search_kernel_(
                 best_similarity[row_base + i],
                 best_time[row_base + i],
                 best_embryo[row_base + i],
-                best_cell[row_base + i]
+                best_cell[row_base + i],
+                best_shard[row_base + i]
             };
         }
         for (int thread = 0; thread < kWarpThreads; ++thread) {
@@ -273,6 +345,7 @@ __global__ void exact_search_kernel_(
             best_time[row_base + i] = merged[i].developmental_time;
             best_embryo[row_base + i] = merged[i].embryo_id;
             best_cell[row_base + i] = merged[i].cell_index;
+            best_shard[row_base + i] = merged[i].shard_index;
         }
     }
 }
@@ -338,10 +411,12 @@ __global__ void ann_refine_kernel_(
     const std::int64_t *list_row_end,
     std::int64_t query_rows,
     int latent_dim,
+    std::int64_t shard_index,
     int hard_same_embryo,
     int probe_count,
     int k,
     std::int64_t *best_cell,
+    std::int64_t *best_shard,
     float *best_time,
     std::int64_t *best_embryo,
     float *best_similarity) {
@@ -373,7 +448,8 @@ __global__ void ann_refine_kernel_(
                 dot_half_rows_(query_row, target_row, latent_dim),
                 time,
                 index_embryo[index_row],
-                index_cell[index_row]
+                index_cell[index_row],
+                shard_index
             }, local_best, k);
         }
     }
@@ -392,7 +468,8 @@ __global__ void ann_refine_kernel_(
                 best_similarity[row_base + i],
                 best_time[row_base + i],
                 best_embryo[row_base + i],
-                best_cell[row_base + i]
+                best_cell[row_base + i],
+                best_shard[row_base + i]
             };
         }
         for (int thread = 0; thread < kWarpThreads; ++thread) {
@@ -404,6 +481,7 @@ __global__ void ann_refine_kernel_(
             best_time[row_base + i] = merged[i].developmental_time;
             best_embryo[row_base + i] = merged[i].embryo_id;
             best_cell[row_base + i] = merged[i].cell_index;
+            best_shard[row_base + i] = merged[i].shard_index;
         }
     }
 }
@@ -412,6 +490,17 @@ inline void require_gpu_() {
     int count = 0;
     cg::cuda_require(cudaGetDeviceCount(&count), "cudaGetDeviceCount");
     if (count <= 0) throw std::runtime_error("forward_neighbors requires at least one CUDA device");
+}
+
+inline int preferred_device_at_(int ordinal) {
+    static constexpr int kPairOrder[4] = {0, 2, 1, 3};
+    return kPairOrder[ordinal];
+}
+
+inline int pair_id_for_device_(int device_id) {
+    if (device_id == 0 || device_id == 2) return 0;
+    if (device_id == 1 || device_id == 3) return 1;
+    return device_id;
 }
 
 inline host_array<int> resolve_forward_neighbor_devices_(const ForwardNeighborBuildConfig &config) {
@@ -423,6 +512,12 @@ inline host_array<int> resolve_forward_neighbor_devices_(const ForwardNeighborBu
     host_array<int> devices;
     const int use_count = std::max(1, std::min(count, 4));
     devices.resize(static_cast<std::size_t>(use_count));
+    if (count >= 4) {
+        for (int ordinal = 0; ordinal < use_count; ++ordinal) {
+            devices[static_cast<std::size_t>(ordinal)] = preferred_device_at_(ordinal);
+        }
+        return devices;
+    }
     for (int device = 0; device < use_count; ++device) devices[static_cast<std::size_t>(device)] = device;
     return devices;
 }
@@ -449,10 +544,10 @@ inline host_array<std::int64_t> sorted_row_order_(
     host_array<std::int64_t> order(rows);
     for (std::size_t row = 0; row < rows; ++row) order[row] = static_cast<std::int64_t>(row);
     std::stable_sort(order.begin(), order.end(), [&](std::int64_t lhs, std::int64_t rhs) {
-        if (embryo_ids[static_cast<std::size_t>(lhs)] < embryo_ids[static_cast<std::size_t>(rhs)]) return true;
-        if (embryo_ids[static_cast<std::size_t>(lhs)] > embryo_ids[static_cast<std::size_t>(rhs)]) return false;
         if (developmental_time[static_cast<std::size_t>(lhs)] < developmental_time[static_cast<std::size_t>(rhs)]) return true;
         if (developmental_time[static_cast<std::size_t>(lhs)] > developmental_time[static_cast<std::size_t>(rhs)]) return false;
+        if (embryo_ids[static_cast<std::size_t>(lhs)] < embryo_ids[static_cast<std::size_t>(rhs)]) return true;
+        if (embryo_ids[static_cast<std::size_t>(lhs)] > embryo_ids[static_cast<std::size_t>(rhs)]) return false;
         return cell_indices[static_cast<std::size_t>(lhs)] < cell_indices[static_cast<std::size_t>(rhs)];
     });
     return order;
@@ -498,79 +593,92 @@ inline ShardPlanTable assign_segments_to_shards_(
     table.shard_offsets.assign_fill(used_shards + 1u, 0u);
     if (segments.empty()) return table;
 
-    host_array<std::int64_t> shard_rows(used_shards);
-    shard_rows.assign_fill(used_shards, 0);
-    host_array<std::size_t> shard_counts(used_shards);
-    shard_counts.assign_fill(used_shards, 0u);
-    host_array<std::size_t> segment_shards(segments.size());
-    host_array<SegmentPlan> sorted = segments;
-    std::sort(sorted.begin(), sorted.end(), [](const SegmentPlan &lhs, const SegmentPlan &rhs) {
-        const std::int64_t lhs_rows = lhs.source_end - lhs.source_begin;
-        const std::int64_t rhs_rows = rhs.source_end - rhs.source_begin;
-        if (lhs_rows > rhs_rows) return true;
-        if (lhs_rows < rhs_rows) return false;
-        if (lhs.embryo_id < rhs.embryo_id) return true;
-        if (lhs.embryo_id > rhs.embryo_id) return false;
-        return lhs.source_begin < rhs.source_begin;
-    });
+    table.segments = segments;
+    std::int64_t total_rows = 0;
+    for (const SegmentPlan &segment : segments) total_rows += segment.source_end - segment.source_begin;
+    const std::int64_t target_rows = std::max<std::int64_t>(
+        1,
+        (total_rows + static_cast<std::int64_t>(used_shards) - 1) / static_cast<std::int64_t>(used_shards));
 
-    for (std::size_t idx = 0; idx < sorted.size(); ++idx) {
-        const SegmentPlan &segment = sorted[idx];
-        std::size_t best_shard = 0;
-        for (std::size_t shard = 1; shard < used_shards; ++shard) {
-            if (shard_rows[shard] < shard_rows[best_shard]) best_shard = shard;
-        }
-        segment_shards[idx] = best_shard;
-        ++shard_counts[best_shard];
-        shard_rows[best_shard] += segment.source_end - segment.source_begin;
-    }
-
+    std::size_t segment_cursor = 0u;
     for (std::size_t shard = 0; shard < used_shards; ++shard) {
-        table.shard_offsets[shard + 1u] = table.shard_offsets[shard] + shard_counts[shard];
+        table.shard_offsets[shard] = segment_cursor;
+        if (segment_cursor >= segments.size()) continue;
+
+        std::int64_t shard_rows = 0;
+        const std::size_t remaining_shards = used_shards - shard;
+        const std::size_t remaining_segments = segments.size() - segment_cursor;
+        const std::size_t min_segments_to_leave = remaining_shards > 1u ? remaining_shards - 1u : 0u;
+
+        while (segment_cursor < segments.size()) {
+            const SegmentPlan &segment = segments[segment_cursor];
+            const std::int64_t segment_rows = segment.source_end - segment.source_begin;
+            const bool must_leave_segment = (segments.size() - (segment_cursor + 1u)) < min_segments_to_leave;
+            if (shard_rows > 0 && shard_rows + segment_rows > target_rows && !must_leave_segment) break;
+            shard_rows += segment_rows;
+            ++segment_cursor;
+            if (must_leave_segment) break;
+        }
     }
-    table.segments.resize(sorted.size());
-    host_array<std::size_t> cursor = table.shard_offsets;
-    for (std::size_t idx = 0; idx < sorted.size(); ++idx) {
-        const std::size_t shard = segment_shards[idx];
-        table.segments[cursor[shard]++] = sorted[idx];
+    table.shard_offsets[used_shards] = segments.size();
+    for (std::size_t shard = 0; shard < used_shards; ++shard) {
+        if (table.shard_offsets[shard + 1u] < table.shard_offsets[shard]) {
+            table.shard_offsets[shard + 1u] = table.shard_offsets[shard];
+        }
     }
     return table;
 }
 
-inline host_array<std::int64_t> eligible_segment_order_(
+inline void eligible_segment_order_(
     const host_array<ForwardNeighborSegment> &segments,
-    const std::unordered_set<std::int64_t> &query_embryos,
-    ForwardNeighborEmbryoPolicy policy) {
-    host_array<std::int64_t> ordered;
-    host_array<std::int64_t> deferred;
+    const host_array<std::int64_t> &query_embryos,
+    ForwardNeighborEmbryoPolicy policy,
+    host_array<std::int64_t> *ordered,
+    host_array<std::int64_t> *deferred) {
+    ordered->clear();
+    deferred->clear();
+    const auto contains_embryo = [&](std::int64_t embryo_id) {
+        for (std::size_t i = 0; i < query_embryos.size(); ++i) {
+            if (query_embryos[i] == embryo_id) return true;
+        }
+        return false;
+    };
+
     for (std::int64_t segment_idx = 0; segment_idx < static_cast<std::int64_t>(segments.size()); ++segment_idx) {
-        const bool embryo_match = !query_embryos.empty() && query_embryos.find(segments[static_cast<std::size_t>(segment_idx)].embryo_id) != query_embryos.end();
+        const bool embryo_match = !query_embryos.empty() && contains_embryo(segments[static_cast<std::size_t>(segment_idx)].embryo_id);
         if (policy == ForwardNeighborEmbryoPolicy::same_embryo_only) {
-            if (query_embryos.empty() || embryo_match) append_one_(&ordered, segment_idx);
+            if (query_embryos.empty() || embryo_match) append_one_(ordered, segment_idx);
             continue;
         }
         if (policy == ForwardNeighborEmbryoPolicy::same_embryo_first && embryo_match) {
-            append_one_(&ordered, segment_idx);
+            append_one_(ordered, segment_idx);
         } else if (policy == ForwardNeighborEmbryoPolicy::same_embryo_first) {
-            append_one_(&deferred, segment_idx);
+            append_one_(deferred, segment_idx);
         } else {
-            append_one_(&ordered, segment_idx);
+            append_one_(ordered, segment_idx);
         }
     }
-    append_copy_(&ordered, deferred.data(), deferred.size());
-    return ordered;
+    append_copy_(ordered, deferred->data(), deferred->size());
 }
 
-inline std::unordered_set<std::int64_t> block_query_embryos_(
+inline void collect_block_query_embryos_(
     const host_array<std::int64_t> &query_embryo,
     std::int64_t query_begin,
-    std::int64_t query_end) {
-    std::unordered_set<std::int64_t> embryo_ids;
+    std::int64_t query_end,
+    host_array<std::int64_t> *embryo_ids) {
+    embryo_ids->clear();
     for (std::int64_t row = query_begin; row < query_end; ++row) {
         const std::int64_t embryo = query_embryo[static_cast<std::size_t>(row)];
-        if (embryo >= 0) embryo_ids.insert(embryo);
+        if (embryo < 0) continue;
+        bool seen = false;
+        for (std::size_t i = 0; i < embryo_ids->size(); ++i) {
+            if ((*embryo_ids)[i] == embryo) {
+                seen = true;
+                break;
+            }
+        }
+        if (!seen) append_one_(embryo_ids, embryo);
     }
-    return embryo_ids;
 }
 
 inline bool segment_time_overlaps_block_(
@@ -628,30 +736,29 @@ inline std::pair<float, float> block_time_limits_(
     return { block_lower, block_upper };
 }
 
-inline host_array<std::pair<std::int64_t, std::int64_t>> merge_row_intervals_(
-    host_array<std::pair<std::int64_t, std::int64_t>> intervals) {
-    if (intervals.empty()) return intervals;
-    std::sort(intervals.begin(), intervals.end(), [](const auto &lhs, const auto &rhs) {
+inline void merge_row_intervals_(
+    host_array<std::pair<std::int64_t, std::int64_t>> *intervals,
+    host_array<std::pair<std::int64_t, std::int64_t>> *merged) {
+    merged->clear();
+    if (intervals->empty()) return;
+    std::sort(intervals->begin(), intervals->end(), [](const auto &lhs, const auto &rhs) {
         if (lhs.first < rhs.first) return true;
         if (lhs.first > rhs.first) return false;
         return lhs.second < rhs.second;
     });
-    host_array<std::pair<std::int64_t, std::int64_t>> merged;
-    append_one_(&merged, intervals[0]);
-    for (std::size_t i = 1; i < intervals.size(); ++i) {
-        if (intervals[i].first <= merged.back().second) {
-            merged.back().second = std::max(merged.back().second, intervals[i].second);
+    append_one_(merged, (*intervals)[0]);
+    for (std::size_t i = 1; i < intervals->size(); ++i) {
+        if ((*intervals)[i].first <= merged->back().second) {
+            merged->back().second = std::max(merged->back().second, (*intervals)[i].second);
         } else {
-            append_one_(&merged, intervals[i]);
+            append_one_(merged, (*intervals)[i]);
         }
     }
-    return merged;
 }
 
-inline host_array<__half> convert_f32_to_half_(const host_array<float> &input) {
-    host_array<__half> output(input.size());
-    for (std::size_t i = 0; i < input.size(); ++i) output[i] = __float2half_rn(input[i]);
-    return output;
+inline void convert_f32_to_half_(const host_array<float> &input, host_array<__half> *output) {
+    output->resize(input.size());
+    for (std::size_t i = 0; i < input.size(); ++i) (*output)[i] = __float2half_rn(input[i]);
 }
 
 inline host_array<float> build_list_centroid_(
@@ -684,23 +791,22 @@ inline void set_device_(int device_id) {
 inline void init_best_arrays_(
     std::int64_t query_rows,
     int k,
-    cg::device_buffer<std::int64_t> *best_cell,
-    cg::device_buffer<float> *best_time,
-    cg::device_buffer<std::int64_t> *best_embryo,
-    cg::device_buffer<float> *best_similarity) {
+    ForwardNeighborSearchWorkspaceStorage *workspace) {
     const std::size_t total = static_cast<std::size_t>(query_rows) * static_cast<std::size_t>(k);
-    best_cell->resize(total);
-    best_time->resize(total);
-    best_embryo->resize(total);
-    best_similarity->resize(total);
+    workspace->d_best_cell.resize(total);
+    workspace->d_best_shard.resize(total);
+    workspace->d_best_time.resize(total);
+    workspace->d_best_embryo.resize(total);
+    workspace->d_best_similarity.resize(total);
     const int threads = 128;
     const int blocks = static_cast<int>((total + static_cast<std::size_t>(threads) - 1u) / static_cast<std::size_t>(threads));
     // Initialization launch is pure bookkeeping and followed by a sync, so it is noticeable only for small query batches.
     init_best_kernel_<<<blocks, threads>>>(
-        best_cell->data(),
-        best_time->data(),
-        best_embryo->data(),
-        best_similarity->data(),
+        workspace->d_best_cell.data(),
+        workspace->d_best_shard.data(),
+        workspace->d_best_time.data(),
+        workspace->d_best_embryo.data(),
+        workspace->d_best_similarity.data(),
         query_rows,
         k);
     cg::cuda_require(cudaGetLastError(), "init_best_kernel launch");
@@ -708,33 +814,33 @@ inline void init_best_arrays_(
     cg::cuda_require(cudaDeviceSynchronize(), "init_best_kernel sync");
 }
 
-inline host_array<Candidate> download_best_candidates_(
-    const cg::device_buffer<std::int64_t> &best_cell,
-    const cg::device_buffer<float> &best_time,
-    const cg::device_buffer<std::int64_t> &best_embryo,
-    const cg::device_buffer<float> &best_similarity,
+inline void download_best_candidates_(
+    ForwardNeighborSearchWorkspaceStorage *workspace,
     std::int64_t query_rows,
     int k) {
     const std::size_t total = static_cast<std::size_t>(query_rows) * static_cast<std::size_t>(k);
-    host_array<std::int64_t> cell;
-    host_array<float> time;
-    host_array<std::int64_t> embryo;
-    host_array<float> similarity;
-    cell.assign_fill(total, static_cast<std::int64_t>(-1));
-    time.assign_fill(total, detail::quiet_nan_());
-    embryo.assign_fill(total, static_cast<std::int64_t>(-1));
-    similarity.assign_fill(total, detail::negative_infinity_());
+    workspace->download_cell.assign_fill(total, static_cast<std::int64_t>(-1));
+    workspace->download_shard.assign_fill(total, static_cast<std::int64_t>(-1));
+    workspace->download_time.assign_fill(total, detail::quiet_nan_());
+    workspace->download_embryo.assign_fill(total, static_cast<std::int64_t>(-1));
+    workspace->download_similarity.assign_fill(total, detail::negative_infinity_());
     // Full-table downloads are intentional here: merge logic is host-side today, so query blocks should be large enough to amortize D2H latency.
-    best_cell.download(cell.data(), total);
-    best_time.download(time.data(), total);
-    best_embryo.download(embryo.data(), total);
-    best_similarity.download(similarity.data(), total);
+    workspace->d_best_cell.download(workspace->download_cell.data(), total);
+    workspace->d_best_shard.download(workspace->download_shard.data(), total);
+    workspace->d_best_time.download(workspace->download_time.data(), total);
+    workspace->d_best_embryo.download(workspace->download_embryo.data(), total);
+    workspace->d_best_similarity.download(workspace->download_similarity.data(), total);
 
-    host_array<Candidate> out(total);
+    workspace->shard_best.resize(total);
     for (std::size_t i = 0; i < total; ++i) {
-        out[i] = Candidate{ similarity[i], time[i], embryo[i], cell[i] };
+        workspace->shard_best[i] = Candidate{
+            workspace->download_similarity[i],
+            workspace->download_time[i],
+            workspace->download_embryo[i],
+            workspace->download_cell[i],
+            workspace->download_shard[i]
+        };
     }
-    return out;
 }
 
 template<typename T>
@@ -778,6 +884,214 @@ inline void append_batch_(
         }
     } else {
         detail::append_i64_(embryo_ids, batch.embryo_ids);
+    }
+}
+
+inline std::size_t estimate_shard_resident_bytes_(const DeviceShardStorage &shard) {
+    return shard.cell_indices_cpu.size() * sizeof(std::int64_t)
+        + shard.developmental_time_cpu.size() * sizeof(float)
+        + shard.embryo_ids_cpu.size() * sizeof(std::int64_t)
+        + shard.latent_unit_half_cpu.size() * sizeof(__half)
+        + shard.ann_centroids_cpu.size() * sizeof(float);
+}
+
+inline void release_shard_device_buffers_(DeviceShardStorage *shard) {
+    if (shard == nullptr || !shard->resident) return;
+    set_device_(shard->device_id);
+    shard->cell_indices.reset();
+    shard->developmental_time.reset();
+    shard->embryo_ids.reset();
+    shard->latent_unit.reset();
+    shard->ann_centroids.reset();
+    shard->resident = false;
+}
+
+inline void upload_shard_to_device_(DeviceShardStorage *shard) {
+    if (shard == nullptr || shard->resident) return;
+    set_device_(shard->device_id);
+    shard->cell_indices.resize(shard->cell_indices_cpu.size());
+    shard->developmental_time.resize(shard->developmental_time_cpu.size());
+    shard->embryo_ids.resize(shard->embryo_ids_cpu.size());
+    shard->latent_unit.resize(shard->latent_unit_half_cpu.size());
+    shard->ann_centroids.resize(shard->ann_centroids_cpu.size());
+    shard->cell_indices.upload(shard->cell_indices_cpu.data(), shard->cell_indices_cpu.size());
+    shard->developmental_time.upload(shard->developmental_time_cpu.data(), shard->developmental_time_cpu.size());
+    shard->embryo_ids.upload(shard->embryo_ids_cpu.data(), shard->embryo_ids_cpu.size());
+    shard->latent_unit.upload(shard->latent_unit_half_cpu.data(), shard->latent_unit_half_cpu.size());
+    if (!shard->ann_centroids_cpu.empty()) {
+        shard->ann_centroids.upload(shard->ann_centroids_cpu.data(), shard->ann_centroids_cpu.size());
+    }
+    shard->resident = true;
+}
+
+inline DeviceResidencyState &device_residency_state_(
+    ForwardNeighborExecutorStorage *executor,
+    int device_id) {
+    for (std::size_t i = 0; i < executor->residency.size(); ++i) {
+        if (executor->residency[i].device_id == device_id) return executor->residency[i];
+    }
+    const std::size_t old_size = executor->residency.size();
+    executor->residency.resize(old_size + 1u);
+    executor->residency[old_size].device_id = device_id;
+    executor->residency[old_size].resident_bytes = 0u;
+    executor->residency[old_size].resident_shards.clear();
+    return executor->residency[old_size];
+}
+
+inline void erase_resident_shard_at_(DeviceResidencyState *state, std::size_t idx) {
+    if (idx >= state->resident_shards.size()) return;
+    for (std::size_t i = idx + 1u; i < state->resident_shards.size(); ++i) {
+        state->resident_shards[i - 1u] = state->resident_shards[i];
+    }
+    state->resident_shards.resize(state->resident_shards.size() - 1u);
+}
+
+inline void touch_resident_shard_(
+    DeviceResidencyState *state,
+    std::uint32_t shard_idx) {
+    for (std::size_t i = 0; i < state->resident_shards.size(); ++i) {
+        if (state->resident_shards[i] != shard_idx) continue;
+        const std::uint32_t value = state->resident_shards[i];
+        erase_resident_shard_at_(state, i);
+        append_one_(&state->resident_shards, value);
+        return;
+    }
+}
+
+inline void evict_oldest_resident_shard_(
+    ForwardNeighborIndexStorage *storage,
+    DeviceResidencyState *state) {
+    if (state->resident_shards.empty()) return;
+    const std::uint32_t shard_idx = state->resident_shards[0];
+    if (shard_idx >= storage->shards.size()) {
+        erase_resident_shard_at_(state, 0u);
+        return;
+    }
+    DeviceShardStorage &shard = storage->shards[shard_idx];
+    if (shard.resident && state->resident_bytes >= shard.resident_bytes) {
+        state->resident_bytes -= shard.resident_bytes;
+    } else {
+        state->resident_bytes = 0u;
+    }
+    release_shard_device_buffers_(&shard);
+    erase_resident_shard_at_(state, 0u);
+}
+
+inline void ensure_shard_resident_(
+    ForwardNeighborIndexStorage *storage,
+    std::uint32_t shard_idx,
+    ForwardNeighborExecutorStorage *executor) {
+    DeviceShardStorage &shard = storage->shards[shard_idx];
+    DeviceResidencyState &state = device_residency_state_(executor, shard.device_id);
+    if (shard.resident) {
+        touch_resident_shard_(&state, shard_idx);
+        return;
+    }
+
+    const std::int64_t max_resident_shards = executor->config.max_resident_shards_per_device;
+    while (max_resident_shards > 0
+           && state.resident_shards.size() >= static_cast<std::size_t>(max_resident_shards)
+           && !state.resident_shards.empty()) {
+        evict_oldest_resident_shard_(storage, &state);
+    }
+    while (executor->config.resident_bytes_per_device > 0u
+           && state.resident_bytes + shard.resident_bytes > executor->config.resident_bytes_per_device
+           && !state.resident_shards.empty()) {
+        evict_oldest_resident_shard_(storage, &state);
+    }
+
+    upload_shard_to_device_(&shard);
+    state.resident_bytes += shard.resident_bytes;
+    append_one_(&state.resident_shards, shard_idx);
+}
+
+inline bool shard_time_overlaps_block_(
+    const DeviceShardStorage &shard,
+    float block_lower,
+    float block_upper) {
+    if (shard.row_begin >= shard.row_end) return false;
+    if (shard.time_end <= block_lower) return false;
+    if (std::isfinite(block_upper) && shard.time_begin > block_upper) return false;
+    return true;
+}
+
+inline ForwardNeighborRoutingPlan build_routing_plan_(
+    const ForwardNeighborIndexStorage &storage,
+    const ForwardNeighborQueryBatch &query,
+    const ForwardNeighborSearchConfig &config) {
+    ForwardNeighborRoutingPlan plan;
+    if (query.cell_indices.empty()) {
+        plan.block_route_offsets.assign_fill(1u, 0u);
+        return plan;
+    }
+
+    std::uint32_t route_cursor = 0u;
+    const std::int64_t block_rows = std::max<std::int64_t>(1, config.query_block_rows);
+    const std::int64_t query_count = static_cast<std::int64_t>(query.cell_indices.size());
+    for (std::int64_t query_begin = 0; query_begin < query_count; query_begin += block_rows) {
+        const std::int64_t query_end = std::min(query_begin + block_rows, query_count);
+        const auto block_limits = block_time_limits_(query.developmental_time, query_begin, query_end, config);
+        append_one_(&plan.block_query_begin, query_begin);
+        append_one_(&plan.block_query_end, query_end);
+        append_one_(&plan.block_window_lower, block_limits.first);
+        append_one_(&plan.block_window_upper, block_limits.second);
+        append_one_(&plan.block_route_offsets, route_cursor);
+        for (std::uint32_t shard_idx = 0u; shard_idx < storage.shards.size(); ++shard_idx) {
+            const DeviceShardStorage &shard = storage.shards[shard_idx];
+            if (!shard_time_overlaps_block_(shard, block_limits.first, block_limits.second)) continue;
+            append_one_(&plan.route_shard_indices, shard_idx);
+            append_one_(&plan.route_device_ids, shard.device_id);
+            ++route_cursor;
+        }
+    }
+    append_one_(&plan.block_route_offsets, route_cursor);
+    return plan;
+}
+
+inline void build_block_device_routes_(
+    const ForwardNeighborRoutingPlan &plan,
+    std::size_t block_idx,
+    ForwardNeighborSearchWorkspaceStorage *workspace) {
+    workspace->block_device_ids.clear();
+    workspace->block_device_offsets.clear();
+    workspace->block_device_shards.clear();
+    if (block_idx + 1u >= plan.block_route_offsets.size()) return;
+
+    const std::uint32_t route_begin = plan.block_route_offsets[block_idx];
+    const std::uint32_t route_end = plan.block_route_offsets[block_idx + 1u];
+    for (std::uint32_t route = route_begin; route < route_end; ++route) {
+        const int device_id = plan.route_device_ids[route];
+        bool seen = false;
+        for (std::size_t idx = 0; idx < workspace->block_device_ids.size(); ++idx) {
+            if (workspace->block_device_ids[idx] == device_id) {
+                seen = true;
+                break;
+            }
+        }
+        if (!seen) append_one_(&workspace->block_device_ids, device_id);
+    }
+
+    workspace->block_device_offsets.assign_fill(workspace->block_device_ids.size() + 1u, 0u);
+    for (std::uint32_t route = route_begin; route < route_end; ++route) {
+        const int device_id = plan.route_device_ids[route];
+        for (std::size_t idx = 0; idx < workspace->block_device_ids.size(); ++idx) {
+            if (workspace->block_device_ids[idx] != device_id) continue;
+            ++workspace->block_device_offsets[idx + 1u];
+            break;
+        }
+    }
+    for (std::size_t idx = 0; idx + 1u < workspace->block_device_offsets.size(); ++idx) {
+        workspace->block_device_offsets[idx + 1u] += workspace->block_device_offsets[idx];
+    }
+    workspace->block_device_shards.resize(route_end - route_begin);
+    host_array<std::uint32_t> cursor = workspace->block_device_offsets;
+    for (std::uint32_t route = route_begin; route < route_end; ++route) {
+        const int device_id = plan.route_device_ids[route];
+        for (std::size_t idx = 0; idx < workspace->block_device_ids.size(); ++idx) {
+            if (workspace->block_device_ids[idx] != device_id) continue;
+            workspace->block_device_shards[cursor[idx]++] = plan.route_shard_indices[route];
+            break;
+        }
     }
 }
 
@@ -832,6 +1146,10 @@ inline std::shared_ptr<ForwardNeighborIndexStorage> build_storage_(
 
         DeviceShardStorage shard;
         shard.device_id = devices[shard_idx % devices.size()];
+        shard.row_begin = shard_plans.segments[plan_begin].source_begin;
+        shard.row_end = shard_plans.segments[plan_end - 1u].source_end;
+        shard.time_begin = shard_plans.segments[plan_begin].time_begin;
+        shard.time_end = shard_plans.segments[plan_end - 1u].time_end;
         std::int64_t shard_row_cursor = 0;
         const std::int64_t ann_rows_per_list = std::max<std::int64_t>(1, config.ann_rows_per_list);
 
@@ -878,21 +1196,9 @@ inline std::shared_ptr<ForwardNeighborIndexStorage> build_storage_(
             shard_row_cursor += segment_rows;
         }
 
-        set_device_(shard.device_id);
-        shard.cell_indices.resize(shard.cell_indices_cpu.size());
-        shard.developmental_time.resize(shard.developmental_time_cpu.size());
-        shard.embryo_ids.resize(shard.embryo_ids_cpu.size());
-        const host_array<__half> latent_half = convert_f32_to_half_(shard.latent_unit_cpu);
-        shard.latent_unit.resize(latent_half.size());
-        shard.ann_centroids.resize(shard.ann_centroids_cpu.size());
-
-        shard.cell_indices.upload(shard.cell_indices_cpu.data(), shard.cell_indices_cpu.size());
-        shard.developmental_time.upload(shard.developmental_time_cpu.data(), shard.developmental_time_cpu.size());
-        shard.embryo_ids.upload(shard.embryo_ids_cpu.data(), shard.embryo_ids_cpu.size());
-        shard.latent_unit.upload(latent_half.data(), latent_half.size());
-        if (!shard.ann_centroids_cpu.empty()) {
-            shard.ann_centroids.upload(shard.ann_centroids_cpu.data(), shard.ann_centroids_cpu.size());
-        }
+        convert_f32_to_half_(shard.latent_unit_cpu, &shard.latent_unit_half_cpu);
+        shard.resident_bytes = estimate_shard_resident_bytes_(shard);
+        if (config.eager_device_upload) upload_shard_to_device_(&shard);
 
         append_one_(&storage->shards, std::move(shard));
     }
@@ -915,15 +1221,49 @@ inline host_array<float> normalize_query_latent_(const host_array<float> &latent
     return normalize_latent_rows_(std::move(copy), rows, dim);
 }
 
+inline ForwardNeighborSearchWorkspaceStorage &workspace_storage_(ForwardNeighborSearchWorkspace *workspace) {
+    if (workspace == nullptr || workspace->storage_ == nullptr) {
+        static thread_local ForwardNeighborSearchWorkspaceStorage local_workspace;
+        return local_workspace;
+    }
+    return *workspace->storage_;
+}
+
+inline void reset_workspace_device_buffers_(ForwardNeighborSearchWorkspaceStorage *workspace) {
+    workspace->d_query_latent.reset();
+    workspace->d_query_lower.reset();
+    workspace->d_query_upper.reset();
+    workspace->d_query_embryo.reset();
+    workspace->d_best_cell.reset();
+    workspace->d_best_shard.reset();
+    workspace->d_best_time.reset();
+    workspace->d_best_embryo.reset();
+    workspace->d_best_similarity.reset();
+    workspace->d_centroids.reset();
+    workspace->d_list_embryo.reset();
+    workspace->d_list_row_begin.reset();
+    workspace->d_list_row_end.reset();
+    workspace->d_selected_lists.reset();
+}
+
+inline void prepare_workspace_device_(ForwardNeighborSearchWorkspaceStorage *workspace, int device_id) {
+    if (workspace->active_device_id == device_id) return;
+    reset_workspace_device_buffers_(workspace);
+    workspace->active_device_id = device_id;
+}
+
 inline ForwardNeighborSearchResult search_core_(
-    const ForwardNeighborIndexStorage &storage,
+    ForwardNeighborIndexStorage *storage,
     const ForwardNeighborQueryBatch &query,
     const ForwardNeighborSearchConfig &config,
-    bool hard_same_embryo) {
+    bool hard_same_embryo,
+    ForwardNeighborSearchWorkspace *workspace,
+    ForwardNeighborExecutorStorage *executor) {
     detail::validate_forward_neighbor_search_config_(config);
     detail::validate_forward_neighbor_query_batch_(query);
     if (query.cell_indices.empty()) return detail::empty_forward_neighbor_result_(config.top_k);
-    if (storage.latent_dim != 0 && storage.latent_dim != query.latent_dim) {
+    if (storage == nullptr) return detail::empty_forward_neighbor_result_(config.top_k);
+    if (storage->latent_dim != 0 && storage->latent_dim != query.latent_dim) {
         throw std::invalid_argument("query latent dimension does not match the forward-neighbor index latent dimension");
     }
     if (config.candidate_k > kMaxTopK || config.ann_probe_list_count > kMaxProbe) {
@@ -939,202 +1279,207 @@ inline ForwardNeighborSearchResult search_core_(
         ? detail::make_missing_i64_array_(query.cell_indices.size())
         : query.embryo_ids;
 
-    const host_array<float> normalized_query_latent =
-        normalize_query_latent_(query.latent_unit, result.query_count, query.latent_dim);
-    host_array<Candidate> best(static_cast<std::size_t>(result.query_count * result.top_k));
-    for (std::size_t i = 0; i < best.size(); ++i) best[i] = Candidate{};
+    ForwardNeighborSearchWorkspaceStorage &scratch = workspace_storage_(workspace);
+    scratch.normalized_query_latent = normalize_query_latent_(query.latent_unit, result.query_count, query.latent_dim);
+    scratch.merged_best.resize(static_cast<std::size_t>(result.query_count * result.top_k));
+    for (std::size_t i = 0; i < scratch.merged_best.size(); ++i) scratch.merged_best[i] = Candidate{};
+    const ForwardNeighborRoutingPlan routing = build_routing_plan_(*storage, query, config);
 
-    for (const DeviceShardStorage &shard : storage.shards) {
-        set_device_(shard.device_id);
+    for (std::size_t block_idx = 0; block_idx < routing.block_query_begin.size(); ++block_idx) {
+        const std::int64_t query_begin = routing.block_query_begin[block_idx];
+        const std::int64_t query_end = routing.block_query_end[block_idx];
+        const std::int64_t block_queries = query_end - query_begin;
+        if (block_queries <= 0) continue;
 
-        for (std::int64_t query_begin = 0; query_begin < result.query_count; query_begin += config.query_block_rows) {
-            const std::int64_t query_end = std::min(query_begin + config.query_block_rows, result.query_count);
-            const std::int64_t block_queries = query_end - query_begin;
-            const auto block_limits = block_time_limits_(result.query_time, query_begin, query_end, config);
-            const std::unordered_set<std::int64_t> block_embryos =
-                block_query_embryos_(result.query_embryo_ids, query_begin, query_end);
-            const host_array<std::int64_t> segment_order =
-                eligible_segment_order_(shard.segments, block_embryos, hard_same_embryo ? ForwardNeighborEmbryoPolicy::same_embryo_only : config.embryo_policy);
+        collect_block_query_embryos_(result.query_embryo_ids, query_begin, query_end, &scratch.block_query_embryos);
+        build_block_device_routes_(routing, block_idx, &scratch);
+        if (scratch.block_device_ids.empty()) continue;
 
-            host_array<float> block_latent_f32(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(query.latent_dim));
-            std::memcpy(
-                block_latent_f32.data(),
-                normalized_query_latent.data() + static_cast<std::size_t>(query_begin) * static_cast<std::size_t>(query.latent_dim),
-                block_latent_f32.size() * sizeof(float));
-            const host_array<__half> block_latent = convert_f32_to_half_(block_latent_f32);
-            host_array<float> block_lower;
-            host_array<float> block_upper;
-            host_array<std::int64_t> block_embryo;
-            block_lower.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
-            block_upper.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
-            block_embryo.assign_fill(static_cast<std::size_t>(block_queries), static_cast<std::int64_t>(-1));
+        scratch.block_latent_f32.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(query.latent_dim));
+        std::memcpy(
+            scratch.block_latent_f32.data(),
+            scratch.normalized_query_latent.data() + static_cast<std::size_t>(query_begin) * static_cast<std::size_t>(query.latent_dim),
+            scratch.block_latent_f32.size() * sizeof(float));
+        convert_f32_to_half_(scratch.block_latent_f32, &scratch.block_latent_half);
+        scratch.block_lower.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
+        scratch.block_upper.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
+        scratch.block_embryo.assign_fill(static_cast<std::size_t>(block_queries), static_cast<std::int64_t>(-1));
+        for (std::int64_t row = 0; row < block_queries; ++row) {
+            const std::int64_t global = query_begin + row;
+            scratch.block_lower[static_cast<std::size_t>(row)] =
+                result.query_time[static_cast<std::size_t>(global)] + config.strict_future_epsilon + config.time_window.min_delta;
+            scratch.block_upper[static_cast<std::size_t>(row)] = std::isfinite(config.time_window.max_delta)
+                ? result.query_time[static_cast<std::size_t>(global)] + config.time_window.max_delta
+                : detail::positive_infinity_();
+            scratch.block_embryo[static_cast<std::size_t>(row)] = result.query_embryo_ids[static_cast<std::size_t>(global)];
+        }
 
-            for (std::int64_t row = 0; row < block_queries; ++row) {
-                const std::int64_t global = query_begin + row;
-                block_lower[static_cast<std::size_t>(row)] =
-                    result.query_time[static_cast<std::size_t>(global)] + config.strict_future_epsilon + config.time_window.min_delta;
-                block_upper[static_cast<std::size_t>(row)] = std::isfinite(config.time_window.max_delta)
-                    ? result.query_time[static_cast<std::size_t>(global)] + config.time_window.max_delta
-                    : detail::positive_infinity_();
-                block_embryo[static_cast<std::size_t>(row)] = result.query_embryo_ids[static_cast<std::size_t>(global)];
-            }
+        for (std::size_t device_group = 0; device_group < scratch.block_device_ids.size(); ++device_group) {
+            const int device_id = scratch.block_device_ids[device_group];
+            const std::uint32_t shard_begin = scratch.block_device_offsets[device_group];
+            const std::uint32_t shard_end = scratch.block_device_offsets[device_group + 1u];
+            if (shard_begin == shard_end) continue;
 
-            cg::device_buffer<__half> d_query_latent(block_latent.size());
-            cg::device_buffer<float> d_query_lower(block_lower.size());
-            cg::device_buffer<float> d_query_upper(block_upper.size());
-            cg::device_buffer<std::int64_t> d_query_embryo(block_embryo.size());
-            // Per-block query uploads are fixed overhead every shard visit, so larger query blocks reduce PCIe and launch tax.
-            d_query_latent.upload(block_latent.data(), block_latent.size());
-            d_query_lower.upload(block_lower.data(), block_lower.size());
-            d_query_upper.upload(block_upper.data(), block_upper.size());
-            d_query_embryo.upload(block_embryo.data(), block_embryo.size());
+            set_device_(device_id);
+            prepare_workspace_device_(&scratch, device_id);
+            scratch.d_query_latent.resize(scratch.block_latent_half.size());
+            scratch.d_query_lower.resize(scratch.block_lower.size());
+            scratch.d_query_upper.resize(scratch.block_upper.size());
+            scratch.d_query_embryo.resize(scratch.block_embryo.size());
+            scratch.d_query_latent.upload(scratch.block_latent_half.data(), scratch.block_latent_half.size());
+            scratch.d_query_lower.upload(scratch.block_lower.data(), scratch.block_lower.size());
+            scratch.d_query_upper.upload(scratch.block_upper.data(), scratch.block_upper.size());
+            scratch.d_query_embryo.upload(scratch.block_embryo.data(), scratch.block_embryo.size());
 
-            cg::device_buffer<std::int64_t> d_best_cell;
-            cg::device_buffer<float> d_best_time;
-            cg::device_buffer<std::int64_t> d_best_embryo;
-            cg::device_buffer<float> d_best_similarity;
-            init_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &d_best_cell, &d_best_time, &d_best_embryo, &d_best_similarity);
+            init_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &scratch);
 
-            if (config.backend == ForwardNeighborBackend::exact_windowed) {
-                host_array<std::pair<std::int64_t, std::int64_t>> intervals;
-                for (const std::int64_t segment_idx : segment_order) {
-                    const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
-                    if (!segment_time_overlaps_block_(segment, block_limits.first, block_limits.second)) continue;
-                    const auto bounds = segment_candidate_bounds_(shard, segment, block_limits.first, block_limits.second);
-                    if (bounds.first < bounds.second) append_one_(&intervals, bounds);
-                }
+            for (std::uint32_t shard_slot = shard_begin; shard_slot < shard_end; ++shard_slot) {
+                const std::uint32_t shard_idx = scratch.block_device_shards[shard_slot];
+                ensure_shard_resident_(storage, shard_idx, executor);
+                DeviceShardStorage &shard = storage->shards[shard_idx];
+                eligible_segment_order_(
+                    shard.segments,
+                    scratch.block_query_embryos,
+                    hard_same_embryo ? ForwardNeighborEmbryoPolicy::same_embryo_only : config.embryo_policy,
+                    &scratch.segment_order,
+                    &scratch.deferred_segment_order);
 
-                const host_array<std::pair<std::int64_t, std::int64_t>> merged_intervals = merge_row_intervals_(std::move(intervals));
-                for (const auto &interval : merged_intervals) {
-                    for (std::int64_t index_begin = interval.first; index_begin < interval.second; index_begin += config.index_block_rows) {
-                        const std::int64_t index_end = std::min(index_begin + config.index_block_rows, interval.second);
-                        // Exact search pays one launch per query block x index block tile; too-small index tiles become launch-bound very quickly.
-                        exact_search_kernel_<<<block_queries, kWarpThreads>>>(
-                            d_query_latent.data(),
-                            d_query_lower.data(),
-                            d_query_upper.data(),
-                            d_query_embryo.data(),
-                            shard.latent_unit.data(),
-                            shard.developmental_time.data(),
-                            shard.embryo_ids.data(),
-                            shard.cell_indices.data(),
-                            block_queries,
-                            static_cast<int>(storage.latent_dim),
-                            index_begin,
-                            index_end - index_begin,
-                            hard_same_embryo ? 1 : 0,
-                            static_cast<int>(config.candidate_k),
-                            d_best_cell.data(),
-                            d_best_time.data(),
-                            d_best_embryo.data(),
-                            d_best_similarity.data());
-                        cg::cuda_require(cudaGetLastError(), "exact_search_kernel launch");
+                if (config.backend == ForwardNeighborBackend::exact_windowed) {
+                    scratch.intervals.clear();
+                    for (const std::int64_t segment_idx : scratch.segment_order) {
+                        const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
+                        if (!segment_time_overlaps_block_(segment, routing.block_window_lower[block_idx], routing.block_window_upper[block_idx])) continue;
+                        const auto bounds = segment_candidate_bounds_(
+                            shard,
+                            segment,
+                            routing.block_window_lower[block_idx],
+                            routing.block_window_upper[block_idx]);
+                        if (bounds.first < bounds.second) append_one_(&scratch.intervals, bounds);
                     }
-                }
-                // Required because the next step reads the candidate buffers on host; this is the main overlap barrier in the exact path.
-                cg::cuda_require(cudaDeviceSynchronize(), "exact_search_kernel sync");
-            } else {
-                host_array<std::int64_t> eligible_lists;
-                for (const std::int64_t segment_idx : segment_order) {
-                    const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
-                    if (!segment_time_overlaps_block_(segment, block_limits.first, block_limits.second)) continue;
-                    for (std::int64_t list_idx = segment.ann_list_begin; list_idx < segment.ann_list_end; ++list_idx) {
-                        const ForwardNeighborAnnList &list = shard.ann_lists[static_cast<std::size_t>(list_idx)];
-                        if (ann_list_overlaps_block_(list, block_limits.first, block_limits.second)) append_one_(&eligible_lists, list_idx);
-                    }
-                }
 
-                if (!eligible_lists.empty()) {
-                    host_array<float> eligible_centroids;
-                    host_array<std::int64_t> eligible_embryo;
-                    host_array<std::int64_t> eligible_row_begin;
-                    host_array<std::int64_t> eligible_row_end;
-                    for (const std::int64_t list_idx : eligible_lists) {
+                    merge_row_intervals_(&scratch.intervals, &scratch.merged_intervals);
+                    for (const auto &interval : scratch.merged_intervals) {
+                        for (std::int64_t index_begin = interval.first; index_begin < interval.second; index_begin += config.index_block_rows) {
+                            const std::int64_t index_end = std::min(index_begin + config.index_block_rows, interval.second);
+                            exact_search_kernel_<<<block_queries, kWarpThreads>>>(
+                                scratch.d_query_latent.data(),
+                                scratch.d_query_lower.data(),
+                                scratch.d_query_upper.data(),
+                                scratch.d_query_embryo.data(),
+                                shard.latent_unit.data(),
+                                shard.developmental_time.data(),
+                                shard.embryo_ids.data(),
+                                shard.cell_indices.data(),
+                                block_queries,
+                                static_cast<int>(storage->latent_dim),
+                                static_cast<std::int64_t>(shard_idx),
+                                index_begin,
+                                index_end - index_begin,
+                                hard_same_embryo ? 1 : 0,
+                                static_cast<int>(config.candidate_k),
+                                scratch.d_best_cell.data(),
+                                scratch.d_best_shard.data(),
+                                scratch.d_best_time.data(),
+                                scratch.d_best_embryo.data(),
+                                scratch.d_best_similarity.data());
+                            cg::cuda_require(cudaGetLastError(), "exact_search_kernel launch");
+                        }
+                    }
+                } else {
+                    scratch.eligible_lists.clear();
+                    for (const std::int64_t segment_idx : scratch.segment_order) {
+                        const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
+                        if (!segment_time_overlaps_block_(segment, routing.block_window_lower[block_idx], routing.block_window_upper[block_idx])) continue;
+                        for (std::int64_t list_idx = segment.ann_list_begin; list_idx < segment.ann_list_end; ++list_idx) {
+                            const ForwardNeighborAnnList &list = shard.ann_lists[static_cast<std::size_t>(list_idx)];
+                            if (ann_list_overlaps_block_(list, routing.block_window_lower[block_idx], routing.block_window_upper[block_idx])) {
+                                append_one_(&scratch.eligible_lists, list_idx);
+                            }
+                        }
+                    }
+
+                    if (scratch.eligible_lists.empty()) continue;
+                    scratch.eligible_centroids.clear();
+                    scratch.eligible_embryo.clear();
+                    scratch.eligible_row_begin.clear();
+                    scratch.eligible_row_end.clear();
+                    for (const std::int64_t list_idx : scratch.eligible_lists) {
                         const ForwardNeighborAnnList &list = shard.ann_lists[static_cast<std::size_t>(list_idx)];
                         append_copy_(
-                            &eligible_centroids,
-                            shard.ann_centroids_cpu.data() + static_cast<std::size_t>(list_idx) * static_cast<std::size_t>(storage.latent_dim),
-                            static_cast<std::size_t>(storage.latent_dim));
-                        append_one_(&eligible_embryo, list.embryo_id);
-                        append_one_(&eligible_row_begin, list.row_begin);
-                        append_one_(&eligible_row_end, list.row_end);
+                            &scratch.eligible_centroids,
+                            shard.ann_centroids_cpu.data() + static_cast<std::size_t>(list_idx) * static_cast<std::size_t>(storage->latent_dim),
+                            static_cast<std::size_t>(storage->latent_dim));
+                        append_one_(&scratch.eligible_embryo, list.embryo_id);
+                        append_one_(&scratch.eligible_row_begin, list.row_begin);
+                        append_one_(&scratch.eligible_row_end, list.row_end);
                     }
 
-                    cg::device_buffer<float> d_centroids(eligible_centroids.size());
-                    cg::device_buffer<std::int64_t> d_list_embryo(eligible_embryo.size());
-                    cg::device_buffer<std::int64_t> d_list_row_begin(eligible_row_begin.size());
-                    cg::device_buffer<std::int64_t> d_list_row_end(eligible_row_end.size());
-                    cg::device_buffer<std::int32_t> d_selected_lists(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(config.ann_probe_list_count));
-                    // ANN metadata upload is paid once per shard/query block and can dominate when the eligible list set is tiny.
-                    d_centroids.upload(eligible_centroids.data(), eligible_centroids.size());
-                    d_list_embryo.upload(eligible_embryo.data(), eligible_embryo.size());
-                    d_list_row_begin.upload(eligible_row_begin.data(), eligible_row_begin.size());
-                    d_list_row_end.upload(eligible_row_end.data(), eligible_row_end.size());
+                    scratch.d_centroids.resize(scratch.eligible_centroids.size());
+                    scratch.d_list_embryo.resize(scratch.eligible_embryo.size());
+                    scratch.d_list_row_begin.resize(scratch.eligible_row_begin.size());
+                    scratch.d_list_row_end.resize(scratch.eligible_row_end.size());
+                    scratch.d_selected_lists.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(config.ann_probe_list_count));
+                    scratch.d_centroids.upload(scratch.eligible_centroids.data(), scratch.eligible_centroids.size());
+                    scratch.d_list_embryo.upload(scratch.eligible_embryo.data(), scratch.eligible_embryo.size());
+                    scratch.d_list_row_begin.upload(scratch.eligible_row_begin.data(), scratch.eligible_row_begin.size());
+                    scratch.d_list_row_end.upload(scratch.eligible_row_end.data(), scratch.eligible_row_end.size());
 
-                    // Probe is intentionally cheap: it scores list centroids only, so it should stay much smaller than refine.
                     ann_probe_kernel_<<<block_queries, kWarpThreads>>>(
-                        d_query_latent.data(),
-                        d_query_embryo.data(),
-                        d_centroids.data(),
-                        d_list_embryo.data(),
+                        scratch.d_query_latent.data(),
+                        scratch.d_query_embryo.data(),
+                        scratch.d_centroids.data(),
+                        scratch.d_list_embryo.data(),
                         block_queries,
-                        static_cast<int>(storage.latent_dim),
-                        static_cast<std::int64_t>(eligible_lists.size()),
+                        static_cast<int>(storage->latent_dim),
+                        static_cast<std::int64_t>(scratch.eligible_lists.size()),
                         hard_same_embryo ? 1 : 0,
                         static_cast<int>(config.ann_probe_list_count),
-                        d_selected_lists.data());
+                        scratch.d_selected_lists.data());
                     cg::cuda_require(cudaGetLastError(), "ann_probe_kernel launch");
 
-                    // Refine does the expensive candidate scan inside the selected lists; this is the hot kernel in ANN mode.
                     ann_refine_kernel_<<<block_queries, kWarpThreads>>>(
-                        d_query_latent.data(),
-                        d_query_lower.data(),
-                        d_query_upper.data(),
-                        d_query_embryo.data(),
+                        scratch.d_query_latent.data(),
+                        scratch.d_query_lower.data(),
+                        scratch.d_query_upper.data(),
+                        scratch.d_query_embryo.data(),
                         shard.latent_unit.data(),
                         shard.developmental_time.data(),
                         shard.embryo_ids.data(),
                         shard.cell_indices.data(),
-                        d_selected_lists.data(),
-                        d_list_row_begin.data(),
-                        d_list_row_end.data(),
+                        scratch.d_selected_lists.data(),
+                        scratch.d_list_row_begin.data(),
+                        scratch.d_list_row_end.data(),
                         block_queries,
-                        static_cast<int>(storage.latent_dim),
+                        static_cast<int>(storage->latent_dim),
+                        static_cast<std::int64_t>(shard_idx),
                         hard_same_embryo ? 1 : 0,
                         static_cast<int>(config.ann_probe_list_count),
                         static_cast<int>(config.candidate_k),
-                        d_best_cell.data(),
-                        d_best_time.data(),
-                        d_best_embryo.data(),
-                        d_best_similarity.data());
+                        scratch.d_best_cell.data(),
+                        scratch.d_best_shard.data(),
+                        scratch.d_best_time.data(),
+                        scratch.d_best_embryo.data(),
+                        scratch.d_best_similarity.data());
                     cg::cuda_require(cudaGetLastError(), "ann_refine_kernel launch");
-                    // Like the exact path, this sync exists only because results are merged on host immediately after.
-                    cg::cuda_require(cudaDeviceSynchronize(), "ann_refine_kernel sync");
                 }
             }
 
-            const host_array<Candidate> shard_best = download_best_candidates_(
-                d_best_cell,
-                d_best_time,
-                d_best_embryo,
-                d_best_similarity,
-                block_queries,
-                static_cast<int>(config.candidate_k));
-
+            cg::cuda_require(cudaDeviceSynchronize(), "forward_neighbors device sync");
+            download_best_candidates_(&scratch, block_queries, static_cast<int>(config.candidate_k));
             for (std::int64_t row = 0; row < block_queries; ++row) {
                 Candidate row_best[kMaxTopK];
                 init_candidates_host_(row_best, static_cast<int>(result.top_k));
                 std::memcpy(
                     row_best,
-                    best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
+                    scratch.merged_best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
                     static_cast<std::size_t>(result.top_k) * sizeof(Candidate));
                 for (std::int64_t slot = 0; slot < config.candidate_k; ++slot) {
                     const std::size_t off = static_cast<std::size_t>(row) * static_cast<std::size_t>(config.candidate_k)
                         + static_cast<std::size_t>(slot);
-                    insert_candidate_host_(shard_best[off], row_best, static_cast<int>(result.top_k));
+                    insert_candidate_host_(scratch.shard_best[off], row_best, static_cast<int>(result.top_k));
                 }
                 std::memcpy(
-                    best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
+                    scratch.merged_best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
                     row_best,
                     static_cast<std::size_t>(result.top_k) * sizeof(Candidate));
             }
@@ -1142,6 +1487,7 @@ inline ForwardNeighborSearchResult search_core_(
     }
 
     result.neighbor_cell_indices.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
+    result.neighbor_shard_indices.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
     result.neighbor_time.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::quiet_nan_());
     result.neighbor_embryo_ids.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
     result.neighbor_similarity.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::negative_infinity_());
@@ -1150,9 +1496,10 @@ inline ForwardNeighborSearchResult search_core_(
 
     for (std::int64_t row = 0; row < result.query_count; ++row) {
         for (std::int64_t slot = 0; slot < result.top_k; ++slot) {
-            const Candidate &candidate = best[static_cast<std::size_t>(row) * static_cast<std::size_t>(result.top_k) + static_cast<std::size_t>(slot)];
+            const Candidate &candidate = scratch.merged_best[static_cast<std::size_t>(row) * static_cast<std::size_t>(result.top_k) + static_cast<std::size_t>(slot)];
             const std::size_t off = detail::result_offset_(row, slot, result.top_k);
             result.neighbor_cell_indices[off] = candidate.cell_index;
+            result.neighbor_shard_indices[off] = candidate.shard_index;
             result.neighbor_time[off] = candidate.developmental_time;
             result.neighbor_embryo_ids[off] = candidate.embryo_id;
             result.neighbor_similarity[off] = candidate.similarity;
@@ -1168,6 +1515,19 @@ inline ForwardNeighborSearchResult search_core_(
 }
 
 } // namespace detail
+
+ForwardNeighborSearchWorkspace::ForwardNeighborSearchWorkspace()
+    : storage_(std::make_unique<detail::ForwardNeighborSearchWorkspaceStorage>()) {}
+
+ForwardNeighborSearchWorkspace::~ForwardNeighborSearchWorkspace() = default;
+
+ForwardNeighborSearchWorkspace::ForwardNeighborSearchWorkspace(ForwardNeighborSearchWorkspace &&) noexcept = default;
+
+ForwardNeighborSearchWorkspace &ForwardNeighborSearchWorkspace::operator=(ForwardNeighborSearchWorkspace &&) noexcept = default;
+
+void ForwardNeighborSearchWorkspace::reset() {
+    storage_ = std::make_unique<detail::ForwardNeighborSearchWorkspaceStorage>();
+}
 
 ForwardNeighborIndexBuilder::ForwardNeighborIndexBuilder(ForwardNeighborBuildConfig config)
     : config_(std::move(config)) {}
@@ -1192,6 +1552,25 @@ std::size_t ForwardNeighborIndex::shard_count() const {
 
 std::int64_t ForwardNeighborIndex::latent_dim() const {
     return storage_ ? storage_->latent_dim : 0;
+}
+
+ForwardNeighborShardSummary ForwardNeighborIndex::shard_summary(std::size_t shard) const {
+    if (!storage_ || shard >= storage_->shards.size()) {
+        throw std::out_of_range("forward-neighbor shard index out of range");
+    }
+    const detail::DeviceShardStorage &src = storage_->shards[shard];
+    return ForwardNeighborShardSummary{
+        src.device_id,
+        src.row_begin,
+        src.row_end,
+        src.row_end - src.row_begin,
+        static_cast<std::int64_t>(src.segments.size()),
+        static_cast<std::int64_t>(src.ann_lists.size()),
+        src.time_begin,
+        src.time_end,
+        src.resident_bytes,
+        src.resident
+    };
 }
 
 ForwardNeighborQueryBatch ForwardNeighborIndex::query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const {
@@ -1221,32 +1600,67 @@ ForwardNeighborQueryBatch ForwardNeighborIndex::query_batch_from_cell_indices(co
     return query;
 }
 
+ForwardNeighborRoutingPlan ForwardNeighborIndex::plan_future_neighbor_routes(
+    const ForwardNeighborQueryBatch &query,
+    const ForwardNeighborSearchConfig &config) const {
+    if (!storage_) return ForwardNeighborRoutingPlan{};
+    detail::validate_forward_neighbor_search_config_(config);
+    detail::validate_forward_neighbor_query_batch_(query);
+    return detail::build_routing_plan_(*storage_, query, config);
+}
+
+ForwardNeighborRoutingPlan ForwardNeighborIndex::plan_future_neighbor_routes_by_cell_index(
+    const std::int64_t *cell_indices,
+    std::size_t cell_count,
+    const ForwardNeighborSearchConfig &config) const {
+    return plan_future_neighbor_routes(query_batch_from_cell_indices(cell_indices, cell_count), config);
+}
+
 ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors(
     const ForwardNeighborQueryBatch &query,
     const ForwardNeighborSearchConfig &config) const {
+    return search_future_neighbors(query, nullptr, config);
+}
+
+ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors(
+    const ForwardNeighborQueryBatch &query,
+    ForwardNeighborSearchWorkspace *workspace,
+    const ForwardNeighborSearchConfig &config) const {
     if (!storage_) return detail::empty_forward_neighbor_result_(config.top_k);
+    detail::ForwardNeighborExecutorStorage executor;
+    executor.config = ForwardNeighborExecutorConfig{};
     if (config.embryo_policy == ForwardNeighborEmbryoPolicy::same_embryo_first) {
         ForwardNeighborSearchConfig same_config = config;
         same_config.embryo_policy = ForwardNeighborEmbryoPolicy::same_embryo_only;
-        ForwardNeighborSearchResult same_result = detail::search_core_(*storage_, query, same_config, true);
+        ForwardNeighborSearchResult same_result = detail::search_core_(storage_.get(), query, same_config, true, workspace, &executor);
         ForwardNeighborSearchConfig any_config = config;
         any_config.embryo_policy = ForwardNeighborEmbryoPolicy::any_embryo;
-        ForwardNeighborSearchResult any_result = detail::search_core_(*storage_, query, any_config, false);
+        ForwardNeighborSearchResult any_result = detail::search_core_(storage_.get(), query, any_config, false, workspace, &executor);
 
         for (std::int64_t row = 0; row < same_result.query_count; ++row) {
             std::size_t fill = 0u;
-            std::unordered_set<std::int64_t> seen;
+            detail::ForwardNeighborSearchWorkspaceStorage &scratch = detail::workspace_storage_(workspace);
+            scratch.seen_neighbor_ids.clear();
             for (; fill < static_cast<std::size_t>(same_result.top_k); ++fill) {
                 const std::size_t off = detail::result_offset_(row, static_cast<std::int64_t>(fill), same_result.top_k);
                 if (same_result.neighbor_cell_indices[off] < 0) break;
-                seen.insert(same_result.neighbor_cell_indices[off]);
+                detail::append_one_(&scratch.seen_neighbor_ids, same_result.neighbor_cell_indices[off]);
             }
             for (std::size_t slot = 0; slot < static_cast<std::size_t>(any_result.top_k) && fill < static_cast<std::size_t>(same_result.top_k); ++slot) {
                 const std::size_t src = detail::result_offset_(row, static_cast<std::int64_t>(slot), any_result.top_k);
                 if (any_result.neighbor_cell_indices[src] < 0) continue;
-                if (!seen.insert(any_result.neighbor_cell_indices[src]).second) continue;
+                bool seen = false;
+                for (std::size_t seen_idx = 0; seen_idx < scratch.seen_neighbor_ids.size(); ++seen_idx) {
+                    if (scratch.seen_neighbor_ids[seen_idx] == any_result.neighbor_cell_indices[src]) {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (seen) continue;
+                detail::append_one_(&scratch.seen_neighbor_ids, any_result.neighbor_cell_indices[src]);
                 const std::size_t dst = detail::result_offset_(row, static_cast<std::int64_t>(fill), same_result.top_k);
                 same_result.neighbor_cell_indices[dst] = any_result.neighbor_cell_indices[src];
+                same_result.neighbor_shard_indices[dst] = any_result.neighbor_shard_indices[src];
                 same_result.neighbor_time[dst] = any_result.neighbor_time[src];
                 same_result.neighbor_embryo_ids[dst] = any_result.neighbor_embryo_ids[src];
                 same_result.neighbor_similarity[dst] = any_result.neighbor_similarity[src];
@@ -1258,17 +1672,130 @@ ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors(
         return same_result;
     }
     return detail::search_core_(
-        *storage_,
+        storage_.get(),
         query,
         config,
-        config.embryo_policy == ForwardNeighborEmbryoPolicy::same_embryo_only);
+        config.embryo_policy == ForwardNeighborEmbryoPolicy::same_embryo_only,
+        workspace,
+        &executor);
 }
 
 ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors_by_cell_index(
     const std::int64_t *cell_indices,
     std::size_t cell_count,
     const ForwardNeighborSearchConfig &config) const {
-    return search_future_neighbors(query_batch_from_cell_indices(cell_indices, cell_count), config);
+    return search_future_neighbors(query_batch_from_cell_indices(cell_indices, cell_count), nullptr, config);
+}
+
+ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors_by_cell_index(
+    const std::int64_t *cell_indices,
+    std::size_t cell_count,
+    ForwardNeighborSearchWorkspace *workspace,
+    const ForwardNeighborSearchConfig &config) const {
+    return search_future_neighbors(query_batch_from_cell_indices(cell_indices, cell_count), workspace, config);
+}
+
+ForwardNeighborSearchExecutor::ForwardNeighborSearchExecutor(
+    ForwardNeighborExecutorConfig config)
+    : storage_(std::make_unique<detail::ForwardNeighborExecutorStorage>()) {
+    storage_->config = std::move(config);
+}
+
+ForwardNeighborSearchExecutor::~ForwardNeighborSearchExecutor() = default;
+
+ForwardNeighborSearchExecutor::ForwardNeighborSearchExecutor(ForwardNeighborSearchExecutor &&) noexcept = default;
+
+ForwardNeighborSearchExecutor &ForwardNeighborSearchExecutor::operator=(ForwardNeighborSearchExecutor &&) noexcept = default;
+
+void ForwardNeighborSearchExecutor::reset() {
+    const ForwardNeighborExecutorConfig current = storage_ ? storage_->config : ForwardNeighborExecutorConfig{};
+    workspace_.reset();
+    storage_ = std::make_unique<detail::ForwardNeighborExecutorStorage>();
+    storage_->config = current;
+}
+
+const ForwardNeighborExecutorConfig &ForwardNeighborSearchExecutor::config() const {
+    return storage_->config;
+}
+
+ForwardNeighborRoutingPlan ForwardNeighborSearchExecutor::plan_future_neighbor_routes(
+    const ForwardNeighborIndex &index,
+    const ForwardNeighborQueryBatch &query,
+    const ForwardNeighborSearchConfig &config) const {
+    return index.plan_future_neighbor_routes(query, config);
+}
+
+ForwardNeighborRoutingPlan ForwardNeighborSearchExecutor::plan_future_neighbor_routes_by_cell_index(
+    const ForwardNeighborIndex &index,
+    const std::int64_t *cell_indices,
+    std::size_t cell_count,
+    const ForwardNeighborSearchConfig &config) const {
+    return index.plan_future_neighbor_routes_by_cell_index(cell_indices, cell_count, config);
+}
+
+ForwardNeighborSearchResult ForwardNeighborSearchExecutor::search_future_neighbors(
+    const ForwardNeighborIndex &index,
+    const ForwardNeighborQueryBatch &query,
+    const ForwardNeighborSearchConfig &config) {
+    if (!index.storage_) return detail::empty_forward_neighbor_result_(config.top_k);
+    if (config.embryo_policy == ForwardNeighborEmbryoPolicy::same_embryo_first) {
+        ForwardNeighborSearchConfig same_config = config;
+        same_config.embryo_policy = ForwardNeighborEmbryoPolicy::same_embryo_only;
+        ForwardNeighborSearchResult same_result =
+            detail::search_core_(index.storage_.get(), query, same_config, true, &workspace_, storage_.get());
+        ForwardNeighborSearchConfig any_config = config;
+        any_config.embryo_policy = ForwardNeighborEmbryoPolicy::any_embryo;
+        ForwardNeighborSearchResult any_result =
+            detail::search_core_(index.storage_.get(), query, any_config, false, &workspace_, storage_.get());
+        detail::ForwardNeighborSearchWorkspaceStorage &scratch = detail::workspace_storage_(&workspace_);
+        for (std::int64_t row = 0; row < same_result.query_count; ++row) {
+            std::size_t fill = 0u;
+            scratch.seen_neighbor_ids.clear();
+            for (; fill < static_cast<std::size_t>(same_result.top_k); ++fill) {
+                const std::size_t off = detail::result_offset_(row, static_cast<std::int64_t>(fill), same_result.top_k);
+                if (same_result.neighbor_cell_indices[off] < 0) break;
+                detail::append_one_(&scratch.seen_neighbor_ids, same_result.neighbor_cell_indices[off]);
+            }
+            for (std::size_t slot = 0; slot < static_cast<std::size_t>(any_result.top_k) && fill < static_cast<std::size_t>(same_result.top_k); ++slot) {
+                const std::size_t src = detail::result_offset_(row, static_cast<std::int64_t>(slot), any_result.top_k);
+                if (any_result.neighbor_cell_indices[src] < 0) continue;
+                bool seen = false;
+                for (std::size_t seen_idx = 0; seen_idx < scratch.seen_neighbor_ids.size(); ++seen_idx) {
+                    if (scratch.seen_neighbor_ids[seen_idx] == any_result.neighbor_cell_indices[src]) {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (seen) continue;
+                detail::append_one_(&scratch.seen_neighbor_ids, any_result.neighbor_cell_indices[src]);
+                const std::size_t dst = detail::result_offset_(row, static_cast<std::int64_t>(fill), same_result.top_k);
+                same_result.neighbor_cell_indices[dst] = any_result.neighbor_cell_indices[src];
+                same_result.neighbor_shard_indices[dst] = any_result.neighbor_shard_indices[src];
+                same_result.neighbor_time[dst] = any_result.neighbor_time[src];
+                same_result.neighbor_embryo_ids[dst] = any_result.neighbor_embryo_ids[src];
+                same_result.neighbor_similarity[dst] = any_result.neighbor_similarity[src];
+                same_result.neighbor_sqdist[dst] = any_result.neighbor_sqdist[src];
+                same_result.neighbor_distance[dst] = any_result.neighbor_distance[src];
+                ++fill;
+            }
+        }
+        return same_result;
+    }
+    return detail::search_core_(
+        index.storage_.get(),
+        query,
+        config,
+        config.embryo_policy == ForwardNeighborEmbryoPolicy::same_embryo_only,
+        &workspace_,
+        storage_.get());
+}
+
+ForwardNeighborSearchResult ForwardNeighborSearchExecutor::search_future_neighbors_by_cell_index(
+    const ForwardNeighborIndex &index,
+    const std::int64_t *cell_indices,
+    std::size_t cell_count,
+    const ForwardNeighborSearchConfig &config) {
+    return search_future_neighbors(index, index.query_batch_from_cell_indices(cell_indices, cell_count), config);
 }
 
 ForwardNeighborIndex build_forward_neighbor_index(

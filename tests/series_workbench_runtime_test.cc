@@ -2,6 +2,7 @@
 
 #include "../extern/CellShard/src/CellShard.hh"
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -44,6 +45,24 @@ owned_text_column make_column(const std::vector<const char *> &values) {
     return col;
 }
 
+struct owned_observation_metadata_column {
+    std::string name;
+    std::uint32_t type = cellshard::series_observation_metadata_type_none;
+    owned_text_column text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
+
+    cellshard::series_observation_metadata_column_view view() const {
+        cellshard::series_observation_metadata_column_view out{};
+        out.name = name.c_str();
+        out.type = type;
+        out.text_values = text_values.view();
+        out.float32_values = float32_values.empty() ? nullptr : float32_values.data();
+        out.uint8_values = uint8_values.empty() ? nullptr : uint8_values.data();
+        return out;
+    }
+};
+
 bool write_file(const std::string &path, const char *text) {
     std::FILE *f = std::fopen(path.c_str(), "wb");
     if (f == nullptr) return false;
@@ -81,12 +100,13 @@ int main() {
     const std::string exported_manifest_path = base + ".builder.manifest.tsv";
     cellshard::sparse::compressed part;
     cellshard::series_codec_descriptor codec;
-    cellshard::series_layout_view layout;
-    cellshard::series_dataset_table_view dataset_view;
-    cellshard::series_provenance_view provenance_view;
-    cellshard::series_metadata_table_view metadata_table_view;
-    cellshard::series_embedded_metadata_view embedded_metadata_view;
-    cellshard::series_browse_cache_view browse_view;
+    cellshard::series_layout_view layout{};
+    cellshard::series_dataset_table_view dataset_view{};
+    cellshard::series_provenance_view provenance_view{};
+    cellshard::series_metadata_table_view metadata_table_view{};
+    cellshard::series_embedded_metadata_view embedded_metadata_view{};
+    cellshard::series_observation_metadata_view observation_metadata_view{};
+    cellshard::series_browse_cache_view browse_view{};
     owned_text_column dataset_ids = make_column({"sample_a"});
     owned_text_column matrix_paths = make_column({matrix_path.c_str()});
     owned_text_column feature_paths = make_column({feature_path.c_str()});
@@ -96,8 +116,15 @@ int main() {
     owned_text_column feature_ids = make_column({"g0", "g1", "g2"});
     owned_text_column feature_names = make_column({"MT-CO1", "GeneB", "GeneC"});
     owned_text_column feature_types = make_column({"gene", "gene", "gene"});
-    owned_text_column metadata_column_names = make_column({"stage", "batch"});
-    owned_text_column metadata_field_values = make_column({"E8", "A", "E9", "A"});
+    owned_text_column metadata_column_names = make_column({"day", "embryo_id", "cell_id"});
+    owned_text_column metadata_field_values = make_column({"E8.5", "embryo_1", "bc0", "P0", "embryo_1", "bc1"});
+    owned_observation_metadata_column obs_day;
+    owned_observation_metadata_column obs_embryo;
+    owned_observation_metadata_column obs_cell;
+    owned_observation_metadata_column obs_day_label;
+    owned_observation_metadata_column obs_day_numeric;
+    owned_observation_metadata_column obs_postnatal;
+    std::vector<cellshard::series_observation_metadata_column_view> observation_columns;
     std::vector<std::uint32_t> dataset_formats = { (std::uint32_t) cellerator::ingest::series::source_mtx };
     std::vector<std::uint64_t> dataset_row_begin = { 0u };
     std::vector<std::uint64_t> dataset_row_end = { 2u };
@@ -117,7 +144,7 @@ int main() {
     std::vector<std::uint64_t> feature_local_indices = { 0u, 1u, 2u };
     std::vector<std::uint64_t> dataset_feature_offsets = { 0u, 3u };
     std::vector<std::uint32_t> dataset_feature_to_global = { 0u, 1u, 2u };
-    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 2u, 4u };
+    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 3u, 6u };
     std::vector<std::uint32_t> metadata_dataset_indices = { 0u };
     std::vector<std::uint64_t> metadata_global_row_begin = { 0u };
     std::vector<std::uint64_t> metadata_global_row_end = { 2u };
@@ -152,7 +179,7 @@ int main() {
                     "2 2 7\n")) return 1;
     if (!write_file(feature_path, "g0\tMT-CO1\tgene\ng1\tGeneB\tgene\ng2\tGeneC\tgene\n")) return 1;
     if (!write_file(barcode_path, "bc0\nbc1\n")) return 1;
-    if (!write_file(metadata_path, "stage\tbatch\nE8\tA\nE9\tA\n")) return 1;
+    if (!write_file(metadata_path, "day\tembryo_id\tcell_id\nE8.5\tembryo_1\tbc0\nP0\tembryo_1\tbc1\n")) return 1;
     if (!write_file(manifest_path,
                     ("dataset\tpath\tformat\tfeatures\tbarcodes\tmetadata\trows\tcols\tnnz\n"
                      "sample_a\t" + matrix_path + "\tmtx\t" + feature_path + "\t" + barcode_path + "\t" + metadata_path + "\t2\t3\t3\n").c_str())) return 1;
@@ -164,7 +191,7 @@ int main() {
                     "2 2 7\n")) return 1;
     if (!write_file(builder_dir + "/features.tsv", "g0\tMT-CO1\tgene\ng1\tGeneB\tgene\ng2\tGeneC\tgene\n")) return 1;
     if (!write_file(builder_dir + "/barcodes.tsv", "bc0\nbc1\n")) return 1;
-    if (!write_file(builder_dir + "/metadata.tsv", "stage\tbatch\nE8\tA\nE9\tA\n")) return 1;
+    if (!write_file(builder_dir + "/metadata.tsv", "day\tembryo_id\tcell_id\nE8.5\tembryo_1\tbc0\nP0\tembryo_1\tbc1\n")) return 1;
 
     wb::manifest_inspection inspection = wb::inspect_manifest_tsv(manifest_path);
     if (!inspection.ok || inspection.sources.size() != 1u) return 1;
@@ -217,6 +244,7 @@ int main() {
     layout.part_rows = part_rows.data();
     layout.part_nnz = part_nnz.data();
     layout.part_axes = part_axes.data();
+    layout.part_aux = nullptr;
     layout.part_row_offsets = part_row_offsets.data();
     layout.part_dataset_ids = part_dataset_ids.data();
     layout.part_codec_ids = part_codec_ids.data();
@@ -260,6 +288,36 @@ int main() {
     embedded_metadata_view.global_row_end = metadata_global_row_end.data();
     embedded_metadata_view.tables = &metadata_table_view;
 
+    obs_day.name = "day";
+    obs_day.type = cellshard::series_observation_metadata_type_text;
+    obs_day.text_values = make_column({"E8.5", "P0"});
+    obs_embryo.name = "embryo_id";
+    obs_embryo.type = cellshard::series_observation_metadata_type_text;
+    obs_embryo.text_values = make_column({"embryo_1", "embryo_1"});
+    obs_cell.name = "cell_id";
+    obs_cell.type = cellshard::series_observation_metadata_type_text;
+    obs_cell.text_values = make_column({"bc0", "bc1"});
+    obs_day_label.name = "embryonic_day_label";
+    obs_day_label.type = cellshard::series_observation_metadata_type_text;
+    obs_day_label.text_values = make_column({"E8.5", "P0"});
+    obs_day_numeric.name = "embryonic_day";
+    obs_day_numeric.type = cellshard::series_observation_metadata_type_float32;
+    obs_day_numeric.float32_values = {8.5f, std::numeric_limits<float>::quiet_NaN()};
+    obs_postnatal.name = "is_postnatal";
+    obs_postnatal.type = cellshard::series_observation_metadata_type_uint8;
+    obs_postnatal.uint8_values = {0u, 1u};
+    observation_columns = {
+        obs_day.view(),
+        obs_embryo.view(),
+        obs_cell.view(),
+        obs_day_label.view(),
+        obs_day_numeric.view(),
+        obs_postnatal.view()
+    };
+    observation_metadata_view.rows = 2u;
+    observation_metadata_view.cols = (std::uint32_t) observation_columns.size();
+    observation_metadata_view.columns = observation_columns.data();
+
     browse_view.selected_feature_count = 2u;
     browse_view.selected_feature_indices = browse_feature_indices.data();
     browse_view.gene_sum = browse_gene_sum.data();
@@ -278,18 +336,28 @@ int main() {
     if (!cellshard::create_series_compressed_h5(series_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
     if (!cellshard::append_standard_csr_part_h5(series_path.c_str(), 0u, &part)) return 1;
     if (!cellshard::append_series_embedded_metadata_h5(series_path.c_str(), &embedded_metadata_view)) return 1;
+    if (!cellshard::append_series_observation_metadata_h5(series_path.c_str(), &observation_metadata_view)) return 1;
     if (!cellshard::append_series_browse_cache_h5(series_path.c_str(), &browse_view)) return 1;
 
     wb::series_summary summary = wb::summarize_series_csh5(series_path);
     if (!summary.ok) return 1;
-    if (summary.rows != 2u || summary.cols != 3u || summary.datasets.size() != 1u || summary.parts.size() != 1u) return 1;
+    if (summary.rows != 2u || summary.cols != 3u || summary.datasets.size() != 1u || summary.partitions.size() != 1u) return 1;
     if (summary.feature_names.size() != 3u || summary.feature_names[0] != "MT-CO1") return 1;
     if (summary.embedded_metadata.size() != 1u) return 1;
-    if (summary.embedded_metadata[0].column_names.size() != 2u || summary.embedded_metadata[0].column_names[0] != "stage") return 1;
+    if (summary.embedded_metadata[0].column_names.size() != 3u || summary.embedded_metadata[0].column_names[0] != "day") return 1;
     wb::embedded_metadata_table loaded_metadata = wb::load_embedded_metadata_table(series_path, 0u);
     if (!loaded_metadata.available) return 1;
-    if (loaded_metadata.field_values.size() != 4u || loaded_metadata.field_values[0] != "E8" || loaded_metadata.field_values[2] != "E9") return 1;
-    if (loaded_metadata.row_offsets.size() != 3u || loaded_metadata.row_offsets[1] != 2u) return 1;
+    if (loaded_metadata.field_values.size() != 6u || loaded_metadata.field_values[0] != "E8.5" || loaded_metadata.field_values[3] != "P0") return 1;
+    if (loaded_metadata.row_offsets.size() != 3u || loaded_metadata.row_offsets[1] != 3u) return 1;
+    if (!summary.observation_metadata.available || summary.observation_metadata.rows != 2u || summary.observation_metadata.cols != 6u) return 1;
+    if (summary.observation_metadata.columns.size() != 6u || summary.observation_metadata.columns[3].name != "embryonic_day_label") return 1;
+    wb::observation_metadata_table loaded_observation = wb::load_observation_metadata_table(series_path);
+    if (!loaded_observation.available || loaded_observation.columns.size() != 6u) return 1;
+    if (loaded_observation.columns[0].text_values.size() != 2u || loaded_observation.columns[0].text_values[0] != "E8.5") return 1;
+    if (loaded_observation.columns[3].text_values[1] != "P0") return 1;
+    if (loaded_observation.columns[4].float32_values.size() != 2u || loaded_observation.columns[4].float32_values[0] != 8.5f) return 1;
+    if (!std::isnan(loaded_observation.columns[4].float32_values[1])) return 1;
+    if (loaded_observation.columns[5].uint8_values.size() != 2u || loaded_observation.columns[5].uint8_values[1] != 1u) return 1;
     if (!summary.browse.available || summary.browse.selected_feature_indices.size() != 2u) return 1;
     if (summary.browse.selected_feature_names.size() != 2u || summary.browse.selected_feature_names[0] != "MT-CO1") return 1;
 
@@ -305,7 +373,7 @@ int main() {
         preprocess.min_variance = 0.0f;
         wb::preprocess_summary preprocess_summary = wb::run_preprocess_pass(series_path, preprocess);
         if (!preprocess_summary.ok) return 1;
-        if (preprocess_summary.parts_processed != 1u || preprocess_summary.kept_genes == 0u) return 1;
+        if (preprocess_summary.partitions_processed != 1u || preprocess_summary.kept_genes == 0u) return 1;
     }
 
     if (device_count >= 4) {
@@ -339,11 +407,15 @@ int main() {
             std::fprintf(stderr, "converted summary missing embedded metadata\n");
             return 1;
         }
+        if (!converted_summary.observation_metadata.available || converted_summary.observation_metadata.cols < 3u) {
+            std::fprintf(stderr, "converted summary missing observation metadata\n");
+            return 1;
+        }
         if (!converted_summary.browse.available || converted_summary.browse.selected_feature_indices.size() != 2u) {
             std::fprintf(stderr, "converted summary missing browse cache\n");
             return 1;
         }
-        if (converted_summary.parts.empty() || converted_summary.parts[0].execution_format == 0u) {
+        if (converted_summary.partitions.empty() || converted_summary.partitions[0].execution_format == 0u) {
             std::fprintf(stderr, "converted summary missing execution metadata\n");
             return 1;
         }

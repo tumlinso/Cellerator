@@ -43,6 +43,24 @@ static owned_text_column make_column(const std::vector<const char *> &values) {
     return col;
 }
 
+struct owned_observation_metadata_column {
+    std::string name;
+    std::uint32_t type = cellshard::series_observation_metadata_type_none;
+    owned_text_column text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
+
+    cellshard::series_observation_metadata_column_view view() const {
+        cellshard::series_observation_metadata_column_view out{};
+        out.name = name.c_str();
+        out.type = type;
+        out.text_values = text_values.view();
+        out.float32_values = float32_values.empty() ? nullptr : float32_values.data();
+        out.uint8_values = uint8_values.empty() ? nullptr : uint8_values.data();
+        return out;
+    }
+};
+
 static int populate_part(cellshard::sparse::compressed *part,
                          unsigned int rows,
                          unsigned int cols,
@@ -73,6 +91,183 @@ static int check_part(const cellshard::sparse::compressed *part,
         if (__half2float(part->val[i]) != values[i]) return 0;
     }
     return 1;
+}
+
+static int populate_blocked_ell_part(cellshard::sparse::blocked_ell *part,
+                                     unsigned int rows,
+                                     unsigned int cols,
+                                     unsigned int block_size,
+                                     unsigned int ell_cols,
+                                     const std::vector<unsigned int> &block_idx,
+                                     const std::vector<float> &values) {
+    std::size_t i = 0;
+
+    cellshard::sparse::init(part,
+                            rows,
+                            cols,
+                            (cellshard::types::nnz_t) values.size(),
+                            block_size,
+                            ell_cols);
+    if (!cellshard::sparse::allocate(part)) return 0;
+    std::memcpy(part->blockColIdx, block_idx.data(), block_idx.size() * sizeof(unsigned int));
+    for (i = 0; i < values.size(); ++i) part->val[i] = __float2half(values[i]);
+    return 1;
+}
+
+static int check_blocked_ell_part(const cellshard::sparse::blocked_ell *part,
+                                  const std::vector<unsigned int> &block_idx,
+                                  const std::vector<float> &values) {
+    std::size_t i = 0;
+    if (part == 0) return 0;
+    for (i = 0; i < block_idx.size(); ++i) {
+        if (part->blockColIdx[i] != block_idx[i]) return 0;
+    }
+    for (i = 0; i < values.size(); ++i) {
+        if (__half2float(part->val[i]) != values[i]) return 0;
+    }
+    return 1;
+}
+
+static int run_blocked_ell_roundtrip_test() {
+    const std::string out_path = "/tmp/cellshard_series_blocked_ell_test.csh5";
+    const std::string cache_dir = "/tmp/cellshard_series_blocked_ell_cache";
+    const std::string cache_part0 = cache_dir + "/part.0.becache";
+    const std::string cache_part1 = cache_dir + "/part.1.becache";
+    cellshard::sparse::blocked_ell part0;
+    cellshard::sparse::blocked_ell part1;
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
+    cellshard::shard_storage storage;
+    std::vector<std::uint64_t> part_rows = { 2u, 2u };
+    std::vector<std::uint64_t> part_nnz = { 8u, 8u };
+    std::vector<std::uint64_t> part_aux = {
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul),
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
+    };
+    std::vector<std::uint64_t> part_row_offsets = { 0u, 2u, 4u };
+    std::vector<std::uint32_t> part_dataset_ids = { 0u, 0u };
+    std::vector<std::uint32_t> part_codec_ids = { 0u, 0u };
+    std::vector<std::uint64_t> shard_offsets = { 0u, 4u };
+    cellshard::series_codec_descriptor codec{};
+    cellshard::series_layout_view layout{};
+    int rc = 1;
+
+    std::remove(out_path.c_str());
+    cellshard::sparse::init(&part0);
+    cellshard::sparse::init(&part1);
+    cellshard::init(&loaded);
+    cellshard::init(&storage);
+
+    if (!populate_blocked_ell_part(&part0,
+                                   2u,
+                                   4u,
+                                   2u,
+                                   4u,
+                                   {0u, 1u},
+                                   {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})) goto done;
+    if (!populate_blocked_ell_part(&part1,
+                                   2u,
+                                   4u,
+                                   2u,
+                                   4u,
+                                   {1u, 0u},
+                                   {5.0f, 5.5f, 6.0f, 6.5f, 7.0f, 7.5f, 8.0f, 8.5f})) goto done;
+
+    codec.codec_id = 0u;
+    codec.family = cellshard::series_codec_family_blocked_ell;
+    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.scale_value_code = 0u;
+    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
+    codec.flags = 0u;
+
+    layout.rows = 4u;
+    layout.cols = 4u;
+    layout.nnz = 16u;
+    layout.num_parts = 2u;
+    layout.num_shards = 1u;
+    layout.part_rows = part_rows.data();
+    layout.part_nnz = part_nnz.data();
+    layout.part_axes = 0;
+    layout.part_aux = part_aux.data();
+    layout.part_row_offsets = part_row_offsets.data();
+    layout.part_dataset_ids = part_dataset_ids.data();
+    layout.part_codec_ids = part_codec_ids.data();
+    layout.shard_offsets = shard_offsets.data();
+    layout.codecs = &codec;
+    layout.num_codecs = 1u;
+
+    if (!cellshard::create_series_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
+    if (!cellshard::append_blocked_ell_part_h5(out_path.c_str(), 0u, &part0)) goto done;
+    if (!cellshard::append_blocked_ell_part_h5(out_path.c_str(), 1u, &part1)) goto done;
+
+    if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
+        std::fprintf(stderr, "failed to load blocked ell series header\n");
+        goto done;
+    }
+    if (storage.backend != cellshard::shard_storage_backend_series_h5) {
+        std::fprintf(stderr, "blocked ell storage backend mismatch\n");
+        goto done;
+    }
+    std::remove(cache_part0.c_str());
+    std::remove(cache_part1.c_str());
+    ::rmdir(cache_dir.c_str());
+    if (!cellshard::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
+        std::fprintf(stderr, "failed to bind blocked ell cache dir\n");
+        goto done;
+    }
+    if (!cellshard::prefetch_series_blocked_ell_h5_shard_to_cache(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to prefetch blocked ell shard to cache\n");
+        goto done;
+    }
+    if (::access(cache_part0.c_str(), R_OK) != 0 || ::access(cache_part1.c_str(), R_OK) != 0) {
+        std::fprintf(stderr, "missing blocked ell cached parts\n");
+        goto done;
+    }
+    if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to fetch blocked ell part 0\n");
+        goto done;
+    }
+    if (!check_blocked_ell_part(loaded.parts[0], {0u, 1u}, {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})) {
+        std::fprintf(stderr, "blocked ell part 0 mismatch after fetch\n");
+        goto done;
+    }
+    if (!cellshard::drop_part(&loaded, 0u)) {
+        std::fprintf(stderr, "failed to drop blocked ell part 0\n");
+        goto done;
+    }
+    if (!cellshard::fetch_part(&loaded, &storage, 1u)) {
+        std::fprintf(stderr, "failed to fetch blocked ell part 1\n");
+        goto done;
+    }
+    if (!check_blocked_ell_part(loaded.parts[1], {1u, 0u}, {5.0f, 5.5f, 6.0f, 6.5f, 7.0f, 7.5f, 8.0f, 8.5f})) {
+        std::fprintf(stderr, "blocked ell part 1 mismatch after fetch\n");
+        goto done;
+    }
+    if (!cellshard::drop_all_parts(&loaded)) {
+        std::fprintf(stderr, "failed to drop blocked ell parts\n");
+        goto done;
+    }
+    if (!cellshard::fetch_shard(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to fetch blocked ell shard 0\n");
+        goto done;
+    }
+    if (!check_blocked_ell_part(loaded.parts[0], {0u, 1u}, {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})
+        || !check_blocked_ell_part(loaded.parts[1], {1u, 0u}, {5.0f, 5.5f, 6.0f, 6.5f, 7.0f, 7.5f, 8.0f, 8.5f})) {
+        std::fprintf(stderr, "blocked ell shard payload mismatch after fetch\n");
+        goto done;
+    }
+
+    rc = 0;
+
+done:
+    cellshard::clear(&storage);
+    cellshard::clear(&loaded);
+    cellshard::sparse::clear(&part0);
+    cellshard::sparse::clear(&part1);
+    std::remove(cache_part0.c_str());
+    std::remove(cache_part1.c_str());
+    ::rmdir(cache_dir.c_str());
+    std::remove(out_path.c_str());
+    return rc;
 }
 
 } // namespace
@@ -121,12 +316,17 @@ int main() {
     std::vector<std::uint32_t> part_codec_ids = { 0u, 0u };
     std::vector<std::uint64_t> shard_offsets = { 0u, 2u, 3u };
     cellshard::series_codec_descriptor codec;
-    cellshard::series_layout_view layout;
-    cellshard::series_dataset_table_view dataset_view;
-    cellshard::series_provenance_view provenance_view;
-    cellshard::series_metadata_table_view metadata_table_view;
-    cellshard::series_embedded_metadata_view embedded_metadata_view;
-    cellshard::series_browse_cache_view browse_view;
+    cellshard::series_layout_view layout{};
+    cellshard::series_dataset_table_view dataset_view{};
+    cellshard::series_provenance_view provenance_view{};
+    cellshard::series_metadata_table_view metadata_table_view{};
+    cellshard::series_embedded_metadata_view embedded_metadata_view{};
+    cellshard::series_observation_metadata_view observation_metadata_view{};
+    cellshard::series_browse_cache_view browse_view{};
+    owned_observation_metadata_column obs_day_label;
+    owned_observation_metadata_column obs_day;
+    owned_observation_metadata_column obs_postnatal;
+    std::vector<cellshard::series_observation_metadata_column_view> observation_columns;
     std::vector<std::uint32_t> browse_feature_indices = { 0u, 2u };
     std::vector<float> browse_gene_sum = { 1.0f, 6.0f };
     std::vector<float> browse_gene_detected = { 1.0f, 2.0f };
@@ -167,6 +367,7 @@ int main() {
     layout.part_rows = part_rows.data();
     layout.part_nnz = part_nnz.data();
     layout.part_axes = part_axes.data();
+    layout.part_aux = nullptr;
     layout.part_row_offsets = part_row_offsets.data();
     layout.part_dataset_ids = part_dataset_ids.data();
     layout.part_codec_ids = part_codec_ids.data();
@@ -210,6 +411,20 @@ int main() {
     embedded_metadata_view.global_row_end = metadata_global_row_end.data();
     embedded_metadata_view.tables = &metadata_table_view;
 
+    obs_day_label.name = "embryonic_day_label";
+    obs_day_label.type = cellshard::series_observation_metadata_type_text;
+    obs_day_label.text_values = make_column({"E8.5", "E8.5", "P0"});
+    obs_day.name = "embryonic_day";
+    obs_day.type = cellshard::series_observation_metadata_type_float32;
+    obs_day.float32_values = {8.5f, 8.5f, std::numeric_limits<float>::quiet_NaN()};
+    obs_postnatal.name = "is_postnatal";
+    obs_postnatal.type = cellshard::series_observation_metadata_type_uint8;
+    obs_postnatal.uint8_values = {0u, 0u, 1u};
+    observation_columns = {obs_day_label.view(), obs_day.view(), obs_postnatal.view()};
+    observation_metadata_view.rows = 3u;
+    observation_metadata_view.cols = (std::uint32_t) observation_columns.size();
+    observation_metadata_view.columns = observation_columns.data();
+
     browse_view.selected_feature_count = 2u;
     browse_view.selected_feature_indices = browse_feature_indices.data();
     browse_view.gene_sum = browse_gene_sum.data();
@@ -230,6 +445,10 @@ int main() {
     if (!cellshard::append_standard_csr_part_h5(out_path.c_str(), 1u, &part1)) goto done;
     if (!cellshard::append_series_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)) {
         std::fprintf(stderr, "failed to append embedded metadata\n");
+        goto done;
+    }
+    if (!cellshard::append_series_observation_metadata_h5(out_path.c_str(), &observation_metadata_view)) {
+        std::fprintf(stderr, "failed to append observation metadata\n");
         goto done;
     }
     if (!cellshard::append_series_browse_cache_h5(out_path.c_str(), &browse_view)) {
@@ -311,5 +530,9 @@ done:
     if (rc != 0) {
         std::fprintf(stderr, "cellShardSeriesH5Test failed\n");
     }
-    return rc;
+    if (run_blocked_ell_roundtrip_test() != 0) {
+        std::fprintf(stderr, "cellShardSeriesH5Test blocked ell roundtrip failed\n");
+        return 1;
+    }
+    return 0;
 }

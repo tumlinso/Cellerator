@@ -184,8 +184,8 @@ struct series_dataset_summary {
     std::uint64_t nnz = 0;
 };
 
-struct series_part_summary {
-    std::uint64_t part_id = 0;
+struct series_partition_summary {
+    std::uint64_t partition_id = 0;
     std::uint64_t row_begin = 0;
     std::uint64_t row_end = 0;
     std::uint64_t rows = 0;
@@ -202,8 +202,8 @@ struct series_part_summary {
 
 struct series_shard_summary {
     std::uint64_t shard_id = 0;
-    std::uint64_t part_begin = 0;
-    std::uint64_t part_end = 0;
+    std::uint64_t partition_begin = 0;
+    std::uint64_t partition_end = 0;
     std::uint64_t row_begin = 0;
     std::uint64_t row_end = 0;
     std::uint32_t execution_format = 0;
@@ -244,6 +244,34 @@ struct embedded_metadata_table {
     std::vector<std::uint32_t> row_offsets;
 };
 
+struct observation_metadata_column_summary {
+    std::string name;
+    std::uint32_t type = 0;
+};
+
+struct observation_metadata_summary {
+    bool available = false;
+    std::uint64_t rows = 0;
+    std::uint32_t cols = 0;
+    std::vector<observation_metadata_column_summary> columns;
+};
+
+struct observation_metadata_column {
+    std::string name;
+    std::uint32_t type = 0;
+    std::vector<std::string> text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
+};
+
+struct observation_metadata_table {
+    bool available = false;
+    std::string error;
+    std::uint64_t rows = 0;
+    std::uint32_t cols = 0;
+    std::vector<observation_metadata_column> columns;
+};
+
 struct browse_cache_summary {
     bool available = false;
     std::uint32_t selected_feature_count = 0;
@@ -264,16 +292,17 @@ struct series_summary {
     std::string path;
     std::vector<issue> issues;
     std::vector<series_dataset_summary> datasets;
-    std::vector<series_part_summary> parts;
+    std::vector<series_partition_summary> partitions;
     std::vector<series_shard_summary> shards;
     std::vector<codec_summary> codecs;
     std::vector<std::string> feature_names;
     std::vector<embedded_metadata_dataset_summary> embedded_metadata;
+    observation_metadata_summary observation_metadata;
     browse_cache_summary browse;
     std::uint64_t rows = 0;
     std::uint64_t cols = 0;
     std::uint64_t nnz = 0;
-    std::uint64_t num_parts = 0;
+    std::uint64_t num_partitions = 0;
     std::uint64_t num_shards = 0;
     std::uint64_t num_datasets = 0;
     bool ok = false;
@@ -297,7 +326,7 @@ struct preprocess_config {
 struct preprocess_summary {
     bool ok = false;
     int device = -1;
-    unsigned long parts_processed = 0;
+    unsigned long partitions_processed = 0;
     unsigned long rows = 0;
     unsigned long cols = 0;
     unsigned long nnz = 0;
@@ -343,6 +372,8 @@ series_summary summarize_series_csh5(const std::string &path);
 
 embedded_metadata_table load_embedded_metadata_table(const std::string &path,
                                                      std::size_t table_index);
+
+observation_metadata_table load_observation_metadata_table(const std::string &path);
 
 preprocess_summary run_preprocess_pass(const std::string &path,
                                        const preprocess_config &config = preprocess_config());

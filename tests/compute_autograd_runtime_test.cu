@@ -119,7 +119,8 @@ void download_on_device(int device, const autograd::device_buffer<T> &src, T *ds
 
 int main() {
     int device_count = 0;
-    if (cudaGetDeviceCount(&device_count) != cudaSuccess || device_count <= 0) return 0;
+    require(cudaGetDeviceCount(&device_count) == cudaSuccess, "cudaGetDeviceCount failed");
+    require(device_count > 0, "computeAutogradRuntimeTest requires at least one visible CUDA device");
 
     autograd::execution_context ctx;
     autograd::init(&ctx);

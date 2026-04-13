@@ -118,6 +118,7 @@ quant::GeneQuantizerOutput train_model(
 } // namespace
 
 int main() {
+    require(torch::cuda::is_available(), "quantizeModelTest requires CUDA");
     torch::manual_seed(0);
 
     const torch::Tensor features = torch::tensor(
@@ -196,63 +197,60 @@ int main() {
         1.0e-5,
         1.0e-5), "binary quantized pack/unpack should match quantizer reconstruction");
 
-    int cuda_device_count = 0;
-    if (cudaGetDeviceCount(&cuda_device_count) == cudaSuccess && cuda_device_count > 0) {
-        const torch::Tensor sparse_cuda = features
-            .to(torch::TensorOptions().dtype(torch::kFloat16).device(torch::kCUDA))
-            .to_sparse_csr();
-        const quant::QuantizerBatch sparse_batch{
-            sparse_cuda,
-            cell_indices.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCUDA))
-        };
+    const torch::Tensor sparse_cuda = features
+        .to(torch::TensorOptions().dtype(torch::kFloat16).device(torch::kCUDA))
+        .to_sparse_csr();
+    const quant::QuantizerBatch sparse_batch{
+        sparse_cuda,
+        cell_indices.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCUDA))
+    };
 
-        quant::GeneQuantizerConfig sparse_config;
-        sparse_config.input_genes = sparse_batch.features.size(1);
-        sparse_config.bits = 4;
-        sparse_config.scale_floor = 1.0e-3;
-        sparse_config.init_scale = 1.0;
-        sparse_config.init_offset = 0.0;
-        quant::GeneQuantizerModel sparse_model(sparse_config);
-        sparse_model->to(torch::kCUDA);
+    quant::GeneQuantizerConfig sparse_config;
+    sparse_config.input_genes = sparse_batch.features.size(1);
+    sparse_config.bits = 4;
+    sparse_config.scale_floor = 1.0e-3;
+    sparse_config.init_scale = 1.0;
+    sparse_config.init_offset = 0.0;
+    quant::GeneQuantizerModel sparse_model(sparse_config);
+    sparse_model->to(torch::kCUDA);
 
-        quant::GeneQuantizerTrainConfig sparse_train;
-        sparse_train.learning_rate = 5.0e-2;
-        sparse_train.weight_decay = 0.0;
-        sparse_train.loss_scale = 32.0;
-        sparse_train.clip_gradients = true;
+    quant::GeneQuantizerTrainConfig sparse_train;
+    sparse_train.learning_rate = 5.0e-2;
+    sparse_train.weight_decay = 0.0;
+    sparse_train.loss_scale = 32.0;
+    sparse_train.clip_gradients = true;
 
-        quant::GeneQuantizerLossConfig sparse_loss_cfg;
-        sparse_loss_cfg.reconstruction_weight = 1.0;
-        sparse_loss_cfg.future_weight = 0.0;
-        sparse_loss_cfg.range_weight = 0.01;
-        sparse_loss_cfg.min_dynamic_range = 1.25;
+    quant::GeneQuantizerLossConfig sparse_loss_cfg;
+    sparse_loss_cfg.reconstruction_weight = 1.0;
+    sparse_loss_cfg.future_weight = 0.0;
+    sparse_loss_cfg.range_weight = 0.01;
+    sparse_loss_cfg.min_dynamic_range = 1.25;
 
-        auto sparse_optimizer = quant::make_gene_quantizer_optimizer(sparse_model, sparse_train);
-        const float initial_loss = quant::evaluate_gene_quantizer_step(
+    auto sparse_optimizer = quant::make_gene_quantizer_optimizer(sparse_model, sparse_train);
+    const float initial_loss = quant::evaluate_gene_quantizer_step(
+        sparse_model,
+        sparse_batch,
+        sparse_loss_cfg,
+        nullptr).loss.total.item<float>();
+    for (int step = 0; step < 200; ++step) {
+        quant::train_gene_quantizer_step(
             sparse_model,
+            sparse_optimizer,
             sparse_batch,
             sparse_loss_cfg,
-            nullptr).loss.total.item<float>();
-        for (int step = 0; step < 200; ++step) {
-            quant::train_gene_quantizer_step(
-                sparse_model,
-                sparse_optimizer,
-                sparse_batch,
-                sparse_loss_cfg,
-                sparse_train,
-                nullptr);
-        }
-        const quant::GeneQuantizerTrainStep sparse_eval = quant::evaluate_gene_quantizer_step(
-            sparse_model,
-            sparse_batch,
-            sparse_loss_cfg,
+            sparse_train,
             nullptr);
-        const float final_loss = sparse_eval.loss.total.item<float>();
-        require(final_loss < initial_loss, "sparse CUDA quantizer training should reduce loss");
-        require(sparse_eval.output.reconstruction.is_cuda(), "sparse CUDA quantizer reconstruction should stay on device");
-        require(sparse_eval.output.codes.min().item<std::int64_t>() >= 0, "sparse CUDA codes must be non-negative");
-        require(sparse_eval.output.codes.max().item<std::int64_t>() <= 15, "sparse CUDA 4-bit codes must stay in range");
     }
+    const quant::GeneQuantizerTrainStep sparse_eval = quant::evaluate_gene_quantizer_step(
+        sparse_model,
+        sparse_batch,
+        sparse_loss_cfg,
+        nullptr);
+    const float final_loss = sparse_eval.loss.total.item<float>();
+    require(final_loss < initial_loss, "sparse CUDA quantizer training should reduce loss");
+    require(sparse_eval.output.reconstruction.is_cuda(), "sparse CUDA quantizer reconstruction should stay on device");
+    require(sparse_eval.output.codes.min().item<std::int64_t>() >= 0, "sparse CUDA codes must be non-negative");
+    require(sparse_eval.output.codes.max().item<std::int64_t>() <= 15, "sparse CUDA 4-bit codes must stay in range");
 
     return 0;
 }

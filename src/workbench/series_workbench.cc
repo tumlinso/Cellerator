@@ -386,6 +386,32 @@ inline bool read_attr_u32(hid_t obj, const char *name, std::uint32_t *value) {
     return ok;
 }
 
+inline bool read_attr_string(hid_t obj, const char *name, std::string *value) {
+    hid_t attr = (hid_t) -1;
+    hid_t type = (hid_t) -1;
+    std::size_t size = 0u;
+    std::vector<char> buffer;
+
+    if (value == nullptr) return false;
+    attr = H5Aopen(obj, name, H5P_DEFAULT);
+    if (attr < 0) return false;
+    type = H5Aget_type(attr);
+    if (type < 0) goto done;
+    size = H5Tget_size(type);
+    if (size == 0u) goto done;
+    buffer.assign(size + 1u, '\0');
+    if (H5Aread(attr, type, buffer.data()) < 0) goto done;
+    *value = buffer.data();
+    H5Tclose(type);
+    H5Aclose(attr);
+    return true;
+
+done:
+    if (type >= 0) H5Tclose(type);
+    if (attr >= 0) H5Aclose(attr);
+    return false;
+}
+
 template<typename T>
 bool read_dataset_vector(hid_t parent, const char *name, hid_t dtype, std::vector<T> *out) {
     hid_t dset = H5Dopen2(parent, name, H5P_DEFAULT);
@@ -448,17 +474,17 @@ inline bool read_text_column_strings(hid_t parent, const char *name, std::vector
     return true;
 }
 
-inline unsigned long find_part_index_for_row(const std::vector<std::uint64_t> &part_row_offsets,
-                                             std::uint64_t row_begin) {
+inline unsigned long find_partition_index_for_row(const std::vector<std::uint64_t> &part_row_offsets,
+                                                  std::uint64_t row_begin) {
     if (part_row_offsets.size() < 2u) return 0;
     const auto it = std::upper_bound(part_row_offsets.begin(), part_row_offsets.end(), row_begin);
     if (it == part_row_offsets.begin()) return 0;
     return (unsigned long) std::distance(part_row_offsets.begin(), it - 1);
 }
 
-inline unsigned long find_part_end_for_row(const std::vector<std::uint64_t> &part_row_offsets,
-                                           std::uint64_t row_end) {
-    const unsigned long begin = find_part_index_for_row(part_row_offsets, row_end);
+inline unsigned long find_partition_end_for_row(const std::vector<std::uint64_t> &part_row_offsets,
+                                                std::uint64_t row_end) {
+    const unsigned long begin = find_partition_index_for_row(part_row_offsets, row_end);
     if (begin + 1u < part_row_offsets.size() && part_row_offsets[begin] < row_end) return begin + 1u;
     return begin;
 }
@@ -1101,6 +1127,7 @@ series_summary summarize_series_csh5(const std::string &path) {
     hid_t provenance = (hid_t) -1;
     hid_t codecs = (hid_t) -1;
     hid_t embedded_metadata = (hid_t) -1;
+    hid_t observation_metadata = (hid_t) -1;
     hid_t browse = (hid_t) -1;
     hid_t execution = (hid_t) -1;
     std::vector<std::uint32_t> dataset_formats;
@@ -1153,7 +1180,7 @@ series_summary summarize_series_csh5(const std::string &path) {
     if (!read_attr_u64(file, "rows", &summary.rows)
         || !read_attr_u64(file, "cols", &summary.cols)
         || !read_attr_u64(file, "nnz", &summary.nnz)
-        || !read_attr_u64(file, "num_parts", &summary.num_parts)
+        || !read_attr_u64(file, "num_parts", &summary.num_partitions)
         || !read_attr_u64(file, "num_shards", &summary.num_shards)
         || !read_attr_u64(file, "num_datasets", &summary.num_datasets)) {
         push_issue(&summary.issues, issue_severity::error, "inspect", "failed to read top-level series attributes");
@@ -1212,9 +1239,9 @@ series_summary summarize_series_csh5(const std::string &path) {
         goto done;
     }
 
-    summary.parts.reserve(part_rows.size());
+    summary.partitions.reserve(part_rows.size());
     for (std::size_t i = 0; i < part_rows.size(); ++i) {
-        summary.parts.push_back(series_part_summary{
+        summary.partitions.push_back(series_partition_summary{
             (std::uint64_t) i,
             i < part_row_offsets.size() ? part_row_offsets[i] : 0ull,
             i + 1u < part_row_offsets.size() ? part_row_offsets[i + 1u] : 0ull,
@@ -1235,12 +1262,12 @@ series_summary summarize_series_csh5(const std::string &path) {
     for (std::size_t i = 0; i + 1u < shard_offsets.size(); ++i) {
         const std::uint64_t row_begin = shard_offsets[i];
         const std::uint64_t row_end = shard_offsets[i + 1u];
-        const unsigned long part_begin = find_part_index_for_row(part_row_offsets, row_begin);
-        const unsigned long part_end = find_part_end_for_row(part_row_offsets, row_end);
+        const unsigned long partition_begin = find_partition_index_for_row(part_row_offsets, row_begin);
+        const unsigned long partition_end = find_partition_end_for_row(part_row_offsets, row_end);
         summary.shards.push_back(series_shard_summary{
             (std::uint64_t) i,
-            part_begin,
-            row_end == row_begin ? part_begin : std::max<unsigned long>(part_begin, part_end),
+            partition_begin,
+            row_end == row_begin ? partition_begin : std::max<unsigned long>(partition_begin, partition_end),
             row_begin,
             row_end,
             0u,
@@ -1317,6 +1344,35 @@ series_summary summarize_series_csh5(const std::string &path) {
         }
     }
 
+    observation_metadata = open_optional_group(file, "/observation_metadata");
+    if (observation_metadata >= 0) {
+        observation_metadata_summary metadata_summary;
+        if (!read_attr_u64(observation_metadata, "rows", &metadata_summary.rows)
+            || !read_attr_u32(observation_metadata, "cols", &metadata_summary.cols)) {
+            push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read observation metadata header");
+        } else {
+            metadata_summary.columns.reserve(metadata_summary.cols);
+            for (std::uint32_t i = 0; i < metadata_summary.cols; ++i) {
+                char column_name[64];
+                hid_t column = (hid_t) -1;
+                observation_metadata_column_summary column_summary;
+                if (std::snprintf(column_name, sizeof(column_name), "column_%u", i) <= 0) continue;
+                column = H5Gopen2(observation_metadata, column_name, H5P_DEFAULT);
+                if (column < 0) continue;
+                if (!read_attr_string(column, "name", &column_summary.name)
+                    || !read_attr_u32(column, "type", &column_summary.type)) {
+                    push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read one observation metadata column");
+                    H5Gclose(column);
+                    continue;
+                }
+                metadata_summary.columns.push_back(std::move(column_summary));
+                H5Gclose(column);
+            }
+            metadata_summary.available = true;
+            summary.observation_metadata = std::move(metadata_summary);
+        }
+    }
+
     browse = open_optional_group(file, "/browse");
     if (browse >= 0) {
         browse_cache_summary browse_summary;
@@ -1360,12 +1416,12 @@ series_summary summarize_series_csh5(const std::string &path) {
             || !read_dataset_vector(execution, "shard_preferred_pair_ids", H5T_NATIVE_UINT32, &shard_pair_ids)) {
             push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read execution layout metadata");
         } else {
-            for (std::size_t i = 0; i < summary.parts.size(); ++i) {
-                summary.parts[i].execution_format = i < part_execution_formats.size() ? part_execution_formats[i] : 0u;
-                summary.parts[i].blocked_ell_block_size = i < part_block_sizes.size() ? part_block_sizes[i] : 0u;
-                summary.parts[i].blocked_ell_fill_ratio = i < part_fill_ratios.size() ? part_fill_ratios[i] : 0.0f;
-                summary.parts[i].execution_bytes = i < part_execution_bytes.size() ? part_execution_bytes[i] : 0ull;
-                summary.parts[i].blocked_ell_bytes = i < part_blocked_ell_bytes.size() ? part_blocked_ell_bytes[i] : 0ull;
+            for (std::size_t i = 0; i < summary.partitions.size(); ++i) {
+                summary.partitions[i].execution_format = i < part_execution_formats.size() ? part_execution_formats[i] : 0u;
+                summary.partitions[i].blocked_ell_block_size = i < part_block_sizes.size() ? part_block_sizes[i] : 0u;
+                summary.partitions[i].blocked_ell_fill_ratio = i < part_fill_ratios.size() ? part_fill_ratios[i] : 0.0f;
+                summary.partitions[i].execution_bytes = i < part_execution_bytes.size() ? part_execution_bytes[i] : 0ull;
+                summary.partitions[i].blocked_ell_bytes = i < part_blocked_ell_bytes.size() ? part_blocked_ell_bytes[i] : 0ull;
             }
             for (std::size_t i = 0; i < summary.shards.size(); ++i) {
                 summary.shards[i].execution_format = i < shard_execution_formats.size() ? shard_execution_formats[i] : 0u;
@@ -1382,6 +1438,7 @@ series_summary summarize_series_csh5(const std::string &path) {
 done:
     if (execution >= 0) H5Gclose(execution);
     if (browse >= 0) H5Gclose(browse);
+    if (observation_metadata >= 0) H5Gclose(observation_metadata);
     if (embedded_metadata >= 0) H5Gclose(embedded_metadata);
     if (codecs >= 0) H5Gclose(codecs);
     if (provenance >= 0) H5Gclose(provenance);
@@ -1460,6 +1517,103 @@ embedded_metadata_table load_embedded_metadata_table(const std::string &path,
 done:
     if (table >= 0) H5Gclose(table);
     if (embedded_metadata >= 0) H5Gclose(embedded_metadata);
+    if (file >= 0) H5Fclose(file);
+    return table_summary;
+}
+
+observation_metadata_table load_observation_metadata_table(const std::string &path) {
+    observation_metadata_table table_summary;
+    hid_t file = (hid_t) -1;
+    hid_t metadata = (hid_t) -1;
+    bool ok = true;
+
+    if (path.empty()) {
+        table_summary.error = "series path is empty";
+        return table_summary;
+    }
+
+    file = H5Fopen(path.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (file < 0) {
+        table_summary.error = "failed to open series file";
+        return table_summary;
+    }
+
+    metadata = open_group(file, "/observation_metadata");
+    if (metadata < 0) {
+        table_summary.error = "observation metadata section is missing";
+        ok = false;
+    }
+
+    if (ok
+        && (!read_attr_u64(metadata, "rows", &table_summary.rows)
+            || !read_attr_u32(metadata, "cols", &table_summary.cols))) {
+        table_summary.error = "failed to read observation metadata header";
+        ok = false;
+    }
+
+    if (ok) {
+        table_summary.columns.reserve(table_summary.cols);
+        for (std::uint32_t i = 0; i < table_summary.cols; ++i) {
+            char column_name[64];
+            hid_t column = (hid_t) -1;
+            observation_metadata_column column_data;
+
+            if (std::snprintf(column_name, sizeof(column_name), "column_%u", i) <= 0) {
+                table_summary.error = "failed to format observation metadata column name";
+                ok = false;
+                break;
+            }
+            column = H5Gopen2(metadata, column_name, H5P_DEFAULT);
+            if (column < 0) {
+                table_summary.error = "failed to open one observation metadata column";
+                ok = false;
+                break;
+            }
+            if (!read_attr_string(column, "name", &column_data.name)
+                || !read_attr_u32(column, "type", &column_data.type)) {
+                table_summary.error = "failed to read observation metadata column header";
+                H5Gclose(column);
+                ok = false;
+                break;
+            }
+
+            if (column_data.type == cellshard::series_observation_metadata_type_text) {
+                if (!read_text_column_strings(column, "values", &column_data.text_values)) {
+                    table_summary.error = "failed to read observation metadata text payload";
+                    H5Gclose(column);
+                    ok = false;
+                    break;
+                }
+            } else if (column_data.type == cellshard::series_observation_metadata_type_float32) {
+                if (!read_dataset_vector(column, "values", H5T_NATIVE_FLOAT, &column_data.float32_values)) {
+                    table_summary.error = "failed to read observation metadata float payload";
+                    H5Gclose(column);
+                    ok = false;
+                    break;
+                }
+            } else if (column_data.type == cellshard::series_observation_metadata_type_uint8) {
+                if (!read_dataset_vector(column, "values", H5T_NATIVE_UINT8, &column_data.uint8_values)) {
+                    table_summary.error = "failed to read observation metadata uint8 payload";
+                    H5Gclose(column);
+                    ok = false;
+                    break;
+                }
+            } else {
+                table_summary.error = "observation metadata contains an unknown column type";
+                H5Gclose(column);
+                ok = false;
+                break;
+            }
+
+            table_summary.columns.push_back(std::move(column_data));
+            H5Gclose(column);
+        }
+    }
+
+    if (ok) table_summary.available = true;
+
+done:
+    if (metadata >= 0) H5Gclose(metadata);
     if (file >= 0) H5Fclose(file);
     return table_summary;
 }

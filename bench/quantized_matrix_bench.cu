@@ -455,13 +455,15 @@ int main(int argc, char** argv) {
     if (!check_cuda(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount")) {
         return 1;
     }
-    if (device_count > 0) {
-        if (!init_workspace(fixture, &workspace)) {
-            destroy_workspace(&workspace);
-            return 1;
-        }
-        workspace_ptr = &workspace;
+    if (device_count <= 0) {
+        std::fprintf(stderr, "quantizedMatrixBench requires at least one visible CUDA device\n");
+        return 1;
     }
+    if (!init_workspace(fixture, &workspace)) {
+        destroy_workspace(&workspace);
+        return 1;
+    }
+    workspace_ptr = &workspace;
 
     if (options.run_per_gene_affine) {
         ok = run_policy_suite<msq::per_gene_affine<float>>(fixture, options, workspace_ptr) && ok;
