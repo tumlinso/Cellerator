@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "codex"
 created_at: "2026-04-13T14:45:32Z"
-last_heartbeat_at: "2026-04-13T15:19:47Z"
-last_reviewed_at: "2026-04-13T15:19:47Z"
+last_heartbeat_at: "2026-04-13T15:43:08Z"
+last_reviewed_at: "2026-04-13T15:43:08Z"
 stale_after_days: 14
 objective: "add repo-wide portable and extreme V100 CUDA optimization modes with compile-time selection and first hotspot backends"
 ---
@@ -74,6 +74,12 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Kept the extreme PTX helpers isolated behind the split and reran the focused dump on `bench/quantized_extreme_ptx_hotspot.cu`; the post-split `sm_70` hotspot still compiles with focused artifacts, 20 registers, and no spills.
 - Rebuilt `quantizedMatrixTest` and `quantizedMatrixBench` in both portable and extreme trees after the split and reran `quantizedMatrixTest` successfully in both modes.
 - A fresh mutex-serialized `quantizedMatrixBench --host-iters 1 --gpu-iters 5 --bits 8 --policy per_gene_affine` run did not return on the expected timescale after the split, so that verification path is currently treated as bench-specific follow-up rather than a kernel-structure regression until the benchmark itself is checked.
+- Split every multi-kernel file in the active repo inventory to one `__global__` definition per file, including quantized, preprocess, autograd `base_sparse`, model ops, forward-neighbor search, cuVS sharded KNN helpers, workbench CUDA helpers, legacy embryo-series loaders, and the multi-kernel CellShard bucket/convert headers.
+- Kept the split structural only: helpers, launchers, namespaces, and public call surfaces stayed in their original owner files while each kernel body moved into a dedicated include file local to its subsystem.
+- Re-ran the repo-wide inventory and the only remaining multi-hit `__global__` file is `extern/CellShard/src/cuda_compat.cuh`, which is a macro-compat header rather than a kernel-definition surface.
+- Verified portable and extreme builds for `quantizedMatrixTest`, `forwardNeighborsCompileTest`, `computeAutogradRuntimeTest`, and `seriesWorkbenchRuntimeTest`, plus `cellerator_compute_model_ops`, after the repo-wide split.
+- `modelCustomOpsTest` and `scrnaPreprocessBench` still fail on the pre-existing CellShard part-to-shard API migration, not on the one-kernel-per-file split.
+- `seriesWorkbenchRuntimeTest` exits cleanly in one serial run, but parallel launches can trip HDF5 temp-file locking or missing-file ordering on `/tmp/cellerator_series_workbench.series.csh5`; treat that as a test harness concurrency issue rather than a kernel-structure regression.
 
 ## Next Actions
 - Patch `CMakeLists.txt` and add the internal mode config header plus target helper changes.
@@ -81,6 +87,7 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Build focused portable/extreme targets and fix compile issues before touching broader hotspots.
 - Once the active CellShard storage rewrite lands or stabilizes enough to compile `cellerator_compute_autograd` again, extend the distinct extreme path into sparse autograd and the model CUDA surfaces that depend on it.
 - Check why the quantized benchmark binary stalled on the tiny post-split sample before using it as the next comparison point.
+- Keep future CUDA changes on the one-kernel-per-file structure now that the repo-wide inventory has been normalized.
 - Add the next benchmark-backed extreme specialization to forward-neighbor or autograd hot kernels instead of broad alias-only coverage.
 
 ## Done Criteria
