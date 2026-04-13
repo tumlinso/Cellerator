@@ -1,7 +1,23 @@
+---
+slug: "public-omics-shortlist-manuscript-benchmark-seed"
+status: "stale"
+execution: "closed"
+owner: "codex"
+created_at: "2026-04-13T14:45:32Z"
+last_heartbeat_at: "2026-04-13T14:48:10Z"
+last_reviewed_at: "2026-04-13T14:48:10Z"
+stale_after_days: 14
+objective: "build first-step public omics shortlist and manuscript benchmark seed artifacts"
+stale_reason: "User marked this stream stale; dataset-root follow-up is deferred until explicitly reactivated."
+---
+
 # Current Objective
 
 ## Summary
 Build a biology-first public embryo dataset shortlist, record additive manuscript append material, and define the first benchmark package without touching the main manuscript source.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - First execution pass should stop at discovery, ranking, and append-ready specs rather than downloads or manuscript rewrites.

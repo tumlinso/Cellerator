@@ -1,3 +1,15 @@
+---
+slug: "cellshard-core-partition-rename"
+status: "in_progress"
+execution: "ready"
+owner: "codex"
+created_at: "2026-04-13T14:45:32Z"
+last_heartbeat_at: "2026-04-13T14:47:06Z"
+last_reviewed_at: "2026-04-13T14:47:06Z"
+stale_after_days: 14
+objective: "rename CellShard core storage runtime and schema terminology from part to partition without compatibility shims"
+---
+
 # Current Objective
 
 ## Summary

@@ -1,6 +1,7 @@
 #include "../src/models/developmental_time/developmentalTime.hh"
 #include "../src/models/developmental_time_cuda/developmentalTimeCuda.hh"
 #include "benchmark_mutex.hh"
+#include "cellerator_cuda_mode.hh"
 
 #include <cuda_runtime.h>
 
@@ -340,6 +341,7 @@ int run_cuda_impl(const bench_config &cfg, const std::string &out_dir) {
 
 int main(int argc, char **argv) {
     cellerator::bench::benchmark_mutex_guard benchmark_mutex("developmentalTimeABBench");
+    std::cout << "cuda_mode=" << cellerator::build::cuda_mode_name << '\n';
     const bench_config cfg = parse_args(argc, argv);
     if (cfg.impl == "baseline") return run_baseline(cfg, cfg.out_dir);
     if (cfg.impl == "cuda") return run_cuda_impl(cfg, cfg.out_dir);

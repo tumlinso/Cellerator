@@ -130,9 +130,7 @@ static int check_blocked_ell_part(const cellshard::sparse::blocked_ell *part,
 
 static int run_blocked_ell_roundtrip_test() {
     const std::string out_path = "/tmp/cellshard_series_blocked_ell_test.csh5";
-    const std::string cache_dir = "/tmp/cellshard_series_blocked_ell_cache";
-    const std::string cache_part0 = cache_dir + "/part.0.becache";
-    const std::string cache_part1 = cache_dir + "/part.1.becache";
+    const std::string cache_root = "/tmp/cellshard_series_blocked_ell_cache";
     cellshard::sparse::blocked_ell part0;
     cellshard::sparse::blocked_ell part1;
     cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
@@ -207,19 +205,12 @@ static int run_blocked_ell_roundtrip_test() {
         std::fprintf(stderr, "blocked ell storage backend mismatch\n");
         goto done;
     }
-    std::remove(cache_part0.c_str());
-    std::remove(cache_part1.c_str());
-    ::rmdir(cache_dir.c_str());
-    if (!cellshard::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
+    if (!cellshard::bind_series_h5_cache(&storage, cache_root.c_str())) {
         std::fprintf(stderr, "failed to bind blocked ell cache dir\n");
         goto done;
     }
-    if (!cellshard::prefetch_series_blocked_ell_h5_shard_to_cache(&loaded, &storage, 0u)) {
+    if (!cellshard::prefetch_series_blocked_ell_h5_shard_cache(&loaded, &storage, 0u)) {
         std::fprintf(stderr, "failed to prefetch blocked ell shard to cache\n");
-        goto done;
-    }
-    if (::access(cache_part0.c_str(), R_OK) != 0 || ::access(cache_part1.c_str(), R_OK) != 0) {
-        std::fprintf(stderr, "missing blocked ell cached parts\n");
         goto done;
     }
     if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
@@ -259,13 +250,13 @@ static int run_blocked_ell_roundtrip_test() {
     rc = 0;
 
 done:
+    if (storage.backend == cellshard::shard_storage_backend_series_h5) {
+        cellshard::invalidate_series_h5_cache(&storage);
+    }
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
-    std::remove(cache_part0.c_str());
-    std::remove(cache_part1.c_str());
-    ::rmdir(cache_dir.c_str());
     std::remove(out_path.c_str());
     return rc;
 }
@@ -274,9 +265,7 @@ done:
 
 int main() {
     const std::string out_path = "/tmp/cellshard_series_test.csh5";
-    const std::string cache_dir = "/tmp/cellshard_series_cache";
-    const std::string cache_part0 = cache_dir + "/part.0.cscache";
-    const std::string cache_part1 = cache_dir + "/part.1.cscache";
+    const std::string cache_root = "/tmp/cellshard_series_cache";
     cellshard::sparse::compressed part0;
     cellshard::sparse::compressed part1;
     cellshard::sharded<cellshard::sparse::compressed> loaded;
@@ -468,27 +457,16 @@ int main() {
         std::fprintf(stderr, "storage backend mismatch after side-domain append\n");
         goto done;
     }
-    std::remove(cache_part0.c_str());
-    std::remove(cache_part1.c_str());
-    ::rmdir(cache_dir.c_str());
-    if (!cellshard::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
+    if (!cellshard::bind_series_h5_cache(&storage, cache_root.c_str())) {
         std::fprintf(stderr, "failed to bind series h5 part cache\n");
         goto done;
     }
-    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 0u)) {
+    if (!cellshard::prefetch_series_compressed_h5_shard_cache(&loaded, &storage, 0u)) {
         std::fprintf(stderr, "failed to prefetch shard 0 to cache\n");
         goto done;
     }
-    if (!cellshard::prefetch_series_compressed_h5_shard_to_cache(&loaded, &storage, 1u)) {
+    if (!cellshard::prefetch_series_compressed_h5_shard_cache(&loaded, &storage, 1u)) {
         std::fprintf(stderr, "failed to prefetch shard 1 to cache\n");
-        goto done;
-    }
-    if (::access(cache_part0.c_str(), R_OK) != 0) {
-        std::fprintf(stderr, "missing cached part0\n");
-        goto done;
-    }
-    if (::access(cache_part1.c_str(), R_OK) != 0) {
-        std::fprintf(stderr, "missing cached part1\n");
         goto done;
     }
     if (!cellshard::fetch_part(&loaded, &storage, 0u)) {
@@ -519,13 +497,13 @@ int main() {
     rc = 0;
 
 done:
+    if (storage.backend == cellshard::shard_storage_backend_series_h5) {
+        cellshard::invalidate_series_h5_cache(&storage);
+    }
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
-    std::remove(cache_part0.c_str());
-    std::remove(cache_part1.c_str());
-    ::rmdir(cache_dir.c_str());
     std::remove(out_path.c_str());
     if (rc != 0) {
         std::fprintf(stderr, "cellShardSeriesH5Test failed\n");

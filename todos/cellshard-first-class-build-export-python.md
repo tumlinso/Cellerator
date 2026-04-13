@@ -1,3 +1,16 @@
+---
+slug: "cellshard-first-class-build-export-python"
+status: "stale"
+execution: "closed"
+owner: "codex"
+created_at: "2026-04-13T14:45:32Z"
+last_heartbeat_at: "2026-04-13T14:48:10Z"
+last_reviewed_at: "2026-04-13T14:48:10Z"
+stale_after_days: 14
+objective: "promote CellShard to a first-class build target with optional export and python package surfaces"
+stale_reason: "User marked this stream stale; keep it out of pickup rotation until explicitly reactivated."
+---
+
 # Current Objective
 
 ## Summary

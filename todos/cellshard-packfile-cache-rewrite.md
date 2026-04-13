@@ -1,3 +1,16 @@
+---
+slug: "cellshard-packfile-cache-rewrite"
+status: "stale"
+execution: "closed"
+owner: "codex"
+created_at: "2026-04-13T14:45:32Z"
+last_heartbeat_at: "2026-04-13T14:48:10Z"
+last_reviewed_at: "2026-04-13T14:48:10Z"
+stale_after_days: 14
+objective: "rewrite CellShard packfile into a disposable shard-pack cache for .csh5 with one HDF5 reader thread and explicit predictor overrides"
+stale_reason: "User marked this stream stale after partial completion; do not resume unless explicitly reopened."
+---
+
 # Current Objective
 
 ## Summary
@@ -48,12 +61,12 @@ Replace the old packfile persistence path with a shard-pack cache manager for .c
 - Build and run the focused CellShard targets serially because the HDF5 tests still share temporary artifacts.
 
 ## Tasks
-- [ ] Audit and replace the current shard_storage backend state and path fields for the new source-path plus cache-root contract.
-- [ ] Implement shard-pack manifest, fingerprint invalidation, and atomic shard-file writes.
-- [ ] Implement one-reader-thread queueing and coalesced shard materialization for .csh5-backed storage.
-- [ ] Implement predictor state, budgeted keep/evict decisions, and explicit caller override APIs.
-- [ ] Rewrite focused tests and fetch benchmark contracts to cold-fill and warm-cache behavior.
-- [ ] Build and run focused CellShard runtime tests and the fetch benchmark compile target.
+- [x] Audit and replace the current sparse sharded API surface so `.csh5` is primary and legacy packfile fallbacks are quarantined.
+- [x] Implement shard-pack manifest, fingerprint invalidation, and atomic shard-file writes.
+- [x] Implement one-reader-thread queueing and coalesced shard materialization for .csh5-backed storage.
+- [x] Implement predictor state, budgeted keep/evict decisions, and explicit caller override APIs.
+- [x] Rewrite focused tests and fetch benchmark contracts to cold-fill and warm-cache behavior.
+- [x] Build and run focused CellShard runtime tests and the fetch benchmark compile target.
 
 ## Blockers
 _None recorded yet._
@@ -61,10 +74,17 @@ _None recorded yet._
 ## Progress Notes
 - Planning is complete: shard-pack cache files, auto fingerprint invalidation, on-demand fill plus preload, and caller-overridable predictor behavior are the locked design.
 - Initial repo inspection confirmed that the main old-packfile consumers are bench/cellshard_fetch_bench.cu and tests/cellshard_blocked_ell_test.cu, which makes the behavioral rewrite boundary relatively contained.
+- `series_h5.*` now owns the active cache-manager path: one reader thread, shard-pack files under a fingerprinted cache directory, shard-level prefetch, explicit pin/evict/invalidate controls, and a bounded access-pattern predictor.
+- Focused tests were rewritten away from old packfile artifacts: `cellShardSeriesH5Test`, `cellShardBlockedEllTest`, and `seriesWorkbenchRuntimeTest` build and pass against the new `.csh5` cache path.
+- `cellShardFetchBench` no longer benchmarks a packfile-primary mode. It now reports `.csh5` direct fetch against `.csh5` warm-cache behavior and reuses artifacts from `.csh5` only.
+- The root build cache had been pinned to `CMAKE_CUDA_ARCHITECTURES=52`; it was reconfigured to `70` so current validation is V100-only instead of compiling for a broad architecture set.
+- Sparse sharded `load_header`, `fetch_part`, `fetch_all_parts`, and `fetch_shard` now refuse silent packfile fallback; compressed and blocked-ELL callers go through the `.csh5` series path only.
+- The remaining raw packfile helpers were deleted: `extern/CellShard/src/sharded/disk.cu` is gone, `shard_storage` now stores only the source path plus backend state, and `disk.cuh` exposes only the active `.csh5` sharded load/store surface.
+- Final validation after deleting the old helpers still passed: `cellShardSeriesH5Test`, `cellShardBlockedEllTest`, `seriesWorkbenchRuntimeTest`, and a synthetic `cellShardFetchBench --impl all` run under `sm_70`.
 
 ## Next Actions
-- Patch shard_paths.*, sharded_host.cuh, series_h5.*, and disk.* to establish the new cache-manager data model before touching the benchmark and tests.
-- Fork the benchmark/test migration on bench/cellshard_fetch_bench.cu and tests/cellshard_blocked_ell_test.cu once the core cache API shape is stable enough to hand off.
+- Resume the deep CellShard partition rename on top of this cleaned `.csh5` backend.
+- Keep future runtime/docs wording aligned to `shard-pack cache` / `.csh5 source` instead of `packfile`.
 
 ## Done Criteria
 - CellShard no longer treats packfile as a primary durable storage format; .csh5 is durable and packfile is a disposable shard-pack cache.

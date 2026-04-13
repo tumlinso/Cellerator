@@ -1,3 +1,16 @@
+---
+slug: "cellshard-debug-thread"
+status: "stale"
+execution: "closed"
+owner: "unassigned"
+created_at: "2026-04-13T14:45:32Z"
+last_heartbeat_at: "2026-04-13T14:48:10Z"
+last_reviewed_at: "2026-04-13T14:48:10Z"
+stale_after_days: 14
+objective: "maintain a pickup ready CellShard debugging thread for crash triage and regression isolation"
+stale_reason: "User marked this stream stale; keep the debug ledger for history but do not pick it up unless a new CellShard crash reactivates it."
+---
+
 # Current Objective
 
 ## Summary

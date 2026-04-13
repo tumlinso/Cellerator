@@ -1,7 +1,22 @@
+---
+slug: "pointer-first-neighbor-runtime"
+status: "done"
+execution: "closed"
+owner: "unassigned"
+created_at: "2026-04-13T14:47:07Z"
+last_heartbeat_at: "2026-04-13T14:47:07Z"
+last_reviewed_at: "2026-04-13T14:47:07Z"
+stale_after_days: 14
+objective: "pointer-first host/device workspaces for forward neighbors"
+---
+
 # Current Objective
 
 ## Summary
 Refactor the forward-neighbor runtime to use reusable pointer-first host/device workspaces, capacity-aware CUDA scratch, and a shared host-buffer primitive across neighbor surfaces.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - Keep forward-neighbor result semantics unchanged while removing repeated per-block and per-call allocation churn from the search path.

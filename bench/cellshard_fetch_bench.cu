@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -51,7 +52,6 @@ struct run_result {
 
 struct temp_paths {
     std::string base_dir;
-    std::string packfile_path;
     std::string csh5_path;
     std::string cache_dir;
 };
@@ -146,8 +146,8 @@ bench_config parse_args(int argc, char **argv) {
     if (cfg.ell_cols == 0u || (cfg.ell_cols % cfg.block_size) != 0u) {
         throw std::invalid_argument("--ell-cols must be a non-zero multiple of --block-size");
     }
-    if (cfg.impl != "all" && cfg.impl != "packfile" && cfg.impl != "csh5" && cfg.impl != "csh5_cache") {
-        throw std::invalid_argument("--impl must be one of: all, packfile, csh5, csh5_cache");
+    if (cfg.impl != "all" && cfg.impl != "csh5" && cfg.impl != "csh5_cache") {
+        throw std::invalid_argument("--impl must be one of: all, csh5, csh5_cache");
     }
     if (!cfg.artifact_dir.empty() && cfg.prepare_only) {
         throw std::invalid_argument("--artifact-dir cannot be combined with --prepare-only");
@@ -180,7 +180,6 @@ temp_paths make_temp_paths(const std::string &artifact_root, const std::string &
 
     temp_paths out;
     out.base_dir = dir;
-    out.packfile_path = out.base_dir + "/series.pack";
     out.csh5_path = out.base_dir + "/series.csh5";
     out.cache_dir = out.base_dir + "/cache";
     return out;
@@ -189,21 +188,18 @@ temp_paths make_temp_paths(const std::string &artifact_root, const std::string &
 temp_paths open_existing_paths(const std::string &artifact_dir) {
     temp_paths out;
     out.base_dir = artifact_dir;
-    out.packfile_path = out.base_dir + "/series.pack";
     out.csh5_path = out.base_dir + "/series.csh5";
     out.cache_dir = out.base_dir + "/cache";
     return out;
 }
 
-void cleanup_paths(const temp_paths &paths, unsigned long parts) {
-    for (unsigned long i = 0; i < parts; ++i) {
-        const std::string cache_part = paths.cache_dir + "/part." + std::to_string(i) + ".becache";
-        std::remove(cache_part.c_str());
-    }
-    ::rmdir(paths.cache_dir.c_str());
-    std::remove(paths.packfile_path.c_str());
-    std::remove(paths.csh5_path.c_str());
-    ::rmdir(paths.base_dir.c_str());
+void cleanup_paths(const temp_paths &paths) {
+    std::error_code ec;
+    std::filesystem::remove_all(paths.cache_dir, ec);
+    ec.clear();
+    std::filesystem::remove(paths.csh5_path, ec);
+    ec.clear();
+    std::filesystem::remove_all(paths.base_dir, ec);
 }
 
 file_size_result stat_file(const std::string &path) {
@@ -491,49 +487,6 @@ void validate_loaded_shard(const cs::sharded<cs::sparse::blocked_ell> &reference
     }
 }
 
-run_result benchmark_packfile(const std::string &path,
-                              const cs::sharded<cs::sparse::blocked_ell> &reference,
-                              unsigned long shard_id,
-                              unsigned int warmup,
-                              unsigned int iters) {
-    cs::sharded<cs::sparse::blocked_ell> loaded;
-    cs::shard_storage storage;
-    run_result out{};
-
-    cs::init(&loaded);
-    cs::init(&storage);
-    if (!cs::load_header(path.c_str(), &loaded, &storage)) {
-        throw std::runtime_error("packfile load_header failed");
-    }
-
-    {
-        const auto start = std::chrono::steady_clock::now();
-        if (!cs::fetch_shard(&loaded, &storage, shard_id)) throw std::runtime_error("packfile cold fetch_shard failed");
-        const auto stop = std::chrono::steady_clock::now();
-        out.cold_ms = elapsed_ms(start, stop);
-    }
-    validate_loaded_shard(reference, loaded, shard_id);
-    if (!cs::drop_shard(&loaded, shard_id)) throw std::runtime_error("packfile drop_shard failed");
-
-    for (unsigned int i = 0; i < warmup; ++i) {
-        if (!cs::fetch_shard(&loaded, &storage, shard_id)) throw std::runtime_error("packfile warmup fetch_shard failed");
-        if (!cs::drop_shard(&loaded, shard_id)) throw std::runtime_error("packfile warmup drop_shard failed");
-    }
-    {
-        const auto start = std::chrono::steady_clock::now();
-        for (unsigned int i = 0; i < iters; ++i) {
-            if (!cs::fetch_shard(&loaded, &storage, shard_id)) throw std::runtime_error("packfile warm fetch_shard failed");
-            if (!cs::drop_shard(&loaded, shard_id)) throw std::runtime_error("packfile warm drop_shard failed");
-        }
-        const auto stop = std::chrono::steady_clock::now();
-        out.warm_avg_ms = elapsed_ms(start, stop) / (double) iters;
-    }
-
-    cs::clear(&storage);
-    cs::clear(&loaded);
-    return out;
-}
-
 void prefetch_csh5_cache(const std::string &path, const std::string &cache_dir, unsigned long shard_id) {
     cs::sharded<cs::sparse::blocked_ell> loaded;
     cs::shard_storage storage;
@@ -543,11 +496,11 @@ void prefetch_csh5_cache(const std::string &path, const std::string &cache_dir, 
     if (!cs::load_header(path.c_str(), &loaded, &storage)) {
         throw std::runtime_error("csh5 load_header failed during prefetch");
     }
-    if (!cs::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
-        throw std::runtime_error("bind_series_h5_part_cache failed during prefetch");
+    if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
+        throw std::runtime_error("bind_series_h5_cache failed during prefetch");
     }
-    if (!cs::prefetch_series_blocked_ell_h5_shard_to_cache(&loaded, &storage, shard_id)) {
-        throw std::runtime_error("prefetch_series_blocked_ell_h5_shard_to_cache failed");
+    if (!cs::prefetch_series_blocked_ell_h5_shard_cache(&loaded, &storage, shard_id)) {
+        throw std::runtime_error("prefetch_series_blocked_ell_h5_shard_cache failed");
     }
     cs::clear(&storage);
     cs::clear(&loaded);
@@ -570,8 +523,8 @@ run_result benchmark_csh5(const std::string &path,
         throw std::runtime_error("csh5 load_header failed");
     }
     if (use_cache) {
-        if (!cs::bind_series_h5_part_cache(&storage, cache_dir.c_str())) {
-            throw std::runtime_error("bind_series_h5_part_cache failed");
+        if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
+            throw std::runtime_error("bind_series_h5_cache failed");
         }
     }
 
@@ -603,16 +556,22 @@ run_result benchmark_csh5(const std::string &path,
     return out;
 }
 
-void load_reference_from_packfile(const std::string &path, cs::sharded<cs::sparse::blocked_ell> *out) {
+void load_reference_from_csh5(const std::string &path,
+                              const std::string &cache_dir,
+                              cs::sharded<cs::sparse::blocked_ell> *out) {
     cs::shard_storage storage;
     cs::init(out);
     cs::init(&storage);
     if (!cs::load_header(path.c_str(), out, &storage)) {
-        throw std::runtime_error("failed to load packfile header for artifact reuse");
+        throw std::runtime_error("failed to load csh5 header for artifact reuse");
+    }
+    if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
+        cs::clear(&storage);
+        throw std::runtime_error("failed to bind csh5 cache for artifact reuse");
     }
     if (!cs::fetch_all_parts(out, &storage)) {
         cs::clear(&storage);
-        throw std::runtime_error("failed to materialize packfile reference for artifact reuse");
+        throw std::runtime_error("failed to materialize csh5 reference for artifact reuse");
     }
     cs::clear(&storage);
 }
@@ -631,10 +590,10 @@ void print_result(const char *impl_name,
                   const run_result &result,
                   std::uint64_t file_bytes,
                   std::uint64_t shard_bytes,
-                  double packfile_warm_ms,
-                  bool has_packfile_baseline) {
-    const double warm_delta_pct = has_packfile_baseline && packfile_warm_ms > 0.0
-        ? ((result.warm_avg_ms - packfile_warm_ms) / packfile_warm_ms) * 100.0
+                  double baseline_warm_ms,
+                  bool has_baseline) {
+    const double warm_delta_pct = has_baseline && baseline_warm_ms > 0.0
+        ? ((result.warm_avg_ms - baseline_warm_ms) / baseline_warm_ms) * 100.0
         : 0.0;
     const double shard_mb = (double) shard_bytes / (1024.0 * 1024.0);
     const double warm_gib_per_s = result.warm_avg_ms > 0.0
@@ -648,15 +607,14 @@ void print_result(const char *impl_name,
         << " cold_ms=" << result.cold_ms
         << " warm_avg_ms=" << result.warm_avg_ms
         << " warm_gib_per_s=" << warm_gib_per_s
-        << " warm_delta_vs_packfile_pct=";
-    if (has_packfile_baseline) std::cout << warm_delta_pct;
+        << " warm_delta_vs_baseline_pct=";
+    if (has_baseline) std::cout << warm_delta_pct;
     else std::cout << "na";
     std::cout << '\n';
 }
 
 void run_case(const bench_config &cfg, const scenario_case &scenario) {
     const bool reuse_artifacts = !cfg.artifact_dir.empty();
-    const bool run_pack = (cfg.impl == "all" || cfg.impl == "packfile");
     const bool run_csh5 = (cfg.impl == "all" || cfg.impl == "csh5");
     const bool run_csh5_cache = (cfg.impl == "all" || cfg.impl == "csh5_cache");
     const bool owns_paths = !reuse_artifacts;
@@ -668,15 +626,12 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
 
     try {
         if (reuse_artifacts) {
-            load_reference_from_packfile(paths.packfile_path, &source);
+            load_reference_from_csh5(paths.csh5_path, paths.cache_dir, &source);
         } else {
             if (scenario.matrix_path.empty()) {
                 build_source_matrix(cfg, &source);
             } else {
                 build_real_source_matrix(cfg, scenario.matrix_path, &source);
-            }
-            if (!cs::store(paths.packfile_path.c_str(), &source, (cs::shard_storage *) 0)) {
-                throw std::runtime_error("packfile store failed");
             }
             write_csh5_from_source(paths.csh5_path, source);
         }
@@ -686,12 +641,10 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
         }
         require(shard_id < source.num_shards, "--shard-id must be < num_shards");
 
-        const file_size_result pack_size = stat_file(paths.packfile_path);
         const file_size_result csh5_size = stat_file(paths.csh5_path);
         const std::uint64_t selected_shard_bytes = shard_payload_bytes(source, shard_id);
         const unsigned long shard_begin = cs::first_part_in_shard(&source, shard_id);
         const unsigned long shard_end = cs::last_part_in_shard(&source, shard_id);
-        run_result pack{};
         run_result csh5{};
         run_result csh5_cache{};
 
@@ -708,7 +661,6 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
         }
 
         if (run_csh5_cache) prefetch_csh5_cache(paths.csh5_path, paths.cache_dir, shard_id);
-        if (run_pack) pack = benchmark_packfile(paths.packfile_path, source, shard_id, cfg.warmup, cfg.iters);
         if (run_csh5) csh5 = benchmark_csh5(paths.csh5_path, paths.cache_dir, false, source, shard_id, cfg.warmup, cfg.iters);
         if (run_csh5_cache) csh5_cache = benchmark_csh5(paths.csh5_path, paths.cache_dir, true, source, shard_id, cfg.warmup, cfg.iters);
 
@@ -736,20 +688,22 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
         }
         std::cout << '\n';
 
-        if (run_pack) print_result("packfile", pack, pack_size.bytes, selected_shard_bytes, pack.warm_avg_ms, true);
-        if (run_csh5) print_result("csh5", csh5, csh5_size.bytes, selected_shard_bytes, pack.warm_avg_ms, run_pack);
-        if (run_csh5_cache) print_result("csh5_cache", csh5_cache, csh5_size.bytes, selected_shard_bytes, pack.warm_avg_ms, run_pack);
+        if (run_csh5) print_result("csh5", csh5, csh5_size.bytes, selected_shard_bytes, 0.0, false);
+        if (run_csh5_cache) print_result("csh5_cache",
+                                         csh5_cache,
+                                         csh5_size.bytes,
+                                         selected_shard_bytes,
+                                         csh5.warm_avg_ms,
+                                         run_csh5);
     } catch (...) {
-        const unsigned long part_count = source.num_parts;
         cs::clear(&source);
-        if (owns_paths && !paths.base_dir.empty() && !cfg.keep_files) cleanup_paths(paths, part_count);
+        if (owns_paths && !paths.base_dir.empty() && !cfg.keep_files) cleanup_paths(paths);
         throw;
     }
 
     {
-        const unsigned long part_count = source.num_parts;
         cs::clear(&source);
-        if (owns_paths && !paths.base_dir.empty() && !cfg.keep_files) cleanup_paths(paths, part_count);
+        if (owns_paths && !paths.base_dir.empty() && !cfg.keep_files) cleanup_paths(paths);
     }
 }
 

@@ -1,7 +1,22 @@
+---
+slug: "developmental-time-cuda-ab"
+status: "done"
+execution: "closed"
+owner: "codex"
+created_at: "2026-04-13T14:47:06Z"
+last_heartbeat_at: "2026-04-13T14:47:06Z"
+last_reviewed_at: "2026-04-13T14:47:06Z"
+stale_after_days: 14
+objective: "separate libtorch baseline and pure CUDA developmental-time model with matched outputs and A/B benchmarks"
+---
+
 # Current Objective
 
 ## Summary
 Implement a matched-output libtorch baseline and separate CUDA-native developmental-time module, plus a fair A/B benchmark harness for train and inference.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - The libtorch baseline must keep the current module path while switching to the matched scalar-time plus auxiliary-bin contract.

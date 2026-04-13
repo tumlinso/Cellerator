@@ -1,7 +1,22 @@
+---
+slug: "make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks"
+status: "done"
+execution: "closed"
+owner: "unassigned"
+created_at: "2026-04-13T14:47:07Z"
+last_heartbeat_at: "2026-04-13T14:47:07Z"
+last_reviewed_at: "2026-04-13T14:47:07Z"
+stale_after_days: 14
+objective: "make blocked ell csh5 fetch approach packfile performance as closely as possible with shard packed payloads reusable shard scratch and ssd only real data fetch benchmarks"
+---
+
 # Current Objective
 
 ## Summary
 Implement shard-bulk blocked-ELL csh5 fetch, shard scratch reuse, and SSD-only synthetic plus embryo-MTX benchmarks.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - Persisted disk optimization is blocked-ELL-only; compressed remains runtime-compatible but is not an on-disk optimization target.

@@ -13,12 +13,30 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `distributed-time-window-neighbor-runtime` | status: done | execution: closed | owner: unassigned | file: `todos/distributed-time-window-neighbor-runtime.md` | next: Leave closed unless the user explicitly asks for cleanup.
 - `developmental-time-cuda-ab` | status: done | execution: closed | owner: codex | file: `todos/developmental-time-cuda-ab.md` | next: Leave closed unless the user explicitly asks for cleanup.
 - `make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks` | status: done | execution: closed | owner: unassigned | file: `todos/make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks.md` | next: Leave closed unless the user explicitly asks for cleanup.
-- `cellshard-first-class-build-export-python` | status: in_progress | execution: idle | owner: codex | file: `todos/cellshard-first-class-build-export-python.md` | next: Package-component handling and consumer-test scaffolding are in; next step is rerunning standalone no-GPU package validation after the overlapping series_h5 compile issue clears.
-- `public-omics-shortlist-manuscript-benchmark-seed` | status: in_progress | execution: idle | owner: codex | file: `todos/public-omics-shortlist-manuscript-benchmark-seed.md` | next: Get a dataset root from the user, then use the canonical anchor set to build layout plans, manifests, and the first processed-file fetch scope.
-- `cellshard-core-partition-rename` | status: in_progress | execution: idle | owner: codex | file: `todos/cellshard-core-partition-rename.md` | next: Do not touch extern/CellShard/src/sharded/{shard_paths,series_h5,sharded_host}* or extern/CellShard/src/sharded/disk* until the packfile-cache rewrite lands; resume rename on top of the new backend after that.
-- `cellshard-debug-thread` | status: planned | execution: ready | owner: unassigned | file: `todos/cellshard-debug-thread.md` | next: Use this stream for the next CellShard native crash or regression; start with native-debugging crash capture and record the first conclusive summary.
-- `cellshard-packfile-cache-rewrite` | status: in_progress | execution: claimed | owner: codex | file: `todos/cellshard-packfile-cache-rewrite.md` | next: Rewrite extern/CellShard/src/sharded/* packfile and series_h5 storage into the new cache manager, then update focused tests and fetch benchmarks.
+- `cellshard-first-class-build-export-python` | status: stale | execution: closed | owner: codex | file: `todos/cellshard-first-class-build-export-python.md` | next: Stale by user decision; do not resume without explicit reactivation.
+- `public-omics-shortlist-manuscript-benchmark-seed` | status: stale | execution: closed | owner: codex | file: `todos/public-omics-shortlist-manuscript-benchmark-seed.md` | next: Stale by user decision; do not resume without explicit reactivation.
+- `cellshard-core-partition-rename` | status: in_progress | execution: ready | owner: codex | file: `todos/cellshard-core-partition-rename.md` | next: Still active per user; resume the deep partition rename on the cleaned .csh5 backend.
+- `cellshard-debug-thread` | status: stale | execution: closed | owner: unassigned | file: `todos/cellshard-debug-thread.md` | next: Stale by user decision; reactivate only if new CellShard crash work appears.
+- `cellshard-packfile-cache-rewrite` | status: stale | execution: closed | owner: codex | file: `todos/cellshard-packfile-cache-rewrite.md` | next: Stale by user decision; do not resume without explicit reactivation.
+- `dual-cuda-optimization-modes` | status: in_progress | execution: claimed | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | next: Still active per user; next expansion is autograd once the CellShard compile break clears.
+
+## Staleness Review
+- Fresh: 2
+- Aging: 0
+- Stale candidates: 0
+- Stale: 4
+- Superseded: 0
+- `rewrite-cudabiotypes-semantic-contracts` | done | age: 0.0d | threshold: 14d | reason: Terminal workstream.
+- `pointer-first-neighbor-runtime` | done | age: 0.0d | threshold: 14d | reason: Terminal workstream.
+- `distributed-time-window-neighbor-runtime` | done | age: 0.0d | threshold: 14d | reason: Terminal workstream.
+- `developmental-time-cuda-ab` | done | age: 0.0d | threshold: 14d | reason: Terminal workstream.
+- `make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks` | done | age: 0.0d | threshold: 14d | reason: Terminal workstream.
+- `cellshard-first-class-build-export-python` | stale | age: 0.0d | threshold: 14d | reason: User marked this stream stale; keep it out of pickup rotation until explicitly reactivated.
+- `public-omics-shortlist-manuscript-benchmark-seed` | stale | age: 0.0d | threshold: 14d | reason: User marked this stream stale; dataset-root follow-up is deferred until explicitly reactivated.
+- `cellshard-debug-thread` | stale | age: 0.0d | threshold: 14d | reason: User marked this stream stale; keep the debug ledger for history but do not pick it up unless a new CellShard crash reactivates it.
+- `cellshard-packfile-cache-rewrite` | stale | age: 0.0d | threshold: 14d | reason: User marked this stream stale after partial completion; do not resume unless explicitly reopened.
 
 ## Cleanup Status
 - Cleanup mode is explicit only.
-- Safe to call `todo-cleanup`: no, waiting on cellshard-first-class-build-export-python, public-omics-shortlist-manuscript-benchmark-seed, cellshard-core-partition-rename, cellshard-debug-thread, cellshard-packfile-cache-rewrite.
+- Safe to call `todo-cleanup`: no, active workstreams: cellshard-core-partition-rename, dual-cuda-optimization-modes.
+- Cleanup still blocked by stale workstreams pending review: cellshard-first-class-build-export-python, public-omics-shortlist-manuscript-benchmark-seed, cellshard-debug-thread, cellshard-packfile-cache-rewrite.

@@ -1,7 +1,22 @@
+---
+slug: "rewrite-cudabiotypes-semantic-contracts"
+status: "done"
+execution: "closed"
+owner: "unassigned"
+created_at: "2026-04-13T14:47:07Z"
+last_heartbeat_at: "2026-04-13T14:47:07Z"
+last_reviewed_at: "2026-04-13T14:47:07Z"
+stale_after_days: 14
+objective: "rewrite cudabiotypes semantic contracts"
+---
+
 # Current Objective
 
 ## Summary
 Rewrite extern/cudaBioTypes into a meaning-only biology contract layer, then add a Cellerator-side semantic validator that checks CellShard matrices against assay specs without changing runtime ownership.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - cudaBioTypes now owns biological meaning only: modality, feature/observation identity, provenance, processing state, and pairing semantics.

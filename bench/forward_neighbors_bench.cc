@@ -1,5 +1,6 @@
 #include "../src/compute/neighbors/forward_neighbors/forwardNeighbors.hh"
 #include "benchmark_mutex.hh"
+#include "cellerator_cuda_mode.hh"
 
 #include <cuda_runtime.h>
 #include <nvtx3/nvToolsExt.h>
@@ -351,6 +352,7 @@ void write_results(
 int main(int argc, char **argv) {
     cellerator::bench::benchmark_mutex_guard benchmark_mutex("forwardNeighborsBench");
     const bench_config cfg = parse_args(argc, argv);
+    std::cout << "cuda_mode=" << cellerator::build::cuda_mode_name << '\n';
 
     int device_count = 0;
     require(cudaGetDeviceCount(&device_count) == cudaSuccess, "cudaGetDeviceCount failed");

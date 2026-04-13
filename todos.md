@@ -32,6 +32,8 @@ Finish the pointer-first forward-neighbor runtime by adding time-window shard ro
 - `todo-orchestrator` - Keep the new cache-rewrite ledger current while the backend, benchmark, and tests move together.
 - `cuda-v100` - Validate that the rewritten blocked-ELL fetch path keeps the shard-oriented sm_70 cost model intact if hot-path regressions show up.
 - `native-debugging` - Use for host-side crashes or deadlocks in the new reader-thread and queue code.
+- `todo-orchestrator` - Keep the new dual-mode CUDA workstream current while implementation and validation proceed.
+- `cuda-v100` - Keep the compile-time split and first extreme kernels aligned to Volta sm_70 and real hotspot classes.
 
 ## Useful Reference Files
 - `AGENTS.md` - Repo-specific engineering rules and path expectations.
@@ -73,6 +75,15 @@ Finish the pointer-first forward-neighbor runtime by adding time-window shard ro
 - `extern/CellShard/src/sharded/series_h5.cc` - Current direct HDF5 materialization and per-part cache helpers to replace with the new manager.
 - `bench/cellshard_fetch_bench.cu` - Current packfile-vs-csh5 benchmark assumptions that must be rewritten to cold-fill vs warm-cache semantics.
 - `tests/cellshard_blocked_ell_test.cu` - Legacy packfile roundtrip coverage to convert into cache behavior coverage.
+- `AGENTS.md` - Repo-wide build, testing, and Volta optimization rules.
+- `optimization.md` - Current bottlenecks and why explicit low-level operators matter more than generic flags.
+- `pointer_migration_plan.md` - Do not grow new vector-heavy hot-path surfaces while splitting kernels by mode.
+- `CMakeLists.txt` - Current shared CUDA compile flag surface and target inventory.
+- `src/quantized/README.md` - Quantized backend posture and why it is the leading custom-kernel hotspot.
+- `src/quantized/dispatch.cuh` - Current launch boundary for quantized kernels.
+- `src/compute/autograd/autograd.hh` - Sparse autograd API and fleet context surface that must preserve stable public contracts.
+- `src/compute/autograd/kernels/base_sparse.cu` - Current base custom kernels and library-backed boundaries.
+- `src/compute/neighbors/forward_neighbors/forward_neighbors.cu` - Forward-neighbor backend that needs the mode boundary even if it stays aliased initially.
 
 ## Workstreams
 - `rewrite-cudabiotypes-semantic-contracts` | status: done | owner: unassigned | file: `todos/rewrite-cudabiotypes-semantic-contracts.md` | objective: rewrite cudabiotypes semantic contracts
@@ -80,11 +91,12 @@ Finish the pointer-first forward-neighbor runtime by adding time-window shard ro
 - `distributed-time-window-neighbor-runtime` | status: done | owner: unassigned | file: `todos/distributed-time-window-neighbor-runtime.md` | objective: time-window shard routing and lazy multi-GPU forward-neighbor execution
 - `developmental-time-cuda-ab` | status: done | owner: codex | file: `todos/developmental-time-cuda-ab.md` | objective: separate libtorch baseline and pure CUDA developmental-time model with matched outputs and A/B benchmarks
 - `make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks` | status: done | owner: unassigned | file: `todos/make-blocked-ell-csh5-fetch-approach-packfile-performance-as-closely-as-possible-with-shard-packed-payloads-reusable-shard-scratch-and-ssd-only-real-data-fetch-benchmarks.md` | objective: make blocked ell csh5 fetch approach packfile performance as closely as possible with shard packed payloads reusable shard scratch and ssd only real data fetch benchmarks
-- `cellshard-first-class-build-export-python` | status: in_progress | owner: codex | file: `todos/cellshard-first-class-build-export-python.md` | objective: promote CellShard to a first-class build target with optional export and python package surfaces
-- `public-omics-shortlist-manuscript-benchmark-seed` | status: in_progress | owner: codex | file: `todos/public-omics-shortlist-manuscript-benchmark-seed.md` | objective: build first-step public omics shortlist and manuscript benchmark seed artifacts
+- `cellshard-first-class-build-export-python` | status: stale | owner: codex | file: `todos/cellshard-first-class-build-export-python.md` | objective: promote CellShard to a first-class build target with optional export and python package surfaces
+- `public-omics-shortlist-manuscript-benchmark-seed` | status: stale | owner: codex | file: `todos/public-omics-shortlist-manuscript-benchmark-seed.md` | objective: build first-step public omics shortlist and manuscript benchmark seed artifacts
 - `cellshard-core-partition-rename` | status: in_progress | owner: codex | file: `todos/cellshard-core-partition-rename.md` | objective: rename CellShard core storage runtime and schema terminology from part to partition without compatibility shims
-- `cellshard-debug-thread` | status: planned | owner: unassigned | file: `todos/cellshard-debug-thread.md` | objective: maintain a pickup ready CellShard debugging thread for crash triage and regression isolation
-- `cellshard-packfile-cache-rewrite` | status: in_progress | owner: codex | file: `todos/cellshard-packfile-cache-rewrite.md` | objective: rewrite CellShard packfile into a disposable shard-pack cache for .csh5 with one HDF5 reader thread and explicit predictor overrides
+- `cellshard-debug-thread` | status: stale | owner: unassigned | file: `todos/cellshard-debug-thread.md` | objective: maintain a pickup ready CellShard debugging thread for crash triage and regression isolation
+- `cellshard-packfile-cache-rewrite` | status: stale | owner: codex | file: `todos/cellshard-packfile-cache-rewrite.md` | objective: rewrite CellShard packfile into a disposable shard-pack cache for .csh5 with one HDF5 reader thread and explicit predictor overrides
+- `dual-cuda-optimization-modes` | status: in_progress | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | objective: add repo-wide portable and extreme V100 CUDA optimization modes with compile-time selection and first hotspot backends
 
 ## Global Blockers
 _None recorded._
@@ -141,6 +153,13 @@ _None recorded._
 - Initial repo inspection confirmed that the main old-packfile consumers are bench/cellshard_fetch_bench.cu and tests/cellshard_blocked_ell_test.cu, which makes the behavioral rewrite boundary relatively contained.
 - Claimed this idle stream and narrowed the next patch to standalone package-component correctness for no-GPU CellShard installs.
 - Patched CellShardConfig.cmake.in to validate requested package components against exported targets, added a package-consumer smoke project, and documented the standalone component contract in extern/CellShard/README.md.
+- Added `CELLERATOR_CUDA_MODE` with default `portable`, generated `cellerator_cuda_mode.hh`, and linked the mode config through the shared performance helper so CUDA targets compile under one consistent mode surface.
+- Locked `extreme` mode to Volta `sm_70` at configure time and kept `portable` as the correctness-default build posture.
+- Split the quantized device backend into `portable_backend.cuh` and a distinct `extreme_backend.cuh` with Volta-specific inline PTX helpers for reciprocal refinement, `cvt.rni`, `setp`/`selp` clamping, and PTX FMA-based reconstruction.
+- Routed the public quantized dispatch layer through compile-time mode selection without changing the existing API used by tests or benches.
+- Added CUDA mode banner output to the quantized, autograd, forward-neighbor, and developmental-time benchmark entrypoints so run logs identify which build produced the numbers.
+- Verified separate `/tmp/cellerator-portable-build` and `/tmp/cellerator-extreme-build` configure passes, built `quantizedMatrixTest`, `quantizedMatrixBench`, and `forwardNeighborsCompileTest` in both trees, and ran `quantizedMatrixTest` successfully in both modes.
+- Ran a quick serialized `quantizedMatrixBench --host-iters 1 --gpu-iters 5 --bits 8 --policy per_gene_affine` sample in both modes; output now includes `cuda_mode=portable|extreme` and the current sample GPU timings were about 0.106 ms portable vs 0.111 ms extreme on that small run.
 
 ## Next Actions
 - Measure one-shard, one-pair, and cross-pair query windows to decide whether pair-local merge needs a stronger explicit path beyond the current device-grouped execution.
@@ -178,6 +197,11 @@ _None recorded._
 - Fork the benchmark/test migration on bench/cellshard_fetch_bench.cu and tests/cellshard_blocked_ell_test.cu once the core cache API shape is stable enough to hand off.
 - Patch CellShardConfig.cmake.in to validate requested components against exported targets, then add focused standalone no-GPU package-consumer coverage.
 - After the overlapping series_h5 redefinition issue is resolved, rerun standalone extern/CellShard with CELLSHARD_ENABLE_CUDA=OFF and build the new cellShardInspectPackageTest target.
+- Patch `CMakeLists.txt` and add the internal mode config header plus target helper changes.
+- Create the quantized portable/extreme backend split and keep the public dispatch API stable.
+- Build focused portable/extreme targets and fix compile issues before touching broader hotspots.
+- Once the active CellShard storage rewrite lands or stabilizes enough to compile `cellerator_compute_autograd` again, extend the distinct extreme path into sparse autograd and the model CUDA surfaces that depend on it.
+- Add the next benchmark-backed extreme specialization to forward-neighbor or autograd hot kernels instead of broad alias-only coverage.
 
 ## Done Criteria
 - The forward-neighbor surface exposes explicit time-window routing and reusable executor contracts.
@@ -210,6 +234,10 @@ _None recorded._
 - Concurrent worker requests for the same missing shard coalesce onto one HDF5 reader-thread materialization job.
 - The predictor can retain or evict shards under a bounded cache budget, but explicit caller commands always override it.
 - Focused CellShard tests and benchmark code build and validate the new cold-fill and warm-cache semantics.
+- `CELLERATOR_CUDA_MODE` exists, defaults to portable, and controls every CUDA target through one consistent compile-time path.
+- Extreme mode builds cleanly for the repo CUDA targets even where some subsystems still alias the portable backend.
+- The quantized backend has a distinct extreme implementation with focused tests or benchmarks proving the split is real.
+- Benchmark/test output clearly identifies the active CUDA mode so results are comparable across builds.
 
 ## Historical Summary
 - Recent completed work included Blocked-ELL persistence, real-data sparse replay benchmarking, quantize autograd kernels, workbench browse-cache updates, semantic cudaBioTypes cleanup, and the initial pointer-first neighbor workspace refactor.

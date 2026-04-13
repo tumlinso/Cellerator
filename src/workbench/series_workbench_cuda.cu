@@ -1739,8 +1739,8 @@ preprocess_summary run_preprocess_pass(const std::string &path, const preprocess
         push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to load series header");
         return summary;
     }
-    if (!config.cache_dir.empty() && !cs::bind_series_h5_part_cache(&storage, config.cache_dir.c_str())) {
-        push_issue(&summary.issues, issue_severity::warning, "preprocess", "failed to bind requested part cache directory");
+    if (!config.cache_dir.empty() && !cs::bind_series_h5_cache(&storage, config.cache_dir.c_str())) {
+        push_issue(&summary.issues, issue_severity::warning, "preprocess", "failed to bind requested cache directory");
     }
 
     if (!csv::reserve(&device_state, matrix.num_parts)) {

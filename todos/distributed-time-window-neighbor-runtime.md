@@ -1,7 +1,22 @@
+---
+slug: "distributed-time-window-neighbor-runtime"
+status: "done"
+execution: "closed"
+owner: "unassigned"
+created_at: "2026-04-13T14:47:07Z"
+last_heartbeat_at: "2026-04-13T14:47:07Z"
+last_reviewed_at: "2026-04-13T14:47:07Z"
+stale_after_days: 14
+objective: "time-window shard routing and lazy multi-GPU forward-neighbor execution"
+---
+
 # Current Objective
 
 ## Summary
 Implement the first distributed forward-neighbor runtime pass with time-window shard routing, lazy multi-GPU residency, and a reusable executor surface tuned for the real 4x V100 host topology.
+
+## Quick Start
+_None recorded yet._
 
 ## Planning Notes
 - Keep the active neighbor API exact-window first and pointer-first.
