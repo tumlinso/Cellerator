@@ -9,9 +9,15 @@ __global__ void ann_probe_kernel_(
     int hard_same_embryo,
     int probe_count,
     std::int32_t *selected_list_offsets) {
-    const std::int64_t row = blockIdx.x;
-    const int lane = threadIdx.x;
-    if (row >= query_rows || lane >= kWarpThreads) return;
+    const int warp = threadIdx.x / kWarpThreads;
+    const int lane = threadIdx.x & (kWarpThreads - 1);
+    const std::int64_t row = static_cast<std::int64_t>(blockIdx.x) *
+            static_cast<std::int64_t>(kForwardNeighborWarpsPerBlock) +
+        static_cast<std::int64_t>(warp);
+    if (row >= query_rows) return;
+    const unsigned warp_mask = __activemask();
+    __shared__ ProbeCandidate merged_shared[kForwardNeighborWarpsPerBlock * kMaxProbe];
+    ProbeCandidate *merged = merged_shared + warp * kMaxProbe;
 
     ProbeCandidate local_best[kMaxProbe];
     init_probe_candidates_device_(local_best, probe_count);
@@ -27,18 +33,16 @@ __global__ void ann_probe_kernel_(
         }, local_best, probe_count);
     }
 
-    __shared__ ProbeCandidate shared_candidates[kWarpThreads * kMaxProbe];
-    ProbeCandidate *thread_shared = shared_candidates + lane * kMaxProbe;
-    for (int i = 0; i < probe_count; ++i) thread_shared[i] = local_best[i];
-    __syncthreads();
-
     if (lane == 0) {
-        ProbeCandidate merged[kMaxProbe];
         init_probe_candidates_device_(merged, probe_count);
-        for (int thread = 0; thread < kWarpThreads; ++thread) {
-            const ProbeCandidate *thread_candidates = shared_candidates + thread * kMaxProbe;
-            for (int i = 0; i < probe_count; ++i) insert_probe_candidate_device_(thread_candidates[i], merged, probe_count);
+    }
+    for (int src_lane = 0; src_lane < kWarpThreads; ++src_lane) {
+        for (int i = 0; i < probe_count; ++i) {
+            const ProbeCandidate candidate = shfl_probe_candidate_device_(warp_mask, local_best[i], src_lane);
+            if (lane == 0) insert_probe_candidate_device_(candidate, merged, probe_count);
         }
+    }
+    if (lane == 0) {
         for (int i = 0; i < probe_count; ++i) {
             selected_list_offsets[row * static_cast<std::int64_t>(probe_count) + i] = merged[i].list_offset;
         }

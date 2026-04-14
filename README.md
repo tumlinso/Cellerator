@@ -2,13 +2,13 @@
 
 Cellerator is a GPU-oriented compute and model repository for large sparse single-cell datasets.
 
-It sits on top of `CellShard`, which handles sparse matrix storage, persistence, and staging. Cellerator adds ingest, preprocessing, reusable sparse compute, model code, trajectory logic, Torch-facing boundaries, and the ncurses workbench.
+It sits on top of `CellShard`, which handles canonical sparse storage, pack delivery, and distributed execution staging. Cellerator adds ingest, one-pass preprocessing/filtering, reusable sparse compute, model code, trajectory logic, Torch-facing boundaries, and the ncurses workbench.
 
-This codebase is built for explicit low-level control rather than a high-level workflow API. If you want the storage layer by itself, see `extern/CellShard/`.
+This codebase is built for explicit low-level control rather than a high-level workflow API, but it now also carries a thin Python wrapper for the dataset-facing workbench path. If you want the storage layer by itself, see `extern/CellShard/`.
 
 ## What Is Here
 
-- `src/ingest/`: source readers, MTX conversion, and series ingest
+- `src/ingest/`: source readers, MTX conversion, and dataset ingest
 - `src/compute/`: reusable sparse compute, preprocess operators, neighbors, and custom-op building blocks
 - `src/models/`: libtorch model workflows
 - `src/trajectory/`: trajectory scoring and assembly
@@ -37,7 +37,7 @@ The main source areas are:
 - `src/compute/`: low-level compute building blocks and performance-sensitive kernels
 - `src/compute/autograd/`: sparse autograd contexts, scratch, and kernels
 - `src/compute/neighbors/`: nearest-neighbor and retrieval code
-- `src/ingest/`: source-format readers, metadata tables, partition planning, and series conversion
+- `src/ingest/`: source-format readers, metadata tables, partition planning, and dataset conversion
 - `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
 - `src/workbench/`: the ncurses workbench application and helpers
 - `src/quantized/`: quantized sparse layouts, accessors, and kernels
@@ -68,6 +68,15 @@ cmake --build build -j 4
 
 Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the default libtorch.
 
+To build the optional Python wrapper from the root build:
+
+```bash
+cmake -S . -B build -DCELLERATOR_ENABLE_PYTHON=ON -DCELLERATOR_ENABLE_TORCH_MODELS=OFF -DCELLERATOR_ENABLE_NCURSES_WORKBENCH=OFF
+cmake --build build -j 4 --target celleratorPythonCompileTest
+```
+
+If you also enable `-DCELLERATOR_ENABLE_CELLSHARD_PYTHON=ON`, the root build exposes a focused `celleratorPythonRuntimeTest` target that imports both build-tree packages and runs an end-to-end smoke check.
+
 ## Running Things
 
 `ctest` is not configured. Run the built binaries directly.
@@ -75,8 +84,8 @@ Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the 
 Examples:
 
 ```bash
-./build/cellShardSeriesH5Test
-./build/seriesWorkbenchRuntimeTest
+./build/cellShardDatasetH5Test
+./build/datasetWorkbenchRuntimeTest
 ./build/forwardNeighborsCompileTest
 ./build/computeAutogradRuntimeTest
 ./build/quantizeModelTest
@@ -85,9 +94,11 @@ Examples:
 Useful build targets include:
 
 - `celleratorWorkbench`
-- `cellShardSeriesH5Test`
-- `seriesIngestCompileTest`
-- `seriesWorkbenchRuntimeTest`
+- `celleratorPythonCompileTest`
+- `celleratorPythonRuntimeTest` when both Python modules are enabled
+- `cellShardDatasetH5Test`
+- `datasetIngestCompileTest`
+- `datasetWorkbenchRuntimeTest`
 - `forwardNeighborsCompileTest`
 - `computeAutogradRuntimeTest`
 - `developmentalTimeCompileTest`
@@ -100,7 +111,38 @@ Useful build targets include:
 
 - Cellerator is performance-oriented and currently tuned around Volta / V100-class assumptions.
 - Blocked-ELL is the preferred sparse execution and persistence layout; CSR/compressed remains available where needed.
-- `docs/` is currently a local research and paper workspace, not part of the default build or packaging surface.
+- Current MTX-dataset ingest is bounded-memory and SSD-aware: it finishes filtering before CellShard emission, spills bounded build artifacts to a local spool, then assembles `dataset.csh5` and the active pack generation without rereading the expensive source.
+- Single-machine operation should still follow the owner-service contract: `.csh5` stays under one owner-side coordinator and master reader, while local executors consume published pack generations.
+- Distributed operation keeps `.csh5` on the owner host and delivers pack generations to executor nodes; remote nodes may cache pack data locally, but those caches are runtime artifacts rather than sources of truth.
+- `docs/` now hosts the Cellerator pipeline manual plus local-only workflow notes; it is still not part of the default build or packaging surface.
+
+## Python Wrapper
+
+The root `cellerator` Python package is intentionally narrow. It wraps the dataset workbench library seam for:
+
+- manifest and source inspection
+- ingest planning and conversion to `.csh5`
+- dataset summary and preprocess execution
+- high-level reopening of the written dataset through `cellshard.open()`
+
+It does not try to expose the full Torch/model/custom-kernel surface. For ordinary Python use:
+
+```bash
+python -m pip install extern/CellShard
+python -m pip install .
+```
+
+```python
+import cellerator
+
+builder = cellerator.DatasetBuilder.from_manifest("manifest.tsv")
+policy = cellerator.ingest_policy()
+policy.output_path = "dataset.csh5"
+plan = builder.plan(policy)
+builder.convert(plan)
+summary = builder.inspect_output()
+dataset = builder.open()
+```
 
 ## Where To Read Next
 

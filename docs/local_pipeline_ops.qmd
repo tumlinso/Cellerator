@@ -1,0 +1,56 @@
+---
+title: "Local Pipeline Ops"
+---
+
+## Scope
+
+`docs/pipeline/` contains local operational wrappers that support dataset acquisition and preprocessing around the main Cellerator pipeline. These scripts are useful, but they are not part of the packaged product surface.
+
+This area currently provides:
+
+- manifest-driven FASTQ acquisition helpers
+- manifest-driven preprocessing wrappers
+- local environment and manifest templates
+
+## Important Boundary
+
+These scripts are local-only:
+
+- they are not wired into CMake
+- they are not installed as product commands
+- they may call external tools such as `prefetch`, `fasterq-dump`, `curl`, `wget`, or `pbrun`
+- they are allowed to drive built Cellerator binaries indirectly, but product code must not depend on them
+
+## Current Interface
+
+The wrappers still use the older `CELLERATOR_PAPER_*` and `PAPER_*` environment-variable names because that was their original local workflow contract.
+
+Current env template:
+
+- `docs/pipeline/config/local.env.example`
+
+Current entrypoints:
+
+- `docs/pipeline/download/fetch_fastq.sh`
+- `docs/pipeline/preprocess/run_unified_preprocess.sh`
+
+## Download Flow
+
+The download helper reads a TSV manifest with dataset identity, provider, accession or URL fields, and target-relative output paths. It defaults to dry-run mode so the command plan is visible before data movement starts.
+
+Supported provider patterns currently include:
+
+- `sra`
+- `direct`
+- `ena`
+- `geo-http`
+
+## Preprocess Flow
+
+The preprocess helper reads a TSV manifest that pairs an input dataset root with a command template. It expands placeholders for data roots, work roots, references, and output paths, then either prints or runs the resulting command.
+
+The manifest contract is intentionally command-template driven so different datasets can still pass through one log and provenance surface.
+
+## Suggested Future Cleanup
+
+If these wrappers become a permanent part of the broader Cellerator pipeline story, the next cleanup step should be renaming the `PAPER_*` environment surface to a neutral pipeline-specific contract. That rename is intentionally not done here because it would change operational behavior, not just documentation.

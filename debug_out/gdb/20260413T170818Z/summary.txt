@@ -1,0 +1,20 @@
+Native GDB Summary
+
+status: rerun
+conclusive: no
+crash_class: host-segfault
+likely_domain: host-crash
+exit_status: 1
+signal: 
+
+decision:
+- The process died with a segmentation-fault style signal.
+- The debugger could not attach because ptrace was blocked.
+
+matched_signatures:
+- segmentation fault
+
+next_step: Rerun gdb where ptrace is permitted, then capture a short backtrace again.
+
+limitations:
+- ptrace-blocked

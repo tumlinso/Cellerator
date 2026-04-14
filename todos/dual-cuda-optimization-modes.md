@@ -78,17 +78,17 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Kept the split structural only: helpers, launchers, namespaces, and public call surfaces stayed in their original owner files while each kernel body moved into a dedicated include file local to its subsystem.
 - Re-ran the repo-wide inventory and the only remaining multi-hit `__global__` file is `extern/CellShard/src/cuda_compat.cuh`, which is a macro-compat header rather than a kernel-definition surface.
 - Verified portable and extreme builds for `quantizedMatrixTest`, `forwardNeighborsCompileTest`, `computeAutogradRuntimeTest`, and `seriesWorkbenchRuntimeTest`, plus `cellerator_compute_model_ops`, after the repo-wide split.
+- Extended the portable/extreme split into CellShard: root CMake now propagates the mode into `extern/CellShard`, standalone CellShard validates `extreme` as `sm_70`-only, and the bucket/convert kernel headers now route their hot index and atomic micro-primitives through a shared Volta-only inline PTX helper layer.
+- Verified the CellShard extension with fresh `/tmp/cellerator-cellshard-portable` and `/tmp/cellerator-cellshard-extreme` configure passes, then built `cellShardSeriesH5Test`, `cellShardBlockedEllTest`, and `seriesWorkbenchRuntimeTest` successfully in both modes.
 - `modelCustomOpsTest` and `scrnaPreprocessBench` still fail on the pre-existing CellShard part-to-shard API migration, not on the one-kernel-per-file split.
 - `seriesWorkbenchRuntimeTest` exits cleanly in one serial run, but parallel launches can trip HDF5 temp-file locking or missing-file ordering on `/tmp/cellerator_series_workbench.series.csh5`; treat that as a test harness concurrency issue rather than a kernel-structure regression.
 
 ## Next Actions
-- Patch `CMakeLists.txt` and add the internal mode config header plus target helper changes.
-- Create the quantized portable/extreme backend split and keep the public dispatch API stable.
-- Build focused portable/extreme targets and fix compile issues before touching broader hotspots.
 - Once the active CellShard storage rewrite lands or stabilizes enough to compile `cellerator_compute_autograd` again, extend the distinct extreme path into sparse autograd and the model CUDA surfaces that depend on it.
+- Decide which CellShard bucket/convert kernel should earn the first benchmark-backed distinct extreme body instead of relying only on shared PTX micro-primitives.
 - Check why the quantized benchmark binary stalled on the tiny post-split sample before using it as the next comparison point.
 - Keep future CUDA changes on the one-kernel-per-file structure now that the repo-wide inventory has been normalized.
-- Add the next benchmark-backed extreme specialization to forward-neighbor or autograd hot kernels instead of broad alias-only coverage.
+- Add the next benchmark-backed extreme specialization to forward-neighbor, autograd, or CellShard hot kernels instead of broad alias-only coverage.
 
 ## Done Criteria
 - `CELLERATOR_CUDA_MODE` exists, defaults to portable, and controls every CUDA target through one consistent compile-time path.

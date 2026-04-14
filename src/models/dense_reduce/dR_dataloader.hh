@@ -77,7 +77,7 @@ public:
 
     DenseReduceBatch sample_sparse_csr(std::size_t cells_per_bucket) {
         std::lock_guard<std::mutex> lock(mutex_);
-        host_buffer<unsigned long> fetched_parts;
+        host_buffer<unsigned long> fetched_partitions;
         host_buffer<sampled_row_span> sampled_rows;
         std::int64_t total_nnz = 0;
 
@@ -97,9 +97,9 @@ public:
                 const unsigned long *bucket_rows = bucket_rows_begin_(static_cast<std::size_t>(bucket_id));
                 for (const unsigned long local_pos : local_positions) {
                     const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
-                    const unsigned long part_id = cellshard::find_part(matrix_, global_row);
-                    part_type *part = require_part_(part_id, &fetched_parts);
-                    const unsigned long part_row_base = matrix_->part_offsets[part_id];
+                    const unsigned long part_id = cellshard::find_partition(matrix_, global_row);
+                    part_type *part = require_partition_(part_id, &fetched_partitions);
+                    const unsigned long part_row_base = matrix_->partition_offsets[part_id];
                     const cellshard::types::dim_t local_row =
                         static_cast<cellshard::types::dim_t>(global_row - part_row_base);
                     const cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
@@ -117,12 +117,12 @@ public:
                 }
             }
         } catch (...) {
-            drop_fetched_parts_(fetched_parts);
+            drop_fetched_partitions_(fetched_partitions);
             throw;
         }
 
         DenseReduceBatch batch = build_sparse_batch_(sampled_rows, total_nnz);
-        drop_fetched_parts_(fetched_parts);
+        drop_fetched_partitions_(fetched_partitions);
         return batch;
     }
 
@@ -164,7 +164,7 @@ private:
     void validate_constructor_state_() const {
         if (matrix_ == 0) throw std::invalid_argument("BalancedDenseReduceSampler requires a non-null CellShard matrix");
         if (matrix_->rows == 0) throw std::invalid_argument("BalancedDenseReduceSampler requires a non-empty CellShard matrix");
-        if (matrix_->num_parts == 0 || matrix_->part_offsets == 0 || matrix_->part_rows == 0 || matrix_->part_aux == 0) {
+        if (matrix_->num_partitions == 0 || matrix_->partition_offsets == 0 || matrix_->partition_rows == 0 || matrix_->partition_aux == 0) {
             throw std::invalid_argument("BalancedDenseReduceSampler requires sharded CSR metadata to be initialized");
         }
         if (developmental_time_.size() != static_cast<std::size_t>(matrix_->rows)) {
@@ -175,8 +175,8 @@ private:
         }
         checked_i64_(matrix_->rows, "rows");
         checked_i64_(matrix_->cols, "cols");
-        for (unsigned long part_id = 0; part_id < matrix_->num_parts; ++part_id) {
-            if (matrix_->part_aux[part_id] != cellshard::sparse::compressed_by_row) {
+        for (unsigned long part_id = 0; part_id < matrix_->num_partitions; ++part_id) {
+            if (matrix_->partition_aux[part_id] != cellshard::sparse::compressed_by_row) {
                 throw std::invalid_argument("BalancedDenseReduceSampler requires CSR parts compressed by row");
             }
         }
@@ -256,36 +256,36 @@ private:
         return buckets;
     }
 
-    part_type *require_part_(unsigned long part_id, host_buffer<unsigned long> *fetched_parts) {
-        if (part_id >= matrix_->num_parts) {
-            throw std::out_of_range("sampled row resolved to an invalid CellShard part");
+    part_type *require_partition_(unsigned long part_id, host_buffer<unsigned long> *fetched_partitions) {
+        if (part_id >= matrix_->num_partitions) {
+            throw std::out_of_range("sampled row resolved to an invalid CellShard partition");
         }
-        if (!cellshard::part_loaded(matrix_, part_id)) {
+        if (!cellshard::partition_loaded(matrix_, part_id)) {
             if (storage_ == 0) {
-                throw std::runtime_error("sampled row lives in an unloaded CellShard part, but no shard_storage was provided");
+                throw std::runtime_error("sampled row lives in an unloaded CellShard partition, but no shard_storage was provided");
             }
-            if (!cellshard::fetch_part(matrix_, storage_, part_id)) {
-                throw std::runtime_error("failed to fetch CellShard part for sampled row");
+            if (!cellshard::fetch_partition(matrix_, storage_, part_id)) {
+                throw std::runtime_error("failed to fetch CellShard partition for sampled row");
             }
-            // Cold-part fetches dominate latency more than local row copy.
-            if (fetched_parts != 0) fetched_parts->push_back(part_id);
+            // Cold-partition fetches dominate latency more than local row copy.
+            if (fetched_partitions != 0) fetched_partitions->push_back(part_id);
         }
 
         part_type *part = matrix_->parts[part_id];
-        if (part == 0) throw std::runtime_error("CellShard part is still null after fetch");
+        if (part == 0) throw std::runtime_error("CellShard partition is still null after fetch");
         if (part->axis != cellshard::sparse::compressed_by_row) {
-            throw std::runtime_error("BalancedDenseReduceSampler only supports row-compressed CSR parts");
+            throw std::runtime_error("BalancedDenseReduceSampler only supports row-compressed CSR partitions");
         }
         if (matrix_->cols != 0 && part->cols != matrix_->cols) {
-            throw std::runtime_error("CellShard part column count does not match sharded metadata");
+            throw std::runtime_error("CellShard partition column count does not match sharded metadata");
         }
         return part;
     }
 
-    void drop_fetched_parts_(const host_buffer<unsigned long> &fetched_parts) {
+    void drop_fetched_partitions_(const host_buffer<unsigned long> &fetched_partitions) {
         if (!options_.drop_fetched_parts) return;
-        for (std::size_t i = fetched_parts.size(); i != 0u; --i) {
-            cellshard::drop_part(matrix_, fetched_parts[i - 1u]);
+        for (std::size_t i = fetched_partitions.size(); i != 0u; --i) {
+            cellshard::drop_partition(matrix_, fetched_partitions[i - 1u]);
         }
     }
 

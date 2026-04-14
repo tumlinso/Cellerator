@@ -1,0 +1,64 @@
+---
+title: "Developer Reference"
+---
+
+## Build
+
+```bash
+cmake -S . -B build
+cmake --build build -j 4
+```
+
+If libtorch is unavailable:
+
+```bash
+cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+cmake --build build -j 4
+```
+
+## Focused Test Targets
+
+Useful pipeline-adjacent targets include:
+
+- `cellShardDatasetH5Test`
+- `datasetIngestCompileTest`
+- `datasetWorkbenchRuntimeTest`
+- `forwardNeighborsCompileTest`
+- `computeAutogradRuntimeTest`
+- `developmentalTimeCompileTest`
+- `denseReduceCompileTest`
+- `quantizeModelTest`
+- `torchBindingsCompileTest`
+- `modelCustomOpsTest`
+
+Run the built binaries directly because `ctest` is not configured.
+
+Examples:
+
+```bash
+./build/cellShardDatasetH5Test
+./build/datasetWorkbenchRuntimeTest
+./build/forwardNeighborsCompileTest
+./build/computeAutogradRuntimeTest
+./build/quantizeModelTest
+```
+
+## Repo Map
+
+- `src/ingest/`: source readers, MTX conversion, dataset ingest, metadata alignment
+- `src/compute/`: reusable sparse compute, preprocess operators, autograd, neighbors
+- `src/models/`: header-first libtorch workflows
+- `src/trajectory/`: trajectory scoring and assembly
+- `src/workbench/`: ncurses and command-line workbench surfaces
+- `src/quantized/`: Volta-oriented quantized sparse runtime
+- `src/torch/`: explicit Torch export boundary
+- `extern/CellShard/`: storage, `.csh5`, pack generation, and runtime staging
+- `tests/`: compile and runtime checks
+- `bench/`: benchmark binaries
+
+## Additional References
+
+- `README.md`
+- `AGENTS.md`
+- `optimization.md`
+- `todos.md`

@@ -232,7 +232,7 @@ Optimization comment:
 
 Relevant file:
 
-- `src/ingest/series/series_ingest.cuh`
+- `src/ingest/dataset/dataset_ingest.cuh`
 
 Observations:
 

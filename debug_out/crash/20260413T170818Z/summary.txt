@@ -1,0 +1,13 @@
+Native Crash Summary
+
+status: ok
+conclusive: yes
+crash_class: sigsegv
+likely_domain: host-crash
+exit_status: 139
+signal: SIGSEGV
+
+decision:
+- The process exited due to SIGSEGV.
+
+next_step: Use batch gdb to capture a short backtrace and failing source line.

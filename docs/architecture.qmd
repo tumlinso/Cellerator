@@ -1,0 +1,53 @@
+---
+title: "Architecture"
+---
+
+## System Split
+
+The repo is organized around an explicit boundary:
+
+- `CellShard` owns canonical sparse storage, `.csh5` metadata, shard and pack generation, and runtime staging.
+- `Cellerator` owns source ingest, reusable compute, preprocessing operators, trajectory assembly, model code, Torch interop, and the workbench.
+
+This is intentionally not a high-level workflow framework. The codebase keeps layouts, residency boundaries, and launch structure visible enough to optimize directly on V100-class hardware.
+
+## Main Pipeline Surfaces
+
+### `src/ingest/`
+
+Owns source-format readers, MTX conversion, one-pass filtering, metadata tables, and canonical emission into `CellShard`.
+
+### `src/compute/`
+
+Owns reusable low-level computation: preprocess operators, neighbor search, sparse autograd building blocks, and hot-path kernels.
+
+### `src/trajectory/`
+
+Owns trajectory-specific scoring, pruning, and assembly. Reusable graph or neighbor primitives stay lower in `src/compute/`.
+
+### `src/models/`
+
+Owns header-first libtorch workflows. Model wrappers and training orchestration live here, while reusable compute stays in `src/compute/`.
+
+### `src/quantized/`
+
+Owns the Volta-oriented quantized sparse backend. This is a custom-kernel path optimized for sparse HBM traffic and irregular row work rather than a generic abstraction layer.
+
+### `src/torch/`
+
+Owns the explicit conversion boundary from Cellerator and `CellShard` structures into Torch tensors. It is intentionally expensive and should not be used as a hot-path runtime layer.
+
+### `src/workbench/`
+
+Owns the interactive and command-line workbench surfaces for inspecting series state and driving preprocess-oriented workflows.
+
+## Sparse And Runtime Posture
+
+- Blocked-ELL is the preferred sparse persistence and execution layout.
+- CSR and other compressed forms remain available only where a subsystem still needs them.
+- The repository is tuned for Volta `sm_70` assumptions, not for broad accelerator portability by default.
+- Performance-sensitive code is expected to keep data-layout and transfer costs explicit.
+
+## Documentation Boundary
+
+The Quarto book in `docs/` is the active explanation surface for the pipeline. Local experiment or manuscript leftovers may still exist under `docs/`, but they are background material rather than the primary documentation source.

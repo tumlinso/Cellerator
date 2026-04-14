@@ -68,7 +68,7 @@ inline void validate_dense_reduce_infer_inputs_(
     const float *developmental_time,
     std::size_t developmental_time_count) {
     if (matrix == nullptr) throw std::invalid_argument("dense reduce inference requires a non-null CellShard matrix");
-    if (matrix->num_parts == 0 || matrix->part_offsets == nullptr || matrix->part_rows == nullptr || matrix->part_aux == nullptr) {
+    if (matrix->num_partitions == 0 || matrix->partition_offsets == nullptr || matrix->partition_rows == nullptr || matrix->partition_aux == nullptr) {
         throw std::invalid_argument("dense reduce inference requires initialized sharded CSR metadata");
     }
     if (developmental_time_count != static_cast<std::size_t>(matrix->rows)) {
@@ -121,28 +121,28 @@ void for_each_dense_reduce_encoded_batch(
     model->eval();
     if (config.move_model_to_device) model->to(config.device);
 
-    for (unsigned long part_id = 0; part_id < matrix->num_parts; ++part_id) {
+    for (unsigned long part_id = 0; part_id < matrix->num_partitions; ++part_id) {
         bool loaded_here = false;
-        const unsigned long row_begin_ul = matrix->part_offsets[part_id];
-        const unsigned long row_end_ul = matrix->part_offsets[part_id + 1];
-        const std::int64_t row_count = detail::checked_i64_dense_reduce_(row_end_ul - row_begin_ul, "part row count");
+        const unsigned long row_begin_ul = matrix->partition_offsets[part_id];
+        const unsigned long row_end_ul = matrix->partition_offsets[part_id + 1];
+        const std::int64_t row_count = detail::checked_i64_dense_reduce_(row_end_ul - row_begin_ul, "partition row count");
 
-        if (!cellshard::part_loaded(matrix, part_id)) {
+        if (!cellshard::partition_loaded(matrix, part_id)) {
             if (storage == nullptr) {
-                throw std::runtime_error("dense reduce inference encountered an unloaded part without shard storage");
+                throw std::runtime_error("dense reduce inference encountered an unloaded partition without shard storage");
             }
-            if (!cellshard::fetch_part(matrix, storage, part_id)) {
-                throw std::runtime_error("dense reduce inference failed to fetch a CellShard part");
+            if (!cellshard::fetch_partition(matrix, storage, part_id)) {
+                throw std::runtime_error("dense reduce inference failed to fetch a CellShard partition");
             }
             loaded_here = true;
         }
 
         const cellshard::sparse::compressed *part = matrix->parts[part_id];
         if (part == nullptr || part->axis != cellshard::sparse::compressed_by_row) {
-            throw std::runtime_error("dense reduce inference requires loaded row-compressed CSR parts");
+            throw std::runtime_error("dense reduce inference requires loaded row-compressed CSR partitions");
         }
 
-        // Part-wise inference exports host CSR to a CPU Torch tensor, moves it
+        // Partition-wise inference exports host CSR to a CPU Torch tensor, moves it
         // to device, then copies latent embeddings back to CPU.
         torch::Tensor features = cellerator::torch_bindings::export_as_tensor(*part);
         features = features.to(config.device);
@@ -163,7 +163,7 @@ void for_each_dense_reduce_encoded_batch(
         });
 
         if (loaded_here && config.drop_fetched_parts) {
-            cellshard::drop_part(matrix, part_id);
+            cellshard::drop_partition(matrix, part_id);
         }
     }
 }

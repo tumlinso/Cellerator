@@ -1,0 +1,28 @@
+{
+  "tool": "gdb",
+  "status": "rerun",
+  "conclusive": false,
+  "command": "./build/seriesWorkbenchRuntimeTest ",
+  "exit_status": 1,
+  "signal": "",
+  "crash_class": "host-segfault",
+  "likely_domain": "host-crash",
+  "next_step": "Rerun gdb where ptrace is permitted, then capture a short backtrace again.",
+  "reasons": [
+    "The process died with a segmentation-fault style signal.",
+    "The debugger could not attach because ptrace was blocked."
+  ],
+  "matched_signatures": [
+    "segmentation fault"
+  ],
+  "stderr_tail": [],
+  "stdout_tail": [],
+  "backtrace_head": [],
+  "source_hint": "",
+  "limitations": [
+    "ptrace-blocked"
+  ],
+  "failed_syscalls": [],
+  "perf_counters": {},
+  "tool_detail": ""
+}

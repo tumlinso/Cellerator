@@ -1,0 +1,4 @@
+run_id	engine	input_relpath	output_relpath	reference_path	command_template	notes
+# replace the placeholders before running with --run
+mouse_gse45719_align	parabricks	raw_fastq/mouse/gse45719/sample01	mouse/gse45719/sample01	/abs/path/to/reference.fa	{parabricks_bin} fq2bam --ref {reference_path} --in-fq {input_dir}/sample01_R1.fastq.gz {input_dir}/sample01_R2.fastq.gz --out-bam {output_dir}/sample01.bam	Parabricks example; adjust subcommand, inputs, and outputs to the real assay.
+mouse_gse121708_custom	custom	raw_fastq/mouse/gse121708/sample01	mouse/gse121708/sample01	/abs/path/to/reference.fa	bash -lc 'echo custom preprocess from {input_dir} to {output_dir}'	Placeholder for a non-Parabricks preprocessing step.

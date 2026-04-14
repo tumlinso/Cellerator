@@ -102,8 +102,8 @@ int main() {
         std::vector<std::uint32_t> partition_dataset_ids(blocked.num_partitions, 0u);
         std::vector<std::uint32_t> partition_codec_ids(blocked.num_partitions, 0u);
         std::vector<std::uint64_t> shard_offsets(blocked.num_shards + 1u, 0u);
-        cs::series_codec_descriptor codec{};
-        cs::series_layout_view layout{};
+        cs::dataset_codec_descriptor codec{};
+        cs::dataset_layout_view layout{};
         for (unsigned long i = 0; i < blocked.num_partitions; ++i) {
             partition_rows[i] = (std::uint64_t) blocked.partition_rows[i];
             partition_nnz[i] = (std::uint64_t) blocked.partition_nnz[i];
@@ -116,7 +116,7 @@ int main() {
         }
 
         codec.codec_id = 0u;
-        codec.family = cs::series_codec_family_blocked_ell;
+        codec.family = cs::dataset_codec_family_sliced_ell;
         codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
         codec.scale_value_code = 0u;
         codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
@@ -142,12 +142,12 @@ int main() {
         cs::sharded<cs::sparse::blocked_ell> loaded;
         cs::init(&storage);
         cs::init(&loaded);
-        require(cs::create_series_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr) != 0, "blocked ell csh5 create failed");
+        require(cs::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr) != 0, "blocked ell csh5 create failed");
         require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 0u, blocked.parts[0]) != 0, "append blocked ell part0 failed");
         require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 1u, blocked.parts[1]) != 0, "append blocked ell part1 failed");
         require(cs::load_header(out_path.c_str(), &loaded, &storage) != 0, "blocked ell csh5 load_header failed");
-        require(cs::bind_series_h5_cache(&storage, cache_root.c_str()) != 0, "blocked ell cache bind failed");
-        require(cs::prefetch_series_blocked_ell_h5_shard_cache(&loaded, &storage, 0ul) != 0, "blocked ell shard cache prefetch failed");
+        require(cs::bind_dataset_h5_cache(&storage, cache_root.c_str()) != 0, "blocked ell cache bind failed");
+        require(cs::prefetch_dataset_blocked_ell_h5_shard_cache(&loaded, &storage, 0ul) != 0, "blocked ell shard cache prefetch failed");
         require(loaded.num_partitions == blocked.num_partitions, "blocked ell loaded part count mismatch");
         require(loaded.partition_aux[0] == blocked.partition_aux[0], "blocked ell loaded aux mismatch");
         require(cs::fetch_partition(&loaded, &storage, 0ul) != 0, "blocked ell fetch_partition failed");
@@ -156,7 +156,7 @@ int main() {
         require(loaded.parts[0]->ell_cols == blocked.parts[0]->ell_cols, "blocked ell loaded ell_cols mismatch");
         require(loaded.parts[0]->blockColIdx[0] == blocked.parts[0]->blockColIdx[0], "blocked ell loaded block col mismatch");
         require(close_half(loaded.parts[0]->val[0], __half2float(blocked.parts[0]->val[0])), "blocked ell loaded value mismatch");
-        require(cs::invalidate_series_h5_cache(&storage) != 0, "blocked ell cache invalidation failed");
+        require(cs::invalidate_dataset_h5_cache(&storage) != 0, "blocked ell cache invalidation failed");
         cs::clear(&storage);
         cs::clear(&loaded);
         std::remove(out_path.c_str());

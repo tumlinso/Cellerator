@@ -58,6 +58,8 @@ For manuscript planning, model framing, or conceptual discussion about regulator
 
 If work around `docs/`, notes, or manuscript-like material turns into writing, figure generation, or citation support, use `$quarto-manuscript` rather than splitting those tasks across separate Quarto skills.
 
+When code changes materially alter runtime, storage, ingest, execution-pack, or other pipeline behavior, update the corresponding documentation in `docs/` and any primary README surface that describes that behavior as part of the same change. Do not leave behavior documentation stale after the implementation lands.
+
 If new model work in `src/models/` appears to need custom Torch ops, record the proposed op boundary in `custom_torch_ops.md` before implementing it and keep the op scope minimal. Prefer library-backed Torch, ATen, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
 
 For CUDA/C++ implementation work outside `src/models/`, default to `$cuda-v100` whenever kernel shape, memory fit, communication topology, HtoD staging, sparse layout, or profiler interpretation is material to the answer. Recommendations should explicitly say whether they are library-backed or custom-kernel, whether they assume `sm_70`, and what the dominant limiter is: PCIe, HBM traffic, occupancy, register pressure, launch overhead, or cross-GPU communication.

@@ -1,5 +1,26 @@
 # Docs
-docs/
+docs/*
+!docs/README.md
+!docs/_quarto.yml
+!docs/*.qmd
+!docs/preamble.tex
+!docs/pipeline/
+docs/pipeline/*
+!docs/pipeline/README.md
+!docs/pipeline/config/
+docs/pipeline/config/*
+!docs/pipeline/config/README.md
+!docs/pipeline/config/*.example
+!docs/pipeline/config/*.example.tsv
+!docs/pipeline/download/
+docs/pipeline/download/*
+!docs/pipeline/download/README.md
+!docs/pipeline/download/*.sh
+!docs/pipeline/preprocess/
+docs/pipeline/preprocess/*
+!docs/pipeline/preprocess/README.md
+!docs/pipeline/preprocess/*.sh
+docs/_book/
 
 # Build directories
 build/

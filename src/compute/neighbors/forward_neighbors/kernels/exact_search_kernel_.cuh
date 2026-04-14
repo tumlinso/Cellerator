@@ -19,9 +19,15 @@ __global__ void exact_search_kernel_(
     float *best_time,
     std::int64_t *best_embryo,
     float *best_similarity) {
-    const std::int64_t row = blockIdx.x;
-    const int lane = threadIdx.x;
-    if (row >= query_rows || lane >= kWarpThreads) return;
+    const int warp = threadIdx.x / kWarpThreads;
+    const int lane = threadIdx.x & (kWarpThreads - 1);
+    const std::int64_t row = static_cast<std::int64_t>(blockIdx.x) *
+            static_cast<std::int64_t>(kForwardNeighborWarpsPerBlock) +
+        static_cast<std::int64_t>(warp);
+    if (row >= query_rows) return;
+    const unsigned warp_mask = __activemask();
+    __shared__ Candidate merged_shared[kForwardNeighborWarpsPerBlock * kMaxTopK];
+    Candidate *merged = merged_shared + warp * kMaxTopK;
 
     Candidate local_best[kMaxTopK];
     init_candidates_device_(local_best, k);
@@ -48,13 +54,7 @@ __global__ void exact_search_kernel_(
         }, local_best, k);
     }
 
-    __shared__ Candidate shared_candidates[kWarpThreads * kMaxTopK];
-    Candidate *thread_shared = shared_candidates + lane * kMaxTopK;
-    for (int i = 0; i < k; ++i) thread_shared[i] = local_best[i];
-    __syncthreads();
-
     if (lane == 0) {
-        Candidate merged[kMaxTopK];
         init_candidates_device_(merged, k);
         const std::int64_t row_base = row * static_cast<std::int64_t>(k);
         for (int i = 0; i < k; ++i) {
@@ -66,10 +66,17 @@ __global__ void exact_search_kernel_(
                 best_shard[row_base + i]
             };
         }
-        for (int thread = 0; thread < kWarpThreads; ++thread) {
-            const Candidate *thread_candidates = shared_candidates + thread * kMaxTopK;
-            for (int i = 0; i < k; ++i) insert_candidate_device_(thread_candidates[i], merged, k);
+    }
+    for (int src_lane = 0; src_lane < kWarpThreads; ++src_lane) {
+        for (int i = 0; i < k; ++i) {
+            const Candidate candidate = shfl_candidate_device_(warp_mask, local_best[i], src_lane);
+            if (lane == 0) {
+                insert_candidate_device_(candidate, merged, k);
+            }
         }
+    }
+    if (lane == 0) {
+        const std::int64_t row_base = row * static_cast<std::int64_t>(k);
         for (int i = 0; i < k; ++i) {
             best_similarity[row_base + i] = merged[i].similarity;
             best_time[row_base + i] = merged[i].developmental_time;

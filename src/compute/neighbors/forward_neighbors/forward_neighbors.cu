@@ -24,6 +24,8 @@ namespace detail {
 namespace cg = ::cellerator::compute::graph;
 
 constexpr int kWarpThreads = 32;
+constexpr int kForwardNeighborWarpsPerBlock = 1;
+constexpr int kForwardNeighborThreadsPerBlock = kForwardNeighborWarpsPerBlock * kWarpThreads;
 constexpr int kMaxTopK = 32;
 constexpr int kMaxProbe = 16;
 
@@ -248,6 +250,35 @@ __device__ inline float dot_half_float_rows_(const __half *lhs, const float *rhs
     float sum = 0.0f;
     for (int i = 0; i < dim; ++i) sum += __half2float(lhs[i]) * rhs[i];
     return sum;
+}
+
+__device__ inline std::int64_t shfl_i64_device_(unsigned mask, std::int64_t value, int src_lane) {
+    const std::uint64_t bits = static_cast<std::uint64_t>(value);
+    const std::uint32_t lo = __shfl_sync(mask, static_cast<std::uint32_t>(bits), src_lane);
+    const std::uint32_t hi = __shfl_sync(mask, static_cast<std::uint32_t>(bits >> 32), src_lane);
+    return static_cast<std::int64_t>((static_cast<std::uint64_t>(hi) << 32) | static_cast<std::uint64_t>(lo));
+}
+
+__device__ inline Candidate shfl_candidate_device_(unsigned mask, const Candidate &candidate, int src_lane) {
+    Candidate shuffled;
+    shuffled.similarity = __shfl_sync(mask, candidate.similarity, src_lane);
+    shuffled.developmental_time = __shfl_sync(mask, candidate.developmental_time, src_lane);
+    shuffled.embryo_id = shfl_i64_device_(mask, candidate.embryo_id, src_lane);
+    shuffled.cell_index = shfl_i64_device_(mask, candidate.cell_index, src_lane);
+    shuffled.shard_index = shfl_i64_device_(mask, candidate.shard_index, src_lane);
+    return shuffled;
+}
+
+__device__ inline ProbeCandidate shfl_probe_candidate_device_(unsigned mask, const ProbeCandidate &candidate, int src_lane) {
+    ProbeCandidate shuffled;
+    shuffled.similarity = __shfl_sync(mask, candidate.similarity, src_lane);
+    shuffled.list_offset = __shfl_sync(mask, candidate.list_offset, src_lane);
+    return shuffled;
+}
+
+inline std::int64_t query_blocks_for_rows_(std::int64_t query_rows) {
+    return (query_rows + static_cast<std::int64_t>(kForwardNeighborWarpsPerBlock) - 1) /
+        static_cast<std::int64_t>(kForwardNeighborWarpsPerBlock);
 }
 
 #include "kernels/init_best_kernel_.cuh"
@@ -1130,7 +1161,7 @@ inline ForwardNeighborSearchResult search_core_(
                     for (const auto &interval : scratch.merged_intervals) {
                         for (std::int64_t index_begin = interval.first; index_begin < interval.second; index_begin += config.index_block_rows) {
                             const std::int64_t index_end = std::min(index_begin + config.index_block_rows, interval.second);
-                            exact_search_kernel_<<<block_queries, kWarpThreads>>>(
+                            exact_search_kernel_<<<query_blocks_for_rows_(block_queries), kForwardNeighborThreadsPerBlock>>>(
                                 scratch.d_query_latent.data(),
                                 scratch.d_query_lower.data(),
                                 scratch.d_query_upper.data(),
@@ -1193,7 +1224,9 @@ inline ForwardNeighborSearchResult search_core_(
                     scratch.d_list_row_begin.upload(scratch.eligible_row_begin.data(), scratch.eligible_row_begin.size());
                     scratch.d_list_row_end.upload(scratch.eligible_row_end.data(), scratch.eligible_row_end.size());
 
-                    ann_probe_kernel_<<<block_queries, kWarpThreads>>>(
+                    const std::int64_t query_blocks = query_blocks_for_rows_(block_queries);
+
+                    ann_probe_kernel_<<<query_blocks, kForwardNeighborThreadsPerBlock>>>(
                         scratch.d_query_latent.data(),
                         scratch.d_query_embryo.data(),
                         scratch.d_centroids.data(),
@@ -1206,7 +1239,7 @@ inline ForwardNeighborSearchResult search_core_(
                         scratch.d_selected_lists.data());
                     cg::cuda_require(cudaGetLastError(), "ann_probe_kernel launch");
 
-                    ann_refine_kernel_<<<block_queries, kWarpThreads>>>(
+                    ann_refine_kernel_<<<query_blocks, kForwardNeighborThreadsPerBlock>>>(
                         scratch.d_query_latent.data(),
                         scratch.d_query_lower.data(),
                         scratch.d_query_upper.data(),

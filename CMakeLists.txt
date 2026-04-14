@@ -47,6 +47,7 @@ find_package(PkgConfig REQUIRED)
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect workbench" ON)
+option(CELLERATOR_ENABLE_PYTHON "Enable the optional Cellerator Python wrapper." OFF)
 option(CELLERATOR_ENABLE_CELLSHARD_PYTHON "Enable the optional CellShard pybind/H5AD surface." OFF)
 set(CELLERATOR_CUDA_MODE "portable" CACHE STRING
     "CUDA optimization mode: portable or extreme")
@@ -69,9 +70,41 @@ set(CELLSHARD_BUILD_APPS ${CELLERATOR_ENABLE_CELLSHARD_PYTHON} CACHE BOOL
 set(CELLSHARD_BUILD_TESTS OFF CACHE BOOL "Disable nested CellShard tests in the root build." FORCE)
 set(CELLSHARD_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
     "Emit CUDA line mapping for Nsight profiling inside CellShard." FORCE)
+set(CELLSHARD_CUDA_MODE ${CELLERATOR_CUDA_MODE} CACHE STRING
+    "CellShard CUDA optimization mode: portable or extreme." FORCE)
 
 add_subdirectory(extern/cudaBioTypes EXCLUDE_FROM_ALL)
 add_subdirectory(extern/CellShard EXCLUDE_FROM_ALL)
+
+if(CELLERATOR_ENABLE_PYTHON)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+    if(NOT TARGET pybind11::module)
+        find_package(pybind11 CONFIG QUIET)
+    endif()
+    if(NOT TARGET pybind11::module)
+        execute_process(
+            COMMAND ${Python3_EXECUTABLE} -c "import pybind11; print(pybind11.get_cmake_dir())"
+            OUTPUT_VARIABLE CELLERATOR_PYBIND11_CMAKE_DIR
+            RESULT_VARIABLE CELLERATOR_PYBIND11_CMAKE_DIR_STATUS
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(CELLERATOR_PYBIND11_CMAKE_DIR_STATUS EQUAL 0 AND NOT "${CELLERATOR_PYBIND11_CMAKE_DIR}" STREQUAL "")
+            list(PREPEND CMAKE_PREFIX_PATH "${CELLERATOR_PYBIND11_CMAKE_DIR}")
+            find_package(pybind11 CONFIG QUIET)
+        endif()
+    endif()
+    if(NOT TARGET pybind11::module)
+        include(FetchContent)
+        FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11.git
+            GIT_TAG v2.13.6
+            GIT_SHALLOW TRUE
+        )
+        FetchContent_MakeAvailable(pybind11)
+    endif()
+endif()
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
@@ -278,13 +311,29 @@ endif()
 set_target_properties(scrnaPreprocessBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(scrnaPreprocessBench)
 
-add_executable(cellShardSeriesH5Test
-    tests/cellshard_series_h5_test.cu
+add_executable(preprocessFormatCompareBench
+    bench/preprocess_format_compare_bench.cu
 )
-target_include_directories(cellShardSeriesH5Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellShardSeriesH5Test PRIVATE CellShard::runtime)
-set_target_properties(cellShardSeriesH5Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(cellShardSeriesH5Test)
+target_include_directories(preprocessFormatCompareBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(preprocessFormatCompareBench PRIVATE CellShard::runtime CUDA::cusparse)
+set_target_properties(preprocessFormatCompareBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(preprocessFormatCompareBench)
+
+add_executable(blockedEllOptimizationBench
+    bench/blocked_ell_optimization_bench.cu
+)
+target_include_directories(blockedEllOptimizationBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(blockedEllOptimizationBench PRIVATE CellShard::runtime CUDA::cudart CUDA::cusparse)
+set_target_properties(blockedEllOptimizationBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(blockedEllOptimizationBench)
+
+add_executable(cellShardDatasetH5Test
+    tests/cellshard_dataset_h5_test.cu
+)
+target_include_directories(cellShardDatasetH5Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellShardDatasetH5Test PRIVATE CellShard::runtime)
+set_target_properties(cellShardDatasetH5Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardDatasetH5Test)
 
 add_executable(cellShardFetchBench
     bench/cellshard_fetch_bench.cu
@@ -302,17 +351,17 @@ target_link_libraries(quantizedMatrixTest PRIVATE CUDA::cudart)
 set_target_properties(quantizedMatrixTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixTest)
 
-add_library(seriesIngestCompileTest OBJECT
-    tests/series_ingest_compile_test.cu
+add_library(datasetIngestCompileTest OBJECT
+    tests/dataset_ingest_compile_test.cu
 )
-target_include_directories(seriesIngestCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(seriesIngestCompileTest PRIVATE ${HDF5_INCLUDE_DIRS})
-set_target_properties(seriesIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(seriesIngestCompileTest)
+target_include_directories(datasetIngestCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(datasetIngestCompileTest PRIVATE ${HDF5_INCLUDE_DIRS})
+set_target_properties(datasetIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(datasetIngestCompileTest)
 
 add_library(cellerator_workbench
-    src/workbench/series_workbench.cc
-    src/workbench/series_workbench_cuda.cu
+    src/workbench/dataset_workbench.cc
+    src/workbench/dataset_workbench_cuda.cu
 )
 target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
@@ -323,25 +372,76 @@ endif()
 set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_workbench)
 
-add_executable(seriesWorkbenchRuntimeTest
-    tests/series_workbench_runtime_test.cc
+if(CELLERATOR_ENABLE_PYTHON)
+    pybind11_add_module(_cellerator
+        python/module.cc
+    )
+    target_include_directories(_cellerator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(_cellerator PRIVATE
+        cellerator_workbench
+        CellShard::runtime
+        CUDA::cudart
+        CUDA::cusparse
+        ${HDF5_LIBRARIES}
+    )
+    if(NCCL_LIBRARY)
+        target_link_libraries(_cellerator PRIVATE ${NCCL_LIBRARY})
+    endif()
+    set_target_properties(_cellerator PROPERTIES
+        OUTPUT_NAME _cellerator
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+    )
+
+    add_custom_target(celleratorPythonCompileTest DEPENDS _cellerator)
+
+    if(CELLERATOR_ENABLE_CELLSHARD_PYTHON AND TARGET _cellshard)
+        set(cellerator_python_build_root ${CMAKE_CURRENT_BINARY_DIR}/python)
+        set_target_properties(_cellerator PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${cellerator_python_build_root}/cellerator
+        )
+        set_target_properties(_cellshard PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${cellerator_python_build_root}/cellshard
+        )
+        add_custom_target(celleratorPythonRuntimeStage
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${cellerator_python_build_root}/cellerator
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/python/cellerator/__init__.py
+                ${cellerator_python_build_root}/cellerator/__init__.py
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${cellerator_python_build_root}/cellshard
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/extern/CellShard/python/cellshard/__init__.py
+                ${cellerator_python_build_root}/cellshard/__init__.py
+            DEPENDS _cellerator _cellshard
+        )
+        add_custom_target(celleratorPythonRuntimeTest
+            COMMAND ${CMAKE_COMMAND} -E env
+                PYTHONPATH=${cellerator_python_build_root}
+                ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/cellerator_python_smoke_test.py
+            DEPENDS celleratorPythonRuntimeStage
+        )
+    endif()
+endif()
+
+add_executable(datasetWorkbenchRuntimeTest
+    tests/dataset_workbench_runtime_test.cc
 )
 set_source_files_properties(
-    tests/series_workbench_runtime_test.cc
+    tests/dataset_workbench_runtime_test.cc
     PROPERTIES LANGUAGE CUDA
 )
-target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(seriesWorkbenchRuntimeTest PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(seriesWorkbenchRuntimeTest PRIVATE cellerator_workbench CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+target_include_directories(datasetWorkbenchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(datasetWorkbenchRuntimeTest PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(datasetWorkbenchRuntimeTest PRIVATE cellerator_workbench CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
 if(NCCL_LIBRARY)
-    target_link_libraries(seriesWorkbenchRuntimeTest PRIVATE ${NCCL_LIBRARY})
+    target_link_libraries(datasetWorkbenchRuntimeTest PRIVATE ${NCCL_LIBRARY})
 endif()
-set_target_properties(seriesWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(seriesWorkbenchRuntimeTest)
+set_target_properties(datasetWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(datasetWorkbenchRuntimeTest)
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
     add_executable(celleratorWorkbench
-        src/workbench/series_workbench_main.cc
+        src/workbench/dataset_workbench_main.cc
     )
     target_include_directories(celleratorWorkbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(celleratorWorkbench PRIVATE ${HDF5_INCLUDE_DIRS})

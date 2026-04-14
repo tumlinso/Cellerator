@@ -1,0 +1,43 @@
+---
+title: "Cellerator Pipeline"
+---
+
+Cellerator is a GPU-oriented pipeline and compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns canonical sparse storage, pack delivery, and execution staging. Cellerator adds ingest, one-pass preprocessing and filtering, reusable sparse compute, trajectory logic, model workflows, Torch interop boundaries, and the ncurses workbench.
+
+This documentation is not a paper workspace. It is the active source for explaining how the Cellerator pipeline is organized, what each stage owns, and where local operations still live outside the packaged product surface.
+
+## What This Documentation Covers
+
+- The end-to-end pipeline shape from source ingest to runtime execution.
+- The contract between Cellerator and `CellShard`.
+- Where compute, trajectory, model, quantized, and Torch-facing surfaces fit.
+- The current local-only download and preprocessing helpers under `docs/pipeline/`.
+- The build and test entrypoints that validate the pipeline.
+
+## Pipeline At A Glance
+
+```{mermaid}
+flowchart LR
+    A[Source Matrices and Metadata] --> B[Cellerator Ingest]
+    B --> C[Canonical Emission]
+    C --> D[CellShard csh5 and Pack Generations]
+    D --> E[Cellerator Compute and Preprocess]
+    E --> F[Trajectory and Model Workflows]
+    D --> G[Workbench]
+    D --> H[Torch Export Boundary]
+```
+
+## Core Rules
+
+- `src/ingest/` owns source parsing, filtering, metadata alignment, and canonical emission.
+- `extern/CellShard/` owns persisted sparse storage, execution-pack delivery, and owner-side runtime coordination.
+- `src/compute/` is the authoritative home for reusable computation.
+- `src/models/`, `src/trajectory/`, `src/quantized/`, and `src/torch/` sit on top of those lower-level surfaces instead of redefining them.
+- `docs/pipeline/` remains local-only operational glue. It can call external tools or built binaries, but it is not part of the CMake or install surface.
+
+## Read Next
+
+- [Architecture](architecture.qmd) for the high-level ownership split.
+- [Ingest And Runtime](ingest_and_runtime.qmd) for the bounded-memory ingest and owner-service contract.
+- [Compute And Models](compute_and_models.qmd) for how downstream pipeline stages fit together.
+- [Local Pipeline Ops](local_pipeline_ops.qmd) for the shell wrappers and manifest-driven local workflows under `docs/pipeline/`.

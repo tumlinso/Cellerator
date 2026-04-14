@@ -1,6 +1,6 @@
 #include "../src/compute/autograd/autograd.hh"
 #include "../src/ingest/mtx/mtx_reader.cuh"
-#include "../src/ingest/series/series_ingest.cuh"
+#include "../src/ingest/dataset/dataset_ingest.cuh"
 #include "benchmark_mutex.hh"
 
 #include <cuda_fp16.h>
@@ -20,7 +20,7 @@
 
 namespace autograd = ::cellerator::compute::autograd;
 namespace cmtx = ::cellerator::ingest::mtx;
-namespace cseries = ::cellerator::ingest::series;
+namespace cdataset = ::cellerator::ingest::dataset;
 namespace cs = ::cellshard;
 
 namespace {
@@ -232,7 +232,7 @@ std::vector<compressed_owned> convert_window_parts_to_csr(const cs::sharded<cs::
         compressed_owned owned;
         owned.part = new cs::sparse::compressed();
         cs::sparse::init(owned.part);
-        if (!cseries::convert_coo_part_to_csr(coo_view.parts[part], ws, owned.part)) {
+        if (!cdataset::convert_coo_part_to_csr(coo_view.parts[part], ws, owned.part)) {
             throw std::runtime_error("convert_coo_part_to_csr failed");
         }
         out.push_back(std::move(owned));

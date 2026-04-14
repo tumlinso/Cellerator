@@ -180,7 +180,7 @@ temp_paths make_temp_paths(const std::string &artifact_root, const std::string &
 
     temp_paths out;
     out.base_dir = dir;
-    out.csh5_path = out.base_dir + "/series.csh5";
+    out.csh5_path = out.base_dir + "/dataset.csh5";
     out.cache_dir = out.base_dir + "/cache";
     return out;
 }
@@ -188,7 +188,7 @@ temp_paths make_temp_paths(const std::string &artifact_root, const std::string &
 temp_paths open_existing_paths(const std::string &artifact_dir) {
     temp_paths out;
     out.base_dir = artifact_dir;
-    out.csh5_path = out.base_dir + "/series.csh5";
+    out.csh5_path = out.base_dir + "/dataset.csh5";
     out.cache_dir = out.base_dir + "/cache";
     return out;
 }
@@ -496,11 +496,11 @@ void prefetch_csh5_cache(const std::string &path, const std::string &cache_dir, 
     if (!cs::load_header(path.c_str(), &loaded, &storage)) {
         throw std::runtime_error("csh5 load_header failed during prefetch");
     }
-    if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
-        throw std::runtime_error("bind_series_h5_cache failed during prefetch");
+    if (!cs::bind_dataset_h5_cache(&storage, cache_dir.c_str())) {
+        throw std::runtime_error("bind_dataset_h5_cache failed during prefetch");
     }
-    if (!cs::prefetch_series_blocked_ell_h5_shard_cache(&loaded, &storage, shard_id)) {
-        throw std::runtime_error("prefetch_series_blocked_ell_h5_shard_cache failed");
+    if (!cs::prefetch_dataset_blocked_ell_h5_shard_cache(&loaded, &storage, shard_id)) {
+        throw std::runtime_error("prefetch_dataset_blocked_ell_h5_shard_cache failed");
     }
     cs::clear(&storage);
     cs::clear(&loaded);
@@ -523,8 +523,8 @@ run_result benchmark_csh5(const std::string &path,
         throw std::runtime_error("csh5 load_header failed");
     }
     if (use_cache) {
-        if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
-            throw std::runtime_error("bind_series_h5_cache failed");
+        if (!cs::bind_dataset_h5_cache(&storage, cache_dir.c_str())) {
+            throw std::runtime_error("bind_dataset_h5_cache failed");
         }
     }
 
@@ -565,7 +565,7 @@ void load_reference_from_csh5(const std::string &path,
     if (!cs::load_header(path.c_str(), out, &storage)) {
         throw std::runtime_error("failed to load csh5 header for artifact reuse");
     }
-    if (!cs::bind_series_h5_cache(&storage, cache_dir.c_str())) {
+    if (!cs::bind_dataset_h5_cache(&storage, cache_dir.c_str())) {
         cs::clear(&storage);
         throw std::runtime_error("failed to bind csh5 cache for artifact reuse");
     }

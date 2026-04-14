@@ -1,0 +1,39 @@
+project:
+  type: book
+
+book:
+  title: "Cellerator Pipeline"
+  subtitle: "Architecture, ingest, runtime, and local operations"
+  downloads:
+    - pdf
+  chapters:
+    - index.qmd
+    - architecture.qmd
+    - cellshard_behavior.qmd
+    - ingest_and_runtime.qmd
+    - compute_and_models.qmd
+    - local_pipeline_ops.qmd
+    - developer_reference.qmd
+
+format:
+  html:
+    toc: true
+    code-copy: true
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+    classoption:
+      - twocolumn
+      - 10pt
+    geometry:
+      - margin=1.1cm
+      - top=1.3cm
+      - bottom=1.5cm
+    include-in-header: preamble.tex
+    pdf-engine: xelatex
+    mainfont: "Liberation Sans Narrow"
+    sansfont: "Liberation Sans Narrow"
+    monofont: "Menlo"
+
+execute:
+  enabled: false
