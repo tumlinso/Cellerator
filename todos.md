@@ -14,6 +14,8 @@ _None recorded yet._
 - `todo-orchestrator` - Track the architecture reset as a standalone resumable stream.
 - `cuda-v100` - Use only if the runtime delivery or staging changes expose new Volta bottlenecks.
 - `todo-orchestrator` - Track the CSR-to-interop migration as a separate resumable stream so it does not blur with the broader runtime-service or ingest work.
+- `todo-orchestrator` - Track the codec stream as a standalone resumable workstream that can hand off cleanly to later pack-writer slices.
+- `cuda` - Guide the direct-to-device packed decode path and any Volta-specific native-extreme follow-up.
 
 ## Useful Reference Files
 - `extern/CellShard/README.md` - Current stated scope of the standalone CellShard library.
@@ -48,6 +50,12 @@ _None recorded yet._
 - `tests/dataset_workbench_runtime_test.cc` - Still builds a compressed `.csh5` fixture for metadata/runtime summary coverage.
 - `src/ingest/dataset/dataset_ingest.cuh` - Shows that active ingest already emits Blocked-ELL `.csh5`, which lowers the risk of removing compressed write support.
 - `src/workbench/dataset_workbench.cc` - Still contains standard-CSR size estimation code that should be re-evaluated once CSR is interop-only.
+- `AGENTS.md` - Repo policy for Blocked-ELL-first hot paths and Volta-oriented CUDA work.
+- `optimization.md` - Explains why Blocked-ELL SpMM is the right first proving consumer on this host class.
+- `extern/CellShard/src/disk/csh5.cuh` - Owns dataset codec family and execution-format metadata definitions.
+- `src/quantized/api.cuh` - Current quantized backend umbrella and the natural home for shared decode primitives.
+- `src/compute/autograd/autograd.hh` - Public sparse runtime surface for the first fused consumer entrypoint.
+- `src/compute/autograd/kernels/base_sparse.cu` - Current custom Blocked-ELL SpMM path and kernel launch boundary.
 
 ## Workstreams
 - `dual-cuda-optimization-modes` | status: in_progress | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | objective: add repo-wide generic, native, and native-extreme CUDA modes with explicit topology policy and first hotspot backends
@@ -55,7 +63,8 @@ _None recorded yet._
 - `cellshard-blocked-ell-ingest-runtime` | status: in_progress | owner: codex | file: `todos/cellshard-blocked-ell-ingest-runtime.md` | objective: implement blocked-ell-first CellShard ingest, explicit machine-local cache warmup, and runtime alignment
 - `cellshard-file-surface-rename` | status: done | owner: codex | file: `todos/cellshard-file-surface-rename.md` | objective: align CellShard filenames with their actual container and packfile responsibilities
 - `cellshard-runtime-service-contract` | status: in_progress | owner: codex | file: `todos/cellshard-runtime-service-contract.md` | objective: reset CellShard around owner-hosted pack delivery, append-only canonical generations, and a Cellerator immutable-emission boundary
-- `cellshard-csr-file-codec-removal` | status: in_progress | owner: codex | file: `todos/cellshard-csr-file-codec-removal.md` | objective: remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed
+- `cellshard-csr-file-codec-removal` | status: done | owner: codex | file: `todos/cellshard-csr-file-codec-removal.md` | objective: remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed
+- `quantized-blocked-ell-codecs` | status: in_progress | owner: codex | file: `todos/quantized-blocked-ell-codecs.md` | objective: implement a distinct quantized blocked-ell codec family with direct-to-device packed delivery and fused live decode
 
 ## Global Blockers
 _None recorded yet._
@@ -111,6 +120,22 @@ _None recorded yet._
 - A follow-up build request for `seriesWorkbenchRuntimeTest` failed in those fresh trees because the target does not currently exist there, which appears to be a target-availability issue rather than a regression from the CUDA mode rewrite.
 - Started the first-file freeze implementation: public docs/header comments now describe CSR/compressed as a legacy compatibility or interop path, the workbench runtime test no longer creates new compressed .csh5 fixtures, and cellShardDatasetH5Test now uses a Blocked-ELL side-domain append path plus a separate explicit legacy compressed compatibility check.
 - Added a dedicated  target that writes a tiny optimized bucketed Blocked-ELL .csh5, warms cache and execution cache, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
+- Added a dedicated `cellShardFirstFileFixtureTest` target that writes a tiny optimized bucketed Blocked-ELL `.csh5`, warms canonical and execution cache state, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
+- Patched dataset workbench summary inspection so Blocked-ELL fixtures no longer fail when `partition_axes` is absent and only `partition_aux` is persisted.
+- Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after converting forward-path fixtures to Blocked-ELL and leaving compressed `.csh5` only as an explicit legacy compatibility test.
+- Converted the direct workbench/runtime fixture path to Blocked-ELL-native `.csh5` creation and kept compressed `.csh5` usage isolated to one explicit legacy compatibility check in `cellShardDatasetH5Test`.
+- Restored explicit legacy compressed create/load/fetch declarations in `csh5.cuh` for the compatibility-only path while keeping the generic `load_header(...)` and fetch wrappers blocked for compressed `.csh5` datasets.
+- Updated repo and CellShard README wording so `.csh5` is described as Blocked-ELL-native and CSR/compressed is no longer described as a supported forward file format.
+- Finished the CSR/compressed file-codec removal slice: removed the public compressed `.csh5` declarations, converted `cellShardDatasetH5Test` to an explicit rejection check, replaced the remaining compressed fetch/prefetch definitions with hard failures, and reran `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardExportRuntimeTest` successfully.
+- Fixed the two stale benchmark consumers that still targeted the pre-migration CellShard API: `cellShardFetchBench` and `scrnaPreprocessBench` now build against `append_partition`, `num_partitions`, `partition_*`, `first_partition_in_shard`, `fetch_all_partitions`, and dataset `.csh5` helpers, and both pass small synthetic smoke runs.
+- Started the first implementation slice: new quantized Blocked-ELL codec identifiers, a reusable packed Blocked-ELL quantized helper header, and an initial fused SpMM autograd path are in progress.
+- Landed the first working quantized Blocked-ELL slice: `extern/CellShard/src/disk/csh5.cuh` now exposes a distinct `dataset_codec_family_quantized_blocked_ell`, decode-policy helpers live in codec flags, `src/quantized/blocked_ell.cuh` provides a packed device-facing view plus pack/unpack helpers, and autograd now has a fused quantized Blocked-ELL SpMM entrypoint.
+- Validated the slice with `cmake --build build -j 4 --target computeAutogradRuntimeTest`, `./build/computeAutogradRuntimeTest`, `cmake --build build -j 4 --target quantizedMatrixTest`, and `./build/quantizedMatrixTest`.
+- Extended the quantized Blocked-ELL stream through the persisted/runtime boundary: CellShard now has a distinct `sparse::quantized_blocked_ell` host format, quantized shard-pack serialization, `.csh5` create/append/load/fetch helpers, and cached-pack materialization for the new codec family.
+- Validated the persisted/runtime slice with `cmake --build build -j 4 --target cellShardDatasetH5Test`, `./build/cellShardDatasetH5Test`, `cmake --build build -j 4 --target computeAutogradRuntimeTest`, `./build/computeAutogradRuntimeTest`, and `cmake --build build -j 4 --target quantizedMatrixTest && ./build/quantizedMatrixTest`.
+- Deleted the remaining compressed `.csh5` create/load/fetch/prefetch implementation from `extern/CellShard/src/disk/csh5.cc` instead of leaving unsupported dead code behind early-return stubs.
+- Removed the last compressed-API rejection test from `cellShardDatasetH5Test` and cleaned the leftover unused compressed helper from `datasetWorkbenchRuntimeTest` so the focused validation suite now covers only supported `.csh5` flows.
+- Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after removing the compressed file codec.
 
 ## Next Actions
 - Create or resume a workstream ledger under `todos/` for the next substantial task.
@@ -139,6 +164,12 @@ _None recorded yet._
 - If compatibility is retained, make it explicitly read-only and time-bounded instead of preserving compressed write support.
 - Finish the autograd fleet topology descriptor and slot-selection helpers, then update forward-neighbor device resolution and focused tests/bench consumers to use the new mode semantics.
 - Decide whether to rename the remaining internal `portable_backend` / `extreme_backend` file vocabulary or keep it as implementation-only history, then continue the next benchmark-backed native-extreme specialization deeper into autograd or CellShard hot kernels.
+- Tighten the shard column-order heuristic and bucket-count search so persisted optimized shards are chosen by measured occupancy/runtime gain rather than the current simple signature sort plus byte-minimizing bucket sweep.
+- Expose additional inspect metadata only if future fixture validation needs shard-level codec details without reopening the execution fetch path.
+- Remove or quarantine the remaining compressed `.csh5` writer entrypoints once the repo decides whether legacy compatibility should be read-only through a converter instead of a test-only writer path.
+- Add an inspect/runtime summary test that exercises the new quantized blocked-ell codec family through `.csh5` metadata once the writer path exists.
+- Decide whether device staging for quantized Blocked-ELL should stay owned by Cellerator autograd/runtime or move behind a dedicated CellShard helper.
+- No further action in this stream unless the repo wants to renumber or delete the reserved compressed codec/execution enum values in `csh5.cuh`, which would be a separate on-disk contract decision.
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.
@@ -161,6 +192,9 @@ _None recorded yet._
 - The forward-looking CellShard file story no longer treats CSR/compressed as a native `.csh5` payload family.
 - Any surviving CSR surface is clearly scoped to interop or legacy read-only compatibility and documented as such.
 - Focused tests and docs no longer depend on creating new compressed `.csh5` datasets unless an intentional compatibility test remains.
+- The repo has a distinct quantized Blocked-ELL codec family and decode-policy vocabulary.
+- A packed quantized Blocked-ELL device view exists with reusable decode helpers.
+- A fused SpMM path can consume packed quantized Blocked-ELL directly on device with focused test coverage.
 
 ## Historical Summary
 - Recent completed work included Blocked-ELL persistence, real-data sparse replay benchmarking, quantize autograd kernels, workbench browse-cache updates, semantic cudaBioTypes cleanup, and the initial pointer-first neighbor workspace refactor.

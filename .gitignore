@@ -102,3 +102,15 @@ nsight/
 *.sqlite-wal
 cuda_profile_*
 cuda_profile*.log
+
+# Test data scaffold
+/data/test/reference/*
+!/data/test/reference/.gitkeep
+/data/test/generated/csh5/*
+!/data/test/generated/csh5/.gitkeep
+/data/test/generated/cache/*
+!/data/test/generated/cache/.gitkeep
+/data/test/generated/logs/*
+!/data/test/generated/logs/.gitkeep
+/data/test/generated/tmp/*
+!/data/test/generated/tmp/.gitkeep

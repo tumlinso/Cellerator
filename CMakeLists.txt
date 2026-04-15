@@ -557,7 +557,7 @@ add_executable(computeAutogradRuntimeTest
     tests/compute_autograd_runtime_test.cu
 )
 target_include_directories(computeAutogradRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(computeAutogradRuntimeTest PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
+target_link_libraries(computeAutogradRuntimeTest PRIVATE cellerator_compute_autograd CellShard::runtime CUDA::cudart CUDA::cusparse)
 if(NCCL_LIBRARY)
     target_link_libraries(computeAutogradRuntimeTest PRIVATE ${NCCL_LIBRARY})
 endif()

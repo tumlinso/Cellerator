@@ -2,6 +2,7 @@
 
 #include "../../../extern/CellShard/src/CellShard.hh"
 #include "../../../extern/CellShard/src/sharded/distributed.cuh"
+#include "../../quantized/blocked_ell.cuh"
 #include "cellerator_cuda_mode.hh"
 
 #include <cuda_runtime.h>
@@ -119,6 +120,22 @@ struct feature_affine_quantize_config {
     float reconstruction_weight = 1.0f;
     float range_weight = 0.01f;
     float min_dynamic_range = 0.25f;
+};
+
+struct quantized_blocked_ell_view {
+    std::uint32_t rows = 0u;
+    std::uint32_t cols = 0u;
+    std::uint32_t nnz = 0u;
+    std::uint32_t block_size = 0u;
+    std::uint32_t ell_cols = 0u;
+    std::uint32_t row_stride_bytes = 0u;
+    std::uint32_t bits = 0u;
+    std::uint32_t decode_policy = ::cellerator::quantized::blocked_ell::decode_policy_unknown;
+    const std::uint32_t *block_col_idx = nullptr;
+    const std::uint8_t *packed_values = nullptr;
+    const float *column_scales = nullptr;
+    const float *column_offsets = nullptr;
+    const float *row_offsets = nullptr;
 };
 
 void init(execution_context *ctx, int device = -1, cudaStream_t stream = nullptr);
@@ -386,6 +403,14 @@ void blocked_ell_spmm_fwd_f16_f32(
     std::uint32_t cols,
     std::uint32_t block_size,
     std::uint32_t ell_cols,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld);
+void quantized_blocked_ell_spmm_fwd_f32(
+    const execution_context &ctx,
+    const quantized_blocked_ell_view &matrix,
     const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,

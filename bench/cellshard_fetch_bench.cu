@@ -26,7 +26,7 @@ namespace {
 
 struct bench_config {
     unsigned long parts = 64ul;
-    unsigned long rows_per_part = 1024ul;
+    unsigned long rows_per_partition = 1024ul;
     unsigned long cols = 4096ul;
     unsigned long shards = 8ul;
     unsigned int block_size = 16u;
@@ -90,8 +90,8 @@ bench_config parse_args(int argc, char **argv) {
         };
         if (arg == "--parts") {
             cfg.parts = parse_ul(require_value("--parts"), "--parts");
-        } else if (arg == "--rows-per-part") {
-            cfg.rows_per_part = parse_ul(require_value("--rows-per-part"), "--rows-per-part");
+        } else if (arg == "--rows-per-partition") {
+            cfg.rows_per_partition = parse_ul(require_value("--rows-per-partition"), "--rows-per-partition");
         } else if (arg == "--cols") {
             cfg.cols = parse_ul(require_value("--cols"), "--cols");
         } else if (arg == "--shards") {
@@ -127,7 +127,7 @@ bench_config parse_args(int argc, char **argv) {
             cfg.keep_files = true;
         } else if (arg == "-h" || arg == "--help") {
             std::cout
-                << "Usage: cellShardFetchBench [--parts N] [--rows-per-part N] [--cols N] [--shards N]\n"
+                << "Usage: cellShardFetchBench [--parts N] [--rows-per-partition N] [--cols N] [--shards N]\n"
                 << "                            [--block-size N] [--ell-cols N] [--warmup N] [--iters N]\n"
                 << "                            [--shard-id N] [--artifact-root PATH] [--artifact-dir PATH]\n"
                 << "                            [--reader-bytes-mb N] [--impl NAME] [--real-data] [--real-mtx PATH]\n"
@@ -139,7 +139,7 @@ bench_config parse_args(int argc, char **argv) {
     }
 
     if (cfg.parts == 0ul) throw std::invalid_argument("--parts must be > 0");
-    if (cfg.rows_per_part == 0ul) throw std::invalid_argument("--rows-per-part must be > 0");
+    if (cfg.rows_per_partition == 0ul) throw std::invalid_argument("--rows-per-partition must be > 0");
     if (cfg.cols == 0ul) throw std::invalid_argument("--cols must be > 0");
     if (cfg.shards == 0ul) throw std::invalid_argument("--shards must be > 0");
     if (cfg.block_size == 0u) throw std::invalid_argument("--block-size must be > 0");
@@ -236,9 +236,9 @@ void build_source_matrix(const bench_config &cfg, cs::sharded<cs::sparse::blocke
     for (unsigned long part_id = 0; part_id < cfg.parts; ++part_id) {
         cs::sparse::blocked_ell *part = new cs::sparse::blocked_ell;
         cs::sparse::init(part,
-                         (cs::types::dim_t) cfg.rows_per_part,
+                         (cs::types::dim_t) cfg.rows_per_partition,
                          (cs::types::dim_t) cfg.cols,
-                         (cs::types::nnz_t) ((std::size_t) cfg.rows_per_part * (std::size_t) cfg.ell_cols),
+                         (cs::types::nnz_t) ((std::size_t) cfg.rows_per_partition * (std::size_t) cfg.ell_cols),
                          (cs::types::u32) cfg.block_size,
                          (cs::types::u32) cfg.ell_cols);
         if (!cs::sparse::allocate(part)) {
@@ -247,10 +247,10 @@ void build_source_matrix(const bench_config &cfg, cs::sharded<cs::sparse::blocke
             throw std::runtime_error("failed to allocate blocked ell part");
         }
         fill_blocked_ell_part(part, part_id);
-        if (!cs::append_part(out, part)) {
+        if (!cs::append_partition(out, part)) {
             cs::sparse::clear(part);
             delete part;
-            throw std::runtime_error("append_part failed");
+            throw std::runtime_error("append_partition failed");
         }
     }
     if (cfg.shards >= cfg.parts) {
@@ -260,14 +260,14 @@ void build_source_matrix(const bench_config &cfg, cs::sharded<cs::sparse::blocke
     }
 }
 
-std::vector<unsigned long> build_real_row_offsets(unsigned long rows, unsigned long rows_per_part) {
+std::vector<unsigned long> build_real_row_offsets(unsigned long rows, unsigned long rows_per_partition) {
     std::vector<unsigned long> offsets;
     unsigned long row = 0;
 
-    if (rows_per_part == 0ul) throw std::invalid_argument("rows_per_part must be > 0");
+    if (rows_per_partition == 0ul) throw std::invalid_argument("rows_per_partition must be > 0");
     offsets.push_back(0ul);
     while (row < rows) {
-        row = std::min(rows, row + rows_per_part);
+        row = std::min(rows, row + rows_per_partition);
         offsets.push_back(row);
     }
     return offsets;
@@ -335,7 +335,7 @@ void build_real_source_matrix(const bench_config &cfg,
             throw std::runtime_error("scan_row_nnz failed for real data");
         }
 
-        row_offsets = build_real_row_offsets(header.rows, cfg.rows_per_part);
+        row_offsets = build_real_row_offsets(header.rows, cfg.rows_per_partition);
         if (!cmtx::count_all_part_nnz(matrix_path.c_str(),
                                       &header,
                                       row_offsets.data(),
@@ -355,7 +355,7 @@ void build_real_source_matrix(const bench_config &cfg,
             throw std::runtime_error("load_part_window_coo failed for real data");
         }
 
-        for (unsigned long part_id = 0; part_id < coo.num_parts; ++part_id) {
+        for (unsigned long part_id = 0; part_id < coo.num_partitions; ++part_id) {
             cs::sparse::compressed compressed;
             cs::convert::blocked_ell_tune_result tune{};
             cs::sparse::blocked_ell *blocked = new cs::sparse::blocked_ell;
@@ -380,14 +380,14 @@ void build_real_source_matrix(const bench_config &cfg,
                 delete blocked;
                 throw std::runtime_error("blocked_ell_from_compressed_auto failed for real data");
             }
-            if (!cs::append_part(out, blocked)) {
+            if (!cs::append_partition(out, blocked)) {
                 cs::sparse::clear(blocked);
                 delete blocked;
-                throw std::runtime_error("append_part failed for real data");
+                throw std::runtime_error("append_partition failed for real data");
             }
         }
 
-        if (cfg.shards >= out->num_parts) {
+        if (cfg.shards >= out->num_partitions) {
             if (!cs::set_shards_to_partitions(out)) throw std::runtime_error("set_shards_to_partitions failed for real data");
         } else {
             if (!cs::set_equal_shards(out, cfg.shards)) throw std::runtime_error("set_equal_shards failed for real data");
@@ -406,29 +406,29 @@ void build_real_source_matrix(const bench_config &cfg,
 }
 
 void write_csh5_from_source(const std::string &path, const cs::sharded<cs::sparse::blocked_ell> &source) {
-    std::vector<std::uint64_t> part_rows(source.num_parts, 0u);
-    std::vector<std::uint64_t> part_nnz(source.num_parts, 0u);
-    std::vector<std::uint64_t> part_aux(source.num_parts, 0u);
-    std::vector<std::uint64_t> part_row_offsets(source.num_parts + 1u, 0u);
-    std::vector<std::uint32_t> part_dataset_ids(source.num_parts, 0u);
-    std::vector<std::uint32_t> part_codec_ids(source.num_parts, 0u);
+    std::vector<std::uint64_t> part_rows(source.num_partitions, 0u);
+    std::vector<std::uint64_t> part_nnz(source.num_partitions, 0u);
+    std::vector<std::uint64_t> part_aux(source.num_partitions, 0u);
+    std::vector<std::uint64_t> part_row_offsets(source.num_partitions + 1u, 0u);
+    std::vector<std::uint32_t> part_dataset_ids(source.num_partitions, 0u);
+    std::vector<std::uint32_t> part_codec_ids(source.num_partitions, 0u);
     std::vector<std::uint64_t> shard_offsets(source.num_shards + 1u, 0u);
-    cs::series_codec_descriptor codec{};
-    cs::series_layout_view layout{};
+    cs::dataset_codec_descriptor codec{};
+    cs::dataset_layout_view layout{};
 
-    for (unsigned long i = 0; i < source.num_parts; ++i) {
-        part_rows[i] = (std::uint64_t) source.part_rows[i];
-        part_nnz[i] = (std::uint64_t) source.part_nnz[i];
-        part_aux[i] = (std::uint64_t) source.part_aux[i];
-        part_row_offsets[i] = (std::uint64_t) source.part_offsets[i];
+    for (unsigned long i = 0; i < source.num_partitions; ++i) {
+        part_rows[i] = (std::uint64_t) source.partition_rows[i];
+        part_nnz[i] = (std::uint64_t) source.partition_nnz[i];
+        part_aux[i] = (std::uint64_t) source.partition_aux[i];
+        part_row_offsets[i] = (std::uint64_t) source.partition_offsets[i];
     }
-    part_row_offsets[source.num_parts] = (std::uint64_t) source.part_offsets[source.num_parts];
+    part_row_offsets[source.num_partitions] = (std::uint64_t) source.partition_offsets[source.num_partitions];
     for (unsigned long i = 0; i <= source.num_shards; ++i) {
         shard_offsets[i] = (std::uint64_t) source.shard_offsets[i];
     }
 
     codec.codec_id = 0u;
-    codec.family = cs::series_codec_family_blocked_ell;
+    codec.family = cs::dataset_codec_family_blocked_ell;
     codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
@@ -437,25 +437,25 @@ void write_csh5_from_source(const std::string &path, const cs::sharded<cs::spars
     layout.rows = source.rows;
     layout.cols = source.cols;
     layout.nnz = source.nnz;
-    layout.num_parts = source.num_parts;
+    layout.num_partitions = source.num_partitions;
     layout.num_shards = source.num_shards;
-    layout.part_rows = part_rows.data();
-    layout.part_nnz = part_nnz.data();
-    layout.part_axes = 0;
-    layout.part_aux = part_aux.data();
-    layout.part_row_offsets = part_row_offsets.data();
-    layout.part_dataset_ids = part_dataset_ids.data();
-    layout.part_codec_ids = part_codec_ids.data();
+    layout.partition_rows = part_rows.data();
+    layout.partition_nnz = part_nnz.data();
+    layout.partition_axes = 0;
+    layout.partition_aux = part_aux.data();
+    layout.partition_row_offsets = part_row_offsets.data();
+    layout.partition_dataset_ids = part_dataset_ids.data();
+    layout.partition_codec_ids = part_codec_ids.data();
     layout.shard_offsets = shard_offsets.data();
     layout.codecs = &codec;
     layout.num_codecs = 1u;
 
-    if (!cs::create_series_blocked_ell_h5(path.c_str(), &layout, 0, 0)) {
-        throw std::runtime_error("create_series_blocked_ell_h5 failed");
+    if (!cs::create_dataset_blocked_ell_h5(path.c_str(), &layout, 0, 0)) {
+        throw std::runtime_error("create_dataset_blocked_ell_h5 failed");
     }
-    for (unsigned long i = 0; i < source.num_parts; ++i) {
-        if (!cs::append_blocked_ell_part_h5(path.c_str(), i, source.parts[i])) {
-            throw std::runtime_error("append_blocked_ell_part_h5 failed");
+    for (unsigned long i = 0; i < source.num_partitions; ++i) {
+        if (!cs::append_blocked_ell_partition_h5(path.c_str(), i, source.parts[i])) {
+            throw std::runtime_error("append_blocked_ell_partition_h5 failed");
         }
     }
 }
@@ -478,8 +478,8 @@ bool equal_blocked_ell_part(const cs::sparse::blocked_ell *a, const cs::sparse::
 void validate_loaded_shard(const cs::sharded<cs::sparse::blocked_ell> &reference,
                            const cs::sharded<cs::sparse::blocked_ell> &loaded,
                            unsigned long shard_id) {
-    const unsigned long begin = cs::first_part_in_shard(&reference, shard_id);
-    const unsigned long end = cs::last_part_in_shard(&reference, shard_id);
+    const unsigned long begin = cs::first_partition_in_shard(&reference, shard_id);
+    const unsigned long end = cs::last_partition_in_shard(&reference, shard_id);
     for (unsigned long part_id = begin; part_id < end; ++part_id) {
         if (!equal_blocked_ell_part(reference.parts[part_id], loaded.parts[part_id])) {
             throw std::runtime_error("loaded shard did not match reference payload");
@@ -569,7 +569,7 @@ void load_reference_from_csh5(const std::string &path,
         cs::clear(&storage);
         throw std::runtime_error("failed to bind csh5 cache for artifact reuse");
     }
-    if (!cs::fetch_all_parts(out, &storage)) {
+    if (!cs::fetch_all_partitions(out, &storage)) {
         cs::clear(&storage);
         throw std::runtime_error("failed to materialize csh5 reference for artifact reuse");
     }
@@ -577,11 +577,11 @@ void load_reference_from_csh5(const std::string &path,
 }
 
 std::uint64_t shard_payload_bytes(const cs::sharded<cs::sparse::blocked_ell> &source, unsigned long shard_id) {
-    const unsigned long begin = cs::first_part_in_shard(&source, shard_id);
-    const unsigned long end = cs::last_part_in_shard(&source, shard_id);
+    const unsigned long begin = cs::first_partition_in_shard(&source, shard_id);
+    const unsigned long end = cs::last_partition_in_shard(&source, shard_id);
     std::uint64_t bytes = 0u;
     for (unsigned long i = begin; i < end; ++i) {
-        bytes += (std::uint64_t) cs::part_bytes(&source, i);
+        bytes += (std::uint64_t) cs::partition_bytes(&source, i);
     }
     return bytes;
 }
@@ -643,8 +643,8 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
 
         const file_size_result csh5_size = stat_file(paths.csh5_path);
         const std::uint64_t selected_shard_bytes = shard_payload_bytes(source, shard_id);
-        const unsigned long shard_begin = cs::first_part_in_shard(&source, shard_id);
-        const unsigned long shard_end = cs::last_part_in_shard(&source, shard_id);
+        const unsigned long shard_begin = cs::first_partition_in_shard(&source, shard_id);
+        const unsigned long shard_end = cs::last_partition_in_shard(&source, shard_id);
         run_result csh5{};
         run_result csh5_cache{};
 
@@ -654,7 +654,7 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
                 << " scenario=" << scenario.label
                 << " source=" << scenario.source_kind
                 << " target_shard=" << shard_id
-                << " parts=" << source.num_parts
+                << " parts=" << source.num_partitions
                 << " shards=" << source.num_shards
                 << '\n';
             return;
@@ -672,7 +672,7 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
             << " format=blocked_ell"
             << " rows=" << source.rows
             << " cols=" << source.cols
-            << " parts=" << source.num_parts
+            << " parts=" << source.num_partitions
             << " shards=" << source.num_shards
             << " target_shard=" << shard_id
             << " parts_in_shard=" << (shard_end - shard_begin)
@@ -682,7 +682,7 @@ void run_case(const bench_config &cfg, const scenario_case &scenario) {
             std::cout << " matrix_path=" << scenario.matrix_path;
         } else {
             std::cout
-                << " rows_per_part=" << cfg.rows_per_part
+                << " rows_per_partition=" << cfg.rows_per_partition
                 << " block_size=" << cfg.block_size
                 << " ell_cols=" << cfg.ell_cols;
         }

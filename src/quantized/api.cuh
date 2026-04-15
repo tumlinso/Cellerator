@@ -7,6 +7,7 @@
 #include "numeric.cuh"
 #include "metadata.cuh"
 #include "layout.cuh"
+#include "blocked_ell.cuh"
 #include "access.cuh"
 #include "packing.cuh"
 #include "kernels.cuh"

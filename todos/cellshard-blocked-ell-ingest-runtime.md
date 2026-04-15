@@ -1,11 +1,11 @@
 ---
 slug: "cellshard-blocked-ell-ingest-runtime"
 status: "in_progress"
-execution: "claimed"
+execution: "idle"
 owner: "codex"
 created_at: "2026-04-13T16:51:58Z"
-last_heartbeat_at: "2026-04-15T13:23:53Z"
-last_reviewed_at: "2026-04-15T13:23:53Z"
+last_heartbeat_at: "2026-04-15T13:34:49Z"
+last_reviewed_at: "2026-04-15T13:34:49Z"
 stale_after_days: 14
 objective: "implement blocked-ell-first CellShard ingest, explicit machine-local cache warmup, and runtime alignment"
 ---
@@ -86,11 +86,16 @@ _None recorded yet._
 - Added an end-to-end codec assertion on the first generated file by reopening the converted `.csh5`, fetching execution metadata and the first execution partition, and confirming the persisted shard-local column remap is the expected non-identity permutation rather than only smoke-testing that the file exists.
 - Aligned workbench-written execution metadata with the actual persisted optimized codec so the file now reports `bucketed_blocked_ell` as the preferred execution base instead of leaking the planner's pre-persist preference.
 - Added a dedicated  target that writes a tiny optimized bucketed Blocked-ELL .csh5, warms cache and execution cache, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
+- Added a dedicated `cellShardFirstFileFixtureTest` target that writes a tiny optimized bucketed Blocked-ELL `.csh5`, warms canonical and execution cache state, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
+- Patched dataset workbench summary inspection so Blocked-ELL fixtures no longer fail when `partition_axes` is absent and only `partition_aux` is persisted.
+- Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after converting forward-path fixtures to Blocked-ELL and leaving compressed `.csh5` only as an explicit legacy compatibility test.
+- Fixed the stale bench consumers after the partition/dataset API migration: `cellShardFetchBench` and `scrnaPreprocessBench` now build against `append_partition`, `num_partitions`, `partition_*`, `first_partition_in_shard`, `fetch_all_partitions`, and the dataset `.csh5` writer surface, and both benches pass a tiny synthetic runtime smoke check.
 
 ## Next Actions
 - Tighten the shard column-order heuristic and bucket-count search so persisted optimized shards are chosen by measured occupancy/runtime gain rather than the current simple signature sort plus byte-minimizing bucket sweep.
 - Add a small explicit sample-file generation workflow or fixture around the now-validated converted `.csh5` so first-file regression tests do not depend only on the larger workbench runtime binary.
 - Extend inspect surfaces further if needed so shard-level codec details can be reported without reopening the runtime fetch path in tests.
+- Expose additional inspect metadata only if future fixture validation needs shard-level codec details without reopening the execution fetch path.
 
 ## Done Criteria
 - Freshly converted `.csh5` series can be preprocessed and browsed through Blocked-ELL runtime paths without compressed fallbacks.

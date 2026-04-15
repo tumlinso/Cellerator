@@ -1,5 +1,7 @@
 #include "../autograd.hh"
 #include "../primitives/common.cuh"
+#include "../../../quantized/dispatch.cuh"
+#include "../../../quantized/metadata.cuh"
 
 #include <cub/cub.cuh>
 
@@ -73,6 +75,7 @@ __device__ inline quantize_entry_eval_ eval_quantize_entry_(
 #include "base_sparse/csr_spmv_bwd_vector_kernel_.cuh"
 #include "base_sparse/csr_spmm_fwd_kernel_.cuh"
 #include "base_sparse/blocked_ell_spmm_fwd_kernel_.cuh"
+#include "base_sparse/quantized_blocked_ell_spmm_fwd_kernel_.cuh"
 #include "base_sparse/feature_affine_quantize_baseline_kernel_.cuh"
 #include "base_sparse/csr_feature_affine_quantize_correction_kernel_.cuh"
 #include "base_sparse/blocked_ell_feature_affine_quantize_correction_kernel_.cuh"
@@ -249,6 +252,106 @@ void blocked_ell_spmm_fwd_f16_f32(
     const dim3 grid(rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
     blocked_ell_spmm_fwd_kernel_<<<grid, kSpmmColsThreads, 0, ctx.stream>>>(block_col_idx, values, rows, cols, block_size, ell_cols, rhs, rhs_ld, out_cols, out, out_ld);
     cuda_require(cudaGetLastError(), "blocked_ell_spmm_fwd_kernel");
+}
+
+namespace {
+
+template<int Bits, typename Metadata>
+void launch_quantized_blocked_ell_spmm_(
+    const execution_context &ctx,
+    const quantized_blocked_ell_view &view,
+    Metadata metadata,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    using matrix_t = ::cellerator::quantized::blocked_ell::matrix<Bits, float, Metadata>;
+
+    const matrix_t matrix = ::cellerator::quantized::blocked_ell::make_matrix<Bits>(
+        static_cast<int>(view.rows),
+        static_cast<int>(view.cols),
+        static_cast<int>(view.nnz),
+        static_cast<int>(view.block_size),
+        static_cast<int>(view.ell_cols),
+        static_cast<int>(view.row_stride_bytes),
+        view.block_col_idx,
+        const_cast<unsigned char *>(reinterpret_cast<const unsigned char *>(view.packed_values)),
+        metadata);
+    const dim3 grid(view.rows, static_cast<unsigned int>((out_cols + kSpmmColsThreads - 1) / kSpmmColsThreads), 1u);
+
+    quantized_blocked_ell_spmm_fwd_kernel_<Bits, Metadata><<<grid, kSpmmColsThreads, 0, ctx.stream>>>(
+        matrix,
+        rhs,
+        rhs_ld,
+        out_cols,
+        out,
+        out_ld);
+    cuda_require(cudaGetLastError(), "quantized_blocked_ell_spmm_fwd_kernel");
+}
+
+} // namespace
+
+void quantized_blocked_ell_spmm_fwd_f32(
+    const execution_context &ctx,
+    const quantized_blocked_ell_view &matrix,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld) {
+    cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(quantized_blocked_ell_spmm_fwd)");
+    if (matrix.rows == 0u || matrix.cols == 0u || out_cols == 0 || matrix.block_size == 0u || matrix.ell_cols == 0u) return;
+    if (matrix.block_col_idx == nullptr || matrix.packed_values == nullptr) {
+        throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires packed values and block columns");
+    }
+    if (!::cellerator::quantized::valid_bits(static_cast<int>(matrix.bits))) {
+        throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires 1/2/4/8-bit quantization");
+    }
+    if (matrix.row_stride_bytes == 0u) {
+        throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires a nonzero row_stride_bytes");
+    }
+
+    switch (matrix.decode_policy) {
+        case ::cellerator::quantized::blocked_ell::decode_policy_per_gene_affine:
+            if (matrix.column_scales == nullptr) {
+                throw std::invalid_argument("quantized_blocked_ell_spmm_fwd per_gene_affine requires column_scales");
+            }
+            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+                constexpr int kBits = decltype(bit_tag)::value;
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::per_gene_affine<float>>(
+                    ctx,
+                    matrix,
+                    ::cellerator::quantized::make_per_gene_affine(matrix.column_scales, matrix.column_offsets),
+                    rhs,
+                    rhs_ld,
+                    out_cols,
+                    out,
+                    out_ld);
+                return 0;
+            });
+            return;
+        case ::cellerator::quantized::blocked_ell::decode_policy_column_scale_row_offset:
+            if (matrix.column_scales == nullptr || matrix.row_offsets == nullptr) {
+                throw std::invalid_argument("quantized_blocked_ell_spmm_fwd column_scale_row_offset requires column_scales and row_offsets");
+            }
+            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+                constexpr int kBits = decltype(bit_tag)::value;
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::column_scale_row_offset<float>>(
+                    ctx,
+                    matrix,
+                    ::cellerator::quantized::make_column_scale_row_offset(matrix.column_scales, matrix.row_offsets),
+                    rhs,
+                    rhs_ld,
+                    out_cols,
+                    out,
+                    out_ld);
+                return 0;
+            });
+            return;
+        default:
+            throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires a supported decode policy");
+    }
 }
 
 void csr_feature_affine_quantize_fwd_bwd_f16_f32(

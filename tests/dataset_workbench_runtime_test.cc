@@ -258,20 +258,6 @@ done:
     return ok;
 }
 
-bool populate_part(cellshard::sparse::compressed *part,
-                   unsigned int rows,
-                   unsigned int cols,
-                   const std::vector<unsigned int> &row_ptr,
-                   const std::vector<unsigned int> &col_idx,
-                   const std::vector<float> &values) {
-    cellshard::sparse::init(part, rows, cols, (cellshard::types::nnz_t) values.size(), cellshard::sparse::compressed_by_row);
-    if (!cellshard::sparse::allocate(part)) return false;
-    std::memcpy(part->majorPtr, row_ptr.data(), row_ptr.size() * sizeof(unsigned int));
-    std::memcpy(part->minorIdx, col_idx.data(), col_idx.size() * sizeof(unsigned int));
-    for (std::size_t i = 0; i < values.size(); ++i) part->val[i] = __float2half(values[i]);
-    return true;
-}
-
 bool populate_blocked_ell_part(cellshard::sparse::blocked_ell *part,
                                unsigned int rows,
                                unsigned int cols,

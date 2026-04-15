@@ -1,11 +1,11 @@
 ---
 slug: "cellshard-csr-file-codec-removal"
-status: "in_progress"
-execution: "claimed"
+status: "done"
+execution: "closed"
 owner: "codex"
 created_at: "2026-04-14T19:32:36Z"
-last_heartbeat_at: "2026-04-15T13:23:53Z"
-last_reviewed_at: "2026-04-15T13:23:53Z"
+last_heartbeat_at: "2026-04-15T13:50:07Z"
+last_reviewed_at: "2026-04-15T13:50:07Z"
 stale_after_days: 14
 objective: "remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed"
 ---
@@ -53,11 +53,11 @@ Plan the removal of CSR/compressed as a `.csh5` payload family while preserving 
 - After the compatibility decision, remove or quarantine the compressed `.csh5` API surface and align summary/probe code with the native layout policy.
 
 ## Tasks
-- [ ] Inventory all compressed/standard-CSR `.csh5` file-codec entrypoints and call sites.
-- [ ] Decide whether legacy compressed `.csh5` read support is kept temporarily or removed outright.
-- [ ] Replace remaining compressed `.csh5` tests with Blocked-ELL-native fixtures where possible.
-- [ ] Tighten README/docs language so CSR is described as interop-only or legacy-compatibility-only, not as a first-class native file format.
-- [ ] Remove compressed `.csh5` write support and any public API that is no longer justified once the migration decision is made.
+- [x] Inventory all compressed/standard-CSR `.csh5` file-codec entrypoints and call sites.
+- [x] Decide whether legacy compressed `.csh5` read support is kept temporarily or removed outright.
+- [x] Replace remaining compressed `.csh5` tests with Blocked-ELL-native fixtures where possible.
+- [x] Tighten README/docs language so CSR is described as interop-only or legacy-compatibility-only, not as a first-class native file format.
+- [x] Remove compressed `.csh5` write support and any public API that is no longer justified once the migration decision is made.
 
 ## Blockers
 _None recorded yet._
@@ -65,10 +65,18 @@ _None recorded yet._
 ## Progress Notes
 - Added a dedicated workstream to decide whether CSR/compressed should disappear from `.csh5` entirely and survive only as an interop layer.
 - Started the first-file freeze implementation: public docs/header comments now describe CSR/compressed as a legacy compatibility or interop path, the workbench runtime test no longer creates new compressed .csh5 fixtures, and cellShardDatasetH5Test now uses a Blocked-ELL side-domain append path plus a separate explicit legacy compressed compatibility check.
+- Converted the direct workbench/runtime fixture path to Blocked-ELL-native `.csh5` creation and kept compressed `.csh5` usage isolated to one explicit legacy compatibility check in `cellShardDatasetH5Test`.
+- Restored explicit legacy compressed create/load/fetch declarations in `csh5.cuh` for the compatibility-only path while keeping the generic `load_header(...)` and fetch wrappers blocked for compressed `.csh5` datasets.
+- Updated repo and CellShard README wording so `.csh5` is described as Blocked-ELL-native and CSR/compressed is no longer described as a supported forward file format.
+- Removed the remaining compressed `.csh5` declarations from `extern/CellShard/src/disk/csh5.cuh`, updated `CellShard.hh` comments to describe `compressed` as in-memory interop only, and converted `cellShardDatasetH5Test` from a compatibility roundtrip into an explicit rejection test.
+- Replaced the remaining compressed `.csh5` fetch/prefetch entrypoints in `extern/CellShard/src/disk/csh5.cc` with hard-fail stubs, restored just enough private dead-code state to keep `cellshard_inspect` compiling, and reran `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardExportRuntimeTest` successfully.
+- Deleted the remaining compressed `.csh5` create/load/fetch/prefetch implementation from `extern/CellShard/src/disk/csh5.cc` instead of leaving unsupported dead code behind early-return stubs.
+- Removed the last compressed-API rejection test from `cellShardDatasetH5Test` and cleaned the leftover unused compressed helper from `datasetWorkbenchRuntimeTest` so the focused validation suite now covers only supported `.csh5` flows.
+- Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after removing the compressed file codec.
 
 ## Next Actions
-- Start by converting the remaining compressed `.csh5` tests and deciding whether legacy compressed-file read support survives as a temporary compatibility layer.
-- If compatibility is retained, make it explicitly read-only and time-bounded instead of preserving compressed write support.
+- No further action in this stream unless the repo wants a follow-up private dead-code purge inside `csh5.cc` beyond the already-removed public/file-surface contract.
+- No further action in this stream unless the repo wants to renumber or delete the reserved compressed codec/execution enum values in `csh5.cuh`, which would be a separate on-disk contract decision.
 
 ## Done Criteria
 - The forward-looking CellShard file story no longer treats CSR/compressed as a native `.csh5` payload family.

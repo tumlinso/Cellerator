@@ -25,7 +25,7 @@ namespace crp = ::cellerator::compute::preprocess;
 
 struct config {
     unsigned int parts = 32;
-    unsigned int rows_per_part = 32768;
+    unsigned int rows_per_partition = 32768;
     unsigned int cols = 32768;
     unsigned int avg_nnz_per_row = 128;
     unsigned int shards = 8;
@@ -55,7 +55,7 @@ static void usage(const char *argv0) {
     std::fprintf(stderr,
                  "Usage: %s [options]\n"
                  "  --parts N                Physical parts. Default: 32\n"
-                 "  --rows-per-part N        Rows per part. Default: 32768\n"
+                 "  --rows-per-partition N   Rows per partition. Default: 32768\n"
                  "  --cols N                 Number of genes. Default: 32768\n"
                  "  --avg-nnz-row N          Average nnz per row. Default: 128\n"
                  "  --shards N               Logical shard count. Default: 8\n"
@@ -92,8 +92,8 @@ static int parse_args(int argc, char **argv, config *cfg) {
     while (i < argc) {
         if (std::strcmp(argv[i], "--parts") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->parts)) return 0;
-        } else if (std::strcmp(argv[i], "--rows-per-part") == 0 && i + 1 < argc) {
-            if (!parse_u32(argv[++i], &cfg->rows_per_part)) return 0;
+        } else if (std::strcmp(argv[i], "--rows-per-partition") == 0 && i + 1 < argc) {
+            if (!parse_u32(argv[++i], &cfg->rows_per_partition)) return 0;
         } else if (std::strcmp(argv[i], "--cols") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->cols)) return 0;
         } else if (std::strcmp(argv[i], "--avg-nnz-row") == 0 && i + 1 < argc) {
@@ -123,7 +123,7 @@ static int parse_args(int argc, char **argv, config *cfg) {
         }
         ++i;
     }
-    return cfg->parts != 0 && cfg->rows_per_part != 0 && cfg->cols != 0 && cfg->shards != 0;
+    return cfg->parts != 0 && cfg->rows_per_partition != 0 && cfg->cols != 0 && cfg->shards != 0;
 }
 
 static void build_row_counts(std::vector<unsigned int> *counts,
@@ -208,7 +208,7 @@ static cs::sparse::compressed *make_compressed_part(unsigned int rows,
 
 static int pin_loaded_parts(cs::sharded<cs::sparse::compressed> *view) {
     unsigned long part = 0;
-    for (part = 0; part < view->num_parts; ++part) {
+    for (part = 0; part < view->num_partitions; ++part) {
         if (view->parts[part] == 0) return 0;
         if (!cs::sparse::pin(view->parts[part])) return 0;
     }
@@ -216,7 +216,7 @@ static int pin_loaded_parts(cs::sharded<cs::sparse::compressed> *view) {
 }
 
 static void unpin_loaded_parts(cs::sharded<cs::sparse::compressed> *view) {
-    for (unsigned long part = 0; part < view->num_parts; ++part) {
+    for (unsigned long part = 0; part < view->num_partitions; ++part) {
         if (view->parts[part] != 0) cs::sparse::unpin(view->parts[part]);
     }
 }
@@ -224,12 +224,12 @@ static void unpin_loaded_parts(cs::sharded<cs::sparse::compressed> *view) {
 static int build_host_matrix(const config &cfg, cs::sharded<cs::sparse::compressed> *built) {
     cs::init(built);
     for (unsigned int part = 0; part < cfg.parts; ++part) {
-        cs::sparse::compressed *matrix_part = make_compressed_part(cfg.rows_per_part,
+        cs::sparse::compressed *matrix_part = make_compressed_part(cfg.rows_per_partition,
                                                                    cfg.cols,
                                                                    cfg.avg_nnz_per_row,
                                                                    cfg.seed + 17u * part);
         if (matrix_part == 0) return 0;
-        if (!cs::append_part(built, matrix_part)) return 0;
+        if (!cs::append_partition(built, matrix_part)) return 0;
     }
     if (!cs::set_equal_shards(built, cfg.shards)) return 0;
     return pin_loaded_parts(built);
@@ -266,20 +266,20 @@ static int setup_multi_gpu_runtime(csd::local_context *ctx,
     }
 #endif
     if (!csd::reserve(fleet, ctx->device_count)) return 0;
-    if (!csd::reserve_parts(fleet, view->num_parts)) return 0;
+    if (!csd::reserve_parts(fleet, view->num_partitions)) return 0;
     if (!csd::assign_shards_by_bytes(map, view, ctx)) return 0;
     return 1;
 }
 
 static int max_part_rows(const cs::sharded<cs::sparse::compressed> *view) {
     unsigned long best = 0;
-    for (unsigned long part = 0; part < view->num_parts; ++part) best = std::max(best, view->part_rows[part]);
+    for (unsigned long part = 0; part < view->num_partitions; ++part) best = std::max(best, view->partition_rows[part]);
     return (int) best;
 }
 
 static int max_part_nnz(const cs::sharded<cs::sparse::compressed> *view) {
     unsigned long best = 0;
-    for (unsigned long part = 0; part < view->num_parts; ++part) best = std::max(best, view->part_nnz[part]);
+    for (unsigned long part = 0; part < view->num_partitions; ++part) best = std::max(best, view->partition_nnz[part]);
     return (int) best;
 }
 
@@ -358,8 +358,8 @@ static int run_preprocess_benchmark(const config &cfg) {
                         }
                         for (unsigned long shard = 0; shard < built.num_shards; ++shard) {
                             if ((unsigned int) map.device_slot[shard] != slot) continue;
-                            const unsigned long begin = cs::first_part_in_shard(&built, shard);
-                            const unsigned long end = cs::last_part_in_shard(&built, shard);
+                            const unsigned long begin = cs::first_partition_in_shard(&built, shard);
+                            const unsigned long end = cs::last_partition_in_shard(&built, shard);
                             for (unsigned long part = begin; part < end; ++part) {
                                 csv::compressed_view part_view;
                                 if (worker_failed.load(std::memory_order_relaxed) != 0) return;
@@ -470,9 +470,9 @@ int main(int argc, char **argv) {
         return 2;
     }
 
-    std::printf("config: parts=%u rows_per_part=%u cols=%u avg_nnz_row=%u shards=%u repeats=%u target_sum=%.1f min_counts=%.1f min_genes=%u max_mito_fraction=%.3f\n",
+    std::printf("config: parts=%u rows_per_partition=%u cols=%u avg_nnz_row=%u shards=%u repeats=%u target_sum=%.1f min_counts=%.1f min_genes=%u max_mito_fraction=%.3f\n",
                 cfg.parts,
-                cfg.rows_per_part,
+                cfg.rows_per_partition,
                 cfg.cols,
                 cfg.avg_nnz_per_row,
                 cfg.shards,

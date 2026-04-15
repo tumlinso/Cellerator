@@ -117,7 +117,7 @@ Useful build targets include:
 
 - Cellerator is performance-oriented and currently tuned around Volta / V100-class assumptions.
 - CUDA mode selection is explicit: `generic` is the default topology-agnostic path, while `native` and `native-extreme` unlock the host-specific V100 ordering only after runtime discovery confirms that topology.
-- Blocked-ELL is the native sparse execution and persistence layout for new `.csh5` output; CSR/compressed is a legacy read/interoperability path rather than a forward file format.
+- Blocked-ELL is the native sparse execution and persistence layout for `.csh5` output; CSR/compressed remains an explicit interop/export path in memory, not a supported `.csh5` file format.
 - Current MTX-dataset ingest is bounded-memory and SSD-aware: it finishes filtering before CellShard emission, spills bounded build artifacts to a local spool, then assembles `dataset.csh5` and the active pack generation without rereading the expensive source.
 - Single-machine operation should still follow the owner-service contract: `.csh5` stays under one owner-side coordinator and master reader, while local executors consume published pack generations.
 - Distributed operation keeps `.csh5` on the owner host and delivers pack generations to executor nodes; remote nodes may cache pack data locally, but those caches are runtime artifacts rather than sources of truth.

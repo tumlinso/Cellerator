@@ -1,6 +1,7 @@
 #include "../extern/CellShard/src/CellShard.hh"
 
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <dirent.h>
@@ -91,38 +92,6 @@ struct owned_observation_metadata_column {
     }
 };
 
-static int populate_part(cellshard::sparse::compressed *part,
-                         unsigned int rows,
-                         unsigned int cols,
-                         const std::vector<unsigned int> &row_ptr,
-                         const std::vector<unsigned int> &col_idx,
-                         const std::vector<float> &values) {
-    std::size_t i = 0;
-
-    cellshard::sparse::init(part, rows, cols, (cellshard::types::nnz_t) values.size(), cellshard::sparse::compressed_by_row);
-    if (!cellshard::sparse::allocate(part)) return 0;
-    std::memcpy(part->majorPtr, row_ptr.data(), row_ptr.size() * sizeof(unsigned int));
-    std::memcpy(part->minorIdx, col_idx.data(), col_idx.size() * sizeof(unsigned int));
-    for (i = 0; i < values.size(); ++i) part->val[i] = __float2half(values[i]);
-    return 1;
-}
-
-static int check_part(const cellshard::sparse::compressed *part,
-                      const std::vector<unsigned int> &row_ptr,
-                      const std::vector<unsigned int> &col_idx,
-                      const std::vector<float> &values) {
-    std::size_t i = 0;
-    if (part == 0) return 0;
-    for (i = 0; i < row_ptr.size(); ++i) {
-        if (part->majorPtr[i] != row_ptr[i]) return 0;
-    }
-    for (i = 0; i < col_idx.size(); ++i) {
-        if (part->minorIdx[i] != col_idx[i]) return 0;
-        if (__half2float(part->val[i]) != values[i]) return 0;
-    }
-    return 1;
-}
-
 static int populate_blocked_ell_part(cellshard::sparse::blocked_ell *part,
                                      unsigned int rows,
                                      unsigned int cols,
@@ -198,6 +167,69 @@ static int check_sliced_ell_part(const cellshard::sparse::sliced_ell *part,
     }
     for (i = 0; i < values.size(); ++i) {
         if (__half2float(part->val[i]) != values[i]) return 0;
+    }
+    return 1;
+}
+
+static int populate_quantized_blocked_ell_part(cellshard::sparse::quantized_blocked_ell *part,
+                                               unsigned int rows,
+                                               unsigned int cols,
+                                               unsigned int nnz,
+                                               unsigned int block_size,
+                                               unsigned int ell_cols,
+                                               unsigned int bits,
+                                               unsigned int decode_policy,
+                                               const std::vector<unsigned int> &block_idx,
+                                               const std::vector<unsigned char> &packed_values,
+                                               const std::vector<float> &column_scales,
+                                               const std::vector<float> &column_offsets,
+                                               const std::vector<float> &row_offsets) {
+    cellshard::sparse::init(part,
+                            rows,
+                            cols,
+                            nnz,
+                            block_size,
+                            ell_cols,
+                            bits,
+                            decode_policy,
+                            cellshard::sparse::quantized_blocked_ell_aligned_row_bytes(bits, ell_cols));
+    if (!cellshard::sparse::allocate(part)) return 0;
+    std::memcpy(part->blockColIdx, block_idx.data(), block_idx.size() * sizeof(unsigned int));
+    std::memcpy(part->packed_values, packed_values.data(), packed_values.size() * sizeof(unsigned char));
+    std::memcpy(part->column_scales, column_scales.data(), column_scales.size() * sizeof(float));
+    std::memcpy(part->column_offsets, column_offsets.data(), column_offsets.size() * sizeof(float));
+    std::memcpy(part->row_offsets, row_offsets.data(), row_offsets.size() * sizeof(float));
+    return 1;
+}
+
+static int close_f32(float lhs, float rhs, float tol = 1.0e-5f) {
+    return std::fabs(lhs - rhs) <= tol;
+}
+
+static int check_quantized_blocked_ell_part(const cellshard::sparse::quantized_blocked_ell *part,
+                                            unsigned int bits,
+                                            unsigned int decode_policy,
+                                            const std::vector<unsigned int> &block_idx,
+                                            const std::vector<unsigned char> &packed_values,
+                                            const std::vector<float> &column_scales,
+                                            const std::vector<float> &column_offsets,
+                                            const std::vector<float> &row_offsets) {
+    std::size_t i = 0;
+    if (part == 0 || part->bits != bits || part->decode_policy != decode_policy) return 0;
+    for (i = 0; i < block_idx.size(); ++i) {
+        if (part->blockColIdx[i] != block_idx[i]) return 0;
+    }
+    for (i = 0; i < packed_values.size(); ++i) {
+        if (part->packed_values[i] != packed_values[i]) return 0;
+    }
+    for (i = 0; i < column_scales.size(); ++i) {
+        if (!close_f32(part->column_scales[i], column_scales[i])) return 0;
+    }
+    for (i = 0; i < column_offsets.size(); ++i) {
+        if (!close_f32(part->column_offsets[i], column_offsets[i])) return 0;
+    }
+    for (i = 0; i < row_offsets.size(); ++i) {
+        if (!close_f32(part->row_offsets[i], row_offsets[i])) return 0;
     }
     return 1;
 }
@@ -335,6 +367,138 @@ done:
     cellshard::clear(&loaded);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+static int run_quantized_blocked_ell_roundtrip_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_quantized_blocked_ell_test.csh5";
+    const std::string cache_root = "/tmp/cellshard_dataset_quantized_blocked_ell_cache";
+    cellshard::sparse::quantized_blocked_ell part0;
+    cellshard::sharded<cellshard::sparse::quantized_blocked_ell> loaded;
+    cellshard::shard_storage storage;
+    const std::uint32_t bits = 8u;
+    const std::uint32_t block_size = 2u;
+    const std::uint32_t ell_cols = 4u;
+    const std::uint32_t row_stride_bytes = cellshard::sparse::quantized_blocked_ell_aligned_row_bytes(bits, ell_cols);
+    std::vector<std::uint64_t> partition_rows = { 2u };
+    std::vector<std::uint64_t> partition_nnz = { 8u };
+    std::vector<std::uint64_t> partition_aux = {
+        (std::uint64_t) cellshard::sparse::pack_quantized_blocked_ell_aux(bits, block_size, 2ul)
+    };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 7u };
+    std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
+    std::vector<unsigned int> block_idx = { 0u, 1u };
+    std::vector<unsigned char> packed_values((std::size_t) row_stride_bytes * 2u, 0u);
+    std::vector<float> column_scales = { 1.0f, 1.0f, 1.0f, 1.0f };
+    std::vector<float> column_offsets = { 0.0f, 0.0f, 0.0f, 0.0f };
+    std::vector<float> row_offsets = { 0.0f, 0.0f };
+    cellshard::dataset_codec_descriptor codec{};
+    cellshard::dataset_layout_view layout{};
+    int rc = 1;
+
+    packed_values[0] = 1u;
+    packed_values[1] = 2u;
+    packed_values[2] = 3u;
+    packed_values[3] = 4u;
+    packed_values[(std::size_t) row_stride_bytes + 0u] = 5u;
+    packed_values[(std::size_t) row_stride_bytes + 1u] = 6u;
+    packed_values[(std::size_t) row_stride_bytes + 2u] = 7u;
+    packed_values[(std::size_t) row_stride_bytes + 3u] = 8u;
+
+    std::remove(out_path.c_str());
+    cellshard::sparse::init(&part0);
+    cellshard::init(&loaded);
+    cellshard::init(&storage);
+
+    if (!populate_quantized_blocked_ell_part(&part0,
+                                             2u,
+                                             4u,
+                                             8u,
+                                             block_size,
+                                             ell_cols,
+                                             bits,
+                                             cellshard::dataset_quantized_decode_policy_per_gene_affine,
+                                             block_idx,
+                                             packed_values,
+                                             column_scales,
+                                             column_offsets,
+                                             row_offsets)) {
+        goto done;
+    }
+
+    codec.codec_id = 7u;
+    codec.family = cellshard::dataset_codec_family_quantized_blocked_ell;
+    codec.value_code = (std::uint32_t) ::real::value_f32;
+    codec.scale_value_code = (std::uint32_t) ::real::code_of< float>::code;
+    codec.bits = bits;
+    codec.flags = cellshard::dataset_codec_flag_direct_device_delivery
+        | cellshard::dataset_codec_flag_live_fused_decode;
+    codec.flags = cellshard::set_dataset_codec_quantized_decode_policy(
+        codec.flags,
+        cellshard::dataset_quantized_decode_policy_per_gene_affine);
+
+    layout.rows = 2u;
+    layout.cols = 4u;
+    layout.nnz = 8u;
+    layout.num_partitions = 1u;
+    layout.num_shards = 1u;
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = 0;
+    layout.partition_aux = partition_aux.data();
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
+    layout.shard_offsets = shard_offsets.data();
+    layout.codecs = &codec;
+    layout.num_codecs = 1u;
+
+    if (!cellshard::create_dataset_quantized_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
+    if (!cellshard::append_quantized_blocked_ell_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
+    if (!cellshard::warm_dataset_quantized_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) {
+        std::fprintf(stderr, "failed to warm quantized blocked ell shard cache\n");
+        goto done;
+    }
+    if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
+        std::fprintf(stderr, "failed to load quantized blocked ell dataset header\n");
+        goto done;
+    }
+    if (storage.backend != cellshard::shard_storage_backend_dataset_h5) {
+        std::fprintf(stderr, "quantized blocked ell storage backend mismatch\n");
+        goto done;
+    }
+    if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) {
+        std::fprintf(stderr, "failed to bind quantized blocked ell cache dir\n");
+        goto done;
+    }
+    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "failed to fetch quantized blocked ell part 0\n");
+        goto done;
+    }
+    if (!check_quantized_blocked_ell_part(loaded.parts[0],
+                                          bits,
+                                          cellshard::dataset_quantized_decode_policy_per_gene_affine,
+                                          block_idx,
+                                          packed_values,
+                                          column_scales,
+                                          column_offsets,
+                                          row_offsets)) {
+        std::fprintf(stderr, "quantized blocked ell part mismatch after fetch\n");
+        goto done;
+    }
+
+    rc = 0;
+
+done:
+    if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
+        cellshard::invalidate_dataset_h5_cache(&storage);
+    }
+    cellshard::clear(&storage);
+    cellshard::clear(&loaded);
+    cellshard::sparse::clear(&part0);
     std::remove(out_path.c_str());
     return rc;
 }
@@ -1217,7 +1381,11 @@ static int run_blocked_ell_side_domain_test() {
         goto done;
     }
     if (loaded.rows != 2u || loaded.cols != 3u || loaded.nnz != 6u) {
-        std::fprintf(stderr, "blocked ell side-domain header mismatch\n");
+        std::fprintf(stderr,
+                     "blocked ell side-domain header mismatch rows=%lu cols=%lu nnz=%lu\n",
+                     loaded.rows,
+                     loaded.cols,
+                     loaded.nnz);
         goto done;
     }
     if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())
@@ -1246,96 +1414,17 @@ done:
     return rc;
 }
 
-static int run_legacy_compressed_api_rejection_test() {
-    const std::string out_path = "/tmp/cellshard_dataset_legacy_compressed_api_rejection_test.csh5";
-    cellshard::sparse::blocked_ell part0;
-    cellshard::sharded<cellshard::sparse::compressed> legacy_view;
-    cellshard::shard_storage storage;
-    std::vector<std::uint64_t> partition_rows = { 2u };
-    std::vector<std::uint64_t> partition_nnz = { 4u };
-    std::vector<std::uint64_t> partition_aux = {
-        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
-    };
-    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
-    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
-    std::vector<std::uint32_t> partition_codec_ids = { 0u };
-    std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
-    cellshard::dataset_codec_descriptor codec{};
-    cellshard::dataset_layout_view layout{};
-    int rc = 1;
-
-    std::remove(out_path.c_str());
-    cellshard::sparse::init(&part0);
-    cellshard::init(&legacy_view);
-    cellshard::init(&storage);
-
-    if (!populate_blocked_ell_part(&part0,
-                                   2u,
-                                   3u,
-                                   1u,
-                                   3u,
-                                   {0u, 1u, 2u, 0u, 1u, 2u},
-                                   {1.0f, 0.0f, 2.0f, 0.0f, 3.0f, 0.0f})) {
-        goto done;
-    }
-
-    codec.codec_id = 0u;
-    codec.family = cellshard::dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
-    codec.scale_value_code = 0u;
-    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
-    codec.flags = 0u;
-
-    layout.rows = 2u;
-    layout.cols = 3u;
-    layout.nnz = 3u;
-    layout.num_partitions = 1u;
-    layout.num_shards = 1u;
-    layout.partition_rows = partition_rows.data();
-    layout.partition_nnz = partition_nnz.data();
-    layout.partition_axes = nullptr;
-    layout.partition_aux = partition_aux.data();
-    layout.partition_row_offsets = partition_row_offsets.data();
-    layout.partition_dataset_ids = partition_dataset_ids.data();
-    layout.partition_codec_ids = partition_codec_ids.data();
-    layout.shard_offsets = shard_offsets.data();
-    layout.codecs = &codec;
-    layout.num_codecs = 1u;
-
-    if (!cellshard::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr)
-        || !cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part0)) {
-        std::fprintf(stderr, "legacy compressed API rejection fixture creation failed\n");
-        goto done;
-    }
-    if (cellshard::load_header(out_path.c_str(), &legacy_view, &storage)) {
-        std::fprintf(stderr, "legacy compressed API unexpectedly loaded a .csh5 dataset\n");
-        goto done;
-    }
-
-    rc = 0;
-
-done:
-    if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
-        cellshard::invalidate_dataset_h5_cache(&storage);
-    }
-    cellshard::clear(&storage);
-    cellshard::clear(&legacy_view);
-    cellshard::sparse::clear(&part0);
-    std::remove(out_path.c_str());
-    return rc;
-}
-
 int main() {
     if (run_blocked_ell_side_domain_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test blocked ell side-domain append failed\n");
         return 1;
     }
-    if (run_legacy_compressed_api_rejection_test() != 0) {
-        std::fprintf(stderr, "cellShardDatasetH5Test legacy compressed API rejection failed\n");
-        return 1;
-    }
     if (run_blocked_ell_roundtrip_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test blocked ell roundtrip failed\n");
+        return 1;
+    }
+    if (run_quantized_blocked_ell_roundtrip_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test quantized blocked ell roundtrip failed\n");
         return 1;
     }
     if (run_optimized_blocked_ell_roundtrip_test() != 0) {
