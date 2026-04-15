@@ -1,4 +1,5 @@
 #include "forwardNeighbors.hh"
+#include "cellerator_cuda_mode.hh"
 
 #include "../../graph/workspace.cuh"
 
@@ -292,15 +293,44 @@ inline void require_gpu_() {
     if (count <= 0) throw std::runtime_error("forward_neighbors requires at least one CUDA device");
 }
 
-inline int preferred_device_at_(int ordinal) {
-    static constexpr int kPairOrder[4] = {0, 2, 1, 3};
-    return kPairOrder[ordinal];
+inline int peer_rank_for_devices_(int src_device, int dst_device) {
+    if (src_device == dst_device) return 0;
+    int can_access = 0;
+    cg::cuda_require(cudaDeviceCanAccessPeer(&can_access, src_device, dst_device), "cudaDeviceCanAccessPeer");
+    if (can_access == 0) return -1;
+    int rank = -1;
+    cg::cuda_require(
+        cudaDeviceGetP2PAttribute(&rank, cudaDevP2PAttrPerformanceRank, src_device, dst_device),
+        "cudaDeviceGetP2PAttribute");
+    return rank;
 }
 
-inline int pair_id_for_device_(int device_id) {
-    if (device_id == 0 || device_id == 2) return 0;
-    if (device_id == 1 || device_id == 3) return 1;
-    return device_id;
+inline bool visible_devices_match_native_topology_(int count) {
+    if (count < 4) return false;
+
+    int best_rank = std::numeric_limits<int>::max();
+    for (int src = 0; src < 4; ++src) {
+        for (int dst = 0; dst < 4; ++dst) {
+            if (src == dst) continue;
+            const int rank = peer_rank_for_devices_(src, dst);
+            if (rank >= 0 && rank < best_rank) best_rank = rank;
+        }
+    }
+    if (best_rank == std::numeric_limits<int>::max()) return false;
+
+    const bool pair02_best = peer_rank_for_devices_(0, 2) == best_rank && peer_rank_for_devices_(2, 0) == best_rank;
+    const bool pair13_best = peer_rank_for_devices_(1, 3) == best_rank && peer_rank_for_devices_(3, 1) == best_rank;
+    const bool leaders_worse =
+        peer_rank_for_devices_(0, 1) > best_rank
+        && peer_rank_for_devices_(1, 0) > best_rank
+        && peer_rank_for_devices_(2, 3) > best_rank
+        && peer_rank_for_devices_(3, 2) > best_rank;
+    const bool cross_worse =
+        peer_rank_for_devices_(0, 3) > best_rank
+        && peer_rank_for_devices_(3, 0) > best_rank
+        && peer_rank_for_devices_(1, 2) > best_rank
+        && peer_rank_for_devices_(2, 1) > best_rank;
+    return pair02_best && pair13_best && leaders_worse && cross_worse;
 }
 
 inline host_array<int> resolve_forward_neighbor_devices_(const ForwardNeighborBuildConfig &config) {
@@ -312,13 +342,17 @@ inline host_array<int> resolve_forward_neighbor_devices_(const ForwardNeighborBu
     host_array<int> devices;
     const int use_count = std::max(1, std::min(count, 4));
     devices.resize(static_cast<std::size_t>(use_count));
-    if (count >= 4) {
-        for (int ordinal = 0; ordinal < use_count; ++ordinal) {
-            devices[static_cast<std::size_t>(ordinal)] = preferred_device_at_(ordinal);
-        }
-        return devices;
-    }
     for (int device = 0; device < use_count; ++device) devices[static_cast<std::size_t>(device)] = device;
+
+    // Generic mode is intentionally ordinal and topology-agnostic. Native
+    // modes may opt into the V100 pair-local order only after discovery proves
+    // the visible device set matches that host profile.
+    if (!build::cuda_mode_is_generic && count >= 4 && visible_devices_match_native_topology_(count)) {
+        devices[0] = 0;
+        devices[1] = 2;
+        devices[2] = 1;
+        devices[3] = 3;
+    }
     return devices;
 }
 

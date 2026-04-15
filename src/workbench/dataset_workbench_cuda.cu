@@ -192,7 +192,7 @@ inline std::string normalized_upper(std::string value) {
 
 inline std::uint32_t to_dataset_execution_format(execution_format format) {
     switch (format) {
-        case execution_format::compressed: return cellshard::dataset_execution_format_compressed;
+        case execution_format::compressed: return cellshard::dataset_execution_format_unknown;
         case execution_format::blocked_ell: return cellshard::dataset_execution_format_blocked_ell;
         case execution_format::bucketed_blocked_ell: return cellshard::dataset_execution_format_bucketed_blocked_ell;
         case execution_format::mixed: return cellshard::dataset_execution_format_mixed;

@@ -39,7 +39,7 @@ inline cudaError_t launch_quantize_block(
     csr_block block,
     const Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_extreme) {
+    if constexpr (build::cuda_mode_is_native_extreme) {
         return extreme_backend::launch_quantize_block(matrix, block, values_by_nnz_block, stream);
     } else {
         return portable_backend::launch_quantize_block(matrix, block, values_by_nnz_block, stream);
@@ -52,7 +52,7 @@ inline cudaError_t launch_dequantize_block(
     csr_block block,
     Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_extreme) {
+    if constexpr (build::cuda_mode_is_native_extreme) {
         return extreme_backend::launch_dequantize_block(matrix, block, values_by_nnz_block, stream);
     } else {
         return portable_backend::launch_dequantize_block(matrix, block, values_by_nnz_block, stream);
@@ -65,7 +65,7 @@ inline cudaError_t launch_quantize_block_v100(
     csr_block block,
     const Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_extreme) {
+    if constexpr (build::cuda_mode_is_native_extreme) {
         return extreme_backend::launch_quantize_block_v100(matrix, block, values_by_nnz_block, stream);
     } else {
         return portable_backend::launch_quantize_block_v100(matrix, block, values_by_nnz_block, stream);
@@ -78,7 +78,7 @@ inline cudaError_t launch_dequantize_block_v100(
     csr_block block,
     Real* values_by_nnz_block,
     cudaStream_t stream = 0) {
-    if constexpr (build::cuda_mode_is_extreme) {
+    if constexpr (build::cuda_mode_is_native_extreme) {
         return extreme_backend::launch_dequantize_block_v100(matrix, block, values_by_nnz_block, stream);
     } else {
         return portable_backend::launch_dequantize_block_v100(matrix, block, values_by_nnz_block, stream);

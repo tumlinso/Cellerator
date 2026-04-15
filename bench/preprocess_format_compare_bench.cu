@@ -77,7 +77,7 @@ static void usage(const char *argv0) {
                  "  --mode {compressed|blocked_ell|sliced_ell|both|all}  Format mode. Default: both\n"
                  "  --device N                            CUDA device. Default: 0\n"
                  "  --parts N                             Partition count. Default: 16\n"
-                 "  --rows-per-part N                     Rows per partition. Default: 8192\n"
+                 "  --rows-per-partition N                Rows per partition. Default: 8192\n"
                  "  --cols N                              Feature count. Default: 16384\n"
                  "  --avg-nnz-row N                       Average nnz per row. Default: 64\n"
                  "  --shards N                            Shard count. Default: 4\n"
@@ -141,7 +141,7 @@ static int parse_args(int argc, char **argv, config *cfg) {
             if (!parse_u32(argv[++i], &cfg->device)) return 0;
         } else if (std::strcmp(argv[i], "--parts") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->parts)) return 0;
-        } else if (std::strcmp(argv[i], "--rows-per-part") == 0 && i + 1 < argc) {
+        } else if (std::strcmp(argv[i], "--rows-per-partition") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->rows_per_part)) return 0;
         } else if (std::strcmp(argv[i], "--cols") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->cols)) return 0;

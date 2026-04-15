@@ -709,7 +709,9 @@ Observations:
   - CSR SpMV with custom value-grad and library-backed vector-grad
   - CSR SpMM with custom value-grad and library-backed rhs-grad
 - `dist_sparse.cu` launches one base copy per selected slot and performs explicit leader-merge reduction instead of hiding cross-device traffic behind a framework boundary
-- the distributed policy matches the host assumptions in the repo: pair-local work first, then leader merge across the real 4-GPU topology
+- the distributed policy is now split cleanly:
+  - `generic` discovers peer-link quality and only forms hierarchical pairs when the visible topology supports it
+  - `native` / `native-extreme` keep the explicit pair-local V100 policy when discovery confirms the real 4-GPU topology
 
 Interpretation:
 

@@ -1,11 +1,11 @@
 ---
 slug: "cellshard-csr-file-codec-removal"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "in_progress"
+execution: "claimed"
+owner: "codex"
 created_at: "2026-04-14T19:32:36Z"
-last_heartbeat_at: "2026-04-14T19:33:29Z"
-last_reviewed_at: "2026-04-14T19:33:29Z"
+last_heartbeat_at: "2026-04-15T13:23:53Z"
+last_reviewed_at: "2026-04-15T13:23:53Z"
 stale_after_days: 14
 objective: "remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed"
 ---
@@ -64,6 +64,7 @@ _None recorded yet._
 
 ## Progress Notes
 - Added a dedicated workstream to decide whether CSR/compressed should disappear from `.csh5` entirely and survive only as an interop layer.
+- Started the first-file freeze implementation: public docs/header comments now describe CSR/compressed as a legacy compatibility or interop path, the workbench runtime test no longer creates new compressed .csh5 fixtures, and cellShardDatasetH5Test now uses a Blocked-ELL side-domain append path plus a separate explicit legacy compressed compatibility check.
 
 ## Next Actions
 - Start by converting the remaining compressed `.csh5` tests and deciding whether legacy compressed-file read support survives as a temporary compatibility layer.

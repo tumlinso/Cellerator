@@ -1,19 +1,22 @@
 #pragma once
 
-#define CELLERATOR_CUDA_MODE_PORTABLE @CELLERATOR_CUDA_MODE_PORTABLE@
-#define CELLERATOR_CUDA_MODE_EXTREME @CELLERATOR_CUDA_MODE_EXTREME@
+#define CELLERATOR_CUDA_MODE_GENERIC @CELLERATOR_CUDA_MODE_GENERIC@
+#define CELLERATOR_CUDA_MODE_NATIVE @CELLERATOR_CUDA_MODE_NATIVE@
+#define CELLERATOR_CUDA_MODE_NATIVE_EXTREME @CELLERATOR_CUDA_MODE_NATIVE_EXTREME@
 #define CELLERATOR_CUDA_MODE_NAME "@CELLERATOR_CUDA_MODE@"
 
 namespace cellerator::build {
 
 enum class cuda_mode {
-    portable,
-    extreme
+    generic,
+    native,
+    native_extreme
 };
 
-inline constexpr cuda_mode active_cuda_mode = cuda_mode::@CELLERATOR_CUDA_MODE@;
-inline constexpr bool cuda_mode_is_portable = CELLERATOR_CUDA_MODE_PORTABLE != 0;
-inline constexpr bool cuda_mode_is_extreme = CELLERATOR_CUDA_MODE_EXTREME != 0;
+inline constexpr cuda_mode active_cuda_mode = cuda_mode::@CELLERATOR_CUDA_MODE_ENUM@;
+inline constexpr bool cuda_mode_is_generic = CELLERATOR_CUDA_MODE_GENERIC != 0;
+inline constexpr bool cuda_mode_is_native = CELLERATOR_CUDA_MODE_NATIVE != 0;
+inline constexpr bool cuda_mode_is_native_extreme = CELLERATOR_CUDA_MODE_NATIVE_EXTREME != 0;
 inline constexpr const char *cuda_mode_name = CELLERATOR_CUDA_MODE_NAME;
 
 } // namespace cellerator::build

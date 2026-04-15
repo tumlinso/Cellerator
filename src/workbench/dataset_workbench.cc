@@ -971,7 +971,7 @@ std::string severity_name(issue_severity severity) {
 
 std::string execution_format_name(execution_format format) {
     switch (format) {
-        case execution_format::compressed: return "compressed";
+        case execution_format::compressed: return "legacy_compressed_unsupported";
         case execution_format::blocked_ell: return "blocked_ell";
         case execution_format::bucketed_blocked_ell: return "bucketed_blocked_ell";
         case execution_format::mixed: return "mixed";
@@ -1628,13 +1628,20 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
 
     if (!read_dataset_vector(matrix, "partition_rows", H5T_NATIVE_UINT64, &partition_rows)
         || !read_dataset_vector(matrix, "partition_nnz", H5T_NATIVE_UINT64, &partition_nnz)
-        || !read_dataset_vector(matrix, "partition_axes", H5T_NATIVE_UINT32, &partition_axes)
         || !read_dataset_vector(matrix, "partition_row_offsets", H5T_NATIVE_UINT64, &partition_row_offsets)
         || !read_dataset_vector(matrix, "partition_dataset_ids", H5T_NATIVE_UINT32, &partition_dataset_ids)
         || !read_dataset_vector(matrix, "partition_codec_ids", H5T_NATIVE_UINT32, &partition_codec_ids)
         || !read_dataset_vector(matrix, "shard_offsets", H5T_NATIVE_UINT64, &shard_offsets)) {
         push_issue(&summary.issues, issue_severity::error, "inspect", "failed to read matrix layout metadata");
         goto done;
+    }
+    if (H5Lexists(matrix, "partition_axes", H5P_DEFAULT) > 0) {
+        if (!read_dataset_vector(matrix, "partition_axes", H5T_NATIVE_UINT32, &partition_axes)) {
+            push_issue(&summary.issues, issue_severity::error, "inspect", "failed to read matrix partition_axes");
+            goto done;
+        }
+    } else {
+        partition_axes.assign(partition_rows.size(), 0u);
     }
 
     summary.partitions.reserve(partition_rows.size());

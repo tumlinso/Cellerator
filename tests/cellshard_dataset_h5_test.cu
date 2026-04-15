@@ -1037,48 +1037,49 @@ done:
 
 } // namespace
 
-int main() {
-    const std::string out_path = "/tmp/cellshard_dataset_test.csh5";
-    const std::string cache_root = "/tmp/cellshard_dataset_cache";
-    cellshard::sparse::compressed part0;
-    cellshard::sparse::compressed part1;
-    cellshard::sharded<cellshard::sparse::compressed> loaded;
+static int run_blocked_ell_side_domain_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_blocked_ell_side_domain_test.csh5";
+    const std::string cache_root = "/tmp/cellshard_dataset_blocked_ell_side_domain_cache";
+    cellshard::sparse::blocked_ell part;
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
     cellshard::shard_storage storage;
-    owned_text_column dataset_ids = make_column({"embryo_1_exon", "embryo_1_intron"});
-    owned_text_column matrix_paths = make_column({"/tmp/exon.mtx", "/tmp/intron.mtx"});
-    owned_text_column feature_paths = make_column({"/tmp/features.tsv", "/tmp/features.tsv"});
-    owned_text_column barcode_paths = make_column({"/tmp/barcodes_exon.tsv", "/tmp/barcodes_intron.tsv"});
-    owned_text_column metadata_paths = make_column({"", ""});
-    owned_text_column global_barcodes = make_column({"bc0", "bc1", "bc2"});
+    owned_text_column dataset_ids = make_column({"embryo_1_counts"});
+    owned_text_column matrix_paths = make_column({"/tmp/embryo_1_counts.mtx"});
+    owned_text_column feature_paths = make_column({"/tmp/features.tsv"});
+    owned_text_column barcode_paths = make_column({"/tmp/barcodes.tsv"});
+    owned_text_column metadata_paths = make_column({""});
+    owned_text_column global_barcodes = make_column({"bc0", "bc1"});
     owned_text_column feature_ids = make_column({"g0", "g1", "g2"});
     owned_text_column feature_names = make_column({"Gene0", "Gene1", "Gene2"});
     owned_text_column feature_types = make_column({"gene", "gene", "gene"});
     owned_text_column metadata_column_names = make_column({"stage", "batch"});
-    owned_text_column metadata_field_values = make_column({"E8", "A", "E9", "A", "E10", "B"});
-    std::vector<std::uint32_t> dataset_formats = { 2u, 2u };
-    std::vector<std::uint64_t> dataset_row_begin = { 0u, 2u };
-    std::vector<std::uint64_t> dataset_row_end = { 2u, 3u };
-    std::vector<std::uint64_t> dataset_rows = { 2u, 1u };
-    std::vector<std::uint64_t> dataset_cols = { 3u, 3u };
-    std::vector<std::uint64_t> dataset_nnz = { 3u, 1u };
-    std::vector<std::uint32_t> cell_dataset_ids = { 0u, 0u, 1u };
-    std::vector<std::uint64_t> cell_local_indices = { 0u, 1u, 0u };
+    owned_text_column metadata_field_values = make_column({"E8", "A", "E9", "A"});
+    std::vector<std::uint32_t> dataset_formats = { 2u };
+    std::vector<std::uint64_t> dataset_row_begin = { 0u };
+    std::vector<std::uint64_t> dataset_row_end = { 2u };
+    std::vector<std::uint64_t> dataset_rows = { 2u };
+    std::vector<std::uint64_t> dataset_cols = { 3u };
+    std::vector<std::uint64_t> dataset_nnz = { 6u };
+    std::vector<std::uint32_t> cell_dataset_ids = { 0u, 0u };
+    std::vector<std::uint64_t> cell_local_indices = { 0u, 1u };
     std::vector<std::uint32_t> feature_dataset_ids = { 0u, 0u, 0u };
     std::vector<std::uint64_t> feature_local_indices = { 0u, 1u, 2u };
-    std::vector<std::uint64_t> dataset_feature_offsets = { 0u, 3u, 6u };
-    std::vector<std::uint32_t> dataset_feature_to_global = { 0u, 1u, 2u, 0u, 1u, 2u };
-    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 2u, 4u, 6u };
+    std::vector<std::uint64_t> dataset_feature_offsets = { 0u, 3u };
+    std::vector<std::uint32_t> dataset_feature_to_global = { 0u, 1u, 2u };
+    std::vector<std::uint32_t> metadata_row_offsets = { 0u, 2u, 4u };
     std::vector<std::uint32_t> metadata_dataset_indices = { 0u };
     std::vector<std::uint64_t> metadata_global_row_begin = { 0u };
-    std::vector<std::uint64_t> metadata_global_row_end = { 3u };
-    std::vector<std::uint64_t> partition_rows = { 2u, 1u };
-    std::vector<std::uint64_t> partition_nnz = { 3u, 1u };
-    std::vector<std::uint32_t> partition_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row, (std::uint32_t) cellshard::sparse::compressed_by_row };
-    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u, 3u };
-    std::vector<std::uint32_t> partition_dataset_ids = { 0u, 1u };
-    std::vector<std::uint32_t> partition_codec_ids = { 0u, 0u };
-    std::vector<std::uint64_t> shard_offsets = { 0u, 2u, 3u };
-    cellshard::dataset_codec_descriptor codec;
+    std::vector<std::uint64_t> metadata_global_row_end = { 2u };
+    std::vector<std::uint64_t> partition_rows = { 2u };
+    std::vector<std::uint64_t> partition_nnz = { 6u };
+    std::vector<std::uint64_t> partition_aux = {
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(1u, 3ul)
+    };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u };
+    std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
+    cellshard::dataset_codec_descriptor codec{};
     cellshard::dataset_layout_view layout{};
     cellshard::dataset_dataset_table_view dataset_view{};
     cellshard::dataset_provenance_view provenance_view{};
@@ -1087,50 +1088,53 @@ int main() {
     cellshard::dataset_observation_metadata_view observation_metadata_view{};
     cellshard::dataset_browse_cache_view browse_view{};
     owned_observation_metadata_column obs_day_label;
-    owned_observation_metadata_column obs_day;
     owned_observation_metadata_column obs_postnatal;
     std::vector<cellshard::dataset_observation_metadata_column_view> observation_columns;
     std::vector<std::uint32_t> browse_feature_indices = { 0u, 2u };
-    std::vector<float> browse_gene_sum = { 1.0f, 6.0f };
+    std::vector<float> browse_gene_sum = { 1.0f, 5.0f };
     std::vector<float> browse_gene_detected = { 1.0f, 2.0f };
-    std::vector<float> browse_gene_sq_sum = { 1.0f, 20.0f };
-    std::vector<float> browse_dataset_mean = { 0.5f, 1.0f, 0.0f, 4.0f };
-    std::vector<float> browse_shard_mean = { 0.5f, 1.0f, 0.0f, 4.0f };
-    std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u, 4u };
-    std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u, 2u, std::numeric_limits<std::uint64_t>::max() };
+    std::vector<float> browse_gene_sq_sum = { 1.0f, 13.0f };
+    std::vector<float> browse_dataset_mean = { 0.5f, 0.0f, 2.5f };
+    std::vector<float> browse_shard_mean = { 0.5f, 0.0f, 2.5f };
+    std::vector<std::uint32_t> browse_part_sample_offsets = { 0u, 2u };
+    std::vector<std::uint64_t> browse_part_sample_rows = { 0u, 1u };
     std::vector<float> browse_partition_sample_values = {
-        1.0f, 2.0f,
-        0.0f, 0.0f,
-        0.0f, 4.0f,
-        0.0f, 0.0f
+        1.0f, 0.0f,
+        0.0f, 3.0f
     };
     int rc = 1;
 
     std::remove(out_path.c_str());
-    cellshard::sparse::init(&part0);
-    cellshard::sparse::init(&part1);
+    cellshard::sparse::init(&part);
     cellshard::init(&loaded);
     cellshard::init(&storage);
 
-    if (!populate_part(&part0, 2u, 3u, {0u, 2u, 3u}, {0u, 2u, 1u}, {1.0f, 2.0f, 3.0f})) goto done;
-    if (!populate_part(&part1, 1u, 3u, {0u, 1u}, {2u}, {4.0f})) goto done;
+    if (!populate_blocked_ell_part(&part,
+                                   2u,
+                                   3u,
+                                   1u,
+                                   3u,
+                                   {0u, 1u, 2u, 0u, 1u, 2u},
+                                   {1.0f, 9.0f, 2.0f, 8.0f, 3.0f, 7.0f})) {
+        goto done;
+    }
 
     codec.codec_id = 0u;
-    codec.family = cellshard::dataset_codec_family_standard_csr;
+    codec.family = cellshard::dataset_codec_family_blocked_ell;
     codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
     codec.flags = 0u;
 
-    layout.rows = 3u;
+    layout.rows = 2u;
     layout.cols = 3u;
-    layout.nnz = 4u;
-    layout.num_partitions = 2u;
-    layout.num_shards = 2u;
+    layout.nnz = 6u;
+    layout.num_partitions = 1u;
+    layout.num_shards = 1u;
     layout.partition_rows = partition_rows.data();
     layout.partition_nnz = partition_nnz.data();
-    layout.partition_axes = partition_axes.data();
-    layout.partition_aux = nullptr;
+    layout.partition_axes = nullptr;
+    layout.partition_aux = partition_aux.data();
     layout.partition_row_offsets = partition_row_offsets.data();
     layout.partition_dataset_ids = partition_dataset_ids.data();
     layout.partition_codec_ids = partition_codec_ids.data();
@@ -1138,7 +1142,7 @@ int main() {
     layout.codecs = &codec;
     layout.num_codecs = 1u;
 
-    dataset_view.count = 2u;
+    dataset_view.count = 1u;
     dataset_view.dataset_ids = dataset_ids.view();
     dataset_view.matrix_paths = matrix_paths.view();
     dataset_view.feature_paths = feature_paths.view();
@@ -1162,7 +1166,7 @@ int main() {
     provenance_view.dataset_feature_offsets = dataset_feature_offsets.data();
     provenance_view.dataset_feature_to_global = dataset_feature_to_global.data();
 
-    metadata_table_view.rows = 3u;
+    metadata_table_view.rows = 2u;
     metadata_table_view.cols = 2u;
     metadata_table_view.column_names = metadata_column_names.view();
     metadata_table_view.field_values = metadata_field_values.view();
@@ -1176,15 +1180,12 @@ int main() {
 
     obs_day_label.name = "embryonic_day_label";
     obs_day_label.type = cellshard::dataset_observation_metadata_type_text;
-    obs_day_label.text_values = make_column({"E8.5", "E8.5", "P0"});
-    obs_day.name = "embryonic_day";
-    obs_day.type = cellshard::dataset_observation_metadata_type_float32;
-    obs_day.float32_values = {8.5f, 8.5f, std::numeric_limits<float>::quiet_NaN()};
+    obs_day_label.text_values = make_column({"E8.5", "P0"});
     obs_postnatal.name = "is_postnatal";
     obs_postnatal.type = cellshard::dataset_observation_metadata_type_uint8;
-    obs_postnatal.uint8_values = {0u, 0u, 1u};
-    observation_columns = {obs_day_label.view(), obs_day.view(), obs_postnatal.view()};
-    observation_metadata_view.rows = 3u;
+    obs_postnatal.uint8_values = {0u, 1u};
+    observation_columns = {obs_day_label.view(), obs_postnatal.view()};
+    observation_metadata_view.rows = 2u;
     observation_metadata_view.cols = (std::uint32_t) observation_columns.size();
     observation_metadata_view.columns = observation_columns.data();
 
@@ -1193,78 +1194,42 @@ int main() {
     browse_view.gene_sum = browse_gene_sum.data();
     browse_view.gene_detected = browse_gene_detected.data();
     browse_view.gene_sq_sum = browse_gene_sq_sum.data();
-    browse_view.dataset_count = 2u;
+    browse_view.dataset_count = 1u;
     browse_view.dataset_feature_mean = browse_dataset_mean.data();
-    browse_view.shard_count = 2u;
+    browse_view.shard_count = 1u;
     browse_view.shard_feature_mean = browse_shard_mean.data();
-    browse_view.partition_count = 2u;
+    browse_view.partition_count = 1u;
     browse_view.sample_rows_per_partition = 2u;
     browse_view.partition_sample_row_offsets = browse_part_sample_offsets.data();
     browse_view.partition_sample_global_rows = browse_part_sample_rows.data();
     browse_view.partition_sample_values = browse_partition_sample_values.data();
 
-    if (!cellshard::create_dataset_compressed_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view)) goto done;
-    if (!cellshard::append_standard_csr_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
-    if (!cellshard::append_standard_csr_partition_h5(out_path.c_str(), 1u, &part1)) goto done;
-    if (!cellshard::append_dataset_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)) {
-        std::fprintf(stderr, "failed to append embedded metadata\n");
+    if (!cellshard::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view)) goto done;
+    if (!cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part)) goto done;
+    if (!cellshard::append_dataset_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)
+        || !cellshard::append_dataset_observation_metadata_h5(out_path.c_str(), &observation_metadata_view)
+        || !cellshard::append_dataset_browse_cache_h5(out_path.c_str(), &browse_view)) {
+        std::fprintf(stderr, "blocked ell side-domain append failed\n");
         goto done;
     }
-    if (!cellshard::append_dataset_observation_metadata_h5(out_path.c_str(), &observation_metadata_view)) {
-        std::fprintf(stderr, "failed to append observation metadata\n");
-        goto done;
-    }
-    if (!cellshard::append_dataset_browse_cache_h5(out_path.c_str(), &browse_view)) {
-        std::fprintf(stderr, "failed to append browse cache\n");
-        goto done;
-    }
-
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
-        std::fprintf(stderr, "failed to reload header after side-domain append\n");
+        std::fprintf(stderr, "blocked ell side-domain reload failed\n");
         goto done;
     }
-    if (loaded.rows != 3u || loaded.cols != 3u || loaded.nnz != 4u) {
-        std::fprintf(stderr, "reloaded header mismatch\n");
+    if (loaded.rows != 2u || loaded.cols != 3u || loaded.nnz != 6u) {
+        std::fprintf(stderr, "blocked ell side-domain header mismatch\n");
         goto done;
     }
-    if (storage.backend != cellshard::shard_storage_backend_dataset_h5) {
-        std::fprintf(stderr, "storage backend mismatch after side-domain append\n");
+    if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())
+        || !cellshard::prefetch_dataset_blocked_ell_h5_shard_cache(&loaded, &storage, 0u)
+        || !cellshard::fetch_partition(&loaded, &storage, 0u)) {
+        std::fprintf(stderr, "blocked ell side-domain fetch failed\n");
         goto done;
     }
-    if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) {
-        std::fprintf(stderr, "failed to bind dataset h5 part cache\n");
-        goto done;
-    }
-    if (!cellshard::prefetch_dataset_compressed_h5_shard_cache(&loaded, &storage, 0u)) {
-        std::fprintf(stderr, "failed to prefetch shard 0 to cache\n");
-        goto done;
-    }
-    if (!cellshard::prefetch_dataset_compressed_h5_shard_cache(&loaded, &storage, 1u)) {
-        std::fprintf(stderr, "failed to prefetch shard 1 to cache\n");
-        goto done;
-    }
-    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
-        std::fprintf(stderr, "failed to fetch part 0 from dataset file\n");
-        goto done;
-    }
-    if (!cellshard::drop_partition(&loaded, 0u)) {
-        std::fprintf(stderr, "failed to drop part 0 after fetch\n");
-        goto done;
-    }
-    if (!cellshard::fetch_shard(&loaded, &storage, 1u)) {
-        std::fprintf(stderr, "failed to fetch shard 1 from dataset file\n");
-        goto done;
-    }
-    if (!cellshard::fetch_partition(&loaded, &storage, 0u)) {
-        std::fprintf(stderr, "failed to refetch part 0 from dataset file\n");
-        goto done;
-    }
-    if (!check_part(loaded.parts[0], {0u, 2u, 3u}, {0u, 2u, 1u}, {1.0f, 2.0f, 3.0f})) {
-        std::fprintf(stderr, "part 0 payload mismatch after side-domain append\n");
-        goto done;
-    }
-    if (!check_part(loaded.parts[1], {0u, 1u}, {2u}, {4.0f})) {
-        std::fprintf(stderr, "part 1 payload mismatch after side-domain append\n");
+    if (!check_blocked_ell_part(loaded.parts[0],
+                                {0u, 1u, 2u, 0u, 1u, 2u},
+                                {1.0f, 9.0f, 2.0f, 8.0f, 3.0f, 7.0f})) {
+        std::fprintf(stderr, "blocked ell side-domain payload mismatch\n");
         goto done;
     }
 
@@ -1276,11 +1241,98 @@ done:
     }
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
-    cellshard::sparse::clear(&part0);
-    cellshard::sparse::clear(&part1);
+    cellshard::sparse::clear(&part);
     std::remove(out_path.c_str());
-    if (rc != 0) {
-        std::fprintf(stderr, "cellShardDatasetH5Test failed\n");
+    return rc;
+}
+
+static int run_legacy_compressed_api_rejection_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_legacy_compressed_api_rejection_test.csh5";
+    cellshard::sparse::blocked_ell part0;
+    cellshard::sharded<cellshard::sparse::compressed> legacy_view;
+    cellshard::shard_storage storage;
+    std::vector<std::uint64_t> partition_rows = { 2u };
+    std::vector<std::uint64_t> partition_nnz = { 4u };
+    std::vector<std::uint64_t> partition_aux = {
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
+    };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u };
+    std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
+    cellshard::dataset_codec_descriptor codec{};
+    cellshard::dataset_layout_view layout{};
+    int rc = 1;
+
+    std::remove(out_path.c_str());
+    cellshard::sparse::init(&part0);
+    cellshard::init(&legacy_view);
+    cellshard::init(&storage);
+
+    if (!populate_blocked_ell_part(&part0,
+                                   2u,
+                                   3u,
+                                   1u,
+                                   3u,
+                                   {0u, 1u, 2u, 0u, 1u, 2u},
+                                   {1.0f, 0.0f, 2.0f, 0.0f, 3.0f, 0.0f})) {
+        goto done;
+    }
+
+    codec.codec_id = 0u;
+    codec.family = cellshard::dataset_codec_family_blocked_ell;
+    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.scale_value_code = 0u;
+    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
+    codec.flags = 0u;
+
+    layout.rows = 2u;
+    layout.cols = 3u;
+    layout.nnz = 3u;
+    layout.num_partitions = 1u;
+    layout.num_shards = 1u;
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = nullptr;
+    layout.partition_aux = partition_aux.data();
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
+    layout.shard_offsets = shard_offsets.data();
+    layout.codecs = &codec;
+    layout.num_codecs = 1u;
+
+    if (!cellshard::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr)
+        || !cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part0)) {
+        std::fprintf(stderr, "legacy compressed API rejection fixture creation failed\n");
+        goto done;
+    }
+    if (cellshard::load_header(out_path.c_str(), &legacy_view, &storage)) {
+        std::fprintf(stderr, "legacy compressed API unexpectedly loaded a .csh5 dataset\n");
+        goto done;
+    }
+
+    rc = 0;
+
+done:
+    if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
+        cellshard::invalidate_dataset_h5_cache(&storage);
+    }
+    cellshard::clear(&storage);
+    cellshard::clear(&legacy_view);
+    cellshard::sparse::clear(&part0);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+int main() {
+    if (run_blocked_ell_side_domain_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test blocked ell side-domain append failed\n");
+        return 1;
+    }
+    if (run_legacy_compressed_api_rejection_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test legacy compressed API rejection failed\n");
+        return 1;
     }
     if (run_blocked_ell_roundtrip_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test blocked ell roundtrip failed\n");

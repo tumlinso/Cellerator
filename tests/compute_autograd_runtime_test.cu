@@ -486,9 +486,10 @@ int main() {
         autograd::init(&fleet);
         autograd::discover_fleet(&fleet, true, cudaStreamNonBlocking, true);
 
-        const unsigned int pair_slots[2] = { 0u, 2u };
+        unsigned int pair_slots[2] = {};
+        require(autograd::default_mode_pair_slots(fleet, 0u, pair_slots, 2u) == 2u, "pair slots unavailable");
         require(autograd::fleet_slot_available(fleet, pair_slots[0]), "pair leader slot 0 unavailable");
-        require(autograd::fleet_slot_available(fleet, pair_slots[1]), "pair peer slot 2 unavailable");
+        require(autograd::fleet_slot_available(fleet, pair_slots[1]), "pair peer slot unavailable");
 
         const int pair_device0 = autograd::fleet_device_id(fleet, pair_slots[0]);
         const int pair_device1 = autograd::fleet_device_id(fleet, pair_slots[1]);
@@ -555,7 +556,7 @@ int main() {
         require(close_value(pair_out1_host[0], 5.0f), "pair-local row-shard output 2 mismatch");
 
         unsigned int fleet_slots[4] = {};
-        require(autograd::default_fleet_slots(fleet_slots, 4) == 4u, "default fleet slots unavailable");
+        require(autograd::default_mode_fleet_slots(fleet, fleet_slots, 4) == 4u, "default fleet slots unavailable");
         for (unsigned int i = 0; i < 4; ++i) {
             require(autograd::fleet_slot_available(fleet, fleet_slots[i]), "fleet slot unavailable");
         }

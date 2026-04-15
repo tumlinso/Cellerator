@@ -272,6 +272,25 @@ bool populate_part(cellshard::sparse::compressed *part,
     return true;
 }
 
+bool populate_blocked_ell_part(cellshard::sparse::blocked_ell *part,
+                               unsigned int rows,
+                               unsigned int cols,
+                               unsigned int block_size,
+                               unsigned int ell_cols,
+                               const std::vector<unsigned int> &block_idx,
+                               const std::vector<float> &values) {
+    cellshard::sparse::init(part,
+                            rows,
+                            cols,
+                            (cellshard::types::nnz_t) values.size(),
+                            block_size,
+                            ell_cols);
+    if (!cellshard::sparse::allocate(part)) return false;
+    std::memcpy(part->blockColIdx, block_idx.data(), block_idx.size() * sizeof(unsigned int));
+    for (std::size_t i = 0; i < values.size(); ++i) part->val[i] = __float2half(values[i]);
+    return true;
+}
+
 } // namespace
 
 int main() {
@@ -291,7 +310,7 @@ int main() {
     const std::string h5ad_manifest_path = base + ".h5ad.manifest.tsv";
     const std::string h5ad_dataset_path = base + ".h5ad.dataset.csh5";
     const std::string h5ad_cache_root = base + ".h5ad.cache";
-    cellshard::sparse::compressed part;
+    cellshard::sparse::blocked_ell part;
     cellshard::dataset_codec_descriptor codec;
     cellshard::dataset_layout_view layout{};
     cellshard::dataset_dataset_table_view dataset_view{};
@@ -323,10 +342,12 @@ int main() {
     std::vector<std::uint64_t> dataset_row_end = { 2u };
     std::vector<std::uint64_t> dataset_rows = { 2u };
     std::vector<std::uint64_t> dataset_cols = { 3u };
-    std::vector<std::uint64_t> dataset_nnz = { 3u };
+    std::vector<std::uint64_t> dataset_nnz = { 6u };
     std::vector<std::uint64_t> partition_rows = { 2u };
-    std::vector<std::uint64_t> partition_nnz = { 3u };
-    std::vector<std::uint32_t> partition_axes = { (std::uint32_t) cellshard::sparse::compressed_by_row };
+    std::vector<std::uint64_t> partition_nnz = { 6u };
+    std::vector<std::uint64_t> partition_aux = {
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(1u, 3ul)
+    };
     std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
     std::vector<std::uint32_t> partition_dataset_ids = { 0u };
     std::vector<std::uint32_t> partition_codec_ids = { 0u };
@@ -427,10 +448,18 @@ int main() {
     if (plan.parts[0].preferred_format == wb::execution_format::unknown) return 1;
 
     cellshard::sparse::init(&part);
-    if (!populate_part(&part, 2u, 3u, {0u, 2u, 3u}, {0u, 2u, 1u}, {5.0f, 1.0f, 7.0f})) return 1;
+    if (!populate_blocked_ell_part(&part,
+                                   2u,
+                                   3u,
+                                   1u,
+                                   3u,
+                                   {0u, 1u, 2u, 0u, 1u, 2u},
+                                   {5.0f, 9.0f, 1.0f, 8.0f, 7.0f, 6.0f})) {
+        return 1;
+    }
 
     codec.codec_id = 0u;
-    codec.family = cellshard::dataset_codec_family_standard_csr;
+    codec.family = cellshard::dataset_codec_family_blocked_ell;
     codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
     codec.scale_value_code = 0u;
     codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
@@ -438,13 +467,13 @@ int main() {
 
     layout.rows = 2u;
     layout.cols = 3u;
-    layout.nnz = 3u;
+    layout.nnz = 6u;
     layout.num_partitions = 1u;
     layout.num_shards = 1u;
     layout.partition_rows = partition_rows.data();
     layout.partition_nnz = partition_nnz.data();
-    layout.partition_axes = partition_axes.data();
-    layout.partition_aux = nullptr;
+    layout.partition_axes = nullptr;
+    layout.partition_aux = partition_aux.data();
     layout.partition_row_offsets = partition_row_offsets.data();
     layout.partition_dataset_ids = partition_dataset_ids.data();
     layout.partition_codec_ids = partition_codec_ids.data();
@@ -533,8 +562,8 @@ int main() {
     browse_view.partition_sample_global_rows = browse_part_sample_rows.data();
     browse_view.partition_sample_values = browse_partition_sample_values.data();
 
-    if (!cellshard::create_dataset_compressed_h5(dataset_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
-    if (!cellshard::append_standard_csr_partition_h5(dataset_path.c_str(), 0u, &part)) return 1;
+    if (!cellshard::create_dataset_blocked_ell_h5(dataset_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
+    if (!cellshard::append_blocked_ell_partition_h5(dataset_path.c_str(), 0u, &part)) return 1;
     if (!cellshard::append_dataset_embedded_metadata_h5(dataset_path.c_str(), &embedded_metadata_view)) return 1;
     if (!cellshard::append_dataset_observation_metadata_h5(dataset_path.c_str(), &observation_metadata_view)) return 1;
     if (!cellshard::append_dataset_browse_cache_h5(dataset_path.c_str(), &browse_view)) return 1;

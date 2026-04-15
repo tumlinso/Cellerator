@@ -454,7 +454,7 @@ void run_fleet_feature_spmv(const bench_config &cfg) {
     require((cfg.cols % 4u) == 0u, "fleet-feature-spmv requires cols divisible by 4");
 
     unsigned int slots[4] = {};
-    require(autograd::default_fleet_slots(slots, 4u) == 4u, "default fleet slots unavailable");
+    require(autograd::default_mode_fleet_slots(fleet, slots, 4u) == 4u, "default fleet slots unavailable");
     const std::uint32_t cols_per_slot = cfg.cols / 4u;
 
     bench_config shard_cfg = cfg;

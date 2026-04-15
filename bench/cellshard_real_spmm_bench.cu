@@ -509,8 +509,8 @@ void run_case(const real_case &entry, const bench_config &cfg, autograd::fleet_c
         unsigned int slots[4] = {};
 
         cs::init(&coo_view);
-        if (slot_count == 2u) require(autograd::default_pair_slots(0u, slots, 4u) == 2u, "pair slots unavailable");
-        else require(autograd::default_fleet_slots(slots, 4u) == 4u, "fleet slots unavailable");
+        if (slot_count == 2u) require(autograd::default_mode_pair_slots(*fleet, 0u, slots, 4u) == 2u, "pair slots unavailable");
+        else require(autograd::default_mode_fleet_slots(*fleet, slots, 4u) == 4u, "fleet slots unavailable");
         if (!cmtx::count_all_part_nnz(entry.matrix_path.c_str(), &header, row_offsets.data(), slot_count + 1u, &part_nnz)) {
             cs::clear(&coo_view);
             throw std::runtime_error("count_all_part_nnz failed");

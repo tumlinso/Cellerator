@@ -49,9 +49,9 @@ option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profil
 option(CELLERATOR_ENABLE_NCURSES_WORKBENCH "Enable the ncurses ingest/inspect workbench" ON)
 option(CELLERATOR_ENABLE_PYTHON "Enable the optional Cellerator Python wrapper." OFF)
 option(CELLERATOR_ENABLE_CELLSHARD_PYTHON "Enable the optional CellShard pybind/H5AD surface." OFF)
-set(CELLERATOR_CUDA_MODE "portable" CACHE STRING
-    "CUDA optimization mode: portable or extreme")
-set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS portable extreme)
+set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
+    "CUDA optimization mode: generic, native, or native-extreme")
+set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
 set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
     "Preferred root for the source-built libtorch installation")
 set(CUDABIOTYPES_BUILD_TESTS OFF CACHE BOOL "Disable nested cudaBioTypes tests in the root build" FORCE)
@@ -71,7 +71,7 @@ set(CELLSHARD_BUILD_TESTS OFF CACHE BOOL "Disable nested CellShard tests in the 
 set(CELLSHARD_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
     "Emit CUDA line mapping for Nsight profiling inside CellShard." FORCE)
 set(CELLSHARD_CUDA_MODE ${CELLERATOR_CUDA_MODE} CACHE STRING
-    "CellShard CUDA optimization mode: portable or extreme." FORCE)
+    "CellShard CUDA optimization mode: generic, native, or native-extreme." FORCE)
 
 add_subdirectory(extern/cudaBioTypes EXCLUDE_FROM_ALL)
 add_subdirectory(extern/CellShard EXCLUDE_FROM_ALL)
@@ -156,35 +156,43 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-if(NOT CELLERATOR_CUDA_MODE STREQUAL "portable" AND NOT CELLERATOR_CUDA_MODE STREQUAL "extreme")
-    message(FATAL_ERROR "CELLERATOR_CUDA_MODE must be one of: portable, extreme")
+if(NOT CELLERATOR_CUDA_MODE STREQUAL "generic"
+   AND NOT CELLERATOR_CUDA_MODE STREQUAL "native"
+   AND NOT CELLERATOR_CUDA_MODE STREQUAL "native-extreme")
+    message(FATAL_ERROR "CELLERATOR_CUDA_MODE must be one of: generic, native, native-extreme")
 endif()
 
-if(CELLERATOR_CUDA_MODE STREQUAL "extreme")
+if(CELLERATOR_CUDA_MODE STREQUAL "native-extreme")
     set(CMAKE_CUDA_ARCHITECTURES 70 CACHE STRING
-        "Extreme mode hard-locks the build to Volta sm_70." FORCE)
+        "Native-extreme mode hard-locks the build to Volta sm_70." FORCE)
     set(cellerator_extreme_arch_count 0)
     foreach(cellerator_cuda_arch IN LISTS CMAKE_CUDA_ARCHITECTURES)
         math(EXPR cellerator_extreme_arch_count "${cellerator_extreme_arch_count} + 1")
         string(STRIP "${cellerator_cuda_arch}" cellerator_cuda_arch_clean)
         if(NOT cellerator_cuda_arch_clean MATCHES "^(70|7\\.0)(-real|-virtual)?$")
             message(FATAL_ERROR
-                "CELLERATOR_CUDA_MODE=extreme is a Volta-only path and currently requires "
+                "CELLERATOR_CUDA_MODE=native-extreme is a Volta-only path and currently requires "
                 "CMAKE_CUDA_ARCHITECTURES to contain only sm_70 entries.")
         endif()
     endforeach()
     if(cellerator_extreme_arch_count EQUAL 0)
         message(FATAL_ERROR
-            "CELLERATOR_CUDA_MODE=extreme requires at least one explicit sm_70 architecture entry.")
+            "CELLERATOR_CUDA_MODE=native-extreme requires at least one explicit sm_70 architecture entry.")
     endif()
 endif()
 
-if(CELLERATOR_CUDA_MODE STREQUAL "portable")
-    set(CELLERATOR_CUDA_MODE_PORTABLE 1)
-    set(CELLERATOR_CUDA_MODE_EXTREME 0)
+set(CELLERATOR_CUDA_MODE_GENERIC 0)
+set(CELLERATOR_CUDA_MODE_NATIVE 0)
+set(CELLERATOR_CUDA_MODE_NATIVE_EXTREME 0)
+set(CELLERATOR_CUDA_MODE_ENUM generic)
+if(CELLERATOR_CUDA_MODE STREQUAL "generic")
+    set(CELLERATOR_CUDA_MODE_GENERIC 1)
+elseif(CELLERATOR_CUDA_MODE STREQUAL "native")
+    set(CELLERATOR_CUDA_MODE_NATIVE 1)
+    set(CELLERATOR_CUDA_MODE_ENUM native)
 else()
-    set(CELLERATOR_CUDA_MODE_PORTABLE 0)
-    set(CELLERATOR_CUDA_MODE_EXTREME 1)
+    set(CELLERATOR_CUDA_MODE_NATIVE_EXTREME 1)
+    set(CELLERATOR_CUDA_MODE_ENUM native_extreme)
 endif()
 
 message(STATUS "Cellerator CUDA mode: ${CELLERATOR_CUDA_MODE}")
@@ -208,8 +216,9 @@ target_include_directories(cellerator_cuda_mode INTERFACE
     ${CMAKE_CURRENT_BINARY_DIR}/generated
 )
 target_compile_definitions(cellerator_cuda_mode INTERFACE
-    CELLERATOR_CUDA_MODE_PORTABLE=${CELLERATOR_CUDA_MODE_PORTABLE}
-    CELLERATOR_CUDA_MODE_EXTREME=${CELLERATOR_CUDA_MODE_EXTREME}
+    CELLERATOR_CUDA_MODE_GENERIC=${CELLERATOR_CUDA_MODE_GENERIC}
+    CELLERATOR_CUDA_MODE_NATIVE=${CELLERATOR_CUDA_MODE_NATIVE}
+    CELLERATOR_CUDA_MODE_NATIVE_EXTREME=${CELLERATOR_CUDA_MODE_NATIVE_EXTREME}
 )
 target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_17)
 
@@ -371,6 +380,15 @@ if(NCCL_LIBRARY)
 endif()
 set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_workbench)
+
+add_executable(cellShardFirstFileFixtureTest
+    tests/cellshard_first_file_fixture_test.cu
+)
+target_include_directories(cellShardFirstFileFixtureTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellShardFirstFileFixtureTest PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(cellShardFirstFileFixtureTest PRIVATE cellerator_workbench CellShard::runtime)
+set_target_properties(cellShardFirstFileFixtureTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardFirstFileFixtureTest)
 
 if(CELLERATOR_ENABLE_PYTHON)
     pybind11_add_module(_cellerator

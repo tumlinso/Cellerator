@@ -52,9 +52,9 @@ static void usage(const char *argv0) {
                  "Usage: %s [options]\n"
                  "  --device N             Device for the single-GPU build benchmark. Default: 0\n"
                  "  --parts N              Number of physical parts. Default: 32\n"
-                 "  --rows-per-part N      Rows in each part. Default: 32768\n"
+                 "  --rows-per-partition N Rows in each partition. Default: 32768\n"
                  "  --cols N               Matrix columns. Default: 65536\n"
-                 "  --avg-nnz-row N        Average nnz/row inside each part. Default: 128\n"
+                 "  --avg-nnz-row N        Average nnz/row inside each partition. Default: 128\n"
                  "  --shards N             Logical shard count. Default: 8\n"
                  "  --build-repeats N      Repeats for device-only COO->compressed. Default: 8\n"
                  "  --upload-repeats N     Repeats for multi-GPU hot upload. Default: 4\n"
@@ -79,7 +79,7 @@ static int parse_args(int argc, char **argv, config *cfg) {
             if (!parse_u32(argv[++i], &cfg->build_device)) return 0;
         } else if (std::strcmp(argv[i], "--parts") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->parts)) return 0;
-        } else if (std::strcmp(argv[i], "--rows-per-part") == 0 && i + 1 < argc) {
+        } else if (std::strcmp(argv[i], "--rows-per-partition") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->rows_per_part)) return 0;
         } else if (std::strcmp(argv[i], "--cols") == 0 && i + 1 < argc) {
             if (!parse_u32(argv[++i], &cfg->cols)) return 0;

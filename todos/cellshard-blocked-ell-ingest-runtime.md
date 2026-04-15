@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "codex"
 created_at: "2026-04-13T16:51:58Z"
-last_heartbeat_at: "2026-04-14T18:26:35Z"
-last_reviewed_at: "2026-04-14T18:26:35Z"
+last_heartbeat_at: "2026-04-15T13:23:53Z"
+last_reviewed_at: "2026-04-15T13:23:53Z"
 stale_after_days: 14
 objective: "implement blocked-ell-first CellShard ingest, explicit machine-local cache warmup, and runtime alignment"
 ---
@@ -85,6 +85,7 @@ _None recorded yet._
 - Tightened the generated-file validation path: `series_workbench` summaries now expose top-level `matrix_format`, `payload_layout`, execution `preferred_base_format`, and runtime-service metadata, and `seriesWorkbenchRuntimeTest` now verifies that a freshly converted `.csh5` advertises the optimized bucketed blocked-ell payload layout and owner-hosted runtime-service contract.
 - Added an end-to-end codec assertion on the first generated file by reopening the converted `.csh5`, fetching execution metadata and the first execution partition, and confirming the persisted shard-local column remap is the expected non-identity permutation rather than only smoke-testing that the file exists.
 - Aligned workbench-written execution metadata with the actual persisted optimized codec so the file now reports `bucketed_blocked_ell` as the preferred execution base instead of leaking the planner's pre-persist preference.
+- Added a dedicated  target that writes a tiny optimized bucketed Blocked-ELL .csh5, warms cache and execution cache, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
 
 ## Next Actions
 - Tighten the shard column-order heuristic and bucket-count search so persisted optimized shards are chosen by measured occupancy/runtime gain rather than the current simple signature sort plus byte-minimizing bucket sweep.

@@ -5,6 +5,17 @@ namespace cellerator::compute::autograd::dist {
 namespace {
 
 constexpr int kAddThreads = 256;
+constexpr int kInvalidPairScore = -1000000000;
+
+struct pair_reduction_plan {
+    unsigned int peer0_index = 0u;
+    unsigned int leader1_index = 0u;
+    unsigned int peer1_index = 0u;
+    unsigned int peer0 = 0u;
+    unsigned int leader1 = 0u;
+    unsigned int peer1 = 0u;
+    bool valid = false;
+};
 
 __global__ void dense_add_inplace_kernel_(float *dst, const float *src, std::size_t count) {
     const std::size_t idx = static_cast<std::size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
@@ -45,6 +56,59 @@ void copy_or_alias_to_leader_(
     cuda_require(cudaMemcpyPeerAsync(leader_out, leader_device, src, src_device, bytes, fleet_stream(*fleet, leader_slot)), "cudaMemcpyPeerAsync(copy_or_alias_to_leader)");
 }
 
+int pair_link_score_(const fleet_context &fleet, unsigned int lhs_slot, unsigned int rhs_slot) {
+    const int lhs_rank = fleet_peer_performance_rank(fleet, lhs_slot, rhs_slot);
+    const int rhs_rank = fleet_peer_performance_rank(fleet, rhs_slot, lhs_slot);
+    if (lhs_rank < 0 || rhs_rank < 0) return kInvalidPairScore;
+    return -(lhs_rank + rhs_rank);
+}
+
+bool matches_native_slot_order_(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {
+    if (slot_count != 4u || !fleet_has_native_v100_topology(fleet)) return false;
+    unsigned int native_slots[4] = {};
+    if (default_native_fleet_slots(fleet, native_slots, 4u) != 4u) return false;
+    for (unsigned int i = 0; i < 4u; ++i) {
+        if (slots[i] != native_slots[i]) return false;
+    }
+    return true;
+}
+
+pair_reduction_plan build_generic_pair_plan_(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count) {
+    pair_reduction_plan best_plan;
+    if (slot_count != 4u || slots == nullptr) return best_plan;
+
+    int best_score = kInvalidPairScore;
+    for (unsigned int peer_index = 1u; peer_index < 4u; ++peer_index) {
+        const unsigned int leader0 = slots[0];
+        const unsigned int peer0 = slots[peer_index];
+        unsigned int remaining[2] = {};
+        unsigned int cursor = 0u;
+        for (unsigned int i = 1u; i < 4u; ++i) {
+            if (i == peer_index) continue;
+            remaining[cursor++] = slots[i];
+        }
+        const int score0 = pair_link_score_(fleet, leader0, peer0);
+        const int score1 = pair_link_score_(fleet, remaining[0], remaining[1]);
+        if (score0 == kInvalidPairScore || score1 == kInvalidPairScore) continue;
+        const int total_score = score0 + score1;
+        if (!best_plan.valid || total_score > best_score) {
+            best_score = total_score;
+            best_plan.peer0_index = peer_index;
+            best_plan.leader1_index = 0u;
+            best_plan.peer1_index = 0u;
+            best_plan.peer0 = peer0;
+            best_plan.leader1 = remaining[0];
+            best_plan.peer1 = remaining[1];
+            for (unsigned int i = 1u; i < 4u; ++i) {
+                if (slots[i] == remaining[0]) best_plan.leader1_index = i;
+                if (slots[i] == remaining[1]) best_plan.peer1_index = i;
+            }
+            best_plan.valid = true;
+        }
+    }
+    return best_plan;
+}
+
 } // namespace
 
 void reduce_sum_to_leader_f32(
@@ -73,14 +137,35 @@ void reduce_sum_to_leader_f32(
     const int leader0_device = fleet_device_id(*fleet, leader0);
     copy_or_alias_to_leader_(fleet, leader0, partials[0], fleet_device_id(*fleet, leader0), count, leader_out);
 
+    pair_reduction_plan pair_plan;
     if (slot_count == 4u) {
-        const unsigned int peer0 = slots[1];
-        const unsigned int leader1 = slots[2];
-        const unsigned int peer1 = slots[3];
+        if (!build::cuda_mode_is_generic && matches_native_slot_order_(*fleet, slots, slot_count)) {
+            pair_plan.peer0_index = 1u;
+            pair_plan.leader1_index = 2u;
+            pair_plan.peer1_index = 3u;
+            pair_plan.peer0 = slots[1];
+            pair_plan.leader1 = slots[2];
+            pair_plan.peer1 = slots[3];
+            pair_plan.valid = true;
+        } else {
+            pair_plan = build_generic_pair_plan_(*fleet, slots, slot_count);
+        }
+    }
+
+    if (pair_plan.valid) {
+        const unsigned int peer0 = pair_plan.peer0;
+        const unsigned int leader1 = pair_plan.leader1;
+        const unsigned int peer1 = pair_plan.peer1;
 
         float *leader0_scratch = static_cast<float *>(request_fleet_scratch(fleet, leader0, count * sizeof(float)));
         cuda_require(
-            cudaMemcpyPeerAsync(leader0_scratch, leader0_device, partials[1], fleet_device_id(*fleet, peer0), count * sizeof(float), fleet_stream(*fleet, leader0)),
+            cudaMemcpyPeerAsync(
+                leader0_scratch,
+                leader0_device,
+                partials[pair_plan.peer0_index],
+                fleet_device_id(*fleet, peer0),
+                count * sizeof(float),
+                fleet_stream(*fleet, leader0)),
             "cudaMemcpyPeerAsync(reduce_sum_to_leader pair0)");
         dense_add_inplace_kernel_<<<blocks, kAddThreads, 0, fleet_stream(*fleet, leader0)>>>(leader_out, leader0_scratch, count);
         cuda_require(cudaGetLastError(), "dense_add_inplace_kernel(reduce_sum_to_leader pair0)");
@@ -89,9 +174,15 @@ void reduce_sum_to_leader_f32(
         float *leader1_scratch = static_cast<float *>(request_fleet_scratch(fleet, leader1, count * sizeof(float) * 2u));
         float *pair1_accum = leader1_scratch;
         float *pair1_tmp = leader1_scratch + count;
-        copy_or_alias_to_leader_(fleet, leader1, partials[2], leader1_device, count, pair1_accum);
+        copy_or_alias_to_leader_(fleet, leader1, partials[pair_plan.leader1_index], leader1_device, count, pair1_accum);
         cuda_require(
-            cudaMemcpyPeerAsync(pair1_tmp, leader1_device, partials[3], fleet_device_id(*fleet, peer1), count * sizeof(float), fleet_stream(*fleet, leader1)),
+            cudaMemcpyPeerAsync(
+                pair1_tmp,
+                leader1_device,
+                partials[pair_plan.peer1_index],
+                fleet_device_id(*fleet, peer1),
+                count * sizeof(float),
+                fleet_stream(*fleet, leader1)),
             "cudaMemcpyPeerAsync(reduce_sum_to_leader pair1)");
         dense_add_inplace_kernel_<<<blocks, kAddThreads, 0, fleet_stream(*fleet, leader1)>>>(pair1_accum, pair1_tmp, count);
         cuda_require(cudaGetLastError(), "dense_add_inplace_kernel(reduce_sum_to_leader pair1)");

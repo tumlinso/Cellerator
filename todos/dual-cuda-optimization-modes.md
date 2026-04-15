@@ -4,37 +4,37 @@ status: "in_progress"
 execution: "claimed"
 owner: "codex"
 created_at: "2026-04-13T14:45:32Z"
-last_heartbeat_at: "2026-04-13T15:43:08Z"
+last_heartbeat_at: "2026-04-15T13:23:04Z"
 last_reviewed_at: "2026-04-13T15:43:08Z"
 stale_after_days: 14
-objective: "add repo-wide portable and extreme V100 CUDA optimization modes with compile-time selection and first hotspot backends"
+objective: "add repo-wide generic, native, and native-extreme CUDA modes with explicit topology policy and first hotspot backends"
 ---
 
 # Current Objective
 
 ## Summary
-Implement a repo-wide compile-time CUDA mode split with default portable Volta tuning, opt-in V100 extreme tuning, and initial distinct extreme hotspot backends.
+Implement a repo-wide compile-time CUDA mode split with default generic behavior, opt-in native V100 behavior, and a separate native-extreme PTX-heavy path.
 
 ## Quick Start
-- Why this stream exists: the repo currently has one shared sm_70 CUDA optimization posture and needs an explicit default `portable` mode plus an opt-in `extreme` mode boundary.
-- In scope: root CMake mode selection, generated/internal mode config, repo-wide target wiring, explicit portable/extreme backend boundaries, and first distinct extreme implementations for benchmark-worthy hotspots.
+- Why this stream exists: the repo currently has one shared sm_70 CUDA optimization posture and needs an explicit default `generic` mode plus opt-in `native` and `native-extreme` boundaries.
+- In scope: root CMake mode selection, generated/internal mode config, repo-wide target wiring, explicit generic/native/native-extreme backend boundaries, topology-aware generic multi-GPU behavior, and first distinct native-extreme implementations for benchmark-worthy hotspots.
 - Out of scope / dependencies: no runtime mode switch, no blanket PTX rewrite of cold code, and no change to existing public APIs beyond compile-time build/configuration additions.
 - Required skills: `todo-orchestrator` for the ledger and `cuda-v100` for Volta-specific hotspot choices.
 - Required references: `AGENTS.md`, `optimization.md`, `pointer_migration_plan.md`, `CMakeLists.txt`, `src/quantized/README.md`, and the active CUDA backend sources under `src/quantized/`, `src/compute/autograd/`, and `src/compute/neighbors/forward_neighbors/`.
 
 ## Planning Notes
-- `portable` remains the default compile mode; `extreme` is a global configure-time choice and not a runtime dispatch surface.
-- Every CUDA target must sit behind the new mode boundary immediately, but low-value targets may use explicit `extreme` -> `portable` alias backends until they earn benchmark-backed specialization.
-- The first distinct extreme backend should land where the repo already expects custom-kernel Volta tuning instead of library-backed math.
+- `generic` remains the default compile mode; `native` and `native-extreme` are global configure-time choices and not runtime dispatch surfaces.
+- Every CUDA target must sit behind the new mode boundary immediately, but low-value targets may still alias `generic` until they earn benchmark-backed specialization.
+- The first distinct `native-extreme` backend should land where the repo already expects custom-kernel Volta tuning instead of library-backed math.
 
 ## Assumptions
-- The initial extreme implementation wave can be considered complete when the framework is in place and at least one real hotspot backend has a distinct extreme path with coverage.
-- Performance-first numerics are acceptable in extreme mode so long as tests use explicit tolerances and the portable mode remains the correctness anchor.
-- Inline PTX should stay isolated to tiny helpers or kernels inside extreme-only code paths rather than becoming a repo-wide source pattern.
+- The initial `native-extreme` implementation wave can be considered complete when the framework is in place and at least one real hotspot backend has a distinct native-extreme path with coverage.
+- Performance-first numerics are acceptable in `native-extreme` so long as tests use explicit tolerances and the `generic` mode remains the correctness anchor.
+- Inline PTX should stay isolated to tiny helpers or kernels inside native-extreme-only code paths rather than becoming a repo-wide source pattern.
 
 ## Suggested Skills
 - `todo-orchestrator` - Keep the new dual-mode CUDA workstream current while implementation and validation proceed.
-- `cuda-v100` - Keep the compile-time split and first extreme kernels aligned to Volta sm_70 and real hotspot classes.
+- `cuda-v100` - Keep the native and native-extreme kernels aligned to Volta sm_70 and real hotspot classes.
 
 ## Useful Reference Files
 - `AGENTS.md` - Repo-wide build, testing, and Volta optimization rules.
@@ -48,15 +48,15 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - `src/compute/neighbors/forward_neighbors/forward_neighbors.cu` - Forward-neighbor backend that needs the mode boundary even if it stays aliased initially.
 
 ## Plan
-- Add the root build option, generated/internal mode config, and shared target helper changes needed to compile portable vs extreme globally.
+- Add the root build option, generated/internal mode config, and shared target helper changes needed to compile generic vs native vs native-extreme globally.
 - Roll every CUDA target/library under the new mode-selection surface with explicit alias backends where specialization is not landing yet.
-- Add a distinct extreme backend for the quantized runtime and route existing call sites through compile-time mode selection.
-- Add focused tests and benchmark output changes so portable vs extreme builds can be validated and compared.
+- Add a distinct native-extreme backend for the quantized runtime and route existing call sites through compile-time mode selection.
+- Add focused tests and benchmark output changes so generic, native, and native-extreme builds can be validated and compared.
 
 ## Tasks
 - [x] Create the repo-wide CUDA mode build/config framework
-- [x] Wire all CUDA targets through portable/extreme compile-time selection
-- [x] Add a distinct quantized extreme backend
+- [x] Wire all CUDA targets through the generic/native/native-extreme compile-time selection
+- [x] Add a distinct quantized native-extreme backend
 - [x] Extend validation and benchmark reporting for CUDA mode awareness
 
 ## Blockers
@@ -82,6 +82,13 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Verified the CellShard extension with fresh `/tmp/cellerator-cellshard-portable` and `/tmp/cellerator-cellshard-extreme` configure passes, then built `cellShardSeriesH5Test`, `cellShardBlockedEllTest`, and `seriesWorkbenchRuntimeTest` successfully in both modes.
 - `modelCustomOpsTest` and `scrnaPreprocessBench` still fail on the pre-existing CellShard part-to-shard API migration, not on the one-kernel-per-file split.
 - `seriesWorkbenchRuntimeTest` exits cleanly in one serial run, but parallel launches can trip HDF5 temp-file locking or missing-file ordering on `/tmp/cellerator_series_workbench.series.csh5`; treat that as a test harness concurrency issue rather than a kernel-structure regression.
+- Started the approved rename from `portable` / `extreme` to `generic` / `native` / `native-extreme` in the root and nested CellShard CMake/config surfaces.
+- Current implementation focus is the topology contract rewrite: make generic multi-GPU behavior discover-and-adapt from peer connectivity instead of assuming the native `0<->2` and `1<->3` pairs in autograd and forward-neighbor code.
+- Completed the mode rename to `generic` / `native` / `native-extreme`, updated the generated mode header and nested CellShard compile definitions, and switched the quantized native-PTX selection checks to the new `native-extreme` flag.
+- Added an explicit autograd fleet topology descriptor with discovered peer-performance ranks, generic-vs-native slot helpers, and a four-GPU generic reduction planner that adapts from peer-link quality while preserving the first slot as leader.
+- Updated forward-neighbor device resolution so `generic` stays ordinal/topology-agnostic by default while `native` and `native-extreme` use the `0,2,1,3` order only after discovery confirms the native 4x V100 topology.
+- Validated fresh `/tmp/cellerator-generic-build`, `/tmp/cellerator-native-build`, and `/tmp/cellerator-native-extreme-build` configure passes; built `computeAutogradRuntimeTest`, `forwardNeighborsCompileTest`, and `quantizedMatrixTest` successfully in all three trees; and ran those binaries successfully in all three trees.
+- A follow-up build request for `seriesWorkbenchRuntimeTest` failed in those fresh trees because the target does not currently exist there, which appears to be a target-availability issue rather than a regression from the CUDA mode rewrite.
 
 ## Next Actions
 - Once the active CellShard storage rewrite lands or stabilizes enough to compile `cellerator_compute_autograd` again, extend the distinct extreme path into sparse autograd and the model CUDA surfaces that depend on it.
@@ -89,9 +96,11 @@ Implement a repo-wide compile-time CUDA mode split with default portable Volta t
 - Check why the quantized benchmark binary stalled on the tiny post-split sample before using it as the next comparison point.
 - Keep future CUDA changes on the one-kernel-per-file structure now that the repo-wide inventory has been normalized.
 - Add the next benchmark-backed extreme specialization to forward-neighbor, autograd, or CellShard hot kernels instead of broad alias-only coverage.
+- Finish the autograd fleet topology descriptor and slot-selection helpers, then update forward-neighbor device resolution and focused tests/bench consumers to use the new mode semantics.
+- Decide whether to rename the remaining internal `portable_backend` / `extreme_backend` file vocabulary or keep it as implementation-only history, then continue the next benchmark-backed native-extreme specialization deeper into autograd or CellShard hot kernels.
 
 ## Done Criteria
-- `CELLERATOR_CUDA_MODE` exists, defaults to portable, and controls every CUDA target through one consistent compile-time path.
-- Extreme mode builds cleanly for the repo CUDA targets even where some subsystems still alias the portable backend.
-- The quantized backend has a distinct extreme implementation with focused tests or benchmarks proving the split is real.
+- `CELLERATOR_CUDA_MODE` exists, defaults to `generic`, and controls every CUDA target through one consistent compile-time path.
+- `native` and `native-extreme` build cleanly for the repo CUDA targets even where some subsystems still alias the generic backend.
+- The quantized backend has a distinct native-extreme implementation with focused tests or benchmarks proving the split is real.
 - Benchmark/test output clearly identifies the active CUDA mode so results are comparable across builds.

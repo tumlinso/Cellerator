@@ -50,12 +50,12 @@ _None recorded yet._
 - `src/workbench/dataset_workbench.cc` - Still contains standard-CSR size estimation code that should be re-evaluated once CSR is interop-only.
 
 ## Workstreams
-- `dual-cuda-optimization-modes` | status: in_progress | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | objective: add repo-wide portable and extreme V100 CUDA optimization modes with compile-time selection and first hotspot backends
+- `dual-cuda-optimization-modes` | status: in_progress | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | objective: add repo-wide generic, native, and native-extreme CUDA modes with explicit topology policy and first hotspot backends
 - `cellshard-first-stable-release` | status: in_progress | owner: codex | file: `todos/cellshard-first-stable-release.md` | objective: bring CellShard to a first stable release
 - `cellshard-blocked-ell-ingest-runtime` | status: in_progress | owner: codex | file: `todos/cellshard-blocked-ell-ingest-runtime.md` | objective: implement blocked-ell-first CellShard ingest, explicit machine-local cache warmup, and runtime alignment
 - `cellshard-file-surface-rename` | status: done | owner: codex | file: `todos/cellshard-file-surface-rename.md` | objective: align CellShard filenames with their actual container and packfile responsibilities
 - `cellshard-runtime-service-contract` | status: in_progress | owner: codex | file: `todos/cellshard-runtime-service-contract.md` | objective: reset CellShard around owner-hosted pack delivery, append-only canonical generations, and a Cellerator immutable-emission boundary
-- `cellshard-csr-file-codec-removal` | status: planned | owner: unassigned | file: `todos/cellshard-csr-file-codec-removal.md` | objective: remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed
+- `cellshard-csr-file-codec-removal` | status: in_progress | owner: codex | file: `todos/cellshard-csr-file-codec-removal.md` | objective: remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed
 
 ## Global Blockers
 _None recorded yet._
@@ -102,6 +102,15 @@ _None recorded yet._
 - Reworked the CellShard cache tree into `instances/<fingerprint>/metadata`, `packs/canonical`, and `packs/execution`, wrote the new layout into the cache manifest, and restored green `cellShardSeriesH5Test` coverage after fixing the canonical execution-pack column-map serialization path.
 - Tightened the first generated `.csh5` validation path: workbench summaries now expose `matrix_format`, `payload_layout`, execution `preferred_base_format`, and runtime-service metadata, and `seriesWorkbenchRuntimeTest` now reopens the converted file to assert the persisted optimized blocked-ell codec and non-identity shard-local column remap.
 - Added a dedicated workstream to decide whether CSR/compressed should disappear from `.csh5` entirely and survive only as an interop layer.
+- Started the approved rename from `portable` / `extreme` to `generic` / `native` / `native-extreme` in the root and nested CellShard CMake/config surfaces.
+- Current implementation focus is the topology contract rewrite: make generic multi-GPU behavior discover-and-adapt from peer connectivity instead of assuming the native `0<->2` and `1<->3` pairs in autograd and forward-neighbor code.
+- Completed the mode rename to `generic` / `native` / `native-extreme`, updated the generated mode header and nested CellShard compile definitions, and switched the quantized native-PTX selection checks to the new `native-extreme` flag.
+- Added an explicit autograd fleet topology descriptor with discovered peer-performance ranks, generic-vs-native slot helpers, and a four-GPU generic reduction planner that adapts from peer-link quality while preserving the first slot as leader.
+- Updated forward-neighbor device resolution so `generic` stays ordinal/topology-agnostic by default while `native` and `native-extreme` use the `0,2,1,3` order only after discovery confirms the native 4x V100 topology.
+- Validated fresh `/tmp/cellerator-generic-build`, `/tmp/cellerator-native-build`, and `/tmp/cellerator-native-extreme-build` configure passes; built `computeAutogradRuntimeTest`, `forwardNeighborsCompileTest`, and `quantizedMatrixTest` successfully in all three trees; and ran those binaries successfully in all three trees.
+- A follow-up build request for `seriesWorkbenchRuntimeTest` failed in those fresh trees because the target does not currently exist there, which appears to be a target-availability issue rather than a regression from the CUDA mode rewrite.
+- Started the first-file freeze implementation: public docs/header comments now describe CSR/compressed as a legacy compatibility or interop path, the workbench runtime test no longer creates new compressed .csh5 fixtures, and cellShardDatasetH5Test now uses a Blocked-ELL side-domain append path plus a separate explicit legacy compressed compatibility check.
+- Added a dedicated  target that writes a tiny optimized bucketed Blocked-ELL .csh5, warms cache and execution cache, summarizes the file, and reopens it to validate the frozen non-identity execution column remap.
 
 ## Next Actions
 - Create or resume a workstream ledger under `todos/` for the next substantial task.
@@ -128,6 +137,8 @@ _None recorded yet._
 - Implement the first concrete owner-node coordinator/runtime surface now that the operation model is documented explicitly.
 - Start by converting the remaining compressed `.csh5` tests and deciding whether legacy compressed-file read support survives as a temporary compatibility layer.
 - If compatibility is retained, make it explicitly read-only and time-bounded instead of preserving compressed write support.
+- Finish the autograd fleet topology descriptor and slot-selection helpers, then update forward-neighbor device resolution and focused tests/bench consumers to use the new mode semantics.
+- Decide whether to rename the remaining internal `portable_backend` / `extreme_backend` file vocabulary or keep it as implementation-only history, then continue the next benchmark-backed native-extreme specialization deeper into autograd or CellShard hot kernels.
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.
