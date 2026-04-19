@@ -45,7 +45,6 @@ The main source areas are:
 - `src/apps/`: adapter or executable entrypoints
 - `src/quantized/`: quantized sparse layouts, accessors, and kernels
 - `src/torch/`: explicit Torch interop boundary
-- `src/legacy/`: older monolithic or transitional code that is not the preferred surface for new work
 
 Public in-repo includes should use `#include <Cellerator/...>` rather than reaching into `src/` directly.
 

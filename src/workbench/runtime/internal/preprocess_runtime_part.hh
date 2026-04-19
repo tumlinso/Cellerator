@@ -270,7 +270,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
     cs::sharded<cs::sparse::sliced_ell> matrix;
     cs::shard_storage storage;
     cellshard::bucketed_sliced_ell_partition exec_part;
-    cs::dataset_sliced_execution_device_partition_view staged_part;
+    cs::dataset_sliced_bucketed_device_partition_view staged_part;
     csv::partition_record<cs::sparse::sliced_ell> device_part;
     cpre::device_workspace workspace;
     host_buffer<unsigned char> gene_flags;
@@ -356,12 +356,12 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
             goto done;
         }
         if (config.enable_sliced_device_cache) {
-            if (!cs::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged_part,
-                                                                              &matrix,
-                                                                              &storage,
-                                                                              part_id,
-                                                                              config.device,
-                                                                              config.sliced_device_cache_bytes)) {
+            if (!cs::acquire_dataset_sliced_ell_h5_bucketed_partition_device(&staged_part,
+                                                                             &matrix,
+                                                                             &storage,
+                                                                             part_id,
+                                                                             config.device,
+                                                                             config.sliced_device_cache_bytes)) {
                 push_issue(&analysis.issues, issue_severity::error, "preprocess", "failed to acquire cached sliced execution partition");
                 goto done;
             }
@@ -478,7 +478,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
         }
         ++analysis.partitions_processed;
         if (config.enable_sliced_device_cache) {
-            (void) cs::release_dataset_sliced_ell_h5_execution_partition_device(&staged_part);
+            (void) cs::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged_part);
         } else {
             cellshard::clear(&exec_part);
         }
@@ -508,7 +508,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
 
 done:
     if (device_part.view != nullptr) (void) csv::release(&device_part);
-    (void) cs::release_dataset_sliced_ell_h5_execution_partition_device(&staged_part);
+    (void) cs::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged_part);
     cellshard::clear(&exec_part);
     cpre::clear(&workspace);
     cs::clear(&storage);
@@ -580,7 +580,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess_multigpu(cons
     }
 
     {
-        const std::vector<unsigned int> slots = select_preprocess_slots(ctx, config);
+        const auto slots = select_preprocess_slots(ctx, config);
         if (slots.size() < 2u || matrix.num_partitions < 2ul) {
             csd::clear(&ctx);
             cs::clear(&storage);

@@ -94,6 +94,29 @@ static bool any_named_subdir_has_path(const std::string &root, const std::string
     return false;
 }
 
+template<typename Fn>
+static auto with_suppressed_stderr(Fn &&fn) -> decltype(fn()) {
+    const int saved_fd = ::dup(STDERR_FILENO);
+    std::FILE *devnull = std::fopen("/dev/null", "w");
+    if (saved_fd < 0 || devnull == nullptr) {
+        if (saved_fd >= 0) ::close(saved_fd);
+        if (devnull != nullptr) std::fclose(devnull);
+        return fn();
+    }
+    std::fflush(stderr);
+    if (::dup2(::fileno(devnull), STDERR_FILENO) < 0) {
+        ::close(saved_fd);
+        std::fclose(devnull);
+        return fn();
+    }
+    auto result = fn();
+    std::fflush(stderr);
+    (void) ::dup2(saved_fd, STDERR_FILENO);
+    ::close(saved_fd);
+    std::fclose(devnull);
+    return result;
+}
+
 static int overwrite_u32_attr(const std::string &filename,
                               const char *object_path,
                               const char *attr_name,
@@ -569,7 +592,9 @@ static int run_executor_role_execution_pack_guard_test() {
         std::fprintf(stderr, "executor role canonical pack fetch failed\n");
         goto done;
     }
-    if (cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u)) {
+    if (with_suppressed_stderr([&]() {
+            return cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u);
+        })) {
         std::fprintf(stderr, "executor role unexpectedly rebuilt execution partition without published pack\n");
         goto done;
     }
@@ -899,6 +924,8 @@ static int run_sliced_ell_roundtrip_test() {
     const std::string cache_root = "/tmp/cellshard_dataset_sliced_ell_cache";
     cellshard::sparse::sliced_ell part0;
     cellshard::sparse::sliced_ell part1;
+    cellshard::bucketed_sliced_ell_partition stored0;
+    cellshard::bucketed_sliced_ell_partition stored1;
     cellshard::sharded<cellshard::sparse::sliced_ell> loaded;
     cellshard::shard_storage storage;
     std::vector<std::uint64_t> partition_rows = { 2u, 2u };
@@ -918,6 +945,8 @@ static int run_sliced_ell_roundtrip_test() {
     std::remove(out_path.c_str());
     cellshard::sparse::init(&part0);
     cellshard::sparse::init(&part1);
+    cellshard::init(&stored0);
+    cellshard::init(&stored1);
     cellshard::init(&loaded);
     cellshard::init(&storage);
 
@@ -962,8 +991,12 @@ static int run_sliced_ell_roundtrip_test() {
     layout.num_codecs = 1u;
 
     if (!cellshard::create_dataset_sliced_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
-    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
-    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 1u, &part1)) goto done;
+    if (!cellshard::build_bucketed_sliced_ell_partition(&stored0, &part0, 2u, 0)
+        || !cellshard::build_bucketed_sliced_ell_partition(&stored1, &part1, 2u, 0)
+        || !cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 0u, &stored0)
+        || !cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 1u, &stored1)) {
+        goto done;
+    }
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) {
         std::fprintf(stderr, "failed to load sliced ell dataset header\n");
         goto done;
@@ -1006,6 +1039,8 @@ done:
     }
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
+    cellshard::clear(&stored0);
+    cellshard::clear(&stored1);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
     std::remove(out_path.c_str());
@@ -1020,10 +1055,9 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     cellshard::bucketed_sliced_ell_partition bucket0;
     cellshard::bucketed_sliced_ell_partition bucket1;
     cellshard::bucketed_sliced_ell_partition exec_part;
-    cellshard::dataset_sliced_execution_device_partition_view staged0;
-    cellshard::dataset_sliced_execution_device_partition_view staged1;
-    cellshard::dataset_sliced_execution_device_partition_view staged_after_generation;
-    cellshard::bucketed_sliced_ell_shard shard;
+    cellshard::dataset_sliced_bucketed_device_partition_view staged0;
+    cellshard::dataset_sliced_bucketed_device_partition_view staged1;
+    cellshard::dataset_sliced_bucketed_device_partition_view staged_after_generation;
     cellshard::sharded<cellshard::sparse::sliced_ell> loaded;
     cellshard::shard_storage storage;
     std::vector<std::uint64_t> partition_rows = { 2u, 2u };
@@ -1067,6 +1101,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     std::vector<std::uint32_t> shard_owner_rank_ids = { 0u };
     cellshard::dataset_execution_view execution{};
     cellshard::dataset_execution_view loaded_execution{};
+    cellshard::dataset_runtime_service_view runtime_service{};
     int rc = 1;
     int device_count = 0;
 
@@ -1079,7 +1114,6 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     cellshard::init(&staged0);
     cellshard::init(&staged1);
     cellshard::init(&staged_after_generation);
-    cellshard::init(&shard);
     cellshard::init(&loaded);
     cellshard::init(&storage);
 
@@ -1118,20 +1152,6 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     part_execution_bytes[0] = part_bucketed_sliced_bytes[0];
     part_execution_bytes[1] = part_bucketed_sliced_bytes[1];
 
-    shard.rows = 4u;
-    shard.cols = 4u;
-    shard.nnz = 10u;
-    shard.partition_count = 2u;
-    shard.partitions = (cellshard::bucketed_sliced_ell_partition *) std::calloc(2u, sizeof(cellshard::bucketed_sliced_ell_partition));
-    shard.partition_row_offsets = (std::uint32_t *) std::calloc(3u, sizeof(std::uint32_t));
-    if (shard.partitions == nullptr || shard.partition_row_offsets == nullptr) goto done;
-    shard.partition_row_offsets[0] = 0u;
-    shard.partition_row_offsets[1] = 2u;
-    shard.partition_row_offsets[2] = 4u;
-    shard.partitions[0] = bucket0;
-    shard.partitions[1] = bucket1;
-    bucket0 = {};
-    bucket1 = {};
     shard_bucketed_sliced_bytes[0] = part_bucketed_sliced_bytes[0] + part_bucketed_sliced_bytes[1];
     shard_execution_bytes[0] = shard_bucketed_sliced_bytes[0];
 
@@ -1185,12 +1205,22 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     execution.shard_owner_node_ids = shard_owner_node_ids.data();
     execution.shard_owner_rank_ids = shard_owner_rank_ids.data();
     execution.preferred_base_format = cellshard::dataset_execution_format_bucketed_sliced_ell;
+    cellshard::init(&runtime_service);
+    runtime_service.service_mode = cellshard::dataset_runtime_service_mode_owner_hosted;
+    runtime_service.live_write_mode = cellshard::dataset_live_write_mode_append_only;
+    runtime_service.prefer_pack_delivery = 1u;
+    runtime_service.single_reader_coordinator = 1u;
+    runtime_service.canonical_generation = 1u;
+    runtime_service.execution_plan_generation = 1u;
+    runtime_service.pack_generation = 1u;
+    runtime_service.service_epoch = 1u;
+    runtime_service.active_read_generation = 1u;
 
     if (!cellshard::create_dataset_sliced_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
-    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 0u, &part0)) goto done;
-    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 1u, &part1)) goto done;
+    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 0u, &bucket0)) goto done;
+    if (!cellshard::append_sliced_ell_partition_h5(out_path.c_str(), 1u, &bucket1)) goto done;
     if (!cellshard::append_dataset_execution_h5(out_path.c_str(), &execution)) goto done;
-    if (!cellshard::append_bucketed_sliced_ell_shard_h5(out_path.c_str(), 0u, &shard)) goto done;
+    if (!cellshard::append_dataset_runtime_service_h5(out_path.c_str(), &runtime_service)) goto done;
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) goto done;
     if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) goto done;
     if (!cellshard::get_dataset_h5_execution_metadata(&storage, &loaded_execution)) goto done;
@@ -1211,7 +1241,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
         std::fprintf(stderr, "optimized sliced ell canonical fetch mismatch\n");
         goto done;
     }
-    if (!cellshard::fetch_dataset_sliced_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u)) {
+    if (!cellshard::fetch_dataset_sliced_ell_h5_bucketed_partition(&exec_part, &loaded, &storage, 0u)) {
         std::fprintf(stderr, "optimized sliced ell execution fetch failed\n");
         goto done;
     }
@@ -1232,22 +1262,22 @@ static int run_optimized_sliced_ell_roundtrip_test() {
         goto done;
     }
     if (cudaGetDeviceCount(&device_count) == cudaSuccess && device_count > 0) {
-        if (!cellshard::clear_all_dataset_sliced_ell_h5_device_caches()) goto done;
-        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged0,
-                                                                                  &loaded,
-                                                                                  &storage,
-                                                                                  0u,
-                                                                                  0,
-                                                                                  0u)) {
+        if (!cellshard::clear_all_dataset_sliced_ell_h5_bucketed_device_caches()) goto done;
+        if (!cellshard::acquire_dataset_sliced_ell_h5_bucketed_partition_device(&staged0,
+                                                                                 &loaded,
+                                                                                 &storage,
+                                                                                 0u,
+                                                                                 0,
+                                                                                 0u)) {
             std::fprintf(stderr, "optimized sliced ell device cache acquire failed\n");
             goto done;
         }
-        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged1,
-                                                                                  &loaded,
-                                                                                  &storage,
-                                                                                  0u,
-                                                                                  0,
-                                                                                  0u)) {
+        if (!cellshard::acquire_dataset_sliced_ell_h5_bucketed_partition_device(&staged1,
+                                                                                 &loaded,
+                                                                                 &storage,
+                                                                                 0u,
+                                                                                 0,
+                                                                                 0u)) {
             std::fprintf(stderr, "optimized sliced ell device cache reacquire failed\n");
             goto done;
         }
@@ -1260,25 +1290,25 @@ static int run_optimized_sliced_ell_roundtrip_test() {
             std::fprintf(stderr, "optimized sliced ell device cache reuse mismatch\n");
             goto done;
         }
-        if (!overwrite_u64_attr(out_path, "/runtime_service", "pack_generation", 2u)) {
-            std::fprintf(stderr, "optimized sliced ell failed to update pack generation\n");
-            goto done;
-        }
         cellshard::clear(&storage);
         cellshard::clear(&loaded);
         cellshard::init(&loaded);
         cellshard::init(&storage);
+        if (!overwrite_u64_attr(out_path, "/runtime_service", "pack_generation", 2u)) {
+            std::fprintf(stderr, "optimized sliced ell failed to update pack generation\n");
+            goto done;
+        }
         if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)
             || !cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) {
             std::fprintf(stderr, "optimized sliced ell failed to reload after generation change\n");
             goto done;
         }
-        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged_after_generation,
-                                                                                  &loaded,
-                                                                                  &storage,
-                                                                                  0u,
-                                                                                  0,
-                                                                                  0u)
+        if (!cellshard::acquire_dataset_sliced_ell_h5_bucketed_partition_device(&staged_after_generation,
+                                                                                 &loaded,
+                                                                                 &storage,
+                                                                                 0u,
+                                                                                 0,
+                                                                                 0u)
             || staged_after_generation.pack_generation != 2u) {
             std::fprintf(stderr, "optimized sliced ell device cache generation invalidation failed\n");
             goto done;
@@ -1288,17 +1318,16 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     rc = 0;
 
 done:
-    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged_after_generation);
-    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged1);
-    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged0);
-    (void) cellshard::clear_all_dataset_sliced_ell_h5_device_caches();
+    (void) cellshard::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged_after_generation);
+    (void) cellshard::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged1);
+    (void) cellshard::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged0);
+    (void) cellshard::clear_all_dataset_sliced_ell_h5_bucketed_device_caches();
     if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
         cellshard::invalidate_dataset_h5_cache(&storage);
     }
     cellshard::clear(&exec_part);
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
-    cellshard::clear(&shard);
     cellshard::clear(&bucket0);
     cellshard::clear(&bucket1);
     cellshard::sparse::clear(&part0);
@@ -1531,7 +1560,9 @@ static int run_schema_version_rejection_test() {
     cellshard::init(&loaded);
     if (!create_small_blocked_ell_dataset(out_path)) goto done;
     if (!overwrite_u32_attr(out_path, "/", "schema_version", cellshard::dataset_h5_schema_version + 1u)) goto done;
-    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+    if (with_suppressed_stderr([&]() {
+            return cellshard::load_header(out_path.c_str(), &loaded, nullptr);
+        })) {
         std::fprintf(stderr, "schema-version rejection unexpectedly succeeded\n");
         goto done;
     }
@@ -1551,7 +1582,9 @@ static int run_header_consistency_rejection_test() {
     cellshard::init(&loaded);
     if (!create_small_blocked_ell_dataset(out_path)) goto done;
     if (!overwrite_u64_attr(out_path, "/", "rows", 3u)) goto done;
-    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+    if (with_suppressed_stderr([&]() {
+            return cellshard::load_header(out_path.c_str(), &loaded, nullptr);
+        })) {
         std::fprintf(stderr, "header consistency rejection unexpectedly succeeded\n");
         goto done;
     }
@@ -1571,7 +1604,9 @@ static int run_dataset_extent_rejection_test() {
     cellshard::init(&loaded);
     if (!create_small_blocked_ell_dataset(out_path)) goto done;
     if (!replace_u64_dataset(out_path, "/matrix/partition_row_offsets", {0u, 2u, 2u})) goto done;
-    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+    if (with_suppressed_stderr([&]() {
+            return cellshard::load_header(out_path.c_str(), &loaded, nullptr);
+        })) {
         std::fprintf(stderr, "dataset extent rejection unexpectedly succeeded\n");
         goto done;
     }

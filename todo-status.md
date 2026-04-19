@@ -26,7 +26,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `split-csh5-translation-units` | status: done | execution: closed | owner: codex | file: `todos/split-csh5-translation-units.md` | next: Optional follow-up only: if the private shared include becomes the next maintenance problem, split `csh5_internal.inc` further by domain without changing the public API.
 - `split-workbench-runtime-backend` | status: done | execution: closed | owner: codex | file: `todos/split-workbench-runtime-backend.md` | next: Runtime backend now lives under src/workbench/runtime/ with the public workbench API preserved; optional follow-up is a second-pass split of runtime/pipeline.cu by behavior.
 - `cellshard-hierarchy-reset` | status: in_progress | execution: claimed | owner: codex | file: `todos/cellshard-hierarchy-reset.md` | next: Start with the public include/install contract and the io/runtime/export/python hierarchy so downstream includes can be migrated cleanly.
-- `cellerator-hierarchy-reset` | status: in_progress | execution: claimed | owner: codex | file: `todos/cellerator-hierarchy-reset.md` | next: The major runtime and ingest monolith bodies now live in private parts and focused tests are green; remaining work is optional second-pass cleanup of the smaller helper bands still left inline.
+- `cellerator-hierarchy-reset` | status: done | execution: closed | owner: codex | file: `todos/cellerator-hierarchy-reset.md` | next: The remaining legacy tree and stale matrix-era targets were deleted; reopen only for optional second-pass helper cleanup or broader app-surface reorganization.
 
 ## Staleness Review
 - Fresh: 1

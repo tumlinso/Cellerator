@@ -663,7 +663,7 @@ int main() {
             || !cellshard::bind_dataset_h5_cache(&converted_storage, converted_cache_root.c_str())
             || !cellshard::get_dataset_h5_execution_metadata(&converted_storage, &converted_execution)
             || !cellshard::get_dataset_h5_runtime_service(&converted_storage, &converted_runtime_service)
-            || !cellshard::fetch_dataset_sliced_ell_h5_execution_partition(&converted_exec_part, &converted_matrix, &converted_storage, 0u)) {
+            || !cellshard::fetch_dataset_sliced_ell_h5_bucketed_partition(&converted_exec_part, &converted_matrix, &converted_storage, 0u)) {
             std::fprintf(stderr, "failed to inspect converted sliced-ell codec runtime\n");
             return 1;
         }

@@ -122,7 +122,7 @@ Use this file as the canonical index for substantial multi-step work.
 - `split-csh5-translation-units` | status: done | owner: codex | file: `todos/split-csh5-translation-units.md` | objective: Split extern/CellShard/src/disk/csh5.cc into coherent translation units without changing behavior
 - `split-workbench-runtime-backend` | status: done | owner: codex | file: `todos/split-workbench-runtime-backend.md` | objective: Split src/workbench into adapter-owned surfaces plus a shared workbench/runtime backend without changing the current public API
 - `cellshard-hierarchy-reset` | status: in_progress | owner: codex | file: `todos/cellshard-hierarchy-reset.md` | objective: Reorganize CellShard into a layered hierarchy with a curated public include tree, without splitting hot kernels
-- `cellerator-hierarchy-reset` | status: in_progress | owner: codex | file: `todos/cellerator-hierarchy-reset.md` | objective: Reorganize Cellerator around a curated include/Cellerator facade tree and clearer src ownership without hiding hot paths
+- `cellerator-hierarchy-reset` | status: done | owner: codex | file: `todos/cellerator-hierarchy-reset.md` | objective: Reorganize Cellerator around a curated include/Cellerator facade tree and clearer src ownership without hiding hot paths
 
 ## Global Blockers
 _None recorded yet._
@@ -229,6 +229,8 @@ _None recorded yet._
 - Created a dedicated workstream for the CellShard hierarchy reset so it does not blur with the earlier translation-unit split or the release stream.
 - Created a dedicated workstream for the Cellerator hierarchy reset so the repo-wide include-tree and src-ownership refactor does not blur with the active CellShard hierarchy work.
 - Landed the first Cellerator hierarchy-reset slice: `include/Cellerator/` is now the canonical in-repo facade tree, tests/benches/Python callers migrated off `../src/...`, root helper wrappers moved under `src/support/`, the ncurses entrypoint moved under `src/apps/workbench/`, and focused compile/runtime coverage passed on the real host.
+- Closed the Cellerator hierarchy-reset stream after deleting the retired quarantine tree, removing the orphaned embryo converter and matrix-era test/target surfaces, and revalidating the focused ingest/workbench runtime targets.
+- Finished the second-pass Cellerator cleanup by extracting the last runtime/ingest helper bands into private internal headers and replacing the main ingest planning/layout numeric tables with `owned_buffer` storage instead of `std::vector`.
 
 ## Next Actions
 - Create or resume a workstream ledger under `todos/` for the next substantial task.

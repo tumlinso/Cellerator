@@ -1,11 +1,11 @@
 ---
 slug: "cellerator-hierarchy-reset"
-status: "in_progress"
-execution: "claimed"
+status: "done"
+execution: "closed"
 owner: "codex"
 created_at: "2026-04-18T00:00:00Z"
-last_heartbeat_at: "2026-04-18T00:00:00Z"
-last_reviewed_at: "2026-04-18T00:00:00Z"
+last_heartbeat_at: "2026-04-19T00:00:00Z"
+last_reviewed_at: "2026-04-19T00:00:00Z"
 stale_after_days: 14
 objective: "Reorganize Cellerator around a curated include/Cellerator facade tree and clearer src ownership without hiding hot paths"
 ---
@@ -26,6 +26,7 @@ Reset Cellerator around a canonical `include/Cellerator/` facade tree, migrate i
 - The new `include/Cellerator/` tree is canonical immediately; tests and benches should stop including `../src/...`.
 - Preserve existing major facades such as workbench, model umbrellas, autograd, quantized, and forward-neighbor surfaces.
 - Split orchestration-heavy files by behavior or helper domain, but do not bury cost-model-relevant kernels.
+- The last surviving app under the retired quarantine tree should be removed entirely if it still depends on already-deleted subsystems rather than being relocated mechanically.
 
 ## Assumptions
 - The repo is not trying to ship a standalone installable Cellerator package yet; this stream only makes `include/Cellerator/` the canonical in-repo public surface.
@@ -45,12 +46,14 @@ Reset Cellerator around a canonical `include/Cellerator/` facade tree, migrate i
 - Add `include/Cellerator/` facades and migrate public callers to them.
 - Rehome flat root helper headers into `src/support/` and move app entrypoints under `src/apps/`.
 - Split the large ingest/runtime files behind thinner public entry headers.
+- Remove the last live quarantine-tree executable path, delete any orphaned targets from already-removed subsystems, and delete the directory.
 - Update docs and focused targets to reflect the new hierarchy.
 
 ## Tasks
 - [x] Add the canonical `include/Cellerator/` tree and migrate in-repo includes.
 - [x] Rehome root helper headers and app entrypoints.
-- [ ] Split the remaining `h5ad_reader.cuh`, `dataset_ingest.cuh`, and `pipeline.cu` helper bands into clearer internal substructures.
+- [x] Split the remaining `h5ad_reader.cuh`, `dataset_ingest.cuh`, and `pipeline.cu` helper bands into clearer internal substructures.
+- [x] Remove the last quarantine-tree app path and delete the directory.
 - [x] Re-run the focused runtime matrix after the current `datasetWorkbenchRuntimeTest` failure is understood.
 
 ## Blockers
@@ -76,13 +79,19 @@ _None recorded right now._
 - Split the remaining `convert_manifest_dataset_to_hdf5()` body out of `src/ingest/dataset/dataset_ingest.cuh` into `src/ingest/dataset/internal/dataset_convert_part.hh`, leaving the public ingest header to own the stable conversion surface while the long offline conversion workflow lives in a private part.
 - Rebuilt `datasetIngestCompileTest`, `cellerator_workbench`, and `datasetWorkbenchRuntimeTest` after the dataset-convert extraction, then reran `datasetWorkbenchRuntimeTest` and `cellShardFirstFileFixtureTest` successfully.
 - Recorded the landed hierarchy-reset scope in `todos/cellerator-hierarchy-reset-inventory.md` so the file-level change inventory is durable and separate from the resumable workstream notes.
+- Confirmed the final live quarantine-tree build path is the standalone embryo MTX converter and that the separate `load_embryo_series*` files are dead leftovers with no active references.
+- Confirmed the embryo converter and `matrixTest` target both depended on an already-removed matrix-era subsystem, so the right cleanup is deletion rather than relocation into `src/apps/`.
+- Removed the retired quarantine tree, deleted the orphaned embryo converter and matrix-test surfaces, removed the stale matrix-target CMake block, and revalidated `datasetIngestCompileTest`, `cellerator_workbench`, `datasetWorkbenchRuntimeTest`, and `cellShardFirstFileFixtureTest`.
+- Landed the final helper-band split by moving the remaining preprocess orchestration support out of `src/workbench/runtime/pipeline.cu` into `src/workbench/runtime/internal/orchestration_support_part.hh` and the blocked-ELL layout heuristics out of `src/ingest/dataset/dataset_ingest.cuh` into `src/ingest/dataset/internal/convert_layout_support_part.hh`.
+- Replaced the main ingest planning/layout numeric tables with `owned_buffer` storage in `src/ingest/dataset/dataset_ingest.cuh` and `src/ingest/dataset/internal/dataset_convert_part.hh`, so the control-plane writer no longer assembles its core row/part/layout tables through `std::vector`.
+- Adapted the sliced-part append path to the current CellShard API by materializing a bucketed sliced partition before `append_sliced_ell_partition_h5()`, which keeps the ingest writer aligned with the newer persisted execution payload contract.
 
 ## Next Actions
-- The largest hierarchy-reset objective is now mostly complete; remaining cleanup is optional second-pass shaping of the smaller helper bands still left inline in `src/workbench/runtime/pipeline.cu` and `src/ingest/dataset/dataset_ingest.cuh`.
-- Keep the refreshed `datasetWorkbenchRuntimeTest` assertions in sync while finishing the remaining runtime splits so future hierarchy-reset passes fail with concrete messages instead of silent exits.
+- No further action in this stream unless a user requests a second-pass cleanup of smaller helper bands or a broader app-surface reorganization.
 
 ## Done Criteria
 - Public callers use `#include <Cellerator/...>` instead of `../src/...`.
 - `src/` root no longer owns legacy helper wrappers or app entrypoints that belong under clearer subsystem paths.
+- The retired quarantine tree no longer exists; surviving executable entrypoints live under `src/apps/`.
 - The major mixed-responsibility ingest/runtime files are split into narrower internal units without changing hot-path behavior.
 - Focused compile/runtime validation remains green after the migration.

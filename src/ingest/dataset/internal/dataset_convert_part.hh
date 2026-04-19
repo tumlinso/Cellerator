@@ -14,27 +14,27 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
     common::text_column global_feature_ids;
     common::text_column global_feature_names;
     common::text_column global_feature_types;
-    std::vector<std::uint32_t> dataset_formats;
-    std::vector<std::uint64_t> dataset_row_begin;
-    std::vector<std::uint64_t> dataset_row_end;
-    std::vector<std::uint64_t> dataset_rows;
-    std::vector<std::uint64_t> dataset_cols;
-    std::vector<std::uint64_t> dataset_nnz;
-    std::vector<std::uint32_t> cell_dataset_ids;
-    std::vector<std::uint64_t> cell_local_indices;
-    std::vector<std::uint32_t> feature_dataset_ids;
-    std::vector<std::uint64_t> feature_local_indices;
-    std::vector<std::uint64_t> dataset_feature_offsets;
-    std::vector<std::uint32_t> dataset_feature_to_global;
-    std::vector<std::uint64_t> part_rows;
-    std::vector<std::uint64_t> part_nnz;
-    std::vector<std::uint32_t> part_axes;
-    std::vector<std::uint64_t> part_aux;
-    std::vector<std::uint64_t> part_row_offsets;
-    std::vector<std::uint32_t> part_dataset_ids;
-    std::vector<std::uint32_t> part_codec_ids;
-    std::vector<std::uint64_t> part_bytes;
-    std::vector<std::uint64_t> shard_offsets;
+    owned_buffer<std::uint32_t> dataset_formats;
+    owned_buffer<std::uint64_t> dataset_row_begin;
+    owned_buffer<std::uint64_t> dataset_row_end;
+    owned_buffer<std::uint64_t> dataset_rows;
+    owned_buffer<std::uint64_t> dataset_cols;
+    owned_buffer<std::uint64_t> dataset_nnz;
+    owned_buffer<std::uint32_t> cell_dataset_ids;
+    owned_buffer<std::uint64_t> cell_local_indices;
+    owned_buffer<std::uint32_t> feature_dataset_ids;
+    owned_buffer<std::uint64_t> feature_local_indices;
+    owned_buffer<std::uint64_t> dataset_feature_offsets;
+    owned_buffer<std::uint32_t> dataset_feature_to_global;
+    owned_buffer<std::uint64_t> part_rows;
+    owned_buffer<std::uint64_t> part_nnz;
+    owned_buffer<std::uint32_t> part_axes;
+    owned_buffer<std::uint64_t> part_aux;
+    owned_buffer<std::uint64_t> part_row_offsets;
+    owned_buffer<std::uint32_t> part_dataset_ids;
+    owned_buffer<std::uint32_t> part_codec_ids;
+    owned_buffer<std::uint64_t> part_bytes;
+    owned_buffer<std::uint64_t> shard_offsets;
     std::unordered_map<std::string, std::uint32_t> feature_map;
     cellshard::dataset_codec_descriptor codec;
     cellshard::dataset_layout_view layout;
@@ -61,6 +61,7 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
     common::init(&global_feature_names);
     common::init(&global_feature_types);
     init(&shard_plan);
+    plans.reserve(m->count);
     part_row_offsets.push_back(0ull);
     spool_root = build_ingest_spool_root(out_path, opts->working_root, opts->cache_root);
     if (!prepare_ingest_spool_root(spool_root)) goto done;
@@ -134,8 +135,8 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
         plan.header = header;
         plan.global_row_begin = global_rows;
         plan.global_part_begin = global_parts;
-        plan.row_offsets.assign(row_offsets, row_offsets + num_parts + 1ul);
-        plan.part_nnz.assign(part_nnz_raw, part_nnz_raw + num_parts);
+        plan.row_offsets.assign_copy(row_offsets, (std::size_t) num_parts + 1u);
+        plan.part_nnz.assign_copy(part_nnz_raw, (std::size_t) num_parts);
         plan.part_rows.resize((std::size_t) num_parts);
         plan.part_bytes.resize((std::size_t) num_parts);
         plan.part_aux.resize((std::size_t) num_parts);
@@ -393,11 +394,6 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
     for (unsigned long shard_id = 0; shard_id < shard_plan.count; ++shard_id) {
         const shard_range &range = shard_plan.ranges[shard_id];
         std::vector<sparse::sliced_ell> shard_parts;
-        std::vector<std::uint32_t> shard_bucket_counts;
-        std::vector<std::uint64_t> shard_bucketed_bytes;
-        cellshard::bucketed_sliced_ell_shard optimized_shard;
-
-        cellshard::init(&optimized_shard);
         shard_parts.resize((std::size_t) (range.part_end - range.part_begin));
         for (sparse::sliced_ell &part : shard_parts) sparse::init(&part);
         for (unsigned long global_part_id = range.part_begin; global_part_id < range.part_end; ++global_part_id) {
@@ -407,27 +403,27 @@ static inline int convert_manifest_dataset_to_hdf5(const manifest *m,
                 || spool_path->empty()
                 || !cellshard::load(spool_path->c_str(), &shard_parts[local_part])) {
                 for (sparse::sliced_ell &part : shard_parts) sparse::clear(&part);
-                cellshard::clear(&optimized_shard);
                 goto done;
             }
-            if (!cellshard::append_sliced_ell_partition_h5(out_path, global_part_id, &shard_parts[local_part])) {
-                for (sparse::sliced_ell &part : shard_parts) sparse::clear(&part);
-                cellshard::clear(&optimized_shard);
-                goto done;
+            {
+                std::uint32_t bucket_count = 1u;
+                std::uint64_t execution_bytes = 0u;
+                cellshard::bucketed_sliced_ell_partition persisted_part;
+                cellshard::init(&persisted_part);
+                if (!choose_bucket_count_for_sliced_part_exact(&shard_parts[local_part], &bucket_count, &execution_bytes)
+                    || !cellshard::build_bucketed_sliced_ell_partition(&persisted_part,
+                                                                       &shard_parts[local_part],
+                                                                       bucket_count,
+                                                                       &execution_bytes)
+                    || !cellshard::append_sliced_ell_partition_h5(out_path, global_part_id, &persisted_part)) {
+                    cellshard::clear(&persisted_part);
+                    for (sparse::sliced_ell &part : shard_parts) sparse::clear(&part);
+                    goto done;
+                }
+                cellshard::clear(&persisted_part);
             }
-        }
-        if (!build_bucketed_optimized_sliced_shard(shard_parts,
-                                                   (std::uint32_t) layout.cols,
-                                                   &optimized_shard,
-                                                   &shard_bucket_counts,
-                                                   &shard_bucketed_bytes)
-            || !cellshard::append_bucketed_sliced_ell_shard_h5(out_path, shard_id, &optimized_shard)) {
-            for (sparse::sliced_ell &part : shard_parts) sparse::clear(&part);
-            cellshard::clear(&optimized_shard);
-            goto done;
         }
         for (sparse::sliced_ell &part : shard_parts) sparse::clear(&part);
-        cellshard::clear(&optimized_shard);
     }
 
     if (!opts->cache_root.empty()

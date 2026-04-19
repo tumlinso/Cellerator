@@ -6,7 +6,9 @@
 #include <cstring>
 #include <filesystem>
 #include <limits>
+#include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -116,17 +118,151 @@ static inline void init(dataset_h5_convert_options *opts) {
     opts->stream = (cudaStream_t) 0;
 }
 
+template<typename T>
+class owned_buffer {
+public:
+    owned_buffer() = default;
+
+    explicit owned_buffer(std::size_t count) {
+        resize(count);
+    }
+
+    owned_buffer(const owned_buffer &other) {
+        assign_copy(other.data(), other.size());
+    }
+
+    owned_buffer(owned_buffer &&other) noexcept
+        : data_(std::move(other.data_)),
+          size_(other.size_),
+          capacity_(other.capacity_) {
+        other.size_ = 0u;
+        other.capacity_ = 0u;
+    }
+
+    owned_buffer &operator=(const owned_buffer &other) {
+        if (this != &other) assign_copy(other.data(), other.size());
+        return *this;
+    }
+
+    owned_buffer &operator=(owned_buffer &&other) noexcept {
+        if (this == &other) return *this;
+        data_ = std::move(other.data_);
+        size_ = other.size_;
+        capacity_ = other.capacity_;
+        other.size_ = 0u;
+        other.capacity_ = 0u;
+        return *this;
+    }
+
+    void clear() {
+        size_ = 0u;
+    }
+
+    void reserve(std::size_t capacity) {
+        if (capacity <= capacity_) return;
+        std::unique_ptr<T[]> next(new T[capacity]);
+        if constexpr (std::is_trivially_copyable_v<T>) {
+            if (size_ != 0u) std::memcpy(next.get(), data_.get(), size_ * sizeof(T));
+        } else {
+            for (std::size_t i = 0; i < size_; ++i) next[i] = std::move(data_[i]);
+        }
+        data_ = std::move(next);
+        capacity_ = capacity;
+    }
+
+    void resize(std::size_t count) {
+        if (count > capacity_) reserve(count);
+        size_ = count;
+    }
+
+    void resize(std::size_t count, const T &value) {
+        const std::size_t old_size = size_;
+        resize(count);
+        for (std::size_t i = old_size; i < count; ++i) data_[i] = value;
+    }
+
+    void assign_copy(const T *src, std::size_t count) {
+        resize(count);
+        if (count == 0u || src == nullptr) return;
+        if constexpr (std::is_trivially_copyable_v<T>) {
+            std::memcpy(data_.get(), src, count * sizeof(T));
+        } else {
+            for (std::size_t i = 0; i < count; ++i) data_[i] = src[i];
+        }
+    }
+
+    void assign_fill(std::size_t count, const T &value) {
+        resize(count);
+        for (std::size_t i = 0; i < count; ++i) data_[i] = value;
+    }
+
+    void push_back(const T &value) {
+        if (size_ == capacity_) reserve(capacity_ != 0u ? capacity_ * 2u : 1u);
+        data_[size_++] = value;
+    }
+
+    void push_back(T &&value) {
+        if (size_ == capacity_) reserve(capacity_ != 0u ? capacity_ * 2u : 1u);
+        data_[size_++] = std::move(value);
+    }
+
+    T *data() {
+        return data_.get();
+    }
+
+    const T *data() const {
+        return data_.get();
+    }
+
+    std::size_t size() const {
+        return size_;
+    }
+
+    bool empty() const {
+        return size_ == 0u;
+    }
+
+    T &operator[](std::size_t idx) {
+        return data_[idx];
+    }
+
+    const T &operator[](std::size_t idx) const {
+        return data_[idx];
+    }
+
+    T *begin() {
+        return data_.get();
+    }
+
+    const T *begin() const {
+        return data_.get();
+    }
+
+    T *end() {
+        return data_.get() + size_;
+    }
+
+    const T *end() const {
+        return data_.get() + size_;
+    }
+
+private:
+    std::unique_ptr<T[]> data_;
+    std::size_t size_ = 0u;
+    std::size_t capacity_ = 0u;
+};
+
 struct dataset_dataset_plan {
     unsigned int manifest_idx;
     unsigned int dataset_idx;
     mtx::header header;
-    std::vector<unsigned long> row_offsets;
-    std::vector<unsigned long> part_rows;
-    std::vector<unsigned long> part_nnz;
-    std::vector<unsigned long> part_bytes;
-    std::vector<unsigned long> part_aux;
+    owned_buffer<unsigned long> row_offsets;
+    owned_buffer<unsigned long> part_rows;
+    owned_buffer<unsigned long> part_nnz;
+    owned_buffer<unsigned long> part_bytes;
+    owned_buffer<unsigned long> part_aux;
     std::vector<std::string> spool_paths;
-    std::vector<std::uint32_t> feature_to_global;
+    owned_buffer<std::uint32_t> feature_to_global;
     unsigned long global_row_begin;
     unsigned long global_part_begin;
 };
@@ -318,187 +454,7 @@ static inline int blocked_ell_to_canonical_coo(const sparse::blocked_ell *part,
     return 1;
 }
 
-struct shard_column_signature {
-    std::uint32_t canonical_col;
-    std::uint32_t support;
-    std::uint64_t hash_a;
-    std::uint64_t hash_b;
-    std::uint32_t min_row_block;
-};
-
-static inline std::uint64_t mix_signature(std::uint64_t seed, std::uint64_t value) {
-    const unsigned char *ptr = reinterpret_cast<const unsigned char *>(&value);
-    for (std::size_t i = 0; i < sizeof(value); ++i) {
-        seed ^= (std::uint64_t) ptr[i];
-        seed *= 1099511628211ull;
-    }
-    return seed;
-}
-
-static inline int build_shard_column_maps(const std::vector<sparse::blocked_ell> &parts,
-                                          std::uint32_t cols,
-                                          std::vector<std::uint32_t> *exec_to_canonical,
-                                          std::vector<std::uint32_t> *canonical_to_exec) {
-    std::vector<shard_column_signature> signatures;
-    std::uint32_t global_row_block = 0u;
-    if (exec_to_canonical == nullptr || canonical_to_exec == nullptr) return 0;
-    exec_to_canonical->clear();
-    canonical_to_exec->clear();
-    exec_to_canonical->resize(cols, 0u);
-    canonical_to_exec->resize(cols, 0u);
-    signatures.resize((std::size_t) cols);
-    for (std::uint32_t col = 0u; col < cols; ++col) {
-        signatures[(std::size_t) col].canonical_col = col;
-        signatures[(std::size_t) col].support = 0u;
-        signatures[(std::size_t) col].hash_a = 1469598103934665603ull;
-        signatures[(std::size_t) col].hash_b = 1099511628211ull;
-        signatures[(std::size_t) col].min_row_block = std::numeric_limits<std::uint32_t>::max();
-    }
-    for (const sparse::blocked_ell &part : parts) {
-        const std::uint32_t row_block_count = cellshard::sparse::row_block_count(&part);
-        const std::uint32_t width_blocks = cellshard::sparse::ell_width_blocks(&part);
-        for (std::uint32_t row_block = 0u; row_block < row_block_count; ++row_block, ++global_row_block) {
-            const std::uint32_t rows_in_block = std::min<std::uint32_t>(part.block_size, part.rows - row_block * part.block_size);
-            for (std::uint32_t slot = 0u; slot < width_blocks; ++slot) {
-                const cellshard::types::idx_t block_col = part.blockColIdx[(std::size_t) row_block * width_blocks + slot];
-                if (block_col == cellshard::sparse::blocked_ell_invalid_col) continue;
-                for (std::uint32_t col_in_block = 0u; col_in_block < part.block_size; ++col_in_block) {
-                    const std::uint32_t col = (std::uint32_t) block_col * part.block_size + col_in_block;
-                    bool seen = false;
-                    if (col >= cols) continue;
-                    for (std::uint32_t row_in_block = 0u; row_in_block < rows_in_block; ++row_in_block) {
-                        const std::size_t offset =
-                            (std::size_t) (row_block * part.block_size + row_in_block) * part.ell_cols
-                            + (std::size_t) slot * part.block_size + col_in_block;
-                        if (__half2float(part.val[offset]) != 0.0f) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (!seen) continue;
-                    signatures[(std::size_t) col].support += 1u;
-                    signatures[(std::size_t) col].hash_a =
-                        mix_signature(signatures[(std::size_t) col].hash_a, (std::uint64_t) global_row_block + 1u);
-                    signatures[(std::size_t) col].hash_b =
-                        mix_signature(signatures[(std::size_t) col].hash_b, ((std::uint64_t) global_row_block + 1u) * 1315423911ull);
-                    signatures[(std::size_t) col].min_row_block =
-                        std::min(signatures[(std::size_t) col].min_row_block, global_row_block);
-                }
-            }
-        }
-    }
-    std::stable_sort(signatures.begin(),
-                     signatures.end(),
-                     [](const shard_column_signature &lhs, const shard_column_signature &rhs) {
-                         if (lhs.support == 0u || rhs.support == 0u) {
-                             if (lhs.support != rhs.support) return lhs.support > rhs.support;
-                         }
-                         if (lhs.min_row_block != rhs.min_row_block) return lhs.min_row_block < rhs.min_row_block;
-                         if (lhs.hash_a != rhs.hash_a) return lhs.hash_a < rhs.hash_a;
-                         if (lhs.hash_b != rhs.hash_b) return lhs.hash_b < rhs.hash_b;
-                         if (lhs.support != rhs.support) return lhs.support > rhs.support;
-                         return lhs.canonical_col < rhs.canonical_col;
-                     });
-    for (std::uint32_t exec_col = 0u; exec_col < cols; ++exec_col) {
-        const std::uint32_t canonical_col = signatures[(std::size_t) exec_col].canonical_col;
-        (*exec_to_canonical)[exec_col] = canonical_col;
-        (*canonical_to_exec)[canonical_col] = exec_col;
-    }
-    return 1;
-}
-
-static inline int choose_bucket_count_for_part_host_exact(const sparse::blocked_ell *part,
-                                                          std::uint32_t *bucket_count_out) {
-    const std::uint32_t row_blocks = part != nullptr ? cellshard::sparse::row_block_count(part) : 0u;
-    const std::uint32_t max_buckets = std::min<std::uint32_t>(8u, row_blocks);
-    cellshard::bucketed_blocked_ell_partition trial;
-    std::uint32_t best_buckets = 1u;
-    std::uint64_t best_bytes = std::numeric_limits<std::uint64_t>::max();
-    if (part == nullptr || bucket_count_out == nullptr) return 0;
-    cellshard::init(&trial);
-    for (std::uint32_t buckets = 1u; buckets <= std::max<std::uint32_t>(1u, max_buckets); ++buckets) {
-        std::uint64_t bytes = 0u;
-        cellshard::clear(&trial);
-        cellshard::init(&trial);
-        if (!cellshard::build_bucketed_blocked_ell_partition(&trial, part, buckets, &bytes)) {
-            cellshard::clear(&trial);
-            return 0;
-        }
-        if (bytes < best_bytes || (bytes == best_bytes && buckets < best_buckets)) {
-            best_bytes = bytes;
-            best_buckets = buckets;
-        }
-    }
-    cellshard::clear(&trial);
-    *bucket_count_out = best_buckets;
-    return 1;
-}
-
-static inline std::uint64_t estimate_bucketed_bytes_from_gpu_plan(const sparse::blocked_ell *part,
-                                                                  const cellshard::bucket::blocked_ell_bucket_plan &plan,
-                                                                  std::uint32_t bucket_count) {
-    const std::uint32_t row_block_count = (std::uint32_t) plan.row_block_order.size();
-    std::uint64_t bytes = 0u;
-    if (part == nullptr || row_block_count == 0u || bucket_count == 0u) return 0u;
-    for (std::uint32_t bucket = 0u; bucket < bucket_count; ++bucket) {
-        const std::uint32_t rb_begin = (bucket * row_block_count) / bucket_count;
-        const std::uint32_t rb_end = ((bucket + 1u) * row_block_count) / bucket_count;
-        std::uint32_t seg_rows = 0u;
-        std::uint32_t seg_width = 0u;
-        if (rb_end <= rb_begin) continue;
-        seg_width = plan.row_block_width_sorted[(std::size_t) rb_end - 1u];
-        for (std::uint32_t pos = rb_begin; pos < rb_end; ++pos) {
-            const std::uint32_t rb = plan.row_block_order[pos];
-            const std::uint32_t row_begin = rb * part->block_size;
-            seg_rows += row_begin < part->rows ? std::min<std::uint32_t>(part->block_size, part->rows - row_begin) : 0u;
-        }
-        bytes += (std::uint64_t) (rb_end - rb_begin) * seg_width * sizeof(cellshard::types::idx_t);
-        bytes += (std::uint64_t) seg_rows * seg_width * part->block_size * sizeof(::real::storage_t);
-    }
-    bytes += (std::uint64_t) part->rows * sizeof(std::uint32_t) * 2u;
-    bytes += (std::uint64_t) (bucket_count + 1u) * sizeof(std::uint32_t);
-    return bytes;
-}
-
-static inline int choose_bucket_count_for_part(const sparse::blocked_ell *part,
-                                               int device,
-                                               std::uint32_t *bucket_count_out) {
-    static thread_local cellshard::bucket::blocked_ell_bucket_workspace ws;
-    static thread_local int ws_ready = 0;
-    cellshard::bucket::blocked_ell_bucket_plan plan;
-    const std::uint32_t row_blocks = part != nullptr ? cellshard::sparse::row_block_count(part) : 0u;
-    const std::uint32_t max_buckets = std::min<std::uint32_t>(8u, row_blocks);
-    const std::uint64_t original_bytes =
-        (std::uint64_t) cellshard::packed_bytes((const sparse::blocked_ell *) nullptr,
-                                                part != nullptr ? part->rows : 0u,
-                                                part != nullptr ? part->cols : 0u,
-                                                part != nullptr ? part->nnz : 0u,
-                                                part != nullptr ? (unsigned long) cellshard::partition_aux(part) : 0ul,
-                                                sizeof(::real::storage_t));
-    std::uint32_t best_buckets = 1u;
-    std::uint64_t best_bytes = original_bytes;
-
-    if (part == nullptr || bucket_count_out == nullptr) return 0;
-    if (row_blocks <= 1u) {
-        *bucket_count_out = 1u;
-        return 1;
-    }
-    if (!ws_ready) {
-        ws_ready = cellshard::bucket::setup(&ws, device) ? 1 : 0;
-    }
-    if (ws_ready && cellshard::bucket::build_plan(part, &ws, &plan)) {
-        for (std::uint32_t buckets = 1u; buckets <= std::max<std::uint32_t>(1u, max_buckets); ++buckets) {
-            const std::uint64_t candidate = estimate_bucketed_bytes_from_gpu_plan(part, plan, buckets);
-            if (candidate < best_bytes || (candidate == best_bytes && buckets < best_buckets)) {
-                best_bytes = candidate;
-                best_buckets = buckets;
-            }
-        }
-        *bucket_count_out = best_buckets;
-        return 1;
-    }
-    return choose_bucket_count_for_part_host_exact(part, bucket_count_out);
-}
+#include "internal/convert_layout_support_part.hh"
 
 #include "internal/layout_build_part.hh"
 

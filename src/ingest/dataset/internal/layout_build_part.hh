@@ -4,8 +4,8 @@ static inline int build_bucketed_optimized_shard(const std::vector<sparse::block
                                                  std::uint32_t cols,
                                                  int device,
                                                  cellshard::bucketed_blocked_ell_shard *out) {
-    std::vector<std::uint32_t> exec_to_canonical_cols;
-    std::vector<std::uint32_t> canonical_to_exec_cols;
+    owned_buffer<std::uint32_t> exec_to_canonical_cols;
+    owned_buffer<std::uint32_t> canonical_to_exec_cols;
     std::uint32_t local_rows = 0u;
     std::uint32_t local_nnz = 0u;
     sparse::coo canonical_coo;
@@ -93,13 +93,21 @@ static inline int clone_bucketed_sliced_partition(cellshard::bucketed_sliced_ell
     dst->cols = src->cols;
     dst->nnz = src->nnz;
     dst->segment_count = src->segment_count;
+    dst->canonical_slice_count = src->canonical_slice_count;
     dst->segments = dst->segment_count != 0u
         ? (sparse::sliced_ell *) std::calloc((std::size_t) dst->segment_count, sizeof(sparse::sliced_ell))
         : nullptr;
     dst->segment_row_offsets = (std::uint32_t *) std::calloc((std::size_t) dst->segment_count + 1u, sizeof(std::uint32_t));
+    dst->canonical_slice_row_offsets =
+        (std::uint32_t *) std::calloc((std::size_t) dst->canonical_slice_count + 1u, sizeof(std::uint32_t));
+    dst->canonical_slice_widths = dst->canonical_slice_count != 0u
+        ? (std::uint32_t *) std::calloc((std::size_t) dst->canonical_slice_count, sizeof(std::uint32_t))
+        : nullptr;
     dst->exec_to_canonical_rows = dst->rows != 0u ? (std::uint32_t *) std::malloc((std::size_t) dst->rows * sizeof(std::uint32_t)) : nullptr;
     dst->canonical_to_exec_rows = dst->rows != 0u ? (std::uint32_t *) std::malloc((std::size_t) dst->rows * sizeof(std::uint32_t)) : nullptr;
     if ((dst->segment_count != 0u && (dst->segments == nullptr || dst->segment_row_offsets == nullptr))
+        || (dst->canonical_slice_row_offsets == nullptr)
+        || (dst->canonical_slice_count != 0u && dst->canonical_slice_widths == nullptr)
         || (dst->rows != 0u && (dst->exec_to_canonical_rows == nullptr || dst->canonical_to_exec_rows == nullptr))) {
         cellshard::clear(dst);
         return 0;
@@ -112,6 +120,14 @@ static inline int clone_bucketed_sliced_partition(cellshard::bucketed_sliced_ell
     if (dst->rows != 0u) {
         std::memcpy(dst->exec_to_canonical_rows, src->exec_to_canonical_rows, (std::size_t) dst->rows * sizeof(std::uint32_t));
         std::memcpy(dst->canonical_to_exec_rows, src->canonical_to_exec_rows, (std::size_t) dst->rows * sizeof(std::uint32_t));
+    }
+    std::memcpy(dst->canonical_slice_row_offsets,
+                src->canonical_slice_row_offsets,
+                ((std::size_t) dst->canonical_slice_count + 1u) * sizeof(std::uint32_t));
+    if (dst->canonical_slice_widths != nullptr) {
+        std::memcpy(dst->canonical_slice_widths,
+                    src->canonical_slice_widths,
+                    (std::size_t) dst->canonical_slice_count * sizeof(std::uint32_t));
     }
     for (std::uint32_t segment = 0u; segment < dst->segment_count; ++segment) {
         const sparse::sliced_ell *src_segment = src->segments + segment;
