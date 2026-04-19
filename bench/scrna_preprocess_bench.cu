@@ -13,8 +13,8 @@
 #include <nvtx3/nvToolsExt.h>
 
 #include "benchmark_mutex.hh"
-#include "../extern/CellShard/src/CellShard.hh"
-#include "../src/compute/preprocess/preprocess.cuh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include <Cellerator/compute/preprocess.cuh>
 
 namespace {
 
@@ -259,7 +259,7 @@ static int setup_multi_gpu_runtime(csd::local_context *ctx,
     if (ctx->device_count == 0) return 0;
     if (!check_cuda(csd::enable_peer_access(ctx), "enable_peer_access")) return 0;
 #if CELLSHARD_HAS_NCCL
-    if (ctx->comms != 0) {
+    if (ctx->device_count != 0) {
         if (csd::init_local_nccl(ctx) != ncclSuccess) {
             std::fprintf(stderr, "Warning: NCCL init failed, host reduction fallback will be used.\n");
         }

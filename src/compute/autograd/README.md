@@ -38,7 +38,7 @@ How to use it:
 - `base::` functions are single-GPU reference copies
 - `base::blocked_ell_spmm_fwd_f16_f32_lib()` is the library-backed Volta sparse Tensor Core path
 - `dist::launch_*` functions launch one base copy per selected device slot
-- `dist::reduce_sum_to_leader_f32()` performs the explicit leader merge step for feature-sharded forwards or row-sharded dense-gradient reductions
+- `dist::reduce_sum_to_leader_f32()` now prefers NCCL collectives for the selected slot set and falls back to the explicit leader merge path when no communicator is available
 - `default_mode_pair_slots()` and `default_mode_fleet_slots()` expose the mode-aware slot order explicitly instead of hiding native topology assumptions in the default path
 
 The intent is that later model-specific kernels copy or inline these patterns rather than call them blindly from a hot training loop.

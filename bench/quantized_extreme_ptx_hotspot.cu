@@ -1,4 +1,4 @@
-#include "../src/quantized/extreme_backend.cuh"
+#include <Cellerator/quantized/extreme_backend.cuh>
 
 #include <cstdint>
 #include <cuda_runtime.h>

@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../extern/CellShard/src/types.cuh"
+#include "../../extern/CellShard/include/CellShard/core/types.cuh"

@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 
 #include <cuda_runtime.h>
 #include <cusparse.h>
@@ -461,51 +462,102 @@ static inline int allreduce_gene_metrics(distributed_workspace *ws, csd::local_c
     if (ws == 0 || ctx == 0 || cols == 0) return 0;
 
 #if CELLSHARD_HAS_NCCL
-    if (ctx->comms != 0 && ctx->nccl_ready != 0u) {
-        ncclGroupStart();
+    if (csd::local_nccl_ready(ctx)) {
+        const std::size_t packed_count = (std::size_t) cols * 3u + 1u;
+        const std::size_t packed_bytes = packed_count * sizeof(float);
+        std::unique_ptr<unsigned int[]> slots;
+        std::unique_ptr<const float *[]> sendbufs;
+        std::unique_ptr<float *[]> recvbufs;
+
+        slots.reset(new unsigned int[ws->device_count]);
+        sendbufs.reset(new const float *[ws->device_count]);
+        recvbufs.reset(new float *[ws->device_count]);
         for (unsigned int i = 0; i < ws->device_count; ++i) {
-            if (ncclAllReduce((const void *) ws->devices[i].d_gene_sum,
-                              (void *) ws->devices[i].d_gene_sum,
-                              (size_t) cols,
-                              ncclFloat32,
-                              ncclSum,
-                              ctx->comms[i],
-                              ws->devices[i].stream) != ncclSuccess) {
-                ncclGroupEnd();
-                return 0;
+            char *packed = 0;
+            slots[i] = i;
+            if (!cscu::cuda_check(cudaSetDevice(ws->devices[i].device), "cudaSetDevice preprocess nccl pack")) return 0;
+            if (packed_bytes > ws->devices[i].d_reduce_tmp_bytes) {
+                if (ws->devices[i].d_reduce_tmp != 0) cudaFree(ws->devices[i].d_reduce_tmp);
+                ws->devices[i].d_reduce_tmp = 0;
+                ws->devices[i].d_reduce_tmp_bytes = 0u;
+                if (!cscu::cuda_check(cudaMalloc(&ws->devices[i].d_reduce_tmp, packed_bytes), "cudaMalloc preprocess nccl pack")) return 0;
+                ws->devices[i].d_reduce_tmp_bytes = packed_bytes;
             }
-            if (ncclAllReduce((const void *) ws->devices[i].d_gene_sq_sum,
-                              (void *) ws->devices[i].d_gene_sq_sum,
-                              (size_t) cols,
-                              ncclFloat32,
-                              ncclSum,
-                              ctx->comms[i],
-                              ws->devices[i].stream) != ncclSuccess) {
-                ncclGroupEnd();
-                return 0;
-            }
-            if (ncclAllReduce((const void *) ws->devices[i].d_gene_detected,
-                              (void *) ws->devices[i].d_gene_detected,
-                              (size_t) cols,
-                              ncclFloat32,
-                              ncclSum,
-                              ctx->comms[i],
-                              ws->devices[i].stream) != ncclSuccess) {
-                ncclGroupEnd();
-                return 0;
-            }
-            if (ncclAllReduce((const void *) ws->devices[i].d_active_rows,
-                              (void *) ws->devices[i].d_active_rows,
-                              1,
-                              ncclFloat32,
-                              ncclSum,
-                              ctx->comms[i],
-                              ws->devices[i].stream) != ncclSuccess) {
-                ncclGroupEnd();
-                return 0;
-            }
+            packed = (char *) ws->devices[i].d_reduce_tmp;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      packed,
+                                      ws->devices[i].d_gene_sum,
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess gene sum -> nccl pack")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      packed + (std::size_t) cols * sizeof(float),
+                                      ws->devices[i].d_gene_sq_sum,
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess gene sq sum -> nccl pack")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      packed + (std::size_t) cols * 2u * sizeof(float),
+                                      ws->devices[i].d_gene_detected,
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess gene detected -> nccl pack")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      packed + (std::size_t) cols * 3u * sizeof(float),
+                                      ws->devices[i].d_active_rows,
+                                      sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess active rows -> nccl pack")) return 0;
+            sendbufs[i] = (const float *) ws->devices[i].d_reduce_tmp;
+            recvbufs[i] = (float *) ws->devices[i].d_reduce_tmp;
         }
-        if (ncclGroupEnd() != ncclSuccess) return 0;
+        if (csd::local_allreduce(
+                ctx,
+                slots.get(),
+                ws->device_count,
+                (const void *const *) sendbufs.get(),
+                (void *const *) recvbufs.get(),
+                packed_count,
+                ncclFloat32,
+                ncclSum) != ncclSuccess) {
+            return 0;
+        }
+        for (unsigned int i = 0; i < ws->device_count; ++i) {
+            char *packed = (char *) ws->devices[i].d_reduce_tmp;
+            if (!cscu::cuda_check(cudaSetDevice(ws->devices[i].device), "cudaSetDevice preprocess nccl unpack")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      ws->devices[i].d_gene_sum,
+                                      packed,
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess nccl pack -> gene sum")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      ws->devices[i].d_gene_sq_sum,
+                                      packed + (std::size_t) cols * sizeof(float),
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess nccl pack -> gene sq sum")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      ws->devices[i].d_gene_detected,
+                                      packed + (std::size_t) cols * 2u * sizeof(float),
+                                      (std::size_t) cols * sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess nccl pack -> gene detected")) return 0;
+            if (!cscu::cuda_check(cudaMemcpyAsync(
+                                      ws->devices[i].d_active_rows,
+                                      packed + (std::size_t) cols * 3u * sizeof(float),
+                                      sizeof(float),
+                                      cudaMemcpyDeviceToDevice,
+                                      ws->devices[i].stream),
+                                  "cudaMemcpyAsync preprocess nccl pack -> active rows")) return 0;
+        }
         return synchronize(ws);
     }
 #endif

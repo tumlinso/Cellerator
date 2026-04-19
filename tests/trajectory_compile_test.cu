@@ -1,4 +1,4 @@
-#include "../src/trajectory/trajectory_tree.cuh"
+#include <Cellerator/trajectory/trajectory_tree.cuh>
 
 int main() {
     using namespace cellerator::compute::graph;

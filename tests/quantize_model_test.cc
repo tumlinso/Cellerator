@@ -1,4 +1,4 @@
-#include "../src/models/quantize/quantize.hh"
+#include <Cellerator/models/quantize.hh>
 
 #include <torch/torch.h>
 
@@ -11,7 +11,7 @@ namespace fn = ::cellerator::compute::neighbors::forward_neighbors;
 
 namespace {
 
-fn::ForwardNeighborRecordBatch make_record_batch(
+fn::ForwardNeighborOwnedRecordBatch make_record_batch(
     const torch::Tensor &cell_indices,
     const torch::Tensor &developmental_time,
     const torch::Tensor &latent_unit,
@@ -21,17 +21,17 @@ fn::ForwardNeighborRecordBatch make_record_batch(
     const torch::Tensor latent_cpu = latent_unit.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
     const torch::Tensor embryo_cpu = embryo_ids.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
 
-    fn::ForwardNeighborRecordBatch batch;
-    batch.latent_dim = latent_cpu.dim() == 2 ? latent_cpu.size(1) : 0;
+    fn::ForwardNeighborOwnedRecordBatch batch;
+    batch.dense_cols = latent_cpu.dim() == 2 ? latent_cpu.size(1) : 0;
     batch.cell_indices.resize(static_cast<std::size_t>(ids_cpu.size(0)));
     batch.developmental_time.resize(static_cast<std::size_t>(time_cpu.size(0)));
-    batch.latent_unit.resize(static_cast<std::size_t>(latent_cpu.numel()));
+    batch.dense_values.resize(static_cast<std::size_t>(latent_cpu.numel()));
     batch.embryo_ids.resize(static_cast<std::size_t>(embryo_cpu.size(0)));
 
     if (!batch.cell_indices.empty()) {
         std::memcpy(batch.cell_indices.data(), ids_cpu.data_ptr<std::int64_t>(), batch.cell_indices.size() * sizeof(std::int64_t));
         std::memcpy(batch.developmental_time.data(), time_cpu.data_ptr<float>(), batch.developmental_time.size() * sizeof(float));
-        std::memcpy(batch.latent_unit.data(), latent_cpu.data_ptr<float>(), batch.latent_unit.size() * sizeof(float));
+        std::memcpy(batch.dense_values.data(), latent_cpu.data_ptr<float>(), batch.dense_values.size() * sizeof(float));
         std::memcpy(batch.embryo_ids.data(), embryo_cpu.data_ptr<std::int64_t>(), batch.embryo_ids.size() * sizeof(std::int64_t));
     }
     return batch;
@@ -50,7 +50,7 @@ float rowwise_masked_mse(
 }
 
 fn::ForwardNeighborIndex build_test_index(const torch::Tensor &cell_indices) {
-    return fn::build_forward_neighbor_index(make_record_batch(
+    const fn::ForwardNeighborOwnedRecordBatch batch = make_record_batch(
         cell_indices,
         torch::tensor({0.10f, 0.20f, 0.30f, 0.40f}, torch::TensorOptions().dtype(torch::kFloat32)),
         torch::tensor(
@@ -61,7 +61,8 @@ fn::ForwardNeighborIndex build_test_index(const torch::Tensor &cell_indices) {
                 {0.97f, 0.03f},
             },
             torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({0, 0, 0, 0}, torch::TensorOptions().dtype(torch::kInt64))));
+        torch::tensor({0, 0, 0, 0}, torch::TensorOptions().dtype(torch::kInt64)));
+    return fn::build_forward_neighbor_index(batch.view());
 }
 
 quant::QuantizerForwardSupervision build_supervision(

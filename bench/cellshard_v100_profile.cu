@@ -12,8 +12,9 @@
 #include <nvtx3/nvToolsExt.h>
 
 #include "benchmark_mutex.hh"
-#include "../extern/CellShard/src/CellShard.hh"
-#include "../src/ingest/mtx/compressed_parts.cuh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include "../extern/CellShard/src/convert/compressed_from_coo_raw.cuh"
+#include <Cellerator/ingest/compressed_parts.cuh>
 
 namespace {
 

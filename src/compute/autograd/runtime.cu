@@ -315,6 +315,9 @@ void discover_fleet(
     if (enable_peer_access && fleet->local.device_count != 0) {
         cuda_require(csdist::enable_peer_access(&fleet->local), "enable_peer_access(autograd fleet)");
     }
+#if CELLSHARD_HAS_NCCL
+    if (fleet->local.device_count != 0) (void) csdist::init_local_nccl(&fleet->local);
+#endif
     if (fleet->local.device_count != 0) {
         fleet->reduce_scratch = static_cast<void **>(std::calloc(fleet->local.device_count, sizeof(void *)));
         fleet->reduce_scratch_bytes = static_cast<std::size_t *>(std::calloc(fleet->local.device_count, sizeof(std::size_t)));

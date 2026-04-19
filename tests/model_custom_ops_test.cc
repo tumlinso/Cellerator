@@ -1,6 +1,6 @@
-#include "../src/models/dense_reduce/denseReduction.hh"
-#include "../src/models/developmental_time/developmentalTime.hh"
-#include "../src/compute/model_ops/model_ops.hh"
+#include <Cellerator/compute/model_ops.hh>
+#include <Cellerator/models/dense_reduce.hh>
+#include <Cellerator/models/developmental_time.hh>
 
 #include <torch/torch.h>
 

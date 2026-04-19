@@ -1,6 +1,6 @@
 #include "benchmark_mutex.hh"
-#include "../extern/CellShard/src/CellShard.hh"
-#include "../src/compute/preprocess/preprocess.cuh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include <Cellerator/compute/preprocess.cuh>
 
 #include <cuda_runtime.h>
 

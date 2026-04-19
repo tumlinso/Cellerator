@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../../extern/CellShard/src/formats/compressed.cuh"
-#include "../../../extern/CellShard/src/sharded/shard_paths.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/compressed.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/layout/shard_paths.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/layout/sharded.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 #include "../rngFetch.hh"
 
 #include <torch/torch.h>

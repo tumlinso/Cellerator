@@ -1,4 +1,6 @@
-#include "../extern/CellShard/src/CellShard.hh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+
+#include <hdf5.h>
 
 #include <cassert>
 #include <cmath>
@@ -72,6 +74,99 @@ static std::string find_first_named_subdir(const std::string &root) {
     }
     ::closedir(dir);
     return std::string();
+}
+
+static bool any_named_subdir_has_path(const std::string &root, const std::string &relative_path) {
+    DIR *dir = ::opendir(root.c_str());
+    if (dir == nullptr) return false;
+    for (;;) {
+        struct dirent *entry = ::readdir(dir);
+        if (entry == nullptr) break;
+        const char *name = entry->d_name;
+        if (std::strcmp(name, ".") == 0 || std::strcmp(name, "..") == 0) continue;
+        const std::string path = root + "/" + name;
+        if (path_is_dir(path) && path_exists(path + "/" + relative_path)) {
+            ::closedir(dir);
+            return true;
+        }
+    }
+    ::closedir(dir);
+    return false;
+}
+
+static int overwrite_u32_attr(const std::string &filename,
+                              const char *object_path,
+                              const char *attr_name,
+                              std::uint32_t value) {
+    hid_t file = (hid_t) -1;
+    hid_t obj = (hid_t) -1;
+    hid_t attr = (hid_t) -1;
+    int ok = 0;
+
+    file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (file < 0) return 0;
+    obj = H5Oopen(file, object_path, H5P_DEFAULT);
+    if (obj < 0) goto done;
+    attr = H5Aopen(obj, attr_name, H5P_DEFAULT);
+    if (attr < 0) goto done;
+    ok = H5Awrite(attr, H5T_NATIVE_UINT32, &value) >= 0;
+
+done:
+    if (attr >= 0) H5Aclose(attr);
+    if (obj >= 0) H5Oclose(obj);
+    if (file >= 0) H5Fclose(file);
+    return ok;
+}
+
+static int overwrite_u64_attr(const std::string &filename,
+                              const char *object_path,
+                              const char *attr_name,
+                              std::uint64_t value) {
+    hid_t file = (hid_t) -1;
+    hid_t obj = (hid_t) -1;
+    hid_t attr = (hid_t) -1;
+    int ok = 0;
+
+    file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (file < 0) return 0;
+    obj = H5Oopen(file, object_path, H5P_DEFAULT);
+    if (obj < 0) goto done;
+    attr = H5Aopen(obj, attr_name, H5P_DEFAULT);
+    if (attr < 0) goto done;
+    ok = H5Awrite(attr, H5T_NATIVE_UINT64, &value) >= 0;
+
+done:
+    if (attr >= 0) H5Aclose(attr);
+    if (obj >= 0) H5Oclose(obj);
+    if (file >= 0) H5Fclose(file);
+    return ok;
+}
+
+static int replace_u64_dataset(const std::string &filename,
+                               const char *dataset_path,
+                               const std::vector<std::uint64_t> &values) {
+    hid_t file = (hid_t) -1;
+    hid_t dset = (hid_t) -1;
+    hid_t space = (hid_t) -1;
+    int ok = 0;
+    hsize_t dims[1] = { (hsize_t) values.size() };
+
+    file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (file < 0) return 0;
+    dset = H5Dopen2(file, dataset_path, H5P_DEFAULT);
+    if (dset >= 0) H5Dclose(dset);
+    if (H5Ldelete(file, dataset_path, H5P_DEFAULT) < 0) goto done;
+    space = H5Screate_simple(1, dims, 0);
+    if (space < 0) goto done;
+    dset = H5Dcreate2(file, dataset_path, H5T_NATIVE_UINT64, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    if (dset < 0) goto done;
+    ok = values.empty() ? 1 : (H5Dwrite(dset, H5T_NATIVE_UINT64, H5S_ALL, H5S_ALL, H5P_DEFAULT, values.data()) >= 0);
+
+done:
+    if (dset >= 0) H5Dclose(dset);
+    if (space >= 0) H5Sclose(space);
+    if (file >= 0) H5Fclose(file);
+    return ok;
 }
 
 struct owned_observation_metadata_column {
@@ -234,6 +329,66 @@ static int check_quantized_blocked_ell_part(const cellshard::sparse::quantized_b
     return 1;
 }
 
+static int create_small_blocked_ell_dataset(const std::string &out_path) {
+    cellshard::sparse::blocked_ell part;
+    cellshard::dataset_codec_descriptor codec{};
+    cellshard::dataset_layout_view layout{};
+    std::vector<std::uint64_t> partition_rows = { 2u };
+    std::vector<std::uint64_t> partition_nnz = { 8u };
+    std::vector<std::uint64_t> partition_aux = {
+        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
+    };
+    std::vector<std::uint64_t> partition_row_offsets = { 0u, 2u };
+    std::vector<std::uint32_t> partition_dataset_ids = { 0u };
+    std::vector<std::uint32_t> partition_codec_ids = { 0u };
+    std::vector<std::uint64_t> shard_offsets = { 0u, 2u };
+    int ok = 0;
+
+    std::remove(out_path.c_str());
+    cellshard::sparse::init(&part);
+    if (!populate_blocked_ell_part(&part,
+                                   2u,
+                                   4u,
+                                   2u,
+                                   4u,
+                                   {0u, 1u},
+                                   {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})) {
+        goto done;
+    }
+
+    codec.codec_id = 0u;
+    codec.family = cellshard::dataset_codec_family_blocked_ell;
+    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
+    codec.scale_value_code = 0u;
+    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
+    codec.flags = 0u;
+
+    layout.rows = 2u;
+    layout.cols = 4u;
+    layout.nnz = 8u;
+    layout.num_partitions = 1u;
+    layout.num_shards = 1u;
+    layout.partition_rows = partition_rows.data();
+    layout.partition_nnz = partition_nnz.data();
+    layout.partition_axes = 0;
+    layout.partition_aux = partition_aux.data();
+    layout.partition_row_offsets = partition_row_offsets.data();
+    layout.partition_dataset_ids = partition_dataset_ids.data();
+    layout.partition_codec_ids = partition_codec_ids.data();
+    layout.shard_offsets = shard_offsets.data();
+    layout.codecs = &codec;
+    layout.num_codecs = 1u;
+
+    if (!cellshard::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
+    if (!cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part)) goto done;
+    ok = 1;
+
+done:
+    cellshard::sparse::clear(&part);
+    if (!ok) std::remove(out_path.c_str());
+    return ok;
+}
+
 static int run_blocked_ell_roundtrip_test() {
     const std::string out_path = "/tmp/cellshard_dataset_blocked_ell_test.csh5";
     const std::string cache_root = "/tmp/cellshard_dataset_blocked_ell_cache";
@@ -360,13 +515,75 @@ static int run_blocked_ell_roundtrip_test() {
     rc = 0;
 
 done:
-    if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
+    if (storage.backend == cellshard::shard_storage_backend_dataset_h5
+        && storage.role != cellshard::shard_storage_role_executor) {
         cellshard::invalidate_dataset_h5_cache(&storage);
     }
     cellshard::clear(&storage);
     cellshard::clear(&loaded);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+static int run_executor_role_execution_pack_guard_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_executor_guard_test.csh5";
+    char cache_root_template[] = "/tmp/cellshard_dataset_executor_guard_cache_XXXXXX";
+    const char *cache_root_cstr = ::mkdtemp(cache_root_template);
+    const std::string cache_root = cache_root_cstr != nullptr ? cache_root_cstr : "";
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
+    cellshard::shard_storage storage;
+    cellshard::bucketed_blocked_ell_partition exec_part;
+    int rc = 1;
+
+    cellshard::init(&loaded);
+    cellshard::init(&storage);
+    cellshard::init(&exec_part);
+    if (cache_root.empty()) {
+        std::fprintf(stderr, "failed to create executor guard cache root\n");
+        goto done;
+    }
+    if (!create_small_blocked_ell_dataset(out_path)) {
+        std::fprintf(stderr, "failed to create executor guard dataset\n");
+        goto done;
+    }
+    if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) {
+        std::fprintf(stderr, "failed to warm canonical cache for executor guard test\n");
+        goto done;
+    }
+    if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)
+        || storage.backend != cellshard::shard_storage_backend_dataset_h5
+        || !cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) {
+        std::fprintf(stderr, "failed to bind executor guard dataset\n");
+        goto done;
+    }
+    if (!cellshard::adopt_dataset_h5_executor_role(&storage)) {
+        std::fprintf(stderr, "failed to adopt executor role\n");
+        goto done;
+    }
+    if (!cellshard::fetch_partition(&loaded, &storage, 0u)
+        || !check_blocked_ell_part(loaded.parts[0],
+                                   {0u, 1u},
+                                   {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})) {
+        std::fprintf(stderr, "executor role canonical pack fetch failed\n");
+        goto done;
+    }
+    if (cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u)) {
+        std::fprintf(stderr, "executor role unexpectedly rebuilt execution partition without published pack\n");
+        goto done;
+    }
+
+    rc = 0;
+
+done:
+    if (storage.backend == cellshard::shard_storage_backend_dataset_h5
+        && storage.role != cellshard::shard_storage_role_executor) {
+        cellshard::invalidate_dataset_h5_cache(&storage);
+    }
+    cellshard::clear(&exec_part);
+    cellshard::clear(&storage);
+    cellshard::clear(&loaded);
     std::remove(out_path.c_str());
     return rc;
 }
@@ -615,8 +832,19 @@ static int run_optimized_blocked_ell_roundtrip_test() {
     layout.codecs = &codec;
     layout.num_codecs = 1u;
 
-    if (!cellshard::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
+    if (!cellshard::create_dataset_optimized_blocked_ell_h5(out_path.c_str(), &layout, 0, 0)) goto done;
     if (!cellshard::append_bucketed_blocked_ell_shard_h5(out_path.c_str(), 0u, &shard)) goto done;
+    {
+        hid_t file = H5Fopen(out_path.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+        hid_t payload = file >= 0 ? H5Gopen2(file, "/payload", H5P_DEFAULT) : (hid_t) -1;
+        const htri_t has_canonical = payload >= 0 ? H5Lexists(payload, "blocked_ell", H5P_DEFAULT) : -1;
+        if (payload >= 0) H5Gclose(payload);
+        if (file >= 0) H5Fclose(file);
+        if (has_canonical > 0) {
+            std::fprintf(stderr, "optimized blocked ell file still contains canonical blocked payload\n");
+            goto done;
+        }
+    }
     if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())
         || !cellshard::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str())) {
         std::fprintf(stderr, "failed to warm optimized blocked ell caches\n");
@@ -792,6 +1020,9 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     cellshard::bucketed_sliced_ell_partition bucket0;
     cellshard::bucketed_sliced_ell_partition bucket1;
     cellshard::bucketed_sliced_ell_partition exec_part;
+    cellshard::dataset_sliced_execution_device_partition_view staged0;
+    cellshard::dataset_sliced_execution_device_partition_view staged1;
+    cellshard::dataset_sliced_execution_device_partition_view staged_after_generation;
     cellshard::bucketed_sliced_ell_shard shard;
     cellshard::sharded<cellshard::sparse::sliced_ell> loaded;
     cellshard::shard_storage storage;
@@ -818,6 +1049,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     std::vector<std::uint64_t> part_blocked_ell_bytes(2u, 0u);
     std::vector<std::uint64_t> part_bucketed_blocked_ell_bytes(2u, 0u);
     std::vector<std::uint32_t> part_sliced_counts = { 2u, 2u };
+    std::vector<std::uint32_t> part_sliced_rows = { 1u, 1u };
     std::vector<std::uint64_t> part_sliced_bytes(2u, 0u);
     std::vector<std::uint64_t> part_bucketed_sliced_bytes(2u, 0u);
     std::vector<std::uint32_t> shard_formats = { cellshard::dataset_execution_format_bucketed_sliced_ell };
@@ -828,12 +1060,15 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     std::vector<std::uint64_t> shard_execution_bytes = { 0u };
     std::vector<std::uint64_t> shard_bucketed_blocked_ell_bytes = { 0u };
     std::vector<std::uint32_t> shard_sliced_counts = { 4u };
+    std::vector<std::uint32_t> shard_sliced_rows = { 1u };
     std::vector<std::uint64_t> shard_bucketed_sliced_bytes = { 0u };
     std::vector<std::uint32_t> shard_pair_ids = { 0u };
     std::vector<std::uint32_t> shard_owner_node_ids = { 0u };
     std::vector<std::uint32_t> shard_owner_rank_ids = { 0u };
     cellshard::dataset_execution_view execution{};
+    cellshard::dataset_execution_view loaded_execution{};
     int rc = 1;
+    int device_count = 0;
 
     std::remove(out_path.c_str());
     cellshard::sparse::init(&part0);
@@ -841,6 +1076,9 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     cellshard::init(&bucket0);
     cellshard::init(&bucket1);
     cellshard::init(&exec_part);
+    cellshard::init(&staged0);
+    cellshard::init(&staged1);
+    cellshard::init(&staged_after_generation);
     cellshard::init(&shard);
     cellshard::init(&loaded);
     cellshard::init(&storage);
@@ -929,6 +1167,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     execution.partition_blocked_ell_bytes = part_blocked_ell_bytes.data();
     execution.partition_bucketed_blocked_ell_bytes = part_bucketed_blocked_ell_bytes.data();
     execution.partition_sliced_ell_slice_counts = part_sliced_counts.data();
+    execution.partition_sliced_ell_slice_rows = part_sliced_rows.data();
     execution.partition_sliced_ell_bytes = part_sliced_bytes.data();
     execution.partition_bucketed_sliced_ell_bytes = part_bucketed_sliced_bytes.data();
     execution.shard_count = (std::uint32_t) shard_formats.size();
@@ -940,6 +1179,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     execution.shard_execution_bytes = shard_execution_bytes.data();
     execution.shard_bucketed_blocked_ell_bytes = shard_bucketed_blocked_ell_bytes.data();
     execution.shard_sliced_ell_slice_counts = shard_sliced_counts.data();
+    execution.shard_sliced_ell_slice_rows = shard_sliced_rows.data();
     execution.shard_bucketed_sliced_ell_bytes = shard_bucketed_sliced_bytes.data();
     execution.shard_preferred_pair_ids = shard_pair_ids.data();
     execution.shard_owner_node_ids = shard_owner_node_ids.data();
@@ -953,6 +1193,15 @@ static int run_optimized_sliced_ell_roundtrip_test() {
     if (!cellshard::append_bucketed_sliced_ell_shard_h5(out_path.c_str(), 0u, &shard)) goto done;
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) goto done;
     if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) goto done;
+    if (!cellshard::get_dataset_h5_execution_metadata(&storage, &loaded_execution)) goto done;
+    if (loaded_execution.partition_sliced_ell_slice_rows == nullptr
+        || loaded_execution.shard_sliced_ell_slice_rows == nullptr
+        || loaded_execution.partition_sliced_ell_slice_rows[0] != 1u
+        || loaded_execution.partition_sliced_ell_slice_rows[1] != 1u
+        || loaded_execution.shard_sliced_ell_slice_rows[0] != 1u) {
+        std::fprintf(stderr, "optimized sliced ell slice_rows metadata mismatch\n");
+        goto done;
+    }
     if (!cellshard::fetch_partition(&loaded, &storage, 0u)
         || !check_sliced_ell_part(loaded.parts[0],
                                   {0u, 1u, 2u},
@@ -982,10 +1231,67 @@ static int run_optimized_sliced_ell_roundtrip_test() {
                      exec_part.canonical_to_exec_rows != nullptr ? exec_part.canonical_to_exec_rows[1] : 999u);
         goto done;
     }
+    if (cudaGetDeviceCount(&device_count) == cudaSuccess && device_count > 0) {
+        if (!cellshard::clear_all_dataset_sliced_ell_h5_device_caches()) goto done;
+        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged0,
+                                                                                  &loaded,
+                                                                                  &storage,
+                                                                                  0u,
+                                                                                  0,
+                                                                                  0u)) {
+            std::fprintf(stderr, "optimized sliced ell device cache acquire failed\n");
+            goto done;
+        }
+        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged1,
+                                                                                  &loaded,
+                                                                                  &storage,
+                                                                                  0u,
+                                                                                  0,
+                                                                                  0u)) {
+            std::fprintf(stderr, "optimized sliced ell device cache reacquire failed\n");
+            goto done;
+        }
+        if (staged0.host_partition == nullptr
+            || staged0.device_segments == nullptr
+            || staged0.segment_count != exec_part.segment_count
+            || staged0.host_partition != staged1.host_partition
+            || staged0.device_segments != staged1.device_segments
+            || staged0.pack_generation != 1u) {
+            std::fprintf(stderr, "optimized sliced ell device cache reuse mismatch\n");
+            goto done;
+        }
+        if (!overwrite_u64_attr(out_path, "/runtime_service", "pack_generation", 2u)) {
+            std::fprintf(stderr, "optimized sliced ell failed to update pack generation\n");
+            goto done;
+        }
+        cellshard::clear(&storage);
+        cellshard::clear(&loaded);
+        cellshard::init(&loaded);
+        cellshard::init(&storage);
+        if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)
+            || !cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) {
+            std::fprintf(stderr, "optimized sliced ell failed to reload after generation change\n");
+            goto done;
+        }
+        if (!cellshard::acquire_dataset_sliced_ell_h5_execution_partition_device(&staged_after_generation,
+                                                                                  &loaded,
+                                                                                  &storage,
+                                                                                  0u,
+                                                                                  0,
+                                                                                  0u)
+            || staged_after_generation.pack_generation != 2u) {
+            std::fprintf(stderr, "optimized sliced ell device cache generation invalidation failed\n");
+            goto done;
+        }
+    }
 
     rc = 0;
 
 done:
+    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged_after_generation);
+    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged1);
+    (void) cellshard::release_dataset_sliced_ell_h5_execution_partition_device(&staged0);
+    (void) cellshard::clear_all_dataset_sliced_ell_h5_device_caches();
     if (storage.backend == cellshard::shard_storage_backend_dataset_h5) {
         cellshard::invalidate_dataset_h5_cache(&storage);
     }
@@ -1174,8 +1480,26 @@ static int run_runtime_service_metadata_test() {
             || !path_is_dir(instance_dir + "/packs/canonical")
             || !path_is_dir(instance_dir + "/packs/execution")
             || !path_exists(instance_dir + "/packs/canonical/shard.0.pack")
-            || !path_exists(instance_dir + "/packs/execution/shard.0.exec.pack")) {
+            || !path_exists(instance_dir + "/packs/execution/plan.12-pack.13-epoch.14/shard.0.exec.pack")) {
             std::fprintf(stderr, "runtime service cache layout mismatch\n");
+            goto done;
+        }
+    }
+    runtime_service.execution_plan_generation = 21u;
+    runtime_service.pack_generation = 22u;
+    runtime_service.service_epoch = 23u;
+    runtime_service.active_read_generation = 24u;
+    runtime_service.staged_write_generation = 25u;
+    if (!overwrite_u64_attr(out_path, "/runtime_service", "execution_plan_generation", runtime_service.execution_plan_generation)) goto done;
+    if (!overwrite_u64_attr(out_path, "/runtime_service", "pack_generation", runtime_service.pack_generation)) goto done;
+    if (!overwrite_u64_attr(out_path, "/runtime_service", "service_epoch", runtime_service.service_epoch)) goto done;
+    if (!overwrite_u64_attr(out_path, "/runtime_service", "active_read_generation", runtime_service.active_read_generation)) goto done;
+    if (!overwrite_u64_attr(out_path, "/runtime_service", "staged_write_generation", runtime_service.staged_write_generation)) goto done;
+    if (!cellshard::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str())) goto done;
+    {
+        const std::string instances_root = cache_root + "/instances";
+        if (!any_named_subdir_has_path(instances_root, "packs/execution/plan.21-pack.22-epoch.23/shard.0.exec.pack")) {
+            std::fprintf(stderr, "updated runtime service execution pack generation missing\n");
             goto done;
         }
     }
@@ -1195,6 +1519,66 @@ done:
     cellshard::clear(&loaded);
     cellshard::sparse::clear(&part0);
     cellshard::sparse::clear(&part1);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+static int run_schema_version_rejection_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_schema_rejection_test.csh5";
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
+    int rc = 1;
+
+    cellshard::init(&loaded);
+    if (!create_small_blocked_ell_dataset(out_path)) goto done;
+    if (!overwrite_u32_attr(out_path, "/", "schema_version", cellshard::dataset_h5_schema_version + 1u)) goto done;
+    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+        std::fprintf(stderr, "schema-version rejection unexpectedly succeeded\n");
+        goto done;
+    }
+    rc = 0;
+
+done:
+    cellshard::clear(&loaded);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+static int run_header_consistency_rejection_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_header_consistency_test.csh5";
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
+    int rc = 1;
+
+    cellshard::init(&loaded);
+    if (!create_small_blocked_ell_dataset(out_path)) goto done;
+    if (!overwrite_u64_attr(out_path, "/", "rows", 3u)) goto done;
+    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+        std::fprintf(stderr, "header consistency rejection unexpectedly succeeded\n");
+        goto done;
+    }
+    rc = 0;
+
+done:
+    cellshard::clear(&loaded);
+    std::remove(out_path.c_str());
+    return rc;
+}
+
+static int run_dataset_extent_rejection_test() {
+    const std::string out_path = "/tmp/cellshard_dataset_extent_rejection_test.csh5";
+    cellshard::sharded<cellshard::sparse::blocked_ell> loaded;
+    int rc = 1;
+
+    cellshard::init(&loaded);
+    if (!create_small_blocked_ell_dataset(out_path)) goto done;
+    if (!replace_u64_dataset(out_path, "/matrix/partition_row_offsets", {0u, 2u, 2u})) goto done;
+    if (cellshard::load_header(out_path.c_str(), &loaded, nullptr)) {
+        std::fprintf(stderr, "dataset extent rejection unexpectedly succeeded\n");
+        goto done;
+    }
+    rc = 0;
+
+done:
+    cellshard::clear(&loaded);
     std::remove(out_path.c_str());
     return rc;
 }
@@ -1250,10 +1634,17 @@ static int run_blocked_ell_side_domain_test() {
     cellshard::dataset_metadata_table_view metadata_table_view{};
     cellshard::dataset_embedded_metadata_view embedded_metadata_view{};
     cellshard::dataset_observation_metadata_view observation_metadata_view{};
+    cellshard::dataset_feature_metadata_view feature_metadata_view{};
+    cellshard::dataset_user_attribute_view dataset_attribute_view{};
     cellshard::dataset_browse_cache_view browse_view{};
     owned_observation_metadata_column obs_day_label;
     owned_observation_metadata_column obs_postnatal;
+    owned_observation_metadata_column var_chr;
+    owned_observation_metadata_column var_short_name;
     std::vector<cellshard::dataset_observation_metadata_column_view> observation_columns;
+    std::vector<cellshard::dataset_observation_metadata_column_view> feature_columns;
+    owned_text_column dataset_attribute_keys;
+    owned_text_column dataset_attribute_values;
     std::vector<std::uint32_t> browse_feature_indices = { 0u, 2u };
     std::vector<float> browse_gene_sum = { 1.0f, 5.0f };
     std::vector<float> browse_gene_detected = { 1.0f, 2.0f };
@@ -1353,6 +1744,23 @@ static int run_blocked_ell_side_domain_test() {
     observation_metadata_view.cols = (std::uint32_t) observation_columns.size();
     observation_metadata_view.columns = observation_columns.data();
 
+    var_chr.name = "chr";
+    var_chr.type = cellshard::dataset_observation_metadata_type_text;
+    var_chr.text_values = make_column({"chrM", "chr1", "chr2"});
+    var_short_name.name = "gene_short_name";
+    var_short_name.type = cellshard::dataset_observation_metadata_type_text;
+    var_short_name.text_values = make_column({"MT-CO1", "POU5F1", "SOX2"});
+    feature_columns = {var_chr.view(), var_short_name.view()};
+    feature_metadata_view.cols = 3u;
+    feature_metadata_view.annotation_count = (std::uint32_t) feature_columns.size();
+    feature_metadata_view.annotations = feature_columns.data();
+
+    dataset_attribute_keys = make_column({"study", "preprocess.pipeline_scope"});
+    dataset_attribute_values = make_column({"demo", "qc_only"});
+    dataset_attribute_view.count = 2u;
+    dataset_attribute_view.keys = dataset_attribute_keys.view();
+    dataset_attribute_view.values = dataset_attribute_values.view();
+
     browse_view.selected_feature_count = 2u;
     browse_view.selected_feature_indices = browse_feature_indices.data();
     browse_view.gene_sum = browse_gene_sum.data();
@@ -1372,6 +1780,8 @@ static int run_blocked_ell_side_domain_test() {
     if (!cellshard::append_blocked_ell_partition_h5(out_path.c_str(), 0u, &part)) goto done;
     if (!cellshard::append_dataset_embedded_metadata_h5(out_path.c_str(), &embedded_metadata_view)
         || !cellshard::append_dataset_observation_metadata_h5(out_path.c_str(), &observation_metadata_view)
+        || !cellshard::append_dataset_feature_metadata_h5(out_path.c_str(), &feature_metadata_view)
+        || !cellshard::append_dataset_user_attributes_h5(out_path.c_str(), &dataset_attribute_view)
         || !cellshard::append_dataset_browse_cache_h5(out_path.c_str(), &browse_view)) {
         std::fprintf(stderr, "blocked ell side-domain append failed\n");
         goto done;
@@ -1423,6 +1833,10 @@ int main() {
         std::fprintf(stderr, "cellShardDatasetH5Test blocked ell roundtrip failed\n");
         return 1;
     }
+    if (run_executor_role_execution_pack_guard_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test executor role guard failed\n");
+        return 1;
+    }
     if (run_quantized_blocked_ell_roundtrip_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test quantized blocked ell roundtrip failed\n");
         return 1;
@@ -1441,6 +1855,18 @@ int main() {
     }
     if (run_runtime_service_metadata_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test runtime service metadata failed\n");
+        return 1;
+    }
+    if (run_schema_version_rejection_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test schema-version rejection failed\n");
+        return 1;
+    }
+    if (run_header_consistency_rejection_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test header consistency rejection failed\n");
+        return 1;
+    }
+    if (run_dataset_extent_rejection_test() != 0) {
+        std::fprintf(stderr, "cellShardDatasetH5Test dataset extent rejection failed\n");
         return 1;
     }
     return 0;

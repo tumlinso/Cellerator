@@ -4,7 +4,8 @@
 Use this file as the canonical index for substantial multi-step work.
 
 ## Shared Assumptions
-_None recorded yet._
+- Prototype policy for this effort: if a phase is numeric, bulk, and not fundamentally text parsing, HDF5 metadata I/O, filesystem traversal, UI, or an explicit interop boundary, it should be eligible for a GPU prototype even if the final architecture remains mixed.
+- Prototype success means a working CUDA-backed path that can be benchmarked against the current CPU or mixed baseline on the native V100 host; prototypes may be narrower and rougher than final production code so long as they preserve a clear benchmark contract.
 
 ## Suggested Skills
 - `todo-orchestrator` - Track the release plan and keep audit findings visible alongside active implementation work.
@@ -16,6 +17,20 @@ _None recorded yet._
 - `todo-orchestrator` - Track the CSR-to-interop migration as a separate resumable stream so it does not blur with the broader runtime-service or ingest work.
 - `todo-orchestrator` - Track the codec stream as a standalone resumable workstream that can hand off cleanly to later pack-writer slices.
 - `cuda` - Guide the direct-to-device packed decode path and any Volta-specific native-extreme follow-up.
+- `todo-orchestrator` - Track the metadata schema work as a resumable repo-level workstream because it spans CellShard storage, workbench ingest, export/bootstrap, Python bindings, tests, and docs.
+- `cuda` - Use the native V100 system route and Volta CPU-porting doctrine for the audit recommendations.
+- `todo-orchestrator` - Keep this repo-wide audit resumable in the existing ledger structure.
+- `cuda` - Use the native system route and Volta router for every prototype slice and keep early binaries narrow to sm_70.
+- `cuda` - Use the native V100 path and treat the dominant question as CPU-centric sparse-porting rather than generic CUDA cleanup.
+- `todo-orchestrator` - Keep this stream aligned with the adjacent CellShard ingest-runtime contract work.
+- `cuda` - Use the Volta Torch-extension and CPU-porting paths; these prototypes are mostly about boundary relocation and sparse glue, not dense GEMM tuning.
+- `todo-orchestrator` - Keep the model-boundary work distinct from ingest and neighbor streams so benchmarks stay interpretable.
+- `cuda` - Use the host-device-pipeline and sparse-bio routing first; the main issue is setup and residency, not one isolated hot kernel.
+- `todo-orchestrator` - Keep the neighbor and trajectory prototypes coupled so the handoff boundary stays explicit.
+- `cuda` - Use native V100 profiling and optimization workflow for benchmark design, Nsight interpretation, and sparse CUDA tuning.
+- `todo-orchestrator` - Track benchmark matrix, profiler artifacts, bottleneck classification, and next actions in a persistent workstream ledger.
+- `todo-orchestrator` - Track the adapter/runtime split as a resumable refactor with explicit verification notes.
+- `todo-orchestrator` - Track this repo-wide refactor as a dedicated resumable workstream.
 
 ## Useful Reference Files
 - `extern/CellShard/README.md` - Current stated scope of the standalone CellShard library.
@@ -56,6 +71,37 @@ _None recorded yet._
 - `src/quantized/api.cuh` - Current quantized backend umbrella and the natural home for shared decode primitives.
 - `src/compute/autograd/autograd.hh` - Public sparse runtime surface for the first fused consumer entrypoint.
 - `src/compute/autograd/kernels/base_sparse.cu` - Current custom Blocked-ELL SpMM path and kernel launch boundary.
+- `extern/CellShard/src/disk/csh5.cuh` - public csh5 schema structs and append/load entrypoints for metadata groups
+- `extern/CellShard/src/disk/csh5.cc` - concrete HDF5 group names, writer helpers, and preprocess finalization path
+- `src/workbench/dataset_workbench_cuda.cu` - current source metadata persistence and preprocess append logic that still hard-codes semantic day helpers and preprocess groups
+- `extern/CellShard/export/dataset_export.cc` - owner snapshot serialization currently shipping observation metadata payloads by default
+- `optimization.md` - Current repo-wide bottleneck map and subsystem-level CUDA posture.
+- `custom_torch_ops.md` - Existing model-op and sparse-runtime CUDA boundaries that should be extended rather than bypassed.
+- `todos/cellshard-blocked-ell-ingest-runtime.md` - Active workstream already targeting the CPU-only ingest blocked builder.
+- `src/compute/autograd/autograd.hh` - Preferred pointer-first sparse runtime for new model-facing CUDA building blocks.
+- `src/compute/model_ops/model_ops.cu` - Existing Torch CUDA custom-op seam that should absorb new model-side GPU prototypes instead of adding more host churn.
+- `src/ingest/dataset/dataset_ingest.cuh` - Current host-heavy column remap, bucket planning, and optimized shard assembly path.
+- `src/workbench/dataset_workbench_cuda.cu` - Current blocked-ell browse and preprocess helpers with repeated sync and copy boundaries.
+- `bench/cellshard_v100_profile.cu` - Existing native benchmark and profiling surface for large sparse runtime paths.
+- `custom_torch_ops.md` - Current custom-op registry and the preferred extension seams.
+- `src/compute/autograd/autograd.hh` - Pointer-first sparse runtime and distributed topology helpers that should absorb new sparse building blocks.
+- `src/models/dense_reduce/dR_model.hh` - Current CSR-to-COO churn and reconstruction densification hotspot.
+- `src/models/quantize/quantize.hh` - Current dense future-target and range-loss assembly path.
+- `src/compute/neighbors/forward_neighbors/forward_neighbors.cu` - Current query-block upload, eligible-list rebuild, sync, and host-merge path.
+- `src/compute/graph/forward_candidates.cuh` - Existing GPU candidate scorer and the current full-table D2H boundary.
+- `src/compute/graph/supernode_reduce.cuh` - Current CPU tree, supernode, and DAG reducers that would be next if candidate tables remain resident.
+- `optimization.md` - Repository performance priorities and expected bottlenecks.
+- `docs/public_omics/benchmark_spec.md` - Benchmark output contract and phase expectations.
+- `bench/real_preprocess_bench.cu` - Primary real-data sliced-first benchmark harness.
+- `todos/gpu-prototype-ingest-blocked-ell.md` - Recent prototype ingest/layout findings and artifact-size context.
+- `src/workbench/README.md` - Workbench is the adapter-facing surface and now documents the runtime subdirectory split.
+- `src/workbench/dataset_workbench.hh` - Stable public facade that remains the include point for UI and Python callers.
+- `src/workbench/runtime/summary.cc` - Shared summary and metadata inspection backend moved out of the adapter root.
+- `src/workbench/runtime/pipeline.cu` - Shared conversion, preprocess, finalize, and browse-cache backend moved out of the adapter root.
+- `CMakeLists.txt` - Build graph now compiles the runtime backend from src/workbench/runtime/.
+- `extern/CellShard/CMakeLists.txt` - Owns the current public install and include contract.
+- `extern/CellShard/src/CellShard.hh` - Current oversized umbrella surface to replace with a thin curated umbrella.
+- `extern/CellShard/export/dataset_export.hh` - Public export API surface that will drive the new export hierarchy.
 
 ## Workstreams
 - `dual-cuda-optimization-modes` | status: in_progress | owner: codex | file: `todos/dual-cuda-optimization-modes.md` | objective: add repo-wide generic, native, and native-extreme CUDA modes with explicit topology policy and first hotspot backends
@@ -64,7 +110,19 @@ _None recorded yet._
 - `cellshard-file-surface-rename` | status: done | owner: codex | file: `todos/cellshard-file-surface-rename.md` | objective: align CellShard filenames with their actual container and packfile responsibilities
 - `cellshard-runtime-service-contract` | status: in_progress | owner: codex | file: `todos/cellshard-runtime-service-contract.md` | objective: reset CellShard around owner-hosted pack delivery, append-only canonical generations, and a Cellerator immutable-emission boundary
 - `cellshard-csr-file-codec-removal` | status: done | owner: codex | file: `todos/cellshard-csr-file-codec-removal.md` | objective: remove CSR/compressed from the CellShard .csh5 file codec, keep CSR only as interop if still needed
-- `quantized-blocked-ell-codecs` | status: in_progress | owner: codex | file: `todos/quantized-blocked-ell-codecs.md` | objective: implement a distinct quantized blocked-ell codec family with direct-to-device packed delivery and fused live decode
+- `quantized-blocked-ell-codecs` | status: in_progress | owner: codex | file: `todos/quantized-blocked-ell-codecs.md` | objective: turn quantized blocked-ell into an end-to-end transfer win with an explicit quantization-semantics contract and a tensor-op-aware follow-on path
+- `cellshard-user-metadata-annotations` | status: in_progress | owner: codex | file: `todos/cellshard-user-metadata-annotations.md` | objective: replace hard-coded semantic metadata with cold user-defined observation/feature annotations and explicit owner-served fetch paths
+- `cuda-porting-audit` | status: done | owner: codex | file: `todos/cuda-porting-audit.md` | objective: Audit CPU-centric Cellerator subsystems for CUDA port candidates and prioritize a Volta-native migration order
+- `gpu-prototype-ingest-blocked-ell` | status: planned | owner: codex | file: `todos/gpu-prototype-ingest-blocked-ell.md` | objective: Prototype GPU-first Blocked-ELL ingest builders, rebucketing, and workbench-adjacent cold materialization paths for speed screening on V100
+- `gpu-prototype-model-sparse-boundaries` | status: planned | owner: codex | file: `todos/gpu-prototype-model-sparse-boundaries.md` | objective: Prototype GPU-first sparse projection, sparse-aware loss, and quantizer supervision boundaries across model codepaths
+- `gpu-prototype-neighbors-trajectory` | status: in_progress | owner: codex | file: `todos/gpu-prototype-neighbors-trajectory.md` | objective: Prototype GPU-resident forward-neighbor query orchestration and trajectory graph follow-on stages for speed screening on V100
+- `blocked-ell-optimization-study` | status: in_progress | owner: codex | file: `todos/blocked-ell-optimization-study.md` | objective: Research, prototype, and benchmark native-V100 Blocked-ELL optimization algorithms with generated real-data subsets and a persistent study record
+- `gpu-benchmark-sliced-preprocess-campaign` | status: in_progress | owner: codex | file: `todos/gpu-benchmark-sliced-preprocess-campaign.md` | objective: Profile native V100 sliced-first ingest and preprocess, identify why GPU utilization is low, and rank GPU-offload priorities
+- `largest-monolithic-files` | status: done | owner: codex | file: `todos/largest-monolithic-files.md` | objective: Inventory the repository's largest monolithic files, including extern, to support future refactor prioritization
+- `split-csh5-translation-units` | status: done | owner: codex | file: `todos/split-csh5-translation-units.md` | objective: Split extern/CellShard/src/disk/csh5.cc into coherent translation units without changing behavior
+- `split-workbench-runtime-backend` | status: done | owner: codex | file: `todos/split-workbench-runtime-backend.md` | objective: Split src/workbench into adapter-owned surfaces plus a shared workbench/runtime backend without changing the current public API
+- `cellshard-hierarchy-reset` | status: in_progress | owner: codex | file: `todos/cellshard-hierarchy-reset.md` | objective: Reorganize CellShard into a layered hierarchy with a curated public include tree, without splitting hot kernels
+- `cellerator-hierarchy-reset` | status: in_progress | owner: codex | file: `todos/cellerator-hierarchy-reset.md` | objective: Reorganize Cellerator around a curated include/Cellerator facade tree and clearer src ownership without hiding hot paths
 
 ## Global Blockers
 _None recorded yet._
@@ -128,6 +186,7 @@ _None recorded yet._
 - Updated repo and CellShard README wording so `.csh5` is described as Blocked-ELL-native and CSR/compressed is no longer described as a supported forward file format.
 - Finished the CSR/compressed file-codec removal slice: removed the public compressed `.csh5` declarations, converted `cellShardDatasetH5Test` to an explicit rejection check, replaced the remaining compressed fetch/prefetch definitions with hard failures, and reran `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardExportRuntimeTest` successfully.
 - Fixed the two stale benchmark consumers that still targeted the pre-migration CellShard API: `cellShardFetchBench` and `scrnaPreprocessBench` now build against `append_partition`, `num_partitions`, `partition_*`, `first_partition_in_shard`, `fetch_all_partitions`, and dataset `.csh5` helpers, and both pass small synthetic smoke runs.
+- Restored the single-emission dataset path: `src/ingest/dataset/dataset_ingest.cuh` now writes Blocked-ELL on first emission again, the workbench preprocess path no longer rebuilds `.csh5` through a finalize spool, the dead finalize API was removed from `extern/CellShard/src/disk/csh5.*`, and `datasetWorkbenchRuntimeTest` was rebuilt and passed.
 - Started the first implementation slice: new quantized Blocked-ELL codec identifiers, a reusable packed Blocked-ELL quantized helper header, and an initial fused SpMM autograd path are in progress.
 - Landed the first working quantized Blocked-ELL slice: `extern/CellShard/src/disk/csh5.cuh` now exposes a distinct `dataset_codec_family_quantized_blocked_ell`, decode-policy helpers live in codec flags, `src/quantized/blocked_ell.cuh` provides a packed device-facing view plus pack/unpack helpers, and autograd now has a fused quantized Blocked-ELL SpMM entrypoint.
 - Validated the slice with `cmake --build build -j 4 --target computeAutogradRuntimeTest`, `./build/computeAutogradRuntimeTest`, `cmake --build build -j 4 --target quantizedMatrixTest`, and `./build/quantizedMatrixTest`.
@@ -136,6 +195,40 @@ _None recorded yet._
 - Deleted the remaining compressed `.csh5` create/load/fetch/prefetch implementation from `extern/CellShard/src/disk/csh5.cc` instead of leaving unsupported dead code behind early-return stubs.
 - Removed the last compressed-API rejection test from `cellShardDatasetH5Test` and cleaned the leftover unused compressed helper from `datasetWorkbenchRuntimeTest` so the focused validation suite now covers only supported `.csh5` flows.
 - Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after removing the compressed file codec.
+- Started implementation by auditing the current csh5 schema, workbench summary/loaders, preprocess finalize path, and owner snapshot serialization. The current blockers are that observation metadata is row-only, preprocess is a dedicated built-in group, and owner snapshots eagerly serialize full metadata payloads.
+- Resumed this stream for the native V100 ingest bottleneck: the cold blocked build is still dominated by CPU-only COO->Blocked-ELL tuning and host shard rebucketing.
+- Current implementation target is a native CUDA blocked-builder path for ingest so part conversion stops doing host qsort/slot-fill on a single CPU core.
+- Created the audit workstream and anchored it to the existing native-Volta migration doctrine before starting the repo scan.
+- Completed the repo-wide CUDA porting audit. Highest-value ports are the dataset ingest blocked builder and rebucketing path, the Torch model sparse-projection/loss boundaries in developmental_time and dense_reduce, and the forward-neighbor query orchestration path; text/HDF5 parsing and the explicit torch export bridge should remain CPU control-plane surfaces.
+- Added three concrete GPU prototype workstreams covering ingest Blocked-ELL builders, model sparse boundaries, and neighbor plus trajectory pipelines under one shared prototype policy.
+- Added a native CUDA COO->Blocked-ELL builder for ingest with on-device candidate scoring, radix sort, group scan, and direct blocked scatter on the V100 path.
+- Wired the CUDA builder into the primary per-part ingest conversion while leaving the shard-local optimized reblocking on the older host path for now.
+- The cold real-data benchmark still blocks at canonical blocked-part fetch while building the sliced comparison artifact, so the next blocker is the optimized-only canonical-pack/materialization path rather than the ingest-side CUDA builder itself.
+- Added native fetch probe target `cellShardBlockedFetchProbe` to reproduce optimized-only blocked canonical-pack failures directly under repo build/link settings.
+- Probe showed optimized execution payloads and canonical reconstruction agree, but the new CUDA Blocked-ELL builder was leaving `dst->nnz = src->nnz`; patched it to count actual nonzero blocked values on device after the scatter.
+- Fresh probe against a rebuilt real blocked artifact now succeeds: execution payload, canonical cache-pack fetch, and header agree on partition-0 nnz after fixing the CUDA builder's on-device nnz accounting and removing the bad host fallback gate.
+- A fresh real benchmark rerun advanced past blocked ingest and sliced-artifact generation, which confirms the old optimized-only blocked canonical-fetch failure is cleared.
+- Prototype plain timings on GPU 1: sliced analyze cold 241.564 ms and warm 57.495 ms on /tmp/cellerator_proto_8192.h5ad.
+- Prototype Nsight Systems cold trace: materialize_sliced 3.0069 s (73.7%), load_or_generate 0.8299 s (20.3%), steady_state_compute.sliced 0.2415 s (5.9%). GPU kernels totaled about 12.85 ms across 8 accumulate launches plus 2.37 ms for direct CSR->sliced emit.
+- Full smaller H5AD warm timings on GPU 1 from reused sliced artifact: sliced analyze mean 800.739 ms over 10 repeats; 200 ms nvidia-smi sampling showed avg GPU util 14.65%, p95 40%, max 43%, nonzero only 50% of samples.
+- Full smaller H5AD Nsight Systems warm trace: load_or_generate 8.4796 s (87.2%), steady_state_compute.sliced 1.2411 s (12.8%), materialize_sliced 6.97 ms. CUDA API time in the warm run was dominated by cudaMemcpy 178.3 ms over 329 calls and cudaStreamSynchronize 45.8 ms over 28 calls.
+- Warm full-run memcopy summary: 175 H2D copies totaling 952.1 MB (median size effectively tiny, avg 5.44 MB, max 61.1 MB) and 161 D2H copies totaling 3.39 MB, confirming many small transfers around the preprocess loop.
+- Direct Nsight Compute on the dominant accumulate_gene_metrics kernel: prototype grid (4,1,1), full grid (13,1,1), block (256,1,1), 22 registers/thread, 0 shared memory. Full kernel DRAM throughput was 2.48% of peak and SM throughput 2.18% of peak; prototype kernel DRAM throughput averaged 0.86% and SM throughput 0.60%. This is underfilled launch geometry, not a saturated kernel.
+- Benchmark front-end fix landed in bench/real_preprocess_bench.cu: when reuse_artifacts is true and the sliced input already exists, the warm path skips inspect_source_entries() and plan_dataset_ingest() instead of redoing H5AD inspection/planning every invocation.
+- Post-fix warm full run on GPU 1 with the production sliced execution-segment path restored: sliced analyze mean 782.031 ms over 10 repeats.
+- Final clean warm Nsight Systems trace after the benchmark fix and with the execution-segment preprocess path restored: steady_state_compute.sliced 1.275 s (99.4%), materialize_sliced 7.53 ms, no residual load_or_generate bucket in the warm path.
+- Final warm trace still shows the main limiter is upload/orchestration: 175 H2D copies totaling 952.1 MB and 329 total cudaMemcpy calls; CUDA API time is dominated by cudaMemcpy 186.3 ms and cudaStreamSynchronize 45.8 ms, while total GPU kernel time is only about 46.7 ms.
+- A prototype canonical-partition preprocess path was tested and then reverted. It improved device fill for the dominant accumulate kernel from grid (13,1,1) to (52,1,1) and raised DRAM throughput to 10.42% of peak, but it regressed steady-state wall time because it increased bytes moved and pack decode cost in the hot loop.
+- Moved the shared non-UI implementation from src/workbench/dataset_workbench.cc to src/workbench/runtime/summary.cc and the shared CUDA workflow implementation from src/workbench/dataset_workbench_cuda.cu to src/workbench/runtime/pipeline.cu.
+- Moved the private workbench CUDA helper headers under src/workbench/runtime/kernels/ so the adapter root no longer owns those runtime-private files.
+- Updated cellerator_workbench in CMakeLists.txt to compile the runtime backend from src/workbench/runtime/ and rewrote the workbench/architecture docs to describe the new adapter/runtime split.
+- Built cellerator_workbench, datasetWorkbenchRuntimeTest, cellShardFirstFileFixtureTest, and celleratorWorkbench successfully; ran ./build/datasetWorkbenchRuntimeTest and ./build/cellShardFirstFileFixtureTest successfully.
+- Forward-neighbor public inputs now use pointer/layout views instead of owned dense batch structs. Added dense owned convenience buffers for callers that need temporary storage.
+- Forward-neighbor build/search now accepts dense, host blocked-ELL, and host sliced-ELL inputs via one layout-explicit view contract. The current implementation materializes sparse inputs into dense host staging before the existing GPU search path.
+- Focused validation passed: `forwardNeighborsCompileTest` now covers dense, blocked-ELL, and sliced-ELL inputs at runtime, and `quantizeModelTest` still passes against the new API.
+- Created a dedicated workstream for the CellShard hierarchy reset so it does not blur with the earlier translation-unit split or the release stream.
+- Created a dedicated workstream for the Cellerator hierarchy reset so the repo-wide include-tree and src-ownership refactor does not blur with the active CellShard hierarchy work.
+- Landed the first Cellerator hierarchy-reset slice: `include/Cellerator/` is now the canonical in-repo facade tree, tests/benches/Python callers migrated off `../src/...`, root helper wrappers moved under `src/support/`, the ncurses entrypoint moved under `src/apps/workbench/`, and focused compile/runtime coverage passed on the real host.
 
 ## Next Actions
 - Create or resume a workstream ledger under `todos/` for the next substantial task.
@@ -168,8 +261,26 @@ _None recorded yet._
 - Expose additional inspect metadata only if future fixture validation needs shard-level codec details without reopening the execution fetch path.
 - Remove or quarantine the remaining compressed `.csh5` writer entrypoints once the repo decides whether legacy compatibility should be read-only through a converter instead of a test-only writer path.
 - Add an inspect/runtime summary test that exercises the new quantized blocked-ell codec family through `.csh5` metadata once the writer path exists.
-- Decide whether device staging for quantized Blocked-ELL should stay owned by Cellerator autograd/runtime or move behind a dedicated CellShard helper.
+- Write the missing quantization-semantics contract first, then decide whether device staging for quantized Blocked-ELL should stay owned by Cellerator autograd/runtime or move behind a dedicated CellShard helper.
 - No further action in this stream unless the repo wants to renumber or delete the reserved compressed codec/execution enum values in `csh5.cuh`, which would be a separate on-disk contract decision.
+- Patch the CellShard csh5 schema header and writer/reader helpers first so observation/feature annotations and dataset attributes have stable on-disk groups before touching ingest and Python APIs.
+- Implement and wire a CUDA COO->Blocked-ELL builder into dataset ingest first, then benchmark cold materialization again before touching secondary host loops.
+- Finish the static audit of ingest, preprocess, models, neighbors, trajectory, workbench, and graph surfaces, then write the prioritized CUDA port map.
+- No further action in this audit stream unless the user wants one of the recommended port slices turned into an implementation workstream.
+- Pick up gpu-prototype-ingest-blocked-ell first because cold materialization is the most obviously CPU-bound hot path and already has an active adjacent CellShard ingest-runtime stream.
+- Start by extracting a benchmarkable cold-materialization slice around dataset ingest blocked builder and optimized shard assembly.
+- Start with DenseReduce because it has both obvious sparse layout churn and the largest avoidable `to_dense()` boundary in current model code.
+- Start with forward_neighbors exact and ANN query orchestration and benchmark before committing to GPU trajectory follow-on stages.
+- Debug canonical blocked-part fetch/materialization from optimized-only blocked datasets so the real benchmark can finish sliced artifact generation after the new native ingest build.
+- Use `cellShardBlockedFetchProbe` against the real optimized-only blocked artifact to capture the failing shard/partition and patch the canonical reconstruction/materialization path.
+- Rebuild the benchmark artifacts and confirm optimized-only blocked headers now persist actual partition nnz so canonical cache-pack fetch succeeds.
+- Return to throughput work on the native CUDA blocked builder now that metadata correctness is fixed, starting with removing remaining host-heavy optimized-shard build/rebucket steps.
+- Write the ranked bottleneck analysis and convert these measurements into a GPU-first optimization order for ingest/load_or_generate and sliced preprocess orchestration.
+- Next optimization slice should keep the execution-segment path but remove repeated H2D staging by introducing a device-resident sliced-part cache or a reusable raw-device copy plus D2D restore per repeat, so steady-state compute can stop paying 952 MB of H2D traffic each run.
+- Map csh5.cc by real responsibility boundaries, then extract the lowest-risk slice first and keep focused CellShard tests green after each cut.
+- Optional follow-up only: split src/workbench/runtime/pipeline.cu further by behavior once the adapter/runtime move has settled.
+- Next push the same workstream further toward the original GPU-residency objective: remove the remaining host-side device-group merge in forward_neighbors and decide whether ANN eligible-list filtering should move fully on-device before starting the trajectory graph rewrite.
+- Patch the public include/install surface first, then move the non-kernel source directories to match it before splitting export/python.
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.
@@ -195,6 +306,26 @@ _None recorded yet._
 - The repo has a distinct quantized Blocked-ELL codec family and decode-policy vocabulary.
 - A packed quantized Blocked-ELL device view exists with reusable decode helpers.
 - A fused SpMM path can consume packed quantized Blocked-ELL directly on device with focused test coverage.
+- The audit clearly labels each major subsystem as keep on CPU, partially port, or fully port, with the recommended CUDA boundary and expected limiter called out.
+- A Volta-oriented repo map exists that separates keep-on-CPU control plane code from the CPU hot paths that should move into CUDA/autograd/custom-op surfaces.
+- The ledger contains explicit prototype workstreams with ownership boundaries, references, and benchmarkable done criteria for the major remaining CPU-centric numeric surfaces.
+- A working CUDA-backed ingest prototype exists for the dominant numeric cold-materialization phases and can be benchmarked against the current path on the V100 host.
+- The prototype clearly reports whether the dominant limiter moved from CPU orchestration to PCIe, HBM traffic, or launch/setup overhead.
+- At least one working GPU prototype exists for each major model-boundary class: sparse projection, sparse-aware loss, and quantizer supervision assembly.
+- Each prototype can be benchmarked against the existing model path and makes the dominant limiter explicit.
+- A working GPU-resident forward-neighbor prototype exists with materially fewer host staging and merge steps and benchmarkable V100 latency data.
+- Trajectory GPU follow-ons are either prototyped and benchmarked or explicitly rejected with measurement showing the extra port is not worth it.
+- Representative timing and profiler artifacts exist for prototype and real sliced-first runs.
+- Bottleneck class is identified with evidence rather than intuition.
+- Workstream ledger records the recommended optimization order.
+- The shared workbench backend no longer lives directly under src/workbench/ root implementation files.
+- src/workbench/dataset_workbench.hh remains the stable public include and callers do not need namespace changes.
+- The build graph compiles the runtime backend from src/workbench/runtime/.
+- Focused workbench build and runtime validation pass after the move.
+- CellShard installs and documents only the curated public headers.
+- Downstream Cellerator code no longer includes private CellShard helper paths.
+- Export and python are split into smaller behavior-local files.
+- Fused kernels remain intact and focused validation passes after the migration.
 
 ## Historical Summary
 - Recent completed work included Blocked-ELL persistence, real-data sparse replay benchmarking, quantize autograd kernels, workbench browse-cache updates, semantic cudaBioTypes cleanup, and the initial pointer-first neighbor workspace refactor.

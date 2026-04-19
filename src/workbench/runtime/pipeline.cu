@@ -1,19 +1,20 @@
-#include "dataset_workbench.hh"
+#include "../dataset_workbench.hh"
 
-#include "../compute/preprocess/operators.cuh"
-#include "../compute/preprocess/workspace.cuh"
-#include "../ingest/common/metadata_table.cuh"
-#include "../ingest/h5ad/h5ad_reader.cuh"
-#include "../ingest/dataset/dataset_ingest.cuh"
+#include "../../compute/preprocess/operators.cuh"
+#include "../../compute/preprocess/workspace.cuh"
+#include "../../ingest/common/metadata_table.cuh"
+#include "../../ingest/h5ad/h5ad_reader.cuh"
+#include "../../ingest/dataset/dataset_ingest.cuh"
 
-#include "../../extern/CellShard/src/sharded/disk.cuh"
-#include "../../extern/CellShard/src/sharded/distributed.cuh"
-#include "../../extern/CellShard/src/sharded/sharded_device.cuh"
-#include "../../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/storage/disk.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/distributed/distributed.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/device/sharded_device.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 
 #include <algorithm>
 #include <atomic>
 #include <cctype>
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -165,6 +166,31 @@ private:
     std::size_t capacity_ = 0u;
 };
 
+struct preprocess_partition_assignment {
+    host_buffer<int> owner;
+    std::vector<unsigned int> slots;
+};
+
+struct preprocess_slot_state {
+    int device = -1;
+    unsigned int slot = 0u;
+    unsigned long partitions_processed = 0ul;
+    bool ok = false;
+    cpre::device_workspace workspace;
+    std::vector<issue> issues;
+
+    preprocess_slot_state() {
+        cpre::init(&workspace);
+    }
+
+    ~preprocess_slot_state() {
+        cpre::clear(&workspace);
+    }
+
+    preprocess_slot_state(const preprocess_slot_state &) = delete;
+    preprocess_slot_state &operator=(const preprocess_slot_state &) = delete;
+};
+
 inline void push_issue(std::vector<issue> *issues,
                        issue_severity severity,
                        const std::string &scope,
@@ -188,6 +214,59 @@ inline bool check_cuda(cudaError_t status,
 inline std::string normalized_upper(std::string value) {
     for (char &ch : value) ch = (char) std::toupper((unsigned char) ch);
     return value;
+}
+
+inline std::vector<unsigned int> select_preprocess_slots(const csd::local_context &ctx,
+                                                         const preprocess_config &config) {
+    std::vector<unsigned int> slots;
+    if (!config.use_all_devices) {
+        if (config.device >= 0 && (unsigned int) config.device < ctx.device_count) {
+            slots.push_back((unsigned int) config.device);
+        }
+        return slots;
+    }
+    const unsigned int count = std::min<unsigned int>(ctx.device_count, 4u);
+    slots.reserve(count);
+    for (unsigned int slot = 0u; slot < count; ++slot) slots.push_back(slot);
+    return slots;
+}
+
+template<typename MatrixT>
+inline preprocess_partition_assignment build_preprocess_partition_assignment(const MatrixT &matrix,
+                                                                            const std::vector<unsigned int> &slots) {
+    preprocess_partition_assignment assignment;
+    std::vector<std::size_t> slot_bytes(slots.size(), 0u);
+    struct weighted_part {
+        unsigned long id;
+        std::size_t bytes;
+    };
+    std::vector<weighted_part> weighted;
+    assignment.owner.assign_fill((std::size_t) matrix.num_partitions, -1);
+    assignment.slots = slots;
+    weighted.reserve((std::size_t) matrix.num_partitions);
+    for (unsigned long part_id = 0u; part_id < matrix.num_partitions; ++part_id) {
+        weighted.push_back({ part_id, cs::partition_bytes(&matrix, part_id) });
+    }
+    std::sort(weighted.begin(),
+              weighted.end(),
+              [](const weighted_part &lhs, const weighted_part &rhs) {
+                  if (lhs.bytes != rhs.bytes) return lhs.bytes > rhs.bytes;
+                  return lhs.id < rhs.id;
+              });
+    for (const weighted_part &part : weighted) {
+        std::size_t best = 0u;
+        for (std::size_t slot = 1u; slot < slots.size(); ++slot) {
+            if (slot_bytes[slot] < slot_bytes[best]) best = slot;
+        }
+        assignment.owner[(std::size_t) part.id] = (int) slots[best];
+        slot_bytes[best] += part.bytes;
+    }
+    return assignment;
+}
+
+inline void append_issues(std::vector<issue> *dst, const std::vector<issue> &src) {
+    if (dst == nullptr || src.empty()) return;
+    dst->insert(dst->end(), src.begin(), src.end());
 }
 
 inline std::uint32_t to_dataset_execution_format(execution_format format) {
@@ -421,77 +500,21 @@ struct owned_sliced_ell_host {
 };
 
 inline bool build_preprocess_sliced_segment(const cs::sparse::blocked_ell *src,
-                                            std::uint32_t slice_rows,
+                                            std::uint32_t fallback_slice_rows,
+                                            int device,
                                             cs::sparse::sliced_ell *out) {
-    std::vector<std::uint32_t> row_offsets;
-    std::vector<std::uint32_t> slice_widths;
-    const std::uint32_t rows = src != nullptr ? src->rows : 0u;
-    const std::uint32_t block_size = src != nullptr ? src->block_size : 0u;
-    const std::uint32_t ell_width_blocks = block_size != 0u ? cs::sparse::ell_width_blocks(src) : 0u;
-    std::uint32_t row = 0u;
-
-    if (src == nullptr || out == nullptr || block_size == 0u || slice_rows == 0u) return false;
-    cs::sparse::clear(out);
-    cs::sparse::init(out, src->rows, src->cols, src->nnz);
-
-    row_offsets.push_back(0u);
-    while (row < rows) {
-        const std::uint32_t row_end = std::min<std::uint32_t>(rows, row + slice_rows);
-        std::uint32_t max_width = 0u;
-        for (std::uint32_t local_row = row; local_row < row_end; ++local_row) {
-            const std::uint32_t row_block = local_row / block_size;
-            std::uint32_t row_nnz = 0u;
-            for (std::uint32_t ell_col = 0u; ell_col < src->ell_cols; ++ell_col) {
-                const std::uint32_t slot = ell_col / block_size;
-                const std::uint32_t lane_in_block = ell_col % block_size;
-                const std::uint32_t block_col = src->blockColIdx[(unsigned long) row_block * ell_width_blocks + slot];
-                const std::uint32_t col = block_col != cs::sparse::blocked_ell_invalid_col
-                    ? block_col * block_size + lane_in_block
-                    : src->cols;
-                const float value = __half2float(src->val[(unsigned long) local_row * src->ell_cols + ell_col]);
-                if (col < src->cols && value != 0.0f) ++row_nnz;
-            }
-            max_width = std::max(max_width, row_nnz);
-        }
-        slice_widths.push_back(max_width);
-        row_offsets.push_back(row_end);
-        row = row_end;
+    static constexpr unsigned int candidates[] = { 8u, 16u, 32u, 64u };
+    if (src == nullptr || out == nullptr || fallback_slice_rows == 0u) return false;
+    if (cs::convert::sliced_ell_from_blocked_ell_cuda_auto(src,
+                                                           candidates,
+                                                           sizeof(candidates) / sizeof(candidates[0]),
+                                                           out,
+                                                           device,
+                                                           (cudaStream_t) 0,
+                                                           nullptr)) {
+        return true;
     }
-
-    if (!cs::sparse::allocate(out,
-                              (std::uint32_t) slice_widths.size(),
-                              row_offsets.data(),
-                              slice_widths.data())) {
-        cs::sparse::clear(out);
-        return false;
-    }
-
-    for (std::uint32_t slice = 0u; slice < out->slice_count; ++slice) {
-        const std::uint32_t row_begin = out->slice_row_offsets[slice];
-        const std::uint32_t row_end = out->slice_row_offsets[slice + 1u];
-        const std::uint32_t width = out->slice_widths[slice];
-        const std::size_t slice_base = cs::sparse::slice_slot_base(out, slice);
-        for (std::uint32_t local_row = row_begin; local_row < row_end; ++local_row) {
-            const std::uint32_t row_block = local_row / block_size;
-            const std::size_t dst_row_base = slice_base + (std::size_t) (local_row - row_begin) * (std::size_t) width;
-            std::uint32_t dst_slot = 0u;
-            for (std::uint32_t ell_col = 0u; ell_col < src->ell_cols; ++ell_col) {
-                const std::uint32_t slot = ell_col / block_size;
-                const std::uint32_t lane_in_block = ell_col % block_size;
-                const std::uint32_t block_col = src->blockColIdx[(unsigned long) row_block * ell_width_blocks + slot];
-                const std::uint32_t col = block_col != cs::sparse::blocked_ell_invalid_col
-                    ? block_col * block_size + lane_in_block
-                    : src->cols;
-                const __half value = src->val[(unsigned long) local_row * src->ell_cols + ell_col];
-                if (col >= src->cols || __half2float(value) == 0.0f) continue;
-                out->col_idx[dst_row_base + dst_slot] = col;
-                out->val[dst_row_base + dst_slot] = value;
-                ++dst_slot;
-            }
-        }
-    }
-
-    return true;
+    return cs::convert::sliced_ell_from_blocked_ell_cuda(src, fallback_slice_rows, out, device, (cudaStream_t) 0) != 0;
 }
 
 inline bool fetch_execution_partition(cellshard::bucketed_blocked_ell_partition *out,
@@ -502,6 +525,20 @@ inline bool fetch_execution_partition(cellshard::bucketed_blocked_ell_partition 
                                       const std::string &scope,
                                       const std::string &label) {
     if (!cs::fetch_dataset_blocked_ell_h5_execution_partition(out, matrix, storage, part_id)) {
+        push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed execution partition for " + label);
+        return false;
+    }
+    return true;
+}
+
+inline bool fetch_execution_partition(cellshard::bucketed_sliced_ell_partition *out,
+                                      cs::sharded<cs::sparse::sliced_ell> *matrix,
+                                      cs::shard_storage *storage,
+                                      unsigned long part_id,
+                                      std::vector<issue> *issues,
+                                      const std::string &scope,
+                                      const std::string &label) {
+    if (!cs::fetch_dataset_sliced_ell_h5_execution_partition(out, matrix, storage, part_id)) {
         push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed execution partition for " + label);
         return false;
     }
@@ -553,355 +590,69 @@ struct owned_observation_metadata_column {
     }
 };
 
-struct normalized_day_value {
-    std::string label;
-    float numeric = std::numeric_limits<float>::quiet_NaN();
-    std::uint8_t is_postnatal = 0u;
-    bool has_numeric = false;
+struct staged_annotation_column {
+    std::string name;
+    std::uint32_t type = cs::dataset_observation_metadata_type_none;
+    std::vector<std::string> text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
 };
 
-struct loaded_observation_metadata {
-    std::unique_ptr<owned_metadata_table> table;
-    std::vector<std::string> column_names;
-    std::vector<int> global_text_to_local;
-    int day_column = -1;
-};
-
-inline bool load_source_metadata_table(const source_entry &source,
-                                       owned_metadata_table *owned,
-                                       std::vector<issue> *issues) {
-    std::string error;
-    if (owned == nullptr) return false;
-    if (source.format == cseries::source_h5ad) {
-        if (!cellerator::ingest::h5ad::load_metadata_table(source.matrix_path.c_str(), &owned->table, &error)) {
-            push_issue(issues,
-                       issue_severity::warning,
-                       "metadata",
-                       error.empty() ? ("failed to load h5ad metadata for " + source.dataset_id) : error);
-            return false;
-        }
-        return true;
-    }
-    if (source.metadata_path.empty()) return false;
-    if (!ccommon::load_tsv(source.metadata_path.c_str(), &owned->table, 1)) {
-        push_issue(issues, issue_severity::warning, "metadata", "failed to load metadata table for " + source.dataset_id);
-        return false;
-    }
-    return true;
-}
-
-inline std::string trim_copy(std::string value) {
-    std::size_t begin = 0u;
-    std::size_t end = value.size();
-    while (begin < end && std::isspace((unsigned char) value[begin])) ++begin;
-    while (end > begin && std::isspace((unsigned char) value[end - 1u])) --end;
-    return value.substr(begin, end - begin);
-}
-
-inline std::string lower_copy(std::string value) {
-    for (char &ch : value) ch = (char) std::tolower((unsigned char) ch);
-    return value;
-}
-
-inline std::string sanitize_metadata_column_name(const char *raw_name,
-                                                 unsigned int column_index) {
-    std::string name = trim_copy(raw_name != nullptr ? raw_name : "");
-    if (!name.empty()) return name;
-    if (column_index == 0u) return "row_id";
-    return "column_" + std::to_string(column_index);
-}
-
-inline std::vector<std::string> make_unique_metadata_column_names(const ccommon::metadata_table &table) {
-    std::unordered_map<std::string, unsigned int> counts;
-    std::vector<std::string> names;
-    names.reserve(table.num_cols);
-    for (unsigned int col = 0; col < table.num_cols; ++col) {
-        const std::string base = sanitize_metadata_column_name(ccommon::column_name(&table, col), col);
-        const unsigned int seen = counts[base]++;
-        if (seen == 0u) names.push_back(base);
-        else names.push_back(base + "_" + std::to_string(seen + 1u));
-    }
-    return names;
-}
-
-inline int find_day_column_index(const std::vector<std::string> &column_names) {
-    int stage_index = -1;
-    for (std::size_t i = 0; i < column_names.size(); ++i) {
-        const std::string name = lower_copy(column_names[i]);
-        if (name == "day" || name == "embryonic_day_label") return (int) i;
-        if (stage_index < 0 && name == "stage") stage_index = (int) i;
-    }
-    return stage_index;
-}
-
-inline normalized_day_value normalize_day_value(const char *raw_value) {
-    normalized_day_value out;
-    const std::string value = trim_copy(raw_value != nullptr ? raw_value : "");
-    if (value.empty()) return out;
-
-    out.label = value;
-    if (value == "P0" || value == "p0") {
-        out.is_postnatal = 1u;
-        return out;
-    }
-
-    if (value.size() > 1u && (value[0] == 'E' || value[0] == 'e')) {
-        char *end = nullptr;
-        const float parsed = std::strtof(value.c_str() + 1u, &end);
-        if (end != value.c_str() + 1u && end != nullptr && *end == '\0' && std::isfinite(parsed)) {
-            out.numeric = parsed;
-            out.has_numeric = true;
-        }
-    }
-    return out;
-}
-
-struct browse_cache_owned {
-    host_buffer<std::uint32_t> selected_feature_indices;
-    host_buffer<float> gene_sum;
-    host_buffer<float> gene_detected;
-    host_buffer<float> gene_sq_sum;
-    host_buffer<float> dataset_feature_mean;
-    host_buffer<float> shard_feature_mean;
-    host_buffer<std::uint32_t> partition_sample_row_offsets;
-    host_buffer<std::uint64_t> partition_sample_global_rows;
-    host_buffer<float> partition_sample_values;
-};
-
-struct gene_metric_partial {
-    host_buffer<float> gene_sum;
-    host_buffer<float> gene_detected;
-    host_buffer<float> gene_sq_sum;
-    float active_rows = 0.0f;
-    bool ok = false;
-};
-
-struct selected_feature_partial {
-    host_buffer<float> dataset_feature_sum;
-    host_buffer<float> shard_feature_sum;
-    bool ok = false;
-};
-
-#include "dataset_workbench_cuda/accumulate_selected_feature_sums_kernel.cuh"
-#include "dataset_workbench_cuda/extract_sample_tile_kernel.cuh"
-#include "dataset_workbench_cuda/accumulate_gene_metrics_blocked_ell_kernel.cuh"
-#include "dataset_workbench_cuda/accumulate_selected_feature_sums_blocked_ell_kernel.cuh"
-#include "dataset_workbench_cuda/extract_sample_tile_blocked_ell_kernel.cuh"
-
-inline bool append_embedded_metadata_tables(const ingest_plan &plan,
-                                            std::vector<issue> *issues) {
-    std::vector<owned_metadata_table *> owned;
-    std::vector<cellshard::dataset_metadata_table_view> views;
+struct owned_embedded_metadata_bundle {
+    std::vector<std::unique_ptr<owned_metadata_table>> tables;
+    std::vector<cs::dataset_metadata_table_view> table_views;
     std::vector<std::uint32_t> dataset_indices;
     std::vector<std::uint64_t> global_row_begin;
     std::vector<std::uint64_t> global_row_end;
-    cellshard::dataset_embedded_metadata_view metadata_view{};
-    bool ok = true;
-
-    owned.reserve(plan.datasets.size());
-    views.reserve(plan.datasets.size());
-    dataset_indices.reserve(plan.datasets.size());
-    global_row_begin.reserve(plan.datasets.size());
-    global_row_end.reserve(plan.datasets.size());
-
-    for (std::size_t i = 0; i < plan.datasets.size(); ++i) {
-        const planned_dataset &dataset = plan.datasets[i];
-        const source_entry &source = plan.sources[dataset.source_index];
-        if (source.format != cseries::source_h5ad && source.metadata_path.empty()) continue;
-
-        owned_metadata_table *owned_table = new owned_metadata_table();
-        if (!load_source_metadata_table(source, owned_table, issues)) {
-            delete owned_table;
-            continue;
-        }
-        if (owned_table->table.num_rows != dataset.rows) {
-            push_issue(issues,
-                       issue_severity::error,
-                       "metadata",
-                       "metadata row count does not match barcodes for " + dataset.dataset_id);
-            delete owned_table;
-            ok = false;
-            continue;
-        }
-
-        dataset_indices.push_back((std::uint32_t) i);
-        global_row_begin.push_back((std::uint64_t) dataset.global_row_begin);
-        global_row_end.push_back((std::uint64_t) dataset.global_row_end);
-        views.push_back(cellshard::dataset_metadata_table_view{
-            owned_table->table.num_rows,
-            owned_table->table.num_cols,
-            as_text_view(&owned_table->table.column_names),
-            as_text_view(&owned_table->table.field_values),
-            owned_table->table.row_offsets
-        });
-        owned.push_back(owned_table);
+    cs::dataset_embedded_metadata_view view() const {
+        cs::dataset_embedded_metadata_view out{};
+        out.count = (std::uint32_t) table_views.size();
+        out.dataset_indices = dataset_indices.empty() ? nullptr : dataset_indices.data();
+        out.global_row_begin = global_row_begin.empty() ? nullptr : global_row_begin.data();
+        out.global_row_end = global_row_end.empty() ? nullptr : global_row_end.data();
+        out.tables = table_views.empty() ? nullptr : table_views.data();
+        return out;
     }
+};
 
-    if (!ok) {
-        for (owned_metadata_table *table : owned) delete table;
-        return false;
-    }
-
-    metadata_view.count = (std::uint32_t) views.size();
-    metadata_view.dataset_indices = dataset_indices.empty() ? nullptr : dataset_indices.data();
-    metadata_view.global_row_begin = global_row_begin.empty() ? nullptr : global_row_begin.data();
-    metadata_view.global_row_end = global_row_end.empty() ? nullptr : global_row_end.data();
-    metadata_view.tables = views.empty() ? nullptr : views.data();
-
-    if (!cellshard::append_dataset_embedded_metadata_h5(plan.policy.output_path.c_str(), &metadata_view)) {
-        push_issue(issues, issue_severity::error, "metadata", "failed to append embedded metadata to dataset.csh5");
-        ok = false;
-    }
-
-    for (owned_metadata_table *table : owned) delete table;
-    return ok;
-}
-
-inline bool append_observation_metadata_table(const ingest_plan &plan,
-                                             std::vector<issue> *issues) {
-    std::vector<loaded_observation_metadata> dataset_metadata(plan.datasets.size());
-    std::vector<std::string> text_column_names;
-    std::unordered_map<std::string, std::size_t> text_column_indices;
+struct owned_annotation_bundle {
     std::vector<std::unique_ptr<owned_observation_metadata_column>> columns;
     std::vector<cs::dataset_observation_metadata_column_view> views;
-    cs::dataset_observation_metadata_view metadata_view{};
-    bool saw_any_metadata = false;
-    bool need_day_columns = false;
+};
 
-    if (plan.total_rows > (unsigned long) std::numeric_limits<std::uint32_t>::max()) {
-        push_issue(issues, issue_severity::error, "metadata", "typed observation metadata currently requires <= 2^32-1 rows");
-        return false;
+struct owned_user_attribute_bundle {
+    ccommon::text_column keys;
+    ccommon::text_column values;
+
+    owned_user_attribute_bundle() {
+        ccommon::init(&keys);
+        ccommon::init(&values);
     }
-
-    for (std::size_t i = 0; i < plan.datasets.size(); ++i) {
-        const planned_dataset &dataset = plan.datasets[i];
-        const source_entry &source = plan.sources[dataset.source_index];
-        if (source.format != cseries::source_h5ad && source.metadata_path.empty()) continue;
-
-        auto owned = std::make_unique<owned_metadata_table>();
-        if (!load_source_metadata_table(source, owned.get(), issues)) {
-            continue;
-        }
-        if (owned->table.num_rows != dataset.rows) {
-            push_issue(issues,
-                       issue_severity::error,
-                       "metadata",
-                       "metadata row count does not match barcodes for " + dataset.dataset_id);
-            return false;
-        }
-
-        loaded_observation_metadata loaded;
-        loaded.column_names = make_unique_metadata_column_names(owned->table);
-        loaded.day_column = find_day_column_index(loaded.column_names);
-        loaded.table = std::move(owned);
-        if (loaded.day_column >= 0) need_day_columns = true;
-        for (const std::string &name : loaded.column_names) {
-            if (text_column_indices.find(name) != text_column_indices.end()) continue;
-            text_column_indices.emplace(name, text_column_names.size());
-            text_column_names.push_back(name);
-        }
-        dataset_metadata[i] = std::move(loaded);
-        saw_any_metadata = true;
+    ~owned_user_attribute_bundle() {
+        ccommon::clear(&values);
+        ccommon::clear(&keys);
     }
+    owned_user_attribute_bundle(const owned_user_attribute_bundle &) = delete;
+    owned_user_attribute_bundle &operator=(const owned_user_attribute_bundle &) = delete;
 
-    if (!saw_any_metadata) return true;
-
-    for (loaded_observation_metadata &loaded : dataset_metadata) {
-        loaded.global_text_to_local.assign(text_column_names.size(), -1);
-        for (std::size_t local = 0; local < loaded.column_names.size(); ++local) {
-            const auto it = text_column_indices.find(loaded.column_names[local]);
-            if (it != text_column_indices.end()) loaded.global_text_to_local[it->second] = (int) local;
-        }
+    cs::dataset_user_attribute_view view(std::uint32_t count) const {
+        cs::dataset_user_attribute_view out{};
+        out.count = count;
+        out.keys = as_text_view(&keys);
+        out.values = as_text_view(&values);
+        return out;
     }
+};
 
-    columns.reserve(text_column_names.size() + (need_day_columns ? 3u : 0u));
-    for (const std::string &name : text_column_names) {
-        auto column = std::make_unique<owned_observation_metadata_column>();
-        column->name = name;
-        column->type = cs::dataset_observation_metadata_type_text;
-        column->text_values = std::make_unique<owned_observation_text_column>();
-        columns.push_back(std::move(column));
-    }
+#include "internal/metadata_support_part.hh"
 
-    owned_observation_metadata_column *day_label_column = nullptr;
-    owned_observation_metadata_column *day_numeric_column = nullptr;
-    owned_observation_metadata_column *postnatal_column = nullptr;
-    if (need_day_columns) {
-        auto label = std::make_unique<owned_observation_metadata_column>();
-        label->name = "embryonic_day_label";
-        label->type = cs::dataset_observation_metadata_type_text;
-        label->text_values = std::make_unique<owned_observation_text_column>();
-        day_label_column = label.get();
-        columns.push_back(std::move(label));
+#include "kernels/accumulate_selected_feature_sums_kernel.cuh"
+#include "kernels/extract_sample_tile_kernel.cuh"
+#include "kernels/accumulate_gene_metrics_blocked_ell_kernel.cuh"
+#include "kernels/accumulate_selected_feature_sums_blocked_ell_kernel.cuh"
+#include "kernels/extract_sample_tile_blocked_ell_kernel.cuh"
 
-        auto numeric = std::make_unique<owned_observation_metadata_column>();
-        numeric->name = "embryonic_day";
-        numeric->type = cs::dataset_observation_metadata_type_float32;
-        numeric->float32_values.reserve(plan.total_rows);
-        day_numeric_column = numeric.get();
-        columns.push_back(std::move(numeric));
-
-        auto postnatal = std::make_unique<owned_observation_metadata_column>();
-        postnatal->name = "is_postnatal";
-        postnatal->type = cs::dataset_observation_metadata_type_uint8;
-        postnatal->uint8_values.reserve(plan.total_rows);
-        postnatal_column = postnatal.get();
-        columns.push_back(std::move(postnatal));
-    }
-
-    for (std::size_t dataset_index = 0; dataset_index < plan.datasets.size(); ++dataset_index) {
-        const planned_dataset &dataset = plan.datasets[dataset_index];
-        const loaded_observation_metadata &loaded = dataset_metadata[dataset_index];
-        for (unsigned long row = 0; row < dataset.rows; ++row) {
-            for (std::size_t global_col = 0; global_col < text_column_names.size(); ++global_col) {
-                const int local_col = global_col < loaded.global_text_to_local.size()
-                    ? loaded.global_text_to_local[global_col]
-                    : -1;
-                const char *value = (loaded.table != nullptr && local_col >= 0)
-                    ? ccommon::field(&loaded.table->table, (unsigned int) row, (unsigned int) local_col)
-                    : "";
-                if (!ccommon::append(&columns[global_col]->text_values->values,
-                                     value != nullptr ? value : "",
-                                     std::strlen(value != nullptr ? value : ""))) {
-                    push_issue(issues, issue_severity::error, "metadata", "failed to build observation metadata text column");
-                    return false;
-                }
-            }
-
-            if (need_day_columns) {
-                const char *raw_day = (loaded.table != nullptr && loaded.day_column >= 0)
-                    ? ccommon::field(&loaded.table->table, (unsigned int) row, (unsigned int) loaded.day_column)
-                    : "";
-                const normalized_day_value normalized = normalize_day_value(raw_day);
-                if (!ccommon::append(&day_label_column->text_values->values,
-                                     normalized.label.c_str(),
-                                     normalized.label.size())) {
-                    push_issue(issues, issue_severity::error, "metadata", "failed to build embryonic_day_label column");
-                    return false;
-                }
-                day_numeric_column->float32_values.push_back(
-                    normalized.has_numeric ? normalized.numeric : std::numeric_limits<float>::quiet_NaN());
-                postnatal_column->uint8_values.push_back(normalized.is_postnatal);
-            }
-        }
-    }
-
-    views.reserve(columns.size());
-    for (const std::unique_ptr<owned_observation_metadata_column> &column : columns) {
-        views.push_back(column->view());
-    }
-
-    metadata_view.rows = plan.total_rows;
-    metadata_view.cols = (std::uint32_t) views.size();
-    metadata_view.columns = views.empty() ? nullptr : views.data();
-
-    if (!cs::append_dataset_observation_metadata_h5(plan.policy.output_path.c_str(), &metadata_view)) {
-        push_issue(issues, issue_severity::error, "metadata", "failed to append typed observation metadata to dataset.csh5");
-        return false;
-    }
-
-    return true;
-}
+#include "internal/metadata_io_part.hh"
 
 inline host_buffer<unsigned int> choose_sample_rows(unsigned int rows, unsigned int sample_rows) {
     host_buffer<unsigned int> out;
@@ -1505,230 +1256,7 @@ done:
     return ok;
 }
 
-inline bool build_browse_cache_multigpu(const std::string &path,
-                                        const ingest_plan &plan,
-                                        std::vector<issue> *issues) {
-    cs::sharded<cs::sparse::blocked_ell> matrix;
-    cs::shard_storage storage;
-    csd::local_context ctx;
-    csd::shard_map shard_map;
-    browse_cache_owned owned;
-    bool ok = false;
-
-    cs::init(&matrix);
-    cs::init(&storage);
-    csd::init(&ctx);
-    csd::init(&shard_map);
-
-    if (plan.policy.cache_dir.empty()) {
-        push_issue(issues, issue_severity::error, "browse", "explicit local cache_dir is required for browse cache generation");
-        goto done;
-    }
-
-    if (!cs::load_header(path.c_str(), &matrix, &storage)) {
-        push_issue(issues, issue_severity::error, "browse", "failed to reload dataset header for browse cache build");
-        goto done;
-    }
-    if (!cs::bind_dataset_h5_cache(&storage, plan.policy.cache_dir.c_str())) {
-        push_issue(issues, issue_severity::error, "browse", "failed to bind explicit local cache_dir for browse cache generation");
-        goto done;
-    }
-
-    if (!check_cuda(csd::discover_local(&ctx, 1, cudaStreamNonBlocking), issues, "browse", "discover_local")
-        || !check_cuda(csd::enable_peer_access(&ctx), issues, "browse", "enable_peer_access")) goto done;
-    if (ctx.device_count < 4u) {
-        push_issue(issues, issue_severity::error, "browse", "browse cache generation requires 4 visible GPUs");
-        goto done;
-    }
-    if (!csd::assign_shards_by_bytes(&shard_map, &matrix, &ctx)) {
-        push_issue(issues, issue_severity::error, "browse", "failed to assign shards across GPUs");
-        goto done;
-    }
-
-    {
-        host_buffer<int> shard_owner;
-        host_buffer<gene_metric_partial> partials;
-        host_buffer<std::thread> workers;
-        shard_owner.assign_fill(matrix.num_shards, -1);
-        partials.resize(ctx.device_count);
-        workers.reserve(ctx.device_count);
-        for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
-            shard_owner[shard_id] = shard_map.device_slot[shard_id];
-        }
-
-        for (unsigned int slot = 0; slot < ctx.device_count; ++slot) {
-            workers.push_back(std::thread([&, slot]() {
-                (void) build_gene_metric_partials_blocked_ell(path,
-                                                              plan.policy.cache_dir,
-                                                              shard_owner,
-                                                              slot,
-                                                              ctx.device_ids[slot],
-                                                              (unsigned int) matrix.cols,
-                                                              partials.data() + slot,
-                                                              issues);
-            }));
-        }
-        for (std::thread &worker : workers) worker.join();
-
-        owned.gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        owned.gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
-        owned.gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        for (const gene_metric_partial &partial : partials) {
-            if (!partial.ok) goto done;
-            for (std::size_t gene = 0; gene < owned.gene_sum.size(); ++gene) {
-                owned.gene_sum[gene] += partial.gene_sum[gene];
-                owned.gene_detected[gene] += partial.gene_detected[gene];
-                owned.gene_sq_sum[gene] += partial.gene_sq_sum[gene];
-            }
-        }
-    }
-
-    {
-        host_buffer<std::pair<float, std::uint32_t>> ranked;
-        ranked.reserve(owned.gene_sum.size());
-        for (std::uint32_t gene = 0; gene < owned.gene_sum.size(); ++gene) {
-            ranked.push_back(std::pair<float, std::uint32_t>{ owned.gene_sum[gene], gene });
-        }
-        std::partial_sort(ranked.begin(),
-                          ranked.begin() + std::min<std::size_t>(plan.policy.browse_top_features, ranked.size()),
-                          ranked.end(),
-                          [](const auto &lhs, const auto &rhs) {
-                              if (lhs.first != rhs.first) return lhs.first > rhs.first;
-                              return lhs.second < rhs.second;
-                          });
-        const std::size_t count = std::min<std::size_t>(plan.policy.browse_top_features, ranked.size());
-        owned.selected_feature_indices.assign_fill(count, 0u);
-        for (std::size_t i = 0; i < count; ++i) owned.selected_feature_indices[i] = ranked[i].second;
-    }
-
-    if (owned.selected_feature_indices.empty()) {
-        push_issue(issues, issue_severity::warning, "browse", "browse cache skipped because no features were selected");
-        ok = true;
-        goto done;
-    }
-
-    owned.dataset_feature_mean.assign_fill(plan.datasets.size() * owned.selected_feature_indices.size(), 0.0f);
-    owned.shard_feature_mean.assign_fill((std::size_t) matrix.num_shards * owned.selected_feature_indices.size(), 0.0f);
-    owned.partition_sample_row_offsets.assign_fill((std::size_t) matrix.num_partitions + 1u, 0u);
-    for (unsigned long part_id = 0; part_id < matrix.num_partitions; ++part_id) {
-        owned.partition_sample_row_offsets[part_id + 1u] =
-            owned.partition_sample_row_offsets[part_id] + plan.policy.browse_sample_rows_per_partition;
-    }
-    owned.partition_sample_global_rows.assign_fill((std::size_t) matrix.num_partitions * plan.policy.browse_sample_rows_per_partition,
-                                              std::numeric_limits<std::uint64_t>::max());
-    owned.partition_sample_values.assign_fill((std::size_t) matrix.num_partitions
-                                             * plan.policy.browse_sample_rows_per_partition
-                                             * owned.selected_feature_indices.size(),
-                                         0.0f);
-
-    {
-        host_buffer<int> shard_owner;
-        host_buffer<std::uint32_t> part_dataset_indices;
-        host_buffer<selected_feature_partial> partials;
-        host_buffer<std::thread> workers;
-        host_buffer<std::uint32_t> source_to_dataset;
-        shard_owner.assign_fill(matrix.num_shards, -1);
-        part_dataset_indices.assign_fill(plan.parts.size(), 0u);
-        partials.resize(ctx.device_count);
-        workers.reserve(ctx.device_count);
-        source_to_dataset.assign_fill(plan.sources.size(), std::numeric_limits<std::uint32_t>::max());
-        for (unsigned long shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
-            shard_owner[shard_id] = shard_map.device_slot[shard_id];
-        }
-        for (std::size_t dataset_index = 0; dataset_index < plan.datasets.size(); ++dataset_index) {
-            source_to_dataset[plan.datasets[dataset_index].source_index] = (std::uint32_t) dataset_index;
-        }
-        for (std::size_t part_index = 0; part_index < plan.parts.size(); ++part_index) {
-            const std::size_t source_index = plan.parts[part_index].source_index;
-            if (source_index < source_to_dataset.size() && source_to_dataset[source_index] != std::numeric_limits<std::uint32_t>::max()) {
-                part_dataset_indices[part_index] = source_to_dataset[source_index];
-            }
-        }
-
-        for (unsigned int slot = 0; slot < ctx.device_count; ++slot) {
-            workers.push_back(std::thread([&, slot]() {
-                partials[slot].ok = build_selected_feature_partials_blocked_ell(path,
-                                                                                plan.policy.cache_dir,
-                                                                                shard_owner,
-                                                                                slot,
-                                                                                ctx.device_ids[slot],
-                                                                                part_dataset_indices,
-                                                                                (unsigned int) plan.datasets.size(),
-                                                                                (unsigned int) matrix.num_shards,
-                                                                                owned.selected_feature_indices,
-                                                                                plan.policy.browse_sample_rows_per_partition,
-                                                                                &partials[slot].dataset_feature_sum,
-                                                                                &partials[slot].shard_feature_sum,
-                                                                                &owned.partition_sample_global_rows,
-                                                                                &owned.partition_sample_values,
-                                                                                issues);
-            }));
-        }
-        for (std::thread &worker : workers) worker.join();
-
-        for (const selected_feature_partial &partial : partials) {
-            if (!partial.ok) goto done;
-            if (partial.dataset_feature_sum.empty()) continue;
-            for (std::size_t i = 0; i < owned.dataset_feature_mean.size(); ++i) {
-                owned.dataset_feature_mean[i] += partial.dataset_feature_sum[i];
-            }
-        }
-        for (const selected_feature_partial &partial : partials) {
-            if (partial.shard_feature_sum.empty()) continue;
-            for (std::size_t i = 0; i < owned.shard_feature_mean.size(); ++i) {
-                owned.shard_feature_mean[i] += partial.shard_feature_sum[i];
-            }
-        }
-    }
-
-    for (std::size_t dataset_index = 0; dataset_index < plan.datasets.size(); ++dataset_index) {
-        const double denom = plan.datasets[dataset_index].rows != 0 ? (double) plan.datasets[dataset_index].rows : 1.0;
-        for (std::size_t feature = 0; feature < owned.selected_feature_indices.size(); ++feature) {
-            owned.dataset_feature_mean[dataset_index * owned.selected_feature_indices.size() + feature] =
-                (float) (owned.dataset_feature_mean[dataset_index * owned.selected_feature_indices.size() + feature] / denom);
-        }
-    }
-    for (std::size_t shard_id = 0; shard_id < matrix.num_shards; ++shard_id) {
-        const double denom = cs::rows_in_shard(&matrix, (unsigned long) shard_id) != 0
-            ? (double) cs::rows_in_shard(&matrix, (unsigned long) shard_id)
-            : 1.0;
-        for (std::size_t feature = 0; feature < owned.selected_feature_indices.size(); ++feature) {
-            owned.shard_feature_mean[shard_id * owned.selected_feature_indices.size() + feature] =
-                (float) (owned.shard_feature_mean[shard_id * owned.selected_feature_indices.size() + feature] / denom);
-        }
-    }
-
-    {
-        cellshard::dataset_browse_cache_view view{};
-        view.selected_feature_count = (std::uint32_t) owned.selected_feature_indices.size();
-        view.selected_feature_indices = owned.selected_feature_indices.data();
-        view.gene_sum = owned.gene_sum.data();
-        view.gene_detected = owned.gene_detected.data();
-        view.gene_sq_sum = owned.gene_sq_sum.data();
-        view.dataset_count = (std::uint32_t) plan.datasets.size();
-        view.dataset_feature_mean = owned.dataset_feature_mean.data();
-        view.shard_count = (std::uint32_t) matrix.num_shards;
-        view.shard_feature_mean = owned.shard_feature_mean.data();
-        view.partition_count = (std::uint32_t) matrix.num_partitions;
-        view.sample_rows_per_partition = plan.policy.browse_sample_rows_per_partition;
-        view.partition_sample_row_offsets = owned.partition_sample_row_offsets.data();
-        view.partition_sample_global_rows = owned.partition_sample_global_rows.data();
-        view.partition_sample_values = owned.partition_sample_values.data();
-        if (!cellshard::append_dataset_browse_cache_h5(path.c_str(), &view)) {
-            push_issue(issues, issue_severity::error, "browse", "failed to append browse cache to dataset.csh5");
-            goto done;
-        }
-    }
-
-    ok = true;
-
-done:
-    csd::clear(&shard_map);
-    csd::clear(&ctx);
-    cs::clear(&storage);
-    cs::clear(&matrix);
-    return ok;
-}
+#include "internal/browse_cache_build_part.hh"
 
 } // namespace
 
@@ -1778,6 +1306,7 @@ conversion_report convert_plan_to_dataset_csh5(const ingest_plan &plan) {
     options.target_shard_bytes = plan.policy.target_shard_bytes;
     options.reader_bytes = plan.policy.reader_bytes;
     options.cache_root = plan.policy.cache_dir;
+    options.working_root = plan.policy.working_root;
     options.device = plan.policy.device;
     options.stream = (cudaStream_t) 0;
 
@@ -1799,45 +1328,59 @@ conversion_report convert_plan_to_dataset_csh5(const ingest_plan &plan) {
             cseries::clear(&manifest);
             return report;
         }
+        report.events.push_back({"metadata", "embedding feature metadata"});
+        if (!append_feature_metadata_table(plan, &report.issues)) {
+            cseries::clear(&manifest);
+            return report;
+        }
     }
 
-    report.events.push_back({"execution", "writing execution layout metadata"});
+    report.events.push_back({"execution", "writing execution metadata"});
     if (!append_execution_layout_metadata(plan, &report.issues)) {
         cseries::clear(&manifest);
         return report;
     }
 
     if (!plan.policy.cache_dir.empty()) {
-        report.events.push_back({"execution", "warming bucketed execution cache"});
-        if (!cs::warm_dataset_blocked_ell_h5_execution_cache(plan.policy.output_path.c_str(), plan.policy.cache_dir.c_str())) {
-            push_issue(&report.issues, issue_severity::error, "execution", "failed to warm bucketed execution cache");
+        report.events.push_back({"execution", "warming sliced cache"});
+        if (!cs::warm_dataset_sliced_ell_h5_cache(plan.policy.output_path.c_str(), plan.policy.cache_dir.c_str())) {
+            push_issue(&report.issues, issue_severity::error, "execution", "failed to warm sliced cache");
             cseries::clear(&manifest);
             return report;
         }
     }
 
     if (plan.policy.build_browse_cache) {
-        report.events.push_back({"browse", "building 4-GPU browse cache"});
-        if (!build_browse_cache_multigpu(plan.policy.output_path, plan, &report.issues)) {
+        const dataset_summary converted = summarize_dataset_csh5(plan.policy.output_path);
+        if (!converted.ok) {
+            push_issue(&report.issues, issue_severity::error, "browse", "failed to summarize converted dataset before browse build");
             cseries::clear(&manifest);
             return report;
+        }
+        if (converted.matrix_format.find("blocked") != std::string::npos) {
+            report.events.push_back({"browse", "building 4-GPU browse cache"});
+            if (!build_browse_cache_multigpu(plan.policy.output_path, plan, &report.issues)) {
+                cseries::clear(&manifest);
+                return report;
+            }
+        } else {
+            report.events.push_back({"browse", "skipping browse build until blocked finalize"});
         }
     }
 
     if (plan.policy.verify_after_write) {
         report.events.push_back({"verify", "loading written header"});
-        if (!cs::load_header(plan.policy.output_path.c_str(), &header, &storage)) {
+        const dataset_summary written = summarize_dataset_csh5(plan.policy.output_path);
+        if (!written.ok) {
             push_issue(&report.issues, issue_severity::error, "verify", "failed to reopen written dataset.csh5 header");
             cseries::clear(&manifest);
-            cs::clear(&storage);
-            cs::clear(&header);
             return report;
         }
-        if (header.rows != plan.total_rows || header.num_partitions != plan.parts.size() || header.num_shards != plan.shards.size()) {
+        if (written.rows != plan.total_rows
+            || written.partitions.size() != plan.parts.size()
+            || written.shards.size() != plan.shards.size()) {
             push_issue(&report.issues, issue_severity::error, "verify", "written header does not match the planned layout");
             cseries::clear(&manifest);
-            cs::clear(&storage);
-            cs::clear(&header);
             return report;
         }
     }
@@ -1850,302 +1393,6 @@ conversion_report convert_plan_to_dataset_csh5(const ingest_plan &plan) {
     return report;
 }
 
-preprocess_summary run_preprocess_pass(const std::string &path, const preprocess_config &config) {
-    preprocess_summary summary;
-    cs::sharded<cs::sparse::blocked_ell> matrix;
-    cs::shard_storage storage;
-    cellshard::bucketed_blocked_ell_partition exec_part;
-    csv::partition_record<cs::sparse::sliced_ell> device_part;
-    cpre::device_workspace workspace;
-    dataset_summary dataset = summarize_dataset_csh5(path);
-    host_buffer<unsigned char> gene_flags;
-    host_buffer<unsigned char> host_keep_genes;
-    host_buffer<float> host_gene_sum;
-    host_buffer<float> host_gene_sq_sum;
-    host_buffer<float> host_gene_detected;
-    host_buffer<float> host_cell_total_counts;
-    host_buffer<float> host_cell_mito_counts;
-    host_buffer<float> host_cell_max_counts;
-    host_buffer<unsigned int> host_cell_detected_genes;
-    host_buffer<unsigned char> host_keep_cells;
-    float kept_cells = 0.0f;
-    unsigned int mito_feature_count = 0u;
-    const cpre::cell_filter_params cell_filter = {
-        config.min_counts,
-        config.min_genes,
-        config.max_mito_fraction
-    };
-    const cpre::gene_filter_params gene_filter = {
-        config.min_gene_sum,
-        config.min_detected_cells,
-        config.min_variance
-    };
-
-    cs::init(&matrix);
-    cs::init(&storage);
-    cellshard::init(&exec_part);
-    csv::zero_record(&device_part);
-    cpre::init(&workspace);
-
-    if (!dataset.ok) {
-        summary.issues = dataset.issues;
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "cannot preprocess an unreadable dataset.csh5");
-        return summary;
-    }
-    if (dataset.preprocess.available) {
-        push_issue(&summary.issues,
-                   issue_severity::error,
-                   "preprocess",
-                   "dataset.csh5 already contains persisted preprocess metadata; start from a raw dataset file instead");
-        return summary;
-    }
-    if (config.cache_dir.empty()) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "explicit local cache_dir is required for Blocked-ELL preprocess");
-        return summary;
-    }
-
-    int device_count = 0;
-    if (!check_cuda(cudaGetDeviceCount(&device_count), &summary.issues, "preprocess", "cudaGetDeviceCount")) return summary;
-    if (device_count == 0) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "no CUDA devices are available");
-        return summary;
-    }
-    if (config.device < 0 || config.device >= device_count) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "requested CUDA device is out of range");
-        return summary;
-    }
-
-    if (!cs::load_header(path.c_str(), &matrix, &storage)) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to load dataset header");
-        return summary;
-    }
-    if (!cs::bind_dataset_h5_cache(&storage, config.cache_dir.c_str())) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to bind explicit local cache_dir");
-        return summary;
-    }
-
-    if (!cpre::setup(&workspace, config.device, (cudaStream_t) 0)
-        || !cpre::reserve(&workspace, max_partition_rows(matrix), (unsigned int) matrix.cols, max_partition_nnz(matrix))) {
-        push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to set up preprocess workspace");
-        goto done;
-    }
-
-    host_cell_total_counts.assign_fill((std::size_t) matrix.rows, 0.0f);
-    host_cell_mito_counts.assign_fill((std::size_t) matrix.rows, 0.0f);
-    host_cell_max_counts.assign_fill((std::size_t) matrix.rows, 0.0f);
-    host_cell_detected_genes.assign_fill((std::size_t) matrix.rows, 0u);
-    host_keep_cells.assign_fill((std::size_t) matrix.rows, static_cast<unsigned char>(0u));
-    host_gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-    host_gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-    host_gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
-    gene_flags = build_gene_flags(dataset, config);
-
-    for (unsigned long part_id = 0; part_id < matrix.num_partitions; ++part_id) {
-        host_buffer<unsigned char> exec_gene_flags;
-        host_buffer<float> exec_gene_sum;
-        host_buffer<float> exec_gene_sq_sum;
-        host_buffer<float> exec_gene_detected;
-        if (!fetch_execution_partition(&exec_part, &matrix, &storage, part_id, &summary.issues, "preprocess", "preprocess")) goto done;
-        exec_gene_flags.assign_fill((std::size_t) matrix.cols, static_cast<unsigned char>(0u));
-        for (unsigned int exec_col = 0u; exec_col < (unsigned int) matrix.cols; ++exec_col) {
-            const unsigned int canonical_col =
-                exec_part.exec_to_canonical_cols != nullptr ? exec_part.exec_to_canonical_cols[exec_col] : exec_col;
-            exec_gene_flags[exec_col] = canonical_col < gene_flags.size() ? gene_flags[canonical_col] : static_cast<unsigned char>(0u);
-        }
-        if (!cpre::upload_gene_flags(&workspace, (unsigned int) matrix.cols, exec_gene_flags.empty() ? nullptr : exec_gene_flags.data())
-            || !cpre::zero_gene_metrics(&workspace, (unsigned int) matrix.cols)) {
-            push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to initialize preprocess workspace state");
-            goto done;
-        }
-        for (std::uint32_t segment = 0u; segment < exec_part.segment_count; ++segment) {
-            csv::sliced_ell_view part_view;
-            cpre::part_preprocess_result part_result;
-            owned_sliced_ell_host host;
-            host_buffer<float> seg_total_counts;
-            host_buffer<float> seg_mito_counts;
-            host_buffer<float> seg_max_counts;
-            host_buffer<unsigned int> seg_detected_genes;
-            host_buffer<unsigned char> seg_keep_cells;
-            if (!build_preprocess_sliced_segment(exec_part.segments + segment, 32u, &host.part)) {
-                push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to build sliced preprocess segment");
-                goto done;
-            }
-            if (!check_cuda(cudaSetDevice(config.device), &summary.issues, "preprocess", "cudaSetDevice upload sliced preprocess segment")
-                || !check_cuda(csv::upload(&host.part, &device_part), &summary.issues, "preprocess", "upload_sliced_execution_segment")) {
-                goto done;
-            }
-            if (!cpre::bind_uploaded_part_view(&part_view, &host.part, &device_part)) {
-                push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to bind uploaded sliced execution segment");
-                goto done;
-            }
-            if (!cpre::preprocess_part_inplace(&part_view, &workspace, cell_filter, config.target_sum, &part_result)) {
-                push_issue(&summary.issues, issue_severity::error, "preprocess", "GPU sliced preprocess kernel pass failed");
-                goto done;
-            }
-            if (!check_cuda(cudaStreamSynchronize(workspace.stream), &summary.issues, "preprocess", "cudaStreamSynchronize part")) goto done;
-            if (part_result.cell.rows != 0u) {
-                const std::size_t row_count = (std::size_t) part_result.cell.rows;
-                seg_total_counts.assign_fill(row_count, 0.0f);
-                seg_mito_counts.assign_fill(row_count, 0.0f);
-                seg_max_counts.assign_fill(row_count, 0.0f);
-                seg_detected_genes.assign_fill(row_count, 0u);
-                seg_keep_cells.assign_fill(row_count, static_cast<unsigned char>(0u));
-                if (!check_cuda(cudaMemcpy(seg_total_counts.data(),
-                                           part_result.cell.total_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &summary.issues, "preprocess", "cudaMemcpy cell total counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_mito_counts.data(),
-                                           part_result.cell.mito_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &summary.issues, "preprocess", "cudaMemcpy cell mito counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_max_counts.data(),
-                                           part_result.cell.max_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &summary.issues, "preprocess", "cudaMemcpy cell max counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_detected_genes.data(),
-                                           part_result.cell.detected_genes,
-                                           row_count * sizeof(unsigned int),
-                                           cudaMemcpyDeviceToHost),
-                                &summary.issues, "preprocess", "cudaMemcpy cell detected genes")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_keep_cells.data(),
-                                           part_result.cell.keep_cells,
-                                           row_count * sizeof(unsigned char),
-                                           cudaMemcpyDeviceToHost),
-                                &summary.issues, "preprocess", "cudaMemcpy cell keep mask")) goto done;
-                for (std::size_t local_row = 0; local_row < row_count; ++local_row) {
-                    const std::size_t exec_row = (std::size_t) exec_part.segment_row_offsets[segment] + local_row;
-                    const std::size_t canonical_row = (std::size_t) exec_part.exec_to_canonical_rows[exec_row];
-                    const std::size_t dst_row = (std::size_t) matrix.partition_offsets[part_id] + canonical_row;
-                    host_cell_total_counts[dst_row] = seg_total_counts[local_row];
-                    host_cell_mito_counts[dst_row] = seg_mito_counts[local_row];
-                    host_cell_max_counts[dst_row] = seg_max_counts[local_row];
-                    host_cell_detected_genes[dst_row] = seg_detected_genes[local_row];
-                    host_keep_cells[dst_row] = seg_keep_cells[local_row];
-                }
-            }
-            if (!check_cuda(csv::release(&device_part), &summary.issues, "preprocess", "release_sliced_execution_segment")) goto done;
-        }
-        exec_gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        exec_gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        exec_gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
-        if (!check_cuda(cudaMemcpy(exec_gene_sum.data(),
-                                   workspace.d_gene_sum,
-                                   exec_gene_sum.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &summary.issues,
-                        "preprocess",
-                        "cudaMemcpy part gene sum")) goto done;
-        if (!check_cuda(cudaMemcpy(exec_gene_sq_sum.data(),
-                                   workspace.d_gene_sq_sum,
-                                   exec_gene_sq_sum.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &summary.issues,
-                        "preprocess",
-                        "cudaMemcpy part gene sq sum")) goto done;
-        if (!check_cuda(cudaMemcpy(exec_gene_detected.data(),
-                                   workspace.d_gene_detected,
-                                   exec_gene_detected.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &summary.issues,
-                        "preprocess",
-                        "cudaMemcpy part gene detected")) goto done;
-        for (unsigned int exec_col = 0u; exec_col < (unsigned int) matrix.cols; ++exec_col) {
-            const unsigned int canonical_col =
-                exec_part.exec_to_canonical_cols != nullptr ? exec_part.exec_to_canonical_cols[exec_col] : exec_col;
-            host_gene_sum[canonical_col] += exec_gene_sum[exec_col];
-            host_gene_sq_sum[canonical_col] += exec_gene_sq_sum[exec_col];
-            host_gene_detected[canonical_col] += exec_gene_detected[exec_col];
-        }
-        ++summary.partitions_processed;
-        cellshard::clear(&exec_part);
-    }
-    host_keep_genes.assign_fill((std::size_t) matrix.cols, static_cast<unsigned char>(0u));
-    kept_cells = 0.0f;
-    for (unsigned char keep : host_keep_cells) kept_cells += keep != 0u ? 1.0f : 0.0f;
-    {
-        const float inv_cells = kept_cells > 0.0f ? (1.0f / kept_cells) : 0.0f;
-        for (unsigned int gene = 0u; gene < (unsigned int) matrix.cols; ++gene) {
-            const float mean = host_gene_sum[gene] * inv_cells;
-            const float var = std::max(host_gene_sq_sum[gene] * inv_cells - mean * mean, 0.0f);
-            host_keep_genes[gene] =
-                (unsigned char) (host_gene_sum[gene] >= gene_filter.min_sum
-                                 && host_gene_detected[gene] >= gene_filter.min_detected_cells
-                                 && var >= gene_filter.min_variance);
-        }
-    }
-
-    summary.device = config.device;
-    summary.rows = matrix.rows;
-    summary.cols = matrix.cols;
-    summary.nnz = matrix.nnz;
-    summary.kept_cells = kept_cells;
-    for (unsigned char flag : gene_flags) mito_feature_count += (flag & cpre::gene_flag_mito) != 0u;
-    for (unsigned char keep : host_keep_genes) summary.kept_genes += keep != 0;
-    for (float value : host_gene_sum) summary.gene_sum_checksum += (double) value;
-
-    // HDF5 rejects reopening the same dataset file read-write while the read-only header
-    // backend is still alive. Persist preprocess metadata only after releasing that handle.
-    cs::clear(&storage);
-    cs::clear(&matrix);
-
-    {
-        cs::dataset_preprocess_view preprocess = {};
-        preprocess.assay = "scrna";
-        preprocess.matrix_orientation = "observations_by_features";
-        preprocess.matrix_state = "raw_counts";
-        preprocess.pipeline_scope = "qc_filter_metrics_from_normalized_log1p";
-        preprocess.raw_matrix_name = "X_raw";
-        preprocess.active_matrix_name = "X_raw";
-        preprocess.feature_namespace = "unknown";
-        preprocess.mito_prefix = config.mito_prefix.c_str();
-        preprocess.raw_counts_available = 1u;
-        preprocess.processed_matrix_available = 0u;
-        preprocess.normalized_log1p_metrics = 1u;
-        preprocess.hvg_available = 0u;
-        preprocess.mark_mito_from_feature_names = config.mark_mito_from_feature_names ? 1u : 0u;
-        preprocess.rows = summary.rows;
-        preprocess.cols = (std::uint32_t) summary.cols;
-        preprocess.nnz = summary.nnz;
-        preprocess.partitions_processed = (std::uint32_t) summary.partitions_processed;
-        preprocess.mito_feature_count = mito_feature_count;
-        preprocess.target_sum = config.target_sum;
-        preprocess.min_counts = config.min_counts;
-        preprocess.min_genes = config.min_genes;
-        preprocess.max_mito_fraction = config.max_mito_fraction;
-        preprocess.min_gene_sum = config.min_gene_sum;
-        preprocess.min_detected_cells = config.min_detected_cells;
-        preprocess.min_variance = config.min_variance;
-        preprocess.kept_cells = summary.kept_cells;
-        preprocess.kept_genes = (std::uint32_t) summary.kept_genes;
-        preprocess.gene_sum_checksum = summary.gene_sum_checksum;
-        preprocess.cell_total_counts = host_cell_total_counts.empty() ? nullptr : host_cell_total_counts.data();
-        preprocess.cell_mito_counts = host_cell_mito_counts.empty() ? nullptr : host_cell_mito_counts.data();
-        preprocess.cell_max_counts = host_cell_max_counts.empty() ? nullptr : host_cell_max_counts.data();
-        preprocess.cell_detected_genes = host_cell_detected_genes.empty() ? nullptr : host_cell_detected_genes.data();
-        preprocess.cell_keep = host_keep_cells.empty() ? nullptr : host_keep_cells.data();
-        preprocess.gene_sum = host_gene_sum.empty() ? nullptr : host_gene_sum.data();
-        preprocess.gene_sq_sum = host_gene_sq_sum.empty() ? nullptr : host_gene_sq_sum.data();
-        preprocess.gene_detected_cells = host_gene_detected.empty() ? nullptr : host_gene_detected.data();
-        preprocess.gene_keep = host_keep_genes.empty() ? nullptr : host_keep_genes.data();
-        preprocess.gene_flags = gene_flags.empty() ? nullptr : gene_flags.data();
-        if (!cs::append_dataset_preprocess_h5(path.c_str(), &preprocess)) {
-            push_issue(&summary.issues, issue_severity::error, "preprocess", "failed to append persisted preprocess metadata");
-            goto done;
-        }
-    }
-
-    summary.ok = true;
-
-done:
-    if (device_part.view != nullptr) (void) csv::release(&device_part);
-    cellshard::clear(&exec_part);
-    cpre::clear(&workspace);
-    cs::clear(&storage);
-    cs::clear(&matrix);
-    return summary;
-}
+#include "internal/preprocess_runtime_part.hh"
 
 } // namespace cellerator::apps::workbench

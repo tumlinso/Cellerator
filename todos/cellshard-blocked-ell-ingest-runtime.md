@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "codex"
 created_at: "2026-04-13T16:51:58Z"
-last_heartbeat_at: "2026-04-15T13:34:49Z"
-last_reviewed_at: "2026-04-15T13:34:49Z"
+last_heartbeat_at: "2026-04-16T09:52:25Z"
+last_reviewed_at: "2026-04-15T16:45:00Z"
 stale_after_days: 14
 objective: "implement blocked-ell-first CellShard ingest, explicit machine-local cache warmup, and runtime alignment"
 ---
@@ -90,12 +90,27 @@ _None recorded yet._
 - Patched dataset workbench summary inspection so Blocked-ELL fixtures no longer fail when `partition_axes` is absent and only `partition_aux` is persisted.
 - Rebuilt and passed `./build/cellShardDatasetH5Test`, `./build/datasetWorkbenchRuntimeTest`, and `./build/cellShardFirstFileFixtureTest` after converting forward-path fixtures to Blocked-ELL and leaving compressed `.csh5` only as an explicit legacy compatibility test.
 - Fixed the stale bench consumers after the partition/dataset API migration: `cellShardFetchBench` and `scrnaPreprocessBench` now build against `append_partition`, `num_partitions`, `partition_*`, `first_partition_in_shard`, `fetch_all_partitions`, and the dataset `.csh5` writer surface, and both benches pass a tiny synthetic runtime smoke check.
+- Removed the temporary raw sliced-ELL plus finalize-spool path from the active dataset workbench flow, restored first-write Blocked-ELL emission in `dataset_ingest`, deleted the unused `finalize_preprocessed_sliced_ell_dataset_h5(...)` API, and revalidated with `cmake --build build -j 4 --target datasetWorkbenchRuntimeTest` plus `./build/datasetWorkbenchRuntimeTest`.
+- Resumed this stream for the native V100 ingest bottleneck: the cold blocked build is still dominated by CPU-only COO->Blocked-ELL tuning and host shard rebucketing.
+- Current implementation target is a native CUDA blocked-builder path for ingest so part conversion stops doing host qsort/slot-fill on a single CPU core.
+- Added a native CUDA COO->Blocked-ELL builder for ingest with on-device candidate scoring, radix sort, group scan, and direct blocked scatter on the V100 path.
+- Wired the CUDA builder into the primary per-part ingest conversion while leaving the shard-local optimized reblocking on the older host path for now.
+- The cold real-data benchmark still blocks at canonical blocked-part fetch while building the sliced comparison artifact, so the next blocker is the optimized-only canonical-pack/materialization path rather than the ingest-side CUDA builder itself.
+- Added native fetch probe target `cellShardBlockedFetchProbe` to reproduce optimized-only blocked canonical-pack failures directly under repo build/link settings.
+- Probe showed optimized execution payloads and canonical reconstruction agree, but the new CUDA Blocked-ELL builder was leaving `dst->nnz = src->nnz`; patched it to count actual nonzero blocked values on device after the scatter.
+- Fresh probe against a rebuilt real blocked artifact now succeeds: execution payload, canonical cache-pack fetch, and header agree on partition-0 nnz after fixing the CUDA builder's on-device nnz accounting and removing the bad host fallback gate.
+- A fresh real benchmark rerun advanced past blocked ingest and sliced-artifact generation, which confirms the old optimized-only blocked canonical-fetch failure is cleared.
 
 ## Next Actions
 - Tighten the shard column-order heuristic and bucket-count search so persisted optimized shards are chosen by measured occupancy/runtime gain rather than the current simple signature sort plus byte-minimizing bucket sweep.
-- Add a small explicit sample-file generation workflow or fixture around the now-validated converted `.csh5` so first-file regression tests do not depend only on the larger workbench runtime binary.
+- Add a small explicit sample-file generation workflow or fixture around the now-validated single-emission converted `.csh5` so first-file regression tests do not depend only on the larger workbench runtime binary.
 - Extend inspect surfaces further if needed so shard-level codec details can be reported without reopening the runtime fetch path in tests.
 - Expose additional inspect metadata only if future fixture validation needs shard-level codec details without reopening the execution fetch path.
+- Implement and wire a CUDA COO->Blocked-ELL builder into dataset ingest first, then benchmark cold materialization again before touching secondary host loops.
+- Debug canonical blocked-part fetch/materialization from optimized-only blocked datasets so the real benchmark can finish sliced artifact generation after the new native ingest build.
+- Use `cellShardBlockedFetchProbe` against the real optimized-only blocked artifact to capture the failing shard/partition and patch the canonical reconstruction/materialization path.
+- Rebuild the benchmark artifacts and confirm optimized-only blocked headers now persist actual partition nnz so canonical cache-pack fetch succeeds.
+- Return to throughput work on the native CUDA blocked builder now that metadata correctness is fixed, starting with removing remaining host-heavy optimized-shard build/rebucket steps.
 
 ## Done Criteria
 - Freshly converted `.csh5` series can be preprocessed and browsed through Blocked-ELL runtime paths without compressed fallbacks.

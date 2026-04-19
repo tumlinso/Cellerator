@@ -1,0 +1,13 @@
+Native Crash Summary
+
+status: partial
+conclusive: no
+crash_class: unknown
+likely_domain: unknown
+exit_status: 1
+signal: 
+
+decision:
+- The process failed but the first-pass crash capture did not isolate a strong fault family.
+
+next_step: Escalate to a sanitizer build or batch gdb depending on whether memory corruption is likely.

@@ -1,5 +1,6 @@
-#include "../src/compute/autograd/autograd.hh"
-#include "../src/quantized/api.cuh"
+#include <Cellerator/compute/autograd.hh>
+#include <Cellerator/quantized/api.cuh>
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
 
 #include <cmath>
 #include <cstdio>
@@ -743,7 +744,7 @@ int main() {
     require(close_value(spmm_grad_rhs_host[4], 14.0f), "spmm grad rhs 4 mismatch");
     require(close_value(spmm_grad_rhs_host[5], 20.0f), "spmm grad rhs 5 mismatch");
 
-    if (device_count >= 4) {
+    if (device_count >= 2) {
         autograd::fleet_context fleet;
         autograd::init(&fleet);
         autograd::discover_fleet(&fleet, true, cudaStreamNonBlocking, true);
@@ -817,139 +818,165 @@ int main() {
         require(close_value(pair_out0_host[1], 430.0f), "pair-local row-shard output 1 mismatch");
         require(close_value(pair_out1_host[0], 5.0f), "pair-local row-shard output 2 mismatch");
 
-        unsigned int fleet_slots[4] = {};
-        require(autograd::default_mode_fleet_slots(fleet, fleet_slots, 4) == 4u, "default fleet slots unavailable");
-        for (unsigned int i = 0; i < 4; ++i) {
-            require(autograd::fleet_slot_available(fleet, fleet_slots[i]), "fleet slot unavailable");
+        {
+            const float subset_partial0_host[] = { 1.0f, 2.0f };
+            const float subset_partial1_host[] = { 3.0f, 4.0f };
+            auto subset_partial0 = allocate_on_device<float>(pair_device0, 2);
+            auto subset_partial1 = allocate_on_device<float>(pair_device1, 2);
+            auto subset_sum0 = allocate_on_device<float>(pair_device0, 2);
+            upload_on_device(pair_device0, &subset_partial0, subset_partial0_host, 2);
+            upload_on_device(pair_device1, &subset_partial1, subset_partial1_host, 2);
+            const float *subset_partial_ptrs[] = { subset_partial0.data, subset_partial1.data };
+            autograd::dist::reduce_sum_to_leader_f32(
+                &fleet,
+                pair_slots,
+                2,
+                subset_partial_ptrs,
+                2,
+                subset_sum0.data);
+            const unsigned int pair_leader_slot[] = { pair_slots[0] };
+            autograd::synchronize_slots(fleet, pair_leader_slot, 1);
+            float subset_sum_host[2] = {};
+            download_on_device(pair_device0, subset_sum0, subset_sum_host, 2);
+            require(close_value(subset_sum_host[0], 4.0f), "2-gpu subset leader sum row 0 mismatch");
+            require(close_value(subset_sum_host[1], 6.0f), "2-gpu subset leader sum row 1 mismatch");
         }
 
-        const int fleet_device0 = autograd::fleet_device_id(fleet, fleet_slots[0]);
-        const int fleet_device1 = autograd::fleet_device_id(fleet, fleet_slots[1]);
-        const int fleet_device2 = autograd::fleet_device_id(fleet, fleet_slots[2]);
-        const int fleet_device3 = autograd::fleet_device_id(fleet, fleet_slots[3]);
+        if (device_count >= 4) {
+            unsigned int fleet_slots[4] = {};
+            require(autograd::default_mode_fleet_slots(fleet, fleet_slots, 4) == 4u, "default fleet slots unavailable");
+            for (unsigned int i = 0; i < 4; ++i) {
+                require(autograd::fleet_slot_available(fleet, fleet_slots[i]), "fleet slot unavailable");
+            }
 
-        const std::uint32_t feature_major_slot0_host[] = { 0, 1, 1 };
-        const std::uint32_t feature_minor_slot0_host[] = { 0 };
-        const __half feature_values_slot0_host[] = { __float2half(1.0f) };
-        const float feature_vector_slot0_host[] = { 10.0f };
+            const int fleet_device0 = autograd::fleet_device_id(fleet, fleet_slots[0]);
+            const int fleet_device1 = autograd::fleet_device_id(fleet, fleet_slots[1]);
+            const int fleet_device2 = autograd::fleet_device_id(fleet, fleet_slots[2]);
+            const int fleet_device3 = autograd::fleet_device_id(fleet, fleet_slots[3]);
 
-        const std::uint32_t feature_major_slot1_host[] = { 0, 0, 1 };
-        const std::uint32_t feature_minor_slot1_host[] = { 0 };
-        const __half feature_values_slot1_host[] = { __float2half(3.0f) };
-        const float feature_vector_slot1_host[] = { 20.0f };
+            const std::uint32_t feature_major_slot0_host[] = { 0, 1, 1 };
+            const std::uint32_t feature_minor_slot0_host[] = { 0 };
+            const __half feature_values_slot0_host[] = { __float2half(1.0f) };
+            const float feature_vector_slot0_host[] = { 10.0f };
 
-        const std::uint32_t feature_major_slot2_host[] = { 0, 1, 1 };
-        const std::uint32_t feature_minor_slot2_host[] = { 0 };
-        const __half feature_values_slot2_host[] = { __float2half(2.0f) };
-        const float feature_vector_slot2_host[] = { 30.0f };
+            const std::uint32_t feature_major_slot1_host[] = { 0, 0, 1 };
+            const std::uint32_t feature_minor_slot1_host[] = { 0 };
+            const __half feature_values_slot1_host[] = { __float2half(3.0f) };
+            const float feature_vector_slot1_host[] = { 20.0f };
 
-        const std::uint32_t feature_major_slot3_host[] = { 0, 0, 1 };
-        const std::uint32_t feature_minor_slot3_host[] = { 0 };
-        const __half feature_values_slot3_host[] = { __float2half(4.0f) };
-        const float feature_vector_slot3_host[] = { 40.0f };
+            const std::uint32_t feature_major_slot2_host[] = { 0, 1, 1 };
+            const std::uint32_t feature_minor_slot2_host[] = { 0 };
+            const __half feature_values_slot2_host[] = { __float2half(2.0f) };
+            const float feature_vector_slot2_host[] = { 30.0f };
 
-        auto feature_major0 = allocate_on_device<std::uint32_t>(fleet_device0, 3);
-        auto feature_minor0 = allocate_on_device<std::uint32_t>(fleet_device0, 1);
-        auto feature_values0 = allocate_on_device<__half>(fleet_device0, 1);
-        auto feature_vector0 = allocate_on_device<float>(fleet_device0, 1);
-        auto feature_out0 = allocate_on_device<float>(fleet_device0, 2);
-        auto feature_sum0 = allocate_on_device<float>(fleet_device0, 2);
+            const std::uint32_t feature_major_slot3_host[] = { 0, 0, 1 };
+            const std::uint32_t feature_minor_slot3_host[] = { 0 };
+            const __half feature_values_slot3_host[] = { __float2half(4.0f) };
+            const float feature_vector_slot3_host[] = { 40.0f };
 
-        auto feature_major1 = allocate_on_device<std::uint32_t>(fleet_device1, 3);
-        auto feature_minor1 = allocate_on_device<std::uint32_t>(fleet_device1, 1);
-        auto feature_values1 = allocate_on_device<__half>(fleet_device1, 1);
-        auto feature_vector1 = allocate_on_device<float>(fleet_device1, 1);
-        auto feature_out1 = allocate_on_device<float>(fleet_device1, 2);
+            auto feature_major0 = allocate_on_device<std::uint32_t>(fleet_device0, 3);
+            auto feature_minor0 = allocate_on_device<std::uint32_t>(fleet_device0, 1);
+            auto feature_values0 = allocate_on_device<__half>(fleet_device0, 1);
+            auto feature_vector0 = allocate_on_device<float>(fleet_device0, 1);
+            auto feature_out0 = allocate_on_device<float>(fleet_device0, 2);
+            auto feature_sum0 = allocate_on_device<float>(fleet_device0, 2);
 
-        auto feature_major2 = allocate_on_device<std::uint32_t>(fleet_device2, 3);
-        auto feature_minor2 = allocate_on_device<std::uint32_t>(fleet_device2, 1);
-        auto feature_values2 = allocate_on_device<__half>(fleet_device2, 1);
-        auto feature_vector2 = allocate_on_device<float>(fleet_device2, 1);
-        auto feature_out2 = allocate_on_device<float>(fleet_device2, 2);
+            auto feature_major1 = allocate_on_device<std::uint32_t>(fleet_device1, 3);
+            auto feature_minor1 = allocate_on_device<std::uint32_t>(fleet_device1, 1);
+            auto feature_values1 = allocate_on_device<__half>(fleet_device1, 1);
+            auto feature_vector1 = allocate_on_device<float>(fleet_device1, 1);
+            auto feature_out1 = allocate_on_device<float>(fleet_device1, 2);
 
-        auto feature_major3 = allocate_on_device<std::uint32_t>(fleet_device3, 3);
-        auto feature_minor3 = allocate_on_device<std::uint32_t>(fleet_device3, 1);
-        auto feature_values3 = allocate_on_device<__half>(fleet_device3, 1);
-        auto feature_vector3 = allocate_on_device<float>(fleet_device3, 1);
-        auto feature_out3 = allocate_on_device<float>(fleet_device3, 2);
+            auto feature_major2 = allocate_on_device<std::uint32_t>(fleet_device2, 3);
+            auto feature_minor2 = allocate_on_device<std::uint32_t>(fleet_device2, 1);
+            auto feature_values2 = allocate_on_device<__half>(fleet_device2, 1);
+            auto feature_vector2 = allocate_on_device<float>(fleet_device2, 1);
+            auto feature_out2 = allocate_on_device<float>(fleet_device2, 2);
 
-        upload_on_device(fleet_device0, &feature_major0, feature_major_slot0_host, 3);
-        upload_on_device(fleet_device0, &feature_minor0, feature_minor_slot0_host, 1);
-        upload_on_device(fleet_device0, &feature_values0, feature_values_slot0_host, 1);
-        upload_on_device(fleet_device0, &feature_vector0, feature_vector_slot0_host, 1);
+            auto feature_major3 = allocate_on_device<std::uint32_t>(fleet_device3, 3);
+            auto feature_minor3 = allocate_on_device<std::uint32_t>(fleet_device3, 1);
+            auto feature_values3 = allocate_on_device<__half>(fleet_device3, 1);
+            auto feature_vector3 = allocate_on_device<float>(fleet_device3, 1);
+            auto feature_out3 = allocate_on_device<float>(fleet_device3, 2);
 
-        upload_on_device(fleet_device1, &feature_major1, feature_major_slot1_host, 3);
-        upload_on_device(fleet_device1, &feature_minor1, feature_minor_slot1_host, 1);
-        upload_on_device(fleet_device1, &feature_values1, feature_values_slot1_host, 1);
-        upload_on_device(fleet_device1, &feature_vector1, feature_vector_slot1_host, 1);
+            upload_on_device(fleet_device0, &feature_major0, feature_major_slot0_host, 3);
+            upload_on_device(fleet_device0, &feature_minor0, feature_minor_slot0_host, 1);
+            upload_on_device(fleet_device0, &feature_values0, feature_values_slot0_host, 1);
+            upload_on_device(fleet_device0, &feature_vector0, feature_vector_slot0_host, 1);
 
-        upload_on_device(fleet_device2, &feature_major2, feature_major_slot2_host, 3);
-        upload_on_device(fleet_device2, &feature_minor2, feature_minor_slot2_host, 1);
-        upload_on_device(fleet_device2, &feature_values2, feature_values_slot2_host, 1);
-        upload_on_device(fleet_device2, &feature_vector2, feature_vector_slot2_host, 1);
+            upload_on_device(fleet_device1, &feature_major1, feature_major_slot1_host, 3);
+            upload_on_device(fleet_device1, &feature_minor1, feature_minor_slot1_host, 1);
+            upload_on_device(fleet_device1, &feature_values1, feature_values_slot1_host, 1);
+            upload_on_device(fleet_device1, &feature_vector1, feature_vector_slot1_host, 1);
 
-        upload_on_device(fleet_device3, &feature_major3, feature_major_slot3_host, 3);
-        upload_on_device(fleet_device3, &feature_minor3, feature_minor_slot3_host, 1);
-        upload_on_device(fleet_device3, &feature_values3, feature_values_slot3_host, 1);
-        upload_on_device(fleet_device3, &feature_vector3, feature_vector_slot3_host, 1);
+            upload_on_device(fleet_device2, &feature_major2, feature_major_slot2_host, 3);
+            upload_on_device(fleet_device2, &feature_minor2, feature_minor_slot2_host, 1);
+            upload_on_device(fleet_device2, &feature_values2, feature_values_slot2_host, 1);
+            upload_on_device(fleet_device2, &feature_vector2, feature_vector_slot2_host, 1);
 
-        const std::uint32_t *feature_major_ptrs[] = {
-            feature_major0.data,
-            feature_major1.data,
-            feature_major2.data,
-            feature_major3.data
-        };
-        const std::uint32_t *feature_minor_ptrs[] = {
-            feature_minor0.data,
-            feature_minor1.data,
-            feature_minor2.data,
-            feature_minor3.data
-        };
-        const __half *feature_value_ptrs[] = {
-            feature_values0.data,
-            feature_values1.data,
-            feature_values2.data,
-            feature_values3.data
-        };
-        const float *feature_vector_ptrs[] = {
-            feature_vector0.data,
-            feature_vector1.data,
-            feature_vector2.data,
-            feature_vector3.data
-        };
-        const std::uint32_t feature_rows[] = { 2u, 2u, 2u, 2u };
-        float *feature_out_ptrs[] = {
-            feature_out0.data,
-            feature_out1.data,
-            feature_out2.data,
-            feature_out3.data
-        };
+            upload_on_device(fleet_device3, &feature_major3, feature_major_slot3_host, 3);
+            upload_on_device(fleet_device3, &feature_minor3, feature_minor_slot3_host, 1);
+            upload_on_device(fleet_device3, &feature_values3, feature_values_slot3_host, 1);
+            upload_on_device(fleet_device3, &feature_vector3, feature_vector_slot3_host, 1);
 
-        autograd::dist::launch_csr_spmv_fwd_f16_f32(
-            &fleet,
-            fleet_slots,
-            4,
-            feature_major_ptrs,
-            feature_minor_ptrs,
-            feature_value_ptrs,
-            feature_rows,
-            feature_vector_ptrs,
-            feature_out_ptrs);
-        autograd::dist::reduce_sum_to_leader_f32(
-            &fleet,
-            fleet_slots,
-            4,
-            const_cast<const float *const *>(feature_out_ptrs),
-            2,
-            feature_sum0.data);
+            const std::uint32_t *feature_major_ptrs[] = {
+                feature_major0.data,
+                feature_major1.data,
+                feature_major2.data,
+                feature_major3.data
+            };
+            const std::uint32_t *feature_minor_ptrs[] = {
+                feature_minor0.data,
+                feature_minor1.data,
+                feature_minor2.data,
+                feature_minor3.data
+            };
+            const __half *feature_value_ptrs[] = {
+                feature_values0.data,
+                feature_values1.data,
+                feature_values2.data,
+                feature_values3.data
+            };
+            const float *feature_vector_ptrs[] = {
+                feature_vector0.data,
+                feature_vector1.data,
+                feature_vector2.data,
+                feature_vector3.data
+            };
+            const std::uint32_t feature_rows[] = { 2u, 2u, 2u, 2u };
+            float *feature_out_ptrs[] = {
+                feature_out0.data,
+                feature_out1.data,
+                feature_out2.data,
+                feature_out3.data
+            };
 
-        const unsigned int leader_slot_only[] = { fleet_slots[0] };
-        autograd::synchronize_slots(fleet, leader_slot_only, 1);
+            autograd::dist::launch_csr_spmv_fwd_f16_f32(
+                &fleet,
+                fleet_slots,
+                4,
+                feature_major_ptrs,
+                feature_minor_ptrs,
+                feature_value_ptrs,
+                feature_rows,
+                feature_vector_ptrs,
+                feature_out_ptrs);
+            autograd::dist::reduce_sum_to_leader_f32(
+                &fleet,
+                fleet_slots,
+                4,
+                const_cast<const float *const *>(feature_out_ptrs),
+                2,
+                feature_sum0.data);
 
-        float feature_sum_host[2] = {};
-        download_on_device(fleet_device0, feature_sum0, feature_sum_host, 2);
-        require(close_value(feature_sum_host[0], 70.0f), "4-gpu feature-shard leader sum row 0 mismatch");
-        require(close_value(feature_sum_host[1], 220.0f), "4-gpu feature-shard leader sum row 1 mismatch");
+            const unsigned int leader_slot_only[] = { fleet_slots[0] };
+            autograd::synchronize_slots(fleet, leader_slot_only, 1);
+
+            float feature_sum_host[2] = {};
+            download_on_device(fleet_device0, feature_sum0, feature_sum_host, 2);
+            require(close_value(feature_sum_host[0], 70.0f), "4-gpu feature-shard leader sum row 0 mismatch");
+            require(close_value(feature_sum_host[1], 220.0f), "4-gpu feature-shard leader sum row 1 mismatch");
+        }
 
         autograd::clear(&fleet);
     }

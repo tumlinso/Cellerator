@@ -5,9 +5,10 @@
 #include "../common/metadata_table.cuh"
 #include "../mtx/mtx_reader.cuh"
 
-#include "../../../extern/CellShard/src/formats/triplet.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/triplet.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/compressed.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/layout/sharded.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 
 #include <hdf5.h>
 
@@ -66,6 +67,11 @@ static inline bool probe_selected_matrix(const char *path,
                                          const char *matrix_source,
                                          selected_matrix_info *out,
                                          std::string *error);
+static inline bool load_dataframe_columns(const char *path,
+                                          const char *group_path,
+                                          std::vector<observation_column> *columns,
+                                          unsigned long *rows_out,
+                                          std::string *error);
 
 static inline void init(observation_column *column) {
     if (column == nullptr) return;
@@ -185,6 +191,7 @@ inline bool read_attr_string(hid_t obj, const char *name, std::string *out) {
     hid_t space = (hid_t) -1;
     hssize_t count = 0;
     char **values = nullptr;
+    std::vector<char> fixed_buffer;
     bool ok = false;
 
     if (out == nullptr) return false;
@@ -197,13 +204,22 @@ inline bool read_attr_string(hid_t obj, const char *name, std::string *out) {
     if (space < 0) goto done;
     count = H5Sget_simple_extent_npoints(space);
     if (count <= 0) goto done;
-    mem = H5Tcopy(H5T_C_S1);
-    if (mem < 0) goto done;
-    if (H5Tset_size(mem, H5T_VARIABLE) < 0) goto done;
-    values = (char **) std::calloc((std::size_t) count, sizeof(char *));
-    if (values == nullptr) goto done;
-    if (H5Aread(attr, mem, values) < 0) goto done;
-    *out = values[0] != nullptr ? values[0] : "";
+    if (H5Tis_variable_str(type) > 0) {
+        mem = H5Tcopy(H5T_C_S1);
+        if (mem < 0) goto done;
+        if (H5Tset_size(mem, H5T_VARIABLE) < 0) goto done;
+        if (H5Tset_cset(mem, H5Tget_cset(type)) < 0) goto done;
+        values = (char **) std::calloc((std::size_t) count, sizeof(char *));
+        if (values == nullptr) goto done;
+        if (H5Aread(attr, mem, values) < 0) goto done;
+        *out = values[0] != nullptr ? values[0] : "";
+    } else {
+        const std::size_t size = H5Tget_size(type);
+        if (size == 0u) goto done;
+        fixed_buffer.assign(size + 1u, '\0');
+        if (H5Aread(attr, type, fixed_buffer.data()) < 0) goto done;
+        *out = fixed_buffer.data();
+    }
     ok = true;
 
 done:
@@ -220,6 +236,7 @@ done:
 
 inline bool read_attr_u64_vector(hid_t obj, const char *name, std::vector<std::uint64_t> *out) {
     hid_t attr = (hid_t) -1;
+    hid_t type = (hid_t) -1;
     hid_t space = (hid_t) -1;
     hssize_t count = 0;
     bool ok = false;
@@ -228,16 +245,28 @@ inline bool read_attr_u64_vector(hid_t obj, const char *name, std::vector<std::u
     out->clear();
     attr = H5Aopen(obj, name, H5P_DEFAULT);
     if (attr < 0) goto done;
+    type = H5Aget_type(attr);
+    if (type < 0 || H5Tget_class(type) != H5T_INTEGER) goto done;
     space = H5Aget_space(attr);
     if (space < 0) goto done;
     count = H5Sget_simple_extent_npoints(space);
     if (count <= 0) goto done;
     out->resize((std::size_t) count, 0u);
-    if (H5Aread(attr, H5T_NATIVE_UINT64, out->data()) < 0) goto done;
+    if (H5Tget_sign(type) == H5T_SGN_2) {
+        std::vector<long long> signed_values((std::size_t) count, 0ll);
+        if (H5Aread(attr, H5T_NATIVE_LLONG, signed_values.data()) < 0) goto done;
+        for (std::size_t i = 0; i < signed_values.size(); ++i) {
+            if (signed_values[i] < 0) goto done;
+            (*out)[i] = (std::uint64_t) signed_values[i];
+        }
+    } else {
+        if (H5Aread(attr, H5T_NATIVE_UINT64, out->data()) < 0) goto done;
+    }
     ok = true;
 
 done:
     if (space >= 0) H5Sclose(space);
+    if (type >= 0) H5Tclose(type);
     if (attr >= 0) H5Aclose(attr);
     if (!ok) out->clear();
     return ok;
@@ -400,6 +429,7 @@ inline bool read_dataset_string_column(hid_t parent, const char *name, common::t
     hid_t space = (hid_t) -1;
     hssize_t count = 0;
     char **values = nullptr;
+    std::vector<char> fixed_values;
     bool ok = false;
 
     if (out == nullptr) return false;
@@ -413,15 +443,30 @@ inline bool read_dataset_string_column(hid_t parent, const char *name, common::t
     if (space < 0 || H5Sget_simple_extent_ndims(space) != 1) goto done;
     count = H5Sget_simple_extent_npoints(space);
     if (count < 0) goto done;
-    mem = H5Tcopy(H5T_C_S1);
-    if (mem < 0) goto done;
-    if (H5Tset_size(mem, H5T_VARIABLE) < 0) goto done;
-    values = (char **) std::calloc((std::size_t) count, sizeof(char *));
-    if (count != 0 && values == nullptr) goto done;
-    if (count != 0 && H5Dread(dset, mem, H5S_ALL, H5S_ALL, H5P_DEFAULT, values) < 0) goto done;
-    for (hssize_t i = 0; i < count; ++i) {
-        const char *value = values[i] != nullptr ? values[i] : "";
-        if (!common::append(out, value, std::strlen(value))) goto done;
+    if (H5Tis_variable_str(type) > 0) {
+        mem = H5Tcopy(H5T_C_S1);
+        if (mem < 0) goto done;
+        if (H5Tset_size(mem, H5T_VARIABLE) < 0) goto done;
+        if (H5Tset_cset(mem, H5Tget_cset(type)) < 0) goto done;
+        values = (char **) std::calloc((std::size_t) count, sizeof(char *));
+        if (count != 0 && values == nullptr) goto done;
+        if (count != 0 && H5Dread(dset, mem, H5S_ALL, H5S_ALL, H5P_DEFAULT, values) < 0) goto done;
+        for (hssize_t i = 0; i < count; ++i) {
+            const char *value = values[i] != nullptr ? values[i] : "";
+            if (!common::append(out, value, std::strlen(value))) goto done;
+        }
+    } else {
+        const std::size_t item_size = H5Tget_size(type);
+        if (item_size == 0u) goto done;
+        fixed_values.assign((std::size_t) count * item_size, '\0');
+        if (count != 0 && H5Dread(dset, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, fixed_values.data()) < 0) goto done;
+        for (hssize_t i = 0; i < count; ++i) {
+            const char *value = fixed_values.data() + (std::size_t) i * item_size;
+            std::size_t value_len = 0u;
+            while (value_len < item_size && value[value_len] != '\0') ++value_len;
+            while (value_len > 0u && std::isspace((unsigned char) value[value_len - 1u])) --value_len;
+            if (!common::append(out, value, value_len)) goto done;
+        }
     }
     ok = true;
 
@@ -593,295 +638,7 @@ done:
     return ok;
 }
 
-inline bool append_metadata_string(common::metadata_table *table, const std::string &value) {
-    return common::append(&table->field_values, value.c_str(), value.size()) != 0;
-}
-
-inline bool load_observation_columns(const char *path,
-                                     std::vector<observation_column> *columns,
-                                     unsigned long *rows_out,
-                                     std::string *error) {
-    hid_t file = (hid_t) -1;
-    hid_t obs = (hid_t) -1;
-    common::text_column obs_index;
-    std::vector<std::string> names;
-    unsigned long rows = 0ul;
-    bool ok = false;
-
-    if (columns == nullptr) return false;
-    columns->clear();
-    common::init(&obs_index);
-    file = H5Fopen(path, H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (file < 0) {
-        set_error(error, "failed to open h5ad file");
-        goto done;
-    }
-    if (!load_dataframe_index(file, "/obs", &obs_index, error)) goto done;
-    rows = (unsigned long) obs_index.count;
-    obs = H5Gopen2(file, "/obs", H5P_DEFAULT);
-    if (obs < 0) {
-        set_error(error, "failed to open h5ad obs group");
-        goto done;
-    }
-    if (!list_child_names(obs, &names)) {
-        set_error(error, "failed to enumerate h5ad obs columns");
-        goto done;
-    }
-    for (const std::string &name : names) {
-        observation_column column;
-        hid_t dset = (hid_t) -1;
-        hid_t sub = (hid_t) -1;
-        hid_t type = (hid_t) -1;
-        hsize_t length = 0u;
-        std::string encoding;
-
-        if (!name.empty() && name[0] == '_') continue;
-        init(&column);
-        column.name = name;
-
-        if (load_dataframe_text_column(obs, name, rows, &column.text_values)) {
-            column.type = observation_column_text;
-            columns->push_back(column);
-            continue;
-        }
-
-        dset = open_optional_dataset(obs, name.c_str());
-        if (dset >= 0) {
-            if (!dataset_length(dset, &length) || (unsigned long) length != rows) {
-                H5Dclose(dset);
-                continue;
-            }
-            type = H5Dget_type(dset);
-            if (type >= 0) {
-                const H5T_class_t klass = H5Tget_class(type);
-                if (klass == H5T_FLOAT || klass == H5T_INTEGER) {
-                    H5Dclose(dset);
-                    dset = (hid_t) -1;
-                    if (klass == H5T_INTEGER) {
-                        std::vector<std::uint8_t> values_u8;
-                        std::vector<long long> values_i64;
-                        if (read_dataset_i64_range(obs, name.c_str(), 0u, (std::uint64_t) rows, &values_i64)) {
-                            bool is_bool = true;
-                            for (long long value : values_i64) {
-                                if (value != 0 && value != 1) {
-                                    is_bool = false;
-                                    break;
-                                }
-                            }
-                            if (is_bool) {
-                                column.type = observation_column_uint8;
-                                column.uint8_values.resize(values_i64.size(), (std::uint8_t) 0u);
-                                for (std::size_t i = 0; i < values_i64.size(); ++i) {
-                                    column.uint8_values[i] = (std::uint8_t) (values_i64[i] != 0 ? 1u : 0u);
-                                }
-                                columns->push_back(column);
-                                if (type >= 0) H5Tclose(type);
-                                continue;
-                            }
-                        }
-                    }
-                    column.type = observation_column_float32;
-                    if (!read_dataset_float32(obs, name.c_str(), &column.float32_values)) {
-                        if (type >= 0) H5Tclose(type);
-                        clear(&column);
-                        continue;
-                    }
-                    columns->push_back(column);
-                    if (type >= 0) H5Tclose(type);
-                    continue;
-                }
-            }
-        }
-
-        if (type >= 0) H5Tclose(type);
-        if (dset >= 0) H5Dclose(dset);
-        sub = open_optional_group(obs, name.c_str());
-        if (sub >= 0) {
-            if (read_attr_string(sub, "encoding-type", &encoding) && encoding == "categorical"
-                && load_categorical_text_column(sub, rows, &column.text_values)) {
-                column.type = observation_column_text;
-                columns->push_back(column);
-            }
-            H5Gclose(sub);
-        }
-        clear(&column);
-    }
-    if (rows_out != nullptr) *rows_out = rows;
-    ok = true;
-
-done:
-    common::clear(&obs_index);
-    if (obs >= 0) H5Gclose(obs);
-    if (file >= 0) H5Fclose(file);
-    if (!ok) {
-        for (observation_column &column : *columns) clear(&column);
-        columns->clear();
-    }
-    return ok;
-}
-
-inline bool build_metadata_table_from_observation_columns(const std::vector<observation_column> &columns,
-                                                          unsigned long rows,
-                                                          common::metadata_table *table) {
-    if (table == nullptr) return false;
-    common::clear(table);
-    common::init(table);
-    if (columns.empty()) return true;
-
-    if (!common::reserve_rows(table, (unsigned int) rows)) return false;
-    for (const observation_column &column : columns) {
-        if (!common::append(&table->column_names, column.name.c_str(), column.name.size())) return false;
-    }
-    table->num_cols = (unsigned int) columns.size();
-    table->row_offsets[0] = 0u;
-
-    for (unsigned long row = 0; row < rows; ++row) {
-        for (const observation_column &column : columns) {
-            if (column.type == observation_column_text) {
-                const char *value = row < (unsigned long) column.text_values.count
-                    ? common::get(&column.text_values, (unsigned int) row)
-                    : "";
-                if (!common::append(&table->field_values, value != nullptr ? value : "", std::strlen(value != nullptr ? value : ""))) return false;
-            } else if (column.type == observation_column_float32) {
-                char buffer[64];
-                const float value = row < column.float32_values.size()
-                    ? column.float32_values[(std::size_t) row]
-                    : std::numeric_limits<float>::quiet_NaN();
-                if (std::isfinite(value)) std::snprintf(buffer, sizeof(buffer), "%.9g", value);
-                else buffer[0] = '\0';
-                if (!common::append(&table->field_values, buffer, std::strlen(buffer))) return false;
-            } else if (column.type == observation_column_uint8) {
-                const char buffer[2] = { row < column.uint8_values.size() && column.uint8_values[(std::size_t) row] != 0 ? '1' : '0', '\0' };
-                if (!common::append(&table->field_values, buffer, 1u)) return false;
-            } else {
-                if (!common::append(&table->field_values, "", 0u)) return false;
-            }
-        }
-        ++table->num_rows;
-        table->row_offsets[table->num_rows] = table->field_values.count;
-    }
-    return true;
-}
-
-inline bool choose_feature_text_column(hid_t file,
-                                       const std::string &var_path,
-                                       unsigned long expected_rows,
-                                       const char *const *candidates,
-                                       std::size_t candidate_count,
-                                       common::text_column *out) {
-    hid_t group = (hid_t) -1;
-    bool ok = false;
-
-    if (out == nullptr) return false;
-    common::clear(out);
-    common::init(out);
-    group = H5Gopen2(file, var_path.c_str(), H5P_DEFAULT);
-    if (group < 0) goto done;
-    for (std::size_t i = 0; i < candidate_count; ++i) {
-        if (load_dataframe_text_column(group, candidates[i], expected_rows, out)) {
-            ok = true;
-            break;
-        }
-    }
-
-done:
-    if (group >= 0) H5Gclose(group);
-    if (!ok) {
-        common::clear(out);
-        common::init(out);
-    }
-    return ok;
-}
-
-inline bool load_feature_table(const char *path,
-                               const char *matrix_source,
-                               common::feature_table *out,
-                               std::string *error) {
-    hid_t file = (hid_t) -1;
-    selected_matrix_info info;
-    common::text_column ids;
-    common::text_column names;
-    common::text_column types;
-    bool ok = false;
-    static constexpr const char *name_candidates[] = {
-        "feature_name", "gene_name", "gene_symbol", "symbol", "name"
-    };
-    static constexpr const char *type_candidates[] = {
-        "feature_type", "feature_types", "gene_biotype", "biotype", "type"
-    };
-
-    if (out == nullptr) return false;
-    common::init(&ids);
-    common::init(&names);
-    common::init(&types);
-    common::clear(out);
-    common::init(out);
-    if (!probe_selected_matrix(path, matrix_source, &info, error)) goto done;
-
-    file = H5Fopen(path, H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (file < 0) {
-        set_error(error, "failed to open h5ad file");
-        goto done;
-    }
-    if (!load_dataframe_index(file, info.var_path, &ids, error)) goto done;
-    if ((unsigned long) ids.count != info.cols) {
-        set_error(error, "h5ad var index length does not match selected matrix columns");
-        goto done;
-    }
-    if (!choose_feature_text_column(file, info.var_path, info.cols, name_candidates, sizeof(name_candidates) / sizeof(name_candidates[0]), &names)) {
-        for (unsigned int i = 0; i < ids.count; ++i) {
-            const char *value = common::get(&ids, i);
-            if (!common::append(&names, value != nullptr ? value : "", std::strlen(value != nullptr ? value : ""))) goto done;
-        }
-    }
-    if (!choose_feature_text_column(file, info.var_path, info.cols, type_candidates, sizeof(type_candidates) / sizeof(type_candidates[0]), &types)) {
-        for (unsigned int i = 0; i < ids.count; ++i) {
-            if (!common::append(&types, "gene", 4u)) goto done;
-        }
-    }
-    if (names.count != ids.count || types.count != ids.count) goto done;
-    out->ids = ids;
-    out->names = names;
-    out->types = types;
-    common::init(&ids);
-    common::init(&names);
-    common::init(&types);
-    ok = true;
-
-done:
-    common::clear(&ids);
-    common::clear(&names);
-    common::clear(&types);
-    if (file >= 0) H5Fclose(file);
-    if (!ok) {
-        common::clear(out);
-        common::init(out);
-    }
-    return ok;
-}
-
-inline bool load_barcodes(const char *path, common::barcode_table *out, std::string *error) {
-    hid_t file = (hid_t) -1;
-    bool ok = false;
-
-    if (out == nullptr) return false;
-    common::clear(out);
-    common::init(out);
-    file = H5Fopen(path, H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (file < 0) {
-        set_error(error, "failed to open h5ad file");
-        goto done;
-    }
-    ok = load_dataframe_index(file, "/obs", &out->values, error);
-
-done:
-    if (file >= 0) H5Fclose(file);
-    if (!ok) {
-        common::clear(out);
-        common::init(out);
-    }
-    return ok;
-}
+#include "internal/dataframe_part.hh"
 
 inline bool load_metadata_table(const char *path, common::metadata_table *out, std::string *error) {
     std::vector<observation_column> columns;
@@ -1294,6 +1051,212 @@ inline bool load_part_window_coo(const char *path,
                 out->parts[local_part]->rowIdx[idx] = (unsigned int) (row - row_offsets[global_part]);
                 out->parts[local_part]->colIdx[idx] = (unsigned int) col;
                 out->parts[local_part]->val[idx] = __float2half((float) values[(std::size_t) (cursor - chunk_begin)]);
+            }
+        }
+    }
+    ok = true;
+
+done:
+    if (group >= 0) H5Gclose(group);
+    if (file >= 0) H5Fclose(file);
+    if (!ok) clear(out);
+    return ok;
+}
+
+inline bool load_part_window_compressed(const char *path,
+                                        const char *matrix_source,
+                                        const mtx::header *h,
+                                        const unsigned long *row_offsets,
+                                        const unsigned long *part_nnz,
+                                        unsigned long num_parts,
+                                        unsigned long part_begin,
+                                        unsigned long part_end,
+                                        sharded<sparse::compressed> *out,
+                                        std::string *error) {
+    hid_t file = (hid_t) -1;
+    hid_t group = (hid_t) -1;
+    std::vector<std::uint64_t> indptr;
+    std::vector<std::uint64_t> indices;
+    std::vector<double> values;
+    selected_matrix_info info;
+    mtx::header local;
+    bool ok = false;
+
+    if (out == nullptr || h == nullptr || part_begin >= part_end || part_end > num_parts) return false;
+    clear(out);
+    init(out);
+    if (!probe_selected_matrix(path, matrix_source, &info, error)) return false;
+
+    mtx::init(&local);
+    local.rows = info.rows;
+    local.cols = info.cols;
+    local.nnz_file = info.nnz;
+    local.nnz_loaded = info.nnz;
+    local.row_sorted = info.csr ? 1 : 0;
+    if (!reserve_partitions(out, part_end - part_begin)) return false;
+    out->num_partitions = part_end - part_begin;
+    out->cols = info.cols;
+
+    for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
+        const unsigned long local_part = global_part - part_begin;
+        const unsigned long rows = row_offsets[global_part + 1ul] - row_offsets[global_part];
+        sparse::compressed *part = new sparse::compressed;
+        sparse::init(part,
+                     (::cellshard::types::dim_t) rows,
+                     (::cellshard::types::dim_t) info.cols,
+                     (::cellshard::types::nnz_t) part_nnz[global_part],
+                     info.csr ? sparse::compressed_by_row : sparse::compressed_by_col);
+        if (!sparse::allocate(part)) {
+            delete part;
+            clear(out);
+            return false;
+        }
+        out->parts[local_part] = part;
+        out->partition_rows[local_part] = rows;
+        out->partition_nnz[local_part] = part_nnz[global_part];
+        out->partition_aux[local_part] = 0u;
+    }
+    rebuild_partition_offsets(out);
+    if (!set_shards_to_partitions(out)) {
+        clear(out);
+        return false;
+    }
+
+    file = H5Fopen(path, H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (file < 0) {
+        set_error(error, "failed to open h5ad file");
+        goto done;
+    }
+    group = H5Gopen2(file, info.matrix_path.c_str(), H5P_DEFAULT);
+    if (group < 0) {
+        set_error(error, "failed to open selected h5ad matrix group");
+        goto done;
+    }
+
+    if (info.csr) {
+        const unsigned long row_begin = row_offsets[part_begin];
+        const unsigned long row_end = row_offsets[part_end];
+        if (!read_dataset_u64_range(group, "indptr", (std::uint64_t) row_begin, (std::uint64_t) (row_end - row_begin + 1ul), &indptr)) {
+            set_error(error, "failed to read h5ad csr indptr window");
+            goto done;
+        }
+        if (indptr.empty()) goto done;
+        {
+            const std::uint64_t nnz_begin = indptr.front();
+            const std::uint64_t nnz_count = indptr.back() - indptr.front();
+            for (std::uint64_t &value : indptr) value -= nnz_begin;
+            if (!read_dataset_u64_range(group, "indices", nnz_begin, nnz_count, &indices)
+                || !read_dataset_double_range(group, "data", nnz_begin, nnz_count, &values)
+                || indices.size() != values.size()) {
+                set_error(error, "failed to read h5ad csr payload window");
+                goto done;
+            }
+        }
+        for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
+            const unsigned long local_part = global_part - part_begin;
+            sparse::compressed *part = out->parts[local_part];
+            const unsigned long local_row_begin = row_offsets[global_part] - row_begin;
+            const unsigned long local_row_end = row_offsets[global_part + 1ul] - row_begin;
+            const std::uint64_t nnz_begin = indptr[(std::size_t) local_row_begin];
+            const std::uint64_t nnz_end = indptr[(std::size_t) local_row_end];
+            std::uint64_t cursor = 0u;
+            part->majorPtr[0] = 0u;
+            for (unsigned long row = local_row_begin; row < local_row_end; ++row) {
+                const std::uint64_t row_span = indptr[(std::size_t) row + 1u] - indptr[(std::size_t) row];
+                cursor += row_span;
+                part->majorPtr[(row - local_row_begin) + 1ul] = (::cellshard::types::ptr_t) cursor;
+            }
+            if (nnz_end > nnz_begin) {
+                const std::size_t count = (std::size_t) (nnz_end - nnz_begin);
+                for (std::size_t i = 0u; i < count; ++i) {
+                    part->minorIdx[i] = (::cellshard::types::idx_t) indices[(std::size_t) nnz_begin + i];
+                    part->val[i] = __float2half((float) values[(std::size_t) nnz_begin + i]);
+                }
+            }
+        }
+        ok = true;
+        goto done;
+    }
+
+    if (!read_matrix_indptr(group, info, &indptr, error)) goto done;
+    for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
+        const unsigned long local_part = global_part - part_begin;
+        sparse::compressed *part = out->parts[local_part];
+        if (part->majorPtr != nullptr) std::memset(part->majorPtr, 0, ((std::size_t) info.cols + 1u) * sizeof(::cellshard::types::ptr_t));
+    }
+    {
+        const unsigned long row_begin = row_offsets[part_begin];
+        const unsigned long row_end = row_offsets[part_end];
+        const std::uint64_t chunk_elems = (std::uint64_t) 1u << 20u;
+        std::uint64_t chunk_begin = 0u;
+        std::uint64_t chunk_end = 0u;
+        for (unsigned long col = 0; col < info.cols; ++col) {
+            const std::uint64_t col_begin = indptr[(std::size_t) col];
+            const std::uint64_t col_end = indptr[(std::size_t) col + 1u];
+            for (std::uint64_t cursor = col_begin; cursor < col_end; ++cursor) {
+                if (cursor < chunk_begin || cursor >= chunk_end) {
+                    chunk_begin = cursor;
+                    chunk_end = std::min<std::uint64_t>(chunk_begin + chunk_elems, indptr.back());
+                    if (!read_dataset_u64_range(group, "indices", chunk_begin, chunk_end - chunk_begin, &indices)
+                        || !read_dataset_double_range(group, "data", chunk_begin, chunk_end - chunk_begin, &values)
+                        || indices.size() != values.size()) {
+                        set_error(error, "failed to read h5ad csc payload window");
+                        goto done;
+                    }
+                }
+                const unsigned long row = (unsigned long) indices[(std::size_t) (cursor - chunk_begin)];
+                if (row < row_begin || row >= row_end) continue;
+                const unsigned long global_part = find_offset_span(row, row_offsets, num_parts);
+                const unsigned long local_part = global_part - part_begin;
+                sparse::compressed *part = out->parts[local_part];
+                part->majorPtr[col + 1u] += 1u;
+            }
+        }
+        for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
+            const unsigned long local_part = global_part - part_begin;
+            sparse::compressed *part = out->parts[local_part];
+            ::cellshard::types::ptr_t running = 0u;
+            for (unsigned long col = 0; col < info.cols; ++col) {
+                const ::cellshard::types::ptr_t count = part->majorPtr[col + 1u];
+                part->majorPtr[col] = running;
+                running += count;
+                part->majorPtr[col + 1u] = running;
+            }
+        }
+        std::vector<std::vector<std::uint64_t>> write_ptr(out->num_partitions);
+        for (unsigned long global_part = part_begin; global_part < part_end; ++global_part) {
+            const unsigned long local_part = global_part - part_begin;
+            sparse::compressed *part = out->parts[local_part];
+            write_ptr[local_part].resize(info.cols, 0u);
+            for (unsigned long col = 0; col < info.cols; ++col) {
+                write_ptr[local_part][col] = part->majorPtr[col];
+            }
+        }
+        chunk_begin = 0u;
+        chunk_end = 0u;
+        for (unsigned long col = 0; col < info.cols; ++col) {
+            const std::uint64_t col_begin = indptr[(std::size_t) col];
+            const std::uint64_t col_end = indptr[(std::size_t) col + 1u];
+            for (std::uint64_t cursor = col_begin; cursor < col_end; ++cursor) {
+                if (cursor < chunk_begin || cursor >= chunk_end) {
+                    chunk_begin = cursor;
+                    chunk_end = std::min<std::uint64_t>(chunk_begin + chunk_elems, indptr.back());
+                    if (!read_dataset_u64_range(group, "indices", chunk_begin, chunk_end - chunk_begin, &indices)
+                        || !read_dataset_double_range(group, "data", chunk_begin, chunk_end - chunk_begin, &values)
+                        || indices.size() != values.size()) {
+                        set_error(error, "failed to read h5ad csc payload window");
+                        goto done;
+                    }
+                }
+                const unsigned long row = (unsigned long) indices[(std::size_t) (cursor - chunk_begin)];
+                if (row < row_begin || row >= row_end) continue;
+                const unsigned long global_part = find_offset_span(row, row_offsets, num_parts);
+                const unsigned long local_part = global_part - part_begin;
+                sparse::compressed *part = out->parts[local_part];
+                const unsigned long local_row = row - row_offsets[global_part];
+                const std::size_t offset = (std::size_t) write_ptr[local_part][col]++;
+                part->minorIdx[offset] = (::cellshard::types::idx_t) local_row;
+                part->val[offset] = __float2half((float) values[(std::size_t) (cursor - chunk_begin)]);
             }
         }
     }

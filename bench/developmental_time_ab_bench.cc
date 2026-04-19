@@ -1,5 +1,5 @@
-#include "../src/models/developmental_time/developmentalTime.hh"
-#include "../src/models/developmental_time_cuda/developmentalTimeCuda.hh"
+#include <Cellerator/models/developmental_time.hh>
+#include <Cellerator/models/developmental_time_cuda.hh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 

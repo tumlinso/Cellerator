@@ -1,7 +1,7 @@
 #include "cuvs_sharded_knn.cuh"
 
-#include "../../../extern/CellShard/src/sharded/distributed.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/distributed/distributed.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 
 #include <cublas_v2.h>
 #include <cuvs/distance/distance.hpp>

@@ -1,4 +1,4 @@
-#include "dataset_workbench.hh"
+#include <Cellerator/workbench/dataset_workbench.hh>
 
 #include <ncurses.h>
 
@@ -258,9 +258,10 @@ constexpr std::array<const char *, 7> output_labels = {
     "output_path", "max_part_nnz", "convert_window_bytes", "target_shard_bytes",
     "reader_bytes", "cache_dir", "verify_after_write"
 };
-constexpr std::array<const char *, 10> preprocess_labels = {
+constexpr std::array<const char *, 11> preprocess_labels = {
     "target_sum", "min_counts", "min_genes", "max_mito_fraction", "min_gene_sum",
-    "min_detected", "min_variance", "device", "cache_dir", "mito_prefix"
+    "min_detected", "min_variance", "device", "cache_dir", "mito_prefix",
+    "finalize_after"
 };
 constexpr std::array<const char *, 7> builder_detail_labels = {
     "active_role", "export_path", "included", "matrix", "features", "barcodes", "metadata"
@@ -1505,6 +1506,7 @@ void edit_active_field(ui_state *ui, ui_runtime *runtime, const ui_layout &layou
                 case 7: ui->preprocess.device = prompt_i32(runtime, layout, "device", ui->preprocess.device); break;
                 case 8: ui->preprocess.cache_dir = prompt_string(runtime, layout, "cache_dir", ui->preprocess.cache_dir); break;
                 case 9: ui->preprocess.mito_prefix = prompt_string(runtime, layout, "mito_prefix", ui->preprocess.mito_prefix); break;
+                case 10: ui->preprocess.finalize_after_preprocess = !ui->preprocess.finalize_after_preprocess; break;
             }
             break;
         case screen_id::datasets:
@@ -2411,6 +2413,7 @@ std::string preprocess_value(const ui_state &ui, int index) {
         case 7: return std::to_string(ui.preprocess.device);
         case 8: return ui.preprocess.cache_dir;
         case 9: return ui.preprocess.mito_prefix;
+        case 10: return ui.preprocess.finalize_after_preprocess ? "true" : "false";
         default: break;
     }
     return std::string();

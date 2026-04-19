@@ -1,4 +1,4 @@
-#include "../src/workbench/dataset_workbench.hh"
+#include <Cellerator/workbench/dataset_workbench.hh>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -146,6 +146,7 @@ PYBIND11_MODULE(_cellerator, m) {
         .def_readwrite("blocked_ell_min_fill_ratio", &wb::ingest_policy::blocked_ell_min_fill_ratio)
         .def_readwrite("output_path", &wb::ingest_policy::output_path)
         .def_readwrite("cache_dir", &wb::ingest_policy::cache_dir)
+        .def_readwrite("working_root", &wb::ingest_policy::working_root)
         .def_readwrite("verify_after_write", &wb::ingest_policy::verify_after_write)
         .def_readwrite("device", &wb::ingest_policy::device)
         .def_readwrite("embed_metadata", &wb::ingest_policy::embed_metadata)
@@ -455,10 +456,13 @@ PYBIND11_MODULE(_cellerator, m) {
         .def_readwrite("min_detected_cells", &wb::preprocess_config::min_detected_cells)
         .def_readwrite("min_variance", &wb::preprocess_config::min_variance)
         .def_readwrite("device", &wb::preprocess_config::device)
+        .def_readwrite("use_all_devices", &wb::preprocess_config::use_all_devices)
         .def_readwrite("drop_host_parts", &wb::preprocess_config::drop_host_parts)
         .def_readwrite("mark_mito_from_feature_names", &wb::preprocess_config::mark_mito_from_feature_names)
+        .def_readwrite("finalize_after_preprocess", &wb::preprocess_config::finalize_after_preprocess)
         .def_readwrite("mito_prefix", &wb::preprocess_config::mito_prefix)
-        .def_readwrite("cache_dir", &wb::preprocess_config::cache_dir);
+        .def_readwrite("cache_dir", &wb::preprocess_config::cache_dir)
+        .def_readwrite("working_root", &wb::preprocess_config::working_root);
 
     py::class_<wb::preprocess_summary>(m, "preprocess_summary")
         .def(py::init<>())

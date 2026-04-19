@@ -25,6 +25,7 @@ Useful pipeline-adjacent targets include:
 - `datasetWorkbenchRuntimeTest`
 - `forwardNeighborsCompileTest`
 - `computeAutogradRuntimeTest`
+- `quantizedTransferSpmmBench`
 - `developmentalTimeCompileTest`
 - `denseReduceCompileTest`
 - `quantizeModelTest`
@@ -49,7 +50,8 @@ Examples:
 - `src/compute/`: reusable sparse compute, preprocess operators, autograd, neighbors
 - `src/models/`: header-first libtorch workflows
 - `src/trajectory/`: trajectory scoring and assembly
-- `src/workbench/`: ncurses and command-line workbench surfaces
+- `src/workbench/`: ncurses adapter and public workbench facade
+- `src/workbench/runtime/`: shared dataset-workflow backend behind the workbench facade
 - `src/quantized/`: Volta-oriented quantized sparse runtime
 - `src/torch/`: explicit Torch export boundary
 - `extern/CellShard/`: storage, `.csh5`, pack generation, and runtime staging

@@ -11,6 +11,7 @@ This documentation is not a paper workspace. It is the active source for explain
 - The end-to-end pipeline shape from source ingest to runtime execution.
 - The contract between Cellerator and `CellShard`.
 - Where compute, trajectory, model, quantized, and Torch-facing surfaces fit.
+- The current quantized transfer-versus-decode architecture questions for sparse inference.
 - The current local-only download and preprocessing helpers under `docs/pipeline/`.
 - The build and test entrypoints that validate the pipeline.
 
@@ -40,4 +41,5 @@ flowchart LR
 - [Architecture](architecture.qmd) for the high-level ownership split.
 - [Ingest And Runtime](ingest_and_runtime.qmd) for the bounded-memory ingest and owner-service contract.
 - [Compute And Models](compute_and_models.qmd) for how downstream pipeline stages fit together.
+- [Quantized Transfer Architecture](quantized_transfer_architecture.qmd) for the current Volta-oriented quantized sparse execution report.
 - [Local Pipeline Ops](local_pipeline_ops.qmd) for the shell wrappers and manifest-driven local workflows under `docs/pipeline/`.

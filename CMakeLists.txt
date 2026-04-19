@@ -40,6 +40,8 @@ endif()
 
 project(Cellerator LANGUAGES CXX CUDA)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
 find_package(PkgConfig REQUIRED)
@@ -147,6 +149,12 @@ find_library(NCCL_LIBRARY
     HINTS
         /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nccl/lib
 )
+
+function(cellerator_link_nccl_if_available target)
+    if(NCCL_LIBRARY)
+        target_link_libraries(${target} PRIVATE ${NCCL_LIBRARY})
+    endif()
+endfunction()
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
     pkg_check_modules(NCURSESW REQUIRED ncursesw)
@@ -314,9 +322,7 @@ add_executable(scrnaPreprocessBench
 )
 target_include_directories(scrnaPreprocessBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(scrnaPreprocessBench PRIVATE CellShard::runtime CUDA::cusparse)
-if(NCCL_LIBRARY)
-    target_link_libraries(scrnaPreprocessBench PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(scrnaPreprocessBench)
 set_target_properties(scrnaPreprocessBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(scrnaPreprocessBench)
 
@@ -336,13 +342,33 @@ target_link_libraries(blockedEllOptimizationBench PRIVATE CellShard::runtime CUD
 set_target_properties(blockedEllOptimizationBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(blockedEllOptimizationBench)
 
+add_executable(blockedEllStudyBench
+    bench/blocked_ell_study_bench.cu
+)
+target_include_directories(blockedEllStudyBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(blockedEllStudyBench PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(blockedEllStudyBench PRIVATE cellerator_compute_autograd CellShard::runtime CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+cellerator_link_nccl_if_available(blockedEllStudyBench)
+set_target_properties(blockedEllStudyBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(blockedEllStudyBench)
+
 add_executable(cellShardDatasetH5Test
     tests/cellshard_dataset_h5_test.cu
 )
 target_include_directories(cellShardDatasetH5Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellShardDatasetH5Test PRIVATE ${HDF5_INCLUDE_DIRS})
 target_link_libraries(cellShardDatasetH5Test PRIVATE CellShard::runtime)
 set_target_properties(cellShardDatasetH5Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardDatasetH5Test)
+
+add_executable(cellShardBlockedFetchProbe
+    tests/cellshard_blocked_fetch_probe.cu
+)
+target_include_directories(cellShardBlockedFetchProbe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cellShardBlockedFetchProbe PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(cellShardBlockedFetchProbe PRIVATE CellShard::runtime)
+set_target_properties(cellShardBlockedFetchProbe PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellShardBlockedFetchProbe)
 
 add_executable(cellShardFetchBench
     bench/cellshard_fetch_bench.cu
@@ -369,17 +395,25 @@ set_target_properties(datasetIngestCompileTest PROPERTIES CXX_STANDARD 17 CXX_ST
 cellerator_enable_perf(datasetIngestCompileTest)
 
 add_library(cellerator_workbench
-    src/workbench/dataset_workbench.cc
-    src/workbench/dataset_workbench_cuda.cu
+    src/workbench/runtime/summary.cc
+    src/workbench/runtime/pipeline.cu
 )
 target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
 target_link_libraries(cellerator_workbench PRIVATE CellShard::runtime CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
-if(NCCL_LIBRARY)
-    target_link_libraries(cellerator_workbench PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(cellerator_workbench)
 set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_workbench)
+
+add_executable(realPreprocessBench
+    bench/real_preprocess_bench.cu
+)
+target_include_directories(realPreprocessBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(realPreprocessBench PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(realPreprocessBench PRIVATE cellerator_workbench CellShard::runtime CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+cellerator_link_nccl_if_available(realPreprocessBench)
+set_target_properties(realPreprocessBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(realPreprocessBench)
 
 add_executable(cellShardFirstFileFixtureTest
     tests/cellshard_first_file_fixture_test.cu
@@ -402,9 +436,7 @@ if(CELLERATOR_ENABLE_PYTHON)
         CUDA::cusparse
         ${HDF5_LIBRARIES}
     )
-    if(NCCL_LIBRARY)
-        target_link_libraries(_cellerator PRIVATE ${NCCL_LIBRARY})
-    endif()
+    cellerator_link_nccl_if_available(_cellerator)
     set_target_properties(_cellerator PROPERTIES
         OUTPUT_NAME _cellerator
         CXX_STANDARD 17
@@ -451,15 +483,13 @@ set_source_files_properties(
 target_include_directories(datasetWorkbenchRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(datasetWorkbenchRuntimeTest PRIVATE ${HDF5_INCLUDE_DIRS})
 target_link_libraries(datasetWorkbenchRuntimeTest PRIVATE cellerator_workbench CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
-if(NCCL_LIBRARY)
-    target_link_libraries(datasetWorkbenchRuntimeTest PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(datasetWorkbenchRuntimeTest)
 set_target_properties(datasetWorkbenchRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(datasetWorkbenchRuntimeTest)
 
 if(CELLERATOR_ENABLE_NCURSES_WORKBENCH)
     add_executable(celleratorWorkbench
-        src/workbench/dataset_workbench_main.cc
+        src/apps/workbench/dataset_workbench_main.cc
     )
     target_include_directories(celleratorWorkbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(celleratorWorkbench PRIVATE ${HDF5_INCLUDE_DIRS})
@@ -477,6 +507,14 @@ target_include_directories(quantizedMatrixBench PRIVATE ${CMAKE_CURRENT_SOURCE_D
 target_link_libraries(quantizedMatrixBench PRIVATE CUDA::cudart)
 set_target_properties(quantizedMatrixBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixBench)
+
+add_executable(quantizedTransferSpmmBench
+    bench/quantized_transfer_spmm_bench.cu
+)
+target_include_directories(quantizedTransferSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_autograd CellShard::runtime CUDA::cudart CUDA::cusparse)
+set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(quantizedTransferSpmmBench)
 
 add_executable(trajectoryCompileTest
     tests/trajectory_compile_test.cu
@@ -499,6 +537,7 @@ add_library(cellerator_compute_forward_neighbors STATIC
 )
 target_include_directories(cellerator_compute_forward_neighbors PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_forward_neighbors PRIVATE CUDA::cudart)
+cellerator_link_nccl_if_available(cellerator_compute_forward_neighbors)
 set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_forward_neighbors)
 
@@ -517,9 +556,7 @@ add_library(cellerator_compute_autograd STATIC
 )
 target_include_directories(cellerator_compute_autograd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_autograd PRIVATE CUDA::cudart CUDA::cusparse)
-if(NCCL_LIBRARY)
-    target_link_libraries(cellerator_compute_autograd PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(cellerator_compute_autograd)
 set_target_properties(cellerator_compute_autograd PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_autograd)
 
@@ -528,9 +565,7 @@ add_executable(computeAutogradBench
 )
 target_include_directories(computeAutogradBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(computeAutogradBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
-if(NCCL_LIBRARY)
-    target_link_libraries(computeAutogradBench PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(computeAutogradBench)
 set_target_properties(computeAutogradBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(computeAutogradBench)
 
@@ -539,9 +574,7 @@ add_executable(cellShardRealSpmmBench
 )
 target_include_directories(cellShardRealSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellShardRealSpmmBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
-if(NCCL_LIBRARY)
-    target_link_libraries(cellShardRealSpmmBench PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(cellShardRealSpmmBench)
 set_target_properties(cellShardRealSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardRealSpmmBench)
 
@@ -558,9 +591,7 @@ add_executable(computeAutogradRuntimeTest
 )
 target_include_directories(computeAutogradRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(computeAutogradRuntimeTest PRIVATE cellerator_compute_autograd CellShard::runtime CUDA::cudart CUDA::cusparse)
-if(NCCL_LIBRARY)
-    target_link_libraries(computeAutogradRuntimeTest PRIVATE ${NCCL_LIBRARY})
-endif()
+cellerator_link_nccl_if_available(computeAutogradRuntimeTest)
 set_target_properties(computeAutogradRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(computeAutogradRuntimeTest)
 

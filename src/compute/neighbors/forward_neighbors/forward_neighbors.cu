@@ -23,6 +23,7 @@ namespace cellerator::compute::neighbors::forward_neighbors {
 namespace detail {
 
 namespace cg = ::cellerator::compute::graph;
+namespace css = ::cellshard::sparse;
 
 constexpr int kWarpThreads = 32;
 constexpr int kForwardNeighborWarpsPerBlock = 1;
@@ -370,6 +371,56 @@ inline host_array<float> normalize_latent_rows_(host_array<float> latent, std::i
     return latent;
 }
 
+inline host_array<float> materialize_dense_matrix_(const ForwardNeighborMatrixView &matrix) {
+    const std::int64_t rows = matrix_rows_(matrix);
+    const std::int64_t cols = matrix_cols_(matrix);
+    host_array<float> dense(static_cast<std::size_t>(rows) * static_cast<std::size_t>(cols));
+    dense.assign_fill(dense.size(), 0.0f);
+    if (rows == 0 || cols == 0) return dense;
+
+    switch (matrix.layout) {
+        case ForwardNeighborInputLayout::dense:
+            for (std::int64_t row = 0; row < rows; ++row) {
+                std::memcpy(
+                    dense.data() + static_cast<std::size_t>(row) * static_cast<std::size_t>(cols),
+                    matrix.dense_values + static_cast<std::size_t>(row) * static_cast<std::size_t>(matrix.dense_row_stride),
+                    static_cast<std::size_t>(cols) * sizeof(float));
+            }
+            break;
+        case ForwardNeighborInputLayout::blocked_ell: {
+            const css::blocked_ell *src = matrix.blocked_ell;
+            for (std::int64_t row = 0; row < rows; ++row) {
+                for (std::int64_t col = 0; col < cols; ++col) {
+                    const __half *value = css::at(src,
+                                                  static_cast<cellshard::types::dim_t>(row),
+                                                  static_cast<cellshard::types::idx_t>(col));
+                    if (value != nullptr) {
+                        dense[static_cast<std::size_t>(row) * static_cast<std::size_t>(cols) + static_cast<std::size_t>(col)] =
+                            __half2float(*value);
+                    }
+                }
+            }
+            break;
+        }
+        case ForwardNeighborInputLayout::sliced_ell: {
+            const css::sliced_ell *src = matrix.sliced_ell;
+            for (std::int64_t row = 0; row < rows; ++row) {
+                for (std::int64_t col = 0; col < cols; ++col) {
+                    const __half *value = css::at(src,
+                                                  static_cast<cellshard::types::dim_t>(row),
+                                                  static_cast<cellshard::types::idx_t>(col));
+                    if (value != nullptr) {
+                        dense[static_cast<std::size_t>(row) * static_cast<std::size_t>(cols) + static_cast<std::size_t>(col)] =
+                            __half2float(*value);
+                    }
+                }
+            }
+            break;
+        }
+    }
+    return dense;
+}
+
 inline host_array<std::int64_t> sorted_row_order_(
     const host_array<std::int64_t> &cell_indices,
     const host_array<float> &developmental_time,
@@ -553,7 +604,7 @@ inline std::pair<std::int64_t, std::int64_t> segment_candidate_bounds_(
 }
 
 inline std::pair<float, float> block_time_limits_(
-    const host_array<float> &query_time,
+    const const_array_view<float> &query_time,
     std::int64_t query_begin,
     std::int64_t query_end,
     const ForwardNeighborSearchConfig &config) {
@@ -644,8 +695,6 @@ inline void init_best_arrays_(
         query_rows,
         k);
     cg::cuda_require(cudaGetLastError(), "init_best_kernel launch");
-    // This barrier keeps later host merges simple but removes any chance to overlap init with query uploads.
-    cg::cuda_require(cudaDeviceSynchronize(), "init_best_kernel sync");
 }
 
 inline void download_best_candidates_(
@@ -704,16 +753,18 @@ inline void append_batch_(
     host_array<std::int64_t> *embryo_ids,
     std::int64_t *latent_dim) {
     detail::validate_forward_neighbor_record_batch_(batch);
-    if (*latent_dim == 0) *latent_dim = batch.latent_dim;
-    if (*latent_dim != batch.latent_dim) throw std::invalid_argument("all forward-neighbor batches must share latent_dim");
+    const std::int64_t batch_cols = matrix_cols_(batch.matrix);
+    if (*latent_dim == 0) *latent_dim = batch_cols;
+    if (*latent_dim != batch_cols) throw std::invalid_argument("all forward-neighbor batches must share matrix cols");
 
     detail::append_i64_(cell_indices, batch.cell_indices);
     detail::append_f32_(developmental_time, batch.developmental_time);
-    detail::append_f32_(latent_unit, batch.latent_unit);
+    const host_array<float> dense_batch = materialize_dense_matrix_(batch.matrix);
+    append_copy_(latent_unit, dense_batch.data(), dense_batch.size());
     if (batch.embryo_ids.empty()) {
         const std::size_t old_size = embryo_ids->size();
-        embryo_ids->resize(old_size + batch.cell_indices.size());
-        for (std::size_t i = 0; i < batch.cell_indices.size(); ++i) {
+        embryo_ids->resize(old_size + batch.cell_indices.size);
+        for (std::size_t i = 0; i < batch.cell_indices.size; ++i) {
             (*embryo_ids)[old_size + i] = static_cast<std::int64_t>(-1);
         }
     } else {
@@ -861,7 +912,7 @@ inline ForwardNeighborRoutingPlan build_routing_plan_(
 
     std::uint32_t route_cursor = 0u;
     const std::int64_t block_rows = std::max<std::int64_t>(1, config.query_block_rows);
-    const std::int64_t query_count = static_cast<std::int64_t>(query.cell_indices.size());
+    const std::int64_t query_count = static_cast<std::int64_t>(query.cell_indices.size);
     for (std::int64_t query_begin = 0; query_begin < query_count; query_begin += block_rows) {
         const std::int64_t query_end = std::min(query_begin + block_rows, query_count);
         const auto block_limits = block_time_limits_(query.developmental_time, query_begin, query_end, config);
@@ -1097,7 +1148,8 @@ inline ForwardNeighborSearchResult search_core_(
     detail::validate_forward_neighbor_query_batch_(query);
     if (query.cell_indices.empty()) return detail::empty_forward_neighbor_result_(config.top_k);
     if (storage == nullptr) return detail::empty_forward_neighbor_result_(config.top_k);
-    if (storage->latent_dim != 0 && storage->latent_dim != query.latent_dim) {
+    const std::int64_t query_latent_dim = matrix_cols_(query.matrix);
+    if (storage->latent_dim != 0 && storage->latent_dim != query_latent_dim) {
         throw std::invalid_argument("query latent dimension does not match the forward-neighbor index latent dimension");
     }
     if (config.candidate_k > kMaxTopK || config.ann_probe_list_count > kMaxProbe) {
@@ -1105,16 +1157,17 @@ inline ForwardNeighborSearchResult search_core_(
     }
 
     ForwardNeighborSearchResult result;
-    result.query_count = static_cast<std::int64_t>(query.cell_indices.size());
+    result.query_count = static_cast<std::int64_t>(query.cell_indices.size);
     result.top_k = config.top_k;
-    result.query_cell_indices = query.cell_indices;
-    result.query_time = query.developmental_time;
+    result.query_cell_indices.assign_copy(query.cell_indices.data, query.cell_indices.size);
+    result.query_time.assign_copy(query.developmental_time.data, query.developmental_time.size);
     result.query_embryo_ids = query.embryo_ids.empty()
-        ? detail::make_missing_i64_array_(query.cell_indices.size())
-        : query.embryo_ids;
+        ? detail::make_missing_i64_array_(query.cell_indices.size)
+        : host_array<std::int64_t>{};
+    if (!query.embryo_ids.empty()) result.query_embryo_ids.assign_copy(query.embryo_ids.data, query.embryo_ids.size);
 
     ForwardNeighborSearchWorkspaceStorage &scratch = workspace_storage_(workspace);
-    scratch.normalized_query_latent = normalize_query_latent_(query.latent_unit, result.query_count, query.latent_dim);
+    scratch.normalized_query_latent = normalize_query_latent_(materialize_dense_matrix_(query.matrix), result.query_count, query_latent_dim);
     scratch.merged_best.resize(static_cast<std::size_t>(result.query_count * result.top_k));
     for (std::size_t i = 0; i < scratch.merged_best.size(); ++i) scratch.merged_best[i] = Candidate{};
     const ForwardNeighborRoutingPlan routing = build_routing_plan_(*storage, query, config);
@@ -1129,10 +1182,10 @@ inline ForwardNeighborSearchResult search_core_(
         build_block_device_routes_(routing, block_idx, &scratch);
         if (scratch.block_device_ids.empty()) continue;
 
-        scratch.block_latent_f32.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(query.latent_dim));
+        scratch.block_latent_f32.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(query_latent_dim));
         std::memcpy(
             scratch.block_latent_f32.data(),
-            scratch.normalized_query_latent.data() + static_cast<std::size_t>(query_begin) * static_cast<std::size_t>(query.latent_dim),
+            scratch.normalized_query_latent.data() + static_cast<std::size_t>(query_begin) * static_cast<std::size_t>(query_latent_dim),
             scratch.block_latent_f32.size() * sizeof(float));
         convert_f32_to_half_(scratch.block_latent_f32, &scratch.block_latent_half);
         scratch.block_lower.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
@@ -1370,11 +1423,24 @@ ForwardNeighborIndexBuilder::ForwardNeighborIndexBuilder(ForwardNeighborBuildCon
 
 void ForwardNeighborIndexBuilder::append(const ForwardNeighborRecordBatch &batch) {
     detail::validate_forward_neighbor_record_batch_(batch);
-    detail::append_batch_(batch, &records_.cell_indices, &records_.developmental_time, &records_.latent_unit, &records_.embryo_ids, &records_.latent_dim);
+    detail::append_batch_(batch,
+                          &records_.cell_indices,
+                          &records_.developmental_time,
+                          &records_.dense_values,
+                          &records_.embryo_ids,
+                          &records_.dense_cols);
 }
 
 ForwardNeighborIndex ForwardNeighborIndexBuilder::finalize() && {
-    return ForwardNeighborIndex(detail::build_storage_(records_, config_));
+    const ForwardNeighborRecordBatch records_view{
+        view_of(records_.cell_indices),
+        view_of(records_.developmental_time),
+        view_of(records_.embryo_ids),
+        make_forward_neighbor_dense_view(records_.dense_values.data(),
+                                         static_cast<std::int64_t>(records_.cell_indices.size()),
+                                         records_.dense_cols)
+    };
+    return ForwardNeighborIndex(detail::build_storage_(records_view, config_));
 }
 
 ForwardNeighborIndex::ForwardNeighborIndex() = default;
@@ -1409,14 +1475,14 @@ ForwardNeighborShardSummary ForwardNeighborIndex::shard_summary(std::size_t shar
     };
 }
 
-ForwardNeighborQueryBatch ForwardNeighborIndex::query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const {
-    if (!storage_) return ForwardNeighborQueryBatch{};
-    ForwardNeighborQueryBatch query;
+ForwardNeighborOwnedQueryBatch ForwardNeighborIndex::query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const {
+    if (!storage_) return ForwardNeighborOwnedQueryBatch{};
+    ForwardNeighborOwnedQueryBatch query;
     query.cell_indices.assign_copy(cell_indices, cell_count);
     query.developmental_time.assign_fill(cell_count, detail::quiet_nan_());
     query.embryo_ids.assign_fill(cell_count, static_cast<std::int64_t>(-1));
-    query.latent_dim = storage_->latent_dim;
-    query.latent_unit.assign_fill(cell_count * static_cast<std::size_t>(storage_->latent_dim), 0.0f);
+    query.dense_cols = storage_->latent_dim;
+    query.dense_values.assign_fill(cell_count * static_cast<std::size_t>(storage_->latent_dim), 0.0f);
 
     for (std::size_t row = 0; row < cell_count; ++row) {
         const auto it = storage_->row_by_cell_index.find(cell_indices[row]);
@@ -1428,7 +1494,7 @@ ForwardNeighborQueryBatch ForwardNeighborIndex::query_batch_from_cell_indices(co
         query.developmental_time[row] = shard.developmental_time_cpu[local_row];
         query.embryo_ids[row] = shard.embryo_ids_cpu[local_row];
         std::memcpy(
-            query.latent_unit.data() + row * static_cast<std::size_t>(storage_->latent_dim),
+            query.dense_values.data() + row * static_cast<std::size_t>(storage_->latent_dim),
             shard.latent_unit_cpu.data() + local_row * static_cast<std::size_t>(storage_->latent_dim),
             static_cast<std::size_t>(storage_->latent_dim) * sizeof(float));
     }
@@ -1449,7 +1515,8 @@ ForwardNeighborRoutingPlan ForwardNeighborIndex::plan_future_neighbor_routes_by_
     const std::int64_t *cell_indices,
     std::size_t cell_count,
     const ForwardNeighborSearchConfig &config) const {
-    return plan_future_neighbor_routes(query_batch_from_cell_indices(cell_indices, cell_count), config);
+    const ForwardNeighborOwnedQueryBatch query = query_batch_from_cell_indices(cell_indices, cell_count);
+    return plan_future_neighbor_routes(query.view(), config);
 }
 
 ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors(
@@ -1520,7 +1587,8 @@ ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors_by_cel
     const std::int64_t *cell_indices,
     std::size_t cell_count,
     const ForwardNeighborSearchConfig &config) const {
-    return search_future_neighbors(query_batch_from_cell_indices(cell_indices, cell_count), nullptr, config);
+    const ForwardNeighborOwnedQueryBatch query = query_batch_from_cell_indices(cell_indices, cell_count);
+    return search_future_neighbors(query.view(), nullptr, config);
 }
 
 ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors_by_cell_index(
@@ -1528,7 +1596,8 @@ ForwardNeighborSearchResult ForwardNeighborIndex::search_future_neighbors_by_cel
     std::size_t cell_count,
     ForwardNeighborSearchWorkspace *workspace,
     const ForwardNeighborSearchConfig &config) const {
-    return search_future_neighbors(query_batch_from_cell_indices(cell_indices, cell_count), workspace, config);
+    const ForwardNeighborOwnedQueryBatch query = query_batch_from_cell_indices(cell_indices, cell_count);
+    return search_future_neighbors(query.view(), workspace, config);
 }
 
 ForwardNeighborSearchExecutor::ForwardNeighborSearchExecutor(
@@ -1631,7 +1700,8 @@ ForwardNeighborSearchResult ForwardNeighborSearchExecutor::search_future_neighbo
     const std::int64_t *cell_indices,
     std::size_t cell_count,
     const ForwardNeighborSearchConfig &config) {
-    return search_future_neighbors(index, index.query_batch_from_cell_indices(cell_indices, cell_count), config);
+    const ForwardNeighborOwnedQueryBatch query = index.query_batch_from_cell_indices(cell_indices, cell_count);
+    return search_future_neighbors(index, query.view(), config);
 }
 
 ForwardNeighborIndex build_forward_neighbor_index(

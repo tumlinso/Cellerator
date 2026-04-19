@@ -132,6 +132,37 @@ void reduce_sum_to_leader_f32(
         }
     }
 
+#if CELLSHARD_HAS_NCCL
+    if (slot_count == 1u) {
+        copy_or_alias_to_leader_(fleet, slots[0], partials[0], fleet_device_id(*fleet, slots[0]), count, leader_out);
+        return;
+    }
+    {
+        csdist::nccl_communicator *comm = nullptr;
+        const ncclResult_t acquire = csdist::acquire_local_nccl_subset(&fleet->local, slots, slot_count, &comm);
+        if (acquire == ncclSuccess && comm != nullptr && comm->ready != 0u) {
+            std::unique_ptr<float *[]> recvbufs(new float *[slot_count]);
+            for (unsigned int i = 0; i < slot_count; ++i) {
+                recvbufs[i] = slots[i] == slots[0]
+                    ? leader_out
+                    : static_cast<float *>(request_fleet_scratch(fleet, slots[i], count * sizeof(float)));
+            }
+            if (csdist::local_allreduce(
+                    &fleet->local,
+                    slots,
+                    slot_count,
+                    (const void *const *) partials,
+                    (void *const *) recvbufs.get(),
+                    count,
+                    ncclFloat32,
+                    ncclSum) == ncclSuccess) {
+                return;
+            }
+            throw std::runtime_error("reduce_sum_to_leader_f32 NCCL allreduce failed");
+        }
+    }
+#endif
+
     const int blocks = static_cast<int>((count + static_cast<std::size_t>(kAddThreads) - 1u) / static_cast<std::size_t>(kAddThreads));
     const unsigned int leader0 = slots[0];
     const int leader0_device = fleet_device_id(*fleet, leader0);

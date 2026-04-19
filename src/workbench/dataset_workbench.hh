@@ -86,11 +86,12 @@ struct ingest_policy {
     unsigned long convert_window_bytes = 1ul << 30ul;
     unsigned long target_shard_bytes = 1ul << 30ul;
     std::size_t reader_bytes = (std::size_t) 8u << 20u;
-    unsigned int blocked_ell_block_sizes[3] = {8u, 16u, 32u};
-    unsigned int blocked_ell_candidate_count = 3u;
+    unsigned int blocked_ell_block_sizes[4] = {4u, 8u, 16u, 32u};
+    unsigned int blocked_ell_candidate_count = 4u;
     double blocked_ell_min_fill_ratio = 0.30;
     std::string output_path;
     std::string cache_dir;
+    std::string working_root;
     bool verify_after_write = true;
     int device = 0;
     bool embed_metadata = true;
@@ -212,10 +213,14 @@ struct dataset_partition_summary {
     std::uint32_t execution_format = 0;
     std::uint32_t blocked_ell_block_size = 0;
     std::uint32_t blocked_ell_bucket_count = 0;
+    std::uint32_t sliced_ell_slice_count = 0;
+    std::uint32_t sliced_ell_slice_rows = 0;
     float blocked_ell_fill_ratio = 0.0f;
     std::uint64_t execution_bytes = 0;
     std::uint64_t blocked_ell_bytes = 0;
     std::uint64_t bucketed_blocked_ell_bytes = 0;
+    std::uint64_t sliced_ell_bytes = 0;
+    std::uint64_t bucketed_sliced_ell_bytes = 0;
 };
 
 struct dataset_shard_summary {
@@ -228,9 +233,12 @@ struct dataset_shard_summary {
     std::uint32_t blocked_ell_block_size = 0;
     std::uint32_t bucketed_partition_count = 0;
     std::uint32_t bucketed_segment_count = 0;
+    std::uint32_t sliced_ell_slice_count = 0;
+    std::uint32_t sliced_ell_slice_rows = 0;
     float blocked_ell_fill_ratio = 0.0f;
     std::uint64_t execution_bytes = 0;
     std::uint64_t bucketed_blocked_ell_bytes = 0;
+    std::uint64_t bucketed_sliced_ell_bytes = 0;
     std::uint32_t preferred_pair = 0;
 };
 
@@ -291,6 +299,50 @@ struct observation_metadata_table {
     std::uint64_t rows = 0;
     std::uint32_t cols = 0;
     std::vector<observation_metadata_column> columns;
+};
+
+struct feature_metadata_column_summary {
+    std::string name;
+    std::uint32_t type = 0;
+};
+
+struct feature_metadata_summary {
+    bool available = false;
+    std::uint64_t rows = 0;
+    std::uint32_t cols = 0;
+    std::vector<feature_metadata_column_summary> columns;
+};
+
+struct feature_metadata_column {
+    std::string name;
+    std::uint32_t type = 0;
+    std::vector<std::string> text_values;
+    std::vector<float> float32_values;
+    std::vector<std::uint8_t> uint8_values;
+};
+
+struct feature_metadata_table {
+    bool available = false;
+    std::string error;
+    std::uint64_t rows = 0;
+    std::uint32_t cols = 0;
+    std::vector<feature_metadata_column> columns;
+};
+
+struct dataset_attribute_entry {
+    std::string key;
+    std::string value;
+};
+
+struct dataset_attribute_summary {
+    bool available = false;
+    std::vector<std::string> keys;
+};
+
+struct dataset_attribute_table {
+    bool available = false;
+    std::string error;
+    std::vector<dataset_attribute_entry> entries;
 };
 
 struct browse_cache_summary {
@@ -385,6 +437,8 @@ struct dataset_summary {
     std::vector<std::string> feature_names;
     std::vector<embedded_metadata_dataset_summary> embedded_metadata;
     observation_metadata_summary observation_metadata;
+    feature_metadata_summary feature_metadata;
+    dataset_attribute_summary dataset_attributes;
     browse_cache_summary browse;
     persisted_preprocess_summary preprocess;
     runtime_service_summary runtime_service;
@@ -407,10 +461,15 @@ struct preprocess_config {
     float min_detected_cells = 5.0f;
     float min_variance = 0.01f;
     int device = 0;
+    bool use_all_devices = false;
     bool drop_host_parts = true;
     bool mark_mito_from_feature_names = true;
+    bool finalize_after_preprocess = true;
+    bool enable_sliced_device_cache = true;
     std::string mito_prefix = "MT-";
     std::string cache_dir;
+    std::string working_root;
+    std::uint64_t sliced_device_cache_bytes = 0u;
 };
 
 struct preprocess_summary {
@@ -424,6 +483,37 @@ struct preprocess_summary {
     unsigned long kept_genes = 0;
     double gene_sum_checksum = 0.0;
     std::vector<issue> issues;
+};
+
+struct preprocess_analysis_table {
+    bool ok = false;
+    std::string path;
+    std::string matrix_format;
+    int device = -1;
+    unsigned long partitions_processed = 0;
+    unsigned long rows = 0;
+    unsigned long cols = 0;
+    unsigned long nnz = 0;
+    double kept_cells = 0.0;
+    unsigned long kept_genes = 0;
+    double gene_sum_checksum = 0.0;
+    std::vector<float> cell_total_counts;
+    std::vector<float> cell_mito_counts;
+    std::vector<float> cell_max_counts;
+    std::vector<std::uint32_t> cell_detected_genes;
+    std::vector<std::uint8_t> cell_keep;
+    std::vector<float> gene_sum;
+    std::vector<float> gene_sq_sum;
+    std::vector<float> gene_detected_cells;
+    std::vector<std::uint8_t> gene_keep;
+    std::vector<std::uint8_t> gene_flags;
+    std::vector<issue> issues;
+};
+
+struct preprocess_persist_summary {
+    preprocess_summary summary;
+    double persist_ms = 0.0;
+    double browse_ms = 0.0;
 };
 
 std::string format_name(unsigned int format);
@@ -465,7 +555,18 @@ embedded_metadata_table load_embedded_metadata_table(const std::string &path,
 
 observation_metadata_table load_observation_metadata_table(const std::string &path);
 
+feature_metadata_table load_feature_metadata_table(const std::string &path);
+
+dataset_attribute_table load_dataset_attribute_table(const std::string &path);
+
 persisted_preprocess_table load_persisted_preprocess_table(const std::string &path);
+
+preprocess_analysis_table analyze_dataset_preprocess(const std::string &path,
+                                                     const preprocess_config &config = preprocess_config());
+
+preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
+                                                       const preprocess_analysis_table &analysis,
+                                                       const preprocess_config &config = preprocess_config());
 
 preprocess_summary run_preprocess_pass(const std::string &path,
                                        const preprocess_config &config = preprocess_config());

@@ -11,8 +11,8 @@
 #include <unistd.h>
 
 #include "../../../extern/CellShard/src/convert/compressed_from_coo_raw.cuh"
-#include "../../../extern/CellShard/src/disk/packfile.cuh"
-#include "../../../extern/CellShard/src/sharded/disk.cuh"
+#include "../../../extern/CellShard/include/CellShard/io/pack/packfile.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/storage/disk.cuh"
 #include "mtx_reader.cuh"
 
 namespace cellerator {

@@ -1,0 +1,27 @@
+{
+  "tool": "crash",
+  "status": "partial",
+  "conclusive": false,
+  "command": "./build/realPreprocessBench --h5ad data/test/reference/GSE147520_all_cells.h5ad --output-dir /tmp/cellerator_real_preprocess_bench --matrix-source raw_x --warmup 0 --repeats 1 --python-exe python3 ",
+  "exit_status": 1,
+  "signal": "",
+  "crash_class": "unknown",
+  "likely_domain": "unknown",
+  "next_step": "Escalate to a sanitizer build or batch gdb depending on whether memory corruption is likely.",
+  "reasons": [
+    "The process failed but the first-pass crash capture did not isolate a strong fault family."
+  ],
+  "matched_signatures": [],
+  "stderr_tail": [
+    "[benchmark-mutex] acquired realPreprocessBench via /tmp/cuda_v100_benchmark.lock",
+    "realPreprocessBench: blocked ingest conversion failed",
+    "  [error] convert: dataset ingest conversion failed"
+  ],
+  "stdout_tail": [],
+  "backtrace_head": [],
+  "source_hint": "",
+  "limitations": [],
+  "failed_syscalls": [],
+  "perf_counters": {},
+  "tool_detail": ""
+}

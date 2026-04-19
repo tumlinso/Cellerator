@@ -1,4 +1,4 @@
-#include "../src/compute/neighbors/forward_neighbors/forwardNeighbors.hh"
+#include <Cellerator/compute/neighbors/forward_neighbors.hh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 

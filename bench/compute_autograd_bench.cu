@@ -1,4 +1,5 @@
-#include "../src/compute/autograd/autograd.hh"
+#include <Cellerator/compute/autograd.hh>
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 

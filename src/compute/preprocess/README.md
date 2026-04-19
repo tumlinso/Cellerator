@@ -2,6 +2,11 @@
 
 Sparse scRNA preprocessing operators for row-sharded sparse inputs.
 
+At the workbench level, preprocess now defaults to `metrics + metadata rewrite + finalize/repack`.
+The compute operators in this directory still own the QC, normalization/log1p, and gene-metric math.
+Physical compaction of filtered rows and genes is a later CellShard finalize step, which can be disabled with
+`preprocess_config.finalize_after_preprocess = false` when benchmarking the analysis phase by itself.
+
 This area owns:
 
 - row-local cell metrics
@@ -34,3 +39,10 @@ On V100 this means:
 - keep Blocked-ELL-native custom kernels for row-local QC and transforms
 - keep the CSR transpose-reduction path where it still gives the cleanest cuSPARSE mapping
 - replace CSR temporary analysis paths only when a real Blocked-ELL library-backed or clearly faster custom path is proven
+
+Current sliced-ELL bridge posture:
+
+- the Blocked-ELL-to-sliced-ELL preprocess bridge now chooses one uniform `slice_rows` value per part from a small fixed candidate set instead of hardcoding `32`
+- the choice is driven by row-nnz skew with a hybrid storage-plus-slice-count score
+- `32` remains a supported kernel path, but it is no longer the preferred default when another uniform slice size scores better
+- single-GPU sliced preprocess can now reuse a CellShard-owned device-resident execution-partition cache across repeated warm runs instead of re-uploading every sliced segment on each pass

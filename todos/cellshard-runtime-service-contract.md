@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "codex"
 created_at: "2026-04-14T10:42:32Z"
-last_heartbeat_at: "2026-04-14T12:23:18Z"
-last_reviewed_at: "2026-04-14T12:23:18Z"
+last_heartbeat_at: "2026-04-15T00:00:00Z"
+last_reviewed_at: "2026-04-15T00:00:00Z"
 stale_after_days: 14
 objective: "reset CellShard around owner-hosted pack delivery, append-only canonical generations, and a Cellerator immutable-emission boundary"
 ---
@@ -65,11 +65,14 @@ _None recorded yet._
 - Expanded the docs to spell out the owner-hosted runtime model in single-machine and distributed operation, including coordinator, master reader, pack-prep, executor, and append-staging roles.
 - Reworked the on-disk cache layout into a legible `instances/<fingerprint>/metadata` plus `packs/canonical` and `packs/execution` tree, wrote the new paths into the cache manifest, and added runtime coverage that checks those directories and files exist after cache warmup.
 - Fixed the canonical blocked-ell execution-pack builder so serialized execution partitions always carry explicit identity column maps; this restored green execution-pack warmup coverage under the new cache layout.
+- Qualified execution-pack cache paths by `execution_plan_generation`, `pack_generation`, and `service_epoch`, updated pack-delivery descriptors to advertise the same generation-aware relative path, and documented the new execution-pack directory shape in `extern/CellShard/README.md`.
+- Hardened `.csh5` open/append paths to require `schema_version`, replaced raw HDF5 1D reads with extent-checked reads, and reject inconsistent top-level totals, non-boundary shard tables, and unknown partition codec ids before any payload load.
+- Added focused runtime coverage for generation-qualified execution-pack cache warmup plus rejection tests for unsupported schema versions, inconsistent header totals, and malformed matrix-table extents; `cellShardDatasetH5Test`, `cellShardExportRuntimeTest`, and `cellShardFirstFileFixtureTest` all pass with the hardened loader.
 
 ## Next Actions
-- Implement the first concrete owner-node coordinator/runtime surface on top of the new cache tree and runtime-service metadata.
+- Implement the first concrete owner-node coordinator/runtime surface on top of the now generation-qualified cache tree and runtime-service metadata.
 - Add explicit append staging and publish/cutover state handling so packs can rebuild and swap generations without mutating active payloads in place.
-- Decide how executor-side delivered packs and owner-side generation directories should be named once remote delivery is implemented.
+- Decide whether executor-side delivered packs should mirror the owner-side `plan.<execution_plan_generation>-pack.<pack_generation>-epoch.<service_epoch>` directory shape exactly once remote delivery is implemented.
 
 ## Done Criteria
 - The public CellShard docs describe pack as the primary execution artifact served from the owner-hosted csh5 source.

@@ -1,5 +1,5 @@
-#include "../src/workbench/dataset_workbench.hh"
-#include "../extern/CellShard/src/CellShard.hh"
+#include <Cellerator/workbench/dataset_workbench.hh>
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
 
 #include <cstdio>
 #include <cstdlib>
@@ -271,8 +271,8 @@ int main() {
         runtime_service.active_read_generation = 1u;
         runtime_service.staged_write_generation = 1u;
 
-        require(cs::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view) != 0,
-                "create_dataset_blocked_ell_h5 failed");
+        require(cs::create_dataset_optimized_blocked_ell_h5(out_path.c_str(), &layout, &dataset_view, &provenance_view) != 0,
+                "create_dataset_optimized_blocked_ell_h5 failed");
         require(cs::append_bucketed_blocked_ell_shard_h5(out_path.c_str(), 0u, &shard) != 0,
                 "append_bucketed_blocked_ell_shard_h5 failed");
         require(cs::append_dataset_execution_h5(out_path.c_str(), &execution) != 0,

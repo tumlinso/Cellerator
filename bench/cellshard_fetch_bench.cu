@@ -1,6 +1,7 @@
-#include "../extern/CellShard/src/CellShard.hh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
 #include "benchmark_mutex.hh"
-#include "../src/ingest/mtx/mtx_reader.cuh"
+#include <Cellerator/ingest/mtx_reader.cuh>
 
 #include <cuda_fp16.h>
 

@@ -389,7 +389,7 @@ static inline int bind_uploaded_part_view(csv::sliced_ell_view *out,
     out->cols = host->cols;
     out->nnz = host->nnz;
     out->slice_count = host->slice_count;
-    out->slice_rows = host->slice_count != 0u ? (host->slice_row_offsets[1u] - host->slice_row_offsets[0u]) : 0u;
+    out->slice_rows = cs::sparse::uniform_slice_rows(host);
     out->slice_row_offsets = (unsigned int *) record->a0;
     out->slice_widths = (unsigned int *) record->a1;
     out->slice_slot_offsets = host->slice_count != 0u

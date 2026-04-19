@@ -1,4 +1,4 @@
-#include "../src/models/developmental_time/developmentalTime.hh"
+#include <Cellerator/models/developmental_time.hh>
 
 #include <torch/torch.h>
 

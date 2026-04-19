@@ -1,4 +1,4 @@
-#include "../src/trajectory/trajectory_tree.cuh"
+#include <Cellerator/trajectory/trajectory_tree.cuh>
 
 #include <algorithm>
 #include <cstdint>

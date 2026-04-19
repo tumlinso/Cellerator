@@ -1,4 +1,4 @@
-#include "../src/ingest/dataset/dataset_ingest.cuh"
+#include <Cellerator/ingest/dataset_ingest.cuh>
 
 int main() {
     return 0;

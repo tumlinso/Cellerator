@@ -1,0 +1,100 @@
+---
+title: "Quantized Transfer Architecture"
+---
+
+## Purpose
+
+This note records the current architectural posture for quantized sparse execution on the native 4x V100 host. The quantized path only justifies its complexity if it wins **end to end** after payload reduction, device staging, and execution. Smaller packs alone are not enough.
+
+The first proving workload is `inference SpMM`, because it isolates the transport and execution tradeoff more cleanly than preprocess or training-time backward paths.
+
+## Route Chosen
+
+- System route: native 4x Tesla V100 16 GB host
+- Architecture route: Volta `sm_70`
+- Dominant bottleneck to investigate first: PCIe/HtoD transfer plus HBM traffic
+- Preferred implementation order: library-backed tensor-op formulation when the sparse layout can be reblocked cleanly, then custom WMMA only if the library path leaves a stable gap
+
+This follows the repository's CUDA guidance: narrow native builds, treat PCIe 3.0 as the enemy, and only pursue Tensor Cores when bytes moved do not remain the dominant cost.
+
+## Current State
+
+The repo already has:
+
+- a persisted `quantized_blocked_ell` codec family in `CellShard`
+- a packed quantized Blocked-ELL host/device payload
+- a fused scalar decode + SpMM path in `src/compute/autograd/`
+- round-trip tests through `.csh5`, cache pack materialization, and runtime execution
+
+What it did not have before this pass was a benchmark surface for the actual question: whether quantized sparse payloads reduce enough staging cost to beat native `__half` Blocked-ELL after decode.
+
+## Candidate Architectures
+
+### A. Scalar fused decode from packed sparse codes
+
+This is the current implementation path. It is the baseline because it already preserves sparse locality and avoids unpack-to-float staging.
+
+- Compute style: custom kernel
+- Best case: PCIe/HtoD win with acceptable extra per-nonzero decode cost
+- Main risks: per-slot decode becomes HBM- or instruction-bound, leaving no net speedup
+- Persistence implication: current `quantized_blocked_ell` can support this path directly
+
+### B. Sparse payload reblocked into tensor-op-friendly tiles
+
+This is the first serious tensor-op path to test.
+
+- Compute style: library-backed first, likely CUTLASS/cuBLASLt-like block math if the sparse payload can be reblocked into dense-enough tiles
+- Best case: keep transport reduction while recovering enough dense tile math to offset decode
+- Main risks: sparse skew or metadata gathers erase the benefit; tile materialization becomes another bandwidth pass
+- Persistence implication: likely needs a new runtime pack layout even if canonical `.csh5` keeps a more neutral sparse representation
+
+### C. State-model quantization with tensor-op-oriented tiles
+
+This is the forward-looking design target for biologically calibrated quantization.
+
+- Compute style: hybrid; likely library-backed tile math with a small state/codebook decode surface
+- Best case: codes represent a few semantically meaningful expression states and still map onto fast tile execution
+- Main risks: codebook lookups or richer per-feature semantics destroy the locality win
+- Persistence implication: requires a new codec family or versioned subtype, not an in-place revision of the current affine-only contract
+
+## Persistence Guidance
+
+The current quantized Blocked-ELL files should be treated as **read-only legacy**. New work should not overload that contract.
+
+Recommended split:
+
+- canonical `.csh5`: store stable quantization semantics, tiling descriptors, and calibration provenance
+- runtime pack/cache: store the delivery layout actually consumed by the hot kernel on `sm_70`
+
+That keeps the canonical container readable across delivery strategies while still allowing Volta-specific pack specialization.
+
+## Quantization Semantics
+
+The long-term contract should not stay affine-only. The intended design direction is a **small per-feature or feature-group state model**:
+
+- codes should approximate a few semantically equivalent expression states rather than generic linear buckets
+- calibration provenance must be persisted explicitly
+- richer state-model codecs should live beside affine codecs, not replace them silently
+
+The current benchmark target still measures the existing affine paths because that is the only fully implemented runtime today.
+
+## Benchmark Surface
+
+`quantizedTransferSpmmBench` is the first research target added for this work. It compares native `__half` Blocked-ELL SpMM against quantized Blocked-ELL on a single GPU and reports:
+
+- matrix payload bytes
+- H2D bytes
+- quantized host packing time
+- device upload time
+- kernel time
+- total upload + kernel time
+- mean and max absolute output drift versus native `__half` Blocked-ELL
+
+This is intentionally a transport-and-kernel benchmark, not yet a full `.csh5`/pack-size benchmark. It uses the resident payload bytes as the first proxy for runtime pack size until the next codec iteration settles the canonical/runtime split.
+
+## Immediate Next Work
+
+- benchmark current scalar fused decode across `1/2/4/8` bits and both affine decode policies
+- add inspect/runtime summary coverage for quantized codec reporting
+- formalize the missing quantization semantics contract: code range, state granularity, calibration provenance, and compatibility rules
+- prototype a tensor-op-oriented sparse tile layout before freezing a new on-disk codec family

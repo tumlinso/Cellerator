@@ -8,6 +8,9 @@
 #include <stdexcept>
 #include <string>
 
+#include "../../../../extern/CellShard/include/CellShard/formats/dense.cuh"
+#include "../../../../extern/CellShard/include/CellShard/formats/blocked_ell.cuh"
+#include "../../../../extern/CellShard/include/CellShard/formats/sliced_ell.cuh"
 #include "../host_buffer.hh"
 
 namespace cellerator::compute::neighbors::forward_neighbors {
@@ -18,6 +21,8 @@ template<typename T>
 using const_array_view = ::cellerator::compute::neighbors::const_buffer_view<T>;
 
 using ::cellerator::compute::neighbors::view_of;
+namespace cs = ::cellshard;
+namespace css = ::cellshard::sparse;
 
 enum class ForwardNeighborBackend {
     exact_windowed,
@@ -39,12 +44,86 @@ struct ForwardTimeWindow {
     float max_delta = std::numeric_limits<float>::infinity();
 };
 
+enum class ForwardNeighborInputLayout {
+    dense,
+    blocked_ell,
+    sliced_ell
+};
+
+struct ForwardNeighborMatrixView {
+    ForwardNeighborInputLayout layout = ForwardNeighborInputLayout::dense;
+    const float *dense_values = nullptr;
+    std::int64_t dense_rows = 0;
+    std::int64_t dense_cols = 0;
+    std::int64_t dense_row_stride = 0;
+    const css::blocked_ell *blocked_ell = nullptr;
+    const css::sliced_ell *sliced_ell = nullptr;
+};
+
+inline ForwardNeighborMatrixView make_forward_neighbor_dense_view(
+    const float *values,
+    std::int64_t rows,
+    std::int64_t cols,
+    std::int64_t row_stride = 0) {
+    return ForwardNeighborMatrixView{
+        ForwardNeighborInputLayout::dense,
+        values,
+        rows,
+        cols,
+        row_stride > 0 ? row_stride : cols,
+        nullptr,
+        nullptr
+    };
+}
+
+inline ForwardNeighborMatrixView make_forward_neighbor_blocked_ell_view(const css::blocked_ell *matrix) {
+    return ForwardNeighborMatrixView{
+        ForwardNeighborInputLayout::blocked_ell,
+        nullptr,
+        0,
+        0,
+        0,
+        matrix,
+        nullptr
+    };
+}
+
+inline ForwardNeighborMatrixView make_forward_neighbor_sliced_ell_view(const css::sliced_ell *matrix) {
+    return ForwardNeighborMatrixView{
+        ForwardNeighborInputLayout::sliced_ell,
+        nullptr,
+        0,
+        0,
+        0,
+        nullptr,
+        matrix
+    };
+}
+
 struct ForwardNeighborQueryBatch {
+    const_array_view<std::int64_t> cell_indices;
+    const_array_view<float> developmental_time;
+    const_array_view<std::int64_t> embryo_ids;
+    ForwardNeighborMatrixView matrix;
+};
+
+struct ForwardNeighborOwnedQueryBatch {
     host_array<std::int64_t> cell_indices;
     host_array<float> developmental_time;
-    host_array<float> latent_unit;
     host_array<std::int64_t> embryo_ids;
-    std::int64_t latent_dim = 0;
+    host_array<float> dense_values;
+    std::int64_t dense_cols = 0;
+
+    ForwardNeighborQueryBatch view() const {
+        return ForwardNeighborQueryBatch{
+            view_of(cell_indices),
+            view_of(developmental_time),
+            view_of(embryo_ids),
+            make_forward_neighbor_dense_view(dense_values.data(),
+                                             static_cast<std::int64_t>(cell_indices.size()),
+                                             dense_cols)
+        };
+    }
 };
 
 struct ForwardNeighborSearchConfig {
@@ -121,6 +200,37 @@ inline host_array<std::int64_t> make_missing_i64_array_(std::size_t rows) {
     return out;
 }
 
+inline std::int64_t checked_i64_(std::size_t value, const char *label) {
+    if (value > static_cast<std::size_t>(std::numeric_limits<std::int64_t>::max())) {
+        throw std::overflow_error(std::string(label) + " does not fit into int64");
+    }
+    return static_cast<std::int64_t>(value);
+}
+
+inline std::int64_t matrix_rows_(const ForwardNeighborMatrixView &matrix) {
+    switch (matrix.layout) {
+        case ForwardNeighborInputLayout::dense:
+            return matrix.dense_rows;
+        case ForwardNeighborInputLayout::blocked_ell:
+            return matrix.blocked_ell != nullptr ? static_cast<std::int64_t>(matrix.blocked_ell->rows) : 0;
+        case ForwardNeighborInputLayout::sliced_ell:
+            return matrix.sliced_ell != nullptr ? static_cast<std::int64_t>(matrix.sliced_ell->rows) : 0;
+    }
+    return 0;
+}
+
+inline std::int64_t matrix_cols_(const ForwardNeighborMatrixView &matrix) {
+    switch (matrix.layout) {
+        case ForwardNeighborInputLayout::dense:
+            return matrix.dense_cols;
+        case ForwardNeighborInputLayout::blocked_ell:
+            return matrix.blocked_ell != nullptr ? static_cast<std::int64_t>(matrix.blocked_ell->cols) : 0;
+        case ForwardNeighborInputLayout::sliced_ell:
+            return matrix.sliced_ell != nullptr ? static_cast<std::int64_t>(matrix.sliced_ell->cols) : 0;
+    }
+    return 0;
+}
+
 inline void validate_forward_neighbor_search_config_(const ForwardNeighborSearchConfig &config) {
     if (config.top_k <= 0) throw std::invalid_argument("ForwardNeighborSearchConfig.top_k must be > 0");
     if (config.direction != ForwardNeighborDirection::forward) {
@@ -150,17 +260,31 @@ inline void validate_forward_neighbor_search_config_(const ForwardNeighborSearch
 }
 
 inline void validate_forward_neighbor_query_batch_(const ForwardNeighborQueryBatch &query) {
-    if (query.latent_dim <= 0) {
-        throw std::invalid_argument("ForwardNeighborQueryBatch.latent_dim must be > 0");
+    if (matrix_cols_(query.matrix) <= 0) {
+        throw std::invalid_argument("ForwardNeighborQueryBatch matrix cols must be > 0");
     }
-    if (query.cell_indices.size() != query.developmental_time.size()) {
+    if (query.cell_indices.size != query.developmental_time.size) {
         throw std::invalid_argument("ForwardNeighborQueryBatch cell_indices and developmental_time must align");
     }
-    if (query.cell_indices.size() * checked_size_(query.latent_dim, "latent_dim") != query.latent_unit.size()) {
-        throw std::invalid_argument("ForwardNeighborQueryBatch latent_unit must equal rows * latent_dim");
+    if (matrix_rows_(query.matrix) != checked_i64_(query.cell_indices.size, "query rows")) {
+        throw std::invalid_argument("ForwardNeighborQueryBatch matrix rows must align with query rows");
     }
-    if (!query.embryo_ids.empty() && query.embryo_ids.size() != query.cell_indices.size()) {
+    if (!query.embryo_ids.empty() && query.embryo_ids.size != query.cell_indices.size) {
         throw std::invalid_argument("ForwardNeighborQueryBatch embryo_ids must be empty or align with rows");
+    }
+    if (query.matrix.layout == ForwardNeighborInputLayout::dense) {
+        if (query.matrix.dense_values == nullptr && query.cell_indices.size != 0u) {
+            throw std::invalid_argument("ForwardNeighborQueryBatch dense_values must not be null");
+        }
+        if (query.matrix.dense_row_stride < matrix_cols_(query.matrix)) {
+            throw std::invalid_argument("ForwardNeighborQueryBatch dense_row_stride must be >= dense_cols");
+        }
+    }
+    if (query.matrix.layout == ForwardNeighborInputLayout::blocked_ell && query.matrix.blocked_ell == nullptr) {
+        throw std::invalid_argument("ForwardNeighborQueryBatch blocked_ell view is null");
+    }
+    if (query.matrix.layout == ForwardNeighborInputLayout::sliced_ell && query.matrix.sliced_ell == nullptr) {
+        throw std::invalid_argument("ForwardNeighborQueryBatch sliced_ell view is null");
     }
 }
 

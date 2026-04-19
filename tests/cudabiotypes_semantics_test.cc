@@ -1,4 +1,4 @@
-#include "../src/support/assay_validation.hh"
+#include <Cellerator/support/assay_validation.hh>
 
 #include <cassert>
 

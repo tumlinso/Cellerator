@@ -1,4 +1,6 @@
-#include "../extern/CellShard/src/CellShard.hh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
+#include "../extern/CellShard/src/convert/sliced_ell_from_blocked_ell.cuh"
 
 #include <cuda_runtime.h>
 
@@ -61,6 +63,28 @@ int main() {
     cs::convert::blocked_ell_tune_result tune = {};
     require(cs::convert::choose_blocked_ell_block_size(src.parts[0], candidates, 2u, &tune) != 0, "choose_blocked_ell_block_size failed");
     require(tune.block_size == 2u || tune.block_size == 4u, "unexpected block size");
+    {
+        const std::uint32_t uniform_rows[64] = {
+            4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u,
+            4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u,
+            4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u,
+            4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u
+        };
+        const std::uint32_t skew_rows[64] = {
+            32u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u,
+            1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u,
+            1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u,
+            1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u, 1u
+        };
+        const unsigned int sliced_candidates[] = { 8u, 16u, 32u, 64u };
+        cs::convert::sliced_ell_tune_result sliced_tune{};
+        require(cs::convert::choose_sliced_ell_slice_rows(uniform_rows, 64u, 256u, sliced_candidates, 4u, &sliced_tune) != 0,
+                "choose_sliced_ell_slice_rows uniform failed");
+        require(sliced_tune.slice_rows == 64u, "uniform sliced ell tuner should prefer one large slice");
+        require(cs::convert::choose_sliced_ell_slice_rows(skew_rows, 64u, 95u, sliced_candidates, 4u, &sliced_tune) != 0,
+                "choose_sliced_ell_slice_rows skew failed");
+        require(sliced_tune.slice_rows == 8u, "skewed sliced ell tuner should prefer smaller slices");
+    }
 
     cs::sparse::blocked_ell local;
     cs::sparse::init(&local);
@@ -71,6 +95,22 @@ int main() {
     require(close_half(local.val[0], 1.0f), "blocked ell row0 slot0 col0 mismatch");
     require(close_half(local.val[3], 2.0f), "blocked ell row0 slot1 col1 mismatch");
     require(close_half(local.val[5], 3.0f), "blocked ell row1 slot0 col1 mismatch");
+    {
+        const unsigned int sliced_candidates[] = { 1u, 2u, 4u };
+        cs::convert::sliced_ell_tune_result sliced_tune{};
+        cs::sparse::sliced_ell sliced;
+        cs::sparse::init(&sliced);
+        require(cs::convert::sliced_ell_from_blocked_ell_auto(&local, sliced_candidates, 3u, &sliced, &sliced_tune) != 0,
+                "sliced_ell_from_blocked_ell_auto failed");
+        require(sliced_tune.slice_rows == 1u, "small blocked ell should pick row-local slices");
+        require(cs::sparse::uniform_slice_rows(&sliced) == 1u, "uniform sliced ell rows mismatch");
+        require(sliced.slice_count == 2u, "sliced ell slice count mismatch");
+        require(sliced.slice_widths[0] == 2u && sliced.slice_widths[1] == 1u, "sliced ell widths mismatch");
+        require(sliced.col_idx[0] == 0u && sliced.col_idx[1] == 3u, "sliced ell first row columns mismatch");
+        require(close_half(sliced.val[0], 1.0f) && close_half(sliced.val[1], 2.0f), "sliced ell first row values mismatch");
+        require(sliced.col_idx[2] == 1u && close_half(sliced.val[2], 3.0f), "sliced ell second row mismatch");
+        cs::sparse::clear(&sliced);
+    }
 
     cs::sharded<cs::sparse::blocked_ell> blocked;
     cs::init(&blocked);

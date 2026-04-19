@@ -7,10 +7,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../../../extern/CellShard/src/offset_span.cuh"
-#include "../../../extern/CellShard/src/formats/triplet.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded.cuh"
-#include "../../../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../../../extern/CellShard/include/CellShard/core/offset_span.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/triplet.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/layout/sharded.cuh"
+#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 #include "../scan.cuh"
 
 namespace cellerator {

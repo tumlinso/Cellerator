@@ -1,6 +1,6 @@
-#include "../src/torch/bindings.hh"
+#include <Cellerator/torch/bindings.hh>
 
-#include "../extern/CellShard/src/sharded/sharded_host.cuh"
+#include "../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
 
 #include <torch/torch.h>
 

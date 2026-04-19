@@ -82,6 +82,12 @@ def main() -> int:
 
     preprocess = cellerator.preprocess_config()
     preprocess.cache_dir = str(preprocess_cache_root)
+    preprocess.min_counts = 0.0
+    preprocess.min_genes = 0
+    preprocess.max_mito_fraction = 1.0
+    preprocess.min_gene_sum = 0.0
+    preprocess.min_detected_cells = 0.0
+    preprocess.min_variance = 0.0
     preprocess_result = cellerator.preprocess(str(dataset_path), preprocess)
     if not preprocess_result.ok:
         raise RuntimeError("preprocess failed")

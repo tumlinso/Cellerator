@@ -1,6 +1,7 @@
-#include "../src/compute/autograd/autograd.hh"
-#include "../src/ingest/mtx/mtx_reader.cuh"
-#include "../src/ingest/dataset/dataset_ingest.cuh"
+#include <Cellerator/compute/autograd.hh>
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
+#include <Cellerator/ingest/dataset_ingest.cuh>
+#include <Cellerator/ingest/mtx_reader.cuh>
 #include "benchmark_mutex.hh"
 
 #include <cuda_fp16.h>

@@ -22,6 +22,8 @@ The rule is simple: reusable runtime logic stays here instead of being hidden in
 
 `src/quantized/` contains the custom-kernel quantized sparse backend for Volta `sm_70`. This path is optimized around sparse traffic and explicit metadata policies rather than framework generality.
 
+The current architecture report for whether quantized sparse payloads actually win after transfer plus decode lives in [quantized_transfer_architecture.qmd](quantized_transfer_architecture.qmd). The first focused benchmark target for that question is `quantizedTransferSpmmBench`.
+
 ### Torch Boundary
 
 `src/torch/` provides the explicit export boundary into Torch tensors. It is appropriate for deliberate interop points, not for repeated hot-path conversion inside training or runtime loops.
@@ -32,7 +34,7 @@ The downstream stages are stacked deliberately:
 
 1. `CellShard` provides persisted sparse layout and runtime staging.
 2. `src/compute/` provides reusable kernels and operators on top of that substrate.
-3. `src/trajectory/`, `src/models/`, `src/quantized/`, and `src/workbench/` build task-specific workflows from those reusable pieces.
+3. `src/trajectory/`, `src/models/`, `src/quantized/`, and `src/workbench/runtime/` build task-specific workflows from those reusable pieces, while `src/workbench/` itself stays as the adapter-facing facade over that runtime backend.
 4. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
 
 ## Hot-Path Guidance

@@ -1,4 +1,4 @@
-#include "../src/models/dense_reduce/denseReduction.hh"
+#include <Cellerator/models/dense_reduce.hh>
 
 #include <torch/torch.h>
 

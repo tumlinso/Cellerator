@@ -6,7 +6,8 @@
 #include <cstring>
 #include <limits>
 
-#include "../../../extern/CellShard/src/formats/blocked_ell.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/blocked_ell.cuh"
+#include "../../../extern/CellShard/include/CellShard/formats/sliced_ell.cuh"
 
 namespace cellerator {
 namespace ingest {
@@ -201,6 +202,74 @@ static inline int build_blocked_ell_shards(partition *p,
         shard_bytes += bytes;
         shard_block_idx += block_idx;
         shard_values += values;
+        row_cursor += (unsigned long) rows;
+    }
+
+    if (num_parts != 0ul) {
+        if (!append(p,
+                    shard_part_begin,
+                    num_parts,
+                    shard_row_begin,
+                    row_cursor,
+                    (unsigned long) shard_nnz,
+                    (unsigned long) shard_bytes)) return 0;
+    }
+    return 1;
+}
+
+static inline int build_sliced_ell_shards(partition *p,
+                                          const unsigned long *part_rows,
+                                          const unsigned long *part_nnz,
+                                          const unsigned long *part_aux,
+                                          const unsigned long *part_bytes,
+                                          unsigned long num_parts,
+                                          unsigned long target_bytes) {
+    const std::uint64_t max_u32 = (std::uint64_t) std::numeric_limits<std::uint32_t>::max();
+    unsigned long i = 0ul;
+    unsigned long row_cursor = 0ul;
+    unsigned long shard_part_begin = 0ul;
+    unsigned long shard_row_begin = 0ul;
+    std::uint64_t shard_rows = 0u;
+    std::uint64_t shard_nnz = 0u;
+    std::uint64_t shard_bytes = 0u;
+    std::uint64_t shard_slots = 0u;
+
+    clear(p);
+    init(p);
+
+    for (i = 0ul; i < num_parts; ++i) {
+        const std::uint64_t rows = part_rows != 0 ? (std::uint64_t) part_rows[i] : 0u;
+        const std::uint64_t nnz = part_nnz != 0 ? (std::uint64_t) part_nnz[i] : 0u;
+        const std::uint64_t bytes = part_bytes != 0 ? (std::uint64_t) part_bytes[i] : 0u;
+        const std::uint64_t slots =
+            part_aux != 0 ? (std::uint64_t) ::cellshard::sparse::unpack_sliced_ell_total_slots(part_aux[i]) : 0u;
+        const int break_bytes = target_bytes != 0ul && shard_bytes != 0u && shard_bytes + bytes > (std::uint64_t) target_bytes;
+        const int break_rows = shard_rows != 0u && shard_rows + rows > max_u32;
+        const int break_nnz = shard_nnz != 0u && shard_nnz + nnz > max_u32;
+        const int break_slots = shard_slots != 0u && shard_slots + slots > max_u32;
+
+        if (rows > max_u32 || nnz > max_u32 || slots > max_u32) return 0;
+
+        if (break_bytes || break_rows || break_nnz || break_slots) {
+            if (!append(p,
+                        shard_part_begin,
+                        i,
+                        shard_row_begin,
+                        row_cursor,
+                        (unsigned long) shard_nnz,
+                        (unsigned long) shard_bytes)) return 0;
+            shard_part_begin = i;
+            shard_row_begin = row_cursor;
+            shard_rows = 0u;
+            shard_nnz = 0u;
+            shard_bytes = 0u;
+            shard_slots = 0u;
+        }
+
+        shard_rows += rows;
+        shard_nnz += nnz;
+        shard_bytes += bytes;
+        shard_slots += slots;
         row_cursor += (unsigned long) rows;
     }
 

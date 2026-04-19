@@ -14,11 +14,29 @@
 namespace cellerator::compute::neighbors::forward_neighbors {
 
 struct ForwardNeighborRecordBatch {
+    const_array_view<std::int64_t> cell_indices;
+    const_array_view<float> developmental_time;
+    const_array_view<std::int64_t> embryo_ids;
+    ForwardNeighborMatrixView matrix;
+};
+
+struct ForwardNeighborOwnedRecordBatch {
     host_array<std::int64_t> cell_indices;
     host_array<float> developmental_time;
-    host_array<float> latent_unit;
     host_array<std::int64_t> embryo_ids;
-    std::int64_t latent_dim = 0;
+    host_array<float> dense_values;
+    std::int64_t dense_cols = 0;
+
+    ForwardNeighborRecordBatch view() const {
+        return ForwardNeighborRecordBatch{
+            view_of(cell_indices),
+            view_of(developmental_time),
+            view_of(embryo_ids),
+            make_forward_neighbor_dense_view(dense_values.data(),
+                                             static_cast<std::int64_t>(cell_indices.size()),
+                                             dense_cols)
+        };
+    }
 };
 
 struct ForwardNeighborBuildConfig {
@@ -101,7 +119,7 @@ public:
 
 private:
     ForwardNeighborBuildConfig config_;
-    ForwardNeighborRecordBatch records_;
+    ForwardNeighborOwnedRecordBatch records_;
 };
 
 class ForwardNeighborIndex {
@@ -118,7 +136,7 @@ public:
     std::int64_t latent_dim() const;
     ForwardNeighborShardSummary shard_summary(std::size_t shard) const;
 
-    ForwardNeighborQueryBatch query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const;
+    ForwardNeighborOwnedQueryBatch query_batch_from_cell_indices(const std::int64_t *cell_indices, std::size_t cell_count) const;
     ForwardNeighborRoutingPlan plan_future_neighbor_routes(
         const ForwardNeighborQueryBatch &query,
         const ForwardNeighborSearchConfig &config = ForwardNeighborSearchConfig()) const;
@@ -195,25 +213,32 @@ ForwardNeighborIndex build_forward_neighbor_index(
 namespace detail {
 
 inline void validate_forward_neighbor_record_batch_(const ForwardNeighborRecordBatch &batch) {
-    if (batch.latent_dim <= 0) {
-        throw std::invalid_argument("ForwardNeighborRecordBatch.latent_dim must be > 0");
+    if (matrix_cols_(batch.matrix) <= 0) {
+        throw std::invalid_argument("ForwardNeighborRecordBatch matrix cols must be > 0");
     }
-    if (batch.cell_indices.size() != batch.developmental_time.size()) {
+    if (batch.cell_indices.size != batch.developmental_time.size) {
         throw std::invalid_argument("ForwardNeighborRecordBatch cell_indices and developmental_time must align");
     }
-    if (batch.cell_indices.size() * static_cast<std::size_t>(batch.latent_dim) != batch.latent_unit.size()) {
-        throw std::invalid_argument("ForwardNeighborRecordBatch latent_unit must equal rows * latent_dim");
+    if (matrix_rows_(batch.matrix) != checked_i64_(batch.cell_indices.size, "record rows")) {
+        throw std::invalid_argument("ForwardNeighborRecordBatch matrix rows must align with record rows");
     }
-    if (!batch.embryo_ids.empty() && batch.embryo_ids.size() != batch.cell_indices.size()) {
+    if (!batch.embryo_ids.empty() && batch.embryo_ids.size != batch.cell_indices.size) {
         throw std::invalid_argument("ForwardNeighborRecordBatch embryo_ids must be empty or align with rows");
     }
-}
-
-inline std::int64_t checked_i64_(std::size_t value, const char *label) {
-    if (value > static_cast<std::size_t>(std::numeric_limits<std::int64_t>::max())) {
-        throw std::overflow_error(std::string(label) + " does not fit into int64");
+    if (batch.matrix.layout == ForwardNeighborInputLayout::dense) {
+        if (batch.matrix.dense_values == nullptr && batch.cell_indices.size != 0u) {
+            throw std::invalid_argument("ForwardNeighborRecordBatch dense_values must not be null");
+        }
+        if (batch.matrix.dense_row_stride < matrix_cols_(batch.matrix)) {
+            throw std::invalid_argument("ForwardNeighborRecordBatch dense_row_stride must be >= dense_cols");
+        }
     }
-    return static_cast<std::int64_t>(value);
+    if (batch.matrix.layout == ForwardNeighborInputLayout::blocked_ell && batch.matrix.blocked_ell == nullptr) {
+        throw std::invalid_argument("ForwardNeighborRecordBatch blocked_ell view is null");
+    }
+    if (batch.matrix.layout == ForwardNeighborInputLayout::sliced_ell && batch.matrix.sliced_ell == nullptr) {
+        throw std::invalid_argument("ForwardNeighborRecordBatch sliced_ell view is null");
+    }
 }
 
 inline std::int64_t default_segment_rows_(const ForwardNeighborBuildConfig &config, std::int64_t rows, std::int64_t shard_count) {
@@ -223,16 +248,16 @@ inline std::int64_t default_segment_rows_(const ForwardNeighborBuildConfig &conf
     return std::max<std::int64_t>(target, config.ann_rows_per_list > 0 ? config.ann_rows_per_list : 1);
 }
 
-inline void append_i64_(host_array<std::int64_t> *dst, const host_array<std::int64_t> &src) {
+inline void append_i64_(host_array<std::int64_t> *dst, const const_array_view<std::int64_t> &src) {
     const std::size_t old_size = dst->size();
-    dst->resize(old_size + src.size());
-    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data(), src.size() * sizeof(std::int64_t));
+    dst->resize(old_size + src.size);
+    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data, src.size * sizeof(std::int64_t));
 }
 
-inline void append_f32_(host_array<float> *dst, const host_array<float> &src) {
+inline void append_f32_(host_array<float> *dst, const const_array_view<float> &src) {
     const std::size_t old_size = dst->size();
-    dst->resize(old_size + src.size());
-    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data(), src.size() * sizeof(float));
+    dst->resize(old_size + src.size);
+    if (!src.empty()) std::memcpy(dst->data() + old_size, src.data, src.size * sizeof(float));
 }
 
 } // namespace detail

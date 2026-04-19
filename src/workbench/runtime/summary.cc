@@ -1,14 +1,14 @@
-#include "dataset_workbench.hh"
+#include "../dataset_workbench.hh"
 
 #include <cuda_runtime.h>
 
-#include "../ingest/common/barcode_table.cuh"
-#include "../ingest/common/feature_table.cuh"
-#include "../ingest/common/metadata_table.cuh"
-#include "../ingest/h5ad/h5ad_reader.cuh"
-#include "../ingest/mtx/mtx_reader.cuh"
-#include "../ingest/dataset/dataset_partition.cuh"
-#include "../../extern/CellShard/src/disk/packfile.cuh"
+#include "../../ingest/common/barcode_table.cuh"
+#include "../../ingest/common/feature_table.cuh"
+#include "../../ingest/common/metadata_table.cuh"
+#include "../../ingest/h5ad/h5ad_reader.cuh"
+#include "../../ingest/mtx/mtx_reader.cuh"
+#include "../../ingest/dataset/dataset_partition.cuh"
+#include "../../../extern/CellShard/include/CellShard/io/pack/packfile.cuh"
 
 #include <hdf5.h>
 
@@ -802,6 +802,43 @@ inline bool load_persisted_preprocess_summary_from_group(hid_t group, persisted_
     return true;
 }
 
+template<typename SummaryColumnT, typename SummaryT>
+inline bool load_annotation_summary_from_group(hid_t group,
+                                               SummaryT *out,
+                                               std::vector<issue> *issues,
+                                               const char *scope,
+                                               const char *label) {
+    if (out == nullptr) return false;
+    *out = SummaryT{};
+    if (group < 0) return false;
+    if ((!read_attr_u64(group, "extent", &out->rows) && !read_attr_u64(group, "rows", &out->rows))
+        || !read_attr_u32(group, "cols", &out->cols)) {
+        push_issue(issues, issue_severity::warning, scope != nullptr ? scope : "inspect",
+                   std::string("failed to read ") + (label != nullptr ? label : "annotation") + " header");
+        return false;
+    }
+    out->columns.reserve(out->cols);
+    for (std::uint32_t i = 0; i < out->cols; ++i) {
+        char column_name[64];
+        hid_t column = (hid_t) -1;
+        SummaryColumnT column_summary;
+        if (std::snprintf(column_name, sizeof(column_name), "column_%u", i) <= 0) continue;
+        column = H5Gopen2(group, column_name, H5P_DEFAULT);
+        if (column < 0) continue;
+        if (!read_attr_string(column, "name", &column_summary.name)
+            || !read_attr_u32(column, "type", &column_summary.type)) {
+            push_issue(issues, issue_severity::warning, scope != nullptr ? scope : "inspect",
+                       std::string("failed to read one ") + (label != nullptr ? label : "annotation") + " column");
+            H5Gclose(column);
+            continue;
+        }
+        out->columns.push_back(std::move(column_summary));
+        H5Gclose(column);
+    }
+    out->available = true;
+    return true;
+}
+
 std::string lower_copy(std::string value) {
     for (char &ch : value) ch = (char) std::tolower((unsigned char) ch);
     return value;
@@ -1548,13 +1585,20 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
     std::vector<std::uint64_t> partition_execution_bytes;
     std::vector<std::uint64_t> partition_blocked_ell_bytes;
     std::vector<std::uint64_t> partition_bucketed_blocked_ell_bytes;
+    std::vector<std::uint32_t> partition_sliced_ell_slice_counts;
+    std::vector<std::uint32_t> partition_sliced_ell_slice_rows;
+    std::vector<std::uint64_t> partition_sliced_ell_bytes;
+    std::vector<std::uint64_t> partition_bucketed_sliced_ell_bytes;
     std::vector<std::uint32_t> shard_execution_formats;
     std::vector<std::uint32_t> shard_block_sizes;
     std::vector<std::uint32_t> shard_bucketed_partition_counts;
     std::vector<std::uint32_t> shard_bucketed_segment_counts;
+    std::vector<std::uint32_t> shard_sliced_ell_slice_counts;
+    std::vector<std::uint32_t> shard_sliced_ell_slice_rows;
     std::vector<float> shard_fill_ratios;
     std::vector<std::uint64_t> shard_execution_bytes;
     std::vector<std::uint64_t> shard_bucketed_blocked_ell_bytes;
+    std::vector<std::uint64_t> shard_bucketed_sliced_ell_bytes;
     std::vector<std::uint32_t> shard_pair_ids;
 
     summary.path = path;
@@ -1658,7 +1702,11 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
             0u,
             0u,
             0u,
+            0u,
+            0u,
             0.0f,
+            0ull,
+            0ull,
             0ull,
             0ull,
             0ull
@@ -1681,7 +1729,10 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
             0u,
             0u,
             0u,
+            0u,
+            0u,
             0.0f,
+            0ull,
             0ull,
             0ull,
             0u
@@ -1757,29 +1808,39 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
     observation_metadata = open_optional_group(file, "/observation_metadata");
     if (observation_metadata >= 0) {
         observation_metadata_summary metadata_summary;
-        if (!read_attr_u64(observation_metadata, "rows", &metadata_summary.rows)
-            || !read_attr_u32(observation_metadata, "cols", &metadata_summary.cols)) {
-            push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read observation metadata header");
-        } else {
-            metadata_summary.columns.reserve(metadata_summary.cols);
-            for (std::uint32_t i = 0; i < metadata_summary.cols; ++i) {
-                char column_name[64];
-                hid_t column = (hid_t) -1;
-                observation_metadata_column_summary column_summary;
-                if (std::snprintf(column_name, sizeof(column_name), "column_%u", i) <= 0) continue;
-                column = H5Gopen2(observation_metadata, column_name, H5P_DEFAULT);
-                if (column < 0) continue;
-                if (!read_attr_string(column, "name", &column_summary.name)
-                    || !read_attr_u32(column, "type", &column_summary.type)) {
-                    push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read one observation metadata column");
-                    H5Gclose(column);
-                    continue;
-                }
-                metadata_summary.columns.push_back(std::move(column_summary));
-                H5Gclose(column);
-            }
-            metadata_summary.available = true;
+        if (load_annotation_summary_from_group<observation_metadata_column_summary>(observation_metadata,
+                                                                                    &metadata_summary,
+                                                                                    &summary.issues,
+                                                                                    "inspect",
+                                                                                    "observation metadata")) {
             summary.observation_metadata = std::move(metadata_summary);
+        }
+    }
+
+    {
+        hid_t feature_metadata = open_optional_group(file, "/feature_metadata");
+        if (feature_metadata >= 0) {
+            feature_metadata_summary metadata_summary;
+            if (load_annotation_summary_from_group<feature_metadata_column_summary>(feature_metadata,
+                                                                                   &metadata_summary,
+                                                                                   &summary.issues,
+                                                                                   "inspect",
+                                                                                   "feature metadata")) {
+                summary.feature_metadata = std::move(metadata_summary);
+            }
+            H5Gclose(feature_metadata);
+        }
+    }
+
+    {
+        hid_t dataset_attributes = open_optional_group(file, "/dataset_attributes");
+        if (dataset_attributes >= 0) {
+            if (!read_text_column_strings(dataset_attributes, "keys", &summary.dataset_attributes.keys)) {
+                push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read dataset attribute keys");
+            } else {
+                summary.dataset_attributes.available = true;
+            }
+            H5Gclose(dataset_attributes);
         }
     }
 
@@ -1844,23 +1905,51 @@ dataset_summary summarize_dataset_csh5(const std::string &path) {
             || !read_dataset_vector(execution, "shard_preferred_pair_ids", H5T_NATIVE_UINT32, &shard_pair_ids)) {
             push_issue(&summary.issues, issue_severity::warning, "inspect", "failed to read execution layout metadata");
         } else {
+            if (H5Lexists(execution, "partition_sliced_ell_slice_counts", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "partition_sliced_ell_slice_counts", H5T_NATIVE_UINT32, &partition_sliced_ell_slice_counts);
+            }
+            if (H5Lexists(execution, "partition_sliced_ell_slice_rows", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "partition_sliced_ell_slice_rows", H5T_NATIVE_UINT32, &partition_sliced_ell_slice_rows);
+            }
+            if (H5Lexists(execution, "partition_sliced_ell_bytes", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "partition_sliced_ell_bytes", H5T_NATIVE_UINT64, &partition_sliced_ell_bytes);
+            }
+            if (H5Lexists(execution, "partition_bucketed_sliced_ell_bytes", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "partition_bucketed_sliced_ell_bytes", H5T_NATIVE_UINT64, &partition_bucketed_sliced_ell_bytes);
+            }
+            if (H5Lexists(execution, "shard_sliced_ell_slice_counts", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "shard_sliced_ell_slice_counts", H5T_NATIVE_UINT32, &shard_sliced_ell_slice_counts);
+            }
+            if (H5Lexists(execution, "shard_sliced_ell_slice_rows", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "shard_sliced_ell_slice_rows", H5T_NATIVE_UINT32, &shard_sliced_ell_slice_rows);
+            }
+            if (H5Lexists(execution, "shard_bucketed_sliced_ell_bytes", H5P_DEFAULT) > 0) {
+                read_dataset_vector(execution, "shard_bucketed_sliced_ell_bytes", H5T_NATIVE_UINT64, &shard_bucketed_sliced_ell_bytes);
+            }
             for (std::size_t i = 0; i < summary.partitions.size(); ++i) {
                 summary.partitions[i].execution_format = i < partition_execution_formats.size() ? partition_execution_formats[i] : 0u;
                 summary.partitions[i].blocked_ell_block_size = i < part_block_sizes.size() ? part_block_sizes[i] : 0u;
                 summary.partitions[i].blocked_ell_bucket_count = i < partition_bucket_counts.size() ? partition_bucket_counts[i] : 0u;
+                summary.partitions[i].sliced_ell_slice_count = i < partition_sliced_ell_slice_counts.size() ? partition_sliced_ell_slice_counts[i] : 0u;
+                summary.partitions[i].sliced_ell_slice_rows = i < partition_sliced_ell_slice_rows.size() ? partition_sliced_ell_slice_rows[i] : 0u;
                 summary.partitions[i].blocked_ell_fill_ratio = i < part_fill_ratios.size() ? part_fill_ratios[i] : 0.0f;
                 summary.partitions[i].execution_bytes = i < partition_execution_bytes.size() ? partition_execution_bytes[i] : 0ull;
                 summary.partitions[i].blocked_ell_bytes = i < partition_blocked_ell_bytes.size() ? partition_blocked_ell_bytes[i] : 0ull;
                 summary.partitions[i].bucketed_blocked_ell_bytes = i < partition_bucketed_blocked_ell_bytes.size() ? partition_bucketed_blocked_ell_bytes[i] : 0ull;
+                summary.partitions[i].sliced_ell_bytes = i < partition_sliced_ell_bytes.size() ? partition_sliced_ell_bytes[i] : 0ull;
+                summary.partitions[i].bucketed_sliced_ell_bytes = i < partition_bucketed_sliced_ell_bytes.size() ? partition_bucketed_sliced_ell_bytes[i] : 0ull;
             }
             for (std::size_t i = 0; i < summary.shards.size(); ++i) {
                 summary.shards[i].execution_format = i < shard_execution_formats.size() ? shard_execution_formats[i] : 0u;
                 summary.shards[i].blocked_ell_block_size = i < shard_block_sizes.size() ? shard_block_sizes[i] : 0u;
                 summary.shards[i].bucketed_partition_count = i < shard_bucketed_partition_counts.size() ? shard_bucketed_partition_counts[i] : 0u;
                 summary.shards[i].bucketed_segment_count = i < shard_bucketed_segment_counts.size() ? shard_bucketed_segment_counts[i] : 0u;
+                summary.shards[i].sliced_ell_slice_count = i < shard_sliced_ell_slice_counts.size() ? shard_sliced_ell_slice_counts[i] : 0u;
+                summary.shards[i].sliced_ell_slice_rows = i < shard_sliced_ell_slice_rows.size() ? shard_sliced_ell_slice_rows[i] : 0u;
                 summary.shards[i].blocked_ell_fill_ratio = i < shard_fill_ratios.size() ? shard_fill_ratios[i] : 0.0f;
                 summary.shards[i].execution_bytes = i < shard_execution_bytes.size() ? shard_execution_bytes[i] : 0ull;
                 summary.shards[i].bucketed_blocked_ell_bytes = i < shard_bucketed_blocked_ell_bytes.size() ? shard_bucketed_blocked_ell_bytes[i] : 0ull;
+                summary.shards[i].bucketed_sliced_ell_bytes = i < shard_bucketed_sliced_ell_bytes.size() ? shard_bucketed_sliced_ell_bytes[i] : 0ull;
                 summary.shards[i].preferred_pair = i < shard_pair_ids.size() ? shard_pair_ids[i] : 0u;
             }
         }
@@ -1978,8 +2067,9 @@ done:
     return table_summary;
 }
 
-observation_metadata_table load_observation_metadata_table(const std::string &path) {
-    observation_metadata_table table_summary;
+template<typename ColumnT, typename TableT>
+inline TableT load_annotation_table_impl(const std::string &path, const char *group_path, const char *label) {
+    TableT table_summary;
     hid_t file = (hid_t) -1;
     hid_t metadata = (hid_t) -1;
     bool ok = true;
@@ -1995,16 +2085,16 @@ observation_metadata_table load_observation_metadata_table(const std::string &pa
         return table_summary;
     }
 
-    metadata = open_group(file, "/observation_metadata");
+    metadata = open_optional_group(file, group_path);
     if (metadata < 0) {
-        table_summary.error = "observation metadata section is missing";
+        table_summary.error = std::string(label != nullptr ? label : "annotation") + " section is missing";
         ok = false;
     }
 
     if (ok
-        && (!read_attr_u64(metadata, "rows", &table_summary.rows)
+        && ((!read_attr_u64(metadata, "extent", &table_summary.rows) && !read_attr_u64(metadata, "rows", &table_summary.rows))
             || !read_attr_u32(metadata, "cols", &table_summary.cols))) {
-        table_summary.error = "failed to read observation metadata header";
+        table_summary.error = std::string("failed to read ") + (label != nullptr ? label : "annotation") + " header";
         ok = false;
     }
 
@@ -2013,22 +2103,22 @@ observation_metadata_table load_observation_metadata_table(const std::string &pa
         for (std::uint32_t i = 0; i < table_summary.cols; ++i) {
             char column_name[64];
             hid_t column = (hid_t) -1;
-            observation_metadata_column column_data;
+            ColumnT column_data;
 
             if (std::snprintf(column_name, sizeof(column_name), "column_%u", i) <= 0) {
-                table_summary.error = "failed to format observation metadata column name";
+                table_summary.error = std::string("failed to format ") + (label != nullptr ? label : "annotation") + " column name";
                 ok = false;
                 break;
             }
             column = H5Gopen2(metadata, column_name, H5P_DEFAULT);
             if (column < 0) {
-                table_summary.error = "failed to open one observation metadata column";
+                table_summary.error = std::string("failed to open one ") + (label != nullptr ? label : "annotation") + " column";
                 ok = false;
                 break;
             }
             if (!read_attr_string(column, "name", &column_data.name)
                 || !read_attr_u32(column, "type", &column_data.type)) {
-                table_summary.error = "failed to read observation metadata column header";
+                table_summary.error = std::string("failed to read ") + (label != nullptr ? label : "annotation") + " column header";
                 H5Gclose(column);
                 ok = false;
                 break;
@@ -2036,27 +2126,27 @@ observation_metadata_table load_observation_metadata_table(const std::string &pa
 
             if (column_data.type == cellshard::dataset_observation_metadata_type_text) {
                 if (!read_text_column_strings(column, "values", &column_data.text_values)) {
-                    table_summary.error = "failed to read observation metadata text payload";
+                    table_summary.error = std::string("failed to read ") + (label != nullptr ? label : "annotation") + " text payload";
                     H5Gclose(column);
                     ok = false;
                     break;
                 }
             } else if (column_data.type == cellshard::dataset_observation_metadata_type_float32) {
                 if (!read_dataset_vector(column, "values", H5T_NATIVE_FLOAT, &column_data.float32_values)) {
-                    table_summary.error = "failed to read observation metadata float payload";
+                    table_summary.error = std::string("failed to read ") + (label != nullptr ? label : "annotation") + " float payload";
                     H5Gclose(column);
                     ok = false;
                     break;
                 }
             } else if (column_data.type == cellshard::dataset_observation_metadata_type_uint8) {
                 if (!read_dataset_vector(column, "values", H5T_NATIVE_UINT8, &column_data.uint8_values)) {
-                    table_summary.error = "failed to read observation metadata uint8 payload";
+                    table_summary.error = std::string("failed to read ") + (label != nullptr ? label : "annotation") + " uint8 payload";
                     H5Gclose(column);
                     ok = false;
                     break;
                 }
             } else {
-                table_summary.error = "observation metadata contains an unknown column type";
+                table_summary.error = std::string(label != nullptr ? label : "annotation") + " contains an unknown column type";
                 H5Gclose(column);
                 ok = false;
                 break;
@@ -2073,6 +2163,57 @@ done:
     if (metadata >= 0) H5Gclose(metadata);
     if (file >= 0) H5Fclose(file);
     return table_summary;
+}
+
+observation_metadata_table load_observation_metadata_table(const std::string &path) {
+    return load_annotation_table_impl<observation_metadata_column,
+                                      observation_metadata_table>(path,
+                                                                  "/observation_metadata",
+                                                                  "observation metadata");
+}
+
+feature_metadata_table load_feature_metadata_table(const std::string &path) {
+    return load_annotation_table_impl<feature_metadata_column,
+                                      feature_metadata_table>(path,
+                                                              "/feature_metadata",
+                                                              "feature metadata");
+}
+
+dataset_attribute_table load_dataset_attribute_table(const std::string &path) {
+    dataset_attribute_table table;
+    hid_t file = (hid_t) -1;
+    hid_t group = (hid_t) -1;
+    std::vector<std::string> keys;
+    std::vector<std::string> values;
+
+    if (path.empty()) {
+        table.error = "dataset path is empty";
+        return table;
+    }
+    file = H5Fopen(path.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (file < 0) {
+        table.error = "failed to open dataset file";
+        return table;
+    }
+    group = open_optional_group(file, "/dataset_attributes");
+    if (group < 0) {
+        table.error = "dataset attribute section is missing";
+        goto done;
+    }
+    if (!read_text_column_strings(group, "keys", &keys) || !read_text_column_strings(group, "values", &values)) {
+        table.error = "failed to read dataset attribute payload";
+        goto done;
+    }
+    table.entries.reserve(keys.size());
+    for (std::size_t i = 0; i < keys.size(); ++i) {
+        table.entries.push_back(dataset_attribute_entry{keys[i], i < values.size() ? values[i] : std::string()});
+    }
+    table.available = true;
+
+done:
+    if (group >= 0) H5Gclose(group);
+    if (file >= 0) H5Fclose(file);
+    return table;
 }
 
 persisted_preprocess_table load_persisted_preprocess_table(const std::string &path) {

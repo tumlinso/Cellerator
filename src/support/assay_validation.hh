@@ -2,8 +2,8 @@
 
 #include "cudaBioTypes.hh"
 
-#include "../../extern/CellShard/src/formats/blocked_ell.cuh"
-#include "../../extern/CellShard/src/formats/compressed.cuh"
+#include "../../extern/CellShard/include/CellShard/formats/blocked_ell.cuh"
+#include "../../extern/CellShard/include/CellShard/formats/compressed.cuh"
 
 #include <string>
 

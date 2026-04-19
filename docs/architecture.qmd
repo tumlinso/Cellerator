@@ -13,6 +13,12 @@ This is intentionally not a high-level workflow framework. The codebase keeps la
 
 ## Main Pipeline Surfaces
 
+### `include/Cellerator/`
+
+Owns the canonical public include surface for in-repo callers. Tests, benches,
+Python bindings, and app entrypoints should include `Cellerator/...` instead of
+reaching into `src/` directly.
+
 ### `src/ingest/`
 
 Owns source-format readers, MTX conversion, one-pass filtering, metadata tables, and canonical emission into `CellShard`.
@@ -39,7 +45,16 @@ Owns the explicit conversion boundary from Cellerator and `CellShard` structures
 
 ### `src/workbench/`
 
-Owns the interactive and command-line workbench surfaces for inspecting series state and driving preprocess-oriented workflows.
+Owns the interactive and command-line workbench surfaces plus the adapter-facing
+facade for dataset workflows.
+
+The implementation split inside this area is intentional:
+
+- `src/workbench/` holds the UI-facing adapter and stable public header surface.
+- `src/workbench/runtime/` holds the shared dataset workflow backend for summary,
+  conversion, preprocess orchestration, finalize, and browse-cache paths.
+- `src/apps/workbench/` holds the ncurses binary entrypoint instead of mixing it
+  into the workbench facade root.
 
 ## Sparse And Runtime Posture
 

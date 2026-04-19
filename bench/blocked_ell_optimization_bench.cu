@@ -1,7 +1,7 @@
 #include "benchmark_mutex.hh"
-#include "../extern/CellShard/src/CellShard.hh"
-#include "../src/ingest/mtx/compressed_parts.cuh"
-#include "../src/ingest/mtx/mtx_reader.cuh"
+#include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include <Cellerator/ingest/compressed_parts.cuh>
+#include <Cellerator/ingest/mtx_reader.cuh>
 
 #include <cuda_runtime.h>
 
