@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <climits>
 #include <cstdio>
 #include <cstring>
@@ -2179,6 +2180,104 @@ feature_metadata_table load_feature_metadata_table(const std::string &path) {
                                                               "feature metadata");
 }
 
+template<typename ColumnT>
+inline bool extract_group_labels(const ColumnT &column,
+                                 std::vector<std::string> *labels,
+                                 std::vector<issue> *issues,
+                                 const char *scope) {
+    if (labels == nullptr) return false;
+    labels->clear();
+    if (column.type == cellshard::dataset_observation_metadata_type_text) {
+        *labels = column.text_values;
+        return true;
+    }
+    if (column.type == cellshard::dataset_observation_metadata_type_float32) {
+        labels->reserve(column.float32_values.size());
+        for (float value : column.float32_values) {
+            if (std::isnan(value)) labels->push_back("nan");
+            else labels->push_back(std::to_string(value));
+        }
+        return true;
+    }
+    if (column.type == cellshard::dataset_observation_metadata_type_uint8) {
+        labels->reserve(column.uint8_values.size());
+        for (std::uint8_t value : column.uint8_values) labels->push_back(std::to_string((unsigned int) value));
+        return true;
+    }
+    push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", "unsupported metadata column type for grouping");
+    return false;
+}
+
+template<typename TableT, typename ColumnT>
+inline bool resolve_group_order_impl(const TableT &table,
+                                     const std::string &column_name,
+                                     const std::vector<std::string> &ordered_values,
+                                     std::vector<std::uint64_t> *indices,
+                                     std::vector<cellshard::exporting::derivation_group_span> *groups,
+                                     std::vector<issue> *issues,
+                                     bool append_unmatched,
+                                     const char *scope) {
+    std::vector<std::string> labels;
+    std::vector<std::uint8_t> used;
+    const ColumnT *target = nullptr;
+
+    if (indices == nullptr || groups == nullptr) {
+        push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", "group resolution output is null");
+        return false;
+    }
+    indices->clear();
+    groups->clear();
+    if (!table.available) {
+        push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", table.error.empty() ? "metadata table is unavailable" : table.error);
+        return false;
+    }
+    if (ordered_values.empty()) {
+        push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", "ordered group values are empty");
+        return false;
+    }
+    for (const ColumnT &column : table.columns) {
+        if (column.name == column_name) {
+            target = &column;
+            break;
+        }
+    }
+    if (target == nullptr) {
+        push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", "group column was not found");
+        return false;
+    }
+    if (!extract_group_labels(*target, &labels, issues, scope)) return false;
+    used.assign(labels.size(), 0u);
+    indices->reserve(labels.size());
+    for (const std::string &value : ordered_values) {
+        cellshard::exporting::derivation_group_span span;
+        span.name = value;
+        span.begin = (std::uint64_t) indices->size();
+        for (std::size_t i = 0; i < labels.size(); ++i) {
+            if (labels[i] != value) continue;
+            indices->push_back((std::uint64_t) i);
+            used[i] = 1u;
+        }
+        span.end = (std::uint64_t) indices->size();
+        if (span.end > span.begin) groups->push_back(std::move(span));
+    }
+    if (append_unmatched) {
+        cellshard::exporting::derivation_group_span span;
+        span.name = "unmatched";
+        span.begin = (std::uint64_t) indices->size();
+        for (std::size_t i = 0; i < used.size(); ++i) {
+            if (used[i] != 0u) continue;
+            indices->push_back((std::uint64_t) i);
+        }
+        span.end = (std::uint64_t) indices->size();
+        if (span.end > span.begin) groups->push_back(std::move(span));
+    }
+    if (indices->empty()) {
+        push_issue(issues, issue_severity::error, scope != nullptr ? scope : "groups", "group resolution matched no rows or features");
+        return false;
+    }
+    return true;
+}
+
 dataset_attribute_table load_dataset_attribute_table(const std::string &path) {
     dataset_attribute_table table;
     hid_t file = (hid_t) -1;
@@ -2278,6 +2377,57 @@ done:
     if (preprocess >= 0) H5Gclose(preprocess);
     if (file >= 0) H5Fclose(file);
     return table;
+}
+
+bool resolve_observation_group_order(const std::string &path,
+                                     const std::string &column_name,
+                                     const std::vector<std::string> &ordered_values,
+                                     std::vector<std::uint64_t> *row_indices,
+                                     std::vector<cellshard::exporting::derivation_group_span> *groups,
+                                     std::vector<issue> *issues,
+                                     bool append_unmatched) {
+    return resolve_group_order_impl<observation_metadata_table, observation_metadata_column>(
+        load_observation_metadata_table(path),
+        column_name,
+        ordered_values,
+        row_indices,
+        groups,
+        issues,
+        append_unmatched,
+        "row_groups");
+}
+
+bool resolve_feature_group_order(const std::string &path,
+                                 const std::string &column_name,
+                                 const std::vector<std::string> &ordered_values,
+                                 std::vector<std::uint64_t> *feature_indices,
+                                 std::vector<cellshard::exporting::derivation_group_span> *groups,
+                                 std::vector<issue> *issues,
+                                 bool append_unmatched) {
+    return resolve_group_order_impl<feature_metadata_table, feature_metadata_column>(
+        load_feature_metadata_table(path),
+        column_name,
+        ordered_values,
+        feature_indices,
+        groups,
+        issues,
+        append_unmatched,
+        "feature_groups");
+}
+
+derived_materialization_report materialize_derived_dataset(
+    const std::string &source_path,
+    const cellshard::exporting::derived_materialization_request &request) {
+    derived_materialization_report report;
+    std::string error;
+    report.resolved_row_indices = request.row_indices;
+    report.resolved_feature_indices = request.feature_indices;
+    if (!cellshard::exporting::materialize_derived_dataset(source_path.c_str(), request, &report.result, &error)) {
+        push_issue(&report.issues, issue_severity::error, "derived_materialization", error.empty() ? "derived materialization failed" : error);
+        return report;
+    }
+    report.ok = true;
+    return report;
 }
 
 } // namespace cellerator::apps::workbench

@@ -251,6 +251,11 @@ inline bool build_browse_cache_after_preprocess(const std::string &path,
         push_issue(issues, issue_severity::error, "browse", "cannot rebuild browse cache for an unreadable dataset");
         goto done;
     }
+    if (summary.matrix_format.find("sliced") != std::string::npos) {
+        push_issue(issues, issue_severity::warning, "browse", "browse cache rebuild is skipped for sliced datasets");
+        ok = true;
+        goto done;
+    }
     if (!cs::load_header(path.c_str(), &matrix, &storage)) {
         push_issue(issues, issue_severity::error, "browse", "failed to reload dataset header for browse cache build");
         goto done;

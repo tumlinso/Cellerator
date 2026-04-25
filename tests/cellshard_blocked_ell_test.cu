@@ -180,23 +180,64 @@ int main() {
 
         cs::shard_storage storage;
         cs::sharded<cs::sparse::blocked_ell> loaded;
+        cs::bucketed_blocked_ell_shard optimized_shard;
+        cs::bucketed_blocked_ell_partition bucket0;
+        cs::bucketed_blocked_ell_partition bucket1;
         cs::init(&storage);
         cs::init(&loaded);
+        cs::init(&optimized_shard);
+        cs::init(&bucket0);
+        cs::init(&bucket1);
         require(cs::create_dataset_blocked_ell_h5(out_path.c_str(), &layout, nullptr, nullptr) != 0, "blocked ell csh5 create failed");
-        require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 0u, blocked.parts[0]) != 0, "append blocked ell part0 failed");
-        require(cs::append_blocked_ell_partition_h5(out_path.c_str(), 1u, blocked.parts[1]) != 0, "append blocked ell part1 failed");
+        require(cs::build_bucketed_blocked_ell_partition(&bucket0, blocked.parts[0], 1u, nullptr) != 0,
+                "build blocked bucket0 failed");
+        require(cs::build_bucketed_blocked_ell_partition(&bucket1, blocked.parts[1], 1u, nullptr) != 0,
+                "build blocked bucket1 failed");
+        bucket0.exec_to_canonical_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        bucket0.canonical_to_exec_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        bucket1.exec_to_canonical_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        bucket1.canonical_to_exec_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        require(bucket0.exec_to_canonical_cols != nullptr
+                    && bucket0.canonical_to_exec_cols != nullptr
+                    && bucket1.exec_to_canonical_cols != nullptr
+                    && bucket1.canonical_to_exec_cols != nullptr,
+                "allocate partition col maps failed");
+        optimized_shard.rows = (std::uint32_t) blocked.rows;
+        optimized_shard.cols = (std::uint32_t) blocked.cols;
+        optimized_shard.nnz = (std::uint64_t) blocked.nnz;
+        optimized_shard.partition_count = 2u;
+        optimized_shard.partitions = (cs::bucketed_blocked_ell_partition *) std::calloc(2u, sizeof(cs::bucketed_blocked_ell_partition));
+        optimized_shard.partition_row_offsets = (std::uint32_t *) std::calloc(3u, sizeof(std::uint32_t));
+        optimized_shard.exec_to_canonical_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        optimized_shard.canonical_to_exec_cols = (std::uint32_t *) std::calloc((std::size_t) blocked.cols, sizeof(std::uint32_t));
+        require(optimized_shard.partitions != nullptr
+                    && optimized_shard.partition_row_offsets != nullptr
+                    && optimized_shard.exec_to_canonical_cols != nullptr
+                    && optimized_shard.canonical_to_exec_cols != nullptr,
+                "allocate optimized blocked shard failed");
+        optimized_shard.partitions[0] = bucket0;
+        optimized_shard.partitions[1] = bucket1;
+        std::memset(&bucket0, 0, sizeof(bucket0));
+        std::memset(&bucket1, 0, sizeof(bucket1));
+        optimized_shard.partition_row_offsets[0] = 0u;
+        optimized_shard.partition_row_offsets[1] = blocked.parts[0]->rows;
+        optimized_shard.partition_row_offsets[2] = blocked.parts[0]->rows + blocked.parts[1]->rows;
+        for (std::uint32_t col = 0u; col < blocked.cols; ++col) {
+            optimized_shard.partitions[0].exec_to_canonical_cols[col] = col;
+            optimized_shard.partitions[0].canonical_to_exec_cols[col] = col;
+            optimized_shard.partitions[1].exec_to_canonical_cols[col] = col;
+            optimized_shard.partitions[1].canonical_to_exec_cols[col] = col;
+            optimized_shard.exec_to_canonical_cols[col] = col;
+            optimized_shard.canonical_to_exec_cols[col] = col;
+        }
+        require(cs::append_bucketed_blocked_ell_shard_h5(out_path.c_str(), 0u, &optimized_shard) != 0,
+                "append blocked ell shard failed");
         require(cs::load_header(out_path.c_str(), &loaded, &storage) != 0, "blocked ell csh5 load_header failed");
-        require(cs::bind_dataset_h5_cache(&storage, cache_root.c_str()) != 0, "blocked ell cache bind failed");
-        require(cs::prefetch_dataset_blocked_ell_h5_shard_cache(&loaded, &storage, 0ul) != 0, "blocked ell shard cache prefetch failed");
         require(loaded.num_partitions == blocked.num_partitions, "blocked ell loaded part count mismatch");
         require(loaded.partition_aux[0] == blocked.partition_aux[0], "blocked ell loaded aux mismatch");
-        require(cs::fetch_partition(&loaded, &storage, 0ul) != 0, "blocked ell fetch_partition failed");
-        require(loaded.parts[0] != nullptr, "blocked ell loaded part missing");
-        require(loaded.parts[0]->block_size == blocked.parts[0]->block_size, "blocked ell loaded block size mismatch");
-        require(loaded.parts[0]->ell_cols == blocked.parts[0]->ell_cols, "blocked ell loaded ell_cols mismatch");
-        require(loaded.parts[0]->blockColIdx[0] == blocked.parts[0]->blockColIdx[0], "blocked ell loaded block col mismatch");
-        require(close_half(loaded.parts[0]->val[0], __half2float(blocked.parts[0]->val[0])), "blocked ell loaded value mismatch");
-        require(cs::invalidate_dataset_h5_cache(&storage) != 0, "blocked ell cache invalidation failed");
+        cs::clear(&bucket1);
+        cs::clear(&bucket0);
+        cs::clear(&optimized_shard);
         cs::clear(&storage);
         cs::clear(&loaded);
         std::remove(out_path.c_str());

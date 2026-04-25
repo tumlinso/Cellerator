@@ -27,6 +27,8 @@ Useful pipeline-adjacent targets include:
 - `computeAutogradRuntimeTest`
 - `quantizedTransferSpmmBench`
 - `developmentalTimeCompileTest`
+- `developmentalTimeRuntimeTest`
+- `developmentalTimeTrajectoryRuntimeTest`
 - `denseReduceCompileTest`
 - `quantizeModelTest`
 - `torchBindingsCompileTest`
@@ -48,7 +50,7 @@ Examples:
 
 - `src/ingest/`: source readers, MTX conversion, dataset ingest, metadata alignment
 - `src/compute/`: reusable sparse compute, preprocess operators, autograd, neighbors
-- `src/models/`: header-first libtorch workflows
+- `src/models/`: model workflows, including native CUDA developmental-time paths
 - `src/trajectory/`: trajectory scoring and assembly
 - `src/workbench/`: ncurses adapter and public workbench facade
 - `src/workbench/runtime/`: shared dataset-workflow backend behind the workbench facade

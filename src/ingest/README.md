@@ -27,9 +27,9 @@ whole-dataset-in-RAM:
 3. apply filtering and canonical metadata alignment before emission
 4. emit immutable canonical sparse parts into CellShard-owned build/spool paths
 5. let CellShard finalize shard offsets, blocking, bucketing, and pack planning
-6. assemble `dataset.csh5` from the local spool instead of rereading the source MTX
+6. assemble `dataset.csh5` from local `.cspool` parts instead of rereading the source MTX
 7. optionally warm the active CellShard pack generation from the written `dataset.csh5`
 
 The local spool is effectively a backwards cache for ingest: it avoids paying a
 second expensive source read while still keeping the authoritative output as
-`dataset.csh5`.
+`dataset.csh5`. The per-part spool artifacts use the `.cspool` suffix.

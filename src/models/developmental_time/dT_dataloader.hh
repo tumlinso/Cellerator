@@ -1,402 +1,57 @@
 #pragma once
 
-#include "../../../extern/CellShard/include/CellShard/formats/compressed.cuh"
-#include "../../../extern/CellShard/include/CellShard/runtime/storage/shard_storage.cuh"
-#include "../../../extern/CellShard/include/CellShard/runtime/layout/sharded.cuh"
-#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
-#include "../rngFetch.hh"
+#include "../../compute/autograd/autograd.hh"
+#include "../../../extern/CellShard/include/CellShard/runtime/device/sharded_device.cuh"
 
-#include <torch/torch.h>
-
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
 #include <cstdint>
-#include <cstring>
-#include <limits>
-#include <memory>
-#include <mutex>
-#include <stdexcept>
-#include <utility>
 
 namespace cellerator::models::developmental_time {
 
-struct TimeBatch {
-    torch::Tensor features;
-    torch::Tensor day_labels;
-    torch::Tensor day_buckets;
-    torch::Tensor cell_indices;
+namespace autograd = ::cellerator::compute::autograd;
+namespace csv = ::cellshard::device;
+
+enum class DevelopmentalTimeLayout {
+    blocked_ell,
+    sliced_ell
 };
 
-class BalancedTimeSampler {
-public:
-    using matrix_type = cellshard::sharded<cellshard::sparse::compressed>;
-    using part_type = cellshard::sparse::compressed;
-    using storage_type = cellshard::shard_storage;
-
-    struct Options {
-        bool with_replacement = true;
-        bool drop_fetched_parts = true;
-        std::size_t max_days_per_batch = 0;
-        std::int64_t num_time_bins = 8;
-        float min_time_label = std::numeric_limits<float>::quiet_NaN();
-        float max_time_label = std::numeric_limits<float>::quiet_NaN();
-        std::uint64_t seed = std::random_device{}();
-    };
-
-    BalancedTimeSampler(matrix_type *matrix,
-                        const float *day_labels,
-                        std::size_t day_count,
-                        const storage_type *storage = 0)
-        : BalancedTimeSampler(matrix, day_labels, day_count, storage, Options{}) {}
-
-    BalancedTimeSampler(matrix_type *matrix,
-                        const float *day_labels,
-                        std::size_t day_count,
-                        const storage_type *storage,
-                        Options options)
-        : matrix_(matrix),
-          storage_(storage),
-          options_(options) {
-        day_labels_.assign_copy(day_labels, day_count);
-        validate_constructor_state_();
-        build_day_buckets_();
-    }
-
-    std::size_t num_cells() const {
-        return matrix_ != 0 ? static_cast<std::size_t>(matrix_->rows) : 0u;
-    }
-
-    std::size_t num_features() const {
-        return matrix_ != 0 ? static_cast<std::size_t>(matrix_->cols) : 0u;
-    }
-
-    std::size_t num_days() const {
-        return day_values_.size();
-    }
-
-    std::int64_t num_time_bins() const {
-        return num_time_bins_;
-    }
-
-    const host_buffer<float> &day_values() const {
-        return day_values_;
-    }
-
-    TimeBatch sample_sparse_csr(std::size_t cells_per_day) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        host_buffer<unsigned long> fetched_parts;
-        host_buffer<sampled_row_span> sampled_rows;
-        std::int64_t total_nnz = 0;
-
-        if (cells_per_day == 0) throw std::invalid_argument("sample_sparse_csr requires cells_per_day > 0");
-
-        // Host-side batch assembly: bucket selection, optional part fetch, then
-        // copy sampled rows into a fresh CPU sparse CSR tensor.
-        try {
-            const host_buffer<std::int64_t> selected_days = select_day_buckets_();
-            sampled_rows.reserve(selected_days.size() * cells_per_day);
-
-            for (const std::int64_t bucket_id : selected_days) {
-                const host_buffer<unsigned long> local_positions = row_fetchers_[static_cast<std::size_t>(bucket_id)].next(cells_per_day);
-                const unsigned long *bucket_rows = bucket_rows_begin_(static_cast<std::size_t>(bucket_id));
-                for (const unsigned long local_pos : local_positions) {
-                    const unsigned long global_row = bucket_rows[static_cast<std::size_t>(local_pos)];
-                    const unsigned long partition_id = cellshard::find_partition(matrix_, global_row);
-                    part_type *part = require_part_(partition_id, &fetched_parts);
-                    const unsigned long part_row_base = matrix_->partition_offsets[partition_id];
-                    const cellshard::types::dim_t local_row = static_cast<cellshard::types::dim_t>(global_row - part_row_base);
-                    const cellshard::types::ptr_t row_begin = part->majorPtr[local_row];
-                    const cellshard::types::ptr_t row_end = part->majorPtr[local_row + 1];
-
-                    sampled_rows.push_back(sampled_row_span{
-                        global_row,
-                        bucket_id,
-                        day_values_[static_cast<std::size_t>(bucket_id)],
-                        part,
-                        row_begin,
-                        row_end
-                    });
-                    total_nnz += static_cast<std::int64_t>(row_end - row_begin);
-                }
-            }
-        } catch (...) {
-            drop_fetched_parts_(fetched_parts);
-            throw;
-        }
-
-        TimeBatch batch = build_sparse_batch_(sampled_rows, total_nnz);
-        drop_fetched_parts_(fetched_parts);
-        return batch;
-    }
-
-private:
-    struct sampled_row_span {
-        unsigned long global_row;
-        std::int64_t bucket_id;
-        float day_label;
-        part_type *part;
-        cellshard::types::ptr_t row_begin;
-        cellshard::types::ptr_t row_end;
-    };
-
-    static std::int64_t checked_i64_(unsigned long value, const char *label) {
-        if (value > static_cast<unsigned long>(std::numeric_limits<std::int64_t>::max())) {
-            throw std::overflow_error(std::string(label) + " does not fit into int64");
-        }
-        return static_cast<std::int64_t>(value);
-    }
-
-    static torch::Tensor copy_i64_tensor_(const host_buffer<std::int64_t> &values) {
-        torch::Tensor tensor = torch::empty(
-            { static_cast<std::int64_t>(values.size()) },
-            torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
-        if (!values.empty()) std::memcpy(tensor.data_ptr<std::int64_t>(), values.data(), values.size() * sizeof(std::int64_t));
-        return tensor;
-    }
-
-    static torch::Tensor copy_f32_tensor_(const host_buffer<float> &values) {
-        torch::Tensor tensor = torch::empty(
-            { static_cast<std::int64_t>(values.size()) },
-            torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
-        if (!values.empty()) std::memcpy(tensor.data_ptr<float>(), values.data(), values.size() * sizeof(float));
-        return tensor;
-    }
-
-    void validate_constructor_state_() const {
-        if (matrix_ == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-null CellShard matrix");
-        if (matrix_->rows == 0) throw std::invalid_argument("BalancedTimeSampler requires a non-empty CellShard matrix");
-        if (matrix_->num_partitions == 0 || matrix_->partition_offsets == 0 || matrix_->partition_rows == 0 || matrix_->partition_aux == 0) {
-            throw std::invalid_argument("BalancedTimeSampler requires sharded CSR metadata to be initialized");
-        }
-        if (day_labels_.size() != static_cast<std::size_t>(matrix_->rows)) {
-            throw std::invalid_argument("day label vector length must match the number of cells in the CellShard matrix");
-        }
-        checked_i64_(matrix_->rows, "rows");
-        checked_i64_(matrix_->cols, "cols");
-        for (unsigned long partition_id = 0; partition_id < matrix_->num_partitions; ++partition_id) {
-            if (matrix_->partition_aux[partition_id] != cellshard::sparse::compressed_by_row) {
-                throw std::invalid_argument("BalancedTimeSampler requires CSR parts compressed by row");
-            }
-        }
-    }
-
-    void build_day_buckets_() {
-        host_buffer<std::pair<float, unsigned long>> labeled_rows;
-
-        // One-time O(rows log rows) sort so later draws are O(sampled rows).
-        labeled_rows.reserve(day_labels_.size());
-        for (unsigned long row = 0; row < static_cast<unsigned long>(day_labels_.size()); ++row) {
-            labeled_rows.push_back(std::pair<float, unsigned long>{ day_labels_[static_cast<std::size_t>(row)], row });
-        }
-        std::sort(labeled_rows.begin(), labeled_rows.end(), [](const auto &lhs, const auto &rhs) {
-            if (lhs.first < rhs.first) return true;
-            if (lhs.first > rhs.first) return false;
-            return lhs.second < rhs.second;
-        });
-
-        day_values_.clear();
-        bucket_rows_.clear();
-        bucket_row_offsets_.clear();
-        bucket_by_row_.assign_fill(day_labels_.size(), 0);
-        host_buffer<std::size_t> bucket_counts;
-
-        for (const auto &entry : labeled_rows) {
-            if (day_values_.empty() || entry.first != day_values_.back()) {
-                day_values_.push_back(entry.first);
-                bucket_counts.push_back(0u);
-            }
-            const std::int64_t bucket_id = static_cast<std::int64_t>(day_values_.size() - 1u);
-            ++bucket_counts.back();
-            bucket_by_row_[static_cast<std::size_t>(entry.second)] = bucket_id;
-        }
-
-        bucket_row_offsets_.resize(day_values_.size() + 1u);
-        bucket_row_offsets_[0] = 0u;
-        for (std::size_t bucket = 0; bucket < day_values_.size(); ++bucket) {
-            bucket_row_offsets_[bucket + 1u] = bucket_row_offsets_[bucket] + bucket_counts[bucket];
-        }
-        bucket_rows_.resize(labeled_rows.size());
-        bucket_counts.assign_fill(day_values_.size(), 0u);
-        for (const auto &entry : labeled_rows) {
-            const std::size_t bucket = static_cast<std::size_t>(bucket_by_row_[static_cast<std::size_t>(entry.second)]);
-            const std::size_t write = bucket_row_offsets_[bucket] + bucket_counts[bucket];
-            bucket_rows_[write] = entry.second;
-            ++bucket_counts[bucket];
-        }
-
-        row_fetchers_.resize(day_values_.size());
-        for (std::size_t bucket = 0; bucket < day_values_.size(); ++bucket) {
-            row_fetchers_[bucket] = RngFetch(
-                static_cast<unsigned long>(bucket_row_count_(bucket)),
-                RngFetchOptions{ options_.with_replacement, options_.seed + static_cast<std::uint64_t>(bucket) + 1u });
-        }
-
-        day_bucket_fetch_.reset();
-        if (options_.max_days_per_batch != 0 && options_.max_days_per_batch < day_values_.size()) {
-            day_bucket_fetch_ = std::make_unique<RngFetch>(
-                static_cast<unsigned long>(day_values_.size()),
-                RngFetchOptions{ false, options_.seed ^ 0x9e3779b97f4a7c15ULL });
-        }
-
-        num_time_bins_ = std::max<std::int64_t>(options_.num_time_bins, 2);
-        time_label_min_ = !std::isnan(options_.min_time_label)
-            ? options_.min_time_label
-            : day_values_[0];
-        time_label_max_ = !std::isnan(options_.max_time_label)
-            ? options_.max_time_label
-            : day_values_.back();
-        if (!(time_label_max_ > time_label_min_)) {
-            time_label_max_ = time_label_min_ + 1.0f;
-        }
-    }
-
-    std::int64_t time_label_to_bin_(float value) const {
-        if (num_time_bins_ <= 1) return 0;
-        const float denom = time_label_max_ - time_label_min_;
-        if (!(denom > 0.0f)) return 0;
-        const float normalized = (value - time_label_min_) / denom;
-        const float scaled = normalized * static_cast<float>(num_time_bins_ - 1);
-        const float clamped = std::fmax(0.0f, std::fmin(static_cast<float>(num_time_bins_ - 1), scaled));
-        return static_cast<std::int64_t>(clamped + 1.0e-6f);
-    }
-
-    host_buffer<std::int64_t> select_day_buckets_() {
-        host_buffer<std::int64_t> buckets;
-
-        if (!day_bucket_fetch_) {
-            buckets.resize(day_values_.size());
-            for (std::size_t i = 0; i < day_values_.size(); ++i) buckets[i] = static_cast<std::int64_t>(i);
-            return buckets;
-        }
-
-        {
-            const host_buffer<unsigned long> sampled = day_bucket_fetch_->next(options_.max_days_per_batch);
-            buckets.resize(sampled.size());
-            for (std::size_t i = 0; i < sampled.size(); ++i) buckets[i] = static_cast<std::int64_t>(sampled[i]);
-        }
-        std::sort(buckets.begin(), buckets.end());
-        return buckets;
-    }
-
-    part_type *require_part_(unsigned long partition_id, host_buffer<unsigned long> *fetched_parts) {
-        if (partition_id >= matrix_->num_partitions) throw std::out_of_range("sampled row resolved to an invalid CellShard part");
-
-        if (!cellshard::partition_loaded(matrix_, partition_id)) {
-            if (storage_ == 0) {
-                throw std::runtime_error("sampled row lives in an unloaded CellShard part, but no shard_storage was provided");
-            }
-            if (!cellshard::fetch_partition(matrix_, storage_, partition_id)) {
-                throw std::runtime_error("failed to fetch CellShard part for sampled row");
-            }
-            // Cold-part fetches dominate batch latency more than local row copy.
-            if (fetched_parts != 0) fetched_parts->push_back(partition_id);
-        }
-
-        part_type *part = matrix_->parts[partition_id];
-        if (part == 0) throw std::runtime_error("CellShard part is still null after fetch");
-        if (part->axis != cellshard::sparse::compressed_by_row) {
-            throw std::runtime_error("BalancedTimeSampler only supports row-compressed CSR parts");
-        }
-        if (matrix_->cols != 0 && part->cols != matrix_->cols) {
-            throw std::runtime_error("CellShard part column count does not match sharded metadata");
-        }
-        return part;
-    }
-
-    void drop_fetched_parts_(const host_buffer<unsigned long> &fetched_parts) {
-        if (!options_.drop_fetched_parts) return;
-        for (std::size_t i = fetched_parts.size(); i != 0u; --i) {
-            cellshard::drop_partition(matrix_, fetched_parts[i - 1u]);
-        }
-    }
-
-    TimeBatch build_sparse_batch_(const host_buffer<sampled_row_span> &sampled_rows, std::int64_t total_nnz) const {
-        static_assert(sizeof(at::Half) == sizeof(::real::storage_t), "ATen half type must match CellShard half storage");
-
-        // Expensive boundary: widen CSR metadata to int64 and copy sampled nnz
-        // into a brand-new Torch-owned CPU sparse tensor every batch.
-        const std::int64_t batch_rows = static_cast<std::int64_t>(sampled_rows.size());
-        const std::int64_t feature_cols = checked_i64_(matrix_->cols, "cols");
-        host_buffer<std::int64_t> crow_indices;
-        host_buffer<std::int64_t> day_buckets;
-        host_buffer<std::int64_t> cell_indices;
-        host_buffer<float> batch_day_labels;
-        torch::Tensor col_tensor = torch::empty(
-            { total_nnz },
-            torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
-        torch::Tensor value_tensor = torch::empty(
-            { total_nnz },
-            torch::TensorOptions().dtype(torch::kFloat16).device(torch::kCPU));
-        std::int64_t *col_ptr = col_tensor.data_ptr<std::int64_t>();
-        at::Half *value_ptr = value_tensor.data_ptr<at::Half>();
-        std::int64_t nnz_cursor = 0;
-
-        crow_indices.reserve(sampled_rows.size() + 1u);
-        crow_indices.push_back(0);
-        day_buckets.reserve(sampled_rows.size());
-        cell_indices.reserve(sampled_rows.size());
-        batch_day_labels.reserve(sampled_rows.size());
-
-        for (const sampled_row_span &row : sampled_rows) {
-            const std::int64_t row_nnz = static_cast<std::int64_t>(row.row_end - row.row_begin);
-            for (std::int64_t i = 0; i < row_nnz; ++i) {
-                col_ptr[nnz_cursor + i] = static_cast<std::int64_t>(row.part->minorIdx[row.row_begin + static_cast<cellshard::types::ptr_t>(i)]);
-            }
-            if (row_nnz != 0) {
-                std::memcpy(
-                    value_ptr + nnz_cursor,
-                    row.part->val + row.row_begin,
-                    static_cast<std::size_t>(row_nnz) * sizeof(::real::storage_t));
-            }
-            nnz_cursor += row_nnz;
-            crow_indices.push_back(nnz_cursor);
-            day_buckets.push_back(time_label_to_bin_(row.day_label));
-            cell_indices.push_back(static_cast<std::int64_t>(row.global_row));
-            batch_day_labels.push_back(row.day_label);
-        }
-
-        torch::Tensor crow_tensor = copy_i64_tensor_(crow_indices);
-        torch::Tensor features = torch::sparse_csr_tensor(
-            crow_tensor,
-            col_tensor,
-            value_tensor,
-            { batch_rows, feature_cols },
-            torch::TensorOptions().dtype(torch::kFloat16).device(torch::kCPU));
-
-        return TimeBatch{
-            std::move(features),
-            copy_f32_tensor_(batch_day_labels),
-            copy_i64_tensor_(day_buckets),
-            copy_i64_tensor_(cell_indices)
-        };
-    }
-
-    std::size_t bucket_row_count_(std::size_t bucket) const {
-        return bucket_row_offsets_[bucket + 1u] - bucket_row_offsets_[bucket];
-    }
-
-    const unsigned long *bucket_rows_begin_(std::size_t bucket) const {
-        return bucket_rows_.data() + bucket_row_offsets_[bucket];
-    }
-
-    matrix_type *matrix_;
-    const storage_type *storage_;
-    host_buffer<float> day_labels_;
-    Options options_;
-    host_buffer<float> day_values_;
-    host_buffer<unsigned long> bucket_rows_;
-    host_buffer<std::size_t> bucket_row_offsets_;
-    host_buffer<std::int64_t> bucket_by_row_;
-    host_buffer<RngFetch> row_fetchers_;
-    std::unique_ptr<RngFetch> day_bucket_fetch_;
-    std::int64_t num_time_bins_ = 8;
-    float time_label_min_ = 0.0f;
-    float time_label_max_ = 1.0f;
-    std::mutex mutex_;
+struct DevelopmentalTimeBatchView {
+    DevelopmentalTimeLayout layout = DevelopmentalTimeLayout::blocked_ell;
+    std::uint32_t rows = 0u;
+    csv::blocked_ell_view blocked_ell{};
+    csv::sliced_ell_view sliced_ell{};
+    const float *target_time = nullptr;
+    const std::uint32_t *cell_index = nullptr;
 };
 
-using RandomTimeBatch = TimeBatch;
-using RandomTimeSampler = BalancedTimeSampler;
+inline DevelopmentalTimeBatchView make_developmental_time_blocked_ell_batch(
+    const csv::blocked_ell_view &view,
+    const float *target_time = nullptr,
+    const std::uint32_t *cell_index = nullptr) {
+    return DevelopmentalTimeBatchView{
+        DevelopmentalTimeLayout::blocked_ell,
+        view.rows,
+        view,
+        csv::sliced_ell_view{},
+        target_time,
+        cell_index
+    };
+}
+
+inline DevelopmentalTimeBatchView make_developmental_time_sliced_ell_batch(
+    const csv::sliced_ell_view &view,
+    const float *target_time = nullptr,
+    const std::uint32_t *cell_index = nullptr) {
+    return DevelopmentalTimeBatchView{
+        DevelopmentalTimeLayout::sliced_ell,
+        view.rows,
+        csv::blocked_ell_view{},
+        view,
+        target_time,
+        cell_index
+    };
+}
+
+using TimeBatch = DevelopmentalTimeBatchView;
 
 } // namespace cellerator::models::developmental_time

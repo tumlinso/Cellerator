@@ -1,10 +1,12 @@
 #include "forwardNeighbors.hh"
 #include "cellerator_cuda_mode.hh"
 
+#include "../exact_search/exact_search.hh"
 #include "../../graph/workspace.cuh"
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
+#include <cusparse.h>
 
 #include <algorithm>
 #include <cmath>
@@ -24,6 +26,7 @@ namespace detail {
 
 namespace cg = ::cellerator::compute::graph;
 namespace css = ::cellshard::sparse;
+namespace ex = ::cellerator::compute::neighbors::exact_search;
 
 constexpr int kWarpThreads = 32;
 constexpr int kForwardNeighborWarpsPerBlock = 1;
@@ -56,20 +59,45 @@ struct DeviceShardStorage {
     int device_id = 0;
     std::int64_t row_begin = 0;
     std::int64_t row_end = 0;
+    std::uint32_t latent_cols = 0u;
     float time_begin = detail::quiet_nan_();
     float time_end = detail::quiet_nan_();
     std::size_t resident_bytes = 0u;
     bool resident = false;
+    ForwardNeighborInputLayout sparse_layout = ForwardNeighborInputLayout::dense;
     host_array<std::int64_t> cell_indices_cpu;
     host_array<float> developmental_time_cpu;
     host_array<std::int64_t> embryo_ids_cpu;
     host_array<float> latent_unit_cpu;
     host_array<__half> latent_unit_half_cpu;
+    std::uint32_t blocked_block_size = 0u;
+    std::uint32_t blocked_ell_cols = 0u;
+    host_array<std::uint32_t> blocked_block_col_idx_cpu;
+    host_array<__half> blocked_values_half_cpu;
+    std::uint32_t ann_blocked_block_size = 0u;
+    std::uint32_t ann_blocked_ell_cols = 0u;
+    host_array<std::uint32_t> ann_blocked_block_col_idx_cpu;
+    host_array<__half> ann_blocked_values_half_cpu;
+    std::uint32_t sliced_slice_count = 0u;
+    host_array<std::uint32_t> sliced_slice_row_offsets_cpu;
+    host_array<std::uint32_t> sliced_row_slot_offsets_cpu;
+    host_array<std::uint32_t> sliced_slice_widths_cpu;
+    host_array<std::uint32_t> sliced_col_idx_cpu;
+    host_array<__half> sliced_values_half_cpu;
     host_array<float> ann_centroids_cpu;
     cg::device_buffer<std::int64_t> cell_indices;
     cg::device_buffer<float> developmental_time;
     cg::device_buffer<std::int64_t> embryo_ids;
     cg::device_buffer<__half> latent_unit;
+    cg::device_buffer<std::uint32_t> blocked_block_col_idx;
+    cg::device_buffer<__half> blocked_values;
+    cg::device_buffer<std::uint32_t> ann_blocked_block_col_idx;
+    cg::device_buffer<__half> ann_blocked_values;
+    cg::device_buffer<std::uint32_t> sliced_slice_row_offsets;
+    cg::device_buffer<std::uint32_t> sliced_row_slot_offsets;
+    cg::device_buffer<std::uint32_t> sliced_slice_widths;
+    cg::device_buffer<std::uint32_t> sliced_col_idx;
+    cg::device_buffer<__half> sliced_values;
     cg::device_buffer<float> ann_centroids;
     host_array<ForwardNeighborSegment> segments;
     host_array<ForwardNeighborAnnList> ann_lists;
@@ -92,12 +120,15 @@ struct ForwardNeighborSearchWorkspaceStorage {
     host_array<Candidate> merged_best;
     host_array<Candidate> shard_best;
     host_array<std::int64_t> block_query_embryos;
+    host_array<float> block_score_matrix;
+    host_array<std::int32_t> selected_lists_host;
     host_array<std::int64_t> deferred_segment_order;
     host_array<std::int64_t> segment_order;
     host_array<std::pair<std::int64_t, std::int64_t>> intervals;
     host_array<std::pair<std::int64_t, std::int64_t>> merged_intervals;
     host_array<float> block_latent_f32;
     host_array<__half> block_latent_half;
+    host_array<__half> block_query_panel_half;
     host_array<float> block_lower;
     host_array<float> block_upper;
     host_array<std::int64_t> block_embryo;
@@ -115,10 +146,20 @@ struct ForwardNeighborSearchWorkspaceStorage {
     host_array<int> block_device_ids;
     host_array<std::uint32_t> block_device_offsets;
     host_array<std::uint32_t> block_device_shards;
+    host_array<std::int64_t> route_segment_begin;
+    host_array<std::int64_t> route_segment_end;
     cg::device_buffer<__half> d_query_latent;
     cg::device_buffer<float> d_query_lower;
     cg::device_buffer<float> d_query_upper;
     cg::device_buffer<std::int64_t> d_query_embryo;
+    cg::device_buffer<__half> d_query_latent_dense_half;
+    cg::device_buffer<std::int64_t> d_route_segment_begin;
+    cg::device_buffer<std::int64_t> d_route_segment_end;
+    cg::device_buffer<std::int64_t> d_local_best_cell;
+    cg::device_buffer<std::int64_t> d_local_best_shard;
+    cg::device_buffer<float> d_local_best_time;
+    cg::device_buffer<std::int64_t> d_local_best_embryo;
+    cg::device_buffer<float> d_local_best_similarity;
     cg::device_buffer<std::int64_t> d_best_cell;
     cg::device_buffer<std::int64_t> d_best_shard;
     cg::device_buffer<float> d_best_time;
@@ -129,6 +170,12 @@ struct ForwardNeighborSearchWorkspaceStorage {
     cg::device_buffer<std::int64_t> d_list_row_begin;
     cg::device_buffer<std::int64_t> d_list_row_end;
     cg::device_buffer<std::int32_t> d_selected_lists;
+    cg::device_buffer<float> d_score_matrix;
+    cg::device_buffer<unsigned char> d_sparse_spmm_scratch;
+    cusparseHandle_t cusparse = nullptr;
+    cusparseSpMatDescr_t blocked_ell_mat = nullptr;
+    const void *blocked_ell_token = nullptr;
+    std::size_t blocked_ell_spmm_bytes = 0u;
 };
 
 struct DeviceResidencyState {
@@ -223,6 +270,32 @@ __device__ inline bool better_probe_device_(const ProbeCandidate &lhs, const Pro
     return lhs.list_offset < rhs.list_offset;
 }
 
+inline bool better_probe_host_(const ProbeCandidate &lhs, const ProbeCandidate &rhs) {
+    const bool lhs_valid = std::isfinite(lhs.similarity) && lhs.list_offset >= 0;
+    const bool rhs_valid = std::isfinite(rhs.similarity) && rhs.list_offset >= 0;
+    if (!lhs_valid) return false;
+    if (!rhs_valid) return true;
+    if (lhs.similarity > rhs.similarity) return true;
+    if (lhs.similarity < rhs.similarity) return false;
+    return lhs.list_offset < rhs.list_offset;
+}
+
+inline void init_probe_candidates_host_(ProbeCandidate *best, int k) {
+    for (int i = 0; i < k; ++i) best[i] = ProbeCandidate{};
+}
+
+inline void insert_probe_candidate_host_(const ProbeCandidate &candidate, ProbeCandidate *best, int k) {
+    if (best == nullptr || k <= 0) return;
+    if (!better_probe_host_(candidate, best[static_cast<std::size_t>(k) - 1u])) return;
+
+    std::size_t insert = static_cast<std::size_t>(k) - 1u;
+    while (insert > 0u && better_probe_host_(candidate, best[insert - 1u])) {
+        best[insert] = best[insert - 1u];
+        --insert;
+    }
+    best[insert] = candidate;
+}
+
 __device__ inline void insert_probe_candidate_device_(const ProbeCandidate &candidate, ProbeCandidate *best, int k) {
     if (!better_probe_device_(candidate, best[k - 1])) return;
 
@@ -251,6 +324,23 @@ __device__ inline float dot_half_rows_(const __half *lhs, const __half *rhs, int
 __device__ inline float dot_half_float_rows_(const __half *lhs, const float *rhs, int dim) {
     float sum = 0.0f;
     for (int i = 0; i < dim; ++i) sum += __half2float(lhs[i]) * rhs[i];
+    return sum;
+}
+
+__device__ inline float dot_query_sliced_row_(
+    const __half *query_row,
+    const std::uint32_t *row_slot_offsets,
+    const std::uint32_t *row_widths,
+    const std::uint32_t *col_idx,
+    const __half *values,
+    std::int64_t index_row) {
+    float sum = 0.0f;
+    const std::size_t slot_begin = static_cast<std::size_t>(row_slot_offsets[index_row]);
+    const std::uint32_t width = row_widths[index_row];
+    for (std::uint32_t slot = 0u; slot < width; ++slot) {
+        const std::size_t off = slot_begin + static_cast<std::size_t>(slot);
+        sum += __half2float(query_row[col_idx[off]]) * __half2float(values[off]);
+    }
     return sum;
 }
 
@@ -283,10 +373,95 @@ inline std::int64_t query_blocks_for_rows_(std::int64_t query_rows) {
         static_cast<std::int64_t>(kForwardNeighborWarpsPerBlock);
 }
 
-#include "kernels/init_best_kernel_.cuh"
-#include "kernels/exact_search_kernel_.cuh"
+inline bool dense_backend_(ForwardNeighborBackend backend) {
+    return backend == ForwardNeighborBackend::exact_windowed
+        || backend == ForwardNeighborBackend::ann_windowed
+        || backend == ForwardNeighborBackend::dense_exact_windowed
+        || backend == ForwardNeighborBackend::dense_ann_windowed;
+}
+
+inline bool ann_backend_(ForwardNeighborBackend backend) {
+    return backend == ForwardNeighborBackend::ann_windowed
+        || backend == ForwardNeighborBackend::dense_ann_windowed
+        || backend == ForwardNeighborBackend::sparse_ann_blocked_ell
+        || backend == ForwardNeighborBackend::sparse_ann_sliced_ell;
+}
+
+inline bool sparse_blocked_backend_(ForwardNeighborBackend backend) {
+    return backend == ForwardNeighborBackend::sparse_exact_blocked_ell
+        || backend == ForwardNeighborBackend::sparse_ann_blocked_ell;
+}
+
+inline bool sparse_sliced_backend_(ForwardNeighborBackend backend) {
+    return backend == ForwardNeighborBackend::sparse_exact_sliced_ell
+        || backend == ForwardNeighborBackend::sparse_ann_sliced_ell;
+}
+
+inline void cusparse_require_(cusparseStatus_t status, const char *label) {
+    if (status == CUSPARSE_STATUS_SUCCESS) return;
+    throw std::runtime_error(std::string(label) + ": cuSPARSE failure");
+}
+
+inline void reset_workspace_sparse_runtime_(ForwardNeighborSearchWorkspaceStorage *workspace) {
+    workspace->d_query_latent_dense_half.reset();
+    workspace->d_score_matrix.reset();
+    workspace->d_sparse_spmm_scratch.reset();
+    if (workspace->blocked_ell_mat != nullptr) {
+        cusparseDestroySpMat(workspace->blocked_ell_mat);
+        workspace->blocked_ell_mat = nullptr;
+    }
+    workspace->blocked_ell_token = nullptr;
+    workspace->blocked_ell_spmm_bytes = 0u;
+}
+
+inline void ensure_workspace_cusparse_(ForwardNeighborSearchWorkspaceStorage *workspace, int device_id) {
+    if (workspace->cusparse != nullptr && workspace->active_device_id == device_id) return;
+    if (workspace->cusparse != nullptr) {
+        cusparseDestroy(workspace->cusparse);
+        workspace->cusparse = nullptr;
+    }
+    cg::cuda_require(cudaSetDevice(device_id), "cudaSetDevice(ensure_workspace_cusparse)");
+    cusparse_require_(cusparseCreate(&workspace->cusparse), "cusparseCreate(forward_neighbors)");
+}
+
+inline cusparseSpMatDescr_t acquire_blocked_ell_descriptor_(
+    ForwardNeighborSearchWorkspaceStorage *workspace,
+    std::int64_t rows,
+    std::int64_t cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    const void *token) {
+    if (workspace->blocked_ell_mat != nullptr && workspace->blocked_ell_token == token) {
+        return workspace->blocked_ell_mat;
+    }
+    if (workspace->blocked_ell_mat != nullptr) {
+        cusparseDestroySpMat(workspace->blocked_ell_mat);
+        workspace->blocked_ell_mat = nullptr;
+    }
+    cusparse_require_(
+        cusparseCreateBlockedEll(
+            &workspace->blocked_ell_mat,
+            rows,
+            cols,
+            static_cast<std::int64_t>(block_size),
+            static_cast<std::int64_t>(ell_cols),
+            const_cast<std::uint32_t *>(block_col_idx),
+            const_cast<__half *>(values),
+            CUSPARSE_INDEX_32I,
+            CUSPARSE_INDEX_BASE_ZERO,
+            CUDA_R_16F),
+        "cusparseCreateBlockedEll(forward_neighbors)");
+    workspace->blocked_ell_token = token;
+    workspace->blocked_ell_spmm_bytes = 0u;
+    return workspace->blocked_ell_mat;
+}
+
 #include "kernels/ann_probe_kernel_.cuh"
 #include "kernels/ann_refine_kernel_.cuh"
+#include "kernels/blocked_ann_refine_kernel_.cuh"
+#include "kernels/sliced_ann_refine_kernel_.cuh"
 
 inline void require_gpu_() {
     int count = 0;
@@ -669,8 +844,179 @@ inline host_array<float> build_list_centroid_(
     return centroid;
 }
 
+inline std::uint32_t blocked_owner_block_size_(std::int64_t rows, std::int64_t cols) {
+    return rows >= 16 && cols >= 16 ? 16u : 1u;
+}
+
+inline void build_blocked_ell_from_dense_(
+    const host_array<float> &dense,
+    std::int64_t rows,
+    std::int64_t cols,
+    std::uint32_t *block_size_out,
+    std::uint32_t *ell_cols_out,
+    host_array<std::uint32_t> *block_col_idx_out,
+    host_array<__half> *values_out) {
+    const std::uint32_t block_size = blocked_owner_block_size_(rows, cols);
+    const std::uint32_t row_block_count = block_size == 0u ? 0u : static_cast<std::uint32_t>((rows + block_size - 1u) / block_size);
+    const std::uint32_t col_block_count = block_size == 0u ? 0u : static_cast<std::uint32_t>((cols + block_size - 1u) / block_size);
+    host_array<std::uint32_t> row_widths;
+    row_widths.assign_fill(row_block_count, 0u);
+    host_array<std::uint32_t> active_cols;
+    std::uint32_t max_width = 0u;
+
+    for (std::uint32_t row_block = 0; row_block < row_block_count; ++row_block) {
+        active_cols.clear();
+        const std::int64_t row_begin = static_cast<std::int64_t>(row_block) * static_cast<std::int64_t>(block_size);
+        const std::int64_t row_end = std::min<std::int64_t>(row_begin + static_cast<std::int64_t>(block_size), rows);
+        for (std::uint32_t col_block = 0; col_block < col_block_count; ++col_block) {
+            const std::int64_t col_begin = static_cast<std::int64_t>(col_block) * static_cast<std::int64_t>(block_size);
+            const std::int64_t col_end = std::min<std::int64_t>(col_begin + static_cast<std::int64_t>(block_size), cols);
+            bool any_nonzero = false;
+            for (std::int64_t row = row_begin; row < row_end && !any_nonzero; ++row) {
+                const std::size_t base = static_cast<std::size_t>(row) * static_cast<std::size_t>(cols);
+                for (std::int64_t col = col_begin; col < col_end; ++col) {
+                    if (std::fabs(dense[base + static_cast<std::size_t>(col)]) > 1.0e-12f) {
+                        any_nonzero = true;
+                        break;
+                    }
+                }
+            }
+            if (any_nonzero) append_one_(&active_cols, col_block);
+        }
+        row_widths[row_block] = static_cast<std::uint32_t>(active_cols.size());
+        max_width = std::max(max_width, row_widths[row_block]);
+    }
+
+    *block_size_out = block_size;
+    *ell_cols_out = max_width * block_size;
+    block_col_idx_out->assign_fill(static_cast<std::size_t>(row_block_count) * static_cast<std::size_t>(max_width), css::blocked_ell_invalid_col);
+    values_out->assign_fill(static_cast<std::size_t>(rows) * static_cast<std::size_t>(*ell_cols_out), __float2half_rn(0.0f));
+
+    for (std::uint32_t row_block = 0; row_block < row_block_count; ++row_block) {
+        std::uint32_t slot = 0u;
+        const std::int64_t row_begin = static_cast<std::int64_t>(row_block) * static_cast<std::int64_t>(block_size);
+        const std::int64_t row_end = std::min<std::int64_t>(row_begin + static_cast<std::int64_t>(block_size), rows);
+        for (std::uint32_t col_block = 0; col_block < col_block_count; ++col_block) {
+            const std::int64_t col_begin = static_cast<std::int64_t>(col_block) * static_cast<std::int64_t>(block_size);
+            const std::int64_t col_end = std::min<std::int64_t>(col_begin + static_cast<std::int64_t>(block_size), cols);
+            bool any_nonzero = false;
+            for (std::int64_t row = row_begin; row < row_end && !any_nonzero; ++row) {
+                const std::size_t base = static_cast<std::size_t>(row) * static_cast<std::size_t>(cols);
+                for (std::int64_t col = col_begin; col < col_end; ++col) {
+                    if (std::fabs(dense[base + static_cast<std::size_t>(col)]) > 1.0e-12f) {
+                        any_nonzero = true;
+                        break;
+                    }
+                }
+            }
+            if (!any_nonzero) continue;
+            (*block_col_idx_out)[static_cast<std::size_t>(row_block) * static_cast<std::size_t>(max_width) + slot] = col_block;
+            for (std::int64_t row = row_begin; row < row_end; ++row) {
+                const std::size_t src_base = static_cast<std::size_t>(row) * static_cast<std::size_t>(cols);
+                const std::size_t dst_base = static_cast<std::size_t>(row) * static_cast<std::size_t>(*ell_cols_out)
+                    + static_cast<std::size_t>(slot) * static_cast<std::size_t>(block_size);
+                for (std::int64_t local_col = 0; local_col < col_end - col_begin; ++local_col) {
+                    (*values_out)[dst_base + static_cast<std::size_t>(local_col)] =
+                        __float2half_rn(dense[src_base + static_cast<std::size_t>(col_begin + local_col)]);
+                }
+            }
+            ++slot;
+        }
+    }
+}
+
+inline void build_sliced_ell_from_dense_(
+    const host_array<float> &dense,
+    std::int64_t rows,
+    std::int64_t cols,
+    std::uint32_t *slice_count_out,
+    host_array<std::uint32_t> *slice_row_offsets_out,
+    host_array<std::uint32_t> *row_slot_offsets_out,
+    host_array<std::uint32_t> *slice_widths_out,
+    host_array<std::uint32_t> *col_idx_out,
+    host_array<__half> *values_out) {
+    *slice_count_out = static_cast<std::uint32_t>(rows);
+    slice_row_offsets_out->resize(static_cast<std::size_t>(rows) + 1u);
+    row_slot_offsets_out->resize(static_cast<std::size_t>(rows) + 1u);
+    slice_widths_out->resize(static_cast<std::size_t>(rows));
+    (*slice_row_offsets_out)[0] = 0u;
+    (*row_slot_offsets_out)[0] = 0u;
+    std::size_t total_slots = 0u;
+    for (std::int64_t row = 0; row < rows; ++row) {
+        std::uint32_t width = 0u;
+        const std::size_t base = static_cast<std::size_t>(row) * static_cast<std::size_t>(cols);
+        for (std::int64_t col = 0; col < cols; ++col) {
+            if (std::fabs(dense[base + static_cast<std::size_t>(col)]) > 1.0e-12f) ++width;
+        }
+        (*slice_widths_out)[static_cast<std::size_t>(row)] = width;
+        total_slots += static_cast<std::size_t>(width);
+        (*slice_row_offsets_out)[static_cast<std::size_t>(row) + 1u] = static_cast<std::uint32_t>(row + 1);
+        (*row_slot_offsets_out)[static_cast<std::size_t>(row) + 1u] = static_cast<std::uint32_t>(total_slots);
+    }
+    col_idx_out->resize(total_slots);
+    values_out->resize(total_slots);
+    std::size_t slot = 0u;
+    for (std::int64_t row = 0; row < rows; ++row) {
+        const std::size_t base = static_cast<std::size_t>(row) * static_cast<std::size_t>(cols);
+        for (std::int64_t col = 0; col < cols; ++col) {
+            const float value = dense[base + static_cast<std::size_t>(col)];
+            if (std::fabs(value) <= 1.0e-12f) continue;
+            (*col_idx_out)[slot] = static_cast<std::uint32_t>(col);
+            (*values_out)[slot] = __float2half_rn(value);
+            ++slot;
+        }
+    }
+}
+
+inline void make_query_panel_half_(
+    const host_array<float> &row_major_query,
+    std::int64_t query_rows,
+    std::int64_t latent_dim,
+    host_array<__half> *panel_half) {
+    panel_half->resize(static_cast<std::size_t>(query_rows) * static_cast<std::size_t>(latent_dim));
+    for (std::int64_t dim = 0; dim < latent_dim; ++dim) {
+        for (std::int64_t row = 0; row < query_rows; ++row) {
+            (*panel_half)[static_cast<std::size_t>(dim) * static_cast<std::size_t>(query_rows) + static_cast<std::size_t>(row)] =
+                __float2half_rn(row_major_query[static_cast<std::size_t>(row) * static_cast<std::size_t>(latent_dim) + static_cast<std::size_t>(dim)]);
+        }
+    }
+}
+
 inline void set_device_(int device_id) {
     cg::cuda_require(cudaSetDevice(device_id), "cudaSetDevice(forward_neighbors)");
+}
+
+inline ex::ExactSearchResultDeviceView exact_result_view_(
+    std::int64_t *best_cell,
+    std::int64_t *best_shard,
+    float *best_time,
+    std::int64_t *best_embryo,
+    float *best_similarity) {
+    return ex::ExactSearchResultDeviceView{
+        best_cell,
+        best_shard,
+        best_time,
+        best_embryo,
+        best_similarity
+    };
+}
+
+inline ex::ExactSearchResultDeviceView workspace_best_result_view_(ForwardNeighborSearchWorkspaceStorage *workspace) {
+    return exact_result_view_(
+        workspace->d_best_cell.data(),
+        workspace->d_best_shard.data(),
+        workspace->d_best_time.data(),
+        workspace->d_best_embryo.data(),
+        workspace->d_best_similarity.data());
+}
+
+inline ex::ExactSearchResultDeviceView workspace_local_result_view_(ForwardNeighborSearchWorkspaceStorage *workspace) {
+    return exact_result_view_(
+        workspace->d_local_best_cell.data(),
+        workspace->d_local_best_shard.data(),
+        workspace->d_local_best_time.data(),
+        workspace->d_local_best_embryo.data(),
+        workspace->d_local_best_similarity.data());
 }
 
 inline void init_best_arrays_(
@@ -683,18 +1029,37 @@ inline void init_best_arrays_(
     workspace->d_best_time.resize(total);
     workspace->d_best_embryo.resize(total);
     workspace->d_best_similarity.resize(total);
-    const int threads = 128;
-    const int blocks = static_cast<int>((total + static_cast<std::size_t>(threads) - 1u) / static_cast<std::size_t>(threads));
-    // Initialization launch is pure bookkeeping and followed by a sync, so it is noticeable only for small query batches.
-    init_best_kernel_<<<blocks, threads>>>(
-        workspace->d_best_cell.data(),
-        workspace->d_best_shard.data(),
-        workspace->d_best_time.data(),
-        workspace->d_best_embryo.data(),
-        workspace->d_best_similarity.data(),
-        query_rows,
-        k);
-    cg::cuda_require(cudaGetLastError(), "init_best_kernel launch");
+    ex::init_result_arrays(workspace_best_result_view_(workspace), query_rows, k);
+}
+
+inline void init_local_best_arrays_(
+    std::int64_t query_rows,
+    int k,
+    ForwardNeighborSearchWorkspaceStorage *workspace) {
+    const std::size_t total = static_cast<std::size_t>(query_rows) * static_cast<std::size_t>(k);
+    workspace->d_local_best_cell.resize(total);
+    workspace->d_local_best_shard.resize(total);
+    workspace->d_local_best_time.resize(total);
+    workspace->d_local_best_embryo.resize(total);
+    workspace->d_local_best_similarity.resize(total);
+    ex::init_result_arrays(workspace_local_result_view_(workspace), query_rows, k);
+}
+
+inline void upload_route_segments_(
+    const host_array<std::pair<std::int64_t, std::int64_t>> &segments,
+    ForwardNeighborSearchWorkspaceStorage *workspace) {
+    workspace->route_segment_begin.resize(segments.size());
+    workspace->route_segment_end.resize(segments.size());
+    for (std::size_t i = 0; i < segments.size(); ++i) {
+        workspace->route_segment_begin[i] = segments[i].first;
+        workspace->route_segment_end[i] = segments[i].second;
+    }
+    workspace->d_route_segment_begin.resize(segments.size());
+    workspace->d_route_segment_end.resize(segments.size());
+    if (!segments.empty()) {
+        workspace->d_route_segment_begin.upload(workspace->route_segment_begin.data(), workspace->route_segment_begin.size());
+        workspace->d_route_segment_end.upload(workspace->route_segment_end.data(), workspace->route_segment_end.size());
+    }
 }
 
 inline void download_best_candidates_(
@@ -777,6 +1142,15 @@ inline std::size_t estimate_shard_resident_bytes_(const DeviceShardStorage &shar
         + shard.developmental_time_cpu.size() * sizeof(float)
         + shard.embryo_ids_cpu.size() * sizeof(std::int64_t)
         + shard.latent_unit_half_cpu.size() * sizeof(__half)
+        + shard.blocked_block_col_idx_cpu.size() * sizeof(std::uint32_t)
+        + shard.blocked_values_half_cpu.size() * sizeof(__half)
+        + shard.ann_blocked_block_col_idx_cpu.size() * sizeof(std::uint32_t)
+        + shard.ann_blocked_values_half_cpu.size() * sizeof(__half)
+        + shard.sliced_slice_row_offsets_cpu.size() * sizeof(std::uint32_t)
+        + shard.sliced_row_slot_offsets_cpu.size() * sizeof(std::uint32_t)
+        + shard.sliced_slice_widths_cpu.size() * sizeof(std::uint32_t)
+        + shard.sliced_col_idx_cpu.size() * sizeof(std::uint32_t)
+        + shard.sliced_values_half_cpu.size() * sizeof(__half)
         + shard.ann_centroids_cpu.size() * sizeof(float);
 }
 
@@ -787,6 +1161,15 @@ inline void release_shard_device_buffers_(DeviceShardStorage *shard) {
     shard->developmental_time.reset();
     shard->embryo_ids.reset();
     shard->latent_unit.reset();
+    shard->blocked_block_col_idx.reset();
+    shard->blocked_values.reset();
+    shard->ann_blocked_block_col_idx.reset();
+    shard->ann_blocked_values.reset();
+    shard->sliced_slice_row_offsets.reset();
+    shard->sliced_row_slot_offsets.reset();
+    shard->sliced_slice_widths.reset();
+    shard->sliced_col_idx.reset();
+    shard->sliced_values.reset();
     shard->ann_centroids.reset();
     shard->resident = false;
 }
@@ -798,11 +1181,29 @@ inline void upload_shard_to_device_(DeviceShardStorage *shard) {
     shard->developmental_time.resize(shard->developmental_time_cpu.size());
     shard->embryo_ids.resize(shard->embryo_ids_cpu.size());
     shard->latent_unit.resize(shard->latent_unit_half_cpu.size());
+    shard->blocked_block_col_idx.resize(shard->blocked_block_col_idx_cpu.size());
+    shard->blocked_values.resize(shard->blocked_values_half_cpu.size());
+    shard->ann_blocked_block_col_idx.resize(shard->ann_blocked_block_col_idx_cpu.size());
+    shard->ann_blocked_values.resize(shard->ann_blocked_values_half_cpu.size());
+    shard->sliced_slice_row_offsets.resize(shard->sliced_slice_row_offsets_cpu.size());
+    shard->sliced_row_slot_offsets.resize(shard->sliced_row_slot_offsets_cpu.size());
+    shard->sliced_slice_widths.resize(shard->sliced_slice_widths_cpu.size());
+    shard->sliced_col_idx.resize(shard->sliced_col_idx_cpu.size());
+    shard->sliced_values.resize(shard->sliced_values_half_cpu.size());
     shard->ann_centroids.resize(shard->ann_centroids_cpu.size());
     shard->cell_indices.upload(shard->cell_indices_cpu.data(), shard->cell_indices_cpu.size());
     shard->developmental_time.upload(shard->developmental_time_cpu.data(), shard->developmental_time_cpu.size());
     shard->embryo_ids.upload(shard->embryo_ids_cpu.data(), shard->embryo_ids_cpu.size());
     shard->latent_unit.upload(shard->latent_unit_half_cpu.data(), shard->latent_unit_half_cpu.size());
+    shard->blocked_block_col_idx.upload(shard->blocked_block_col_idx_cpu.data(), shard->blocked_block_col_idx_cpu.size());
+    shard->blocked_values.upload(shard->blocked_values_half_cpu.data(), shard->blocked_values_half_cpu.size());
+    shard->ann_blocked_block_col_idx.upload(shard->ann_blocked_block_col_idx_cpu.data(), shard->ann_blocked_block_col_idx_cpu.size());
+    shard->ann_blocked_values.upload(shard->ann_blocked_values_half_cpu.data(), shard->ann_blocked_values_half_cpu.size());
+    shard->sliced_slice_row_offsets.upload(shard->sliced_slice_row_offsets_cpu.data(), shard->sliced_slice_row_offsets_cpu.size());
+    shard->sliced_row_slot_offsets.upload(shard->sliced_row_slot_offsets_cpu.data(), shard->sliced_row_slot_offsets_cpu.size());
+    shard->sliced_slice_widths.upload(shard->sliced_slice_widths_cpu.data(), shard->sliced_slice_widths_cpu.size());
+    shard->sliced_col_idx.upload(shard->sliced_col_idx_cpu.data(), shard->sliced_col_idx_cpu.size());
+    shard->sliced_values.upload(shard->sliced_values_half_cpu.data(), shard->sliced_values_half_cpu.size());
     if (!shard->ann_centroids_cpu.empty()) {
         shard->ann_centroids.upload(shard->ann_centroids_cpu.data(), shard->ann_centroids_cpu.size());
     }
@@ -980,6 +1381,66 @@ inline void build_block_device_routes_(
     }
 }
 
+inline void collect_eligible_lists_(
+    const DeviceShardStorage &shard,
+    const host_array<std::int64_t> &segment_order,
+    float block_lower,
+    float block_upper,
+    host_array<std::int64_t> *eligible_lists,
+    host_array<std::int64_t> *eligible_embryo,
+    host_array<std::int64_t> *eligible_row_begin,
+    host_array<std::int64_t> *eligible_row_end) {
+    eligible_lists->clear();
+    eligible_embryo->clear();
+    eligible_row_begin->clear();
+    eligible_row_end->clear();
+    for (const std::int64_t segment_idx : segment_order) {
+        const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
+        if (!segment_time_overlaps_block_(segment, block_lower, block_upper)) continue;
+        for (std::int64_t list_idx = segment.ann_list_begin; list_idx < segment.ann_list_end; ++list_idx) {
+            const ForwardNeighborAnnList &list = shard.ann_lists[static_cast<std::size_t>(list_idx)];
+            if (!ann_list_overlaps_block_(list, block_lower, block_upper)) continue;
+            append_one_(eligible_lists, list_idx);
+            append_one_(eligible_embryo, list.embryo_id);
+            append_one_(eligible_row_begin, list.row_begin);
+            append_one_(eligible_row_end, list.row_end);
+        }
+    }
+}
+
+inline void select_sparse_probe_lists_host_(
+    const host_array<float> &score_matrix,
+    const host_array<std::int64_t> &eligible_lists,
+    const host_array<std::int64_t> &eligible_embryo,
+    const host_array<std::int64_t> &query_embryo,
+    std::int64_t block_queries,
+    int hard_same_embryo,
+    int probe_count,
+    host_array<std::int32_t> *selected_lists) {
+    selected_lists->assign_fill(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(probe_count), -1);
+    for (std::int64_t row = 0; row < block_queries; ++row) {
+        ProbeCandidate best[kMaxProbe];
+        init_probe_candidates_host_(best, probe_count);
+        const std::int64_t embryo = query_embryo[static_cast<std::size_t>(row)];
+        for (std::size_t eligible_slot = 0; eligible_slot < eligible_lists.size(); ++eligible_slot) {
+            if (hard_same_embryo && embryo >= 0 && eligible_embryo[eligible_slot] != embryo) continue;
+            const std::int64_t list_idx = eligible_lists[eligible_slot];
+            insert_probe_candidate_host_(
+                ProbeCandidate{
+                    score_matrix[static_cast<std::size_t>(list_idx) * static_cast<std::size_t>(block_queries)
+                        + static_cast<std::size_t>(row)],
+                    static_cast<std::int32_t>(eligible_slot)
+                },
+                best,
+                probe_count);
+        }
+        for (int slot = 0; slot < probe_count; ++slot) {
+            (*selected_lists)[static_cast<std::size_t>(row) * static_cast<std::size_t>(probe_count)
+                + static_cast<std::size_t>(slot)] = best[slot].list_offset;
+        }
+    }
+}
+
 inline std::shared_ptr<ForwardNeighborIndexStorage> build_storage_(
     const ForwardNeighborRecordBatch &records,
     const ForwardNeighborBuildConfig &config) {
@@ -1031,6 +1492,8 @@ inline std::shared_ptr<ForwardNeighborIndexStorage> build_storage_(
 
         DeviceShardStorage shard;
         shard.device_id = devices[shard_idx % devices.size()];
+        shard.latent_cols = static_cast<std::uint32_t>(storage->latent_dim);
+        shard.sparse_layout = records.matrix.layout;
         shard.row_begin = shard_plans.segments[plan_begin].source_begin;
         shard.row_end = shard_plans.segments[plan_end - 1u].source_end;
         shard.time_begin = shard_plans.segments[plan_begin].time_begin;
@@ -1081,6 +1544,32 @@ inline std::shared_ptr<ForwardNeighborIndexStorage> build_storage_(
             shard_row_cursor += segment_rows;
         }
 
+        build_blocked_ell_from_dense_(
+            shard.latent_unit_cpu,
+            static_cast<std::int64_t>(shard.cell_indices_cpu.size()),
+            storage->latent_dim,
+            &shard.blocked_block_size,
+            &shard.blocked_ell_cols,
+            &shard.blocked_block_col_idx_cpu,
+            &shard.blocked_values_half_cpu);
+        build_blocked_ell_from_dense_(
+            shard.ann_centroids_cpu,
+            static_cast<std::int64_t>(shard.ann_lists.size()),
+            storage->latent_dim,
+            &shard.ann_blocked_block_size,
+            &shard.ann_blocked_ell_cols,
+            &shard.ann_blocked_block_col_idx_cpu,
+            &shard.ann_blocked_values_half_cpu);
+        build_sliced_ell_from_dense_(
+            shard.latent_unit_cpu,
+            static_cast<std::int64_t>(shard.cell_indices_cpu.size()),
+            storage->latent_dim,
+            &shard.sliced_slice_count,
+            &shard.sliced_slice_row_offsets_cpu,
+            &shard.sliced_row_slot_offsets_cpu,
+            &shard.sliced_slice_widths_cpu,
+            &shard.sliced_col_idx_cpu,
+            &shard.sliced_values_half_cpu);
         convert_f32_to_half_(shard.latent_unit_cpu, &shard.latent_unit_half_cpu);
         shard.resident_bytes = estimate_shard_resident_bytes_(shard);
         if (config.eager_device_upload) upload_shard_to_device_(&shard);
@@ -1119,6 +1608,14 @@ inline void reset_workspace_device_buffers_(ForwardNeighborSearchWorkspaceStorag
     workspace->d_query_lower.reset();
     workspace->d_query_upper.reset();
     workspace->d_query_embryo.reset();
+    workspace->d_query_latent_dense_half.reset();
+    workspace->d_route_segment_begin.reset();
+    workspace->d_route_segment_end.reset();
+    workspace->d_local_best_cell.reset();
+    workspace->d_local_best_shard.reset();
+    workspace->d_local_best_time.reset();
+    workspace->d_local_best_embryo.reset();
+    workspace->d_local_best_similarity.reset();
     workspace->d_best_cell.reset();
     workspace->d_best_shard.reset();
     workspace->d_best_time.reset();
@@ -1129,12 +1626,135 @@ inline void reset_workspace_device_buffers_(ForwardNeighborSearchWorkspaceStorag
     workspace->d_list_row_begin.reset();
     workspace->d_list_row_end.reset();
     workspace->d_selected_lists.reset();
+    reset_workspace_sparse_runtime_(workspace);
+    if (workspace->cusparse != nullptr) {
+        cusparseDestroy(workspace->cusparse);
+        workspace->cusparse = nullptr;
+    }
 }
 
 inline void prepare_workspace_device_(ForwardNeighborSearchWorkspaceStorage *workspace, int device_id) {
     if (workspace->active_device_id == device_id) return;
     reset_workspace_device_buffers_(workspace);
     workspace->active_device_id = device_id;
+}
+
+inline void run_blocked_sparse_spmm_(
+    ForwardNeighborSearchWorkspaceStorage *workspace,
+    std::int64_t matrix_rows,
+    std::uint32_t matrix_cols,
+    std::uint32_t block_size,
+    std::uint32_t ell_cols,
+    const std::uint32_t *block_col_idx,
+    const __half *values,
+    const void *token,
+    std::int64_t block_queries) {
+    if (block_queries <= 0 || matrix_rows <= 0 || block_size == 0u || ell_cols == 0u) {
+        workspace->block_score_matrix.clear();
+        return;
+    }
+
+    cusparseSpMatDescr_t mat = acquire_blocked_ell_descriptor_(
+        workspace,
+        matrix_rows,
+        static_cast<std::int64_t>(matrix_cols),
+        block_size,
+        ell_cols,
+        block_col_idx,
+        values,
+        token);
+    workspace->d_score_matrix.resize(static_cast<std::size_t>(matrix_rows) * static_cast<std::size_t>(block_queries));
+    workspace->d_sparse_spmm_scratch.reset();
+    cusparseDnMatDescr_t b = nullptr;
+    cusparseDnMatDescr_t c = nullptr;
+    const float alpha = 1.0f;
+    const float beta = 0.0f;
+    cusparse_require_(
+        cusparseCreateDnMat(
+            &b,
+            static_cast<std::int64_t>(matrix_cols),
+            block_queries,
+            block_queries,
+            workspace->d_query_latent_dense_half.data(),
+            CUDA_R_16F,
+            CUSPARSE_ORDER_ROW),
+        "cusparseCreateDnMat(forward_neighbors blocked rhs)");
+    cusparse_require_(
+        cusparseCreateDnMat(
+            &c,
+            matrix_rows,
+            block_queries,
+            block_queries,
+            workspace->d_score_matrix.data(),
+            CUDA_R_32F,
+            CUSPARSE_ORDER_ROW),
+        "cusparseCreateDnMat(forward_neighbors blocked out)");
+    if (workspace->blocked_ell_spmm_bytes == 0u) {
+        cusparse_require_(
+            cusparseSpMM_bufferSize(
+                workspace->cusparse,
+                CUSPARSE_OPERATION_NON_TRANSPOSE,
+                CUSPARSE_OPERATION_NON_TRANSPOSE,
+                &alpha,
+                mat,
+                b,
+                &beta,
+                c,
+                CUDA_R_32F,
+                CUSPARSE_SPMM_ALG_DEFAULT,
+                &workspace->blocked_ell_spmm_bytes),
+            "cusparseSpMM_bufferSize(forward_neighbors blocked)");
+    }
+    workspace->d_sparse_spmm_scratch.resize(workspace->blocked_ell_spmm_bytes);
+    cusparse_require_(
+        cusparseSpMM(
+            workspace->cusparse,
+            CUSPARSE_OPERATION_NON_TRANSPOSE,
+            CUSPARSE_OPERATION_NON_TRANSPOSE,
+            &alpha,
+            mat,
+            b,
+            &beta,
+            c,
+            CUDA_R_32F,
+            CUSPARSE_SPMM_ALG_DEFAULT,
+            workspace->d_sparse_spmm_scratch.data()),
+        "cusparseSpMM(forward_neighbors blocked)");
+    cg::cuda_require(cudaDeviceSynchronize(), "cudaDeviceSynchronize(forward_neighbors blocked spmm)");
+    workspace->block_score_matrix.resize(static_cast<std::size_t>(matrix_rows) * static_cast<std::size_t>(block_queries));
+    workspace->d_score_matrix.download(workspace->block_score_matrix.data(), workspace->block_score_matrix.size());
+    if (c != nullptr) cusparseDestroyDnMat(c);
+    if (b != nullptr) cusparseDestroyDnMat(b);
+}
+
+inline void fill_result_from_candidates_(
+    const host_array<Candidate> &merged_best,
+    ForwardNeighborSimilarity similarity,
+    ForwardNeighborSearchResult *result) {
+    result->neighbor_cell_indices.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), static_cast<std::int64_t>(-1));
+    result->neighbor_shard_indices.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), static_cast<std::int64_t>(-1));
+    result->neighbor_time.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), detail::quiet_nan_());
+    result->neighbor_embryo_ids.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), static_cast<std::int64_t>(-1));
+    result->neighbor_similarity.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), detail::negative_infinity_());
+    const float undefined_distance = detail::quiet_nan_();
+    result->neighbor_sqdist.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), undefined_distance);
+    result->neighbor_distance.assign_fill(static_cast<std::size_t>(result->query_count * result->top_k), undefined_distance);
+
+    for (std::int64_t row = 0; row < result->query_count; ++row) {
+        for (std::int64_t slot = 0; slot < result->top_k; ++slot) {
+            const Candidate &candidate = merged_best[static_cast<std::size_t>(row) * static_cast<std::size_t>(result->top_k) + static_cast<std::size_t>(slot)];
+            const std::size_t off = detail::result_offset_(row, slot, result->top_k);
+            result->neighbor_cell_indices[off] = candidate.cell_index;
+            result->neighbor_shard_indices[off] = candidate.shard_index;
+            result->neighbor_time[off] = candidate.developmental_time;
+            result->neighbor_embryo_ids[off] = candidate.embryo_id;
+            result->neighbor_similarity[off] = candidate.similarity;
+            if (similarity == ForwardNeighborSimilarity::dense_cosine && std::isfinite(candidate.similarity)) {
+                result->neighbor_sqdist[off] = std::max(0.0f, 2.0f - 2.0f * candidate.similarity);
+                result->neighbor_distance[off] = std::sqrt(result->neighbor_sqdist[off] + 1.0e-12f);
+            }
+        }
+    }
 }
 
 inline ForwardNeighborSearchResult search_core_(
@@ -1167,10 +1787,335 @@ inline ForwardNeighborSearchResult search_core_(
     if (!query.embryo_ids.empty()) result.query_embryo_ids.assign_copy(query.embryo_ids.data, query.embryo_ids.size);
 
     ForwardNeighborSearchWorkspaceStorage &scratch = workspace_storage_(workspace);
-    scratch.normalized_query_latent = normalize_query_latent_(materialize_dense_matrix_(query.matrix), result.query_count, query_latent_dim);
     scratch.merged_best.resize(static_cast<std::size_t>(result.query_count * result.top_k));
     for (std::size_t i = 0; i < scratch.merged_best.size(); ++i) scratch.merged_best[i] = Candidate{};
     const ForwardNeighborRoutingPlan routing = build_routing_plan_(*storage, query, config);
+
+    if (sparse_blocked_backend_(config.backend) || sparse_sliced_backend_(config.backend)) {
+        scratch.normalized_query_latent =
+            normalize_query_latent_(materialize_dense_matrix_(query.matrix), result.query_count, query_latent_dim);
+        for (std::size_t block_idx = 0; block_idx < routing.block_query_begin.size(); ++block_idx) {
+            const std::int64_t query_begin = routing.block_query_begin[block_idx];
+            const std::int64_t query_end = routing.block_query_end[block_idx];
+            const std::int64_t block_queries = query_end - query_begin;
+            if (block_queries <= 0) continue;
+
+            collect_block_query_embryos_(result.query_embryo_ids, query_begin, query_end, &scratch.block_query_embryos);
+            build_block_device_routes_(routing, block_idx, &scratch);
+            if (scratch.block_device_ids.empty()) continue;
+
+            scratch.block_latent_f32.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(query_latent_dim));
+            std::memcpy(
+                scratch.block_latent_f32.data(),
+                scratch.normalized_query_latent.data() + static_cast<std::size_t>(query_begin) * static_cast<std::size_t>(query_latent_dim),
+                scratch.block_latent_f32.size() * sizeof(float));
+            convert_f32_to_half_(scratch.block_latent_f32, &scratch.block_latent_half);
+            make_query_panel_half_(scratch.block_latent_f32, block_queries, query_latent_dim, &scratch.block_query_panel_half);
+            scratch.block_lower.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
+            scratch.block_upper.assign_fill(static_cast<std::size_t>(block_queries), detail::positive_infinity_());
+            scratch.block_embryo.assign_fill(static_cast<std::size_t>(block_queries), static_cast<std::int64_t>(-1));
+            for (std::int64_t row = 0; row < block_queries; ++row) {
+                const std::int64_t global = query_begin + row;
+                scratch.block_lower[static_cast<std::size_t>(row)] =
+                    result.query_time[static_cast<std::size_t>(global)] + config.strict_future_epsilon + config.time_window.min_delta;
+                scratch.block_upper[static_cast<std::size_t>(row)] = std::isfinite(config.time_window.max_delta)
+                    ? result.query_time[static_cast<std::size_t>(global)] + config.time_window.max_delta
+                    : detail::positive_infinity_();
+                scratch.block_embryo[static_cast<std::size_t>(row)] = result.query_embryo_ids[static_cast<std::size_t>(global)];
+            }
+
+            for (std::size_t device_group = 0; device_group < scratch.block_device_ids.size(); ++device_group) {
+                const int device_id = scratch.block_device_ids[device_group];
+                const std::uint32_t shard_begin = scratch.block_device_offsets[device_group];
+                const std::uint32_t shard_end = scratch.block_device_offsets[device_group + 1u];
+                if (shard_begin == shard_end) continue;
+
+                set_device_(device_id);
+                prepare_workspace_device_(&scratch, device_id);
+                scratch.d_query_latent.resize(scratch.block_latent_half.size());
+                scratch.d_query_lower.resize(scratch.block_lower.size());
+                scratch.d_query_upper.resize(scratch.block_upper.size());
+                scratch.d_query_embryo.resize(scratch.block_embryo.size());
+                scratch.d_query_latent.upload(scratch.block_latent_half.data(), scratch.block_latent_half.size());
+                scratch.d_query_lower.upload(scratch.block_lower.data(), scratch.block_lower.size());
+                scratch.d_query_upper.upload(scratch.block_upper.data(), scratch.block_upper.size());
+                scratch.d_query_embryo.upload(scratch.block_embryo.data(), scratch.block_embryo.size());
+                scratch.d_query_latent_dense_half.resize(scratch.block_query_panel_half.size());
+                scratch.d_query_latent_dense_half.upload(scratch.block_query_panel_half.data(), scratch.block_query_panel_half.size());
+                const ex::ExactSearchQueryDeviceView exact_query{
+                    scratch.d_query_latent.data(),
+                    scratch.d_query_lower.data(),
+                    scratch.d_query_upper.data(),
+                    scratch.d_query_embryo.data(),
+                    block_queries,
+                    static_cast<int>(storage->latent_dim)
+                };
+                if (sparse_blocked_backend_(config.backend)) {
+                    ensure_workspace_cusparse_(&scratch, device_id);
+                }
+                if (ann_backend_(config.backend) || sparse_sliced_backend_(config.backend)) {
+                    init_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &scratch);
+                }
+
+                for (std::uint32_t shard_slot = shard_begin; shard_slot < shard_end; ++shard_slot) {
+                    const std::uint32_t shard_idx = scratch.block_device_shards[shard_slot];
+                    ensure_shard_resident_(storage, shard_idx, executor);
+                    const DeviceShardStorage &shard = storage->shards[shard_idx];
+                    if (sparse_blocked_backend_(config.backend)) {
+                        if (!ann_backend_(config.backend)) {
+                            run_blocked_sparse_spmm_(
+                                &scratch,
+                                static_cast<std::int64_t>(shard.cell_indices_cpu.size()),
+                                shard.latent_cols,
+                                shard.blocked_block_size,
+                                shard.blocked_ell_cols,
+                                shard.blocked_block_col_idx.data(),
+                                shard.blocked_values.data(),
+                                &shard,
+                                block_queries);
+                            for (std::int64_t row = 0; row < block_queries; ++row) {
+                                Candidate *row_best = scratch.merged_best.data()
+                                    + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k);
+                                const float lower = scratch.block_lower[static_cast<std::size_t>(row)];
+                                const float upper = scratch.block_upper[static_cast<std::size_t>(row)];
+                                const std::int64_t embryo = scratch.block_embryo[static_cast<std::size_t>(row)];
+                                for (std::size_t index_row = 0; index_row < shard.cell_indices_cpu.size(); ++index_row) {
+                                    const float time = shard.developmental_time_cpu[index_row];
+                                    if (!(time > lower)) continue;
+                                    if (std::isfinite(upper) && time > upper) continue;
+                                    if (hard_same_embryo && embryo >= 0 && shard.embryo_ids_cpu[index_row] != embryo) continue;
+                                    insert_candidate_host_(
+                                        Candidate{
+                                            scratch.block_score_matrix[index_row * static_cast<std::size_t>(block_queries)
+                                                + static_cast<std::size_t>(row)],
+                                            time,
+                                            shard.embryo_ids_cpu[index_row],
+                                            shard.cell_indices_cpu[index_row],
+                                            static_cast<std::int64_t>(shard_idx)
+                                        },
+                                        row_best,
+                                        static_cast<int>(result.top_k));
+                                }
+                            }
+                            continue;
+                        }
+
+                        eligible_segment_order_(
+                            shard.segments,
+                            scratch.block_query_embryos,
+                            hard_same_embryo ? ForwardNeighborEmbryoPolicy::same_embryo_only : config.embryo_policy,
+                            &scratch.segment_order,
+                            &scratch.deferred_segment_order);
+                        collect_eligible_lists_(
+                            shard,
+                            scratch.segment_order,
+                            routing.block_window_lower[block_idx],
+                            routing.block_window_upper[block_idx],
+                            &scratch.eligible_lists,
+                            &scratch.eligible_embryo,
+                            &scratch.eligible_row_begin,
+                            &scratch.eligible_row_end);
+                        if (scratch.eligible_lists.empty()) continue;
+
+                        run_blocked_sparse_spmm_(
+                            &scratch,
+                            static_cast<std::int64_t>(shard.ann_lists.size()),
+                            shard.latent_cols,
+                            shard.ann_blocked_block_size,
+                            shard.ann_blocked_ell_cols,
+                            shard.ann_blocked_block_col_idx.data(),
+                            shard.ann_blocked_values.data(),
+                            static_cast<const void *>(shard.ann_lists.data()),
+                            block_queries);
+                        select_sparse_probe_lists_host_(
+                            scratch.block_score_matrix,
+                            scratch.eligible_lists,
+                            scratch.eligible_embryo,
+                            scratch.block_embryo,
+                            block_queries,
+                            hard_same_embryo ? 1 : 0,
+                            static_cast<int>(config.ann_probe_list_count),
+                            &scratch.selected_lists_host);
+                        scratch.d_list_row_begin.resize(scratch.eligible_row_begin.size());
+                        scratch.d_list_row_end.resize(scratch.eligible_row_end.size());
+                        scratch.d_selected_lists.resize(scratch.selected_lists_host.size());
+                        scratch.d_list_row_begin.upload(scratch.eligible_row_begin.data(), scratch.eligible_row_begin.size());
+                        scratch.d_list_row_end.upload(scratch.eligible_row_end.data(), scratch.eligible_row_end.size());
+                        scratch.d_selected_lists.upload(scratch.selected_lists_host.data(), scratch.selected_lists_host.size());
+                        blocked_ann_refine_kernel_<<<query_blocks_for_rows_(block_queries), kForwardNeighborThreadsPerBlock>>>(
+                            scratch.d_query_latent.data(),
+                            scratch.d_query_lower.data(),
+                            scratch.d_query_upper.data(),
+                            scratch.d_query_embryo.data(),
+                            shard.blocked_block_col_idx.data(),
+                            shard.blocked_values.data(),
+                            shard.developmental_time.data(),
+                            shard.embryo_ids.data(),
+                            shard.cell_indices.data(),
+                            scratch.d_selected_lists.data(),
+                            scratch.d_list_row_begin.data(),
+                            scratch.d_list_row_end.data(),
+                            block_queries,
+                            static_cast<int>(storage->latent_dim),
+                            static_cast<std::int64_t>(shard_idx),
+                            static_cast<int>(shard.blocked_block_size),
+                            static_cast<int>(shard.blocked_ell_cols),
+                            hard_same_embryo ? 1 : 0,
+                            static_cast<int>(config.ann_probe_list_count),
+                            static_cast<int>(config.candidate_k),
+                            scratch.d_best_cell.data(),
+                            scratch.d_best_shard.data(),
+                            scratch.d_best_time.data(),
+                            scratch.d_best_embryo.data(),
+                            scratch.d_best_similarity.data());
+                        cg::cuda_require(cudaGetLastError(), "blocked_ann_refine_kernel launch");
+                        continue;
+                    }
+
+                    eligible_segment_order_(
+                        shard.segments,
+                        scratch.block_query_embryos,
+                        hard_same_embryo ? ForwardNeighborEmbryoPolicy::same_embryo_only : config.embryo_policy,
+                        &scratch.segment_order,
+                        &scratch.deferred_segment_order);
+
+                    if (!ann_backend_(config.backend)) {
+                        scratch.intervals.clear();
+                        for (const std::int64_t segment_idx : scratch.segment_order) {
+                            const ForwardNeighborSegment &segment = shard.segments[static_cast<std::size_t>(segment_idx)];
+                            if (!segment_time_overlaps_block_(segment, routing.block_window_lower[block_idx], routing.block_window_upper[block_idx])) continue;
+                            const auto bounds = segment_candidate_bounds_(
+                                shard,
+                                segment,
+                                routing.block_window_lower[block_idx],
+                                routing.block_window_upper[block_idx]);
+                            if (bounds.first < bounds.second) append_one_(&scratch.intervals, bounds);
+                        }
+                        merge_row_intervals_(&scratch.intervals, &scratch.merged_intervals);
+                        if (!scratch.merged_intervals.empty()) {
+                            upload_route_segments_(scratch.merged_intervals, &scratch);
+                            init_local_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &scratch);
+                            ex::routed_sliced_ell_topk(
+                                exact_query,
+                                ex::ExactSearchSlicedEllIndexDeviceView{
+                                    shard.sliced_row_slot_offsets.data(),
+                                    shard.sliced_slice_widths.data(),
+                                    shard.sliced_col_idx.data(),
+                                    shard.sliced_values.data(),
+                                    shard.developmental_time.data(),
+                                    shard.embryo_ids.data(),
+                                    shard.cell_indices.data(),
+                                    static_cast<std::int64_t>(shard_idx)
+                                },
+                                scratch.d_route_segment_begin.data(),
+                                scratch.d_route_segment_end.data(),
+                                static_cast<std::int64_t>(scratch.merged_intervals.size()),
+                                hard_same_embryo ? 1 : 0,
+                                static_cast<int>(config.candidate_k),
+                                workspace_local_result_view_(&scratch));
+                            ex::merge_result_arrays(
+                                workspace_local_result_view_(&scratch),
+                                workspace_best_result_view_(&scratch),
+                                block_queries,
+                                static_cast<int>(config.candidate_k));
+                        }
+                    } else {
+                        collect_eligible_lists_(
+                            shard,
+                            scratch.segment_order,
+                            routing.block_window_lower[block_idx],
+                            routing.block_window_upper[block_idx],
+                            &scratch.eligible_lists,
+                            &scratch.eligible_embryo,
+                            &scratch.eligible_row_begin,
+                            &scratch.eligible_row_end);
+                        if (scratch.eligible_lists.empty()) continue;
+                        scratch.eligible_centroids.clear();
+                        for (const std::int64_t list_idx : scratch.eligible_lists) {
+                            append_copy_(
+                                &scratch.eligible_centroids,
+                                shard.ann_centroids_cpu.data() + static_cast<std::size_t>(list_idx) * static_cast<std::size_t>(storage->latent_dim),
+                                static_cast<std::size_t>(storage->latent_dim));
+                        }
+                        scratch.d_centroids.resize(scratch.eligible_centroids.size());
+                        scratch.d_list_embryo.resize(scratch.eligible_embryo.size());
+                        scratch.d_list_row_begin.resize(scratch.eligible_row_begin.size());
+                        scratch.d_list_row_end.resize(scratch.eligible_row_end.size());
+                        scratch.d_selected_lists.resize(static_cast<std::size_t>(block_queries) * static_cast<std::size_t>(config.ann_probe_list_count));
+                        scratch.d_centroids.upload(scratch.eligible_centroids.data(), scratch.eligible_centroids.size());
+                        scratch.d_list_embryo.upload(scratch.eligible_embryo.data(), scratch.eligible_embryo.size());
+                        scratch.d_list_row_begin.upload(scratch.eligible_row_begin.data(), scratch.eligible_row_begin.size());
+                        scratch.d_list_row_end.upload(scratch.eligible_row_end.data(), scratch.eligible_row_end.size());
+                        ann_probe_kernel_<<<query_blocks_for_rows_(block_queries), kForwardNeighborThreadsPerBlock>>>(
+                            scratch.d_query_latent.data(),
+                            scratch.d_query_embryo.data(),
+                            scratch.d_centroids.data(),
+                            scratch.d_list_embryo.data(),
+                            block_queries,
+                            static_cast<int>(storage->latent_dim),
+                            static_cast<std::int64_t>(scratch.eligible_lists.size()),
+                            hard_same_embryo ? 1 : 0,
+                            static_cast<int>(config.ann_probe_list_count),
+                            scratch.d_selected_lists.data());
+                        cg::cuda_require(cudaGetLastError(), "ann_probe_kernel launch (sliced sparse)");
+                        sliced_ann_refine_kernel_<<<query_blocks_for_rows_(block_queries), kForwardNeighborThreadsPerBlock>>>(
+                            scratch.d_query_latent.data(),
+                            scratch.d_query_lower.data(),
+                            scratch.d_query_upper.data(),
+                            scratch.d_query_embryo.data(),
+                            shard.sliced_row_slot_offsets.data(),
+                            shard.sliced_slice_widths.data(),
+                            shard.sliced_col_idx.data(),
+                            shard.sliced_values.data(),
+                            shard.developmental_time.data(),
+                            shard.embryo_ids.data(),
+                            shard.cell_indices.data(),
+                            scratch.d_selected_lists.data(),
+                            scratch.d_list_row_begin.data(),
+                            scratch.d_list_row_end.data(),
+                            block_queries,
+                            static_cast<int>(storage->latent_dim),
+                            static_cast<std::int64_t>(shard_idx),
+                            hard_same_embryo ? 1 : 0,
+                            static_cast<int>(config.ann_probe_list_count),
+                            static_cast<int>(config.candidate_k),
+                            scratch.d_best_cell.data(),
+                            scratch.d_best_shard.data(),
+                            scratch.d_best_time.data(),
+                            scratch.d_best_embryo.data(),
+                            scratch.d_best_similarity.data());
+                        cg::cuda_require(cudaGetLastError(), "sliced_ann_refine_kernel launch");
+                    }
+                }
+
+                if (ann_backend_(config.backend) || sparse_sliced_backend_(config.backend)) {
+                    cg::cuda_require(cudaDeviceSynchronize(), "forward_neighbors sparse device sync");
+                    download_best_candidates_(&scratch, block_queries, static_cast<int>(config.candidate_k));
+                    for (std::int64_t row = 0; row < block_queries; ++row) {
+                        Candidate row_best[kMaxTopK];
+                        init_candidates_host_(row_best, static_cast<int>(result.top_k));
+                        std::memcpy(
+                            row_best,
+                            scratch.merged_best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
+                            static_cast<std::size_t>(result.top_k) * sizeof(Candidate));
+                        for (std::int64_t slot = 0; slot < config.candidate_k; ++slot) {
+                            const std::size_t off = static_cast<std::size_t>(row) * static_cast<std::size_t>(config.candidate_k)
+                                + static_cast<std::size_t>(slot);
+                            insert_candidate_host_(scratch.shard_best[off], row_best, static_cast<int>(result.top_k));
+                        }
+                        std::memcpy(
+                            scratch.merged_best.data() + static_cast<std::size_t>(query_begin + row) * static_cast<std::size_t>(result.top_k),
+                            row_best,
+                            static_cast<std::size_t>(result.top_k) * sizeof(Candidate));
+                    }
+                }
+            }
+        }
+        fill_result_from_candidates_(scratch.merged_best, config.similarity, &result);
+        return result;
+    }
+
+    scratch.normalized_query_latent = normalize_query_latent_(materialize_dense_matrix_(query.matrix), result.query_count, query_latent_dim);
 
     for (std::size_t block_idx = 0; block_idx < routing.block_query_begin.size(); ++block_idx) {
         const std::int64_t query_begin = routing.block_query_begin[block_idx];
@@ -1217,6 +2162,14 @@ inline ForwardNeighborSearchResult search_core_(
             scratch.d_query_lower.upload(scratch.block_lower.data(), scratch.block_lower.size());
             scratch.d_query_upper.upload(scratch.block_upper.data(), scratch.block_upper.size());
             scratch.d_query_embryo.upload(scratch.block_embryo.data(), scratch.block_embryo.size());
+            const ex::ExactSearchQueryDeviceView exact_query{
+                scratch.d_query_latent.data(),
+                scratch.d_query_lower.data(),
+                scratch.d_query_upper.data(),
+                scratch.d_query_embryo.data(),
+                block_queries,
+                static_cast<int>(storage->latent_dim)
+            };
 
             init_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &scratch);
 
@@ -1245,32 +2198,29 @@ inline ForwardNeighborSearchResult search_core_(
                     }
 
                     merge_row_intervals_(&scratch.intervals, &scratch.merged_intervals);
-                    for (const auto &interval : scratch.merged_intervals) {
-                        for (std::int64_t index_begin = interval.first; index_begin < interval.second; index_begin += config.index_block_rows) {
-                            const std::int64_t index_end = std::min(index_begin + config.index_block_rows, interval.second);
-                            exact_search_kernel_<<<query_blocks_for_rows_(block_queries), kForwardNeighborThreadsPerBlock>>>(
-                                scratch.d_query_latent.data(),
-                                scratch.d_query_lower.data(),
-                                scratch.d_query_upper.data(),
-                                scratch.d_query_embryo.data(),
+                    if (!scratch.merged_intervals.empty()) {
+                        upload_route_segments_(scratch.merged_intervals, &scratch);
+                        init_local_best_arrays_(block_queries, static_cast<int>(config.candidate_k), &scratch);
+                        ex::routed_dense_topk(
+                            exact_query,
+                            ex::ExactSearchDenseIndexDeviceView{
                                 shard.latent_unit.data(),
                                 shard.developmental_time.data(),
                                 shard.embryo_ids.data(),
                                 shard.cell_indices.data(),
-                                block_queries,
-                                static_cast<int>(storage->latent_dim),
-                                static_cast<std::int64_t>(shard_idx),
-                                index_begin,
-                                index_end - index_begin,
-                                hard_same_embryo ? 1 : 0,
-                                static_cast<int>(config.candidate_k),
-                                scratch.d_best_cell.data(),
-                                scratch.d_best_shard.data(),
-                                scratch.d_best_time.data(),
-                                scratch.d_best_embryo.data(),
-                                scratch.d_best_similarity.data());
-                            cg::cuda_require(cudaGetLastError(), "exact_search_kernel launch");
-                        }
+                                static_cast<std::int64_t>(shard_idx)
+                            },
+                            scratch.d_route_segment_begin.data(),
+                            scratch.d_route_segment_end.data(),
+                            static_cast<std::int64_t>(scratch.merged_intervals.size()),
+                            hard_same_embryo ? 1 : 0,
+                            static_cast<int>(config.candidate_k),
+                            workspace_local_result_view_(&scratch));
+                        ex::merge_result_arrays(
+                            workspace_local_result_view_(&scratch),
+                            workspace_best_result_view_(&scratch),
+                            block_queries,
+                            static_cast<int>(config.candidate_k));
                     }
                 } else {
                     scratch.eligible_lists.clear();
@@ -1375,31 +2325,7 @@ inline ForwardNeighborSearchResult search_core_(
         }
     }
 
-    result.neighbor_cell_indices.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
-    result.neighbor_shard_indices.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
-    result.neighbor_time.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::quiet_nan_());
-    result.neighbor_embryo_ids.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), static_cast<std::int64_t>(-1));
-    result.neighbor_similarity.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::negative_infinity_());
-    result.neighbor_sqdist.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::positive_infinity_());
-    result.neighbor_distance.assign_fill(static_cast<std::size_t>(result.query_count * result.top_k), detail::positive_infinity_());
-
-    for (std::int64_t row = 0; row < result.query_count; ++row) {
-        for (std::int64_t slot = 0; slot < result.top_k; ++slot) {
-            const Candidate &candidate = scratch.merged_best[static_cast<std::size_t>(row) * static_cast<std::size_t>(result.top_k) + static_cast<std::size_t>(slot)];
-            const std::size_t off = detail::result_offset_(row, slot, result.top_k);
-            result.neighbor_cell_indices[off] = candidate.cell_index;
-            result.neighbor_shard_indices[off] = candidate.shard_index;
-            result.neighbor_time[off] = candidate.developmental_time;
-            result.neighbor_embryo_ids[off] = candidate.embryo_id;
-            result.neighbor_similarity[off] = candidate.similarity;
-            result.neighbor_sqdist[off] = std::isfinite(candidate.similarity)
-                ? std::max(0.0f, 2.0f - 2.0f * candidate.similarity)
-                : detail::positive_infinity_();
-            result.neighbor_distance[off] = std::isfinite(result.neighbor_sqdist[off])
-                ? std::sqrt(result.neighbor_sqdist[off] + 1.0e-12f)
-                : detail::positive_infinity_();
-        }
-    }
+    fill_result_from_candidates_(scratch.merged_best, config.similarity, &result);
     return result;
 }
 
@@ -1471,7 +2397,8 @@ ForwardNeighborShardSummary ForwardNeighborIndex::shard_summary(std::size_t shar
         src.time_begin,
         src.time_end,
         src.resident_bytes,
-        src.resident
+        src.resident,
+        src.sparse_layout
     };
 }
 

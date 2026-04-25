@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ingest/dataset/dataset_manifest.cuh"
+#include "../../extern/CellShard/include/CellShard/export/dataset_export.hh"
 
 #include <cstddef>
 #include <cstdint>
@@ -516,6 +517,14 @@ struct preprocess_persist_summary {
     double browse_ms = 0.0;
 };
 
+struct derived_materialization_report {
+    bool ok = false;
+    std::vector<std::uint64_t> resolved_row_indices;
+    std::vector<std::uint64_t> resolved_feature_indices;
+    cellshard::exporting::derived_materialization_result result;
+    std::vector<issue> issues;
+};
+
 std::string format_name(unsigned int format);
 std::string severity_name(issue_severity severity);
 std::string execution_format_name(execution_format format);
@@ -568,7 +577,32 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
                                                        const preprocess_analysis_table &analysis,
                                                        const preprocess_config &config = preprocess_config());
 
+preprocess_persist_summary persist_preprocess_analysis_to_output(const std::string &source_path,
+                                                                 const std::string &output_path,
+                                                                 const preprocess_analysis_table &analysis,
+                                                                 const preprocess_config &config = preprocess_config());
+
 preprocess_summary run_preprocess_pass(const std::string &path,
                                        const preprocess_config &config = preprocess_config());
+
+bool resolve_observation_group_order(const std::string &path,
+                                     const std::string &column_name,
+                                     const std::vector<std::string> &ordered_values,
+                                     std::vector<std::uint64_t> *row_indices,
+                                     std::vector<cellshard::exporting::derivation_group_span> *groups,
+                                     std::vector<issue> *issues = nullptr,
+                                     bool append_unmatched = false);
+
+bool resolve_feature_group_order(const std::string &path,
+                                 const std::string &column_name,
+                                 const std::vector<std::string> &ordered_values,
+                                 std::vector<std::uint64_t> *feature_indices,
+                                 std::vector<cellshard::exporting::derivation_group_span> *groups,
+                                 std::vector<issue> *issues = nullptr,
+                                 bool append_unmatched = false);
+
+derived_materialization_report materialize_derived_dataset(
+    const std::string &source_path,
+    const cellshard::exporting::derived_materialization_request &request);
 
 } // namespace cellerator::apps::workbench

@@ -46,3 +46,5 @@ Current sliced-ELL bridge posture:
 - the choice is driven by row-nnz skew with a hybrid storage-plus-slice-count score
 - `32` remains a supported kernel path, but it is no longer the preferred default when another uniform slice size scores better
 - single-GPU sliced preprocess can now reuse a CellShard-owned device-resident execution-partition cache across repeated warm runs instead of re-uploading every sliced segment on each pass
+- single-GPU sliced preprocess no longer round-trips per-segment cell and gene aggregates through the CPU during analysis; it keeps working aggregates on device across the pass and only copies the finished result vectors back once at the end
+- sliced finalize/repack now stays native to `.csh5`: the filtered sliced artifact is rebuilt directly from the analyzed raw sliced dataset plus keep masks, without a Python or H5AD subset/re-ingest roundtrip

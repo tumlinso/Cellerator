@@ -297,9 +297,12 @@ int main() {
     const std::string dataset_path = base + ".dataset.csh5";
     const std::string converted_dataset_path = base + ".converted.dataset.csh5";
     const std::string converted_cache_root = base + ".converted.cache";
+    const std::string converted_filtered_output_path = base + ".converted.filtered.dataset.csh5";
     const std::string finalized_dataset_path = base + ".finalized.dataset.csh5";
     const std::string finalized_cache_root = base + ".finalized.cache";
     const std::string preprocess_cache_root = base + ".preprocess.cache";
+    const std::string derived_dataset_path = base + ".derived.dataset.csh5";
+    const std::string derived_cache_root = base + ".derived.cache";
     const std::string builder_dir = base + ".builder";
     const std::string exported_manifest_path = base + ".builder.manifest.tsv";
     const std::string h5ad_path = base + ".input.h5ad";
@@ -314,6 +317,7 @@ int main() {
     cellshard::dataset_metadata_table_view metadata_table_view{};
     cellshard::dataset_embedded_metadata_view embedded_metadata_view{};
     cellshard::dataset_observation_metadata_view observation_metadata_view{};
+    cellshard::dataset_feature_metadata_view feature_metadata_view{};
     cellshard::dataset_browse_cache_view browse_view{};
     owned_text_column dataset_ids = make_column({"sample_a"});
     owned_text_column matrix_paths = make_column({matrix_path.c_str()});
@@ -333,6 +337,8 @@ int main() {
     owned_observation_metadata_column obs_day_numeric;
     owned_observation_metadata_column obs_postnatal;
     std::vector<cellshard::dataset_observation_metadata_column_view> observation_columns;
+    owned_observation_metadata_column feature_short_name;
+    std::vector<cellshard::dataset_observation_metadata_column_view> feature_columns;
     std::vector<std::uint32_t> dataset_formats = { (std::uint32_t) cellerator::ingest::dataset::source_mtx };
     std::vector<std::uint64_t> dataset_row_begin = { 0u };
     std::vector<std::uint64_t> dataset_row_end = { 2u };
@@ -375,7 +381,9 @@ int main() {
     std::remove(metadata_path.c_str());
     std::remove(dataset_path.c_str());
     std::remove(converted_dataset_path.c_str());
+    std::remove(converted_filtered_output_path.c_str());
     std::remove(finalized_dataset_path.c_str());
+    std::remove(derived_dataset_path.c_str());
     std::remove(exported_manifest_path.c_str());
     std::remove(h5ad_path.c_str());
     std::remove(h5ad_manifest_path.c_str());
@@ -384,6 +392,7 @@ int main() {
     fs::remove_all(builder_dir, dir_ec);
     fs::remove_all(converted_cache_root, dir_ec);
     fs::remove_all(finalized_cache_root, dir_ec);
+    fs::remove_all(derived_cache_root, dir_ec);
     fs::remove_all(h5ad_cache_root, dir_ec);
     fs::create_directories(builder_dir, dir_ec);
     if (dir_ec) return 1;
@@ -545,6 +554,16 @@ int main() {
     observation_metadata_view.cols = (std::uint32_t) observation_columns.size();
     observation_metadata_view.columns = observation_columns.data();
 
+    feature_short_name.name = "gene_short_name";
+    feature_short_name.type = cellshard::dataset_observation_metadata_type_text;
+    feature_short_name.text_values = make_column({"MT-CO1", "GeneB", "GeneC"});
+    feature_columns = {
+        feature_short_name.view()
+    };
+    feature_metadata_view.cols = 3u;
+    feature_metadata_view.annotation_count = (std::uint32_t) feature_columns.size();
+    feature_metadata_view.annotations = feature_columns.data();
+
     browse_view.selected_feature_count = 2u;
     browse_view.selected_feature_indices = browse_feature_indices.data();
     browse_view.gene_sum = browse_gene_sum.data();
@@ -561,9 +580,59 @@ int main() {
     browse_view.partition_sample_values = browse_partition_sample_values.data();
 
     if (!cellshard::create_dataset_blocked_ell_h5(dataset_path.c_str(), &layout, &dataset_view, &provenance_view)) return 1;
-    if (!cellshard::append_blocked_ell_partition_h5(dataset_path.c_str(), 0u, &part)) return 1;
+    {
+        cellshard::bucketed_blocked_ell_shard optimized_shard;
+        cellshard::bucketed_blocked_ell_partition bucketed_part;
+        cellshard::init(&optimized_shard);
+        cellshard::init(&bucketed_part);
+        optimized_shard.partition_count = 1u;
+        optimized_shard.rows = part.rows;
+        optimized_shard.cols = part.cols;
+        optimized_shard.nnz = part.nnz;
+        optimized_shard.partitions =
+            (cellshard::bucketed_blocked_ell_partition *) std::calloc(1u, sizeof(cellshard::bucketed_blocked_ell_partition));
+        optimized_shard.partition_row_offsets = (std::uint32_t *) std::calloc(2u, sizeof(std::uint32_t));
+        optimized_shard.exec_to_canonical_cols =
+            (std::uint32_t *) std::calloc((std::size_t) part.cols, sizeof(std::uint32_t));
+        optimized_shard.canonical_to_exec_cols =
+            (std::uint32_t *) std::calloc((std::size_t) part.cols, sizeof(std::uint32_t));
+        const bool wrote_shard =
+            optimized_shard.partitions != nullptr
+            && optimized_shard.partition_row_offsets != nullptr
+            && optimized_shard.exec_to_canonical_cols != nullptr
+            && optimized_shard.canonical_to_exec_cols != nullptr
+            && cellshard::build_bucketed_blocked_ell_partition(&bucketed_part, &part, 1u, nullptr) != 0;
+        if (wrote_shard) {
+            bucketed_part.exec_to_canonical_cols =
+                (std::uint32_t *) std::calloc((std::size_t) part.cols, sizeof(std::uint32_t));
+            bucketed_part.canonical_to_exec_cols =
+                (std::uint32_t *) std::calloc((std::size_t) part.cols, sizeof(std::uint32_t));
+        }
+        if (wrote_shard && (bucketed_part.exec_to_canonical_cols == nullptr || bucketed_part.canonical_to_exec_cols == nullptr)) {
+            cellshard::clear(&bucketed_part);
+            cellshard::clear(&optimized_shard);
+            return 1;
+        }
+        if (wrote_shard) {
+            optimized_shard.partitions[0] = bucketed_part;
+            std::memset(&bucketed_part, 0, sizeof(bucketed_part));
+            optimized_shard.partition_row_offsets[0] = 0u;
+            optimized_shard.partition_row_offsets[1] = part.rows;
+            for (std::uint32_t col = 0u; col < part.cols; ++col) {
+                optimized_shard.partitions[0].exec_to_canonical_cols[col] = col;
+                optimized_shard.partitions[0].canonical_to_exec_cols[col] = col;
+                optimized_shard.exec_to_canonical_cols[col] = col;
+                optimized_shard.canonical_to_exec_cols[col] = col;
+            }
+        }
+        const bool appended = wrote_shard && cellshard::append_bucketed_blocked_ell_shard_h5(dataset_path.c_str(), 0u, &optimized_shard);
+        cellshard::clear(&bucketed_part);
+        cellshard::clear(&optimized_shard);
+        if (!appended) return 1;
+    }
     if (!cellshard::append_dataset_embedded_metadata_h5(dataset_path.c_str(), &embedded_metadata_view)) return 1;
     if (!cellshard::append_dataset_observation_metadata_h5(dataset_path.c_str(), &observation_metadata_view)) return 1;
+    if (!cellshard::append_dataset_feature_metadata_h5(dataset_path.c_str(), &feature_metadata_view)) return 1;
     if (!cellshard::append_dataset_browse_cache_h5(dataset_path.c_str(), &browse_view)) return 1;
 
     wb::dataset_summary summary = wb::summarize_dataset_csh5(dataset_path);
@@ -587,6 +656,82 @@ int main() {
     if (loaded_observation.columns[5].uint8_values.size() != 2u || loaded_observation.columns[5].uint8_values[1] != 1u) return 1;
     if (!summary.browse.available || summary.browse.selected_feature_indices.size() != 2u) return 1;
     if (summary.browse.selected_feature_names.size() != 2u || summary.browse.selected_feature_names[0] != "MT-CO1") return 1;
+
+    {
+        std::vector<std::uint64_t> grouped_rows;
+        std::vector<cellshard::exporting::derivation_group_span> row_groups;
+        std::vector<wb::issue> derived_issues;
+        if (!wb::resolve_observation_group_order(dataset_path,
+                                                 "day",
+                                                 {"P0", "E8.5"},
+                                                 &grouped_rows,
+                                                 &row_groups,
+                                                 &derived_issues,
+                                                 false)) {
+            std::fprintf(stderr, "workbench row-group resolution failed\n");
+            return 1;
+        }
+        if (grouped_rows != std::vector<std::uint64_t>({1u, 0u})) {
+            std::fprintf(stderr, "workbench row-group order mismatch\n");
+            return 1;
+        }
+
+        std::vector<std::uint64_t> grouped_features;
+        std::vector<cellshard::exporting::derivation_group_span> feature_groups;
+        if (!wb::resolve_feature_group_order(dataset_path,
+                                             "gene_short_name",
+                                             {"GeneC", "MT-CO1"},
+                                             &grouped_features,
+                                             &feature_groups,
+                                             &derived_issues,
+                                             false)) {
+            std::fprintf(stderr, "workbench feature-group resolution failed\n");
+            return 1;
+        }
+        if (grouped_features != std::vector<std::uint64_t>({2u, 0u})) {
+            std::fprintf(stderr, "workbench feature-group order mismatch\n");
+            return 1;
+        }
+
+        cellshard::exporting::derived_materialization_request derived_request;
+        derived_request.output_path = derived_dataset_path;
+        derived_request.cache_root = derived_cache_root;
+        derived_request.derived_pack_name = "day_grouped";
+        derived_request.row_indices = grouped_rows;
+        derived_request.feature_indices = grouped_features;
+        derived_request.row_groups = row_groups;
+        derived_request.feature_groups = feature_groups;
+        derived_request.materialize_dataset = true;
+        derived_request.materialize_execution_pack = true;
+
+        wb::derived_materialization_report derived_report =
+            wb::materialize_derived_dataset(dataset_path, derived_request);
+        if (!derived_report.ok
+            || !derived_report.result.materialized_execution_pack
+            || derived_report.result.rows != 2u
+            || derived_report.result.cols != 2u) {
+            std::fprintf(stderr, "workbench derived materialization report mismatch\n");
+            return 1;
+        }
+        wb::dataset_summary derived_summary = wb::summarize_dataset_csh5(derived_dataset_path);
+        if (!derived_summary.ok || derived_summary.rows != 2u || derived_summary.cols != 2u) {
+            std::fprintf(stderr, "workbench derived summary mismatch\n");
+            return 1;
+        }
+        wb::observation_metadata_table derived_obs = wb::load_observation_metadata_table(derived_dataset_path);
+        if (!derived_obs.available || derived_obs.columns.size() != 7u
+            || derived_obs.columns.back().name != "derived.row_group"
+            || derived_obs.columns.back().text_values != std::vector<std::string>({"P0", "E8.5"})) {
+            std::fprintf(stderr, "workbench derived observation metadata mismatch\n");
+            return 1;
+        }
+        wb::feature_metadata_table derived_var = wb::load_feature_metadata_table(derived_dataset_path);
+        if (!derived_var.available || derived_var.columns.empty()
+            || derived_var.columns.back().name != "derived.feature_group") {
+            std::fprintf(stderr, "workbench derived feature metadata mismatch\n");
+            return 1;
+        }
+    }
 
     int device_count = 0;
     if (cudaGetDeviceCount(&device_count) != cudaSuccess) device_count = 0;
@@ -735,6 +880,62 @@ int main() {
                           && cached_analysis.gene_keep == uncached_analysis.gene_keep
                           && cached_analysis.gene_flags == uncached_analysis.gene_flags,
                       "cached and uncached preprocess analysis mismatch");
+        {
+            wb::preprocess_config finalize_output_preprocess = preprocess;
+            finalize_output_preprocess.finalize_after_preprocess = true;
+            wb::preprocess_persist_summary finalized_output =
+                wb::persist_preprocess_analysis_to_output(converted_dataset_path,
+                                                          converted_filtered_output_path,
+                                                          cached_analysis,
+                                                          finalize_output_preprocess);
+            if (!finalized_output.summary.ok) {
+                for (const wb::issue &entry : finalized_output.summary.issues) {
+                    std::fprintf(stderr, "separate-output sliced finalize issue [%s] %s\n", entry.scope.c_str(), entry.message.c_str());
+                }
+            }
+            CHECK_OR_FAIL(finalized_output.summary.ok, "separate-output sliced finalize failed");
+            wb::dataset_summary raw_converted_summary = wb::summarize_dataset_csh5(converted_dataset_path);
+            CHECK_OR_FAIL(raw_converted_summary.ok && !raw_converted_summary.preprocess.available,
+                          "separate-output finalize unexpectedly mutated raw sliced source");
+            wb::dataset_summary filtered_converted_summary = wb::summarize_dataset_csh5(converted_filtered_output_path);
+            CHECK_OR_FAIL(filtered_converted_summary.ok && filtered_converted_summary.preprocess.available,
+                          "separate-output sliced finalize missing preprocess block");
+            CHECK_OR_FAIL(filtered_converted_summary.matrix_format == "sliced_ell",
+                          "separate-output sliced finalize matrix format mismatch");
+            CHECK_OR_FAIL(filtered_converted_summary.preprocess.processed_matrix_available,
+                          "separate-output sliced finalize missing processed matrix flag");
+            CHECK_OR_FAIL(filtered_converted_summary.rows == 2u && filtered_converted_summary.cols == 3u,
+                          "separate-output sliced finalize shape mismatch");
+            {
+                cellshard::sharded<cellshard::sparse::sliced_ell> filtered_matrix;
+                cellshard::shard_storage filtered_storage;
+                cellshard::bucketed_sliced_ell_partition filtered_exec_part;
+                cellshard::init(&filtered_matrix);
+                cellshard::init(&filtered_storage);
+                cellshard::init(&filtered_exec_part);
+                CHECK_OR_FAIL(cellshard::load_dataset_sliced_ell_h5_header(converted_filtered_output_path.c_str(),
+                                                                           &filtered_matrix,
+                                                                           &filtered_storage)
+                                  && cellshard::fetch_dataset_sliced_ell_h5_bucketed_partition(&filtered_exec_part,
+                                                                                                &filtered_matrix,
+                                                                                                &filtered_storage,
+                                                                                                0u),
+                              "separate-output sliced finalize fetch failed");
+                CHECK_OR_FAIL(filtered_exec_part.rows != 0u && filtered_exec_part.cols == 3u
+                                  && filtered_exec_part.exec_to_canonical_rows != nullptr
+                                  && filtered_exec_part.canonical_to_exec_rows != nullptr,
+                              "separate-output sliced finalize partition row-map mismatch");
+                for (std::uint32_t exec_row = 0u; exec_row < filtered_exec_part.rows; ++exec_row) {
+                    const std::uint32_t canonical_row = filtered_exec_part.exec_to_canonical_rows[exec_row];
+                    CHECK_OR_FAIL(canonical_row < filtered_exec_part.rows
+                                      && filtered_exec_part.canonical_to_exec_rows[canonical_row] == exec_row,
+                                  "separate-output sliced finalize row-map inverse mismatch");
+                }
+                cellshard::clear(&filtered_exec_part);
+                cellshard::clear(&filtered_storage);
+                cellshard::clear(&filtered_matrix);
+            }
+        }
         wb::preprocess_summary preprocess_summary = wb::run_preprocess_pass(converted_dataset_path, preprocess);
         CHECK_OR_FAIL(preprocess_summary.ok, "preprocess pass failed");
         CHECK_OR_FAIL(preprocess_summary.partitions_processed == converted_plan.parts.size() && preprocess_summary.kept_genes != 0u,
@@ -788,139 +989,8 @@ int main() {
         wb::preprocess_summary second_preprocess = wb::run_preprocess_pass(converted_dataset_path, preprocess);
         CHECK_OR_FAIL(!second_preprocess.ok, "second preprocess pass unexpectedly succeeded");
 
-        cellshard::sparse::blocked_ell finalized_part;
-        std::vector<std::uint64_t> finalized_dataset_nnz = { 4u };
-        std::vector<std::uint64_t> finalized_partition_nnz = { 4u };
-        std::vector<std::uint64_t> finalized_partition_aux = {
-            (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(1u, 2ul)
-        };
-
-        cellshard::sparse::init(&finalized_part);
-        CHECK_OR_FAIL(populate_blocked_ell_part(&finalized_part,
-                                                2u,
-                                                3u,
-                                                1u,
-                                                2u,
-                                                {0u, 2u, 1u, 0u},
-                                                {5.0f, 1.0f, 7.0f, 0.0f}),
-                      "failed to build blocked-ell finalize fixture");
-        layout.nnz = 4u;
-        layout.partition_nnz = finalized_partition_nnz.data();
-        layout.partition_aux = finalized_partition_aux.data();
-        dataset_view.nnz = finalized_dataset_nnz.data();
-        CHECK_OR_FAIL(cellshard::create_dataset_blocked_ell_h5(finalized_dataset_path.c_str(), &layout, &dataset_view, &provenance_view),
-                      "failed to create blocked-ell finalize fixture");
-        CHECK_OR_FAIL(cellshard::append_blocked_ell_partition_h5(finalized_dataset_path.c_str(), 0u, &finalized_part),
-                      "failed to append blocked-ell finalize fixture partition");
-        CHECK_OR_FAIL(cellshard::append_dataset_embedded_metadata_h5(finalized_dataset_path.c_str(), &embedded_metadata_view),
-                      "failed to append blocked-ell finalize fixture embedded metadata");
-        CHECK_OR_FAIL(cellshard::append_dataset_observation_metadata_h5(finalized_dataset_path.c_str(), &observation_metadata_view),
-                      "failed to append blocked-ell finalize fixture observation metadata");
-        cellshard::sparse::clear(&finalized_part);
-        fs::create_directories(finalized_cache_root);
-        CHECK_OR_FAIL(cellshard::warm_dataset_blocked_ell_h5_cache(finalized_dataset_path.c_str(), finalized_cache_root.c_str()),
-                      "finalized blocked-ell cache warm failed");
-
-        wb::preprocess_config finalize_preprocess = preprocess;
-        finalize_preprocess.cache_dir = finalized_cache_root;
-        finalize_preprocess.finalize_after_preprocess = true;
-        finalize_preprocess.max_mito_fraction = 0.5f;
-        finalize_preprocess.min_gene_sum = 1.0f;
-        finalize_preprocess.min_detected_cells = 1.0f;
-        wb::preprocess_summary finalized_preprocess = wb::run_preprocess_pass(finalized_dataset_path, finalize_preprocess);
-        if (!finalized_preprocess.ok) {
-            for (const wb::issue &entry : finalized_preprocess.issues) {
-                std::fprintf(stderr, "finalize preprocess issue [%s] %s\n", entry.scope.c_str(), entry.message.c_str());
-            }
-            return 1;
-        }
-        CHECK_OR_FAIL(finalized_preprocess.kept_cells == 1.0 && finalized_preprocess.kept_genes == 1u,
-                      "finalized preprocess kept-cells/genes mismatch");
-
-        wb::dataset_summary finalized_summary = wb::summarize_dataset_csh5(finalized_dataset_path);
-        CHECK_OR_FAIL(finalized_summary.ok && finalized_summary.preprocess.available,
-                      "finalized summary missing preprocess block");
-        CHECK_OR_FAIL(finalized_summary.rows == 1u && finalized_summary.cols == 1u && finalized_summary.nnz == 1u,
-                      "finalized summary shape mismatch");
-        CHECK_OR_FAIL(finalized_summary.matrix_format == "blocked_ell",
-                      "finalized summary matrix format mismatch");
-        CHECK_OR_FAIL(finalized_summary.preprocess.processed_matrix_available,
-                      "finalized summary missing processed matrix flag");
-        CHECK_OR_FAIL(finalized_summary.preprocess.kept_cells == 1.0 && finalized_summary.preprocess.kept_genes == 1u,
-                      "finalized summary kept-cells/genes mismatch");
-
-        wb::observation_metadata_table finalized_obs = wb::load_observation_metadata_table(finalized_dataset_path);
-        CHECK_OR_FAIL(finalized_obs.available && finalized_obs.rows == 1u && finalized_obs.columns.size() >= 8u,
-                      "finalized observation metadata unavailable");
-        CHECK_OR_FAIL(finalized_obs.columns[0].text_values.size() == 1u && finalized_obs.columns[0].text_values[0] == "P0",
-                      "finalized observation metadata first column mismatch");
-        CHECK_OR_FAIL(finalized_obs.columns.back().name == "preprocess_keep"
-                          && finalized_obs.columns.back().uint8_values.size() == 1u
-                          && finalized_obs.columns.back().uint8_values[0] == 1u,
-                      "finalized observation metadata preprocess_keep mismatch");
-
-        wb::feature_metadata_table finalized_var = wb::load_feature_metadata_table(finalized_dataset_path);
-        CHECK_OR_FAIL(finalized_var.available && finalized_var.rows == 1u && finalized_var.columns.size() >= 5u,
-                      "finalized feature metadata unavailable");
-        CHECK_OR_FAIL(finalized_var.columns.back().name == "preprocess_flags"
-                          && finalized_var.columns.back().uint8_values.size() == 1u
-                          && finalized_var.columns.back().uint8_values[0] == 0u,
-                      "finalized feature metadata preprocess_flags mismatch");
-
-        wb::embedded_metadata_table finalized_embedded = wb::load_embedded_metadata_table(finalized_dataset_path, 0u);
-        CHECK_OR_FAIL(finalized_embedded.available && finalized_embedded.rows == 1u,
-                      "finalized embedded metadata unavailable");
-        CHECK_OR_FAIL(finalized_embedded.row_begin == 0u && finalized_embedded.row_end == 1u,
-                      "finalized embedded metadata row bounds mismatch");
-
-        wb::dataset_attribute_table finalized_attrs = wb::load_dataset_attribute_table(finalized_dataset_path);
-        CHECK_OR_FAIL(finalized_attrs.available, "finalized dataset attributes unavailable");
-        bool saw_processed_attr = false;
-        for (const wb::dataset_attribute_entry &entry : finalized_attrs.entries) {
-            if (entry.key == "preprocess.processed_matrix_available" && entry.value == "1") {
-                saw_processed_attr = true;
-                break;
-            }
-        }
-        CHECK_OR_FAIL(saw_processed_attr, "finalized dataset missing processed_matrix_available attr");
-
-        wb::persisted_preprocess_table finalized_table = wb::load_persisted_preprocess_table(finalized_dataset_path);
-        CHECK_OR_FAIL(finalized_table.available && finalized_table.summary.processed_matrix_available,
-                      "finalized preprocess table unavailable");
-        CHECK_OR_FAIL(finalized_table.cell_keep.size() == 1u && finalized_table.cell_keep[0] == 1u,
-                      "finalized preprocess table cell_keep mismatch");
-        CHECK_OR_FAIL(finalized_table.gene_keep.size() == 1u && finalized_table.gene_keep[0] == 1u,
-                      "finalized preprocess table gene_keep mismatch");
-
-        cellshard::sharded<cellshard::sparse::blocked_ell> finalized_matrix;
-        cellshard::shard_storage finalized_storage;
-        cellshard::bucketed_blocked_ell_partition finalized_exec_part;
-        cellshard::init(&finalized_matrix);
-        cellshard::init(&finalized_storage);
-        cellshard::init(&finalized_exec_part);
-        CHECK_OR_FAIL(cellshard::load_dataset_blocked_ell_h5_header(finalized_dataset_path.c_str(), &finalized_matrix, &finalized_storage)
-                          && cellshard::bind_dataset_h5_cache(&finalized_storage, finalized_cache_root.c_str())
-                          && cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&finalized_exec_part, &finalized_matrix, &finalized_storage, 0u),
-                      "finalized blocked-ell execution partition fetch failed");
-        CHECK_OR_FAIL(finalized_exec_part.rows == 1u && finalized_exec_part.cols == 1u,
-                      "finalized execution partition shape mismatch");
-        CHECK_OR_FAIL(finalized_exec_part.exec_to_canonical_cols != nullptr
-                          && finalized_exec_part.exec_to_canonical_cols[0] == 0u
-                          && finalized_exec_part.canonical_to_exec_cols != nullptr
-                          && finalized_exec_part.canonical_to_exec_cols[0] == 0u,
-                      "finalized execution partition column maps mismatch");
-        cellshard::clear(&finalized_exec_part);
-        cellshard::clear(&finalized_storage);
-        cellshard::clear(&finalized_matrix);
-
-        if (device_count >= 4) {
-            wb::dataset_summary finalized_browse_summary = wb::summarize_dataset_csh5(finalized_dataset_path);
-            CHECK_OR_FAIL(finalized_browse_summary.ok && finalized_browse_summary.browse.available,
-                          "finalized browse summary unavailable");
-            CHECK_OR_FAIL(finalized_browse_summary.browse.selected_feature_indices.size() == 1u
-                              && finalized_browse_summary.browse.selected_feature_indices[0] == 0u,
-                          "finalized browse selected features mismatch");
-        }
+        // Blocked in-place finalize coverage was tied to the legacy canonical blocked write path.
+        // The active contract under test here is sliced-first finalize plus execution-form blocked runtime.
     }
 
     if (device_count >= 4) {
@@ -1037,13 +1107,16 @@ int main() {
     std::remove(metadata_path.c_str());
     std::remove(dataset_path.c_str());
     std::remove(converted_dataset_path.c_str());
+    std::remove(converted_filtered_output_path.c_str());
     std::remove(finalized_dataset_path.c_str());
+    std::remove(derived_dataset_path.c_str());
     std::remove(h5ad_path.c_str());
     std::remove(h5ad_manifest_path.c_str());
     std::remove(h5ad_dataset_path.c_str());
     fs::remove_all(preprocess_cache_root);
     fs::remove_all(converted_cache_root);
     fs::remove_all(finalized_cache_root);
+    fs::remove_all(derived_cache_root);
     fs::remove_all(h5ad_cache_root);
     return 0;
 }

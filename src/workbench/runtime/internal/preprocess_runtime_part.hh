@@ -1,5 +1,138 @@
 #pragma once
 
+struct preprocess_device_dataset_outputs {
+    int device = -1;
+    void *cell_block = nullptr;
+    std::size_t rows_capacity = 0u;
+    float *cell_total_counts = nullptr;
+    float *cell_mito_counts = nullptr;
+    float *cell_max_counts = nullptr;
+    unsigned int *cell_detected_genes = nullptr;
+    unsigned char *cell_keep = nullptr;
+    std::uint32_t *exec_to_canonical_rows = nullptr;
+    std::size_t row_map_capacity = 0u;
+};
+
+inline void init(preprocess_device_dataset_outputs *out) {
+    if (out == nullptr) return;
+    out->device = -1;
+    out->cell_block = nullptr;
+    out->rows_capacity = 0u;
+    out->cell_total_counts = nullptr;
+    out->cell_mito_counts = nullptr;
+    out->cell_max_counts = nullptr;
+    out->cell_detected_genes = nullptr;
+    out->cell_keep = nullptr;
+    out->exec_to_canonical_rows = nullptr;
+    out->row_map_capacity = 0u;
+}
+
+inline void clear(preprocess_device_dataset_outputs *out) {
+    if (out == nullptr) return;
+    if (out->device >= 0) cudaSetDevice(out->device);
+    if (out->exec_to_canonical_rows != nullptr) cudaFree(out->exec_to_canonical_rows);
+    if (out->cell_block != nullptr) cudaFree(out->cell_block);
+    init(out);
+}
+
+inline bool reserve(preprocess_device_dataset_outputs *out,
+                    int device,
+                    std::size_t rows,
+                    std::size_t row_map_rows,
+                    std::vector<issue> *issues,
+                    const std::string &scope) {
+    if (out == nullptr) return false;
+    if (!check_cuda(cudaSetDevice(device), issues, scope, "cudaSetDevice preprocess dataset outputs")) return false;
+    out->device = device;
+    if (rows > out->rows_capacity) {
+        std::size_t bytes = 0u;
+        char *base = nullptr;
+        if (out->cell_block != nullptr) cudaFree(out->cell_block);
+        out->cell_block = nullptr;
+        out->cell_total_counts = nullptr;
+        out->cell_mito_counts = nullptr;
+        out->cell_max_counts = nullptr;
+        out->cell_detected_genes = nullptr;
+        out->cell_keep = nullptr;
+
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(unsigned int));
+        bytes += rows * sizeof(unsigned int);
+        bytes = cpre::align_up_bytes(bytes, alignof(unsigned char));
+        bytes += rows * sizeof(unsigned char);
+        if (!check_cuda(cudaMalloc(&out->cell_block, bytes), issues, scope, "cudaMalloc preprocess dataset cell block")) return false;
+        base = (char *) out->cell_block;
+        bytes = 0u;
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        out->cell_total_counts = (float *) (base + bytes);
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        out->cell_mito_counts = (float *) (base + bytes);
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(float));
+        out->cell_max_counts = (float *) (base + bytes);
+        bytes += rows * sizeof(float);
+        bytes = cpre::align_up_bytes(bytes, alignof(unsigned int));
+        out->cell_detected_genes = (unsigned int *) (base + bytes);
+        bytes += rows * sizeof(unsigned int);
+        bytes = cpre::align_up_bytes(bytes, alignof(unsigned char));
+        out->cell_keep = (unsigned char *) (base + bytes);
+        out->rows_capacity = rows;
+    }
+    if (row_map_rows > out->row_map_capacity) {
+        if (out->exec_to_canonical_rows != nullptr) cudaFree(out->exec_to_canonical_rows);
+        out->exec_to_canonical_rows = nullptr;
+        if (!check_cuda(cudaMalloc((void **) &out->exec_to_canonical_rows,
+                                   row_map_rows * sizeof(std::uint32_t)),
+                        issues,
+                        scope,
+                        "cudaMalloc preprocess exec_to_canonical rows")) {
+            return false;
+        }
+        out->row_map_capacity = row_map_rows;
+    }
+    return true;
+}
+
+__global__ static void scatter_sliced_cell_metrics_to_dataset_kernel(
+    unsigned int rows,
+    unsigned long long partition_row_offset,
+    unsigned int exec_row_base,
+    const std::uint32_t * __restrict__ exec_to_canonical_rows,
+    const float * __restrict__ src_total_counts,
+    const float * __restrict__ src_mito_counts,
+    const float * __restrict__ src_max_counts,
+    const unsigned int * __restrict__ src_detected_genes,
+    const unsigned char * __restrict__ src_keep_cells,
+    float * __restrict__ dst_total_counts,
+    float * __restrict__ dst_mito_counts,
+    float * __restrict__ dst_max_counts,
+    unsigned int * __restrict__ dst_detected_genes,
+    unsigned char * __restrict__ dst_keep_cells
+) {
+    const unsigned int tid = (unsigned int) (blockIdx.x * blockDim.x + threadIdx.x);
+    const unsigned int stride = (unsigned int) (gridDim.x * blockDim.x);
+    unsigned int row = tid;
+
+    while (row < rows) {
+        const unsigned int exec_row = exec_row_base + row;
+        const std::size_t dst_row =
+            (std::size_t) partition_row_offset
+            + (std::size_t) (exec_to_canonical_rows != nullptr ? exec_to_canonical_rows[exec_row] : exec_row);
+        dst_total_counts[dst_row] = src_total_counts[row];
+        dst_mito_counts[dst_row] = src_mito_counts[row];
+        dst_max_counts[dst_row] = src_max_counts[row];
+        dst_detected_genes[dst_row] = src_detected_genes[row];
+        dst_keep_cells[dst_row] = src_keep_cells[row];
+        row += stride;
+    }
+}
+
 inline void fill_preprocess_summary_from_analysis(preprocess_summary *summary,
                                                   const preprocess_analysis_table &analysis) {
     if (summary == nullptr) return;
@@ -271,6 +404,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
     cs::shard_storage storage;
     cellshard::bucketed_sliced_ell_partition exec_part;
     cs::dataset_sliced_bucketed_device_partition_view staged_part;
+    preprocess_device_dataset_outputs device_outputs;
     csv::partition_record<cs::sparse::sliced_ell> device_part;
     cpre::device_workspace workspace;
     host_buffer<unsigned char> gene_flags;
@@ -301,6 +435,7 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
     cs::init(&storage);
     cellshard::init(&exec_part);
     cs::init(&staged_part);
+    init(&device_outputs);
     csv::zero_record(&device_part);
     cpre::init(&workspace);
 
@@ -333,6 +468,14 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
         push_issue(&analysis.issues, issue_severity::error, "preprocess", "failed to set up preprocess workspace");
         goto done;
     }
+    if (!reserve(&device_outputs,
+                 config.device,
+                 (std::size_t) matrix.rows,
+                 (std::size_t) max_partition_rows(matrix),
+                 &analysis.issues,
+                 "preprocess")) {
+        goto done;
+    }
 
     host_cell_total_counts.assign_fill((std::size_t) matrix.rows, 0.0f);
     host_cell_mito_counts.assign_fill((std::size_t) matrix.rows, 0.0f);
@@ -343,18 +486,15 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
     host_gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
     host_gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
     gene_flags = build_gene_flags(dataset, config);
+    if (!cpre::upload_gene_flags(&workspace, (unsigned int) matrix.cols, gene_flags.empty() ? nullptr : gene_flags.data())
+        || !cpre::zero_gene_metrics(&workspace, (unsigned int) matrix.cols)) {
+        push_issue(&analysis.issues, issue_severity::error, "preprocess", "failed to initialize sliced preprocess workspace state");
+        goto done;
+    }
 
     for (unsigned long part_id = 0; part_id < matrix.num_partitions; ++part_id) {
         const cellshard::bucketed_sliced_ell_partition *active_exec_part = 0;
         const csv::partition_record<cs::sparse::sliced_ell> *active_device_segments = 0;
-        host_buffer<float> exec_gene_sum;
-        host_buffer<float> exec_gene_sq_sum;
-        host_buffer<float> exec_gene_detected;
-        if (!cpre::upload_gene_flags(&workspace, (unsigned int) matrix.cols, gene_flags.empty() ? nullptr : gene_flags.data())
-            || !cpre::zero_gene_metrics(&workspace, (unsigned int) matrix.cols)) {
-            push_issue(&analysis.issues, issue_severity::error, "preprocess", "failed to initialize sliced preprocess workspace state");
-            goto done;
-        }
         if (config.enable_sliced_device_cache) {
             if (!cs::acquire_dataset_sliced_ell_h5_bucketed_partition_device(&staged_part,
                                                                              &matrix,
@@ -375,14 +515,20 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
             push_issue(&analysis.issues, issue_severity::error, "preprocess", "missing sliced execution partition state");
             goto done;
         }
+        if (active_exec_part->rows != 0u
+            && !check_cuda(cudaMemcpyAsync(device_outputs.exec_to_canonical_rows,
+                                           active_exec_part->exec_to_canonical_rows,
+                                           (std::size_t) active_exec_part->rows * sizeof(std::uint32_t),
+                                           cudaMemcpyHostToDevice,
+                                           workspace.stream),
+                           &analysis.issues,
+                           "preprocess",
+                           "cudaMemcpyAsync sliced exec_to_canonical rows")) {
+            goto done;
+        }
         for (std::uint32_t segment = 0u; segment < active_exec_part->segment_count; ++segment) {
             csv::sliced_ell_view part_view;
             cpre::part_preprocess_result part_result;
-            host_buffer<float> seg_total_counts;
-            host_buffer<float> seg_mito_counts;
-            host_buffer<float> seg_max_counts;
-            host_buffer<unsigned int> seg_detected_genes;
-            host_buffer<unsigned char> seg_keep_cells;
             if (config.enable_sliced_device_cache) {
                 if (active_device_segments == nullptr) {
                     push_issue(&analysis.issues, issue_severity::error, "preprocess", "cached sliced execution partition is missing device segments");
@@ -405,76 +551,32 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
                 push_issue(&analysis.issues, issue_severity::error, "preprocess", "sliced preprocess kernel pass failed");
                 goto done;
             }
-            if (!check_cuda(cudaStreamSynchronize(workspace.stream), &analysis.issues, "preprocess", "cudaStreamSynchronize sliced part")) goto done;
             if (part_result.cell.rows != 0u) {
-                const std::size_t row_count = (std::size_t) part_result.cell.rows;
-                seg_total_counts.assign_fill(row_count, 0.0f);
-                seg_mito_counts.assign_fill(row_count, 0.0f);
-                seg_max_counts.assign_fill(row_count, 0.0f);
-                seg_detected_genes.assign_fill(row_count, 0u);
-                seg_keep_cells.assign_fill(row_count, static_cast<unsigned char>(0u));
-                if (!check_cuda(cudaMemcpy(seg_total_counts.data(),
-                                           part_result.cell.total_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &analysis.issues, "preprocess", "cudaMemcpy sliced cell total counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_mito_counts.data(),
-                                           part_result.cell.mito_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &analysis.issues, "preprocess", "cudaMemcpy sliced cell mito counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_max_counts.data(),
-                                           part_result.cell.max_counts,
-                                           row_count * sizeof(float),
-                                           cudaMemcpyDeviceToHost),
-                                &analysis.issues, "preprocess", "cudaMemcpy sliced cell max counts")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_detected_genes.data(),
-                                           part_result.cell.detected_genes,
-                                           row_count * sizeof(unsigned int),
-                                           cudaMemcpyDeviceToHost),
-                                &analysis.issues, "preprocess", "cudaMemcpy sliced cell detected genes")) goto done;
-                if (!check_cuda(cudaMemcpy(seg_keep_cells.data(),
-                                           part_result.cell.keep_cells,
-                                           row_count * sizeof(unsigned char),
-                                           cudaMemcpyDeviceToHost),
-                                &analysis.issues, "preprocess", "cudaMemcpy sliced cell keep mask")) goto done;
-                for (std::size_t local_row = 0; local_row < row_count; ++local_row) {
-                    const std::size_t exec_row = (std::size_t) active_exec_part->segment_row_offsets[segment] + local_row;
-                    const std::size_t canonical_row = (std::size_t) active_exec_part->exec_to_canonical_rows[exec_row];
-                    const std::size_t dst_row = (std::size_t) matrix.partition_offsets[part_id] + canonical_row;
-                    host_cell_total_counts[dst_row] = seg_total_counts[local_row];
-                    host_cell_mito_counts[dst_row] = seg_mito_counts[local_row];
-                    host_cell_max_counts[dst_row] = seg_max_counts[local_row];
-                    host_cell_detected_genes[dst_row] = seg_detected_genes[local_row];
-                    host_keep_cells[dst_row] = seg_keep_cells[local_row];
-                }
+                unsigned int blocks = (part_result.cell.rows + 255u) >> 8;
+                if (blocks < 1u) blocks = 1u;
+                if (blocks > 4096u) blocks = 4096u;
+                scatter_sliced_cell_metrics_to_dataset_kernel<<<blocks, 256, 0, workspace.stream>>>(
+                    part_result.cell.rows,
+                    (unsigned long long) matrix.partition_offsets[part_id],
+                    active_exec_part->segment_row_offsets[segment],
+                    device_outputs.exec_to_canonical_rows,
+                    part_result.cell.total_counts,
+                    part_result.cell.mito_counts,
+                    part_result.cell.max_counts,
+                    part_result.cell.detected_genes,
+                    part_result.cell.keep_cells,
+                    device_outputs.cell_total_counts,
+                    device_outputs.cell_mito_counts,
+                    device_outputs.cell_max_counts,
+                    device_outputs.cell_detected_genes,
+                    device_outputs.cell_keep);
+                if (!check_cuda(cudaGetLastError(),
+                                &analysis.issues,
+                                "preprocess",
+                                "scatter_sliced_cell_metrics_to_dataset_kernel")) goto done;
             }
             if (!config.enable_sliced_device_cache
                 && !check_cuda(csv::release(&device_part), &analysis.issues, "preprocess", "release sliced execution segment")) goto done;
-        }
-
-        exec_gene_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        exec_gene_sq_sum.assign_fill((std::size_t) matrix.cols, 0.0f);
-        exec_gene_detected.assign_fill((std::size_t) matrix.cols, 0.0f);
-        if (!check_cuda(cudaMemcpy(exec_gene_sum.data(),
-                                   workspace.d_gene_sum,
-                                   exec_gene_sum.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &analysis.issues, "preprocess", "cudaMemcpy sliced gene sum")) goto done;
-        if (!check_cuda(cudaMemcpy(exec_gene_sq_sum.data(),
-                                   workspace.d_gene_sq_sum,
-                                   exec_gene_sq_sum.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &analysis.issues, "preprocess", "cudaMemcpy sliced gene sq sum")) goto done;
-        if (!check_cuda(cudaMemcpy(exec_gene_detected.data(),
-                                   workspace.d_gene_detected,
-                                   exec_gene_detected.size() * sizeof(float),
-                                   cudaMemcpyDeviceToHost),
-                        &analysis.issues, "preprocess", "cudaMemcpy sliced gene detected")) goto done;
-        for (unsigned int gene = 0u; gene < (unsigned int) matrix.cols; ++gene) {
-            host_gene_sum[gene] += exec_gene_sum[gene];
-            host_gene_sq_sum[gene] += exec_gene_sq_sum[gene];
-            host_gene_detected[gene] += exec_gene_detected[gene];
         }
         ++analysis.partitions_processed;
         if (config.enable_sliced_device_cache) {
@@ -483,6 +585,56 @@ inline preprocess_analysis_table analyze_sliced_dataset_preprocess(const std::st
             cellshard::clear(&exec_part);
         }
     }
+
+    if (!check_cuda(cudaMemcpyAsync(host_cell_total_counts.data(),
+                                    device_outputs.cell_total_counts,
+                                    host_cell_total_counts.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final cell total counts")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_cell_mito_counts.data(),
+                                    device_outputs.cell_mito_counts,
+                                    host_cell_mito_counts.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final cell mito counts")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_cell_max_counts.data(),
+                                    device_outputs.cell_max_counts,
+                                    host_cell_max_counts.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final cell max counts")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_cell_detected_genes.data(),
+                                    device_outputs.cell_detected_genes,
+                                    host_cell_detected_genes.size() * sizeof(unsigned int),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final cell detected genes")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_keep_cells.data(),
+                                    device_outputs.cell_keep,
+                                    host_keep_cells.size() * sizeof(unsigned char),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final cell keep")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_gene_sum.data(),
+                                    workspace.d_gene_sum,
+                                    host_gene_sum.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final gene sum")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_gene_sq_sum.data(),
+                                    workspace.d_gene_sq_sum,
+                                    host_gene_sq_sum.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final gene sq sum")) goto done;
+    if (!check_cuda(cudaMemcpyAsync(host_gene_detected.data(),
+                                    workspace.d_gene_detected,
+                                    host_gene_detected.size() * sizeof(float),
+                                    cudaMemcpyDeviceToHost,
+                                    workspace.stream),
+                    &analysis.issues, "preprocess", "cudaMemcpyAsync sliced final gene detected")) goto done;
+    if (!check_cuda(cudaStreamSynchronize(workspace.stream), &analysis.issues, "preprocess", "cudaStreamSynchronize sliced final readback")) goto done;
 
     kept_cells = 0.0f;
     for (unsigned char keep : host_keep_cells) kept_cells += keep != 0u ? 1.0f : 0.0f;
@@ -510,6 +662,7 @@ done:
     if (device_part.view != nullptr) (void) csv::release(&device_part);
     (void) cs::release_dataset_sliced_ell_h5_bucketed_partition_device(&staged_part);
     cellshard::clear(&exec_part);
+    clear(&device_outputs);
     cpre::clear(&workspace);
     cs::clear(&storage);
     cs::clear(&matrix);
@@ -999,11 +1152,12 @@ preprocess_analysis_table analyze_dataset_preprocess(const std::string &path, co
     return analyze_blocked_dataset_preprocess(path, config, dataset);
 }
 
-preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
-                                                       const preprocess_analysis_table &analysis,
-                                                       const preprocess_config &config) {
+preprocess_persist_summary persist_preprocess_analysis_to_output(const std::string &source_path,
+                                                                 const std::string &output_path,
+                                                                 const preprocess_analysis_table &analysis,
+                                                                 const preprocess_config &config) {
     preprocess_persist_summary result;
-    dataset_summary dataset = summarize_dataset_csh5(path);
+    dataset_summary dataset = summarize_dataset_csh5(source_path);
     cs::dataset_preprocess_view preprocess = {};
     std::vector<std::pair<std::string, std::string>> dataset_attributes;
     host_buffer<float> host_cell_total_counts;
@@ -1016,6 +1170,7 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
     host_buffer<float> host_gene_detected;
     host_buffer<unsigned char> host_keep_genes;
     host_buffer<unsigned char> gene_flags;
+    const bool same_path = source_path == output_path;
     unsigned int mito_feature_count = 0u;
 
     fill_preprocess_summary_from_analysis(&result.summary, analysis);
@@ -1035,6 +1190,14 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
                    issue_severity::error,
                    "preprocess",
                    "dataset.csh5 already contains persisted preprocess metadata; start from a raw dataset file instead");
+        result.summary.ok = false;
+        return result;
+    }
+    if (!same_path && !config.finalize_after_preprocess) {
+        push_issue(&result.summary.issues,
+                   issue_severity::error,
+                   "preprocess",
+                   "persisting to a separate output path requires finalize_after_preprocess");
         result.summary.ok = false;
         return result;
     }
@@ -1092,24 +1255,6 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
 
     {
         const auto persist_begin = std::chrono::steady_clock::now();
-        if (!rewrite_observation_annotations_with_preprocess(path,
-                                                             host_cell_total_counts,
-                                                             host_cell_mito_counts,
-                                                             host_cell_max_counts,
-                                                             host_cell_detected_genes,
-                                                             host_keep_cells,
-                                                             &result.summary.issues)
-            || !rewrite_feature_metadata_with_preprocess(path,
-                                                         host_gene_sum,
-                                                         host_gene_sq_sum,
-                                                         host_gene_detected,
-                                                         host_keep_genes,
-                                                         gene_flags,
-                                                         &result.summary.issues)) {
-            result.summary.ok = false;
-            return result;
-        }
-
         dataset_attributes.push_back({"preprocess.assay", "scrna"});
         dataset_attributes.push_back({"preprocess.matrix_orientation", "observations_by_features"});
         dataset_attributes.push_back({"preprocess.matrix_state", "raw_counts"});
@@ -1133,32 +1278,43 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
         dataset_attributes.push_back({"preprocess.kept_cells", std::to_string(analysis.kept_cells)});
         dataset_attributes.push_back({"preprocess.kept_genes", std::to_string(analysis.kept_genes)});
         dataset_attributes.push_back({"preprocess.gene_sum_checksum", std::to_string(analysis.gene_sum_checksum)});
-        {
-            const std::vector<std::pair<std::string, std::string>> merged_attrs =
-                merge_dataset_attribute_entries(path, dataset_attributes, &result.summary.issues);
-            if (!write_dataset_attribute_strings(path, merged_attrs, &result.summary.issues)) {
+        if (same_path || !config.finalize_after_preprocess) {
+            if (!rewrite_observation_annotations_with_preprocess(source_path,
+                                                                 host_cell_total_counts,
+                                                                 host_cell_mito_counts,
+                                                                 host_cell_max_counts,
+                                                                 host_cell_detected_genes,
+                                                                 host_keep_cells,
+                                                                 &result.summary.issues)
+                || !rewrite_feature_metadata_with_preprocess(source_path,
+                                                             host_gene_sum,
+                                                             host_gene_sq_sum,
+                                                             host_gene_detected,
+                                                             host_keep_genes,
+                                                             gene_flags,
+                                                             &result.summary.issues)) {
                 result.summary.ok = false;
                 return result;
             }
-        }
-        if (!cs::append_dataset_preprocess_h5(path.c_str(), &preprocess)) {
-            push_issue(&result.summary.issues, issue_severity::error, "preprocess", "failed to append persisted preprocess metadata");
-            result.summary.ok = false;
-            return result;
+
+            {
+                const std::vector<std::pair<std::string, std::string>> merged_attrs =
+                    merge_dataset_attribute_entries(source_path, dataset_attributes, &result.summary.issues);
+                if (!write_dataset_attribute_strings(source_path, merged_attrs, &result.summary.issues)) {
+                    result.summary.ok = false;
+                    return result;
+                }
+            }
+            if (!cs::append_dataset_preprocess_h5(source_path.c_str(), &preprocess)) {
+                push_issue(&result.summary.issues, issue_severity::error, "preprocess", "failed to append persisted preprocess metadata");
+                result.summary.ok = false;
+                return result;
+            }
         }
 
         if (config.finalize_after_preprocess) {
-            if (dataset.matrix_format.find("blocked") == std::string::npos) {
-                push_issue(&result.summary.issues,
-                           issue_severity::error,
-                           "preprocess",
-                           "finalize_after_preprocess currently requires a blocked-ELL dataset");
-                result.summary.ok = false;
-                return result;
-            }
-
-            observation_metadata_table current_obs = load_observation_metadata_table(path);
-            feature_metadata_table current_feature = load_feature_metadata_table(path);
+            observation_metadata_table current_obs = load_observation_metadata_table(source_path);
+            feature_metadata_table current_feature = load_feature_metadata_table(source_path);
             owned_annotation_bundle filtered_obs_bundle;
             owned_annotation_bundle filtered_feature_bundle;
             owned_embedded_metadata_bundle filtered_embedded_bundle;
@@ -1174,7 +1330,17 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
             std::uint64_t final_nnz = analysis.nnz;
 
             if (current_obs.available) {
-                if (!filter_observation_metadata_table(current_obs, host_keep_cells, &filtered_obs_bundle, &result.summary.issues)) {
+                const bool obs_ok = same_path
+                    ? filter_observation_metadata_table(current_obs, host_keep_cells, &filtered_obs_bundle, &result.summary.issues)
+                    : build_filtered_observation_metadata_bundle_with_preprocess(current_obs,
+                                                                                host_cell_total_counts,
+                                                                                host_cell_mito_counts,
+                                                                                host_cell_max_counts,
+                                                                                host_cell_detected_genes,
+                                                                                host_keep_cells,
+                                                                                &filtered_obs_bundle,
+                                                                                &result.summary.issues);
+                if (!obs_ok) {
                     result.summary.ok = false;
                     return result;
                 }
@@ -1182,7 +1348,17 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
                 push_issue(&result.summary.issues, issue_severity::warning, "preprocess", current_obs.error);
             }
             if (current_feature.available) {
-                if (!filter_feature_metadata_table(current_feature, host_keep_genes, &filtered_feature_bundle, &result.summary.issues)) {
+                const bool feature_ok = same_path
+                    ? filter_feature_metadata_table(current_feature, host_keep_genes, &filtered_feature_bundle, &result.summary.issues)
+                    : build_filtered_feature_metadata_bundle_with_preprocess(current_feature,
+                                                                            host_gene_sum,
+                                                                            host_gene_sq_sum,
+                                                                            host_gene_detected,
+                                                                            host_keep_genes,
+                                                                            gene_flags,
+                                                                            &filtered_feature_bundle,
+                                                                            &result.summary.issues);
+                if (!feature_ok) {
                     result.summary.ok = false;
                     return result;
                 }
@@ -1190,13 +1366,13 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
                 push_issue(&result.summary.issues, issue_severity::warning, "preprocess", current_feature.error);
             }
             if (!dataset.embedded_metadata.empty()
-                && !filter_embedded_metadata_tables(path, dataset, host_keep_cells, &filtered_embedded_bundle, &result.summary.issues)) {
+                && !filter_embedded_metadata_tables(source_path, dataset, host_keep_cells, &filtered_embedded_bundle, &result.summary.issues)) {
                 result.summary.ok = false;
                 return result;
             }
 
             final_attr_updates.push_back({"preprocess.processed_matrix_available", "1"});
-            final_attr_entries = merge_dataset_attribute_entries(path, final_attr_updates, &result.summary.issues);
+            final_attr_entries = merge_dataset_attribute_entries(source_path, final_attr_updates, &result.summary.issues);
             if (!build_user_attribute_bundle(final_attr_entries, &final_attr_bundle, &result.summary.issues)) {
                 result.summary.ok = false;
                 return result;
@@ -1210,19 +1386,20 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
             filtered_feature_view.annotations = filtered_feature_bundle.views.empty() ? nullptr : filtered_feature_bundle.views.data();
             final_attr_view = final_attr_bundle.view((std::uint32_t) final_attr_entries.size());
 
-            if (!cs::finalize_preprocessed_blocked_ell_dataset_h5(path.c_str(),
-                                                                  host_keep_cells.empty() ? nullptr : host_keep_cells.data(),
-                                                                  host_keep_genes.empty() ? nullptr : host_keep_genes.data(),
-                                                                  filtered_embedded_bundle.table_views.empty() ? nullptr : &filtered_embedded_view,
-                                                                  filtered_obs_bundle.views.empty() ? nullptr : &filtered_obs_view,
-                                                                  filtered_feature_bundle.views.empty() ? nullptr : &filtered_feature_view,
-                                                                  &final_attr_view,
-                                                                  &preprocess,
-                                                                  config.working_root.empty() ? nullptr : config.working_root.c_str(),
-                                                                  &final_rows,
-                                                                  &final_cols,
-                                                                  &final_nnz)) {
-                push_issue(&result.summary.issues, issue_severity::error, "preprocess", "failed to finalize compacted blocked-ELL dataset");
+            if (!cs::finalize_preprocessed_dataset_h5_to_output(source_path.c_str(),
+                                                                output_path.c_str(),
+                                                                host_keep_cells.empty() ? nullptr : host_keep_cells.data(),
+                                                                host_keep_genes.empty() ? nullptr : host_keep_genes.data(),
+                                                                filtered_embedded_bundle.table_views.empty() ? nullptr : &filtered_embedded_view,
+                                                                filtered_obs_bundle.views.empty() ? nullptr : &filtered_obs_view,
+                                                                filtered_feature_bundle.views.empty() ? nullptr : &filtered_feature_view,
+                                                                &final_attr_view,
+                                                                &preprocess,
+                                                                config.working_root.empty() ? nullptr : config.working_root.c_str(),
+                                                                &final_rows,
+                                                                &final_cols,
+                                                                &final_nnz)) {
+                push_issue(&result.summary.issues, issue_severity::error, "preprocess", "failed to finalize compacted dataset");
                 result.summary.ok = false;
                 return result;
             }
@@ -1236,14 +1413,14 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
 
     if (config.finalize_after_preprocess) {
         const auto browse_begin = std::chrono::steady_clock::now();
-        dataset_summary finalized_dataset = summarize_dataset_csh5(path);
+        dataset_summary finalized_dataset = summarize_dataset_csh5(output_path);
         if (!finalized_dataset.ok) {
             result.summary.issues.insert(result.summary.issues.end(), finalized_dataset.issues.begin(), finalized_dataset.issues.end());
             push_issue(&result.summary.issues, issue_severity::error, "preprocess", "failed to summarize finalized dataset");
             result.summary.ok = false;
             return result;
         }
-        if (!build_browse_cache_after_preprocess(path, finalized_dataset, config, &result.summary.issues)) {
+        if (!build_browse_cache_after_preprocess(output_path, finalized_dataset, config, &result.summary.issues)) {
             result.summary.ok = false;
             return result;
         }
@@ -1253,6 +1430,12 @@ preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
 
     result.summary.ok = true;
     return result;
+}
+
+preprocess_persist_summary persist_preprocess_analysis(const std::string &path,
+                                                       const preprocess_analysis_table &analysis,
+                                                       const preprocess_config &config) {
+    return persist_preprocess_analysis_to_output(path, path, analysis, config);
 }
 
 preprocess_summary run_preprocess_pass(const std::string &path, const preprocess_config &config) {

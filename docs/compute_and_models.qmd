@@ -8,6 +8,15 @@ title: "Compute And Models"
 
 The rule is simple: reusable runtime logic stays here instead of being hidden inside model wrappers or one-off workbench code.
 
+The forward-neighbor surface under `src/compute/neighbors/forward_neighbors/` now has an explicit backend split:
+
+- routed exact top-`k` search now lives in the reusable `src/compute/neighbors/exact_search/` layer, so dense and sliced exact search stream routed segments on device and emit only compact candidate tables instead of updating per-interval score state in HBM
+- dense exact and dense ANN remain available as the validation and cross-check path
+- Blocked-ELL sparse exact is the optimized V100 owner path and is routed through Tensor Core-capable Blocked-ELL `SpMM`
+- Blocked-ELL sparse ANN now uses Tensor Core-capable Blocked-ELL list probes and a sparse refine stage instead of aliasing to dense exact
+- sliced-ELL sparse exact and ANN are native secondary sparse paths with custom kernels rather than dense fallback aliases
+- sparse blocked affinity no longer pretends to be a cosine distance: sparse results carry affinity plus metadata, while dense cosine continues to populate distance fields for validation work
+
 ## Downstream Layers
 
 ### Trajectory
@@ -16,7 +25,11 @@ The rule is simple: reusable runtime logic stays here instead of being hidden in
 
 ### Models
 
-`src/models/` contains header-first libtorch workflows. Current modules follow the `dataloader` / `model` / `train` / `infer` split with one umbrella header per workflow.
+`src/models/` now mixes older libtorch prototypes with native CUDA workflows. The developmental-time surfaces are no longer Torch-managed:
+
+- `src/models/developmental_time/` is the native sparse scalar-time model. Blocked-ELL is the optimized owner path and routes the sparse projection stem through Tensor Core-capable Blocked-ELL `SpMM`; sliced-ELL is the native secondary path.
+- `src/models/developmental_time_trajectory/` is the native trajectory-aware scalar-time model. It consumes the same sparse batch views plus an external graph and adds one graph aggregation stage along with graph smoothness and directed-order losses.
+- older libtorch modules such as `dense_reduce/` still exist where the rewrite has not happened yet, but `src/torch/` is no longer in the developmental-time hot path.
 
 ### Quantized Runtime
 

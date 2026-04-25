@@ -1,5 +1,30 @@
 # Custom Torch Ops Registry
 
+## `state_reduce_native_runtime`
+
+- Purpose: replace the old Torch-bound dense reducer with a native CUDA cell-identity reducer that trains on Blocked-ELL or sliced-ELL batches without libtorch or Torch custom ops.
+- Owner: `src/models/state_reduce/`
+- Boundary:
+  public model surface in [`src/models/state_reduce/stateReduce.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/state_reduce/stateReduce.hh:1)
+  native CUDA runtime in [`src/models/state_reduce/state_reduce_cuda.cu`](/home/tumlinson/Software/Repos/Cellerator/src/models/state_reduce/state_reduce_cuda.cu:1)
+- Inputs:
+  native Blocked-ELL or sliced-ELL batch descriptors
+  optional forward-neighbor graph edges and weights
+  explicit model, loss, optimizer, and distributed configs
+- Outputs:
+  CUDA-resident embeddings
+  scalar reconstruction and graph-consistency losses
+  updated native parameter buffers after training steps
+- Backend: native CUDA runtime with a WMMA-capable path plus a cuSPARSE-heavy encoder path
+- Backward:
+  handwritten CUDA gradients for reconstruction, graph smoothing, encoder projection, decoder factors, and AdamW updates
+  no Torch autograd boundary
+- Assumptions:
+  Volta `sm_70`
+  Blocked-ELL and sliced-ELL are the steady-state sparse layouts
+  current runtime slice is single-GPU only even though the interface is NCCL-shaped for later scale-out
+- Status: implemented as the replacement path; no Torch op required
+
 ## `dense_reduce_pair_losses`
 
 - Purpose: fuse `dense_reduce` pairwise local-smoothness and far-separation loss evaluation for CUDA training.
@@ -20,7 +45,7 @@
 - Assumptions:
   `latent_unit` is row-major `[batch, latent_dim]`
   Volta `sm_70`
-- Status: implemented
+- Status: legacy Torch-only prototype op; superseded for new identity reduction by `state_reduce_native_runtime`
 
 ## `developmental_stage_bucket_losses`
 

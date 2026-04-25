@@ -106,6 +106,8 @@ inline void append_issues(std::vector<issue> *dst, const std::vector<issue> &src
 
 inline bool append_execution_layout_metadata(const ingest_plan &plan,
                                              std::vector<issue> *issues) {
+    const dataset_summary written = summarize_dataset_csh5(plan.policy.output_path);
+    const bool sliced_dataset = written.ok && written.matrix_format.find("sliced") != std::string::npos;
     host_buffer<std::uint32_t> part_formats;
     host_buffer<std::uint32_t> part_block_sizes;
     host_buffer<std::uint32_t> part_bucket_counts;
@@ -113,6 +115,10 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
     host_buffer<std::uint64_t> part_execution_bytes;
     host_buffer<std::uint64_t> part_blocked_ell_bytes;
     host_buffer<std::uint64_t> part_bucketed_blocked_ell_bytes;
+    host_buffer<std::uint32_t> part_slice_counts;
+    host_buffer<std::uint32_t> part_slice_rows;
+    host_buffer<std::uint64_t> part_sliced_bytes;
+    host_buffer<std::uint64_t> part_bucketed_sliced_bytes;
     host_buffer<std::uint32_t> shard_formats;
     host_buffer<std::uint32_t> shard_block_sizes;
     host_buffer<std::uint32_t> shard_bucketed_partition_counts;
@@ -120,10 +126,20 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
     host_buffer<float> shard_fill_ratios;
     host_buffer<std::uint64_t> shard_execution_bytes;
     host_buffer<std::uint64_t> shard_bucketed_blocked_ell_bytes;
+    host_buffer<std::uint32_t> shard_slice_counts;
+    host_buffer<std::uint32_t> shard_slice_rows;
+    host_buffer<std::uint64_t> shard_bucketed_sliced_bytes;
     host_buffer<std::uint32_t> shard_pair_ids;
     cellshard::dataset_execution_view execution = {};
     const std::uint32_t persisted_execution_format = cellshard::dataset_execution_format_bucketed_blocked_ell;
+    const std::uint32_t persisted_sliced_execution_format = cellshard::dataset_execution_format_bucketed_sliced_ell;
     std::uint32_t preferred_base_format = cellshard::dataset_execution_format_unknown;
+
+    if (!written.ok) {
+        push_issue(issues, issue_severity::error, "execution", "failed to summarize written dataset before execution metadata append");
+        append_issues(issues, written.issues);
+        return false;
+    }
 
     part_formats.reserve(plan.parts.size());
     part_block_sizes.reserve(plan.parts.size());
@@ -132,41 +148,84 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
     part_execution_bytes.reserve(plan.parts.size());
     part_blocked_ell_bytes.reserve(plan.parts.size());
     part_bucketed_blocked_ell_bytes.reserve(plan.parts.size());
-    for (const planned_part &part : plan.parts) {
-        part_formats.push_back(persisted_execution_format);
-        part_block_sizes.push_back(part.blocked_ell_block_size);
-        part_bucket_counts.push_back(std::max<std::uint32_t>(1u, part.blocked_ell_bucket_count));
-        part_fill_ratios.push_back((float) part.blocked_ell_fill_ratio);
-        part_execution_bytes.push_back((std::uint64_t) (part.bucketed_blocked_ell_bytes != 0
-            ? part.bucketed_blocked_ell_bytes
-            : part.execution_bytes));
-        part_blocked_ell_bytes.push_back((std::uint64_t) part.blocked_ell_bytes);
-        part_bucketed_blocked_ell_bytes.push_back((std::uint64_t) (part.bucketed_blocked_ell_bytes != 0
-            ? part.bucketed_blocked_ell_bytes
-            : part.execution_bytes));
+    part_slice_counts.reserve(written.partitions.size());
+    part_slice_rows.reserve(written.partitions.size());
+    part_sliced_bytes.reserve(written.partitions.size());
+    part_bucketed_sliced_bytes.reserve(written.partitions.size());
+    for (std::size_t i = 0; i < written.partitions.size(); ++i) {
+        const dataset_partition_summary &part = written.partitions[i];
+        const planned_part *planned = i < plan.parts.size() ? &plan.parts[i] : nullptr;
+        const std::uint64_t sliced_bytes = part.sliced_ell_bytes;
+        const std::uint64_t bucketed_sliced_bytes = part.bucketed_sliced_ell_bytes != 0u ? part.bucketed_sliced_ell_bytes : sliced_bytes;
+        part_formats.push_back(sliced_dataset ? persisted_sliced_execution_format : persisted_execution_format);
+        part_block_sizes.push_back(sliced_dataset ? 0u : (planned != nullptr ? planned->blocked_ell_block_size : 0u));
+        part_bucket_counts.push_back(sliced_dataset ? 0u : std::max<std::uint32_t>(1u, planned != nullptr ? planned->blocked_ell_bucket_count : 0u));
+        part_fill_ratios.push_back(sliced_dataset ? 0.0f : (float) (planned != nullptr ? planned->blocked_ell_fill_ratio : 0.0));
+        part_execution_bytes.push_back(sliced_dataset
+                                           ? bucketed_sliced_bytes
+                                           : (std::uint64_t) ((planned != nullptr && planned->bucketed_blocked_ell_bytes != 0)
+                                                  ? planned->bucketed_blocked_ell_bytes
+                                                  : (planned != nullptr ? planned->execution_bytes : 0u)));
+        part_blocked_ell_bytes.push_back(sliced_dataset ? 0u : (std::uint64_t) (planned != nullptr ? planned->blocked_ell_bytes : 0u));
+        part_bucketed_blocked_ell_bytes.push_back(sliced_dataset
+                                                      ? 0u
+                                                      : (std::uint64_t) ((planned != nullptr && planned->bucketed_blocked_ell_bytes != 0)
+                                                             ? planned->bucketed_blocked_ell_bytes
+                                                             : (planned != nullptr ? planned->execution_bytes : 0u)));
+        part_slice_counts.push_back(part.sliced_ell_slice_count);
+        part_slice_rows.push_back(part.sliced_ell_slice_rows);
+        part_sliced_bytes.push_back(sliced_bytes);
+        part_bucketed_sliced_bytes.push_back(bucketed_sliced_bytes);
     }
 
-    shard_formats.reserve(plan.shards.size());
-    shard_block_sizes.reserve(plan.shards.size());
-    shard_bucketed_partition_counts.reserve(plan.shards.size());
-    shard_bucketed_segment_counts.reserve(plan.shards.size());
-    shard_fill_ratios.reserve(plan.shards.size());
-    shard_execution_bytes.reserve(plan.shards.size());
-    shard_bucketed_blocked_ell_bytes.reserve(plan.shards.size());
-    shard_pair_ids.reserve(plan.shards.size());
-    for (const planned_shard &shard : plan.shards) {
-        const std::uint32_t encoded = persisted_execution_format;
+    shard_formats.reserve(written.shards.size());
+    shard_block_sizes.reserve(written.shards.size());
+    shard_bucketed_partition_counts.reserve(written.shards.size());
+    shard_bucketed_segment_counts.reserve(written.shards.size());
+    shard_fill_ratios.reserve(written.shards.size());
+    shard_execution_bytes.reserve(written.shards.size());
+    shard_bucketed_blocked_ell_bytes.reserve(written.shards.size());
+    shard_slice_counts.reserve(written.shards.size());
+    shard_slice_rows.reserve(written.shards.size());
+    shard_bucketed_sliced_bytes.reserve(written.shards.size());
+    shard_pair_ids.reserve(written.shards.size());
+    for (std::size_t shard_index = 0; shard_index < written.shards.size(); ++shard_index) {
+        const dataset_shard_summary &shard = written.shards[shard_index];
+        const planned_shard *planned = shard_index < plan.shards.size() ? &plan.shards[shard_index] : nullptr;
+        const std::uint32_t encoded = sliced_dataset ? persisted_sliced_execution_format : persisted_execution_format;
+        std::uint64_t shard_exec_bytes = 0u;
+        std::uint64_t shard_bucketed_blocked_bytes = 0u;
+        std::uint64_t shard_bucketed_sliced_total_bytes = 0u;
+        std::uint32_t shard_slice_count = 0u;
+        std::uint32_t shard_segment_count = 0u;
+        std::uint32_t uniform_rows = 0u;
+        bool same_uniform_rows = true;
+
+        for (std::uint64_t partition_id = shard.partition_begin;
+             partition_id < shard.partition_end && partition_id < part_execution_bytes.size();
+             ++partition_id) {
+            shard_exec_bytes += part_execution_bytes[(std::size_t) partition_id];
+            shard_bucketed_blocked_bytes += part_bucketed_blocked_ell_bytes[(std::size_t) partition_id];
+            shard_bucketed_sliced_total_bytes += part_bucketed_sliced_bytes[(std::size_t) partition_id];
+            shard_slice_count += part_slice_counts[(std::size_t) partition_id];
+            ++shard_segment_count;
+            if (partition_id == shard.partition_begin) {
+                uniform_rows = part_slice_rows[(std::size_t) partition_id];
+            } else if (uniform_rows != part_slice_rows[(std::size_t) partition_id]) {
+                same_uniform_rows = false;
+            }
+        }
+
         shard_formats.push_back(encoded);
-        shard_block_sizes.push_back(shard.blocked_ell_block_size);
-        shard_bucketed_partition_counts.push_back(std::max<std::uint32_t>(1u, shard.bucketed_partition_count));
-        shard_bucketed_segment_counts.push_back(std::max<std::uint32_t>(1u, shard.bucketed_segment_count));
-        shard_fill_ratios.push_back((float) shard.blocked_ell_fill_ratio);
-        shard_execution_bytes.push_back((std::uint64_t) (shard.bucketed_blocked_ell_bytes != 0
-            ? shard.bucketed_blocked_ell_bytes
-            : shard.execution_bytes));
-        shard_bucketed_blocked_ell_bytes.push_back((std::uint64_t) (shard.bucketed_blocked_ell_bytes != 0
-            ? shard.bucketed_blocked_ell_bytes
-            : shard.execution_bytes));
+        shard_block_sizes.push_back(sliced_dataset ? 0u : (planned != nullptr ? planned->blocked_ell_block_size : shard.blocked_ell_block_size));
+        shard_bucketed_partition_counts.push_back(std::max<std::uint32_t>(1u, (std::uint32_t) (shard.partition_end - shard.partition_begin)));
+        shard_bucketed_segment_counts.push_back(std::max<std::uint32_t>(1u, shard_segment_count));
+        shard_fill_ratios.push_back(sliced_dataset ? 0.0f : (float) (planned != nullptr ? planned->blocked_ell_fill_ratio : shard.blocked_ell_fill_ratio));
+        shard_execution_bytes.push_back(sliced_dataset ? shard_bucketed_sliced_total_bytes : shard_exec_bytes);
+        shard_bucketed_blocked_ell_bytes.push_back(sliced_dataset ? 0u : shard_bucketed_blocked_bytes);
+        shard_slice_counts.push_back(shard_slice_count);
+        shard_slice_rows.push_back(same_uniform_rows ? uniform_rows : 0u);
+        shard_bucketed_sliced_bytes.push_back(shard_bucketed_sliced_total_bytes);
         shard_pair_ids.push_back(shard.preferred_pair);
         if (preferred_base_format == cellshard::dataset_execution_format_unknown) {
             preferred_base_format = encoded;
@@ -175,7 +234,7 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
         }
     }
     if (preferred_base_format == cellshard::dataset_execution_format_unknown) {
-        preferred_base_format = cellshard::dataset_execution_format_blocked_ell;
+        preferred_base_format = sliced_dataset ? persisted_sliced_execution_format : cellshard::dataset_execution_format_blocked_ell;
     }
 
     execution.partition_count = (std::uint32_t) part_formats.size();
@@ -186,6 +245,10 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
     execution.partition_execution_bytes = part_execution_bytes.empty() ? nullptr : part_execution_bytes.data();
     execution.partition_blocked_ell_bytes = part_blocked_ell_bytes.empty() ? nullptr : part_blocked_ell_bytes.data();
     execution.partition_bucketed_blocked_ell_bytes = part_bucketed_blocked_ell_bytes.empty() ? nullptr : part_bucketed_blocked_ell_bytes.data();
+    execution.partition_sliced_ell_slice_counts = part_slice_counts.empty() ? nullptr : part_slice_counts.data();
+    execution.partition_sliced_ell_slice_rows = part_slice_rows.empty() ? nullptr : part_slice_rows.data();
+    execution.partition_sliced_ell_bytes = part_sliced_bytes.empty() ? nullptr : part_sliced_bytes.data();
+    execution.partition_bucketed_sliced_ell_bytes = part_bucketed_sliced_bytes.empty() ? nullptr : part_bucketed_sliced_bytes.data();
     execution.shard_count = (std::uint32_t) shard_formats.size();
     execution.shard_execution_formats = shard_formats.empty() ? nullptr : shard_formats.data();
     execution.shard_blocked_ell_block_sizes = shard_block_sizes.empty() ? nullptr : shard_block_sizes.data();
@@ -194,6 +257,9 @@ inline bool append_execution_layout_metadata(const ingest_plan &plan,
     execution.shard_blocked_ell_fill_ratios = shard_fill_ratios.empty() ? nullptr : shard_fill_ratios.data();
     execution.shard_execution_bytes = shard_execution_bytes.empty() ? nullptr : shard_execution_bytes.data();
     execution.shard_bucketed_blocked_ell_bytes = shard_bucketed_blocked_ell_bytes.empty() ? nullptr : shard_bucketed_blocked_ell_bytes.data();
+    execution.shard_sliced_ell_slice_counts = shard_slice_counts.empty() ? nullptr : shard_slice_counts.data();
+    execution.shard_sliced_ell_slice_rows = shard_slice_rows.empty() ? nullptr : shard_slice_rows.data();
+    execution.shard_bucketed_sliced_ell_bytes = shard_bucketed_sliced_bytes.empty() ? nullptr : shard_bucketed_sliced_bytes.data();
     execution.shard_preferred_pair_ids = shard_pair_ids.empty() ? nullptr : shard_pair_ids.data();
     execution.preferred_base_format = preferred_base_format;
 

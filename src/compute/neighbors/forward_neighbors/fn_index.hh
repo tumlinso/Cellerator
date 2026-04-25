@@ -80,6 +80,7 @@ struct ForwardNeighborShardSummary {
     float time_end = detail::quiet_nan_();
     std::size_t resident_bytes = 0u;
     bool resident = false;
+    ForwardNeighborInputLayout sparse_layout = ForwardNeighborInputLayout::dense;
 };
 
 namespace detail {

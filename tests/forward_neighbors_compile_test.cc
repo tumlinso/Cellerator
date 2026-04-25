@@ -157,10 +157,29 @@ int main() {
     ann_config.embryo_policy = ForwardNeighborEmbryoPolicy::any_embryo;
     ann_config.ann_probe_list_count = 2;
 
+    ForwardNeighborSearchConfig blocked_sparse_config = exact_config;
+    blocked_sparse_config.backend = ForwardNeighborBackend::sparse_exact_blocked_ell;
+    blocked_sparse_config.similarity = ForwardNeighborSimilarity::sparse_blocked_affinity;
+
+    ForwardNeighborSearchConfig blocked_sparse_ann_config = blocked_sparse_config;
+    blocked_sparse_ann_config.backend = ForwardNeighborBackend::sparse_ann_blocked_ell;
+
+    ForwardNeighborSearchConfig sliced_sparse_config = exact_config;
+    sliced_sparse_config.backend = ForwardNeighborBackend::sparse_exact_sliced_ell;
+    sliced_sparse_config.similarity = ForwardNeighborSimilarity::sparse_blocked_affinity;
+
+    ForwardNeighborSearchConfig sliced_sparse_ann_config = sliced_sparse_config;
+    sliced_sparse_ann_config.backend = ForwardNeighborBackend::sparse_ann_sliced_ell;
+    sliced_sparse_ann_config.ann_probe_list_count = 2;
+
     ForwardNeighborSearchResult ann_result = index.search_future_neighbors(routed_query.view(), &workspace, ann_config);
     ForwardNeighborSearchResult ann_repeat = index.search_future_neighbors(routed_query.view(), &workspace, ann_config);
     ForwardNeighborSearchResult blocked_exact = blocked_index.search_future_neighbors(blocked_query, exact_config);
     ForwardNeighborSearchResult sliced_exact = sliced_index.search_future_neighbors(sliced_query, exact_config);
+    ForwardNeighborSearchResult blocked_sparse = blocked_index.search_future_neighbors(blocked_query, blocked_sparse_config);
+    ForwardNeighborSearchResult blocked_sparse_ann = blocked_index.search_future_neighbors(blocked_query, blocked_sparse_ann_config);
+    ForwardNeighborSearchResult sliced_sparse = sliced_index.search_future_neighbors(sliced_query, sliced_sparse_config);
+    ForwardNeighborSearchResult sliced_sparse_ann = sliced_index.search_future_neighbors(sliced_query, sliced_sparse_ann_config);
 
     const auto exact_first_neighbor = exact_by_id.neighbor_cell_indices[detail::result_offset_(0, 0, exact_by_id.top_k)];
     const auto exact_no_neighbor = exact_by_id.neighbor_cell_indices[detail::result_offset_(1, 0, exact_by_id.top_k)];
@@ -172,6 +191,11 @@ int main() {
     const auto ann_embryo = ann_result.neighbor_embryo_ids[detail::result_offset_(0, 0, ann_result.top_k)];
     const auto blocked_neighbor = blocked_exact.neighbor_cell_indices[detail::result_offset_(0, 0, blocked_exact.top_k)];
     const auto sliced_neighbor = sliced_exact.neighbor_cell_indices[detail::result_offset_(0, 0, sliced_exact.top_k)];
+    const auto blocked_sparse_neighbor = blocked_sparse.neighbor_cell_indices[detail::result_offset_(0, 0, blocked_sparse.top_k)];
+    const auto blocked_sparse_ann_neighbor = blocked_sparse_ann.neighbor_cell_indices[detail::result_offset_(0, 0, blocked_sparse_ann.top_k)];
+    const auto sliced_sparse_neighbor = sliced_sparse.neighbor_cell_indices[detail::result_offset_(0, 0, sliced_sparse.top_k)];
+    const auto sliced_sparse_ann_neighbor = sliced_sparse_ann.neighbor_cell_indices[detail::result_offset_(0, 0, sliced_sparse_ann.top_k)];
+    const float blocked_sparse_distance = blocked_sparse.neighbor_distance[detail::result_offset_(0, 0, blocked_sparse.top_k)];
     const std::size_t routed_shards = routing.block_route_offsets.size() >= 2u
         ? static_cast<std::size_t>(routing.block_route_offsets[1] - routing.block_route_offsets[0])
         : 0u;
@@ -190,7 +214,13 @@ int main() {
         && ann_repeat_neighbor == 11
         && blocked_neighbor == 11
         && sliced_neighbor == 11
+        && blocked_sparse_neighbor == 11
+        && blocked_sparse_ann_neighbor == 11
+        && sliced_sparse_neighbor == 11
+        && sliced_sparse_ann_neighbor == 11
+        && !std::isfinite(blocked_sparse_distance)
         && ann_embryo == 0
+        && shard0.sparse_layout == ForwardNeighborInputLayout::dense
         && std::isfinite(ann_sqdist);
     css::clear(&blocked_records_matrix);
     css::clear(&blocked_query_matrix);

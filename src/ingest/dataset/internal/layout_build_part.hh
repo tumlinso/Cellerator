@@ -265,6 +265,6 @@ static inline int prepare_ingest_spool_root(const std::string &root) {
 static inline std::string build_ingest_spool_part_path(const std::string &root,
                                                        unsigned long global_part_id) {
     char filename[64];
-    std::snprintf(filename, sizeof(filename), "part.%08lu.sell", global_part_id);
+    std::snprintf(filename, sizeof(filename), "part.%08lu.cspool", global_part_id);
     return (std::filesystem::path(root) / filename).string();
 }

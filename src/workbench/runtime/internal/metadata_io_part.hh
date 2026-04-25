@@ -503,6 +503,88 @@ inline bool rewrite_observation_annotations_with_preprocess(const std::string &p
     return true;
 }
 
+inline bool build_filtered_observation_metadata_bundle_with_preprocess(const observation_metadata_table &source,
+                                                                       const host_buffer<float> &cell_total_counts,
+                                                                       const host_buffer<float> &cell_mito_counts,
+                                                                       const host_buffer<float> &cell_max_counts,
+                                                                       const host_buffer<unsigned int> &cell_detected_genes,
+                                                                       const host_buffer<unsigned char> &cell_keep,
+                                                                       owned_annotation_bundle *bundle,
+                                                                       std::vector<issue> *issues) {
+    const std::size_t rows = cell_keep.size();
+    if (bundle == nullptr) return false;
+
+    for (const observation_metadata_column &column : source.columns) {
+        auto owned = std::make_unique<owned_observation_metadata_column>();
+        owned->name = column.name;
+        owned->type = column.type;
+        if (column.type == cs::dataset_observation_metadata_type_text) {
+            owned->text_values = std::make_unique<owned_observation_text_column>();
+            for (std::size_t row = 0; row < rows && row < column.text_values.size(); ++row) {
+                if (cell_keep[row] == 0u) continue;
+                const std::string &value = column.text_values[row];
+                if (!ccommon::append(&owned->text_values->values, value.c_str(), value.size())) {
+                    push_issue(issues, issue_severity::error, "preprocess", "failed to filter observation metadata text column");
+                    return false;
+                }
+            }
+        } else if (column.type == cs::dataset_observation_metadata_type_float32) {
+            owned->float32_values.reserve(rows);
+            for (std::size_t row = 0; row < rows && row < column.float32_values.size(); ++row) {
+                if (cell_keep[row] != 0u) owned->float32_values.push_back(column.float32_values[row]);
+            }
+        } else if (column.type == cs::dataset_observation_metadata_type_uint8) {
+            owned->uint8_values.reserve(rows);
+            for (std::size_t row = 0; row < rows && row < column.uint8_values.size(); ++row) {
+                if (cell_keep[row] != 0u) owned->uint8_values.push_back(column.uint8_values[row]);
+            }
+        } else {
+            push_issue(issues, issue_severity::error, "preprocess", "unknown observation metadata column type");
+            return false;
+        }
+        bundle->columns.push_back(std::move(owned));
+    }
+
+    auto append_float_column = [&](const std::string &name, const host_buffer<float> &values) {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = name;
+        column->type = cs::dataset_observation_metadata_type_float32;
+        column->float32_values.reserve(rows);
+        for (std::size_t row = 0; row < rows && row < values.size(); ++row) {
+            if (cell_keep[row] != 0u) column->float32_values.push_back(values[row]);
+        }
+        bundle->columns.push_back(std::move(column));
+    };
+    auto append_uint8_column = [&](const std::string &name, const host_buffer<unsigned char> &values) {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = name;
+        column->type = cs::dataset_observation_metadata_type_uint8;
+        column->uint8_values.reserve(rows);
+        for (std::size_t row = 0; row < rows && row < values.size(); ++row) {
+            if (cell_keep[row] != 0u) column->uint8_values.push_back(values[row]);
+        }
+        bundle->columns.push_back(std::move(column));
+    };
+    {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = "preprocess_detected_genes";
+        column->type = cs::dataset_observation_metadata_type_float32;
+        column->float32_values.reserve(rows);
+        for (std::size_t row = 0; row < rows && row < cell_detected_genes.size(); ++row) {
+            if (cell_keep[row] != 0u) column->float32_values.push_back((float) cell_detected_genes[row]);
+        }
+        bundle->columns.push_back(std::move(column));
+    }
+    append_float_column("preprocess_total_counts", cell_total_counts);
+    append_float_column("preprocess_mito_counts", cell_mito_counts);
+    append_float_column("preprocess_max_counts", cell_max_counts);
+    append_uint8_column("preprocess_keep", cell_keep);
+
+    bundle->views.reserve(bundle->columns.size());
+    for (const auto &column : bundle->columns) bundle->views.push_back(column->view());
+    return true;
+}
+
 inline bool rewrite_feature_metadata_with_preprocess(const std::string &path,
                                                      const host_buffer<float> &gene_sum,
                                                      const host_buffer<float> &gene_sq_sum,
@@ -567,6 +649,80 @@ inline bool rewrite_feature_metadata_with_preprocess(const std::string &path,
         push_issue(issues, issue_severity::error, "preprocess", "failed to rewrite feature metadata with preprocess columns");
         return false;
     }
+    return true;
+}
+
+inline bool build_filtered_feature_metadata_bundle_with_preprocess(const feature_metadata_table &source,
+                                                                  const host_buffer<float> &gene_sum,
+                                                                  const host_buffer<float> &gene_sq_sum,
+                                                                  const host_buffer<float> &gene_detected,
+                                                                  const host_buffer<unsigned char> &gene_keep,
+                                                                  const host_buffer<unsigned char> &gene_flags,
+                                                                  owned_annotation_bundle *bundle,
+                                                                  std::vector<issue> *issues) {
+    const std::size_t cols = gene_keep.size();
+    if (bundle == nullptr) return false;
+
+    for (const feature_metadata_column &column : source.columns) {
+        auto owned = std::make_unique<owned_observation_metadata_column>();
+        owned->name = column.name;
+        owned->type = column.type;
+        if (column.type == cs::dataset_observation_metadata_type_text) {
+            owned->text_values = std::make_unique<owned_observation_text_column>();
+            for (std::size_t col = 0; col < cols && col < column.text_values.size(); ++col) {
+                if (gene_keep[col] == 0u) continue;
+                const std::string &value = column.text_values[col];
+                if (!ccommon::append(&owned->text_values->values, value.c_str(), value.size())) {
+                    push_issue(issues, issue_severity::error, "preprocess", "failed to filter feature metadata text column");
+                    return false;
+                }
+            }
+        } else if (column.type == cs::dataset_observation_metadata_type_float32) {
+            owned->float32_values.reserve(cols);
+            for (std::size_t col = 0; col < cols && col < column.float32_values.size(); ++col) {
+                if (gene_keep[col] != 0u) owned->float32_values.push_back(column.float32_values[col]);
+            }
+        } else if (column.type == cs::dataset_observation_metadata_type_uint8) {
+            owned->uint8_values.reserve(cols);
+            for (std::size_t col = 0; col < cols && col < column.uint8_values.size(); ++col) {
+                if (gene_keep[col] != 0u) owned->uint8_values.push_back(column.uint8_values[col]);
+            }
+        } else {
+            push_issue(issues, issue_severity::error, "preprocess", "unknown feature metadata column type");
+            return false;
+        }
+        bundle->columns.push_back(std::move(owned));
+    }
+
+    auto append_float_column = [&](const std::string &name, const host_buffer<float> &values) {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = name;
+        column->type = cs::dataset_observation_metadata_type_float32;
+        column->float32_values.reserve(cols);
+        for (std::size_t col = 0; col < cols && col < values.size(); ++col) {
+            if (gene_keep[col] != 0u) column->float32_values.push_back(values[col]);
+        }
+        bundle->columns.push_back(std::move(column));
+    };
+    auto append_uint8_column = [&](const std::string &name, const host_buffer<unsigned char> &values) {
+        auto column = std::make_unique<owned_observation_metadata_column>();
+        column->name = name;
+        column->type = cs::dataset_observation_metadata_type_uint8;
+        column->uint8_values.reserve(cols);
+        for (std::size_t col = 0; col < cols && col < values.size(); ++col) {
+            if (gene_keep[col] != 0u) column->uint8_values.push_back(values[col]);
+        }
+        bundle->columns.push_back(std::move(column));
+    };
+
+    append_float_column("preprocess_sum", gene_sum);
+    append_float_column("preprocess_sq_sum", gene_sq_sum);
+    append_float_column("preprocess_detected_cells", gene_detected);
+    append_uint8_column("preprocess_keep", gene_keep);
+    append_uint8_column("preprocess_flags", gene_flags);
+
+    bundle->views.reserve(bundle->columns.size());
+    for (const auto &column : bundle->columns) bundle->views.push_back(column->view());
     return true;
 }
 

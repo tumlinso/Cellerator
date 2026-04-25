@@ -25,8 +25,19 @@ namespace cs = ::cellshard;
 namespace css = ::cellshard::sparse;
 
 enum class ForwardNeighborBackend {
-    exact_windowed,
-    ann_windowed
+    exact_windowed = 0,
+    ann_windowed = 1,
+    dense_exact_windowed = exact_windowed,
+    dense_ann_windowed = ann_windowed,
+    sparse_exact_blocked_ell = 2,
+    sparse_ann_blocked_ell = 3,
+    sparse_exact_sliced_ell = 4,
+    sparse_ann_sliced_ell = 5
+};
+
+enum class ForwardNeighborSimilarity {
+    dense_cosine = 0,
+    sparse_blocked_affinity = 1
 };
 
 enum class ForwardNeighborDirection {
@@ -128,6 +139,7 @@ struct ForwardNeighborOwnedQueryBatch {
 
 struct ForwardNeighborSearchConfig {
     ForwardNeighborBackend backend = ForwardNeighborBackend::exact_windowed;
+    ForwardNeighborSimilarity similarity = ForwardNeighborSimilarity::dense_cosine;
     ForwardNeighborDirection direction = ForwardNeighborDirection::forward;
     ForwardNeighborEmbryoPolicy embryo_policy = ForwardNeighborEmbryoPolicy::any_embryo;
     std::int64_t top_k = 15;
@@ -247,6 +259,13 @@ inline void validate_forward_neighbor_search_config_(const ForwardNeighborSearch
     }
     if (config.ann_probe_list_count <= 0) {
         throw std::invalid_argument("ForwardNeighborSearchConfig.ann_probe_list_count must be > 0");
+    }
+    if ((config.backend == ForwardNeighborBackend::sparse_exact_blocked_ell
+         || config.backend == ForwardNeighborBackend::sparse_ann_blocked_ell
+         || config.backend == ForwardNeighborBackend::sparse_exact_sliced_ell
+         || config.backend == ForwardNeighborBackend::sparse_ann_sliced_ell)
+        && config.similarity != ForwardNeighborSimilarity::sparse_blocked_affinity) {
+        throw std::invalid_argument("sparse forward-neighbor backends require sparse_blocked_affinity similarity");
     }
     if (config.strict_future_epsilon < 0.0f) {
         throw std::invalid_argument("ForwardNeighborSearchConfig.strict_future_epsilon must be >= 0");

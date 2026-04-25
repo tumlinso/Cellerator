@@ -11,9 +11,9 @@ Current posture:
 1. Scan source row counts and plan row-aligned parts.
 2. Stream bounded windows from the source matrix.
 3. Apply filtering and canonical metadata alignment before emission.
-4. Emit immutable canonical sparse parts into `CellShard`-owned build and spool paths.
+4. Emit immutable canonical sparse parts into `CellShard`-owned build and `.cspool` paths.
 5. Let `CellShard` finalize shard offsets, blocking, bucketing, and pack planning.
-6. Assemble `dataset.csh5` from the local spool instead of rereading the expensive source.
+6. Assemble `dataset.csh5` from local `.cspool` parts instead of rereading the expensive source.
 7. Optionally warm the active pack generation from the written `dataset.csh5`.
 
 ## Ownership Contract
