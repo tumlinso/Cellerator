@@ -1129,6 +1129,8 @@ done:
 preprocess_analysis_table analyze_dataset_preprocess(const std::string &path, const preprocess_config &config) {
     preprocess_analysis_table analysis;
     dataset_summary dataset = summarize_dataset_csh5(path);
+    mosaic::preprocess_state_view state{};
+    mosaic::status state_status{};
 
     if (!dataset.ok) {
         analysis.path = path;
@@ -1136,13 +1138,20 @@ preprocess_analysis_table analyze_dataset_preprocess(const std::string &path, co
         push_issue(&analysis.issues, issue_severity::error, "preprocess", "cannot preprocess an unreadable dataset.csh5");
         return analysis;
     }
-    if (dataset.preprocess.available) {
+    state.assay = dataset.preprocess.available ? dataset.preprocess.assay.c_str() : "scrna";
+    state.matrix_orientation = dataset.preprocess.available ? dataset.preprocess.matrix_orientation.c_str() : "observations_by_features";
+    state.matrix_state = dataset.preprocess.available ? dataset.preprocess.matrix_state.c_str() : "raw_counts";
+    state.feature_namespace = dataset.preprocess.available ? dataset.preprocess.feature_namespace.c_str() : "unknown";
+    state.preprocess_available = dataset.preprocess.available ? 1u : 0u;
+    state.raw_counts_available = dataset.preprocess.available ? (dataset.preprocess.raw_counts_available ? 1u : 0u) : 1u;
+    state.processed_matrix_available = dataset.preprocess.available ? (dataset.preprocess.processed_matrix_available ? 1u : 0u) : 0u;
+    if (!mosaic::validate_raw_count_state(&state, &state_status)) {
         analysis.path = path;
         analysis.matrix_format = dataset.matrix_format;
         push_issue(&analysis.issues,
                    issue_severity::error,
                    "preprocess",
-                   "dataset.csh5 already contains persisted preprocess metadata; start from a raw dataset file instead");
+                   state_status.message);
         return analysis;
     }
     if (dataset.matrix_format.find("sliced") != std::string::npos) {
@@ -1159,6 +1168,8 @@ preprocess_persist_summary persist_preprocess_analysis_to_output(const std::stri
     preprocess_persist_summary result;
     dataset_summary dataset = summarize_dataset_csh5(source_path);
     cs::dataset_preprocess_view preprocess = {};
+    mosaic::preprocess_state_view state{};
+    mosaic::status state_status{};
     std::vector<std::pair<std::string, std::string>> dataset_attributes;
     host_buffer<float> host_cell_total_counts;
     host_buffer<float> host_cell_mito_counts;
@@ -1185,11 +1196,18 @@ preprocess_persist_summary persist_preprocess_analysis_to_output(const std::stri
         result.summary.ok = false;
         return result;
     }
-    if (dataset.preprocess.available) {
+    state.assay = dataset.preprocess.available ? dataset.preprocess.assay.c_str() : "scrna";
+    state.matrix_orientation = dataset.preprocess.available ? dataset.preprocess.matrix_orientation.c_str() : "observations_by_features";
+    state.matrix_state = dataset.preprocess.available ? dataset.preprocess.matrix_state.c_str() : "raw_counts";
+    state.feature_namespace = dataset.preprocess.available ? dataset.preprocess.feature_namespace.c_str() : "unknown";
+    state.preprocess_available = dataset.preprocess.available ? 1u : 0u;
+    state.raw_counts_available = dataset.preprocess.available ? (dataset.preprocess.raw_counts_available ? 1u : 0u) : 1u;
+    state.processed_matrix_available = dataset.preprocess.available ? (dataset.preprocess.processed_matrix_available ? 1u : 0u) : 0u;
+    if (!mosaic::validate_raw_count_state(&state, &state_status)) {
         push_issue(&result.summary.issues,
                    issue_severity::error,
                    "preprocess",
-                   "dataset.csh5 already contains persisted preprocess metadata; start from a raw dataset file instead");
+                   state_status.message);
         result.summary.ok = false;
         return result;
     }

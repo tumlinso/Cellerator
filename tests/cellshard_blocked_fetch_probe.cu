@@ -130,9 +130,9 @@ int main(int argc, char **argv) {
                  matrix.num_shards,
                  partition_id,
                  shard_id);
-    if (cs::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &matrix, &storage, partition_id)) {
+    if (cs::fetch_dataset_blocked_ell_h5_pack_partition(&exec_part, &matrix, &storage, partition_id)) {
         std::fprintf(stderr,
-                     "probe: execution partition %lu nnz=%llu actual_nnz=%llu segments=%u rows=%u cols=%u\n",
+                     "probe: pack partition %lu nnz=%llu actual_nnz=%llu segments=%u rows=%u cols=%u\n",
                      partition_id,
                      (unsigned long long) exec_part.nnz,
                      (unsigned long long) count_bucketed_partition_actual_nnz(&exec_part),
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
                      exec_part.rows,
                      exec_part.cols);
     } else {
-        std::fprintf(stderr, "probe: execution partition %lu fetch failed\n", partition_id);
+        std::fprintf(stderr, "probe: pack partition %lu fetch failed\n", partition_id);
     }
     if (!cs::prefetch_dataset_blocked_ell_h5_shard_cache(&matrix, &storage, shard_id)) {
         std::fprintf(stderr, "probe: prefetch shard %lu failed\n", shard_id);

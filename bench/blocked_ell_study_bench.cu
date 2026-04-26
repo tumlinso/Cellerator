@@ -1526,16 +1526,19 @@ int main(int argc, char **argv) {
             const case_matrices matrices = load_case_matrices(entry, cfg);
             const support_model model = build_support_model(matrices.blocked_parts, matrices.cols, cfg.block_size);
             std::vector<cs::sparse::blocked_ell> part_views;
-            std::vector<std::uint32_t> baseline_exec_to_canonical;
-            std::vector<std::uint32_t> baseline_canonical_to_exec;
+            cdataset::owned_buffer<std::uint32_t> baseline_exec_to_canonical_buffer;
+            cdataset::owned_buffer<std::uint32_t> baseline_canonical_to_exec_buffer;
 
             part_views.reserve(matrices.blocked_parts.size());
             for (const blocked_ell_owned &part : matrices.blocked_parts) part_views.push_back(*part.part);
             require(cdataset::build_shard_column_maps(part_views,
                                                       matrices.cols,
-                                                      &baseline_exec_to_canonical,
-                                                      &baseline_canonical_to_exec),
+                                                      &baseline_exec_to_canonical_buffer,
+                                                      &baseline_canonical_to_exec_buffer),
                     "build_shard_column_maps failed");
+            const std::vector<std::uint32_t> baseline_exec_to_canonical(
+                baseline_exec_to_canonical_buffer.begin(),
+                baseline_exec_to_canonical_buffer.end());
 
             const std::vector<std::uint32_t> overlap_order = build_overlap_cluster_order(model);
             const std::vector<std::uint32_t> local_order =

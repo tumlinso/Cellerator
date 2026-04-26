@@ -60,7 +60,7 @@ For manuscript planning, model framing, or conceptual discussion about regulator
 
 If work around `docs/`, notes, or manuscript-like material turns into writing, figure generation, or citation support, use `$quarto-manuscript` rather than splitting those tasks across separate Quarto skills.
 
-When code changes materially alter runtime, storage, ingest, execution-pack, or other pipeline behavior, update the corresponding documentation in `docs/` and any primary README surface that describes that behavior as part of the same change. Do not leave behavior documentation stale after the implementation lands.
+When code changes materially alter runtime, storage, ingest, pack, or other pipeline behavior, update the corresponding documentation in `docs/` and any primary README surface that describes that behavior as part of the same change. Do not leave behavior documentation stale after the implementation lands.
 
 If new model work in `src/models/` appears to need custom Torch ops, record the proposed op boundary in `custom_torch_ops.md` before implementing it and keep the op scope minimal. Prefer library-backed Torch, ATen, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
 

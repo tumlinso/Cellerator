@@ -14,27 +14,27 @@ Current posture:
 4. Emit immutable canonical sparse parts into `CellShard`-owned build and `.cspool` paths.
 5. Let `CellShard` finalize shard offsets, blocking, bucketing, and pack planning.
 6. Assemble `dataset.csh5` from local `.cspool` parts instead of rereading the expensive source.
-7. Optionally warm the active pack generation from the written `dataset.csh5`.
+7. Optionally warm the active CSPACK generation from the written `dataset.csh5`.
 
 ## Ownership Contract
 
 `src/ingest/` stops at canonical emission. After that:
 
 - `CellShard` owns final blocking and bucketing.
-- `CellShard` owns pack generation and `.csh5` assembly.
-- `CellShard` owns execution-pack publication and runtime fetch paths.
+- `CellShard` owns CSPACK generation and `.csh5` assembly.
+- `CellShard` owns CSPACK publication and runtime fetch paths.
 
 That split matters because Cellerator is not trying to reimplement the storage or staging substrate in higher-level code.
 
-In current operation, CellShard should be read as a service discipline rather than as a passive file format. The emitted matrix is committed into an owner-hosted `.csh5` canonical container, while the hot execution surface is expressed through published `.pack` generations derived from that container. Readers and executors consume those published generations instead of mutating canonical payloads in place, and append staging remains separate from visible runtime state until an explicit generation cutover occurs. The more complete description of this behavior lives in [CellShard Behavior](cellshard_behavior.qmd).
+In current operation, CellShard should be read as a service discipline rather than as a passive file format. The emitted matrix is committed into an owner-hosted `.csh5` canonical container, while the hot execution surface is expressed through published `.cspack` generations derived from that container. Readers and executors consume those published generations instead of mutating canonical payloads in place, and append staging remains separate from visible runtime state until an explicit generation cutover occurs. The more complete description of this behavior lives in [CellShard Behavior](cellshard_behavior.qmd).
 
 ## Single-Machine And Distributed Operation
 
 The current runtime model follows the owner-service contract:
 
 - In single-machine operation, `.csh5` still stays under an owner-side coordinator and master reader.
-- Executors consume published pack generations instead of mutating source files directly.
-- In distributed operation, `.csh5` remains owner-hosted and remote nodes consume delivered pack artifacts.
+- Executors consume published CSPACK generations instead of mutating source files directly.
+- In distributed operation, `.csh5` remains owner-hosted and remote nodes consume delivered CSPACK artifacts.
 - Remote caches are runtime artifacts, not sources of truth.
 
 ## Why The Local Spool Exists
@@ -50,8 +50,8 @@ The spool path is effectively an ingest-side backwards cache:
 The main persisted outputs are:
 
 - canonical `.csh5` metadata and shard layout
-- published execution packs
-- runtime metadata that tells downstream compute and workbench code how to fetch and interpret those packs
+- published CSPACK files
+- runtime metadata that tells downstream compute and workbench code how to fetch and interpret those CSPACK files
 
 ## Relevant Source Areas
 

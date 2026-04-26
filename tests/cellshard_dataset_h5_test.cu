@@ -702,7 +702,7 @@ done:
     return rc;
 }
 
-static int run_executor_role_execution_pack_guard_test() {
+static int run_executor_role_cspack_guard_test() {
     const std::string out_path = "/tmp/cellshard_dataset_executor_guard_test.csh5";
     char cache_root_template[] = "/tmp/cellshard_dataset_executor_guard_cache_XXXXXX";
     const char *cache_root_cstr = ::mkdtemp(cache_root_template);
@@ -724,7 +724,7 @@ static int run_executor_role_execution_pack_guard_test() {
         goto done;
     }
     if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) {
-        std::fprintf(stderr, "failed to warm canonical cache for executor guard test\n");
+        std::fprintf(stderr, "failed to warm cspack cache for executor guard test\n");
         goto done;
     }
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)
@@ -741,11 +741,11 @@ static int run_executor_role_execution_pack_guard_test() {
         || !check_blocked_ell_part(loaded.parts[0],
                                    {0u, 1u},
                                    {1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f})) {
-        std::fprintf(stderr, "executor role canonical pack fetch failed\n");
+        std::fprintf(stderr, "executor role pack fetch failed\n");
         goto done;
     }
-    if (!cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u)) {
-        std::fprintf(stderr, "executor role execution partition fetch failed\n");
+    if (!cellshard::fetch_dataset_blocked_ell_h5_pack_partition(&exec_part, &loaded, &storage, 0u)) {
+        std::fprintf(stderr, "executor role pack partition fetch failed\n");
         goto done;
     }
 
@@ -1022,9 +1022,8 @@ static int run_optimized_blocked_ell_roundtrip_test() {
             goto done;
         }
     }
-    if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())
-        || !cellshard::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str())) {
-        std::fprintf(stderr, "failed to warm optimized blocked ell caches\n");
+    if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) {
+        std::fprintf(stderr, "failed to warm optimized blocked ell cspack cache\n");
         goto done;
     }
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)
@@ -1038,8 +1037,8 @@ static int run_optimized_blocked_ell_roundtrip_test() {
         std::fprintf(stderr, "optimized blocked ell canonical fetch mismatch\n");
         goto done;
     }
-    if (!cellshard::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u)) {
-        std::fprintf(stderr, "optimized blocked ell execution fetch failed\n");
+    if (!cellshard::fetch_dataset_blocked_ell_h5_pack_partition(&exec_part, &loaded, &storage, 0u)) {
+        std::fprintf(stderr, "optimized blocked ell pack fetch failed\n");
         goto done;
     }
     if (exec_part.exec_to_canonical_cols == nullptr || exec_part.canonical_to_exec_cols == nullptr) {
@@ -1437,7 +1436,7 @@ static int run_optimized_sliced_ell_roundtrip_test() {
         goto done;
     }
     if (!cellshard::fetch_dataset_sliced_ell_h5_bucketed_partition(&exec_part, &loaded, &storage, 0u)) {
-        std::fprintf(stderr, "optimized sliced ell execution fetch failed\n");
+        std::fprintf(stderr, "optimized sliced ell pack fetch failed\n");
         goto done;
     }
     if (exec_part.segment_count < 1u
@@ -1665,7 +1664,6 @@ static int run_runtime_service_metadata_test() {
     if (!cellshard::append_dataset_execution_h5(out_path.c_str(), &execution)) goto done;
     if (!cellshard::append_dataset_runtime_service_h5(out_path.c_str(), &runtime_service)) goto done;
     if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) goto done;
-    if (!cellshard::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str())) goto done;
     if (!cellshard::load_header(out_path.c_str(), &loaded, &storage)) goto done;
     if (!cellshard::bind_dataset_h5_cache(&storage, cache_root.c_str())) goto done;
     if (!cellshard::get_dataset_h5_execution_metadata(&storage, &loaded_execution)) goto done;
@@ -1702,8 +1700,7 @@ static int run_runtime_service_metadata_test() {
         if (!path_is_dir(instance_dir + "/metadata")
             || !path_exists(instance_dir + "/metadata/manifest.txt")
             || !path_is_dir(instance_dir + "/packs")
-            || !path_is_dir(instance_dir + "/packs/execution")
-            || !path_exists(instance_dir + "/packs/execution/plan.12-pack.13-epoch.14/shard.0.exec.pack")) {
+            || !path_exists(instance_dir + "/packs/plan.12-pack.13-epoch.14/shard.0.cspack")) {
             std::fprintf(stderr, "runtime service cache layout mismatch\n");
             goto done;
         }
@@ -1718,11 +1715,11 @@ static int run_runtime_service_metadata_test() {
     if (!overwrite_u64_attr(out_path, "/runtime_service", "service_epoch", runtime_service.service_epoch)) goto done;
     if (!overwrite_u64_attr(out_path, "/runtime_service", "active_read_generation", runtime_service.active_read_generation)) goto done;
     if (!overwrite_u64_attr(out_path, "/runtime_service", "staged_write_generation", runtime_service.staged_write_generation)) goto done;
-    if (!cellshard::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str())) goto done;
+    if (!cellshard::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str())) goto done;
     {
         const std::string instances_root = cache_root + "/instances";
-        if (!any_named_subdir_has_path(instances_root, "packs/execution/plan.21-pack.22-epoch.23/shard.0.exec.pack")) {
-            std::fprintf(stderr, "updated runtime service execution pack generation missing\n");
+        if (!any_named_subdir_has_path(instances_root, "packs/plan.21-pack.22-epoch.23/shard.0.cspack")) {
+            std::fprintf(stderr, "updated runtime service cspack generation missing\n");
             goto done;
         }
     }
@@ -2064,7 +2061,7 @@ int main() {
         std::fprintf(stderr, "cellShardDatasetH5Test blocked ell roundtrip failed\n");
         return 1;
     }
-    if (run_executor_role_execution_pack_guard_test() != 0) {
+    if (run_executor_role_cspack_guard_test() != 0) {
         std::fprintf(stderr, "cellShardDatasetH5Test executor role guard failed\n");
         return 1;
     }

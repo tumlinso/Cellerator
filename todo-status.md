@@ -8,11 +8,11 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `closed`: completed or removed from pickup rotation.
 
 ## Workstreams
-_No tracked workstreams yet._
+- `mosaicell-gpu-biology-backbone`: claimed. MosaiCell's smaller preprocessing/runtime targets build and compatibility wiring is in place; remaining Cellerator metadata/finalize/browse-cache code needs extraction before the migration is complete.
 
 ## Staleness Review
 _No staleness review recorded yet._
 
 ## Cleanup Status
 - Cleanup mode is explicit only.
-- Safe to call `todo-cleanup`: yes, there are no tracked workstreams left.
+- Safe to call `todo-cleanup`: no, tracked MosaiCell migration work is still active.

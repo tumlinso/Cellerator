@@ -1,5 +1,7 @@
 #include "../dataset_workbench.hh"
 
+#include <MosaiCell/runtime.hh>
+
 #include "../../compute/preprocess/operators.cuh"
 #include "../../compute/preprocess/workspace.cuh"
 #include "../../ingest/common/metadata_table.cuh"
@@ -35,6 +37,7 @@ namespace cseries = ::cellerator::ingest::dataset;
 namespace cs = ::cellshard;
 namespace csd = ::cellshard::distributed;
 namespace csv = ::cellshard::device;
+namespace mosaic = ::mosaicell;
 
 namespace {
 
@@ -279,8 +282,8 @@ inline bool fetch_execution_partition(cellshard::bucketed_blocked_ell_partition 
                                       std::vector<issue> *issues,
                                       const std::string &scope,
                                       const std::string &label) {
-    if (!cs::fetch_dataset_blocked_ell_h5_execution_partition(out, matrix, storage, part_id)) {
-        push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed execution partition for " + label);
+    if (!cs::fetch_dataset_blocked_ell_h5_pack_partition(out, matrix, storage, part_id)) {
+        push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed pack partition for " + label);
         return false;
     }
     return true;
@@ -294,7 +297,7 @@ inline bool fetch_execution_partition(cellshard::bucketed_sliced_ell_partition *
                                       const std::string &scope,
                                       const std::string &label) {
     if (!cs::fetch_dataset_sliced_ell_h5_bucketed_partition(out, matrix, storage, part_id)) {
-        push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed execution partition for " + label);
+        push_issue(issues, issue_severity::error, scope, "failed to fetch bucketed pack partition for " + label);
         return false;
     }
     return true;

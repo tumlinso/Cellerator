@@ -1,9 +1,14 @@
 # `compute/preprocess`
 
-Sparse scRNA preprocessing operators for row-sharded sparse inputs.
+Legacy Cellerator sparse scRNA preprocessing operators for row-sharded sparse inputs.
+
+New native preprocessing code should live under `extern/MosaiCell/` and use the
+`mosaicell` pointer-first API. This directory remains for compatibility while
+existing Cellerator workbench callers are delegated across the MosaiCell runtime
+boundary.
 
 At the workbench level, preprocess now defaults to `metrics + metadata rewrite + finalize/repack`.
-The compute operators in this directory still own the QC, normalization/log1p, and gene-metric math.
+MosaiCell owns the native QC, normalization/log1p, and gene-metric math going forward.
 Physical compaction of filtered rows and genes is a later CellShard finalize step, which can be disabled with
 `preprocess_config.finalize_after_preprocess = false` when benchmarking the analysis phase by itself.
 

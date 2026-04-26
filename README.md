@@ -2,7 +2,7 @@
 
 Cellerator is a GPU-oriented compute and model repository for large sparse single-cell datasets.
 
-It sits on top of `CellShard`, which handles canonical sparse storage, finalize/repack staging, pack delivery, and distributed execution staging. Cellerator adds ingest, one-pass preprocessing/filtering, reusable sparse compute, model code, trajectory logic, Torch-facing boundaries, and the ncurses workbench.
+It sits on top of `CellShard`, which handles canonical sparse storage, finalize/repack staging, CSPACK delivery, and distributed execution staging. The accelerated standard-biology preprocessing backbone now lives in `extern/MosaiCell`; Cellerator keeps ingest, compatibility workbench facades, reusable compute that has not moved, model code, trajectory logic, and Torch-facing boundaries.
 
 This codebase is built for explicit low-level control rather than a high-level workflow API, but it now also carries a thin Python wrapper for the dataset-facing workbench path. If you want the storage layer by itself, see `extern/CellShard/`.
 
@@ -19,6 +19,7 @@ This codebase is built for explicit low-level control rather than a high-level w
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
 - `extern/CellShard/`: storage and staging submodule used by Cellerator
+- `extern/MosaiCell/`: accelerated scRNA preprocessing runtime and native workbench target
 
 ## Source Layout
 
@@ -103,6 +104,11 @@ Examples:
 Useful build targets include:
 
 - `celleratorWorkbench`
+- `mosaiCellWorkbench`
+- `mosaicellAdapterStagingTest`
+- `mosaicellDoublePreprocessRejectionTest`
+- `mosaicellPreprocessRuntimeTest`
+- `mosaicellQCMetricsEquivalenceTest`
 - `celleratorPythonCompileTest`
 - `celleratorPythonRuntimeTest` when both Python modules are enabled
 - `cellShardDatasetH5Test`
@@ -123,15 +129,16 @@ Useful build targets include:
 - Cellerator is performance-oriented and currently tuned around Volta / V100-class assumptions.
 - CUDA mode selection is explicit: `generic` is the default topology-agnostic path, while `native` and `native-extreme` unlock the host-specific V100 ordering only after runtime discovery confirms that topology.
 - Blocked-ELL is the native sparse execution and persistence layout for `.csh5` output; CSR/compressed remains an explicit interop/export path in memory, not a supported `.csh5` file format.
+- `.cshard` is present as an experimental standby HDF5-free native archive: it can be inspected, validated, converted from `.csh5`, and read directly by sparse row range, but `.csh5` remains the production durable format.
 - The Blocked-ELL tuner is storage-first for sparse omics ingest: it now minimizes padded scalar-value bytes before using block-occupancy fill as a tie-breaker, and the default candidate set includes `4x4` blocks so scRNA row-block unions do not automatically collapse into near-full-width `32x32` layouts.
 - The native ingest path will try the CUDA COO-to-Blocked-ELL builder first, but it now validates the live nonzero count of each built part before publishing it. If the GPU builder produces a payload whose live entries do not match the source COO semantics, ingest falls back to the CPU builder for that part instead of writing a mismatched optimized shard.
-- Optimized blocked `.csh5` files now persist only `/payload/optimized_blocked_ell` shard blobs plus matrix metadata; they no longer carry a second heavyweight `/payload/blocked_ell` body in the same file. Compatibility paths that still need canonical blocked partitions reconstruct them lazily from the optimized shard payload or from published packs.
+- Optimized blocked `.csh5` files now persist only `/payload/optimized_blocked_ell` shard blobs plus matrix metadata; they no longer carry a second heavyweight `/payload/blocked_ell` body in the same file. Compatibility paths that still need canonical blocked partitions reconstruct them lazily from the optimized shard payload or from published CSPACK files.
 - Optimized blocked shard blobs also use a compact remap encoding: shard-level column permutations are stored once, inverse permutations are reconstructed on load, and permutation arrays are narrowed to `u8`/`u16` on disk when the shard shape permits it.
-- Current MTX-dataset ingest is bounded-memory and SSD-aware: it emits the canonical `dataset.csh5`, spills bounded `.cspool` build artifacts to a local spool, and leaves shape-changing preprocess compaction to the later workbench preprocess/finalize path.
-- Workbench preprocess now defaults to a two-stage flow: Cellerator computes QC, normalization/log1p metrics, keep masks, and metadata updates first, then CellShard finalizes the compacted Blocked-ELL dataset in place and rebuilds browse metadata. Set `preprocess_config.finalize_after_preprocess = false` only when you intentionally want a metadata-only benchmark stop before repack.
-- Single-machine operation should still follow the owner-service contract: `.csh5` stays under one owner-side coordinator and master reader, while local executors consume published pack generations.
-- Distributed operation keeps `.csh5` on the owner host and delivers pack generations to executor nodes; remote nodes may cache pack data locally, but those caches are runtime artifacts rather than sources of truth.
-- User-defined annotations now live in cold `/observation_metadata`, `/feature_metadata`, and `/dataset_attributes` groups. Owner snapshots advertise those surfaces, but they are fetched only on explicit request rather than being shipped on the hot pack/bootstrap path.
+- Current MTX-dataset ingest is bounded-memory and SSD-aware: it emits the canonical `dataset.csh5`, spills bounded `.cspool` build artifacts to a local spool, and leaves shape-changing preprocess compaction to the later MosaiCell-backed workbench preprocess/finalize path.
+- Workbench preprocess now defaults to a two-stage flow: MosaiCell owns the native QC, normalization/log1p, keep-mask, and raw-count validation contract, while Cellerator's existing workbench API remains a compatibility facade. CellShard then finalizes the compacted Blocked-ELL dataset in place and rebuilds browse metadata. Set `preprocess_config.finalize_after_preprocess = false` only when you intentionally want a metadata-only benchmark stop before repack.
+- Single-machine operation should still follow the owner-service contract: `.csh5` stays under one owner-side coordinator and master reader, while local executors consume published CSPACK generations.
+- Distributed operation keeps `.csh5` on the owner host and delivers CSPACK generations to executor nodes; remote nodes may cache CSPACK data locally, but those caches are runtime artifacts rather than sources of truth.
+- User-defined annotations now live in cold `/observation_metadata`, `/feature_metadata`, and `/dataset_attributes` groups. Owner snapshots advertise those surfaces, but they are fetched only on explicit request rather than being shipped on the hot CSPACK bootstrap path.
 - `docs/` now hosts the Cellerator pipeline manual plus local-only workflow notes; it is still not part of the default build or packaging surface.
 - `docs/quantized_transfer_architecture.qmd` records the current Volta-oriented report for quantized sparse transport, decode cost, and tensor-op-oriented follow-up work.
 
@@ -167,6 +174,7 @@ dataset = builder.open()
 ## Where To Read Next
 
 - `extern/CellShard/README.md`: CellShard scope and storage/runtime details
+- `extern/MosaiCell/README.md`: MosaiCell preprocessing runtime scope
 - `AGENTS.md`: contributor rules, codebase conventions, and repository-specific guidance
 - `optimization.md`: performance notes and bottleneck analysis
 - `pointer_migration_plan.md`: pointer-first migration policy for hot paths

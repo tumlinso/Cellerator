@@ -227,14 +227,34 @@ std::vector<unsigned long> build_balanced_offsets(const unsigned long *row_nnz,
 
 std::vector<compressed_owned> convert_window_parts_to_csr(const cs::sharded<cs::sparse::coo> &coo_view,
                                                           cmtx::compressed_workspace *ws) {
+    (void) ws;
     std::vector<compressed_owned> out;
-    out.reserve(coo_view.num_parts);
-    for (unsigned long part = 0; part < coo_view.num_parts; ++part) {
+    out.reserve(coo_view.num_partitions);
+    for (unsigned long part = 0; part < coo_view.num_partitions; ++part) {
+        const cs::sparse::coo *src = coo_view.parts[part];
         compressed_owned owned;
         owned.part = new cs::sparse::compressed();
-        cs::sparse::init(owned.part);
-        if (!cdataset::convert_coo_part_to_csr(coo_view.parts[part], ws, owned.part)) {
+        if (src == nullptr) throw std::runtime_error("missing COO part");
+        cs::sparse::init(owned.part, src->rows, src->cols, src->nnz, cs::sparse::compressed_by_row);
+        if (!cs::sparse::allocate(owned.part)) {
             throw std::runtime_error("convert_coo_part_to_csr failed");
+        }
+        for (cs::types::dim_t row = 0u; row <= src->rows; ++row) owned.part->majorPtr[row] = 0u;
+        for (cs::types::nnz_t i = 0u; i < src->nnz; ++i) {
+            if (src->rowIdx[i] >= src->rows || src->colIdx[i] >= src->cols) {
+                throw std::runtime_error("COO coordinate outside part shape");
+            }
+            ++owned.part->majorPtr[src->rowIdx[i] + 1u];
+        }
+        for (cs::types::dim_t row = 0u; row < src->rows; ++row) {
+            owned.part->majorPtr[row + 1u] += owned.part->majorPtr[row];
+        }
+        std::vector<cs::types::ptr_t> cursor((std::size_t) src->rows);
+        for (cs::types::dim_t row = 0u; row < src->rows; ++row) cursor[row] = owned.part->majorPtr[row];
+        for (cs::types::nnz_t i = 0u; i < src->nnz; ++i) {
+            const cs::types::ptr_t dst = cursor[src->rowIdx[i]]++;
+            owned.part->minorIdx[dst] = src->colIdx[i];
+            owned.part->val[dst] = src->val[i];
         }
         out.push_back(std::move(owned));
     }

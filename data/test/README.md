@@ -7,7 +7,7 @@ Layout:
 - `generated/csh5/`
   - Persisted `.csh5` outputs derived from reference inputs or conversion tests.
 - `generated/cache/`
-  - Warmed CellShard cache trees, shard packs, and execution packs.
+  - Warmed CellShard cache trees and CSPACK files.
 - `generated/logs/`
   - Debug logs, inspect dumps, and one-off validation artifacts.
 - `generated/tmp/`

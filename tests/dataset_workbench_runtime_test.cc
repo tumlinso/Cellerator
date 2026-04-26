@@ -702,12 +702,12 @@ int main() {
         derived_request.row_groups = row_groups;
         derived_request.feature_groups = feature_groups;
         derived_request.materialize_dataset = true;
-        derived_request.materialize_execution_pack = true;
+        derived_request.materialize_pack = true;
 
         wb::derived_materialization_report derived_report =
             wb::materialize_derived_dataset(dataset_path, derived_request);
         if (!derived_report.ok
-            || !derived_report.result.materialized_execution_pack
+            || !derived_report.result.materialized_pack
             || derived_report.result.rows != 2u
             || derived_report.result.cols != 2u) {
             std::fprintf(stderr, "workbench derived materialization report mismatch\n");

@@ -67,7 +67,7 @@ set(CELLSHARD_ENABLE_CUDA ON CACHE BOOL
 set(CELLSHARD_BUILD_EXPORT ON CACHE BOOL "Build CellShard export helpers in the root build." FORCE)
 set(CELLSHARD_ENABLE_PYTHON ${CELLERATOR_ENABLE_CELLSHARD_PYTHON} CACHE BOOL
     "Build the optional CellShard Python bindings and H5AD export app." FORCE)
-set(CELLSHARD_BUILD_APPS ${CELLERATOR_ENABLE_CELLSHARD_PYTHON} CACHE BOOL
+set(CELLSHARD_BUILD_APPS ON CACHE BOOL
     "Build optional CellShard applications from the root build." FORCE)
 set(CELLSHARD_BUILD_TESTS OFF CACHE BOOL "Disable nested CellShard tests in the root build." FORCE)
 set(CELLSHARD_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
@@ -77,6 +77,7 @@ set(CELLSHARD_CUDA_MODE ${CELLERATOR_CUDA_MODE} CACHE STRING
 
 add_subdirectory(extern/cudaBioTypes EXCLUDE_FROM_ALL)
 add_subdirectory(extern/CellShard EXCLUDE_FROM_ALL)
+add_subdirectory(extern/MosaiCell EXCLUDE_FROM_ALL)
 
 if(CELLERATOR_ENABLE_PYTHON)
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
@@ -366,7 +367,7 @@ add_library(cellerator_workbench
 )
 target_include_directories(cellerator_workbench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cellerator_workbench PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(cellerator_workbench PRIVATE CellShard::runtime CellShard::export CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
+target_link_libraries(cellerator_workbench PRIVATE MosaiCell::runtime CellShard::runtime CellShard::export CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
 cellerator_link_nccl_if_available(cellerator_workbench)
 set_target_properties(cellerator_workbench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_workbench)
@@ -397,6 +398,7 @@ if(CELLERATOR_ENABLE_PYTHON)
     target_include_directories(_cellerator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(_cellerator PRIVATE
         cellerator_workbench
+        MosaiCell::runtime
         CellShard::runtime
         CUDA::cudart
         CUDA::cusparse
@@ -547,7 +549,8 @@ add_executable(cellShardRealSpmmBench
     bench/cellshard_real_spmm_bench.cu
 )
 target_include_directories(cellShardRealSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellShardRealSpmmBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse)
+target_include_directories(cellShardRealSpmmBench PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(cellShardRealSpmmBench PRIVATE cellerator_compute_autograd CUDA::cudart CUDA::cusparse ${HDF5_LIBRARIES})
 cellerator_link_nccl_if_available(cellShardRealSpmmBench)
 set_target_properties(cellShardRealSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellShardRealSpmmBench)

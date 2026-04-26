@@ -4,9 +4,9 @@ title: "Compute And Models"
 
 ## Reusable Compute First
 
-`src/compute/` is the authoritative home for reusable low-level computation. That includes preprocess operators, neighbor search, sparse autograd contexts and kernels, and other fleet or shard-scoped building blocks.
+`src/compute/` is the authoritative home for reusable low-level Cellerator computation that has not moved into MosaiCell. That includes neighbor search, sparse autograd contexts and kernels, and other fleet or shard-scoped building blocks.
 
-The rule is simple: reusable runtime logic stays here instead of being hidden inside model wrappers or one-off workbench code.
+The rule is simple: reusable runtime logic stays in an explicit low-level owner instead of being hidden inside model wrappers or one-off workbench code. The standard scRNA preprocessing owner is now `extern/MosaiCell/`.
 
 The forward-neighbor surface under `src/compute/neighbors/forward_neighbors/` now has an explicit backend split:
 
@@ -46,9 +46,10 @@ The current architecture report for whether quantized sparse payloads actually w
 The downstream stages are stacked deliberately:
 
 1. `CellShard` provides persisted sparse layout and runtime staging.
-2. `src/compute/` provides reusable kernels and operators on top of that substrate.
-3. `src/trajectory/`, `src/models/`, `src/quantized/`, and `src/workbench/runtime/` build task-specific workflows from those reusable pieces, while `src/workbench/` itself stays as the adapter-facing facade over that runtime backend.
-4. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
+2. `extern/MosaiCell/` provides the accelerated preprocessing backbone on top of CellShard layouts.
+3. `src/compute/` provides remaining reusable Cellerator kernels and operators on top of that substrate.
+4. `src/trajectory/`, `src/models/`, `src/quantized/`, and `src/workbench/runtime/` build task-specific workflows from those reusable pieces, while `src/workbench/` itself stays as the adapter-facing facade over that runtime backend.
+5. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
 
 ## Hot-Path Guidance
 

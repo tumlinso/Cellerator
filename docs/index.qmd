@@ -2,7 +2,7 @@
 title: "Cellerator Pipeline"
 ---
 
-Cellerator is a GPU-oriented pipeline and compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns canonical sparse storage, pack delivery, and execution staging. Cellerator adds ingest, one-pass preprocessing and filtering, reusable sparse compute, trajectory logic, model workflows, Torch interop boundaries, and the ncurses workbench.
+Cellerator is a GPU-oriented pipeline and compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns canonical sparse storage, CSPACK delivery, and execution staging. The accelerated standard-biology preprocessing backbone is now split into `MosaiCell`; Cellerator adds ingest, compatibility workbench facades, reusable sparse compute, trajectory logic, model workflows, and Torch interop boundaries.
 
 This documentation is not a paper workspace. It is the active source for explaining how the Cellerator pipeline is organized, what each stage owns, and where local operations still live outside the packaged product surface.
 
@@ -10,7 +10,7 @@ This documentation is not a paper workspace. It is the active source for explain
 
 - The end-to-end pipeline shape from source ingest to runtime execution.
 - The contract between Cellerator and `CellShard`.
-- Where compute, trajectory, model, quantized, and Torch-facing surfaces fit.
+- Where MosaiCell, compute, trajectory, model, quantized, and Torch-facing surfaces fit.
 - The current quantized transfer-versus-decode architecture questions for sparse inference.
 - The current local-only download and preprocessing helpers under `docs/pipeline/`.
 - The build and test entrypoints that validate the pipeline.
@@ -22,8 +22,9 @@ flowchart LR
     A[Source Matrices and Metadata] --> B[Cellerator Ingest]
     B --> C[Canonical Emission]
     C --> D[CellShard csh5 and Pack Generations]
-    D --> E[Cellerator Compute and Preprocess]
-    E --> F[Trajectory and Model Workflows]
+    D --> E[MosaiCell Preprocess]
+    E --> I[Cellerator Compute]
+    I --> F[Trajectory and Model Workflows]
     D --> G[Workbench]
     D --> H[Torch Export Boundary]
 ```
@@ -31,8 +32,9 @@ flowchart LR
 ## Core Rules
 
 - `src/ingest/` owns source parsing, filtering, metadata alignment, and canonical emission.
-- `extern/CellShard/` owns persisted sparse storage, execution-pack delivery, and owner-side runtime coordination.
-- `src/compute/` is the authoritative home for reusable computation.
+- `extern/CellShard/` owns persisted sparse storage, execution-CSPACK delivery, and owner-side runtime coordination.
+- `extern/MosaiCell/` owns the native accelerated scRNA preprocessing backbone.
+- `src/compute/` is the authoritative home for reusable Cellerator computation that has not moved into MosaiCell.
 - `src/models/`, `src/trajectory/`, `src/quantized/`, and `src/torch/` sit on top of those lower-level surfaces instead of redefining them.
 - `docs/pipeline/` remains local-only operational glue. It can call external tools or built binaries, but it is not part of the CMake or install surface.
 

@@ -281,8 +281,8 @@ int main() {
                 "append_dataset_runtime_service_h5 failed");
         require(cs::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str()) != 0,
                 "warm_dataset_blocked_ell_h5_cache failed");
-        require(cs::warm_dataset_blocked_ell_h5_execution_cache(out_path.c_str(), cache_root.c_str()) != 0,
-                "warm_dataset_blocked_ell_h5_execution_cache failed");
+        require(cs::warm_dataset_blocked_ell_h5_cache(out_path.c_str(), cache_root.c_str()) != 0,
+                "warm_dataset_blocked_ell_h5_cache failed");
 
         wb::dataset_summary summary = wb::summarize_dataset_csh5(out_path);
         require(summary.ok, "summarize_dataset_csh5 failed");
@@ -301,9 +301,9 @@ int main() {
                 "load_dataset_blocked_ell_h5_header failed");
         require(cs::bind_dataset_h5_cache(&storage, cache_root.c_str()) != 0,
                 "bind_dataset_h5_cache failed");
-        require(cs::fetch_dataset_blocked_ell_h5_execution_partition(&exec_part, &loaded, &storage, 0u) != 0,
-                "fetch_dataset_blocked_ell_h5_execution_partition failed");
-        require(exec_part.cols == 4u, "fixture execution partition cols mismatch");
+        require(cs::fetch_dataset_blocked_ell_h5_pack_partition(&exec_part, &loaded, &storage, 0u) != 0,
+                "fetch_dataset_blocked_ell_h5_pack_partition failed");
+        require(exec_part.cols == 4u, "fixture pack partition cols mismatch");
         require(exec_part.exec_to_canonical_cols != nullptr && exec_part.canonical_to_exec_cols != nullptr,
                 "fixture execution column maps missing");
         require(exec_part.exec_to_canonical_cols[0] == 0u

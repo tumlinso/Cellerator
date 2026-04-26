@@ -1,5 +1,6 @@
 #include "benchmark_mutex.hh"
 #include "../extern/CellShard/include/CellShard/CellShard.hh"
+#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
 #include <Cellerator/ingest/compressed_parts.cuh>
 #include <Cellerator/ingest/mtx_reader.cuh>
 
