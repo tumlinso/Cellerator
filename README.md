@@ -2,24 +2,27 @@
 
 Cellerator is a GPU-oriented compute and model repository for large sparse single-cell datasets.
 
-It sits on top of `CellShard`, which handles canonical sparse storage, finalize/repack staging, CSPACK delivery, and distributed execution staging. The accelerated standard-biology preprocessing backbone now lives in `extern/MosaiCell`; Cellerator keeps ingest, compatibility workbench facades, reusable compute that has not moved, model code, trajectory logic, and Torch-facing boundaries.
+It sits on top of `CellShard`, which handles canonical sparse storage, optional ingest, finalize/repack staging, CSPACK delivery, and distributed execution staging. Cellerator owns math over CellShard matrices, including reusable sparse compute, model code, trajectory logic, quantized kernels, and Torch-facing boundaries. The biology-facing preprocessing API and workflow policy live in `extern/CellShardPreprocess`.
 
-This codebase is built for explicit low-level control rather than a high-level workflow API, but it now also carries a thin Python wrapper for the dataset-facing workbench path. If you want the storage layer by itself, see `extern/CellShard/`.
+This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, distributed sparse execution, and explicit Torch interop. It does not replace Torch, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now. If you want source ingest or storage workflows, see `extern/CellShard/`.
+
+Surfaces that are temporarily inside this repo but do not belong in Cellerator long term are tracked in `out_of_scope_inventory.md`.
 
 ## What Is Here
 
-- `src/ingest/`: source readers, MTX conversion, and dataset ingest
-- `src/compute/`: reusable sparse compute, preprocess operators, neighbors, and custom-op building blocks
+- `src/compute/`: reusable sparse compute, neighbors, autograd, and custom-op building blocks
 - `src/models/`: libtorch model workflows
 - `src/trajectory/`: trajectory scoring and assembly
-- `src/workbench/`: keyboard-driven terminal workbench adapters and shared runtime facade
-- `src/apps/`: application entrypoints such as the ncurses workbench binary
 - `src/quantized/`: quantized sparse runtime
 - `src/torch/`: explicit CellShard-to-Torch boundary
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
-- `extern/CellShard/`: storage and staging submodule used by Cellerator
-- `extern/MosaiCell/`: accelerated scRNA preprocessing runtime and native workbench target
+- `extern/CellShard/`: storage, staging, and optional ingest submodule used by Cellerator
+- `extern/CellShardPreprocess/`: biology-facing scRNA preprocessing policy, runtime API, and native workbench target
+
+CellShardPreprocess exposes its native C++ API in `namespace cellshard_preprocess`.
+Use `namespace cspre = ::cellshard_preprocess;` as the short Cellerator-facing
+alias when calling that API from wrappers, tests, or examples.
 
 ## Source Layout
 
@@ -37,13 +40,11 @@ Naming is mostly `snake_case` for files, functions, variables, and structs.
 The main source areas are:
 
 - `include/Cellerator/`: canonical public headers for in-repo callers
-- `src/compute/`: low-level compute building blocks and performance-sensitive kernels
-- `src/compute/autograd/`: sparse autograd contexts, scratch, and kernels
-- `src/compute/neighbors/`: nearest-neighbor and retrieval code
-- `src/ingest/`: source-format readers, metadata tables, partition planning, and dataset conversion
+- `src/compute/`: sparse ML math over CellShard matrices
+- `src/compute/core/`: shared low-level host/device utilities
+- `src/compute/ml/autograd/`: sparse autograd contexts, scratch, and kernels
+- `src/compute/neighbors/`: nearest-neighbor math only; caller policy lives in `extern/CellShardNeighbors/`
 - `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
-- `src/workbench/`: the ncurses workbench application, public facade, and `runtime/` backend
-- `src/apps/`: adapter or executable entrypoints
 - `src/quantized/`: quantized sparse layouts, accessors, and kernels
 - `src/torch/`: explicit Torch interop boundary
 
@@ -77,14 +78,7 @@ cmake --build build -j 4
 
 Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the default libtorch.
 
-To build the optional Python wrapper from the root build:
-
-```bash
-cmake -S . -B build -DCELLERATOR_ENABLE_PYTHON=ON -DCELLERATOR_ENABLE_TORCH_MODELS=OFF -DCELLERATOR_ENABLE_NCURSES_WORKBENCH=OFF
-cmake --build build -j 4 --target celleratorPythonCompileTest
-```
-
-If you also enable `-DCELLERATOR_ENABLE_CELLSHARD_PYTHON=ON`, the root build exposes a focused `celleratorPythonRuntimeTest` target that imports both build-tree packages and runs an end-to-end smoke check.
+CellShard ingest is optional and disabled by default. Build it from the CellShard subproject with `-DCELLSHARD_BUILD_INGEST=ON`; `-DCELLSHARD_INSTALL_PREPROCESS=ON` forces that flag on.
 
 ## Running Things
 
@@ -94,8 +88,6 @@ Examples:
 
 ```bash
 ./build/cellShardDatasetH5Test
-./build/cellShardFirstFileFixtureTest
-./build/datasetWorkbenchRuntimeTest
 ./build/forwardNeighborsCompileTest
 ./build/computeAutogradRuntimeTest
 ./build/quantizeModelTest
@@ -103,18 +95,7 @@ Examples:
 
 Useful build targets include:
 
-- `celleratorWorkbench`
-- `mosaiCellWorkbench`
-- `mosaicellAdapterStagingTest`
-- `mosaicellDoublePreprocessRejectionTest`
-- `mosaicellPreprocessRuntimeTest`
-- `mosaicellQCMetricsEquivalenceTest`
-- `celleratorPythonCompileTest`
-- `celleratorPythonRuntimeTest` when both Python modules are enabled
 - `cellShardDatasetH5Test`
-- `cellShardFirstFileFixtureTest`
-- `datasetIngestCompileTest`
-- `datasetWorkbenchRuntimeTest`
 - `forwardNeighborsCompileTest`
 - `computeAutogradRuntimeTest`
 - `quantizedTransferSpmmBench`
@@ -127,6 +108,7 @@ Useful build targets include:
 ## Repository Notes
 
 - Cellerator is performance-oriented and currently tuned around Volta / V100-class assumptions.
+- CellShard archive semantics are now assay-aware: `.csh5` and `.cshard` can describe a shared observation table plus per-assay sparse matrices, feature tables, row maps, and pairing metadata for exact or partial multiome lookup.
 - CUDA mode selection is explicit: `generic` is the default topology-agnostic path, while `native` and `native-extreme` unlock the host-specific V100 ordering only after runtime discovery confirms that topology.
 - Blocked-ELL is the native sparse execution and persistence layout for `.csh5` output; CSR/compressed remains an explicit interop/export path in memory, not a supported `.csh5` file format.
 - `.cshard` is present as an experimental standby HDF5-free native archive: it can be inspected, validated, converted from `.csh5`, and read directly by sparse row range, but `.csh5` remains the production durable format.
@@ -134,47 +116,23 @@ Useful build targets include:
 - The native ingest path will try the CUDA COO-to-Blocked-ELL builder first, but it now validates the live nonzero count of each built part before publishing it. If the GPU builder produces a payload whose live entries do not match the source COO semantics, ingest falls back to the CPU builder for that part instead of writing a mismatched optimized shard.
 - Optimized blocked `.csh5` files now persist only `/payload/optimized_blocked_ell` shard blobs plus matrix metadata; they no longer carry a second heavyweight `/payload/blocked_ell` body in the same file. Compatibility paths that still need canonical blocked partitions reconstruct them lazily from the optimized shard payload or from published CSPACK files.
 - Optimized blocked shard blobs also use a compact remap encoding: shard-level column permutations are stored once, inverse permutations are reconstructed on load, and permutation arrays are narrowed to `u8`/`u16` on disk when the shard shape permits it.
-- Current MTX-dataset ingest is bounded-memory and SSD-aware: it emits the canonical `dataset.csh5`, spills bounded `.cspool` build artifacts to a local spool, and leaves shape-changing preprocess compaction to the later MosaiCell-backed workbench preprocess/finalize path.
-- Workbench preprocess now defaults to a two-stage flow: MosaiCell owns the native QC, normalization/log1p, keep-mask, and raw-count validation contract, while Cellerator's existing workbench API remains a compatibility facade. CellShard then finalizes the compacted Blocked-ELL dataset in place and rebuilds browse metadata. Set `preprocess_config.finalize_after_preprocess = false` only when you intentionally want a metadata-only benchmark stop before repack.
+- CellShard owns source ingest when configured with `CELLSHARD_BUILD_INGEST=ON`; Cellerator no longer exposes ingest or workbench compatibility APIs from the root build.
+- Cellerator owns model-facing numerical math over CellShard matrices. CellShardPreprocess owns native QC rules, normalization/log1p, keep-mask policy, and raw-count validation as biology-facing workflow policy. CellShard owns data handling plus generic runtime sparse row/feature masking and grouped row reductions over its execution layouts.
+- C++ call sites should spell the native preprocessing namespace as `cspre` via `namespace cspre = ::cellshard_preprocess;`; keep the full `cellshard_preprocess` spelling for declarations and public documentation that names the ABI directly.
 - Single-machine operation should still follow the owner-service contract: `.csh5` stays under one owner-side coordinator and master reader, while local executors consume published CSPACK generations.
 - Distributed operation keeps `.csh5` on the owner host and delivers CSPACK generations to executor nodes; remote nodes may cache CSPACK data locally, but those caches are runtime artifacts rather than sources of truth.
+- CSPACK remains a single-assay execution matrix artifact. Multiome execution uses coordinated per-assay CSPACK files plus manifest metadata that records `assay_id`, global observation ranges, local row ranges, generation, and layout.
 - User-defined annotations now live in cold `/observation_metadata`, `/feature_metadata`, and `/dataset_attributes` groups. Owner snapshots advertise those surfaces, but they are fetched only on explicit request rather than being shipped on the hot CSPACK bootstrap path.
 - `docs/` now hosts the Cellerator pipeline manual plus local-only workflow notes; it is still not part of the default build or packaging surface.
 - `docs/quantized_transfer_architecture.qmd` records the current Volta-oriented report for quantized sparse transport, decode cost, and tensor-op-oriented follow-up work.
 
-## Python Wrapper
-
-The root `cellerator` Python package is intentionally narrow. It wraps the dataset workbench library seam for:
-
-- manifest and source inspection
-- ingest planning and conversion to `.csh5`
-- dataset summary and preprocess execution
-- high-level reopening of the written dataset through `cellshard.open()`
-- explicit cold metadata fetches for observation annotations, feature annotations, and dataset attributes through the CellShard owner/client handles
-
-It does not try to expose the full Torch/model/custom-kernel surface. For ordinary Python use:
-
-```bash
-python -m pip install extern/CellShard
-python -m pip install .
-```
-
-```python
-import cellerator
-
-builder = cellerator.DatasetBuilder.from_manifest("manifest.tsv")
-policy = cellerator.ingest_policy()
-policy.output_path = "dataset.csh5"
-plan = builder.plan(policy)
-builder.convert(plan)
-summary = builder.inspect_output()
-dataset = builder.open()
-```
-
 ## Where To Read Next
 
 - `extern/CellShard/README.md`: CellShard scope and storage/runtime details
-- `extern/MosaiCell/README.md`: MosaiCell preprocessing runtime scope
+- `extern/CellShardPreprocess/README.md`: CellShardPreprocess preprocessing runtime scope
+- `scope.md`: canonical Cellerator ownership and out-of-scope boundary
+- `out_of_scope_inventory.md`: advisory queue for code that should move out or be reclassified
+- `planning_strategy.md`: pickup guide for operator-first sparse biological ML planning
 - `AGENTS.md`: contributor rules, codebase conventions, and repository-specific guidance
 - `optimization.md`: performance notes and bottleneck analysis
 - `pointer_migration_plan.md`: pointer-first migration policy for hot paths

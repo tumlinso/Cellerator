@@ -14,14 +14,14 @@
 #include "benchmark_mutex.hh"
 #include "../extern/CellShard/include/CellShard/CellShard.hh"
 #include "../extern/CellShard/src/convert/compressed_from_coo_raw.cuh"
-#include <Cellerator/ingest/compressed_parts.cuh>
+#include <CellShard/ingest/compressed_parts.cuh>
 
 namespace {
 
 namespace cs = ::cellshard;
 namespace csb = ::cellshard::bucket;
 namespace csd = ::cellshard::distributed;
-namespace csi = ::cellerator::ingest::mtx;
+namespace csi = ::cellshard::ingest::mtx;
 
 struct config {
     unsigned int build_device = 0;

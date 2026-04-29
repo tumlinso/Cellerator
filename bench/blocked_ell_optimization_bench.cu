@@ -1,8 +1,8 @@
 #include "benchmark_mutex.hh"
 #include "../extern/CellShard/include/CellShard/CellShard.hh"
 #include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
-#include <Cellerator/ingest/compressed_parts.cuh>
-#include <Cellerator/ingest/mtx_reader.cuh>
+#include <CellShard/ingest/compressed_parts.cuh>
+#include <CellShard/ingest/mtx_reader.cuh>
 
 #include <cuda_runtime.h>
 
@@ -23,7 +23,7 @@
 namespace {
 
 namespace cs = ::cellshard;
-namespace cmtx = ::cellerator::ingest::mtx;
+namespace cmtx = ::cellshard::ingest::mtx;
 namespace csc = ::cellshard::convert;
 
 struct real_case {

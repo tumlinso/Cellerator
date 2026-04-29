@@ -4,6 +4,7 @@
 // compile units if compile time matters more than convenience.
 
 #include "format.cuh"
+#include <Cellerator/quantized/quantized_blocked_ell.cuh>
 #include "numeric.cuh"
 #include "metadata.cuh"
 #include "layout.cuh"

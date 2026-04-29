@@ -55,7 +55,7 @@
 
 ### 3.1 What Is Already Good
 
-- `src/compute/preprocess/workspace.cuh` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
+- `extern/CellShardPreprocess/src/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
 - The quantized backend under `src/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
@@ -88,7 +88,7 @@
 - Pair-local row sharding across the real NVLink pairs scales well for CSR `SpMV` because it keeps the workload bandwidth-heavy and avoids expensive global merges.
 - Four-way feature-sharded CSR `SpMV` improves latency, but it does not drive all four V100s like a Tensor Core GEMM. The per-GPU shards become too thin and the math intensity stays low.
 - If the goal is high sustained board power and Tensor Core usage, CSR `SpMV` is the wrong target. The sparse Tensor Core direction for this host class is Blocked-ELL `SpMM`.
-- That makes the right storage strategy Blocked-ELL-first:
+- That makes the right Cellerator storage strategy Blocked-ELL-first:
   - make Blocked-ELL the native sparse layout for persisted execution and hot-path staging
   - retain CSR/row-compressed as the secondary fallback path for algorithms that still require row-compressed semantics
 
@@ -258,11 +258,10 @@ Optimization comment:
 
 ### 6.1 Relevant Surface
 
-- `src/compute/preprocess/types.cuh`
-- `src/compute/preprocess/workspace.cuh`
-- `src/compute/preprocess/kernels.cuh`
-- `src/compute/preprocess/operators.cuh`
-- `bench/scrna_preprocess_bench.cu`
+- `extern/CellShardPreprocess/include/CellShardPreprocess/preprocess.cuh`
+- `extern/CellShardPreprocess/src/preprocess.cu`
+- `extern/CellShardPreprocess/bench/scrna_preprocess_bench.cu`
+- `extern/CellShardPreprocess/bench/preprocess_format_compare_bench.cu`
 
 This is the cleanest performance-oriented subsystem in the repo today.
 
@@ -270,8 +269,8 @@ This is the cleanest performance-oriented subsystem in the repo today.
 
 Good choices:
 
-- one `device_workspace` per GPU
-- one `distributed_workspace` for cross-device reduction
+- one `preprocess_workspace` per GPU
+- one `preprocess_fleet_workspace` for cross-device reduction
 - contiguous slabs for cell metrics and gene metrics
 - cached CUB and cuSPARSE temporary buffers
 
@@ -284,7 +283,7 @@ Why this matters:
 
 Relevant code:
 
-- `compute_cell_metrics_kernel` in `src/compute/preprocess/kernels.cuh`
+- `compute_qc_metrics_*_kernel` in `extern/CellShardPreprocess/src/preprocess.cu`
 
 Shape:
 
@@ -403,7 +402,7 @@ Performance comment:
 
 Relevant code:
 
-- `allreduce_gene_metrics()` in `src/compute/preprocess/workspace.cuh`
+- `reduce_gene_metrics_to_leader()` in `extern/CellShardPreprocess/src/preprocess.cu`
 
 NCCL path:
 

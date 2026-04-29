@@ -1,7 +1,7 @@
 #include <Cellerator/compute/autograd.hh>
 #include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
-#include <Cellerator/ingest/dataset_ingest.cuh>
-#include <Cellerator/ingest/mtx_reader.cuh>
+#include <CellShard/ingest/dataset_ingest.cuh>
+#include <CellShard/ingest/mtx_reader.cuh>
 #include "benchmark_mutex.hh"
 
 #include <cuda_fp16.h>
@@ -20,8 +20,8 @@
 #include <vector>
 
 namespace autograd = ::cellerator::compute::autograd;
-namespace cmtx = ::cellerator::ingest::mtx;
-namespace cdataset = ::cellerator::ingest::dataset;
+namespace cmtx = ::cellshard::ingest::mtx;
+namespace cdataset = ::cellshard::ingest::dataset;
 namespace cs = ::cellshard;
 
 namespace {

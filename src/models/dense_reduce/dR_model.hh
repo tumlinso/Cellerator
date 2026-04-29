@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dR_dataloader.hh"
-#include "../../compute/model_ops/model_ops.hh"
+#include "../../compute/ml/model_ops/model_ops.hh"
 
 #include <torch/torch.h>
 

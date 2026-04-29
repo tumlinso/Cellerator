@@ -1,6 +1,6 @@
 #include "quantize.hh"
 
-#include "../../compute/autograd/autograd.hh"
+#include "../../compute/ml/autograd/autograd.hh"
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>

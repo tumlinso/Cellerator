@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../src/compute/model_ops/model_ops.hh"
+#include "../../../src/compute/ml/model_ops/model_ops.hh"

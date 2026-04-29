@@ -4,7 +4,7 @@ title: "Ingest And Runtime"
 
 ## Bounded-Memory Ingest
 
-Cellerator's ingest path is designed around bounded-memory conversion rather than whole-dataset materialization in RAM.
+CellShard's optional ingest path is designed around bounded-memory conversion rather than whole-dataset materialization in RAM. It is built only when `CELLSHARD_BUILD_INGEST=ON`; installing CellShardPreprocess through CellShard forces that flag on.
 
 Current posture:
 
@@ -18,13 +18,13 @@ Current posture:
 
 ## Ownership Contract
 
-`src/ingest/` stops at canonical emission. After that:
+`CellShard::ingest` stops at canonical emission. After that:
 
 - `CellShard` owns final blocking and bucketing.
 - `CellShard` owns CSPACK generation and `.csh5` assembly.
 - `CellShard` owns CSPACK publication and runtime fetch paths.
 
-That split matters because Cellerator is not trying to reimplement the storage or staging substrate in higher-level code.
+That split matters because Cellerator is no longer the source-ingest owner; it consumes CellShard storage/runtime surfaces for ML workloads.
 
 In current operation, CellShard should be read as a service discipline rather than as a passive file format. The emitted matrix is committed into an owner-hosted `.csh5` canonical container, while the hot execution surface is expressed through published `.cspack` generations derived from that container. Readers and executors consume those published generations instead of mutating canonical payloads in place, and append staging remains separate from visible runtime state until an explicit generation cutover occurs. The more complete description of this behavior lives in [CellShard Behavior](cellshard_behavior.qmd).
 
@@ -51,13 +51,10 @@ The main persisted outputs are:
 
 - canonical `.csh5` metadata and shard layout
 - published CSPACK files
-- runtime metadata that tells downstream compute and workbench code how to fetch and interpret those CSPACK files
+- runtime metadata that tells downstream compute code how to fetch and interpret those CSPACK files
 
 ## Relevant Source Areas
 
-- `src/ingest/`
+- `extern/CellShard/include/CellShard/ingest/`
 - `extern/CellShard/src/disk/`
-- `src/workbench/`
-- `src/workbench/runtime/`
 - `tests/cellshard_dataset_h5_test.cu`
-- `tests/dataset_workbench_runtime_test.cc`

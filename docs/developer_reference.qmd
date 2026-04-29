@@ -21,8 +21,6 @@ cmake --build build -j 4
 Useful pipeline-adjacent targets include:
 
 - `cellShardDatasetH5Test`
-- `datasetIngestCompileTest`
-- `datasetWorkbenchRuntimeTest`
 - `forwardNeighborsCompileTest`
 - `computeAutogradRuntimeTest`
 - `quantizedTransferSpmmBench`
@@ -40,7 +38,6 @@ Examples:
 
 ```bash
 ./build/cellShardDatasetH5Test
-./build/datasetWorkbenchRuntimeTest
 ./build/forwardNeighborsCompileTest
 ./build/computeAutogradRuntimeTest
 ./build/quantizeModelTest
@@ -48,15 +45,12 @@ Examples:
 
 ## Repo Map
 
-- `src/ingest/`: source readers, MTX conversion, dataset ingest, metadata alignment
-- `src/compute/`: reusable sparse compute, preprocess operators, autograd, neighbors
+- `src/compute/`: reusable sparse compute, autograd, neighbors
 - `src/models/`: model workflows, including native CUDA developmental-time paths
 - `src/trajectory/`: trajectory scoring and assembly
-- `src/workbench/`: ncurses adapter and public workbench facade
-- `src/workbench/runtime/`: shared dataset-workflow backend behind the workbench facade
 - `src/quantized/`: Volta-oriented quantized sparse runtime
 - `src/torch/`: explicit Torch export boundary
-- `extern/CellShard/`: storage, `.csh5`, pack generation, and runtime staging
+- `extern/CellShard/`: storage, optional ingest, `.csh5`, pack generation, and runtime staging
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
 
@@ -64,5 +58,7 @@ Examples:
 
 - `README.md`
 - `AGENTS.md`
+- `scope.md`
+- `out_of_scope_inventory.md`
 - `optimization.md`
 - `todos.md`

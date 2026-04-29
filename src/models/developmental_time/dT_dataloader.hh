@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../compute/autograd/autograd.hh"
+#include "../../compute/ml/autograd/autograd.hh"
 #include "../../../extern/CellShard/include/CellShard/runtime/device/sharded_device.cuh"
 
 #include <cstdint>

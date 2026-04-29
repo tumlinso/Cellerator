@@ -4,8 +4,8 @@
 Use this file as the canonical index for substantial multi-step work.
 
 ## Shared Assumptions
-- MosaiCell owns the accelerated scRNA preprocessing backbone and workbench implementation; Cellerator keeps compatibility wrappers.
-- Native GPU policy remains V100 `sm_70`, Blocked-ELL-first persisted execution, fp16 steady-state matrix values, and fp32 accumulators for QC and summary statistics.
+- CellShardPreprocess owns the accelerated scRNA preprocessing backbone, native workbench implementation, and preprocessing benchmarks; Cellerator no longer keeps preprocessing compatibility wrappers.
+- Native Cellerator GPU policy remains V100 `sm_70` and Blocked-ELL-first for Cellerator execution. CellShardPreprocess treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, with compressed / CSR as fallback.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -19,18 +19,23 @@ Use this file as the canonical index for substantial multi-step work.
 - `docs/pipeline/README.md`: pipeline-level documentation surface to keep in sync.
 
 ## Workstreams
-- `mosaicell-gpu-biology-backbone`: partial / active - MosaiCell external target, smaller native preprocessing/runtime targets, validation delegation, docs, and build/test coverage are in place; remaining Cellerator metadata/finalize/browse-cache compatibility code still needs extraction behind MosaiCell-owned pointer-first APIs.
+- `cellerator-sparse-ml-layout`: in_progress / idle - Refactored Cellerator `src/compute` around sparse ML math contracts, kept compatibility wrappers, and moved forward-neighbor policy into CellShardNeighbors. Needs a final follow-up review/build after this checkpoint.
+- `cellshard-preprocess-gpu-biology-backbone`: done / closed - CellShardPreprocess owns native preprocessing APIs and benchmarks; Cellerator preprocessing API/implementation/benchmark targets have been removed.
+- `cellshard-multi-assay-archive`: done / closed - Added the multi-assay archive foundation, pointer-first row-map validation, cudaBioTypes-backed semantic checks, cshard POD descriptors, docs, and compile/runtime coverage while leaving CSPACK payloads single-assay.
 
 ## Global Blockers
 _None recorded yet._
 
 ## Progress Notes
+- Started `cellerator-sparse-ml-layout` from the supplied source layout plan. The intended first pass is behavior-preserving except for moving forward-neighbor policy/API ownership into the new `extern/CellShardNeighbors` submodule.
+- Checkpointed `cellerator-sparse-ml-layout`: moved autograd/model-op code under `src/compute/ml`, moved shared host buffering to `src/compute/core`, moved cuVS/KNN scoring helpers under `src/compute/neighbors/scoring`, and moved forward-neighbor API/source into `extern/CellShardNeighbors` with Cellerator compatibility wrappers.
+- Implemented `cellshard-multi-assay-archive`: CellShard now has measurement-agnostic assay descriptors and row-map helpers, Cellerator validates those semantics against cudaBioTypes, and docs state that multiome execution uses coordinated single-assay CSPACK artifacts.
 - Ran `todo-cleanup --partial` and cleared workstreams: dual-cuda-optimization-modes, cellshard-first-stable-release, cellshard-blocked-ell-ingest-runtime, cellshard-runtime-service-contract, quantized-blocked-ell-codecs, cellshard-user-metadata-annotations, gpu-prototype-ingest-blocked-ell, gpu-prototype-model-sparse-boundaries, gpu-prototype-neighbors-trajectory, blocked-ell-optimization-study, gpu-benchmark-sliced-preprocess-campaign, cellshard-hierarchy-reset, implement-derived-subset-and-reorder-materialization-for-cellshard-and-workbench.
-- Started `mosaicell-gpu-biology-backbone` from the supplied implementation plan.
-- Reopened `mosaicell-gpu-biology-backbone` after clarifying that the smaller MosaiCell target builds, but not all preprocessing orchestration source has moved out of Cellerator yet; GPU runtime tests build but could not run on this no-device environment.
+- Started `cellshard-preprocess-gpu-biology-backbone` from the supplied implementation plan.
+- Finished `cellshard-preprocess-gpu-biology-backbone`: moved Blocked-ELL/Sliced-ELL native preprocessing and CSR fallback ownership into CellShardPreprocess, moved preprocessing benchmarks there, and removed Cellerator preprocessing APIs and root targets.
 
 ## Next Actions
-- Continue extracting remaining preprocessing orchestration into MosaiCell-owned targets before thinning the Cellerator compatibility layer further.
+- Resume by reviewing the CMake/include wiring after the source moves, then run a focused configure/build and the affected tests.
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.

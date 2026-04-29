@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../compute/neighbors/forward_neighbors/forwardNeighbors.hh"
-#include "../../compute/model_ops/model_ops.hh"
+#include <Cellerator/compute/neighbors/forward_neighbors.hh>
+#include "../../compute/ml/model_ops/model_ops.hh"
 #include "../../quantized/layout.cuh"
 #include "../../quantized/packing.cuh"
 

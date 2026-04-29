@@ -4,13 +4,14 @@ title: "Compute And Models"
 
 ## Reusable Compute First
 
-`src/compute/` is the authoritative home for reusable low-level Cellerator computation that has not moved into MosaiCell. That includes neighbor search, sparse autograd contexts and kernels, and other fleet or shard-scoped building blocks.
+`src/compute/` is the authoritative home for reusable sparse ML math over CellShard matrices. That includes sparse linalg, reductions, transforms, selection, neighbor scoring/search math, sparse autograd contexts and kernels, preprocessing math kernels, and other fleet or shard-scoped numerical building blocks.
 
-The rule is simple: reusable runtime logic stays in an explicit low-level owner instead of being hidden inside model wrappers or one-off workbench code. The standard scRNA preprocessing owner is now `extern/MosaiCell/`.
+The rule is simple: math stays in Cellerator, data handling stays in CellShard, and biology-facing preprocessing policy stays in `extern/CellShardPreprocess/`. Reusable runtime kernels should not be hidden inside model wrappers, storage code, or one-off workflow code. Source ingest belongs to CellShard's optional ingest component.
 
-The forward-neighbor surface under `src/compute/neighbors/forward_neighbors/` now has an explicit backend split:
+The forward-neighbor caller surface now lives in `extern/CellShardNeighbors/`. Cellerator keeps the reusable math under `src/compute/neighbors/`:
 
 - routed exact top-`k` search now lives in the reusable `src/compute/neighbors/exact_search/` layer, so dense and sliced exact search stream routed segments on device and emit only compact candidate tables instead of updating per-interval score state in HBM
+- lower-level KNN scoring helpers live under `src/compute/neighbors/scoring/`
 - dense exact and dense ANN remain available as the validation and cross-check path
 - Blocked-ELL sparse exact is the optimized V100 owner path and is routed through Tensor Core-capable Blocked-ELL `SpMM`
 - Blocked-ELL sparse ANN now uses Tensor Core-capable Blocked-ELL list probes and a sparse refine stage instead of aliasing to dense exact
@@ -45,15 +46,15 @@ The current architecture report for whether quantized sparse payloads actually w
 
 The downstream stages are stacked deliberately:
 
-1. `CellShard` provides persisted sparse layout and runtime staging.
-2. `extern/MosaiCell/` provides the accelerated preprocessing backbone on top of CellShard layouts.
-3. `src/compute/` provides remaining reusable Cellerator kernels and operators on top of that substrate.
-4. `src/trajectory/`, `src/models/`, `src/quantized/`, and `src/workbench/runtime/` build task-specific workflows from those reusable pieces, while `src/workbench/` itself stays as the adapter-facing facade over that runtime backend.
+1. `CellShard` provides persisted sparse layout, data handling, and runtime staging.
+2. `src/compute/` provides reusable Cellerator math over CellShard matrices.
+3. `extern/CellShardPreprocess/` provides biology-facing preprocessing policy and calls the layout-aware math layer.
+4. `src/trajectory/`, `src/models/`, and `src/quantized/` build task-specific workflows from those reusable pieces.
 5. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
 
 ## Hot-Path Guidance
 
 - Keep data layout and transfer costs explicit.
-- Keep framework-independent differentiation logic in `src/compute/autograd/`.
+- Keep framework-independent differentiation logic in `src/compute/ml/autograd/`.
 - Do not route hot runtime work through `src/torch/`.
 - Prefer the fastest reasonable Volta path over abstraction-heavy compatibility layers when the code is performance-sensitive.
