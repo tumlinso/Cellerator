@@ -26,7 +26,7 @@ reaching into `src/` directly.
 
 Owns reusable low-level computation inside Cellerator: neighbor search, sparse autograd building blocks, preprocessing math over CellShard matrices, and other hot-path kernels. Biology-facing scRNA preprocessing remains behind the CellShardPreprocess API.
 
-### `extern/CellShardPreprocess/`
+### CellShardPreprocess
 
 Owns the biology-facing preprocessing API and workbench. Its native contract uses `cellshard_preprocess` C++ identifiers and the short caller alias `cspre`, treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, keeps compressed / CSR as fallback, and defines QC feature groups, raw-count policy, preprocessing state, and workflow orchestration. Reusable numerical kernels over those layouts should live in Cellerator compute and be called through explicit layout-aware boundaries.
 

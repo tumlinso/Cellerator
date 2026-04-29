@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../extern/CellShard/include/CellShard/formats/compressed.cuh"
-#include "../../extern/CellShard/include/CellShard/runtime/layout/sharded.cuh"
+#include <CellShard/formats/compressed.cuh>
+#include <CellShard/runtime/layout/sharded.cuh>
 
 #include <torch/torch.h>
 

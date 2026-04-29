@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Cellerator/compute/neighbors/forward_neighbors.hh>
-#include "../../compute/ml/model_ops/model_ops.hh"
 #include "../../quantized/layout.cuh"
 #include "../../quantized/packing.cuh"
 
@@ -14,18 +12,14 @@
 #include <cstring>
 #include <limits>
 #include <stdexcept>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 namespace cellerator::models::quantize {
 
 namespace msq = ::cellerator::quantized;
-namespace fn = ::cellerator::compute::neighbors::forward_neighbors;
-namespace model_ops = ::cellerator::compute::model_ops;
 
-// Model/training wrapper around forward-neighbor supervision and the lower-level
-// quantized backend.
+// Model/training wrapper around the lower-level quantized backend.
 
 struct GeneQuantizerConfig {
     std::int64_t input_genes = 0;
@@ -54,20 +48,6 @@ struct GeneQuantizerTrainConfig {
 struct QuantizerBatch {
     torch::Tensor features;
     torch::Tensor cell_indices;
-};
-
-struct QuantizerForwardSupervision {
-    const fn::ForwardNeighborIndex *neighbor_index = nullptr;
-    torch::Tensor reference_cell_indices;
-    torch::Tensor reference_features;
-    fn::ForwardNeighborSearchConfig search_config{};
-};
-
-struct ForwardNeighborTarget {
-    torch::Tensor target_features;
-    torch::Tensor valid_rows;
-    torch::Tensor neighbor_cell_indices;
-    torch::Tensor neighbor_weights;
 };
 
 struct GeneQuantizerOutput {
@@ -132,24 +112,8 @@ inline torch::Tensor dense_f32_(const torch::Tensor &tensor) {
     return tensor.to(torch::kFloat32);
 }
 
-inline torch::Tensor contiguous_i64_cpu_(const torch::Tensor &tensor) {
-    return tensor.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
-}
-
 inline torch::Tensor contiguous_f32_cpu_(const torch::Tensor &tensor) {
     return tensor.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
-}
-
-inline std::unordered_map<std::int64_t, std::int64_t> build_cell_lookup_(const torch::Tensor &cell_indices_cpu) {
-    if (cell_indices_cpu.dim() != 1) throw std::invalid_argument("reference_cell_indices must be rank-1");
-    std::unordered_map<std::int64_t, std::int64_t> lookup;
-    const std::int64_t rows = cell_indices_cpu.size(0);
-    const std::int64_t *ptr = cell_indices_cpu.data_ptr<std::int64_t>();
-    lookup.reserve(static_cast<std::size_t>(rows));
-    for (std::int64_t row = 0; row < rows; ++row) {
-        lookup[ptr[row]] = row;
-    }
-    return lookup;
 }
 
 template<typename Fn>
@@ -381,145 +345,10 @@ SparseCudaLossBundle sparse_cuda_reconstruction_range_backward_(
 
 } // namespace detail
 
-inline ForwardNeighborTarget build_forward_neighbor_target(
-    const torch::Tensor &query_cell_indices,
-    const QuantizerForwardSupervision &supervision) {
-    if (supervision.neighbor_index == nullptr) {
-        throw std::invalid_argument("QuantizerForwardSupervision.neighbor_index must be non-null");
-    }
-    torch::Tensor query_ids = detail::contiguous_i64_cpu_(query_cell_indices);
-    torch::Tensor reference_ids = detail::contiguous_i64_cpu_(supervision.reference_cell_indices);
-    torch::Tensor reference_dense = detail::dense_f32_(supervision.reference_features).contiguous();
-    if (reference_dense.dim() != 2) {
-        throw std::invalid_argument("QuantizerForwardSupervision.reference_features must be rank-2 after densification");
-    }
-    if (reference_ids.size(0) != reference_dense.size(0)) {
-        throw std::invalid_argument("QuantizerForwardSupervision reference tensors must align on row count");
-    }
-
-    // Mixed CPU/GPU supervision path: CPU row lookup and weight assembly, then
-    // optional GPU weighted-target blending.
-    const auto lookup = detail::build_cell_lookup_(reference_ids);
-    const fn::ForwardNeighborSearchResult neighbors =
-        supervision.neighbor_index->search_future_neighbors_by_cell_index(
-            query_ids.numel() != 0 ? query_ids.data_ptr<std::int64_t>() : nullptr,
-            static_cast<std::size_t>(query_ids.size(0)),
-            supervision.search_config);
-
-    const std::int64_t rows = query_ids.size(0);
-    const std::int64_t genes = reference_dense.size(1);
-    const std::int64_t top_k = neighbors.top_k;
-    torch::Tensor valid_rows = torch::zeros(
-        { rows },
-        torch::TensorOptions().dtype(torch::kBool).device(torch::kCPU));
-    torch::Tensor neighbor_row_indices = torch::full(
-        { rows, top_k },
-        -1,
-        torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
-    torch::Tensor neighbor_weights = torch::zeros(
-        { rows, top_k },
-        torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
-
-    bool *valid_ptr = valid_rows.data_ptr<bool>();
-    std::int64_t *neighbor_row_ptr = neighbor_row_indices.data_ptr<std::int64_t>();
-    float *weight_ptr = neighbor_weights.data_ptr<float>();
-
-    // Later branch-aware logic belongs here: replace this weighted future average
-    // without changing the quantizer parameters or quantized storage path.
-    for (std::int64_t row = 0; row < rows; ++row) {
-        std::vector<std::pair<std::int64_t, std::int64_t>> selected_neighbors;
-        std::vector<float> raw_weights;
-        selected_neighbors.reserve(static_cast<std::size_t>(top_k));
-        raw_weights.reserve(static_cast<std::size_t>(top_k));
-
-        for (std::int64_t slot = 0; slot < top_k; ++slot) {
-            const std::size_t off = static_cast<std::size_t>(row * top_k + slot);
-            const std::int64_t neighbor_id = neighbors.neighbor_cell_indices[off];
-            if (neighbor_id < 0) continue;
-
-            const auto it = lookup.find(neighbor_id);
-            if (it == lookup.end()) {
-                throw std::invalid_argument("forward neighbor cell index is missing from the quantizer reference table");
-            }
-
-            const float similarity = neighbors.neighbor_similarity[off];
-            if (!std::isfinite(similarity)) continue;
-            selected_neighbors.emplace_back(slot, it->second);
-            raw_weights.push_back(std::max(similarity, 0.0f));
-        }
-
-        if (selected_neighbors.empty()) continue;
-
-        float weight_sum = 0.0f;
-        for (const float value : raw_weights) weight_sum += value;
-        if (weight_sum <= 0.0f) {
-            weight_sum = static_cast<float>(raw_weights.size());
-            std::fill(raw_weights.begin(), raw_weights.end(), 1.0f);
-        }
-
-        valid_ptr[row] = true;
-        for (std::size_t idx = 0; idx < selected_neighbors.size(); ++idx) {
-            const std::int64_t slot = selected_neighbors[idx].first;
-            const std::int64_t reference_row = selected_neighbors[idx].second;
-            const float normalized = raw_weights[idx] / weight_sum;
-            weight_ptr[static_cast<std::size_t>(row * top_k + slot)] = normalized;
-            neighbor_row_ptr[static_cast<std::size_t>(row * top_k + slot)] = reference_row;
-        }
-    }
-
-    torch::Tensor target;
-    if (reference_dense.is_cuda()) {
-        target = model_ops::weighted_future_target(
-            reference_dense,
-            neighbor_row_indices.to(reference_dense.device(), torch::kInt64).contiguous(),
-            neighbor_weights.to(reference_dense.device(), torch::kFloat32).contiguous());
-    } else {
-        torch::Tensor reference_cpu = detail::contiguous_f32_cpu_(reference_dense);
-        torch::Tensor weights_cpu = neighbor_weights;
-        target = torch::zeros(
-            { rows, genes },
-            torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU));
-        float *target_ptr = target.data_ptr<float>();
-        const float *reference_ptr = reference_cpu.data_ptr<float>();
-        for (std::int64_t row = 0; row < rows; ++row) {
-            float *target_row_ptr = target_ptr + row * genes;
-            for (std::int64_t slot = 0; slot < top_k; ++slot) {
-                const std::size_t off = static_cast<std::size_t>(row * top_k + slot);
-                const std::int64_t reference_row = neighbor_row_ptr[off];
-                const float normalized = weights_cpu.data_ptr<float>()[off];
-                if (reference_row < 0 || normalized == 0.0f) continue;
-                const float *reference_row_ptr = reference_ptr + reference_row * genes;
-                for (std::int64_t gene = 0; gene < genes; ++gene) {
-                    target_row_ptr[gene] += normalized * reference_row_ptr[gene];
-                }
-            }
-        }
-    }
-
-    return ForwardNeighborTarget{
-        std::move(target),
-        std::move(valid_rows),
-        [&neighbors]() {
-            torch::Tensor tensor = torch::empty(
-                { neighbors.query_count, neighbors.top_k },
-                torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU));
-            if (!neighbors.neighbor_cell_indices.empty()) {
-                std::memcpy(
-                    tensor.data_ptr<std::int64_t>(),
-                    neighbors.neighbor_cell_indices.data(),
-                    neighbors.neighbor_cell_indices.size() * sizeof(std::int64_t));
-            }
-            return tensor;
-        }(),
-        std::move(neighbor_weights)
-    };
-}
-
 inline GeneQuantizerLoss compute_gene_quantizer_loss(
     const GeneQuantizerOutput &output,
     const QuantizerBatch &batch,
-    const GeneQuantizerLossConfig &config = GeneQuantizerLossConfig(),
-    const QuantizerForwardSupervision *forward_supervision = nullptr) {
+    const GeneQuantizerLossConfig &config = GeneQuantizerLossConfig()) {
     if (config.reconstruction_weight < 0.0 || config.future_weight < 0.0 || config.range_weight < 0.0) {
         throw std::invalid_argument("GeneQuantizerLossConfig weights must be >= 0");
     }
@@ -556,18 +385,6 @@ inline GeneQuantizerLoss compute_gene_quantizer_loss(
         range_loss = dynamic_range_loss + offset_anchor_loss;
     }
 
-    if (forward_supervision != nullptr && forward_supervision->neighbor_index != nullptr && config.future_weight > 0.0) {
-        // Future supervision adds neighbor search, target assembly, and one
-        // more dense comparison on top of plain reconstruction.
-        ForwardNeighborTarget future_target = build_forward_neighbor_target(batch.cell_indices, *forward_supervision);
-        torch::Tensor valid_rows = future_target.valid_rows.to(reconstruction.device());
-        if (valid_rows.any().item<bool>()) {
-            torch::Tensor future_dense = future_target.target_features.to(reconstruction.device(), torch::kFloat32);
-            torch::Tensor per_row = torch::pow(reconstruction - future_dense, 2).mean(1);
-            future_loss = per_row.masked_select(valid_rows).mean();
-        }
-    }
-
     torch::Tensor total = config.reconstruction_weight * reconstruction_loss
         + config.future_weight * future_loss
         + config.range_weight * range_loss;
@@ -592,8 +409,7 @@ inline GeneQuantizerTrainStep train_gene_quantizer_step(
     torch::optim::Optimizer &optimizer,
     const QuantizerBatch &batch,
     const GeneQuantizerLossConfig &loss_config = GeneQuantizerLossConfig(),
-    const GeneQuantizerTrainConfig &train_config = GeneQuantizerTrainConfig(),
-    const QuantizerForwardSupervision *forward_supervision = nullptr) {
+    const GeneQuantizerTrainConfig &train_config = GeneQuantizerTrainConfig()) {
     if (train_config.loss_scale <= 0.0) throw std::invalid_argument("loss_scale must be > 0");
 
     model->train();
@@ -605,19 +421,6 @@ inline GeneQuantizerTrainStep train_gene_quantizer_step(
         torch::Tensor future_loss = torch::zeros(
             {},
             torch::TensorOptions().dtype(torch::kFloat32).device(batch.features.device()));
-
-        if (forward_supervision != nullptr
-            && forward_supervision->neighbor_index != nullptr
-            && loss_config.future_weight > 0.0) {
-            GeneQuantizerOutput future_output = model->forward(batch.features);
-            GeneQuantizerLossConfig future_only = loss_config;
-            future_only.reconstruction_weight = 0.0;
-            future_only.range_weight = 0.0;
-            GeneQuantizerLoss future_components =
-                compute_gene_quantizer_loss(future_output, batch, future_only, forward_supervision);
-            future_loss = future_components.future_consistency;
-            future_components.total.backward();
-        }
 
         if (train_config.skip_non_finite_updates) {
             for (const torch::Tensor &param : model->parameters()) {
@@ -665,7 +468,7 @@ inline GeneQuantizerTrainStep train_gene_quantizer_step(
     // Extra step overhead comes from manual unscale, optional finite-gradient
     // checks, and optional full-parameter gradient clipping.
     GeneQuantizerOutput output = model->forward(batch.features);
-    GeneQuantizerLoss loss = compute_gene_quantizer_loss(output, batch, loss_config, forward_supervision);
+    GeneQuantizerLoss loss = compute_gene_quantizer_loss(output, batch, loss_config);
     (loss.total * train_config.loss_scale).backward();
 
     for (torch::Tensor &param : model->parameters()) {
@@ -689,13 +492,12 @@ inline GeneQuantizerTrainStep train_gene_quantizer_step(
 inline GeneQuantizerTrainStep evaluate_gene_quantizer_step(
     GeneQuantizerModel &model,
     const QuantizerBatch &batch,
-    const GeneQuantizerLossConfig &loss_config = GeneQuantizerLossConfig(),
-    const QuantizerForwardSupervision *forward_supervision = nullptr) {
+    const GeneQuantizerLossConfig &loss_config = GeneQuantizerLossConfig()) {
     torch::NoGradGuard no_grad;
     model->eval();
 
     GeneQuantizerOutput output = model->forward(batch.features);
-    GeneQuantizerLoss loss = compute_gene_quantizer_loss(output, batch, loss_config, forward_supervision);
+    GeneQuantizerLoss loss = compute_gene_quantizer_loss(output, batch, loss_config);
     return GeneQuantizerTrainStep{ std::move(output), std::move(loss) };
 }
 

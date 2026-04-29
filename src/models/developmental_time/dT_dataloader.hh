@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../compute/ml/autograd/autograd.hh"
-#include "../../../extern/CellShard/include/CellShard/runtime/device/sharded_device.cuh"
+#include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cstdint>
 

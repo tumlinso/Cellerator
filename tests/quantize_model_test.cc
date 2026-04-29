@@ -7,86 +7,16 @@
 #include <stdexcept>
 
 namespace quant = ::cellerator::models::quantize;
-namespace fn = ::cellerator::compute::neighbors::forward_neighbors;
 
 namespace {
-
-fn::ForwardNeighborOwnedRecordBatch make_record_batch(
-    const torch::Tensor &cell_indices,
-    const torch::Tensor &developmental_time,
-    const torch::Tensor &latent_unit,
-    const torch::Tensor &embryo_ids) {
-    const torch::Tensor ids_cpu = cell_indices.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
-    const torch::Tensor time_cpu = developmental_time.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
-    const torch::Tensor latent_cpu = latent_unit.to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
-    const torch::Tensor embryo_cpu = embryo_ids.to(torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU)).contiguous();
-
-    fn::ForwardNeighborOwnedRecordBatch batch;
-    batch.dense_cols = latent_cpu.dim() == 2 ? latent_cpu.size(1) : 0;
-    batch.cell_indices.resize(static_cast<std::size_t>(ids_cpu.size(0)));
-    batch.developmental_time.resize(static_cast<std::size_t>(time_cpu.size(0)));
-    batch.dense_values.resize(static_cast<std::size_t>(latent_cpu.numel()));
-    batch.embryo_ids.resize(static_cast<std::size_t>(embryo_cpu.size(0)));
-
-    if (!batch.cell_indices.empty()) {
-        std::memcpy(batch.cell_indices.data(), ids_cpu.data_ptr<std::int64_t>(), batch.cell_indices.size() * sizeof(std::int64_t));
-        std::memcpy(batch.developmental_time.data(), time_cpu.data_ptr<float>(), batch.developmental_time.size() * sizeof(float));
-        std::memcpy(batch.dense_values.data(), latent_cpu.data_ptr<float>(), batch.dense_values.size() * sizeof(float));
-        std::memcpy(batch.embryo_ids.data(), embryo_cpu.data_ptr<std::int64_t>(), batch.embryo_ids.size() * sizeof(std::int64_t));
-    }
-    return batch;
-}
 
 void require(bool condition, const char *message) {
     if (!condition) throw std::runtime_error(message);
 }
 
-float rowwise_masked_mse(
-    const torch::Tensor &lhs,
-    const torch::Tensor &rhs,
-    const torch::Tensor &valid_rows) {
-    torch::Tensor per_row = torch::pow(lhs.to(torch::kFloat32) - rhs.to(torch::kFloat32), 2).mean(1);
-    return per_row.masked_select(valid_rows.to(torch::kBool)).mean().item<float>();
-}
-
-fn::ForwardNeighborIndex build_test_index(const torch::Tensor &cell_indices) {
-    const fn::ForwardNeighborOwnedRecordBatch batch = make_record_batch(
-        cell_indices,
-        torch::tensor({0.10f, 0.20f, 0.30f, 0.40f}, torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor(
-            {
-                {1.00f, 0.00f},
-                {0.99f, 0.01f},
-                {0.98f, 0.02f},
-                {0.97f, 0.03f},
-            },
-            torch::TensorOptions().dtype(torch::kFloat32)),
-        torch::tensor({0, 0, 0, 0}, torch::TensorOptions().dtype(torch::kInt64)));
-    return fn::build_forward_neighbor_index(batch.view());
-}
-
-quant::QuantizerForwardSupervision build_supervision(
-    const fn::ForwardNeighborIndex &index,
-    const torch::Tensor &cell_indices,
-    const torch::Tensor &features) {
-    quant::QuantizerForwardSupervision supervision;
-    supervision.neighbor_index = &index;
-    supervision.reference_cell_indices = cell_indices;
-    supervision.reference_features = features;
-    supervision.search_config.backend = fn::ForwardNeighborBackend::exact_windowed;
-    supervision.search_config.embryo_policy = fn::ForwardNeighborEmbryoPolicy::same_embryo_only;
-    supervision.search_config.top_k = 1;
-    supervision.search_config.candidate_k = 1;
-    supervision.search_config.time_window.min_delta = 0.0f;
-    supervision.search_config.time_window.max_delta = 0.11f;
-    return supervision;
-}
-
 quant::GeneQuantizerOutput train_model(
     std::int64_t bits,
     const quant::QuantizerBatch &batch,
-    const quant::QuantizerForwardSupervision *supervision,
-    double future_weight,
     int steps) {
     quant::GeneQuantizerConfig model_config;
     model_config.input_genes = batch.features.size(1);
@@ -104,16 +34,16 @@ quant::GeneQuantizerOutput train_model(
 
     quant::GeneQuantizerLossConfig loss_config;
     loss_config.reconstruction_weight = 1.0;
-    loss_config.future_weight = future_weight;
+    loss_config.future_weight = 0.0;
     loss_config.range_weight = 0.01;
     loss_config.min_dynamic_range = bits == 1 ? 0.50 : 1.25;
 
     auto optimizer = quant::make_gene_quantizer_optimizer(model, train_config);
     for (int step = 0; step < steps; ++step) {
-        quant::train_gene_quantizer_step(model, optimizer, batch, loss_config, train_config, supervision);
+        quant::train_gene_quantizer_step(model, optimizer, batch, loss_config, train_config);
     }
 
-    return quant::evaluate_gene_quantizer_step(model, batch, loss_config, supervision).output;
+    return quant::evaluate_gene_quantizer_step(model, batch, loss_config).output;
 }
 
 } // namespace
@@ -135,53 +65,29 @@ int main() {
         torch::TensorOptions().dtype(torch::kInt64));
 
     const quant::QuantizerBatch batch{ features, cell_indices };
-    const fn::ForwardNeighborIndex index = build_test_index(cell_indices);
-    const quant::QuantizerForwardSupervision supervision = build_supervision(index, cell_indices, features);
-    const quant::ForwardNeighborTarget future_target =
-        quant::build_forward_neighbor_target(batch.cell_indices, supervision);
+    const quant::GeneQuantizerOutput four_bit_output = train_model(4, batch, 250);
 
-    require(future_target.valid_rows.index({0}).item<bool>(), "row 0 should have a forward neighbor");
-    require(future_target.valid_rows.index({1}).item<bool>(), "row 1 should have a forward neighbor");
-    require(future_target.valid_rows.index({2}).item<bool>(), "row 2 should have a forward neighbor");
-    require(!future_target.valid_rows.index({3}).item<bool>(), "last row should not have a forward neighbor");
-    require(future_target.neighbor_cell_indices.index({0, 0}).item<std::int64_t>() == 101, "row 0 neighbor should come from forward_neighbors");
-    require(future_target.neighbor_cell_indices.index({1, 0}).item<std::int64_t>() == 102, "row 1 neighbor should come from forward_neighbors");
-    require(future_target.neighbor_cell_indices.index({2, 0}).item<std::int64_t>() == 103, "row 2 neighbor should come from forward_neighbors");
-
-    const quant::GeneQuantizerOutput four_bit_without_future = train_model(4, batch, nullptr, 0.0, 250);
-    const quant::GeneQuantizerOutput four_bit_with_future = train_model(4, batch, &supervision, 2.0, 250);
-
-    const float scale0 = four_bit_with_future.scale.index({0}).item<float>();
-    const float scale1 = four_bit_with_future.scale.index({1}).item<float>();
-    const float offset0 = four_bit_with_future.offset.index({0}).item<float>();
-    const float offset1 = four_bit_with_future.offset.index({1}).item<float>();
+    const float scale0 = four_bit_output.scale.index({0}).item<float>();
+    const float scale1 = four_bit_output.scale.index({1}).item<float>();
+    const float offset0 = four_bit_output.offset.index({0}).item<float>();
+    const float offset1 = four_bit_output.offset.index({1}).item<float>();
     require(std::fabs(scale0 - scale1) > 0.10f, "per-gene scales should learn different values");
     require(std::fabs(offset0 - offset1) > 1.00f, "per-gene offsets should learn different values");
 
-    const float future_mse_without = rowwise_masked_mse(
-        four_bit_without_future.reconstruction,
-        future_target.target_features,
-        future_target.valid_rows);
-    const float future_mse_with = rowwise_masked_mse(
-        four_bit_with_future.reconstruction,
-        future_target.target_features,
-        future_target.valid_rows);
-    require(future_mse_with < future_mse_without, "forward-neighbor supervision should improve future consistency");
-
     const quant::PackedDenseQuantizedMatrix packed_four_bit = quant::pack_dense_quantized_matrix(
         features,
-        four_bit_with_future.scale,
-        four_bit_with_future.offset,
+        four_bit_output.scale,
+        four_bit_output.offset,
         4,
         2);
     const torch::Tensor unpacked_four_bit = quant::unpack_dense_quantized_matrix(packed_four_bit);
     require(torch::allclose(
         unpacked_four_bit,
-        four_bit_with_future.reconstruction.to(torch::kCPU),
+        four_bit_output.reconstruction.to(torch::kCPU),
         1.0e-5,
         1.0e-5), "4-bit quantized pack/unpack should match quantizer reconstruction");
 
-    const quant::GeneQuantizerOutput binary_output = train_model(1, batch, &supervision, 1.0, 200);
+    const quant::GeneQuantizerOutput binary_output = train_model(1, batch, 200);
     require(binary_output.codes.min().item<std::int64_t>() >= 0, "binary codes must be non-negative");
     require(binary_output.codes.max().item<std::int64_t>() <= 1, "binary mode must emit only 0/1 codes");
 
@@ -231,22 +137,19 @@ int main() {
     const float initial_loss = quant::evaluate_gene_quantizer_step(
         sparse_model,
         sparse_batch,
-        sparse_loss_cfg,
-        nullptr).loss.total.item<float>();
+        sparse_loss_cfg).loss.total.item<float>();
     for (int step = 0; step < 200; ++step) {
         quant::train_gene_quantizer_step(
             sparse_model,
             sparse_optimizer,
             sparse_batch,
             sparse_loss_cfg,
-            sparse_train,
-            nullptr);
+            sparse_train);
     }
     const quant::GeneQuantizerTrainStep sparse_eval = quant::evaluate_gene_quantizer_step(
         sparse_model,
         sparse_batch,
-        sparse_loss_cfg,
-        nullptr);
+        sparse_loss_cfg);
     const float final_loss = sparse_eval.loss.total.item<float>();
     require(final_loss < initial_loss, "sparse CUDA quantizer training should reduce loss");
     require(sparse_eval.output.reconstruction.is_cuda(), "sparse CUDA quantizer reconstruction should stay on device");

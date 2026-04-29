@@ -20,10 +20,11 @@ cmake --build build -j 4
 
 Useful pipeline-adjacent targets include:
 
-- `cellShardDatasetH5Test`
-- `forwardNeighborsCompileTest`
+- `exactSearchRuntimeTest`
 - `computeAutogradRuntimeTest`
-- `quantizedTransferSpmmBench`
+- `quantizedMatrixTest`
+- `trajectoryCompileTest`
+- `trajectoryRuntimeTest`
 - `developmentalTimeCompileTest`
 - `developmentalTimeRuntimeTest`
 - `developmentalTimeTrajectoryRuntimeTest`
@@ -37,8 +38,7 @@ Run the built binaries directly because `ctest` is not configured.
 Examples:
 
 ```bash
-./build/cellShardDatasetH5Test
-./build/forwardNeighborsCompileTest
+./build/exactSearchRuntimeTest
 ./build/computeAutogradRuntimeTest
 ./build/quantizeModelTest
 ```
@@ -50,7 +50,6 @@ Examples:
 - `src/trajectory/`: trajectory scoring and assembly
 - `src/quantized/`: Volta-oriented quantized sparse runtime
 - `src/torch/`: explicit Torch export boundary
-- `extern/CellShard/`: storage, optional ingest, `.csh5`, pack generation, and runtime staging
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
 

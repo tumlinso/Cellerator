@@ -1,11 +1,12 @@
 #include <Cellerator/compute/autograd.hh>
-#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
+#include <CellShard/formats/blocked_ell.cuh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 
 #include <cuda_fp16.h>
 
 #include <chrono>
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -13,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace autograd = ::cellerator::compute::autograd;
 namespace cs = ::cellshard;
@@ -176,6 +178,63 @@ csr_host_matrix make_host_matrix_for_cfg(const bench_config &cfg, std::uint32_t 
     return make_host_csr(cfg.rows, cfg.cols, cfg.nnz_per_row, column_seed);
 }
 
+bool build_blocked_ell_from_csr(const csr_host_matrix &src, std::uint32_t block_size, cs::sparse::blocked_ell *dst) {
+    if (block_size == 0u) return false;
+    const std::uint32_t row_blocks = (src.rows + block_size - 1u) / block_size;
+    const std::uint32_t col_blocks = (src.cols + block_size - 1u) / block_size;
+    if (row_blocks == 0u || col_blocks == 0u) return false;
+
+    std::vector<std::vector<std::uint32_t>> block_cols(row_blocks);
+    std::vector<unsigned char> seen(col_blocks, 0u);
+    std::vector<std::uint32_t> touched;
+    std::uint32_t max_width = 1u;
+
+    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
+        touched.clear();
+        const std::uint32_t row_begin = rb * block_size;
+        const std::uint32_t row_end = std::min(src.rows, row_begin + block_size);
+        for (std::uint32_t row = row_begin; row < row_end; ++row) {
+            for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
+                const std::uint32_t cb = src.minor_idx[off] / block_size;
+                if (cb >= col_blocks || seen[cb]) continue;
+                seen[cb] = 1u;
+                touched.push_back(cb);
+            }
+        }
+        std::sort(touched.begin(), touched.end());
+        block_cols[rb] = touched;
+        max_width = std::max<std::uint32_t>(max_width, static_cast<std::uint32_t>(touched.size()));
+        for (std::uint32_t cb : touched) seen[cb] = 0u;
+    }
+
+    cs::sparse::init(dst, src.rows, src.cols, src.nnz, block_size, max_width * block_size);
+    if (!cs::sparse::allocate(dst)) return false;
+    for (std::size_t idx = 0; idx < static_cast<std::size_t>(row_blocks) * max_width; ++idx) {
+        dst->blockColIdx[idx] = cs::sparse::blocked_ell_invalid_col;
+    }
+    std::memset(dst->val, 0, static_cast<std::size_t>(src.rows) * dst->ell_cols * sizeof(__half));
+
+    for (std::uint32_t rb = 0u; rb < row_blocks; ++rb) {
+        for (std::uint32_t slot = 0u; slot < block_cols[rb].size(); ++slot) {
+            dst->blockColIdx[static_cast<std::size_t>(rb) * max_width + slot] = block_cols[rb][slot];
+        }
+    }
+    for (std::uint32_t row = 0u; row < src.rows; ++row) {
+        const std::uint32_t rb = row / block_size;
+        for (std::uint32_t off = src.major_ptr[row]; off < src.major_ptr[row + 1u]; ++off) {
+            const std::uint32_t col = src.minor_idx[off];
+            const std::uint32_t cb = col / block_size;
+            const auto &cols = block_cols[rb];
+            const auto it = std::find(cols.begin(), cols.end(), cb);
+            if (it == cols.end()) continue;
+            const std::uint32_t slot = static_cast<std::uint32_t>(it - cols.begin());
+            const std::uint32_t local_col = col - cb * block_size;
+            dst->val[static_cast<std::size_t>(row) * dst->ell_cols + slot * block_size + local_col] = src.values[off];
+        }
+    }
+    return true;
+}
+
 std::unique_ptr<float[]> make_host_vector(std::uint32_t count, std::uint32_t seed) {
     auto out = std::make_unique<float[]>(count);
     for (std::uint32_t i = 0; i < count; ++i) {
@@ -332,22 +391,10 @@ void run_base_blocked_ell_spmm(const bench_config &cfg) {
 
     const csr_host_matrix matrix = make_host_matrix_for_cfg(cfg, 0u);
     const auto rhs = make_host_half_matrix(cfg.cols, cfg.out_cols, 7u);
-    const unsigned int candidates[] = { cfg.block_size, 8u, 16u, 32u };
-    cs::convert::blocked_ell_tune_result tune = {};
-    cs::sparse::compressed host_csr;
     cs::sparse::blocked_ell blocked;
     const auto convert_start = std::chrono::steady_clock::now();
-    cs::sparse::init(&host_csr, cfg.rows, cfg.cols, matrix.nnz, cs::sparse::compressed_by_row);
     cs::sparse::init(&blocked);
-    host_csr.majorPtr = matrix.major_ptr.get();
-    host_csr.minorIdx = matrix.minor_idx.get();
-    host_csr.val = matrix.values.get();
-    if (cfg.generator == "block-structured") {
-        require(cs::convert::blocked_ell_from_compressed(&host_csr, cfg.block_size, &blocked) != 0, "blocked ell fixed conversion failed");
-        tune.block_size = cfg.block_size;
-    } else {
-        require(cs::convert::blocked_ell_from_compressed_auto(&host_csr, candidates, 4u, &blocked, &tune) != 0, "blocked ell conversion failed");
-    }
+    require(build_blocked_ell_from_csr(matrix, cfg.block_size, &blocked), "blocked ell construction failed");
     const auto convert_stop = std::chrono::steady_clock::now();
 
     auto block_col_idx = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));

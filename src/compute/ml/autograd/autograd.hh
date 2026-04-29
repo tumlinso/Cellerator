@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../extern/CellShard/include/CellShard/CellShard.hh"
-#include "../../../../extern/CellShard/include/CellShard/runtime/distributed/distributed.cuh"
+#include <CellShard/CellShard.hh>
+#include <CellShard/runtime/distributed/distributed.cuh>
 #include "../../../quantized/blocked_ell.cuh"
 #include "cellerator_cuda_mode.hh"
 

@@ -82,6 +82,6 @@ This file tracks the concrete code and doc changes landed under the active
 - `./build/datasetWorkbenchRuntimeTest`
 - `./build/cellShardFirstFileFixtureTest`
 - Earlier focused coverage also passed during the include-surface migration:
-  `forwardNeighborsCompileTest`, `computeAutogradRuntimeTest`,
+  `computeAutogradRuntimeTest`,
   `trajectoryRuntimeTest`, `developmentalTimeCudaRuntimeTest`, and
   `quantizeModelTest`.

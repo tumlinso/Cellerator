@@ -10,8 +10,7 @@ owner: codex
 
 Refactor Cellerator so `src/compute` is organized around sparse ML math over
 CellShard matrices. Keep old public include paths as compatibility wrappers.
-Move forward-neighbor policy/API into `extern/CellShardNeighbors`, but leave
-reusable scoring/search/top-k math in Cellerator.
+Forward-neighbor caller policy is external to Cellerator.
 
 ## Skills And References
 
@@ -23,7 +22,7 @@ reusable scoring/search/top-k math in Cellerator.
 
 - [x] Move compute files into sparse ML math folders.
 - [x] Add backend-folder structure for library and custom paths.
-- [x] Move forward-neighbor policy into CellShardNeighbors.
+- [x] Move forward-neighbor policy into the neighbor-caller sibling package.
 - [x] Preserve old public include paths as compatibility wrappers.
 - [x] Update CMake targets and aliases.
 - [ ] Run final focused build/test pass after checkpoint review.
@@ -42,7 +41,7 @@ reusable scoring/search/top-k math in Cellerator.
 - Moved `compute/model_ops` to `compute/ml/model_ops`.
 - Moved shared `host_buffer` to `compute/core`.
 - Moved cuVS/KNN scoring helpers to `compute/neighbors/scoring`.
-- Moved forward-neighbor API/source into `extern/CellShardNeighbors` and left `Cellerator/compute/neighbors/forward_neighbors.hh` as a compatibility wrapper.
+- Removed Cellerator-owned forward-neighbor compatibility wrappers; caller policy now lives outside this package.
 
 ## Next Actions
 

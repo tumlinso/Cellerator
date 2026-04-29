@@ -11,7 +11,7 @@ Rules:
 - put measured or layout-specific hot paths under `custom/` folders beside the
   library path they replace
 - keep CellShard data handling, CellShardPreprocess biology policy, and
-  CellShardNeighbors caller policy out of this tree
+  the neighbor-caller sibling package caller policy out of this tree
 - keep framework-independent sparse training code under `compute/ml/autograd`;
   libtorch-facing wrappers belong above that layer, not inside the runtime core
 - document launch, HBM, PCIe, and synchronization costs at host boundaries

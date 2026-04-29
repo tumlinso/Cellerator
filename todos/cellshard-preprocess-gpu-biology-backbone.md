@@ -4,7 +4,7 @@ Last updated: 2026-04-26
 
 ## Quick Start
 
-Migrate the accelerated scRNA preprocessing and standard biology backbone from Cellerator into `extern/CellShardPreprocess`. Use `bio-experiments` for preprocessing semantics and `cuda` native V100 routing for GPU layout decisions. Preserve Cellerator C++ and Python APIs as wrappers that delegate to CellShardPreprocess.
+Migrate the accelerated scRNA preprocessing and standard biology backbone from Cellerator into CellShardPreprocess. Use `bio-experiments` for preprocessing semantics and `cuda` native V100 routing for GPU layout decisions. Preserve Cellerator C++ and Python APIs as wrappers that delegate to CellShardPreprocess.
 
 ## Status
 
@@ -35,7 +35,7 @@ Migrate the accelerated scRNA preprocessing and standard biology backbone from C
 ## Plan
 
 - [x] Inspect existing `extern`, preprocessing, ingest, workbench, Python, and CMake surfaces.
-- [x] Rename or create `extern/CellShardPreprocess`, update Git submodule metadata and remote.
+- [x] Rename or create CellShardPreprocess, update Git submodule metadata and remote.
 - [x] Stand up standalone CellShardPreprocess CUDA/C++ build with smaller `CellShardPreprocess::preprocess` and composed `CellShardPreprocess::runtime` targets, namespace `cellshard_preprocess`, Python package `cellshard_preprocess`, and optional `cellShardPreprocessWorkbench`.
 - [x] Move accelerated preprocessing behavior into CellShardPreprocess: raw-count validation, cell/gene QC metrics, mitochondrial flags, normalize-total/log1p, preprocessing metadata hooks, and compaction/finalization integration points.
 - [x] Remove Cellerator preprocessing compatibility wrappers and build targets after moving ownership to CellShardPreprocess.
@@ -46,7 +46,7 @@ Migrate the accelerated scRNA preprocessing and standard biology backbone from C
 ## Progress Notes
 
 - Ledger initialized from the supplied plan.
-- Renamed the external shell to `extern/CellShardPreprocess` and updated the submodule URL to `git@github.com:tumlinso/CellShardPreprocess.git`.
+- Renamed the external shell to CellShardPreprocess and updated the submodule URL to `git@github.com:tumlinso/CellShardPreprocess.git`.
 - Added pointer-first CellShardPreprocess native preprocessing headers, CUDA implementation, Python package marker, standalone CMake target, host tests, GPU preprocessing tests, and optional `cellShardPreprocessWorkbench`.
 - Split CellShardPreprocess into the smaller `CellShardPreprocess::preprocess` target and the composed `CellShardPreprocess::runtime` target so native preprocessing can build before Cellerator links it.
 - Added standalone CellShard resolution for cloned CellShardPreprocess checkouts: explicit `CELLSHARD_PREPROCESS_CELLSHARD_SOURCE_DIR`, sibling checkout, vendored checkout, then `FetchContent`.
@@ -65,7 +65,7 @@ Migrate the accelerated scRNA preprocessing and standard biology backbone from C
 
 ## Done Criteria
 
-- `extern/CellShardPreprocess` exists with the requested remote metadata and standalone build.
+- CellShardPreprocess exists with the requested remote metadata and standalone build.
 - Cellerator builds without public preprocessing APIs or root preprocessing benchmark targets.
 - CellShardPreprocess-native tests cover CellShard-format preprocessing, adapter staging, QC equivalence, double-preprocess rejection, and workbench compile coverage where feasible.
 - Documentation reflects the new ownership boundary.

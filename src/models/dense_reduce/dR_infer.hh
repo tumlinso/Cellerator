@@ -3,7 +3,7 @@
 #include "dR_model.hh"
 #include "../../torch/bindings.hh"
 
-#include "../../../extern/CellShard/include/CellShard/runtime/host/sharded_host.cuh"
+#include <CellShard/runtime/host/sharded_host.cuh>
 
 #include <torch/torch.h>
 

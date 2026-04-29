@@ -2,7 +2,7 @@
 
 Compute-facing home for neighbor search math.
 
-CellShardNeighbors owns caller policy, index/query lifecycle, graph semantics,
+the neighbor-caller sibling package owns caller policy, index/query lifecycle, graph semantics,
 and forward-neighbor APIs. Cellerator owns the reusable math that those callers
 use.
 

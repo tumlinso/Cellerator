@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../extern/CellShard/include/CellShard/CellShard.hh"
+#include <CellShard/CellShard.hh>
 #include "../../core/host_buffer.hh"
 
 #include <cstddef>

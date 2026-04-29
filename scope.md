@@ -17,7 +17,7 @@ capability. It should not replace Torch as the general ML framework.
 
 - Cellerator owns math over CellShard matrices: sparse GPU operators,
   reductions, transforms, sparse training primitives, biological model
-  components, trajectory/model orchestration, quantized sparse kernels, and
+  components, trajectory/model math, quantized sparse kernels, and
   explicit Torch/libtorch extension or export boundaries.
 - CellShard owns data handling: `.csh5`, `.cshard`, CSPACK generations,
   precomputed Blocked-ELL/Sliced-ELL layouts, source ingest, retrieval,
@@ -38,7 +38,7 @@ capability. It should not replace Torch as the general ML framework.
 
 - Sparse operators for Blocked-ELL, Sliced-ELL, CSR fallback, cuSPARSE-backed
   paths, sparse-dense projections, reductions, gather/scatter, row/feature
-  selection, neighbor retrieval, pathway/module reductions, and graph-aware
+  selection, exact-search/scoring math, pathway/module reductions, and graph-aware
   sparse transforms.
 - Training-capable sparse autograd where Torch sparse support is missing,
   layout-mismatched, or too costly for CellShard-scale data.
@@ -62,6 +62,7 @@ capability. It should not replace Torch as the general ML framework.
   outside the CellShard owner surface.
 - Biology-facing preprocessing policy and workflow implementation outside
   CellShardPreprocess.
+- Neighbor index/query caller policy and graph construction workflows.
 - High-level workflow or notebook ergonomics that hide layout, residency,
   transfer, or launch costs in performance-sensitive paths.
 

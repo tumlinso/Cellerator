@@ -55,7 +55,7 @@
 
 ### 3.1 What Is Already Good
 
-- `extern/CellShardPreprocess/src/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
+- `CellShardPreprocess src/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
 - The quantized backend under `src/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
@@ -258,10 +258,10 @@ Optimization comment:
 
 ### 6.1 Relevant Surface
 
-- `extern/CellShardPreprocess/include/CellShardPreprocess/preprocess.cuh`
-- `extern/CellShardPreprocess/src/preprocess.cu`
-- `extern/CellShardPreprocess/bench/scrna_preprocess_bench.cu`
-- `extern/CellShardPreprocess/bench/preprocess_format_compare_bench.cu`
+- `CellShardPreprocessinclude/CellShardPreprocess/preprocess.cuh`
+- `CellShardPreprocess src/preprocess.cu`
+- `CellShardPreprocessbench/scrna_preprocess_bench.cu`
+- `CellShardPreprocessbench/preprocess_format_compare_bench.cu`
 
 This is the cleanest performance-oriented subsystem in the repo today.
 
@@ -283,7 +283,7 @@ Why this matters:
 
 Relevant code:
 
-- `compute_qc_metrics_*_kernel` in `extern/CellShardPreprocess/src/preprocess.cu`
+- `compute_qc_metrics_*_kernel` in `CellShardPreprocess src/preprocess.cu`
 
 Shape:
 
@@ -402,7 +402,7 @@ Performance comment:
 
 Relevant code:
 
-- `reduce_gene_metrics_to_leader()` in `extern/CellShardPreprocess/src/preprocess.cu`
+- `reduce_gene_metrics_to_leader()` in `CellShardPreprocess src/preprocess.cu`
 
 NCCL path:
 
@@ -756,9 +756,6 @@ Optimization comment:
 
 Relevant files:
 
-- `src/compute/neighbors/forward_neighbors/fn_index.hh`
-- `src/compute/neighbors/forward_neighbors/fn_query.hh`
-- `src/compute/neighbors/forward_neighbors/forward_neighbors.cu`
 
 Build path shape:
 

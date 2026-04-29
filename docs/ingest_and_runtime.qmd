@@ -18,7 +18,7 @@ Current posture:
 
 ## Ownership Contract
 
-`CellShard::ingest` stops at canonical emission. After that:
+CellShard ingest stops at canonical emission. After that:
 
 - `CellShard` owns final blocking and bucketing.
 - `CellShard` owns CSPACK generation and `.csh5` assembly.
@@ -55,6 +55,5 @@ The main persisted outputs are:
 
 ## Relevant Source Areas
 
-- `extern/CellShard/include/CellShard/ingest/`
-- `extern/CellShard/src/disk/`
-- `tests/cellshard_dataset_h5_test.cu`
+- CellShard owns ingest, disk, pack, and runtime-fetch source areas.
+- Cellerator tests cover math over CellShard ABI types rather than storage behavior.

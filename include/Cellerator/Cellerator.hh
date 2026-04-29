@@ -1,14 +1,11 @@
 #pragma once
 
 #include "compute/autograd.hh"
-#include "compute/neighbors/forward_neighbors.hh"
 #include "compute/preprocess.cuh"
 #include "models/developmental_time.hh"
 #include "models/developmental_time_trajectory.hh"
 #include "models/quantize.hh"
 #include "models/state_reduce.hh"
 #include "quantized/api.cuh"
-#include "support/assay_validation.hh"
-#include "support/multi_assay_validation.hh"
 #include "torch/bindings.hh"
 #include "trajectory/trajectory_tree.cuh"

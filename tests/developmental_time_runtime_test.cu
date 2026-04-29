@@ -1,8 +1,8 @@
 #include <Cellerator/models/developmental_time.hh>
 
-#include "../extern/CellShard/include/CellShard/formats/blocked_ell.cuh"
-#include "../extern/CellShard/include/CellShard/formats/sliced_ell.cuh"
-#include "../extern/CellShard/include/CellShard/runtime/device/sharded_device.cuh"
+#include <CellShard/formats/blocked_ell.cuh>
+#include <CellShard/formats/sliced_ell.cuh>
+#include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>

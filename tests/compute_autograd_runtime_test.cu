@@ -1,10 +1,10 @@
 #include <Cellerator/compute/autograd.hh>
 #include <Cellerator/quantized/api.cuh>
-#include "../extern/CellShard/src/convert/blocked_ell_from_compressed.cuh"
+#include <CellShard/formats/blocked_ell.cuh>
 
 #include <cmath>
-#include <cstdio>
 #include <cstdint>
+#include <cstring>
 #include <stdexcept>
 #include <vector>
 
@@ -292,14 +292,20 @@ int main() {
     require(close_value(spmm_out_host[4], 5.0f), "spmm out 4 mismatch");
     require(close_value(spmm_out_host[5], 10.0f), "spmm out 5 mismatch");
 
-    cs::sparse::compressed blocked_src;
     cs::sparse::blocked_ell blocked_host;
-    cs::sparse::init(&blocked_src, 3u, 3u, 5u, cs::sparse::compressed_by_row);
-    cs::sparse::init(&blocked_host);
-    blocked_src.majorPtr = const_cast<std::uint32_t *>(major_ptr_host);
-    blocked_src.minorIdx = const_cast<std::uint32_t *>(minor_idx_host);
-    blocked_src.val = const_cast<__half *>(values_host);
-    require(cs::convert::blocked_ell_from_compressed(&blocked_src, 1u, &blocked_host) != 0, "blocked_ell_from_compressed runtime setup failed");
+    cs::sparse::init(&blocked_host, 3u, 3u, 5u, 1u, 2u);
+    require(cs::sparse::allocate(&blocked_host) != 0, "blocked ell runtime setup failed");
+    const std::uint32_t block_col_idx_host[] = { 0u, 2u, 1u, 2u, 0u, cs::sparse::blocked_ell_invalid_col };
+    const __half blocked_values_host[] = {
+        __float2half(1.0f),
+        __float2half(2.0f),
+        __float2half(3.0f),
+        __float2half(4.0f),
+        __float2half(5.0f),
+        __float2half(0.0f)
+    };
+    std::memcpy(blocked_host.blockColIdx, block_col_idx_host, sizeof(block_col_idx_host));
+    std::memcpy(blocked_host.val, blocked_values_host, sizeof(blocked_values_host));
     auto blocked_idx = autograd::allocate_device_buffer<std::uint32_t>(static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
     auto blocked_values = autograd::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked_host.rows) * blocked_host.ell_cols);
     autograd::upload_device_buffer(&blocked_idx, blocked_host.blockColIdx, static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host));
@@ -455,155 +461,6 @@ int main() {
     require(close_value(quantized_row_offset_host_out[1], blocked_spmm_ref_host[1]), "quantized blocked ell row-offset out 1 mismatch");
     require(close_value(quantized_row_offset_host_out[4], blocked_spmm_ref_host[4]), "quantized blocked ell row-offset out 4 mismatch");
 
-    {
-        const char *dataset_path = "/tmp/compute_autograd_quantized_blocked_ell.csh5";
-        const char *cache_root = "/tmp/compute_autograd_quantized_blocked_ell_cache";
-        cs::sparse::quantized_blocked_ell persisted_part;
-        cs::sharded<cs::sparse::quantized_blocked_ell> persisted_matrix;
-        cs::shard_storage persisted_storage;
-        std::vector<std::uint64_t> partition_rows = { blocked_host.rows };
-        std::vector<std::uint64_t> partition_nnz = { blocked_host.nnz };
-        std::vector<std::uint64_t> partition_aux = {
-            (std::uint64_t) cs::sparse::pack_quantized_blocked_ell_aux(4u, blocked_host.block_size, cs::sparse::ell_width_blocks(&blocked_host))
-        };
-        std::vector<std::uint64_t> partition_row_offsets = { 0u, blocked_host.rows };
-        std::vector<std::uint32_t> partition_dataset_ids = { 0u };
-        std::vector<std::uint32_t> partition_codec_ids = { 3u };
-        std::vector<std::uint64_t> shard_offsets = { 0u, blocked_host.rows };
-        cs::dataset_codec_descriptor codec{};
-        cs::dataset_layout_view layout{};
-        std::vector<unsigned char> persisted_packed_values(
-            static_cast<std::size_t>(blocked_host.rows)
-                * static_cast<std::size_t>(msq::blocked_ell::aligned_row_bytes<4>(blocked_host.ell_cols)),
-            0u);
-        auto persisted_host = msq::blocked_ell::make_matrix<4>(
-            static_cast<int>(blocked_host.rows),
-            static_cast<int>(blocked_host.cols),
-            static_cast<int>(blocked_host.nnz),
-            static_cast<int>(blocked_host.block_size),
-            static_cast<int>(blocked_host.ell_cols),
-            msq::blocked_ell::aligned_row_bytes<4>(blocked_host.ell_cols),
-            blocked_host.blockColIdx,
-            persisted_packed_values.data(),
-            msq::make_column_scale_row_offset(column_scales_host, row_offsets_host));
-        require(msq::blocked_ell::pack_row_major_values(&persisted_host, blocked_slot_values.data()) == 0,
-                "persisted quantized blocked ell pack failed");
-
-        codec.codec_id = 3u;
-        codec.family = cs::dataset_codec_family_quantized_blocked_ell;
-        codec.value_code = (std::uint32_t) ::real::value_f32;
-        codec.scale_value_code = (std::uint32_t) ::real::code_of< float>::code;
-        codec.bits = 4u;
-        codec.flags = cs::dataset_codec_flag_direct_device_delivery | cs::dataset_codec_flag_live_fused_decode;
-        codec.flags = cs::set_dataset_codec_quantized_decode_policy(
-            codec.flags,
-            cs::dataset_quantized_decode_policy_column_scale_row_offset);
-
-        layout.rows = blocked_host.rows;
-        layout.cols = blocked_host.cols;
-        layout.nnz = blocked_host.nnz;
-        layout.num_partitions = 1u;
-        layout.num_shards = 1u;
-        layout.partition_rows = partition_rows.data();
-        layout.partition_nnz = partition_nnz.data();
-        layout.partition_axes = nullptr;
-        layout.partition_aux = partition_aux.data();
-        layout.partition_row_offsets = partition_row_offsets.data();
-        layout.partition_dataset_ids = partition_dataset_ids.data();
-        layout.partition_codec_ids = partition_codec_ids.data();
-        layout.shard_offsets = shard_offsets.data();
-        layout.codecs = &codec;
-        layout.num_codecs = 1u;
-
-        std::remove(dataset_path);
-        cs::sparse::init(&persisted_part);
-        cs::init(&persisted_matrix);
-        cs::init(&persisted_storage);
-        cs::sparse::init(&persisted_part,
-                         blocked_host.rows,
-                         blocked_host.cols,
-                         blocked_host.nnz,
-                         blocked_host.block_size,
-                         blocked_host.ell_cols,
-                         4u,
-                         cs::dataset_quantized_decode_policy_column_scale_row_offset,
-                         static_cast<std::uint32_t>(msq::blocked_ell::aligned_row_bytes<4>(blocked_host.ell_cols)));
-        require(cs::sparse::allocate(&persisted_part) != 0, "persisted quantized blocked ell allocate failed");
-        std::memcpy(persisted_part.blockColIdx,
-                    blocked_host.blockColIdx,
-                    static_cast<std::size_t>(cs::sparse::row_block_count(&blocked_host)) * cs::sparse::ell_width_blocks(&blocked_host) * sizeof(std::uint32_t));
-        std::memcpy(persisted_part.packed_values, persisted_packed_values.data(), persisted_packed_values.size() * sizeof(std::uint8_t));
-        std::memcpy(persisted_part.column_scales, column_scales_host, static_cast<std::size_t>(blocked_host.cols) * sizeof(float));
-        std::memset(persisted_part.column_offsets, 0, static_cast<std::size_t>(blocked_host.cols) * sizeof(float));
-        std::memcpy(persisted_part.row_offsets, row_offsets_host, static_cast<std::size_t>(blocked_host.rows) * sizeof(float));
-        require(cs::create_dataset_quantized_blocked_ell_h5(dataset_path, &layout, nullptr, nullptr) != 0,
-                "create quantized blocked ell dataset failed");
-        require(cs::append_quantized_blocked_ell_partition_h5(dataset_path, 0u, &persisted_part) != 0,
-                "append quantized blocked ell dataset failed");
-        require(cs::warm_dataset_quantized_blocked_ell_h5_cache(dataset_path, cache_root) != 0,
-                "warm quantized blocked ell cache failed");
-        require(cs::load_header(dataset_path, &persisted_matrix, &persisted_storage) != 0,
-                "load quantized blocked ell header failed");
-        require(cs::bind_dataset_h5_cache(&persisted_storage, cache_root) != 0,
-                "bind quantized blocked ell cache failed");
-        require(cs::fetch_partition(&persisted_matrix, &persisted_storage, 0u) != 0,
-                "fetch quantized blocked ell partition failed");
-
-        auto persisted_block_idx = autograd::allocate_device_buffer<std::uint32_t>(
-            static_cast<std::size_t>(cs::sparse::row_block_count(persisted_matrix.parts[0])) * cs::sparse::ell_width_blocks(persisted_matrix.parts[0]));
-        auto persisted_values = autograd::allocate_device_buffer<std::uint8_t>(
-            static_cast<std::size_t>(persisted_matrix.parts[0]->rows) * persisted_matrix.parts[0]->row_stride_bytes);
-        auto persisted_scales = autograd::allocate_device_buffer<float>(persisted_matrix.parts[0]->cols);
-        auto persisted_row_offsets = autograd::allocate_device_buffer<float>(persisted_matrix.parts[0]->rows);
-        autograd::upload_device_buffer(&persisted_block_idx,
-                                       persisted_matrix.parts[0]->blockColIdx,
-                                       static_cast<std::size_t>(cs::sparse::row_block_count(persisted_matrix.parts[0])) * cs::sparse::ell_width_blocks(persisted_matrix.parts[0]));
-        autograd::upload_device_buffer(&persisted_values,
-                                       persisted_matrix.parts[0]->packed_values,
-                                       static_cast<std::size_t>(persisted_matrix.parts[0]->rows) * persisted_matrix.parts[0]->row_stride_bytes);
-        autograd::upload_device_buffer(&persisted_scales,
-                                       persisted_matrix.parts[0]->column_scales,
-                                       persisted_matrix.parts[0]->cols);
-        autograd::upload_device_buffer(&persisted_row_offsets,
-                                       persisted_matrix.parts[0]->row_offsets,
-                                       persisted_matrix.parts[0]->rows);
-
-        autograd::quantized_blocked_ell_view persisted_view{};
-        persisted_view.rows = persisted_matrix.parts[0]->rows;
-        persisted_view.cols = persisted_matrix.parts[0]->cols;
-        persisted_view.nnz = persisted_matrix.parts[0]->nnz;
-        persisted_view.block_size = persisted_matrix.parts[0]->block_size;
-        persisted_view.ell_cols = persisted_matrix.parts[0]->ell_cols;
-        persisted_view.row_stride_bytes = persisted_matrix.parts[0]->row_stride_bytes;
-        persisted_view.bits = persisted_matrix.parts[0]->bits;
-        persisted_view.decode_policy = persisted_matrix.parts[0]->decode_policy;
-        persisted_view.block_col_idx = persisted_block_idx.data;
-        persisted_view.packed_values = persisted_values.data;
-        persisted_view.column_scales = persisted_scales.data;
-        persisted_view.row_offsets = persisted_row_offsets.data;
-
-        auto persisted_out = autograd::allocate_device_buffer<float>(6);
-        autograd::base::quantized_blocked_ell_spmm_fwd_f32(
-            ctx,
-            persisted_view,
-            rhs.data,
-            2,
-            2,
-            persisted_out.data,
-            2);
-        float persisted_out_host[6] = {};
-        autograd::download_device_buffer(persisted_out, persisted_out_host, 6);
-        require(close_value(persisted_out_host[0], blocked_spmm_ref_host[0]), "persisted quantized blocked ell out 0 mismatch");
-        require(close_value(persisted_out_host[5], blocked_spmm_ref_host[5]), "persisted quantized blocked ell out 5 mismatch");
-
-        if (persisted_storage.backend == cs::shard_storage_backend_dataset_h5) {
-            cs::invalidate_dataset_h5_cache(&persisted_storage);
-        }
-        cs::clear(&persisted_storage);
-        cs::clear(&persisted_matrix);
-        cs::sparse::clear(&persisted_part);
-        std::remove(dataset_path);
-    }
 
     const float quantize_dense_host[] = {
         1.0f, 0.0f, 2.0f,

@@ -33,9 +33,9 @@ flowchart LR
 
 ## Core Rules
 
-- `extern/CellShard/` owns data handling: persisted sparse storage, optional source ingest, layout publication, compaction/finalization, execution-CSPACK delivery, and owner-side runtime coordination.
+- CellShard owns data handling: persisted sparse storage, optional source ingest, layout publication, compaction/finalization, execution-CSPACK delivery, and owner-side runtime coordination.
 - `src/compute/` is the authoritative home for reusable Cellerator math over CellShard matrices.
-- `extern/CellShardPreprocess/` owns biology-facing preprocessing policy, state validation, workflow APIs, and the native workbench.
+- CellShardPreprocess owns biology-facing preprocessing policy, state validation, workflow APIs, and the native workbench.
 - `src/models/`, `src/trajectory/`, `src/quantized/`, and `src/torch/` sit on top of those lower-level surfaces instead of redefining them.
 - `docs/pipeline/` remains local-only operational glue. It can call external tools or built binaries, but it is not part of the CMake or install surface.
 - Scope drift should be recorded in `../out_of_scope_inventory.md` before it is treated as Cellerator-owned.

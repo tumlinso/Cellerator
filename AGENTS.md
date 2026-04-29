@@ -1,23 +1,31 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds active Cellerator implementation code. Primary surfaces live under `src/compute/`, `src/models/`, `src/trajectory/`, `src/torch/`, and `src/quantized/`. `tests/` contains compile and runtime checks, `bench/` contains performance benches, `extern/CellShard/` is the storage/runtime submodule and optional ingest owner, and `extern/CellShardPreprocess/` owns the accelerated scRNA preprocessing runtime.
+`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds active Cellerator implementation code. Primary surfaces live under `src/compute/`, `src/models/`, `src/trajectory/`, `src/torch/`, and `src/quantized/`. `tests/` contains compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone CellStack math/compute package; storage, preprocessing workflow policy, neighbor-caller policy, and biological semantic validation live in sibling CellStack projects or installed packages.
 
 The durable Cellerator scope boundary lives in `scope.md`, and the advisory migration queue for surfaces that do not belong in Cellerator lives in `out_of_scope_inventory.md`. Read both before adding public APIs, new CMake targets, model modules, preprocessing code, ingest/runtime code, or Torch boundaries. If work touches scope drift, remind the user that `out_of_scope_inventory.md` is the migration queue and update it before normalizing the drift as Cellerator-owned.
 
-`src/compute/` is the authoritative home for reusable low-level computation: neighbor search, quantized helpers, Torch custom ops, and the sparse autograd building-block layer under `src/compute/autograd/`. That autograd surface is pointer-first and layout-explicit: `autograd.hh` defines raw-buffer contexts, scratch, cuSPARSE caches, and fleet helpers; `kernels/base_sparse.cu` holds the single-GPU CSR kernels and cuSPARSE-backed library paths; `kernels/dist_sparse.cu` holds the selected-slot distributed launch wrappers and explicit leader-merge reduction path for the real 4-GPU topology. `src/models/` is the header-first libtorch workflow surface. `src/models/developmental_time/` and `src/models/dense_reduce/` split each model into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh` layers with umbrella headers (`developmentalTime.hh`, `denseReduction.hh`). Forward-neighbor retrieval indices live under `src/compute/neighbors/forward_neighbors/`, not under `src/models/`. `src/models/quantize/` learns per-gene quantization parameters and packs dense reconstructions into the Volta-oriented quantized backend under `src/quantized/`. CellShard ingest lives under `extern/CellShard/include/CellShard/ingest/` and is built only with `CELLSHARD_BUILD_INGEST=ON`; `CELLSHARD_INSTALL_PREPROCESS=ON` forces that flag on.
+`src/compute/` is the authoritative home for reusable low-level computation: exact search math, quantized helpers, Torch custom ops, and the sparse autograd building-block layer under `src/compute/autograd/`. That autograd surface is pointer-first and layout-explicit: `autograd.hh` defines raw-buffer contexts, scratch, cuSPARSE caches, and fleet helpers; `kernels/base_sparse.cu` holds the single-GPU CSR kernels and cuSPARSE-backed library paths; `kernels/dist_sparse.cu` holds the selected-slot distributed launch wrappers and explicit leader-merge reduction path for the real 4-GPU topology. `src/models/` is the header-first libtorch workflow surface. `src/models/developmental_time/` and `src/models/dense_reduce/` split each model into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh` layers with umbrella headers (`developmentalTime.hh`, `denseReduction.hh`). Neighbor retrieval index/query policy is not a Cellerator public API. `src/models/quantize/` learns per-gene quantization parameters and packs dense reconstructions into the Volta-oriented quantized backend under `src/quantized/`.
 
-CellShardPreprocess C++ APIs use `namespace cellshard_preprocess`; Cellerator call sites should introduce `namespace cspre = ::cellshard_preprocess;` and use `cspre::` locally so wrapper code stays readable without hiding the ABI owner.
+Expected local checkout layout for source builds is:
+
+```text
+cellstack/
+├── CellShard/
+├── Cellerator/
+├── CellShardPreprocess/
+└── NeighborCaller/
+```
 
 For substantial repo work, consult root `todos.md` first. Detailed workstream ledgers under `todos/` are optional and may not exist.
 
 For custom gradients, the first intended handwritten gradient-calculator target is the quantized path. Treat that backend as the leading candidate for explicit backward logic before introducing broader custom-gradient machinery elsewhere.
 
 ## Build, Test, and Development Commands
-Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. Useful Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `forwardNeighborsCompileTest`, `computeAutogradRuntimeTest`, `developmentalTimeCompileTest`, `denseReduceCompileTest`, `quantizeModelTest`, `torchBindingsCompileTest`, and `modelCustomOpsTest`. CellShardPreprocess benchmarks live in the CellShardPreprocess subproject as `cellShardPreprocessScrnaBench` and `cellShardPreprocessFormatCompareBench`. CellShard ingest checks live in the CellShard subproject and require `-DCELLSHARD_BUILD_INGEST=ON`. Run built tests directly because `ctest` is not configured, for example `./build/forwardNeighborsCompileTest`, `./build/computeAutogradRuntimeTest`, or `./build/quantizeModelTest`. Torch-enabled builds now prefer the source-built libtorch installed at `/usr/local` via `/usr/local/share/cmake/Torch`. If libtorch is unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override that default.
+Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. CMake resolves CellShard in this order: `CELLERATOR_CELLSHARD_SOURCE_DIR`, sibling `../CellShard`, then `find_package(CellShard CONFIG REQUIRED)`. Useful Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `exactSearchRuntimeTest`, `computeAutogradRuntimeTest`, `developmentalTimeCompileTest`, `denseReduceCompileTest`, `quantizeModelTest`, `torchBindingsCompileTest`, and `modelCustomOpsTest`. Run built tests directly because `ctest` is not configured, for example `./build/exactSearchRuntimeTest`, `./build/computeAutogradRuntimeTest`, or `./build/quantizeModelTest`. Torch-enabled builds now prefer the source-built libtorch installed at `/usr/local` via `/usr/local/share/cmake/Torch`. If libtorch is unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override that default.
 
 ## Coding Style & Naming Conventions
-Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep storage/layout primitives in `extern/CellShard`; keep preprocessing runtime logic in `extern/CellShardPreprocess`; keep pipeline and model logic in Cellerator.
+Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep storage/layout primitives, preprocessing runtime policy, ingest, and neighbor-caller orchestration outside Cellerator; keep math and model logic in Cellerator.
 
 The old preprocessing project name has been retired. If future work encounters `MosaiCell`, `Mosaicell`, `mosaicell`, or `mosaiCell`, change it automatically to `CellShardPreprocess`, `cellshard_preprocess`, or `cellShardPreprocess` as appropriate unless the text is explicitly historical. For C++ caller aliases, prefer `cspre`.
 
@@ -43,10 +51,9 @@ Add tests under `tests/` beside the nearest feature area and name them after the
 Benchmark and profiler runs must be serialized across workers. Treat the repository-wide benchmark mutex as mandatory so concurrent agents do not skew GPU measurements. When adding or changing a benchmark binary under `bench/`, wire it through `bench/benchmark_mutex.hh` and do not bypass that lock in normal benchmark workflows.
 
 Model-facing and compute-adjacent targets currently map to:
-- `cellShardPreprocessAdapterStagingTest`, `cellShardPreprocessDoublePreprocessRejectionTest`, `cellShardPreprocessRuntimeTest`, and `cellShardPreprocessQCMetricsEquivalenceTest` for `extern/CellShardPreprocess/`
 - `developmentalTimeCompileTest` for `src/models/developmental_time/`
 - `denseReduceCompileTest` for `src/models/dense_reduce/`
-- `forwardNeighborsCompileTest` for `src/compute/neighbors/forward_neighbors/`
+- `exactSearchRuntimeTest` for `src/compute/neighbors/exact_search/`
 - `quantizeModelTest` for `src/models/quantize/`
 - `torchBindingsCompileTest` for `src/torch/` and CellShard-to-libtorch tensor export
 - `computeAutogradRuntimeTest` for `src/compute/autograd/`
