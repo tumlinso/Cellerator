@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace dt = ::cellerator::models::developmental_time;
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
 namespace css = ::cellshard::sparse;
 namespace csv = ::cellshard::device;
 
@@ -81,9 +81,9 @@ csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host, const csv::pa
     return out;
 }
 
-float download_first(const autograd::device_buffer<float> &buf) {
+float download_first(const runtime::device_buffer<float> &buf) {
     float value = 0.0f;
-    autograd::download_device_buffer(buf, &value, 1u);
+    runtime::download_device_buffer(buf, &value, 1u);
     return value;
 }
 
@@ -104,7 +104,7 @@ void run_case(const dt::DevelopmentalTimeBatchView &batch, dt::DevelopmentalTime
     require(std::isfinite(final.total), "final developmental_time loss must be finite");
     require(final.total <= initial.total, "developmental_time loss should not increase after training");
 
-    autograd::device_buffer<float> predicted = dt::infer_time(&model, batch);
+    runtime::device_buffer<float> predicted = dt::infer_time(&model, batch);
     require(std::isfinite(download_first(predicted)), "developmental_time inference should be finite");
     dt::clear(&model);
 }
@@ -138,8 +138,8 @@ int main() {
     require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
     require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
 
-    autograd::device_buffer<float> d_target = autograd::allocate_device_buffer<float>(target.size());
-    autograd::upload_device_buffer(&d_target, target.data(), target.size());
+    runtime::device_buffer<float> d_target = runtime::allocate_device_buffer<float>(target.size());
+    runtime::upload_device_buffer(&d_target, target.data(), target.size());
 
     const dt::DevelopmentalTimeBatchView blocked_batch =
         dt::make_developmental_time_blocked_ell_batch(make_blocked_view(blocked, blocked_record), d_target.data);

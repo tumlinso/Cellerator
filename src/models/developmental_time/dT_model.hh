@@ -41,30 +41,30 @@ struct DevelopmentalTimeMetrics {
 
 struct DevelopmentalTimeModel {
     DevelopmentalTimeModelConfig config{};
-    autograd::execution_context ctx{};
-    autograd::scratch_arena scratch{};
-    autograd::cusparse_cache sparse_cache{};
+    runtime::execution_context ctx{};
+    runtime::scratch_arena scratch{};
+    runtime::cusparse_cache sparse_cache{};
     std::uint64_t step = 0u;
 
-    autograd::device_buffer<float> encoder_weight;
-    autograd::device_buffer<float> encoder_bias;
-    autograd::device_buffer<float> hidden_weight;
-    autograd::device_buffer<float> hidden_bias;
-    autograd::device_buffer<float> output_weight;
-    autograd::device_buffer<float> output_bias;
+    runtime::device_buffer<float> encoder_weight;
+    runtime::device_buffer<float> encoder_bias;
+    runtime::device_buffer<float> hidden_weight;
+    runtime::device_buffer<float> hidden_bias;
+    runtime::device_buffer<float> output_weight;
+    runtime::device_buffer<float> output_bias;
 
-    autograd::device_buffer<float> encoder_weight_m1;
-    autograd::device_buffer<float> encoder_weight_m2;
-    autograd::device_buffer<float> encoder_bias_m1;
-    autograd::device_buffer<float> encoder_bias_m2;
-    autograd::device_buffer<float> hidden_weight_m1;
-    autograd::device_buffer<float> hidden_weight_m2;
-    autograd::device_buffer<float> hidden_bias_m1;
-    autograd::device_buffer<float> hidden_bias_m2;
-    autograd::device_buffer<float> output_weight_m1;
-    autograd::device_buffer<float> output_weight_m2;
-    autograd::device_buffer<float> output_bias_m1;
-    autograd::device_buffer<float> output_bias_m2;
+    runtime::device_buffer<float> encoder_weight_m1;
+    runtime::device_buffer<float> encoder_weight_m2;
+    runtime::device_buffer<float> encoder_bias_m1;
+    runtime::device_buffer<float> encoder_bias_m2;
+    runtime::device_buffer<float> hidden_weight_m1;
+    runtime::device_buffer<float> hidden_weight_m2;
+    runtime::device_buffer<float> hidden_bias_m1;
+    runtime::device_buffer<float> hidden_bias_m2;
+    runtime::device_buffer<float> output_weight_m1;
+    runtime::device_buffer<float> output_weight_m2;
+    runtime::device_buffer<float> output_bias_m1;
+    runtime::device_buffer<float> output_bias_m2;
 };
 
 void init(
@@ -73,7 +73,7 @@ void init(
 
 void clear(DevelopmentalTimeModel *model);
 
-autograd::device_buffer<float> infer_time(
+runtime::device_buffer<float> infer_time(
     DevelopmentalTimeModel *model,
     const DevelopmentalTimeBatchView &batch);
 

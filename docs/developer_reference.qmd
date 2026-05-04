@@ -21,7 +21,7 @@ cmake --build build -j 4
 Useful pipeline-adjacent targets include:
 
 - `exactSearchRuntimeTest`
-- `computeAutogradRuntimeTest`
+- `sparseOpsRuntimeTest`
 - `quantizedMatrixTest`
 - `trajectoryCompileTest`
 - `trajectoryRuntimeTest`
@@ -39,16 +39,16 @@ Examples:
 
 ```bash
 ./build/exactSearchRuntimeTest
-./build/computeAutogradRuntimeTest
+./build/sparseOpsRuntimeTest
 ./build/quantizeModelTest
 ```
 
 ## Repo Map
 
-- `src/compute/`: reusable sparse compute, autograd, neighbors
+- `src/compute/`: reusable sparse compute, sparse operators, neighbors
 - `src/models/`: model workflows, including native CUDA developmental-time paths
 - `src/trajectory/`: trajectory scoring and assembly
-- `src/quantized/`: Volta-oriented quantized sparse runtime
+- `include/Cellerator/core/quantized/`: Volta-oriented quantized sparse format and packing helpers
 - `src/torch/`: explicit Torch export boundary
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries

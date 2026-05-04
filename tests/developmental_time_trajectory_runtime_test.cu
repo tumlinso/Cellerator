@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace dtt = ::cellerator::models::developmental_time_trajectory;
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
 namespace css = ::cellshard::sparse;
 namespace csv = ::cellshard::device;
 
@@ -81,9 +81,9 @@ csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host, const csv::pa
     return out;
 }
 
-float download_first(const autograd::device_buffer<float> &buf) {
+float download_first(const runtime::device_buffer<float> &buf) {
     float value = 0.0f;
-    autograd::download_device_buffer(buf, &value, 1u);
+    runtime::download_device_buffer(buf, &value, 1u);
     return value;
 }
 
@@ -103,7 +103,7 @@ void run_case(const dtt::DevelopmentalTimeTrajectoryBatchView &batch) {
     require(std::isfinite(final.total), "final trajectory loss must be finite");
     require(final.total <= initial.total, "trajectory loss should not increase after training");
 
-    autograd::device_buffer<float> predicted = dtt::infer_time(&model, batch);
+    runtime::device_buffer<float> predicted = dtt::infer_time(&model, batch);
     require(std::isfinite(download_first(predicted)), "trajectory inference should be finite");
     dtt::clear(&model);
 }
@@ -143,14 +143,14 @@ int main() {
     require(csv::upload(&blocked, &blocked_record) == cudaSuccess, "blocked upload failed");
     require(csv::upload(&sliced, &sliced_record) == cudaSuccess, "sliced upload failed");
 
-    autograd::device_buffer<float> d_target = autograd::allocate_device_buffer<float>(target.size());
-    autograd::device_buffer<std::uint32_t> d_src = autograd::allocate_device_buffer<std::uint32_t>(graph_src.size());
-    autograd::device_buffer<std::uint32_t> d_dst = autograd::allocate_device_buffer<std::uint32_t>(graph_dst.size());
-    autograd::device_buffer<float> d_weight = autograd::allocate_device_buffer<float>(graph_weight.size());
-    autograd::upload_device_buffer(&d_target, target.data(), target.size());
-    autograd::upload_device_buffer(&d_src, graph_src.data(), graph_src.size());
-    autograd::upload_device_buffer(&d_dst, graph_dst.data(), graph_dst.size());
-    autograd::upload_device_buffer(&d_weight, graph_weight.data(), graph_weight.size());
+    runtime::device_buffer<float> d_target = runtime::allocate_device_buffer<float>(target.size());
+    runtime::device_buffer<std::uint32_t> d_src = runtime::allocate_device_buffer<std::uint32_t>(graph_src.size());
+    runtime::device_buffer<std::uint32_t> d_dst = runtime::allocate_device_buffer<std::uint32_t>(graph_dst.size());
+    runtime::device_buffer<float> d_weight = runtime::allocate_device_buffer<float>(graph_weight.size());
+    runtime::upload_device_buffer(&d_target, target.data(), target.size());
+    runtime::upload_device_buffer(&d_src, graph_src.data(), graph_src.size());
+    runtime::upload_device_buffer(&d_dst, graph_dst.data(), graph_dst.size());
+    runtime::upload_device_buffer(&d_weight, graph_weight.data(), graph_weight.size());
 
     const dtt::DevelopmentalTimeGraphView graph{
         static_cast<std::uint32_t>(graph_src.size()),

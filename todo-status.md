@@ -8,7 +8,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `closed`: completed or removed from pickup rotation.
 
 ## Workstreams
-- `cellerator-sparse-ml-layout`: idle. Source moves and compatibility wrappers are checkpointed; resume with a focused wiring review and build/test pass.
+- `cellerator-sparse-ml-layout`: idle. Contract-first CelleratorCore matrix/runtime/quantized layout, compute-owned matrix conversion and CUDA primitives, and CellShard shims are checkpointed and build-tested; remaining pickup is deciding whether the CellShard mask-groups exit-14 expectation belongs here or a separate CellShard test fix.
 - `cellshard-preprocess-gpu-biology-backbone`: closed. CellShardPreprocess owns native preprocessing APIs and benchmarks; Cellerator preprocessing APIs and root benchmark targets have been removed.
 - `cellshard-multi-assay-archive`: closed. Multi-assay archive descriptors, row-map helpers, the biology semantics package validation, docs, and tests are in place; CSPACK payloads remain single-assay.
 

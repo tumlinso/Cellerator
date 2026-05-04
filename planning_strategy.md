@@ -13,7 +13,7 @@ or package ergonomics.
 
 Cellerator should become useful because it owns sparse biological training
 primitives that Torch does not express efficiently over CellShard-scale data:
-Blocked-ELL/Sliced-ELL execution, sparse autograd, pathway/module reductions,
+Blocked-ELL/Sliced-ELL execution, sparse operator, pathway/module reductions,
 graph/neighborhood operations, quantized sparse reconstruction, and deliberate
 Torch interop.
 
@@ -40,7 +40,7 @@ Start here before implementing new models.
      reconstruction loss, quantized sparse affine/reconstruction, and sparse
      gather/scatter.
 
-3. Define the autograd boundary.
+3. Define the differentiation boundary.
    - Decide per op whether Cellerator owns forward only, forward plus backward,
      or forward/backward/optimizer state.
    - Be explicit about which gradients exist: values, weights, gene parameters,
@@ -93,7 +93,7 @@ Good first model candidates:
 - quantized sparse reconstruction path
 
 Avoid starting with a broad model zoo. The first model should prove that the
-operator ABI, autograd boundary, and CellShard batch contract are correct.
+operator ABI, differentiation boundary, and CellShard batch contract are correct.
 
 ## Phase 4: Define Torch Interop After The Native Contract
 
@@ -131,7 +131,7 @@ Before accepting a new Cellerator surface, answer:
 - Does it operate on CellShard-scale sparse biological data?
 - Does it need Blocked-ELL, Sliced-ELL, CSR fallback, cuSPARSE, or custom CUDA?
 - Is it training-capable, or does it support a training-capable primitive?
-- Is Torch insufficient because of layout, autograd, residency, or distributed
+- Is Torch insufficient because of layout, differentiation, residency, or distributed
   sparse execution?
 - Does the surface belong in CellShard or CellShardPreprocess instead?
 - Is it future `.cellerator` model-format work? If yes, defer it.

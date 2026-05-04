@@ -1,3 +1,7 @@
 #pragma once
 
-#include "../../../src/models/quantize/quantize.hh"
+#include "../compute/ml/quantize.hh"
+
+namespace cellerator::models {
+namespace quantize = ::cellerator::compute::ml::quantize;
+}

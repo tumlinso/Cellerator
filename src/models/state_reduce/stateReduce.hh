@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../compute/ml/autograd/autograd.hh"
+#include "../../compute/runtime/runtime.hh"
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -9,7 +9,7 @@
 
 namespace cellerator::models::state_reduce {
 
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
 namespace csv = ::cellshard::device;
 
 enum class StateReduceBackend {
@@ -100,29 +100,31 @@ struct StateReduceTrainMetrics {
 struct StateReduceModel {
     StateReduceModelConfig config{};
     StateReduceDistributedConfig distributed{};
-    autograd::execution_context ctx{};
-    autograd::scratch_arena scratch{};
-    autograd::cusparse_cache sparse_cache{};
-    autograd::fleet_context fleet{};
+    runtime::execution_context ctx{};
+    runtime::scratch_arena scratch{};
+    runtime::cusparse_cache sparse_cache{};
+    runtime::cublas_cache dense_cache{};
+    runtime::fleet_context fleet{};
     bool fleet_ready = false;
     std::uint64_t step = 0u;
 
-    autograd::device_buffer<float> encoder_weight;
-    autograd::device_buffer<float> encoder_bias;
-    autograd::device_buffer<float> decoder_factor;
-    autograd::device_buffer<float> gene_dictionary;
+    runtime::device_buffer<float> encoder_weight;
+    runtime::device_buffer<float> encoder_bias;
+    runtime::device_buffer<float> decoder_factor;
+    runtime::device_buffer<float> gene_dictionary;
 
-    autograd::device_buffer<float> encoder_weight_m1;
-    autograd::device_buffer<float> encoder_weight_m2;
-    autograd::device_buffer<float> encoder_bias_m1;
-    autograd::device_buffer<float> encoder_bias_m2;
-    autograd::device_buffer<float> decoder_factor_m1;
-    autograd::device_buffer<float> decoder_factor_m2;
-    autograd::device_buffer<float> gene_dictionary_m1;
-    autograd::device_buffer<float> gene_dictionary_m2;
+    runtime::device_buffer<float> encoder_weight_m1;
+    runtime::device_buffer<float> encoder_weight_m2;
+    runtime::device_buffer<float> encoder_bias_m1;
+    runtime::device_buffer<float> encoder_bias_m2;
+    runtime::device_buffer<float> decoder_factor_m1;
+    runtime::device_buffer<float> decoder_factor_m2;
+    runtime::device_buffer<float> gene_dictionary_m1;
+    runtime::device_buffer<float> gene_dictionary_m2;
 
-    autograd::device_buffer<__half> decoder_factor_half;
-    autograd::device_buffer<__half> gene_dictionary_half;
+    runtime::device_buffer<__half> decoder_factor_half;
+    runtime::device_buffer<__half> gene_dictionary_half;
+    runtime::device_buffer<float> row_ones;
 };
 
 void init(
@@ -132,7 +134,7 @@ void init(
 
 void clear(StateReduceModel *model);
 
-autograd::device_buffer<float> infer_embeddings(
+runtime::device_buffer<float> infer_embeddings(
     StateReduceModel *model,
     const StateReduceBatchView &batch);
 

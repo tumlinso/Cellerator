@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace sr = ::cellerator::models::state_reduce;
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
 namespace cs = ::cellshard;
 namespace css = ::cellshard::sparse;
 namespace csv = ::cellshard::device;
@@ -99,11 +99,11 @@ csv::sliced_ell_view make_sliced_view(const css::sliced_ell &host,
     return out;
 }
 
-std::vector<float> download_embeddings(const autograd::device_buffer<float> &latent,
+std::vector<float> download_embeddings(const runtime::device_buffer<float> &latent,
                                        std::size_t rows,
                                        std::size_t cols) {
     std::vector<float> host(rows * cols, 0.0f);
-    autograd::download_device_buffer(latent, host.data(), host.size());
+    runtime::download_device_buffer(latent, host.data(), host.size());
     return host;
 }
 
@@ -141,7 +141,7 @@ void run_case(const sr::StateReduceBatchView &batch,
     require(final.total <= initial.total, "state_reduce loss should not increase after training");
 
     if (require_graph_geometry) {
-        autograd::device_buffer<float> latent = sr::infer_embeddings(&model, batch);
+        runtime::device_buffer<float> latent = sr::infer_embeddings(&model, batch);
         const std::vector<float> embedding = download_embeddings(latent, batch.rows, config.latent_dim);
         const float same_pair = row_distance_sq(embedding, batch.rows, config.latent_dim, 0u, 1u);
         const float cross_pair = row_distance_sq(embedding, batch.rows, config.latent_dim, 0u, 8u);
@@ -189,12 +189,12 @@ int main() {
         graph_weight.push_back(1.0f);
     }
 
-    autograd::device_buffer<std::uint32_t> d_src = autograd::allocate_device_buffer<std::uint32_t>(graph_src.size());
-    autograd::device_buffer<std::uint32_t> d_dst = autograd::allocate_device_buffer<std::uint32_t>(graph_dst.size());
-    autograd::device_buffer<float> d_weight = autograd::allocate_device_buffer<float>(graph_weight.size());
-    autograd::upload_device_buffer(&d_src, graph_src.data(), graph_src.size());
-    autograd::upload_device_buffer(&d_dst, graph_dst.data(), graph_dst.size());
-    autograd::upload_device_buffer(&d_weight, graph_weight.data(), graph_weight.size());
+    runtime::device_buffer<std::uint32_t> d_src = runtime::allocate_device_buffer<std::uint32_t>(graph_src.size());
+    runtime::device_buffer<std::uint32_t> d_dst = runtime::allocate_device_buffer<std::uint32_t>(graph_dst.size());
+    runtime::device_buffer<float> d_weight = runtime::allocate_device_buffer<float>(graph_weight.size());
+    runtime::upload_device_buffer(&d_src, graph_src.data(), graph_src.size());
+    runtime::upload_device_buffer(&d_dst, graph_dst.data(), graph_dst.size());
+    runtime::upload_device_buffer(&d_weight, graph_weight.data(), graph_weight.size());
 
     const sr::StateReduceGraphView graph{
         static_cast<std::uint32_t>(graph_src.size()),

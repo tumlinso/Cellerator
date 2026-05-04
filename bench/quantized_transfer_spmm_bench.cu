@@ -1,5 +1,7 @@
-#include <Cellerator/compute/autograd.hh>
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/compute/runtime.hh>
+#include <Cellerator/compute/sparse/ops.hh>
+#include <Cellerator/compute/sparse/project.hh>
+#include <Cellerator/core/quantized/api.cuh>
 #include <CellShard/formats/blocked_ell.cuh>
 #include "benchmark_mutex.hh"
 
@@ -19,9 +21,11 @@
 #include <string>
 #include <vector>
 
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
+namespace sparse_ops = ::cellerator::compute::sparse::ops;
+namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace cs = ::cellshard;
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::core::quantized;
 
 namespace {
 
@@ -500,31 +504,31 @@ bench_result run_blocked_ell_case(
     const cs::sparse::blocked_ell &blocked,
     const float *rhs_host) {
     bench_result out;
-    autograd::execution_context ctx;
-    autograd::cusparse_cache cache;
+    runtime::execution_context ctx;
+    runtime::cusparse_cache cache;
 
     out.case_name = "blocked_ell_f16";
     out.policy = "native";
-    autograd::init(&ctx, 0);
-    autograd::init(&cache);
+    runtime::init(&ctx, 0);
+    runtime::init(&cache);
 
-    auto block_col_idx = autograd::allocate_device_buffer<std::uint32_t>(
+    auto block_col_idx = runtime::allocate_device_buffer<std::uint32_t>(
         static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    auto blocked_values = autograd::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    auto rhs = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    auto out_dev = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
+    auto blocked_values = runtime::allocate_device_buffer<__half>(static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
+    auto rhs = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    auto out_dev = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
 
     const auto upload_start = std::chrono::steady_clock::now();
-    autograd::upload_device_buffer(&block_col_idx,
+    runtime::upload_device_buffer(&block_col_idx,
                                    blocked.blockColIdx,
                                    static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    autograd::upload_device_buffer(&blocked_values, blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
-    autograd::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked upload)");
+    runtime::upload_device_buffer(&blocked_values, blocked.val, static_cast<std::size_t>(blocked.rows) * blocked.ell_cols);
+    runtime::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked upload)");
     const auto upload_stop = std::chrono::steady_clock::now();
 
     for (std::uint32_t i = 0u; i < cfg.warmup; ++i) {
-        autograd::base::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
+        sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
                                                          &cache,
                                                          blocked.val,
                                                          block_col_idx.data,
@@ -539,11 +543,11 @@ bench_result run_blocked_ell_case(
                                                          out_dev.data,
                                                          cfg.out_cols);
     }
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked warmup)");
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked warmup)");
 
     const auto kernel_start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0u; i < cfg.iters; ++i) {
-        autograd::base::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
+        sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(ctx,
                                                          &cache,
                                                          blocked.val,
                                                          block_col_idx.data,
@@ -558,11 +562,11 @@ bench_result run_blocked_ell_case(
                                                          out_dev.data,
                                                          cfg.out_cols);
     }
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked timed)");
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(blocked timed)");
     const auto kernel_stop = std::chrono::steady_clock::now();
 
     out.output.resize(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, 0.0f);
-    autograd::download_device_buffer(out_dev, out.output.data(), out.output.size());
+    runtime::download_device_buffer(out_dev, out.output.data(), out.output.size());
 
     out.payload_bytes =
         static_cast<std::uint64_t>(cs::sparse::row_block_count(&blocked))
@@ -574,8 +578,8 @@ bench_result run_blocked_ell_case(
     out.kernel_ms = elapsed_ms(kernel_start, kernel_stop);
     out.total_ms = out.upload_ms + out.kernel_ms;
 
-    autograd::clear(&cache);
-    autograd::clear(&ctx);
+    runtime::clear(&cache);
+    runtime::clear(&ctx);
     return out;
 }
 
@@ -586,46 +590,46 @@ bench_result run_quantized_case(
     const float *rhs_host,
     const std::vector<float> &reference_output) {
     bench_result out;
-    autograd::execution_context ctx;
+    runtime::execution_context ctx;
 
     out.case_name = "quantized_blocked_ell";
     out.policy = cfg.policy;
     out.bits = cfg.bits;
-    autograd::init(&ctx, 0);
+    runtime::init(&ctx, 0);
 
-    auto block_col_idx = autograd::allocate_device_buffer<std::uint32_t>(
+    auto block_col_idx = runtime::allocate_device_buffer<std::uint32_t>(
         static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    auto packed_values = autograd::allocate_device_buffer<std::uint8_t>(payload.packed_values.size());
-    auto column_scales = autograd::allocate_device_buffer<float>(payload.column_scales.size());
-    auto rhs = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    auto out_dev = autograd::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
-    autograd::device_buffer<float> column_offsets;
-    autograd::device_buffer<float> row_offsets;
+    auto packed_values = runtime::allocate_device_buffer<std::uint8_t>(payload.packed_values.size());
+    auto column_scales = runtime::allocate_device_buffer<float>(payload.column_scales.size());
+    auto rhs = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    auto out_dev = runtime::allocate_device_buffer<float>(static_cast<std::size_t>(blocked.rows) * cfg.out_cols);
+    runtime::device_buffer<float> column_offsets;
+    runtime::device_buffer<float> row_offsets;
 
     if (!payload.column_offsets.empty()) {
-        column_offsets = autograd::allocate_device_buffer<float>(payload.column_offsets.size());
+        column_offsets = runtime::allocate_device_buffer<float>(payload.column_offsets.size());
     }
     if (!payload.row_offsets.empty()) {
-        row_offsets = autograd::allocate_device_buffer<float>(payload.row_offsets.size());
+        row_offsets = runtime::allocate_device_buffer<float>(payload.row_offsets.size());
     }
 
     const auto upload_start = std::chrono::steady_clock::now();
-    autograd::upload_device_buffer(&block_col_idx,
+    runtime::upload_device_buffer(&block_col_idx,
                                    blocked.blockColIdx,
                                    static_cast<std::size_t>(cs::sparse::row_block_count(&blocked)) * cs::sparse::ell_width_blocks(&blocked));
-    autograd::upload_device_buffer(&packed_values, payload.packed_values.data(), payload.packed_values.size());
-    autograd::upload_device_buffer(&column_scales, payload.column_scales.data(), payload.column_scales.size());
+    runtime::upload_device_buffer(&packed_values, payload.packed_values.data(), payload.packed_values.size());
+    runtime::upload_device_buffer(&column_scales, payload.column_scales.data(), payload.column_scales.size());
     if (!payload.column_offsets.empty()) {
-        autograd::upload_device_buffer(&column_offsets, payload.column_offsets.data(), payload.column_offsets.size());
+        runtime::upload_device_buffer(&column_offsets, payload.column_offsets.data(), payload.column_offsets.size());
     }
     if (!payload.row_offsets.empty()) {
-        autograd::upload_device_buffer(&row_offsets, payload.row_offsets.data(), payload.row_offsets.size());
+        runtime::upload_device_buffer(&row_offsets, payload.row_offsets.data(), payload.row_offsets.size());
     }
-    autograd::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized upload)");
+    runtime::upload_device_buffer(&rhs, rhs_host, static_cast<std::size_t>(blocked.cols) * cfg.out_cols);
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized upload)");
     const auto upload_stop = std::chrono::steady_clock::now();
 
-    autograd::quantized_blocked_ell_view view{};
+    sparse_ops::quantized_blocked_ell_view view{};
     view.rows = blocked.rows;
     view.cols = blocked.cols;
     view.nnz = blocked.nnz;
@@ -641,19 +645,19 @@ bench_result run_quantized_case(
     view.row_offsets = payload.row_offsets.empty() ? nullptr : row_offsets.data;
 
     for (std::uint32_t i = 0u; i < cfg.warmup; ++i) {
-        autograd::base::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
+        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
     }
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized warmup)");
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized warmup)");
 
     const auto kernel_start = std::chrono::steady_clock::now();
     for (std::uint32_t i = 0u; i < cfg.iters; ++i) {
-        autograd::base::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
+        sparse_project::quantized_blocked_ell_spmm_fwd_f32(ctx, view, rhs.data, cfg.out_cols, cfg.out_cols, out_dev.data, cfg.out_cols);
     }
-    autograd::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized timed)");
+    runtime::cuda_require(cudaStreamSynchronize(ctx.stream), "cudaStreamSynchronize(quantized timed)");
     const auto kernel_stop = std::chrono::steady_clock::now();
 
     out.output.resize(static_cast<std::size_t>(blocked.rows) * cfg.out_cols, 0.0f);
-    autograd::download_device_buffer(out_dev, out.output.data(), out.output.size());
+    runtime::download_device_buffer(out_dev, out.output.data(), out.output.size());
 
     out.payload_bytes =
         static_cast<std::uint64_t>(cs::sparse::row_block_count(&blocked))
@@ -670,7 +674,7 @@ bench_result run_quantized_case(
     out.mean_abs_err = compute_mean_abs_error(out.output, reference_output);
     out.max_abs_err = compute_max_abs_error(out.output, reference_output);
 
-    autograd::clear(&ctx);
+    runtime::clear(&ctx);
     return out;
 }
 
@@ -721,7 +725,7 @@ int main(int argc, char **argv) {
     std::vector<int> slot_columns;
     double quantized_host_prep_ms = 0.0;
 
-    autograd::cuda_require(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount");
+    runtime::cuda_require(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount");
     require(device_count > 0, "quantizedTransferSpmmBench requires at least one visible CUDA device");
     cellerator::bench::benchmark_mutex_guard benchmark_mutex("quantizedTransferSpmmBench");
 

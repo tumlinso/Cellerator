@@ -6,9 +6,9 @@
 
 #include <cuda_runtime.h>
 
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/core/quantized/api.cuh>
 
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::core::quantized;
 
 namespace {
 

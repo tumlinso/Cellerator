@@ -23,7 +23,7 @@ The repo already has:
 
 - a persisted `quantized_blocked_ell` codec family in `CellShard`
 - a packed quantized Blocked-ELL host/device payload
-- a fused scalar decode + SpMM path in `src/compute/ml/autograd/`
+- a fused scalar decode + SpMM path in `src/compute/sparse/ops/`
 - round-trip tests through `.csh5`, cache pack materialization, and runtime execution
 
 What it did not have before this pass was a benchmark surface for the actual question: whether quantized sparse payloads reduce enough staging cost to beat native `__half` Blocked-ELL after decode.

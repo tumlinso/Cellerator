@@ -4,7 +4,7 @@ title: "Compute And Models"
 
 ## Reusable Compute First
 
-`src/compute/` is the authoritative home for reusable sparse ML math over CellShard matrices. That includes sparse linalg, reductions, transforms, selection, neighbor scoring/search math, sparse autograd contexts and kernels, preprocessing math kernels, and other fleet or shard-scoped numerical building blocks.
+`src/compute/` is the authoritative home for reusable sparse ML math over CellShard matrices. That includes sparse linalg, reductions, transforms, selection, neighbor scoring/search math, sparse operator contexts and kernels, preprocessing math kernels, and other fleet or shard-scoped numerical building blocks.
 
 The rule is simple: math stays in Cellerator, data handling stays in CellShard, and biology-facing preprocessing policy stays in CellShardPreprocess. Reusable runtime kernels should not be hidden inside model wrappers, storage code, or one-off workflow code. Source ingest belongs to CellShard's optional ingest component.
 
@@ -32,9 +32,9 @@ The forward-neighbor caller surface now lives in the neighbor-caller sibling pac
 - `src/models/developmental_time_trajectory/` is the native trajectory-aware scalar-time model. It consumes the same sparse batch views plus an external graph and adds one graph aggregation stage along with graph smoothness and directed-order losses.
 - older libtorch modules such as `dense_reduce/` still exist where the rewrite has not happened yet, but `src/torch/` is no longer in the developmental-time hot path.
 
-### Quantized Runtime
+### Quantized Format And Packing
 
-`src/quantized/` contains the custom-kernel quantized sparse backend for Volta `sm_70`. This path is optimized around sparse traffic and explicit metadata policies rather than framework generality.
+`include/Cellerator/core/quantized/` contains the quantized sparse format metadata, accessors, packing, unpacking, and dispatch helpers for Volta `sm_70`. Sparse projection and training uses of those payloads remain in `src/compute/`.
 
 The current architecture report for whether quantized sparse payloads actually win after transfer plus decode lives in [quantized_transfer_architecture.qmd](quantized_transfer_architecture.qmd). The first focused benchmark target for that question is `quantizedTransferSpmmBench`.
 
@@ -49,12 +49,12 @@ The downstream stages are stacked deliberately:
 1. `CellShard` provides persisted sparse layout, data handling, and runtime staging.
 2. `src/compute/` provides reusable Cellerator math over CellShard matrices.
 3. CellShardPreprocess provides biology-facing preprocessing policy and calls the layout-aware math layer.
-4. `src/trajectory/`, `src/models/`, and `src/quantized/` build task-specific workflows from those reusable pieces.
+4. `src/trajectory/` and `src/models/` build task-specific workflows from those reusable pieces.
 5. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
 
 ## Hot-Path Guidance
 
 - Keep data layout and transfer costs explicit.
-- Keep framework-independent differentiation logic in `src/compute/ml/autograd/`.
+- Keep framework-independent differentiation logic in `src/compute/sparse/ops/`.
 - Do not route hot runtime work through `src/torch/`.
 - Prefer the fastest reasonable Volta path over abstraction-heavy compatibility layers when the code is performance-sensitive.

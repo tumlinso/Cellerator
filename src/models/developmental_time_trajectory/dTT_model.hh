@@ -40,7 +40,7 @@ void init(
 
 void clear(DevelopmentalTimeTrajectoryModel *model);
 
-dt::autograd::device_buffer<float> infer_time(
+dt::runtime::device_buffer<float> infer_time(
     DevelopmentalTimeTrajectoryModel *model,
     const DevelopmentalTimeTrajectoryBatchView &batch,
     float graph_mix = 0.5f);

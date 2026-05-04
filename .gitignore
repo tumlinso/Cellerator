@@ -31,6 +31,8 @@ bin/
 lib/
 lib64/
 dist/
+!include/Cellerator/dist/
+!include/Cellerator/dist/**
 
 # CMake / make / ninja output
 CMakeCache.txt
@@ -84,6 +86,10 @@ Testing/
 # Debugger / crash output
 core
 core.*
+!include/Cellerator/core/
+!include/Cellerator/core/**
+!src/core/
+!src/core/**
 vgcore.*
 *.stackdump
 *.dSYM/

@@ -1,0 +1,162 @@
+#pragma once
+
+#define CELLERATOR_CONFIG_REAL_STORAGE_CODE @CELLERATOR_REAL_STORAGE_CODE@
+#define CELLERATOR_CONFIG_REAL_COMPUTE_CODE @CELLERATOR_REAL_COMPUTE_CODE@
+#define CELLERATOR_CONFIG_REAL_ACCUM_CODE @CELLERATOR_REAL_ACCUM_CODE@
+#define CELLERATOR_CONFIG_REAL_STORAGE_NAME "@CELLERATOR_REAL_STORAGE@"
+#define CELLERATOR_CONFIG_REAL_COMPUTE_NAME "@CELLERATOR_REAL_COMPUTE@"
+#define CELLERATOR_CONFIG_REAL_ACCUM_NAME "@CELLERATOR_REAL_ACCUM@"
+#define CELLERATOR_CONFIG_DEFAULT_SPARSE_LAYOUT_NAME "@CELLERATOR_DEFAULT_SPARSE_LAYOUT@"
+#define CELLERATOR_CONFIG_DEFAULT_TRAINING_PRECISION_NAME "@CELLERATOR_DEFAULT_TRAINING_PRECISION@"
+#define CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIPPING_NAME "@CELLERATOR_DEFAULT_GRADIENT_CLIPPING@"
+#define CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIP_NORM @CELLERATOR_DEFAULT_GRADIENT_CLIP_NORM@
+#define CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIP_VALUE @CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE@
+#define CELLERATOR_CONFIG_HOST_CPU_ARCH "@CELLERATOR_HOST_CPU_ARCH@"
+#define CELLERATOR_CONFIG_HOST_CPU_MODEL "@CELLERATOR_HOST_CPU_MODEL@"
+#define CELLERATOR_CONFIG_HOST_VECTOR_LEVEL_NAME "@CELLERATOR_HOST_VECTOR_LEVEL_ENUM@"
+#define CELLERATOR_CONFIG_HOST_HAS_SSE2 @CELLERATOR_HOST_HAS_SSE2@
+#define CELLERATOR_CONFIG_HOST_HAS_SSE3 @CELLERATOR_HOST_HAS_SSE3@
+#define CELLERATOR_CONFIG_HOST_HAS_SSSE3 @CELLERATOR_HOST_HAS_SSSE3@
+#define CELLERATOR_CONFIG_HOST_HAS_SSE41 @CELLERATOR_HOST_HAS_SSE41@
+#define CELLERATOR_CONFIG_HOST_HAS_SSE42 @CELLERATOR_HOST_HAS_SSE42@
+#define CELLERATOR_CONFIG_HOST_HAS_AVX @CELLERATOR_HOST_HAS_AVX@
+#define CELLERATOR_CONFIG_HOST_HAS_AVX2 @CELLERATOR_HOST_HAS_AVX2@
+#define CELLERATOR_CONFIG_HOST_HAS_AVX512F @CELLERATOR_HOST_HAS_AVX512F@
+#define CELLERATOR_CONFIG_HOST_HAS_AVX512BW @CELLERATOR_HOST_HAS_AVX512BW@
+#define CELLERATOR_CONFIG_HOST_HAS_AVX512VNNI @CELLERATOR_HOST_HAS_AVX512VNNI@
+#define CELLERATOR_CONFIG_HOST_HAS_F16C @CELLERATOR_HOST_HAS_F16C@
+#define CELLERATOR_CONFIG_HOST_HAS_FMA @CELLERATOR_HOST_HAS_FMA@
+#define CELLERATOR_CONFIG_HOST_HAS_NEON @CELLERATOR_HOST_HAS_NEON@
+#define CELLERATOR_CONFIG_HOST_HAS_ASIMD @CELLERATOR_HOST_HAS_ASIMD@
+#define CELLERATOR_CONFIG_HOST_HAS_SVE @CELLERATOR_HOST_HAS_SVE@
+#define CELLERATOR_CONFIG_HARDWARE_PROBE_RAN @CELLERATOR_HARDWARE_PROBE_RAN@
+#define CELLERATOR_CONFIG_HARDWARE_PROBE_OK @CELLERATOR_HARDWARE_PROBE_OK@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_COUNT @CELLERATOR_DETECTED_CUDA_DEVICE_COUNT@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_INDEX @CELLERATOR_DETECTED_CUDA_DEVICE_INDEX@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_COMPUTE_MAJOR @CELLERATOR_DETECTED_CUDA_COMPUTE_MAJOR@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_COMPUTE_MINOR @CELLERATOR_DETECTED_CUDA_COMPUTE_MINOR@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_SM @CELLERATOR_DETECTED_CUDA_SM@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_NAME "@CELLERATOR_DETECTED_CUDA_DEVICE_NAME@"
+#define CELLERATOR_CONFIG_DETECTED_CUDA_TOTAL_GLOBAL_MEM_MIB @CELLERATOR_DETECTED_CUDA_TOTAL_GLOBAL_MEM_MIB@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_MULTIPROCESSORS @CELLERATOR_DETECTED_CUDA_MULTIPROCESSORS@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_WARP_SIZE @CELLERATOR_DETECTED_CUDA_WARP_SIZE@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_ARCH_FAMILY_NAME "@CELLERATOR_DETECTED_CUDA_ARCH_FAMILY_ENUM@"
+#define CELLERATOR_CONFIG_DETECTED_CUDA_HAS_FP16_TENSOR_CORES @CELLERATOR_DETECTED_CUDA_HAS_FP16_TENSOR_CORES@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_HAS_BF16_TENSOR_CORES @CELLERATOR_DETECTED_CUDA_HAS_BF16_TENSOR_CORES@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_HAS_TF32_TENSOR_CORES @CELLERATOR_DETECTED_CUDA_HAS_TF32_TENSOR_CORES@
+#define CELLERATOR_CONFIG_DETECTED_CUDA_HAS_FP8_TENSOR_CORES @CELLERATOR_DETECTED_CUDA_HAS_FP8_TENSOR_CORES@
+
+namespace cellerator::core::config {
+
+enum class real_kind {
+    f16 = 3,
+    f32 = 4,
+    f64 = 5,
+    bf16 = 6,
+    fp8_e4m3 = 7,
+    fp8_e5m2 = 8
+};
+
+enum class sparse_layout_kind {
+    blocked_ell,
+    sliced_ell,
+    csr
+};
+
+enum class training_precision {
+    f32,
+    mixed_f16,
+    mixed_bf16,
+    mixed_fp8
+};
+
+enum class gradient_clipping {
+    none,
+    global_norm,
+    value
+};
+
+enum class host_vector_level {
+    scalar,
+    sse2,
+    sse4_1,
+    sse4_2,
+    avx,
+    avx2,
+    avx512,
+    neon,
+    sve
+};
+
+enum class cuda_arch_family {
+    unknown,
+    volta,
+    turing,
+    ampere,
+    ada,
+    hopper,
+    blackwell
+};
+
+inline constexpr int default_real_storage_code = CELLERATOR_CONFIG_REAL_STORAGE_CODE;
+inline constexpr int default_real_compute_code = CELLERATOR_CONFIG_REAL_COMPUTE_CODE;
+inline constexpr int default_real_accum_code = CELLERATOR_CONFIG_REAL_ACCUM_CODE;
+inline constexpr real_kind default_real_storage = real_kind::@CELLERATOR_REAL_STORAGE_ENUM@;
+inline constexpr real_kind default_real_compute = real_kind::@CELLERATOR_REAL_COMPUTE_ENUM@;
+inline constexpr real_kind default_real_accum = real_kind::@CELLERATOR_REAL_ACCUM_ENUM@;
+inline constexpr sparse_layout_kind default_sparse_layout = sparse_layout_kind::@CELLERATOR_DEFAULT_SPARSE_LAYOUT_ENUM@;
+inline constexpr training_precision default_training_precision = training_precision::@CELLERATOR_DEFAULT_TRAINING_PRECISION_ENUM@;
+inline constexpr gradient_clipping default_gradient_clipping = gradient_clipping::@CELLERATOR_DEFAULT_GRADIENT_CLIPPING_ENUM@;
+inline constexpr double default_gradient_clip_norm = CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIP_NORM;
+inline constexpr double default_gradient_clip_value = CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIP_VALUE;
+
+inline constexpr const char *default_real_storage_name = CELLERATOR_CONFIG_REAL_STORAGE_NAME;
+inline constexpr const char *default_real_compute_name = CELLERATOR_CONFIG_REAL_COMPUTE_NAME;
+inline constexpr const char *default_real_accum_name = CELLERATOR_CONFIG_REAL_ACCUM_NAME;
+inline constexpr const char *default_sparse_layout_name = CELLERATOR_CONFIG_DEFAULT_SPARSE_LAYOUT_NAME;
+inline constexpr const char *default_training_precision_name = CELLERATOR_CONFIG_DEFAULT_TRAINING_PRECISION_NAME;
+inline constexpr const char *default_gradient_clipping_name = CELLERATOR_CONFIG_DEFAULT_GRADIENT_CLIPPING_NAME;
+inline constexpr const char *host_cpu_arch = CELLERATOR_CONFIG_HOST_CPU_ARCH;
+inline constexpr const char *host_cpu_model = CELLERATOR_CONFIG_HOST_CPU_MODEL;
+inline constexpr host_vector_level detected_host_vector_level = host_vector_level::@CELLERATOR_HOST_VECTOR_LEVEL_ENUM@;
+inline constexpr const char *detected_host_vector_level_name = CELLERATOR_CONFIG_HOST_VECTOR_LEVEL_NAME;
+inline constexpr bool host_has_sse2 = CELLERATOR_CONFIG_HOST_HAS_SSE2 != 0;
+inline constexpr bool host_has_sse3 = CELLERATOR_CONFIG_HOST_HAS_SSE3 != 0;
+inline constexpr bool host_has_ssse3 = CELLERATOR_CONFIG_HOST_HAS_SSSE3 != 0;
+inline constexpr bool host_has_sse41 = CELLERATOR_CONFIG_HOST_HAS_SSE41 != 0;
+inline constexpr bool host_has_sse42 = CELLERATOR_CONFIG_HOST_HAS_SSE42 != 0;
+inline constexpr bool host_has_avx = CELLERATOR_CONFIG_HOST_HAS_AVX != 0;
+inline constexpr bool host_has_avx2 = CELLERATOR_CONFIG_HOST_HAS_AVX2 != 0;
+inline constexpr bool host_has_avx512f = CELLERATOR_CONFIG_HOST_HAS_AVX512F != 0;
+inline constexpr bool host_has_avx512bw = CELLERATOR_CONFIG_HOST_HAS_AVX512BW != 0;
+inline constexpr bool host_has_avx512vnni = CELLERATOR_CONFIG_HOST_HAS_AVX512VNNI != 0;
+inline constexpr bool host_has_f16c = CELLERATOR_CONFIG_HOST_HAS_F16C != 0;
+inline constexpr bool host_has_fma = CELLERATOR_CONFIG_HOST_HAS_FMA != 0;
+inline constexpr bool host_has_neon = CELLERATOR_CONFIG_HOST_HAS_NEON != 0;
+inline constexpr bool host_has_asimd = CELLERATOR_CONFIG_HOST_HAS_ASIMD != 0;
+inline constexpr bool host_has_sve = CELLERATOR_CONFIG_HOST_HAS_SVE != 0;
+
+inline constexpr bool hardware_probe_ran = CELLERATOR_CONFIG_HARDWARE_PROBE_RAN != 0;
+inline constexpr bool hardware_probe_ok = CELLERATOR_CONFIG_HARDWARE_PROBE_OK != 0;
+inline constexpr int detected_cuda_device_count = CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_COUNT;
+inline constexpr int detected_cuda_device_index = CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_INDEX;
+inline constexpr int detected_cuda_compute_major = CELLERATOR_CONFIG_DETECTED_CUDA_COMPUTE_MAJOR;
+inline constexpr int detected_cuda_compute_minor = CELLERATOR_CONFIG_DETECTED_CUDA_COMPUTE_MINOR;
+inline constexpr int detected_cuda_sm = CELLERATOR_CONFIG_DETECTED_CUDA_SM;
+inline constexpr const char *detected_cuda_device_name = CELLERATOR_CONFIG_DETECTED_CUDA_DEVICE_NAME;
+inline constexpr int detected_cuda_total_global_mem_mib = CELLERATOR_CONFIG_DETECTED_CUDA_TOTAL_GLOBAL_MEM_MIB;
+inline constexpr int detected_cuda_multiprocessors = CELLERATOR_CONFIG_DETECTED_CUDA_MULTIPROCESSORS;
+inline constexpr int detected_cuda_warp_size = CELLERATOR_CONFIG_DETECTED_CUDA_WARP_SIZE;
+inline constexpr cuda_arch_family detected_cuda_arch = cuda_arch_family::@CELLERATOR_DETECTED_CUDA_ARCH_FAMILY_ENUM@;
+inline constexpr const char *detected_cuda_arch_family_name = CELLERATOR_CONFIG_DETECTED_CUDA_ARCH_FAMILY_NAME;
+inline constexpr bool detected_cuda_has_fp16_tensor_cores = CELLERATOR_CONFIG_DETECTED_CUDA_HAS_FP16_TENSOR_CORES != 0;
+inline constexpr bool detected_cuda_has_bf16_tensor_cores = CELLERATOR_CONFIG_DETECTED_CUDA_HAS_BF16_TENSOR_CORES != 0;
+inline constexpr bool detected_cuda_has_tf32_tensor_cores = CELLERATOR_CONFIG_DETECTED_CUDA_HAS_TF32_TENSOR_CORES != 0;
+inline constexpr bool detected_cuda_has_fp8_tensor_cores = CELLERATOR_CONFIG_DETECTED_CUDA_HAS_FP8_TENSOR_CORES != 0;
+
+// Build defaults are used only when a caller does not provide an explicit
+// precision policy. CellShard files and runtime packs remain self-describing:
+// their stored value precision is read from per-file codec/layout metadata.
+inline constexpr bool stored_payload_precision_is_explicit = true;
+
+} // namespace cellerator::core::config

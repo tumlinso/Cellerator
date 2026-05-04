@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../compute/ml/autograd/autograd.hh"
+#include "../../compute/runtime/runtime.hh"
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cstdint>
 
 namespace cellerator::models::developmental_time {
 
-namespace autograd = ::cellerator::compute::autograd;
+namespace runtime = ::cellerator::compute::runtime;
 namespace csv = ::cellshard::device;
 
 enum class DevelopmentalTimeLayout {

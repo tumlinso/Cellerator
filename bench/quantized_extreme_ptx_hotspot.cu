@@ -1,10 +1,10 @@
-#include <Cellerator/quantized/extreme_backend.cuh>
+#include <Cellerator/core/quantized/extreme_backend.cuh>
 
 #include <cstdint>
 #include <cuda_runtime.h>
 
-namespace msq = ::cellerator::quantized;
-namespace msqe = ::cellerator::quantized::extreme_backend;
+namespace msq = ::cellerator::core::quantized;
+namespace msqe = ::cellerator::core::quantized::extreme_backend;
 
 extern "C" __global__ __launch_bounds__(256, 3)
 void quantized_extreme_hotspot_kernel(

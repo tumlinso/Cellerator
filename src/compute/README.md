@@ -12,14 +12,18 @@ Rules:
   library path they replace
 - keep CellShard data handling, CellShardPreprocess biology policy, and
   the neighbor-caller sibling package caller policy out of this tree
-- keep framework-independent sparse training code under `compute/ml/autograd`;
+- keep framework-independent sparse training code under `compute/sparse/ops`;
   libtorch-facing wrappers belong above that layer, not inside the runtime core
+- keep reusable forward sparse projection contracts under `compute/sparse/project`
+- keep reusable CUDA library handles and scratch ownership under `compute/runtime`;
+  model code should acquire cuSPARSE/cuBLAS there instead of creating per-call handles
 - document launch, HBM, PCIe, and synchronization costs at host boundaries
 
 Primary folders:
 
 - `core/`: small shared host/device utilities
+- `runtime/`: pointer-first execution contexts, scratch arenas, and CUDA library caches
 - `layouts/`: lightweight views over CellShard-owned layouts
 - `sparse/`: reusable sparse math contracts and backend families
-- `ml/`: ML-facing sparse math, autograd, and model-adjacent operators
+- `ml/`: ML-facing sparse math, sparse operators, and model-adjacent operators
 - `neighbors/`: reusable neighbor scoring/search/top-k math only

@@ -1,7 +1,8 @@
 #include "stateReduce.hh"
+#include "../../compute/sparse/project/project.hh"
 
+#include <cublas_v2.h>
 #include <cuda_runtime.h>
-#include <mma.h>
 
 #include <cmath>
 #include <cstddef>
@@ -13,9 +14,9 @@ namespace cellerator::models::state_reduce {
 
 namespace {
 
-using namespace nvcuda;
 namespace cs = ::cellshard;
 namespace css = ::cellshard::sparse;
+namespace sparse_project = ::cellerator::compute::sparse::project;
 
 constexpr int kScalarThreads = 256;
 
@@ -44,22 +45,19 @@ inline void require_runtime_mode_(const StateReduceModel *model, const char *lab
     }
 }
 
-template<typename T>
-autograd::device_buffer<T> allocate_device_zeroed_(int device, std::size_t count, const char *label) {
-    autograd::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_device_zeroed)");
-    autograd::device_buffer<T> out = autograd::allocate_device_buffer<T>(count);
-    if (count != 0u) {
-        autograd::cuda_require(cudaMemset(out.data, 0, count * sizeof(T)), label);
-    }
-    return out;
+inline void cublas_require_(cublasStatus_t status, const char *label) {
+    if (status == CUBLAS_STATUS_SUCCESS) return;
+    throw std::runtime_error(std::string(label) + ": cuBLAS failure");
 }
 
-__global__ void add_bias_kernel_(float *dst, const float *bias, std::uint32_t rows, std::uint32_t cols) {
-    const std::uint32_t linear = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    const std::uint32_t total = rows * cols;
-    if (linear >= total) return;
-    dst[linear] += bias[linear % cols];
+template<typename T>
+runtime::device_buffer<T> allocate_device_zeroed_(int device, std::size_t count, const char *label) {
+    runtime::cuda_require(cudaSetDevice(device), "cudaSetDevice(allocate_device_zeroed)");
+    runtime::device_buffer<T> out = runtime::allocate_device_buffer<T>(count);
+    if (count != 0u) {
+        runtime::cuda_require(cudaMemset(out.data, 0, count * sizeof(T)), label);
+    }
+    return out;
 }
 
 __global__ void float_to_half_kernel_(const float *src, __half *dst, std::uint32_t count) {
@@ -67,91 +65,6 @@ __global__ void float_to_half_kernel_(const float *src, __half *dst, std::uint32
         + static_cast<std::uint32_t>(threadIdx.x);
     if (idx >= count) return;
     dst[idx] = __float2half_rn(src[idx]);
-}
-
-__global__ void dense_matmul_fwd_kernel_(
-    const float *lhs,
-    const float *rhs,
-    std::uint32_t rows,
-    std::uint32_t inner,
-    std::uint32_t cols,
-    float *out) {
-    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.y) * static_cast<std::uint32_t>(blockDim.y)
-        + static_cast<std::uint32_t>(threadIdx.y);
-    const std::uint32_t col = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    if (row >= rows || col >= cols) return;
-
-    float accum = 0.0f;
-    for (std::uint32_t k = 0u; k < inner; ++k) {
-        accum += lhs[static_cast<std::size_t>(row) * inner + k] * rhs[static_cast<std::size_t>(k) * cols + col];
-    }
-    out[static_cast<std::size_t>(row) * cols + col] = accum;
-}
-
-__global__ void dense_left_grad_kernel_(
-    const float *grad_out,
-    const float *rhs,
-    std::uint32_t rows,
-    std::uint32_t inner,
-    std::uint32_t cols,
-    float *grad_lhs) {
-    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.y) * static_cast<std::uint32_t>(blockDim.y)
-        + static_cast<std::uint32_t>(threadIdx.y);
-    const std::uint32_t col = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    if (row >= rows || col >= inner) return;
-
-    float accum = 0.0f;
-    for (std::uint32_t k = 0u; k < cols; ++k) {
-        accum += grad_out[static_cast<std::size_t>(row) * cols + k] * rhs[static_cast<std::size_t>(col) * cols + k];
-    }
-    grad_lhs[static_cast<std::size_t>(row) * inner + col] = accum;
-}
-
-__global__ void dense_right_grad_kernel_(
-    const float *lhs,
-    const float *grad_out,
-    std::uint32_t rows,
-    std::uint32_t inner,
-    std::uint32_t cols,
-    float *grad_rhs) {
-    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.y) * static_cast<std::uint32_t>(blockDim.y)
-        + static_cast<std::uint32_t>(threadIdx.y);
-    const std::uint32_t col = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    if (row >= inner || col >= cols) return;
-
-    float accum = 0.0f;
-    for (std::uint32_t sample = 0u; sample < rows; ++sample) {
-        accum += lhs[static_cast<std::size_t>(sample) * inner + row] * grad_out[static_cast<std::size_t>(sample) * cols + col];
-    }
-    grad_rhs[static_cast<std::size_t>(row) * cols + col] = accum;
-}
-
-__global__ void wmma_decode_kernel_(
-    const __half *lhs,
-    const __half *rhs,
-    std::uint32_t rows,
-    std::uint32_t inner,
-    std::uint32_t cols,
-    float *out) {
-    const std::uint32_t tile_row = static_cast<std::uint32_t>(blockIdx.y) * 16u;
-    const std::uint32_t tile_col = static_cast<std::uint32_t>(blockIdx.x) * 16u;
-    if (tile_row >= rows || tile_col >= cols) return;
-
-    wmma::fragment<wmma::accumulator, 16, 16, 16, float> acc;
-    wmma::fill_fragment(acc, 0.0f);
-
-    for (std::uint32_t k = 0u; k < inner; k += 16u) {
-        wmma::fragment<wmma::matrix_a, 16, 16, 16, __half, wmma::row_major> a_frag;
-        wmma::fragment<wmma::matrix_b, 16, 16, 16, __half, wmma::row_major> b_frag;
-        wmma::load_matrix_sync(a_frag, lhs + static_cast<std::size_t>(tile_row) * inner + k, inner);
-        wmma::load_matrix_sync(b_frag, rhs + static_cast<std::size_t>(k) * cols + tile_col, cols);
-        wmma::mma_sync(acc, a_frag, b_frag, acc);
-    }
-
-    wmma::store_matrix_sync(out + static_cast<std::size_t>(tile_row) * cols + tile_col, acc, cols, wmma::mem_row_major);
 }
 
 __global__ void sliced_ell_spmm_fwd_kernel_(
@@ -379,24 +292,6 @@ __global__ void sliced_ell_encoder_grad_kernel_(
     }
 }
 
-__global__ void row_sum_kernel_(const float *src, std::uint32_t rows, std::uint32_t cols, float *dst) {
-    const std::uint32_t col = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    if (col >= cols) return;
-    float accum = 0.0f;
-    for (std::uint32_t row = 0u; row < rows; ++row) {
-        accum += src[static_cast<std::size_t>(row) * cols + col];
-    }
-    dst[col] = accum;
-}
-
-__global__ void add_inplace_kernel_(float *dst, const float *src, std::uint32_t count) {
-    const std::uint32_t idx = static_cast<std::uint32_t>(blockIdx.x) * static_cast<std::uint32_t>(blockDim.x)
-        + static_cast<std::uint32_t>(threadIdx.x);
-    if (idx >= count) return;
-    dst[idx] += src[idx];
-}
-
 __global__ void adamw_update_kernel_(
     float *param,
     float *m1,
@@ -424,27 +319,47 @@ __global__ void adamw_update_kernel_(
     m2[idx] = next_m2;
 }
 
-inline void launch_bias_(const autograd::execution_context &ctx, float *dst, const float *bias, std::uint32_t rows, std::uint32_t cols) {
+inline void ensure_row_ones_(StateReduceModel *model, std::uint32_t rows) {
+    if (rows == 0u || model->row_ones.count >= rows) return;
+    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce row ones)");
+    model->row_ones = runtime::allocate_device_buffer<float>(rows);
+    std::vector<float> ones(rows, 1.0f);
+    runtime::upload_device_buffer(&model->row_ones, ones.data(), ones.size());
+}
+
+inline void launch_bias_(StateReduceModel *model, float *dst, const float *bias, std::uint32_t rows, std::uint32_t cols) {
     if (rows == 0u || cols == 0u) return;
-    const std::uint32_t total = rows * cols;
-    const int blocks = static_cast<int>((total + kScalarThreads - 1u) / kScalarThreads);
-    add_bias_kernel_<<<blocks, kScalarThreads, 0, ctx.stream>>>(dst, bias, rows, cols);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce add_bias_kernel");
+    ensure_row_ones_(model, rows);
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f;
+    cublas_require_(
+        cublasSger(
+            handle,
+            static_cast<int>(cols),
+            static_cast<int>(rows),
+            &alpha,
+            bias,
+            1,
+            model->row_ones.data,
+            1,
+            dst,
+            static_cast<int>(cols)),
+        "state_reduce cublasSger bias");
 }
 
 inline void launch_float_to_half_(
-    const autograd::execution_context &ctx,
+    const runtime::execution_context &ctx,
     const float *src,
     __half *dst,
     std::uint32_t count) {
     if (count == 0u) return;
     const int blocks = static_cast<int>((count + kScalarThreads - 1u) / kScalarThreads);
     float_to_half_kernel_<<<blocks, kScalarThreads, 0, ctx.stream>>>(src, dst, count);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce float_to_half_kernel");
+    runtime::cuda_require(cudaGetLastError(), "state_reduce float_to_half_kernel");
 }
 
 inline void launch_dense_fwd_(
-    const autograd::execution_context &ctx,
+    StateReduceModel *model,
     const float *lhs,
     const float *rhs,
     std::uint32_t rows,
@@ -452,14 +367,29 @@ inline void launch_dense_fwd_(
     std::uint32_t cols,
     float *out) {
     if (rows == 0u || inner == 0u || cols == 0u) return;
-    const dim3 block(16u, 16u);
-    const dim3 grid((cols + block.x - 1u) / block.x, (rows + block.y - 1u) / block.y);
-    dense_matmul_fwd_kernel_<<<grid, block, 0, ctx.stream>>>(lhs, rhs, rows, inner, cols, out);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce dense_matmul_fwd_kernel");
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f, beta = 0.0f;
+    cublas_require_(
+        cublasSgemm(
+            handle,
+            CUBLAS_OP_N,
+            CUBLAS_OP_N,
+            static_cast<int>(cols),
+            static_cast<int>(rows),
+            static_cast<int>(inner),
+            &alpha,
+            rhs,
+            static_cast<int>(cols),
+            lhs,
+            static_cast<int>(inner),
+            &beta,
+            out,
+            static_cast<int>(cols)),
+        "state_reduce cublasSgemm dense fwd");
 }
 
 inline void launch_dense_left_grad_(
-    const autograd::execution_context &ctx,
+    StateReduceModel *model,
     const float *grad_out,
     const float *rhs,
     std::uint32_t rows,
@@ -467,14 +397,29 @@ inline void launch_dense_left_grad_(
     std::uint32_t cols,
     float *grad_lhs) {
     if (rows == 0u || inner == 0u || cols == 0u) return;
-    const dim3 block(16u, 16u);
-    const dim3 grid((inner + block.x - 1u) / block.x, (rows + block.y - 1u) / block.y);
-    dense_left_grad_kernel_<<<grid, block, 0, ctx.stream>>>(grad_out, rhs, rows, inner, cols, grad_lhs);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce dense_left_grad_kernel");
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f, beta = 0.0f;
+    cublas_require_(
+        cublasSgemm(
+            handle,
+            CUBLAS_OP_T,
+            CUBLAS_OP_N,
+            static_cast<int>(inner),
+            static_cast<int>(rows),
+            static_cast<int>(cols),
+            &alpha,
+            rhs,
+            static_cast<int>(cols),
+            grad_out,
+            static_cast<int>(cols),
+            &beta,
+            grad_lhs,
+            static_cast<int>(inner)),
+        "state_reduce cublasSgemm dense left grad");
 }
 
 inline void launch_dense_right_grad_(
-    const autograd::execution_context &ctx,
+    StateReduceModel *model,
     const float *lhs,
     const float *grad_out,
     std::uint32_t rows,
@@ -482,14 +427,29 @@ inline void launch_dense_right_grad_(
     std::uint32_t cols,
     float *grad_rhs) {
     if (rows == 0u || inner == 0u || cols == 0u) return;
-    const dim3 block(16u, 16u);
-    const dim3 grid((cols + block.x - 1u) / block.x, (inner + block.y - 1u) / block.y);
-    dense_right_grad_kernel_<<<grid, block, 0, ctx.stream>>>(lhs, grad_out, rows, inner, cols, grad_rhs);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce dense_right_grad_kernel");
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f, beta = 0.0f;
+    cublas_require_(
+        cublasSgemm(
+            handle,
+            CUBLAS_OP_N,
+            CUBLAS_OP_T,
+            static_cast<int>(cols),
+            static_cast<int>(inner),
+            static_cast<int>(rows),
+            &alpha,
+            grad_out,
+            static_cast<int>(cols),
+            lhs,
+            static_cast<int>(inner),
+            &beta,
+            grad_rhs,
+            static_cast<int>(cols)),
+        "state_reduce cublasSgemm dense right grad");
 }
 
-inline void launch_wmma_decode_(
-    const autograd::execution_context &ctx,
+inline void launch_half_dense_fwd_(
+    StateReduceModel *model,
     const __half *lhs,
     const __half *rhs,
     std::uint32_t rows,
@@ -497,10 +457,59 @@ inline void launch_wmma_decode_(
     std::uint32_t cols,
     float *out) {
     if (rows == 0u || inner == 0u || cols == 0u) return;
-    const dim3 block(32u, 1u, 1u);
-    const dim3 grid((cols + 15u) / 16u, (rows + 15u) / 16u, 1u);
-    wmma_decode_kernel_<<<grid, block, 0, ctx.stream>>>(lhs, rhs, rows, inner, cols, out);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce wmma_decode_kernel");
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f, beta = 0.0f;
+    cublas_require_(
+        cublasGemmEx(
+            handle,
+            CUBLAS_OP_N,
+            CUBLAS_OP_N,
+            static_cast<int>(cols),
+            static_cast<int>(rows),
+            static_cast<int>(inner),
+            &alpha,
+            rhs,
+            CUDA_R_16F,
+            static_cast<int>(cols),
+            lhs,
+            CUDA_R_16F,
+            static_cast<int>(inner),
+            &beta,
+            out,
+            CUDA_R_32F,
+            static_cast<int>(cols),
+            CUBLAS_COMPUTE_32F,
+            CUBLAS_GEMM_DEFAULT_TENSOR_OP),
+        "state_reduce cublasGemmEx half dense fwd");
+}
+
+inline void launch_row_sum_(StateReduceModel *model, const float *src, std::uint32_t rows, std::uint32_t cols, float *dst) {
+    if (rows == 0u || cols == 0u) return;
+    ensure_row_ones_(model, rows);
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f, beta = 0.0f;
+    cublas_require_(
+        cublasSgemv(
+            handle,
+            CUBLAS_OP_N,
+            static_cast<int>(cols),
+            static_cast<int>(rows),
+            &alpha,
+            src,
+            static_cast<int>(cols),
+            model->row_ones.data,
+            1,
+            &beta,
+            dst,
+            1),
+        "state_reduce cublasSgemv row sum");
+}
+
+inline void launch_axpy_(StateReduceModel *model, float *dst, const float *src, std::uint32_t count) {
+    if (count == 0u) return;
+    cublasHandle_t handle = runtime::acquire_cublas(&model->dense_cache, model->ctx);
+    const float alpha = 1.0f;
+    cublas_require_(cublasSaxpy(handle, static_cast<int>(count), &alpha, src, 1, dst, 1), "state_reduce cublasSaxpy");
 }
 
 inline void encode_batch_(
@@ -512,7 +521,7 @@ inline void encode_batch_(
     if (batch.layout == StateReduceLayout::blocked_ell) {
         const csv::blocked_ell_view &view = batch.blocked_ell;
         if (model->config.backend == StateReduceBackend::cusparse_heavy) {
-            autograd::base::blocked_ell_spmm_fwd_f16_f32_lib(
+            sparse_project::blocked_ell_spmm_fwd_f16_f32_lib(
                 model->ctx,
                 &model->sparse_cache,
                 view.blockColIdx,
@@ -528,7 +537,7 @@ inline void encode_batch_(
                 latent_out,
                 static_cast<std::int64_t>(latent_dim));
         } else {
-            autograd::base::blocked_ell_spmm_fwd_f16_f32(
+            sparse_project::blocked_ell_spmm_fwd_f16_f32(
                 model->ctx,
                 view.blockColIdx,
                 view.val,
@@ -550,9 +559,9 @@ inline void encode_batch_(
             model->encoder_weight.data,
             latent_dim,
             latent_out);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_spmm_fwd_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_spmm_fwd_kernel");
     }
-    if (model->config.use_encoder_bias) launch_bias_(model->ctx, latent_out, model->encoder_bias.data, rows, latent_dim);
+    if (model->config.use_encoder_bias) launch_bias_(model, latent_out, model->encoder_bias.data, rows, latent_dim);
 }
 
 inline void refresh_half_mirrors_(StateReduceModel *model) {
@@ -569,10 +578,10 @@ inline void refresh_half_mirrors_(StateReduceModel *model) {
 }
 
 struct forward_buffers_ {
-    autograd::device_buffer<float> latent;
-    autograd::device_buffer<float> factors;
-    autograd::device_buffer<float> reconstruction;
-    autograd::device_buffer<__half> factors_half;
+    runtime::device_buffer<float> latent;
+    runtime::device_buffer<float> factors;
+    runtime::device_buffer<float> reconstruction;
+    runtime::device_buffer<__half> factors_half;
 };
 
 inline forward_buffers_ run_forward_(
@@ -587,7 +596,7 @@ inline forward_buffers_ run_forward_(
 
     encode_batch_(model, batch, out.latent.data);
     launch_dense_fwd_(
-        model->ctx,
+        model,
         out.latent.data,
         model->decoder_factor.data,
         batch.rows,
@@ -604,8 +613,8 @@ inline forward_buffers_ run_forward_(
             out.factors.data,
             out.factors_half.data,
             batch.rows * model->config.factor_dim);
-        launch_wmma_decode_(
-            model->ctx,
+        launch_half_dense_fwd_(
+            model,
             out.factors_half.data,
             model->gene_dictionary_half.data,
             batch.rows,
@@ -614,7 +623,7 @@ inline forward_buffers_ run_forward_(
             out.reconstruction.data);
     } else {
         launch_dense_fwd_(
-            model->ctx,
+            model,
             out.factors.data,
             model->gene_dictionary.data,
             batch.rows,
@@ -646,7 +655,7 @@ inline StateReduceTrainMetrics compute_loss_(
         baseline_scale,
         recon_loss.data,
         grad_reconstruction);
-    autograd::cuda_require(cudaGetLastError(), "state_reduce reconstruction_zero_baseline_kernel");
+    runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_zero_baseline_kernel");
 
     if (batch.layout == StateReduceLayout::blocked_ell) {
         reconstruction_positive_blocked_ell_kernel_<<<batch.rows, 128, 0, model->ctx.stream>>>(
@@ -656,7 +665,7 @@ inline StateReduceTrainMetrics compute_loss_(
             baseline_scale,
             recon_loss.data,
             grad_reconstruction);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_blocked_ell_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_blocked_ell_kernel");
     } else {
         reconstruction_positive_sliced_ell_kernel_<<<batch.rows, 128, 0, model->ctx.stream>>>(
             batch.sliced_ell,
@@ -665,7 +674,7 @@ inline StateReduceTrainMetrics compute_loss_(
             baseline_scale,
             recon_loss.data,
             grad_reconstruction);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_sliced_ell_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce reconstruction_positive_sliced_ell_kernel");
     }
 
     if (batch.graph.edge_count != 0u && loss_config.graph_weight != 0.0f) {
@@ -678,11 +687,11 @@ inline StateReduceTrainMetrics compute_loss_(
             graph_scale,
             graph_loss.data,
             grad_graph);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce graph_loss_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce graph_loss_kernel");
     }
 
-    autograd::download_device_buffer(recon_loss, &metrics.reconstruction, 1u);
-    autograd::download_device_buffer(graph_loss, &metrics.graph, 1u);
+    runtime::download_device_buffer(recon_loss, &metrics.reconstruction, 1u);
+    runtime::download_device_buffer(graph_loss, &metrics.graph, 1u);
     metrics.total = metrics.reconstruction + metrics.graph;
     return metrics;
 }
@@ -719,7 +728,7 @@ inline void apply_optimizer_(
             optimizer_config.weight_decay,
             bias_correction1,
             bias_correction2);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce adamw_update_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce adamw_update_kernel");
     };
 
     launch_update(
@@ -770,12 +779,13 @@ void init(
     model->config = config;
     model->distributed = distributed;
     model->step = 0u;
-    autograd::init(&model->ctx, config.device);
-    autograd::init(&model->scratch);
-    autograd::init(&model->sparse_cache);
-    autograd::init(&model->fleet);
+    runtime::init(&model->ctx, config.device);
+    runtime::init(&model->scratch);
+    runtime::init(&model->sparse_cache);
+    runtime::init(&model->dense_cache);
+    runtime::init(&model->fleet);
     if (distributed.requested_slots > 1u) {
-        autograd::discover_fleet(&model->fleet);
+        runtime::discover_fleet(&model->fleet);
         model->fleet_ready = true;
         if (model->fleet.local.device_count < distributed.requested_slots) {
             throw std::runtime_error("state_reduce requested more fleet slots than are visible");
@@ -787,11 +797,11 @@ void init(
     const std::uint32_t decoder_factor_count = config.latent_dim * config.factor_dim;
     const std::uint32_t gene_dictionary_count = config.factor_dim * config.input_genes;
 
-    autograd::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce init)");
-    model->encoder_weight = autograd::allocate_device_buffer<float>(encoder_weight_count);
-    model->encoder_bias = autograd::allocate_device_buffer<float>(encoder_bias_count);
-    model->decoder_factor = autograd::allocate_device_buffer<float>(decoder_factor_count);
-    model->gene_dictionary = autograd::allocate_device_buffer<float>(gene_dictionary_count);
+    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce init)");
+    model->encoder_weight = runtime::allocate_device_buffer<float>(encoder_weight_count);
+    model->encoder_bias = runtime::allocate_device_buffer<float>(encoder_bias_count);
+    model->decoder_factor = runtime::allocate_device_buffer<float>(decoder_factor_count);
+    model->gene_dictionary = runtime::allocate_device_buffer<float>(gene_dictionary_count);
     model->encoder_weight_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m1)");
     model->encoder_weight_m2 = allocate_device_zeroed_<float>(model->ctx.device, encoder_weight_count, "cudaMemset(state_reduce encoder_weight_m2)");
     model->encoder_bias_m1 = allocate_device_zeroed_<float>(model->ctx.device, encoder_bias_count, "cudaMemset(state_reduce encoder_bias_m1)");
@@ -800,8 +810,9 @@ void init(
     model->decoder_factor_m2 = allocate_device_zeroed_<float>(model->ctx.device, decoder_factor_count, "cudaMemset(state_reduce decoder_factor_m2)");
     model->gene_dictionary_m1 = allocate_device_zeroed_<float>(model->ctx.device, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m1)");
     model->gene_dictionary_m2 = allocate_device_zeroed_<float>(model->ctx.device, gene_dictionary_count, "cudaMemset(state_reduce gene_dictionary_m2)");
-    model->decoder_factor_half = autograd::allocate_device_buffer<__half>(decoder_factor_count);
-    model->gene_dictionary_half = autograd::allocate_device_buffer<__half>(gene_dictionary_count);
+    model->decoder_factor_half = runtime::allocate_device_buffer<__half>(decoder_factor_count);
+    model->gene_dictionary_half = runtime::allocate_device_buffer<__half>(gene_dictionary_count);
+    model->row_ones = runtime::device_buffer<float>();
 
     std::vector<float> encoder_weight_host(encoder_weight_count, 0.0f);
     std::vector<float> encoder_bias_host(encoder_bias_count, 0.0f);
@@ -811,47 +822,49 @@ void init(
     fill_host_weights_(decoder_factor_host, 0.05f, 0.29f);
     fill_host_weights_(gene_dictionary_host, 0.05f, 0.47f);
 
-    autograd::upload_device_buffer(&model->encoder_weight, encoder_weight_host.data(), encoder_weight_host.size());
-    if (encoder_bias_count != 0u) autograd::upload_device_buffer(&model->encoder_bias, encoder_bias_host.data(), encoder_bias_host.size());
-    autograd::upload_device_buffer(&model->decoder_factor, decoder_factor_host.data(), decoder_factor_host.size());
-    autograd::upload_device_buffer(&model->gene_dictionary, gene_dictionary_host.data(), gene_dictionary_host.size());
+    runtime::upload_device_buffer(&model->encoder_weight, encoder_weight_host.data(), encoder_weight_host.size());
+    if (encoder_bias_count != 0u) runtime::upload_device_buffer(&model->encoder_bias, encoder_bias_host.data(), encoder_bias_host.size());
+    runtime::upload_device_buffer(&model->decoder_factor, decoder_factor_host.data(), decoder_factor_host.size());
+    runtime::upload_device_buffer(&model->gene_dictionary, gene_dictionary_host.data(), gene_dictionary_host.size());
     refresh_half_mirrors_(model);
 }
 
 void clear(StateReduceModel *model) {
     require_model_(model, "state_reduce::clear");
-    model->encoder_weight = autograd::device_buffer<float>();
-    model->encoder_bias = autograd::device_buffer<float>();
-    model->decoder_factor = autograd::device_buffer<float>();
-    model->gene_dictionary = autograd::device_buffer<float>();
-    model->encoder_weight_m1 = autograd::device_buffer<float>();
-    model->encoder_weight_m2 = autograd::device_buffer<float>();
-    model->encoder_bias_m1 = autograd::device_buffer<float>();
-    model->encoder_bias_m2 = autograd::device_buffer<float>();
-    model->decoder_factor_m1 = autograd::device_buffer<float>();
-    model->decoder_factor_m2 = autograd::device_buffer<float>();
-    model->gene_dictionary_m1 = autograd::device_buffer<float>();
-    model->gene_dictionary_m2 = autograd::device_buffer<float>();
-    model->decoder_factor_half = autograd::device_buffer<__half>();
-    model->gene_dictionary_half = autograd::device_buffer<__half>();
-    if (model->fleet_ready) autograd::clear(&model->fleet);
-    autograd::clear(&model->sparse_cache);
-    autograd::clear(&model->scratch);
-    autograd::clear(&model->ctx);
+    model->encoder_weight = runtime::device_buffer<float>();
+    model->encoder_bias = runtime::device_buffer<float>();
+    model->decoder_factor = runtime::device_buffer<float>();
+    model->gene_dictionary = runtime::device_buffer<float>();
+    model->encoder_weight_m1 = runtime::device_buffer<float>();
+    model->encoder_weight_m2 = runtime::device_buffer<float>();
+    model->encoder_bias_m1 = runtime::device_buffer<float>();
+    model->encoder_bias_m2 = runtime::device_buffer<float>();
+    model->decoder_factor_m1 = runtime::device_buffer<float>();
+    model->decoder_factor_m2 = runtime::device_buffer<float>();
+    model->gene_dictionary_m1 = runtime::device_buffer<float>();
+    model->gene_dictionary_m2 = runtime::device_buffer<float>();
+    model->decoder_factor_half = runtime::device_buffer<__half>();
+    model->gene_dictionary_half = runtime::device_buffer<__half>();
+    model->row_ones = runtime::device_buffer<float>();
+    if (model->fleet_ready) runtime::clear(&model->fleet);
+    runtime::clear(&model->dense_cache);
+    runtime::clear(&model->sparse_cache);
+    runtime::clear(&model->scratch);
+    runtime::clear(&model->ctx);
     model->fleet_ready = false;
     model->step = 0u;
     model->config = StateReduceModelConfig();
     model->distributed = StateReduceDistributedConfig();
 }
 
-autograd::device_buffer<float> infer_embeddings(
+runtime::device_buffer<float> infer_embeddings(
     StateReduceModel *model,
     const StateReduceBatchView &batch) {
     require_model_(model, "state_reduce::infer_embeddings");
     require_batch_(batch, "state_reduce::infer_embeddings");
     require_runtime_mode_(model, "state_reduce::infer_embeddings");
-    autograd::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::infer_embeddings)");
-    autograd::device_buffer<float> latent = allocate_device_zeroed_<float>(
+    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::infer_embeddings)");
+    runtime::device_buffer<float> latent = allocate_device_zeroed_<float>(
         model->ctx.device,
         static_cast<std::size_t>(batch.rows) * model->config.latent_dim,
         "cudaMemset(state_reduce infer latent)");
@@ -866,7 +879,7 @@ StateReduceTrainMetrics evaluate(
     require_model_(model, "state_reduce::evaluate");
     require_batch_(batch, "state_reduce::evaluate");
     require_runtime_mode_(model, "state_reduce::evaluate");
-    autograd::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::evaluate)");
+    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::evaluate)");
     const forward_buffers_ forward = run_forward_(model, batch);
     auto grad_reconstruction = allocate_device_zeroed_<float>(
         model->ctx.device,
@@ -887,7 +900,7 @@ StateReduceTrainMetrics train_step(
     require_model_(model, "state_reduce::train_step");
     require_batch_(batch, "state_reduce::train_step");
     require_runtime_mode_(model, "state_reduce::train_step");
-    autograd::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::train_step)");
+    runtime::cuda_require(cudaSetDevice(model->ctx.device), "cudaSetDevice(state_reduce::train_step)");
 
     const forward_buffers_ forward = run_forward_(model, batch);
     auto grad_reconstruction = allocate_device_zeroed_<float>(
@@ -932,7 +945,7 @@ StateReduceTrainMetrics train_step(
         "cudaMemset(state_reduce grad_encoder_bias)");
 
     launch_dense_left_grad_(
-        model->ctx,
+        model,
         grad_reconstruction.data,
         model->gene_dictionary.data,
         batch.rows,
@@ -940,7 +953,7 @@ StateReduceTrainMetrics train_step(
         model->config.input_genes,
         grad_factors.data);
     launch_dense_right_grad_(
-        model->ctx,
+        model,
         forward.factors.data,
         grad_reconstruction.data,
         batch.rows,
@@ -948,7 +961,7 @@ StateReduceTrainMetrics train_step(
         model->config.input_genes,
         grad_gene_dictionary.data);
     launch_dense_left_grad_(
-        model->ctx,
+        model,
         grad_factors.data,
         model->decoder_factor.data,
         batch.rows,
@@ -956,7 +969,7 @@ StateReduceTrainMetrics train_step(
         model->config.factor_dim,
         grad_latent.data);
     launch_dense_right_grad_(
-        model->ctx,
+        model,
         forward.latent.data,
         grad_factors.data,
         batch.rows,
@@ -966,12 +979,7 @@ StateReduceTrainMetrics train_step(
 
     const std::uint32_t latent_count = batch.rows * model->config.latent_dim;
     if (batch.graph.edge_count != 0u && loss_config.graph_weight != 0.0f) {
-        const int add_blocks = static_cast<int>((latent_count + kScalarThreads - 1u) / kScalarThreads);
-        add_inplace_kernel_<<<add_blocks, kScalarThreads, 0, model->ctx.stream>>>(
-            grad_latent.data,
-            grad_graph.data,
-            latent_count);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce add_inplace_kernel graph");
+        launch_axpy_(model, grad_latent.data, grad_graph.data, latent_count);
     }
 
     if (batch.layout == StateReduceLayout::blocked_ell) {
@@ -980,24 +988,18 @@ StateReduceTrainMetrics train_step(
             grad_latent.data,
             model->config.latent_dim,
             grad_encoder_weight.data);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce blocked_ell_encoder_grad_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce blocked_ell_encoder_grad_kernel");
     } else {
         sliced_ell_encoder_grad_kernel_<<<batch.rows, model->config.latent_dim, 0, model->ctx.stream>>>(
             batch.sliced_ell,
             grad_latent.data,
             model->config.latent_dim,
             grad_encoder_weight.data);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_encoder_grad_kernel");
+        runtime::cuda_require(cudaGetLastError(), "state_reduce sliced_ell_encoder_grad_kernel");
     }
 
     if (model->config.use_encoder_bias) {
-        const int bias_blocks = static_cast<int>((model->config.latent_dim + kScalarThreads - 1u) / kScalarThreads);
-        row_sum_kernel_<<<bias_blocks, kScalarThreads, 0, model->ctx.stream>>>(
-            grad_latent.data,
-            batch.rows,
-            model->config.latent_dim,
-            grad_encoder_bias.data);
-        autograd::cuda_require(cudaGetLastError(), "state_reduce row_sum_kernel");
+        launch_row_sum_(model, grad_latent.data, batch.rows, model->config.latent_dim, grad_encoder_bias.data);
     }
 
     apply_optimizer_(

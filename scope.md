@@ -5,23 +5,27 @@ Last updated: 2026-04-29
 ## Purpose
 
 Cellerator is a sparse biological ML runtime and operator library for training
-and inference on CellShard-scale omics data. It owns GPU operators, sparse
-autograd and training primitives, biologically structured model components,
-distributed sparse execution, and explicit Torch interop boundaries that Torch
-does not natively provide well for sparse biological structure.
+and inference on CellShard-scale omics data. Its dependency-light
+CelleratorCore layer owns sparse layout primitives, GPU operators, sparse
+differentiation and training primitives, biologically structured model
+components, distributed sparse execution, and explicit Torch interop boundaries
+that Torch does not natively provide well for sparse biological structure.
 
 Cellerator should extend Torch where sparse omics execution needs new
 capability. It should not replace Torch as the general ML framework.
 
 ## Ownership Boundary
 
-- Cellerator owns math over CellShard matrices: sparse GPU operators,
-  reductions, transforms, sparse training primitives, biological model
-  components, trajectory/model math, quantized sparse kernels, and
-  explicit Torch/libtorch extension or export boundaries.
-- CellShard owns data handling: `.csh5`, `.cshard`, CSPACK generations,
-  precomputed Blocked-ELL/Sliced-ELL layouts, source ingest, retrieval,
-  sharded runtime staging, compaction/finalization, and pack publication.
+- CelleratorCore owns sparse layout primitives and is the migration target for
+  generic sparse math: Blocked-ELL, Sliced-ELL, quantized Blocked-ELL, layout
+  helpers, device views, sparse GPU operators, reductions, transforms, sparse
+  training primitives, and quantized sparse kernels. Some compatibility runtime
+  wrappers may remain in CellShard during migration.
+- Higher-level Cellerator owns biological model components, trajectory/model
+  math, and explicit Torch/libtorch extension or export boundaries.
+- CellShard owns data handling over CelleratorCore payloads: `.csh5`,
+  `.cshard`, CSPACK generations, source ingest, retrieval, sharded runtime
+  staging, compaction/finalization, and pack publication.
 - CellShardPreprocess owns biology-facing preprocessing policy and APIs:
   QC metric definitions, normalization/log1p workflow semantics, feature/cell
   keep-mask semantics, raw-count validation, and preprocessing workbench/runtime
@@ -40,7 +44,7 @@ capability. It should not replace Torch as the general ML framework.
   paths, sparse-dense projections, reductions, gather/scatter, row/feature
   selection, exact-search/scoring math, pathway/module reductions, and graph-aware
   sparse transforms.
-- Training-capable sparse autograd where Torch sparse support is missing,
+- Training-capable sparse operator where Torch sparse support is missing,
   layout-mismatched, or too costly for CellShard-scale data.
 - Biological model primitives that make sparsity part of the model: pathway
   layers, gene/module reductions, sparse latent models, developmental-time and

@@ -10,8 +10,8 @@
 
 ### 1.2 Method
 
-- This pass is based on static code inspection, target layout inspection, and focused benchmark/profiler work on the sparse autograd surface.
-- Nsight Systems and Nsight Compute were used on representative large `SpMV` runs in `computeAutogradBench`.
+- This pass is based on static code inspection, target layout inspection, and focused benchmark/profiler work on the sparse operator surface.
+- Nsight Systems and Nsight Compute were used on representative large `SpMV` runs in `sparseOpsBench`.
 - Where a section is still call-shape guidance rather than measured truth, it is called out explicitly.
 
 ### 1.3 Design Posture
@@ -57,7 +57,7 @@
 
 - `CellShardPreprocess src/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
-- The quantized backend under `src/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
+- The quantized backend under `include/Cellerator/core/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
 - The torch binding layer is explicit about being a copy boundary instead of hiding expensive aliasing semantics.
 
@@ -82,7 +82,7 @@
 - Keep ingest pinned slabs alive across windows and use them in double-buffered parse/convert/store pipelines if ingest throughput becomes a priority.
 - Keep model-facing sparse batches in one sparse layout if possible; the current CSR->COO path is paying extra metadata traffic for no obvious end-to-end win.
 
-### 3.5 Sparse Autograd Findings
+### 3.5 Sparse Operator Findings
 
 - Large CSR `SpMV` on V100 is decisively memory-bound, not Tensor Core-bound. The hot kernel reached high DRAM pressure and low SM math utilization in Nsight Compute.
 - Pair-local row sharding across the real NVLink pairs scales well for CSR `SpMV` because it keeps the workload bandwidth-heavy and avoids expensive global merges.
@@ -633,7 +633,7 @@ Observations:
 Interpretation:
 
 - This is fine as a training or export scaffold.
-- The actual hot backend lives in `src/quantized/`, not in the model wrapper.
+- The actual hot backend lives in `include/Cellerator/core/quantized/`, not in the model wrapper.
 
 ## 8. Custom Model Ops
 
@@ -675,7 +675,7 @@ Observations:
 Interpretation:
 
 - The single-thread finalize kernel is acceptable because bucket count is small relative to row count.
-- The bigger issue is scalar extraction via `.item<>()` in autograd plumbing, which introduces synchronization at the Torch boundary.
+- The bigger issue is scalar extraction via `.item<>()` in runtime plumbing, which introduces synchronization at the Torch boundary.
 
 ### 8.4 Weighted Future Target
 
@@ -688,20 +688,20 @@ Interpretation:
 
 - This is library-independent custom glue and belongs here.
 
-### 8.5 Compute-Native Sparse Autograd Runtime
+### 8.5 Compute-Native Sparse Operator Runtime
 
 Relevant files:
 
-- `src/compute/autograd/autograd.hh`
-- `src/compute/autograd/runtime.cu`
-- `src/compute/autograd/kernels/base_sparse.cu`
-- `src/compute/autograd/kernels/dist_sparse.cu`
-- `src/compute/autograd/primitives/common.cuh`
+- `src/compute/runtime/runtime.hh`
+- `src/compute/runtime/runtime.cu`
+- `src/compute/sparse/ops/kernels/base_sparse.cu`
+- `src/compute/sparse/ops/kernels/dist_sparse.cu`
+- `src/compute/sparse/ops/primitives/common.cuh`
 
 Observations:
 
 - this surface is lower-level than a framework runtime: it is pointer-first, Blocked-ELL-first, and explicit about streams, scratch, cuSPARSE caches, and fleet topology
-- `autograd.hh` exposes raw-buffer contexts rather than tensor-wrapper-heavy hot paths
+- `runtime.hh` exposes raw-buffer contexts rather than tensor-wrapper-heavy hot paths
 - `base_sparse.cu` provides the single-GPU reference kernels and cuSPARSE-backed library paths for:
   - CSR row scaling with custom backward
   - sparse value reduction with CUB
@@ -714,8 +714,8 @@ Observations:
 
 Interpretation:
 
-- this is the correct direction for sparse model code that would otherwise pay Torch layout conversion and boxed autograd overhead
-- this is not trying to become a generic autograd framework; it is trying to expose reusable low-level sparse building blocks without abstracting their cost model away
+- this is the correct direction for sparse model code that would otherwise pay Torch layout conversion and boxed differentiation overhead
+- this is not trying to become a generic differentiation framework; it is trying to expose reusable low-level sparse building blocks without abstracting their cost model away
 - the runtime is not yet a full training system, but it already demonstrates the right split:
   - library-backed sparse linear algebra where the library is clearly best
   - custom kernels for sparse glue and fused value-gradient logic
@@ -962,9 +962,9 @@ Optimization comment:
 
 Relevant files:
 
-- `src/quantized/README.md`
-- `src/quantized/kernels.cuh`
-- `src/quantized/packing.cuh`
+- `src/core/quantized/README.md`
+- `include/Cellerator/core/quantized/kernels.cuh`
+- `include/Cellerator/core/quantized/packing.cuh`
 
 This subsystem is architecturally aligned with the repo goals.
 
@@ -1165,7 +1165,7 @@ If only one principle is carried forward from this document, it should be this:
 
 ### 16.1 Commented Active Surfaces
 
-- `src/models/*`, `src/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
+- `src/models/*`, `include/Cellerator/core/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
 - The comments are intentionally short and mostly attached to:
   - host versus device materialization boundaries
   - alloc/free or realloc/copy points

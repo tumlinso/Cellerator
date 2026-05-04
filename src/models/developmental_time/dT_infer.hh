@@ -4,6 +4,6 @@
 
 namespace cellerator::models::developmental_time {
 
-using DevelopmentalTimePredictions = autograd::device_buffer<float>;
+using DevelopmentalTimePredictions = runtime::device_buffer<float>;
 
 } // namespace cellerator::models::developmental_time

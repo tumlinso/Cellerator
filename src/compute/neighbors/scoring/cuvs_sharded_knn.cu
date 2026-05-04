@@ -1,5 +1,6 @@
 #include "cuvs_sharded_knn.cuh"
 
+#include <Cellerator/dist/distributed.cuh>
 #include <CellShard/runtime/distributed/distributed.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
 
@@ -643,7 +644,7 @@ int sparse_exact_self_knn(const ShardedCsr *view_const,
                           knn_result_host *result)
 {
     sparse_exact_params params;
-    ::cellshard::distributed::local_context ctx;
+    ::cellerator::dist::local_context ctx;
     ::cellshard::distributed::shard_map map;
     ShardedCsr *view = const_cast<ShardedCsr *>(view_const);
     host_buffer<int> device_ids;
@@ -657,13 +658,13 @@ int sparse_exact_self_knn(const ShardedCsr *view_const,
     init(&params);
     if (params_in != 0) params = *params_in;
     init(result);
-    ::cellshard::distributed::init(&ctx);
+    ::cellerator::dist::init(&ctx);
     ::cellshard::distributed::init(&map);
 
     if (view == 0 || result == 0 || params.k <= 0) goto fail;
     if (view->num_shards == 0 || view->cols == 0) goto fail;
     if (!active_device_ids(params.gpu_limit, &device_ids)) goto fail;
-    if (!cuda_ok(::cellshard::distributed::discover_local(&ctx, 1, cudaStreamNonBlocking), "discover_local")) goto fail;
+    if (!cuda_ok(::cellerator::dist::discover_local(&ctx, 1, cudaStreamNonBlocking), "discover_local")) goto fail;
     if (ctx.device_count > device_ids.size()) ctx.device_count = (unsigned int) device_ids.size();
     if (ctx.device_count == 0) goto fail;
     for (device = 0; device < (int) ctx.device_count; ++device) ctx.device_ids[device] = device_ids[(std::size_t) device];
@@ -876,13 +877,13 @@ device_fail:
 
     for (shard = 0; shard < index_cache.size(); ++shard) clear(&index_cache[(std::size_t) shard]);
     ::cellshard::distributed::clear(&map);
-    ::cellshard::distributed::clear(&ctx);
+    ::cellerator::dist::clear(&ctx);
     return 1;
 
 fail:
     for (shard = 0; shard < index_cache.size(); ++shard) clear(&index_cache[(std::size_t) shard]);
     ::cellshard::distributed::clear(&map);
-    ::cellshard::distributed::clear(&ctx);
+    ::cellerator::dist::clear(&ctx);
     clear(result);
     return 0;
 }
@@ -978,7 +979,7 @@ int proprietary_dense_self_knn(const ShardedDense *view,
                                knn_result_host *result)
 {
     proprietary_dense_params params;
-    ::cellshard::distributed::local_context ctx;
+    ::cellerator::dist::local_context ctx;
     host_buffer<int> device_ids;
     host_buffer<unsigned long> row_offsets;
     host_buffer<device_dense_exact_index> indices;
@@ -995,16 +996,16 @@ int proprietary_dense_self_knn(const ShardedDense *view,
     init(&params);
     if (params_in != 0) params = *params_in;
     init(result);
-    ::cellshard::distributed::init(&ctx);
+    ::cellerator::dist::init(&ctx);
 
     if (view == 0 || result == 0 || params.k <= 0) goto fail;
     if (view->num_parts == 0 || view->rows == 0 || view->cols == 0) goto fail;
     if (!active_device_ids(params.gpu_limit, &device_ids)) goto fail;
-    if (!cuda_ok(::cellshard::distributed::discover_local(&ctx, 1, cudaStreamNonBlocking), "discover_local(proprietary)")) goto fail;
+    if (!cuda_ok(::cellerator::dist::discover_local(&ctx, 1, cudaStreamNonBlocking), "discover_local(proprietary)")) goto fail;
     if (ctx.device_count > device_ids.size()) ctx.device_count = (unsigned int) device_ids.size();
     if (ctx.device_count == 0) goto fail;
     for (device = 0; device < (int) ctx.device_count; ++device) ctx.device_ids[device] = device_ids[(std::size_t) device];
-    if (!cuda_ok(::cellshard::distributed::enable_peer_access(&ctx), "enable_peer_access")) goto fail;
+    if (!cuda_ok(::cellerator::dist::enable_peer_access(&ctx), "enable_peer_access")) goto fail;
 
     padded_cols = round_up_int((int) view->cols, 8);
     select_min = metric_selects_min(params.metric);
@@ -1221,7 +1222,7 @@ device_fail:
         if (cublas_handles[(std::size_t) device] != 0) cublasDestroy(cublas_handles[(std::size_t) device]);
     }
     for (device = 0; device < (int) indices.size(); ++device) clear(&indices[(std::size_t) device]);
-    ::cellshard::distributed::clear(&ctx);
+    ::cellerator::dist::clear(&ctx);
     return 1;
 
 fail:
@@ -1229,7 +1230,7 @@ fail:
         if (cublas_handles[(std::size_t) device] != 0) cublasDestroy(cublas_handles[(std::size_t) device]);
     }
     for (device = 0; device < (int) indices.size(); ++device) clear(&indices[(std::size_t) device]);
-    ::cellshard::distributed::clear(&ctx);
+    ::cellerator::dist::clear(&ctx);
     clear(result);
     return 0;
 }

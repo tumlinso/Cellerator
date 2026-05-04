@@ -8,9 +8,9 @@
 #include <cuda_runtime.h>
 
 #include "benchmark_mutex.hh"
-#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/core/quantized/api.cuh>
 
-namespace msq = ::cellerator::quantized;
+namespace msq = ::cellerator::core::quantized;
 
 namespace {
 

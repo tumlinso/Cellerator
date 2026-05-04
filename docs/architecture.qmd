@@ -24,7 +24,7 @@ reaching into `src/` directly.
 
 ### `src/compute/`
 
-Owns reusable low-level computation inside Cellerator: neighbor search, sparse autograd building blocks, preprocessing math over CellShard matrices, and other hot-path kernels. Biology-facing scRNA preprocessing remains behind the CellShardPreprocess API.
+Owns reusable low-level computation inside Cellerator: neighbor search, sparse operator building blocks, preprocessing math over CellShard matrices, and other hot-path kernels. Biology-facing scRNA preprocessing remains behind the CellShardPreprocess API.
 
 ### CellShardPreprocess
 
@@ -38,9 +38,9 @@ Owns trajectory-specific scoring, pruning, and assembly. Reusable graph or neigh
 
 Owns header-first libtorch workflows. Model wrappers and training orchestration live here, while reusable compute stays in `src/compute/`.
 
-### `src/quantized/`
+### `include/Cellerator/core/quantized/`
 
-Owns the Volta-oriented quantized sparse backend. This is a custom-kernel path optimized for sparse HBM traffic and irregular row work rather than a generic abstraction layer.
+Owns the Volta-oriented quantized format metadata, access, packing, and dispatch helpers. Sparse matmul and model-facing quantized math stay in `src/compute/`.
 
 ### `src/torch/`
 

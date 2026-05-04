@@ -18,7 +18,7 @@
 - Backend: native CUDA runtime with a WMMA-capable path plus a cuSPARSE-heavy encoder path
 - Backward:
   handwritten CUDA gradients for reconstruction, graph smoothing, encoder projection, decoder factors, and AdamW updates
-  no Torch autograd boundary
+  no Torch differentiation boundary
 - Assumptions:
   Volta `sm_70`
   Blocked-ELL and sliced-ELL are the steady-state sparse layouts
@@ -31,14 +31,14 @@
 - Owner: `src/models/dense_reduce/`
 - Boundary:
   C++ caller in [`src/models/dense_reduce/dR_model.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/dense_reduce/dR_model.hh:202)
-  CUDA/autograd backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
+  CUDA/differentiation backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
 - Inputs:
   contiguous CUDA `int64` `pair_rows`, `pair_cols`
   contiguous CUDA `float32` `latent_unit`, `developmental_time`
   scalar windows and margin
 - Outputs:
   CUDA scalar `local_loss`, CUDA scalar `far_loss`
-- Backend: custom CUDA kernels with C++ autograd wrapper
+- Backend: custom CUDA kernels with C++ differentiation wrapper
 - Backward:
   custom backward for `latent_unit`
   no gradients for pair indices or time
@@ -53,14 +53,14 @@
 - Owner: `src/models/developmental_time/`
 - Boundary:
   C++ caller in [`src/models/developmental_time/dT_model.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/developmental_time/dT_model.hh:234)
-  CUDA/autograd backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
+  CUDA/differentiation backend in [`src/compute/model_ops/model_ops.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/model_ops/model_ops.cu:1)
 - Inputs:
   contiguous CUDA `float32` `stage`
   contiguous CUDA `int64` `day_buckets`
   scalar margin/std config
 - Outputs:
   CUDA scalar `ranking`, `anchor`, `spread`
-- Backend: custom CUDA kernels with C++ autograd wrapper
+- Backend: custom CUDA kernels with C++ differentiation wrapper
 - Backward:
   custom backward for `stage`
   no gradients for `day_buckets`
@@ -91,14 +91,14 @@
   Volta `sm_70`
 - Status: implemented
 
-## `compute_autograd_runtime_v1`
+## `sparse_ops_runtime_v1`
 
-- Purpose: provide a pointer-first sparse building-block library in `src/compute/autograd/` for model-specific fused CUDA kernels on V100.
-- Owner: `src/compute/autograd/`
+- Purpose: provide a pointer-first sparse building-block library in `src/compute/sparse/ops/` for model-specific fused CUDA kernels on V100.
+- Owner: `src/compute/sparse/ops/`
 - Boundary:
-  public runtime surface in [`src/compute/autograd/autograd.hh`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/autograd.hh:1)
-  base single-GPU kernels in [`src/compute/autograd/kernels/base_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/kernels/base_sparse.cu:1)
-  distributed launch and leader-merge helpers in [`src/compute/autograd/kernels/dist_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/kernels/dist_sparse.cu:1)
+  public runtime surface in [`src/compute/runtime/runtime.hh`](/home/tumlinson/Software/Repos/Cellerator/src/compute/runtime/runtime.hh:1)
+  base single-GPU kernels in [`src/compute/sparse/ops/kernels/base_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/sparse/ops/kernels/base_sparse.cu:1)
+  distributed launch and leader-merge helpers in [`src/compute/sparse/ops/kernels/dist_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/sparse/ops/kernels/dist_sparse.cu:1)
 - Inputs:
   raw CSR metadata pointers, raw dense pointers, explicit sizes, and explicit stream / scratch state
 - Outputs:
@@ -116,12 +116,12 @@
 
 ## `quantize_sparse_feature_affine`
 
-- Purpose: move quantizer reconstruction and range gradients for sparse CUDA CSR batches into fused kernels under `src/compute/autograd` instead of dense libtorch math.
+- Purpose: move quantizer reconstruction and range gradients for sparse CUDA CSR batches into fused kernels under `src/compute/sparse/ops` instead of dense libtorch math.
 - Owner: `src/models/quantize/`
 - Boundary:
   model-facing wrapper in [`src/models/quantize/quantize.hh`](/home/tumlinson/Software/Repos/Cellerator/src/models/quantize/quantize.hh:1)
-  fused sparse kernels in [`src/compute/autograd/kernels/base_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/kernels/base_sparse.cu:1)
-  low-level runtime surface in [`src/compute/autograd/autograd.hh`](/home/tumlinson/Software/Repos/Cellerator/src/compute/autograd/autograd.hh:1)
+  fused sparse kernels in [`src/compute/sparse/ops/kernels/base_sparse.cu`](/home/tumlinson/Software/Repos/Cellerator/src/compute/sparse/ops/kernels/base_sparse.cu:1)
+  low-level runtime surface in [`src/compute/runtime/runtime.hh`](/home/tumlinson/Software/Repos/Cellerator/src/compute/runtime/runtime.hh:1)
 - Inputs:
   CUDA sparse CSR batch with cell-major rows and gene-major columns
   contiguous CUDA `float32` `log_scale` and `offset`
