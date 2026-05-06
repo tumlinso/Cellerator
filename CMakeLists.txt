@@ -602,6 +602,7 @@ set_target_properties(cellerator_compute_preprocess PROPERTIES CXX_STANDARD 17 C
 cellerator_enable_perf(cellerator_compute_preprocess)
 
 add_library(cellerator_preprocess STATIC
+    src/preprocess/cellshard_session.cu
     src/preprocess/runtime.cc
 )
 add_library(Cellerator::preprocess ALIAS cellerator_preprocess)
@@ -610,8 +611,8 @@ target_include_directories(cellerator_preprocess PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_include_directories(cellerator_preprocess PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_preprocess PUBLIC Cellerator::compute_preprocess)
-set_target_properties(cellerator_preprocess PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_link_libraries(cellerator_preprocess PUBLIC Cellerator::compute_preprocess CellShard::export)
+set_target_properties(cellerator_preprocess PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_preprocess)
 
 if(CELLERATOR_BUILD_PREPROCESS_WORKBENCH AND PkgConfig_FOUND)
@@ -742,6 +743,15 @@ if(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS)
     target_link_libraries(celleratorPreprocessFormatCompareBench PRIVATE Cellerator::preprocess CUDA::cudart)
     set_target_properties(celleratorPreprocessFormatCompareBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     cellerator_enable_perf(celleratorPreprocessFormatCompareBench)
+
+    add_executable(celleratorPreprocessNcclReduceBench
+        bench/preprocess/nccl_gene_reduce_bench.cu
+    )
+    target_include_directories(celleratorPreprocessNcclReduceBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(celleratorPreprocessNcclReduceBench PRIVATE Cellerator::preprocess CUDA::cudart)
+    set_target_properties(celleratorPreprocessNcclReduceBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(celleratorPreprocessNcclReduceBench)
+
 endif()
 
 add_executable(sequenceDna2Bench
@@ -823,6 +833,14 @@ target_include_directories(celleratorPreprocessQCFleetTest PRIVATE ${CMAKE_CURRE
 target_link_libraries(celleratorPreprocessQCFleetTest PRIVATE Cellerator::preprocess CUDA::cudart)
 set_target_properties(celleratorPreprocessQCFleetTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(celleratorPreprocessQCFleetTest)
+
+add_executable(celleratorPreprocessCellShardSessionApiTest
+    tests/preprocess/cellshard_session_api_test.cu
+)
+target_include_directories(celleratorPreprocessCellShardSessionApiTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessCellShardSessionApiTest PRIVATE Cellerator::preprocess CUDA::cudart)
+set_target_properties(celleratorPreprocessCellShardSessionApiTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessCellShardSessionApiTest)
 
 add_executable(celleratorPreprocessAdapterStagingTest
     tests/preprocess/adapter_staging_test.cc

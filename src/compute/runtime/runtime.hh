@@ -52,6 +52,11 @@ struct fleet_context {
     fleet_topology_descriptor topology;
 };
 
+struct reduce_sum_to_leader_f32_options {
+#if CELLERATOR_DIST_HAS_NCCL
+    const cdist::nccl_communicator *ranked_nccl = nullptr;
+#endif
+};
 
 using ::cellerator::core::runtime::init;
 using ::cellerator::core::runtime::clear;
@@ -70,6 +75,16 @@ cudaStream_t fleet_stream(const fleet_context &fleet, unsigned int slot);
 int fleet_peer_performance_rank(const fleet_context &fleet, unsigned int src_slot, unsigned int dst_slot);
 bool fleet_has_native_v100_topology(const fleet_context &fleet);
 void synchronize_slots(const fleet_context &fleet, const unsigned int *slots, unsigned int slot_count);
+void dense_add_inplace_f32(const execution_context &ctx, float *dst, const float *src, std::size_t count);
+void reduce_sum_to_leader_f32(
+    fleet_context *fleet,
+    const unsigned int *slots,
+    unsigned int slot_count,
+    const float *const *partials,
+    std::size_t count,
+    unsigned int leader_slot,
+    float *leader_out,
+    const reduce_sum_to_leader_f32_options *options = nullptr);
 
 inline unsigned int default_generic_pair_slots(
     const fleet_context &fleet,

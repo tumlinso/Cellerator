@@ -2,6 +2,7 @@
 
 #include <CellShard/formats/blocked_ell.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
+#include <Cellerator/compute/runtime.hh>
 #include <Cellerator/dist/distributed.cuh>
 #include <CellShard/runtime/mask_groups.cuh>
 
@@ -13,6 +14,7 @@
 namespace cellerator::compute::preprocess {
 
 namespace cs_device = ::cellshard::device;
+namespace cs_compute_runtime = ::cellerator::compute::runtime;
 namespace cs_dist = ::cellerator::dist;
 namespace cs_runtime = ::cellshard::runtime;
 
@@ -86,6 +88,27 @@ struct alignas(16) gene_metrics_view {
     unsigned char *gene_flags;
 };
 
+struct alignas(16) gene_metric_packet_view {
+    unsigned int cols;
+    float *sum;
+    float *sq_sum;
+    float *detected_cells;
+    float *active_rows;
+};
+
+inline std::size_t gene_metric_packet_float_count(unsigned int cols, unsigned int include_active_rows) {
+    return include_active_rows != 0u
+        ? static_cast<std::size_t>(3u) * cols + 1u
+        : static_cast<std::size_t>(3u) * cols;
+}
+
+inline int gene_metric_packet_is_contiguous(const gene_metric_packet_view *packet, unsigned int include_active_rows) {
+    if (packet == nullptr || packet->sum == nullptr) return 0;
+    if (packet->sq_sum != packet->sum + packet->cols) return 0;
+    if (packet->detected_cells != packet->sum + 2u * packet->cols) return 0;
+    return include_active_rows == 0u || packet->active_rows == packet->sum + 3u * packet->cols;
+}
+
 struct alignas(16) preprocess_workspace {
     int device;
     cudaStream_t stream;
@@ -145,13 +168,11 @@ struct alignas(16) preprocess_fleet_result {
 };
 
 struct alignas(16) preprocess_fleet_workspace {
-    cs_dist::local_context local;
+    cs_compute_runtime::fleet_context fleet;
     unsigned int slot_count;
     unsigned int *slots;
     preprocess_workspace *devices;
     part_preprocess_result *results;
-    void **reduce_scratch;
-    std::size_t *reduce_scratch_bytes;
 #if CELLERATOR_DIST_HAS_NCCL
     cs_dist::nccl_communicator ranked_nccl;
 #endif

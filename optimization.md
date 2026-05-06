@@ -371,8 +371,7 @@ Optimization priorities:
 
 1. Cache cuSPARSE descriptors inside the workspace for stable `src` views.
 2. Reuse x/y dense-vector descriptors when dimensions stay constant.
-3. Keep `active_rows` entirely on device until the end of the pipeline.
-4. Benchmark whether one custom fused nnz traversal that accumulates `sum`, `sq_sum`, and `detected` via atomics beats `3x` transpose SpMV on the real sparsity distribution.
+3. Benchmark whether one custom fused nnz traversal that accumulates `sum`, `sq_sum`, and `detected` via atomics beats `3x` transpose SpMV on the real sparsity distribution.
 
 Important nuance:
 
@@ -384,19 +383,17 @@ Important nuance:
 
 Shape:
 
-- copies one scalar `active_rows` from device to host
-- synchronizes the stream
+- reads one scalar `active_rows` from device inside the filter kernel
 - launches one filter kernel
 
 Estimated overhead per call:
 
-- D2H scalar copy and sync: typically `10-50 us` when the stream is otherwise idle, but effectively a hard serialization boundary when queued work is still running
 - 1 kernel launch
 
 Performance comment:
 
-- The scalar copy is small, but the stream sync is architecturally expensive because it breaks overlap.
-- This is an easy win: compute `inv_cells` on device and keep the path asynchronous.
+- The previous scalar D2H copy and stream sync were removed; the path now computes
+  `inv_cells` on device and stays asynchronous.
 
 ### 6.7 Cross-GPU Reduction
 
@@ -406,11 +403,30 @@ Relevant code:
 
 NCCL path:
 
-- `4` separate allreduces:
+- current steady-state path is one contiguous allreduce over `3 * cols + 1`
+  floats:
   - `gene_sum`
   - `gene_sq_sum`
   - `gene_detected`
   - `active_rows`
+- `active_rows` is stored directly after the three gene-metric arrays in the
+  gene workspace so the ranked/local NCCL path can reduce one payload.
+- The gene-filter kernel reads `active_rows` on device; there is no scalar D2H
+  copy or stream sync in this path.
+
+Benchmark note:
+
+- Command family:
+  `./build/celleratorPreprocessNcclReduceBench --cols {32768,65536,200000} --devices 4`
+- Host/toolchain context: 4x Tesla V100-SXM2-16GB, CUDA 12.9 / HPC SDK NCCL,
+  Cellerator generic CUDA mode with `CELLERATOR_DIST_HAS_NCCL=1`.
+- Ranked NCCL average reduction time:
+  - `cols=32768`: separate `0.255713 ms`, grouped `0.188349 ms`,
+    contiguous `0.149783 ms`
+  - `cols=65536`: separate `0.374124 ms`, grouped `0.288237 ms`,
+    contiguous `0.264562 ms`
+  - `cols=200000`: separate `0.796951 ms`, grouped `0.696046 ms`,
+    contiguous `0.674138 ms`
 
 Fallback path:
 
@@ -437,9 +453,8 @@ V100 topology note:
 
 Optimization priorities:
 
-1. Flatten the three gene-metric arrays into one contiguous reduction buffer and allreduce once.
-2. Ensure rank placement preserves pair-local traffic when possible.
-3. Keep the fallback only as a correctness path.
+1. Ensure rank placement preserves pair-local traffic when possible.
+2. Keep the fallback only as a correctness path.
 
 ### 6.8 Overall Preprocess Verdict
 
@@ -1011,8 +1026,6 @@ Divergence note:
 
 1. Preprocess:
    - cache cuSPARSE descriptors in `device_workspace`
-   - remove the `active_rows` D2H sync boundary
-   - fuse NCCL reductions into one contiguous buffer
 2. Models:
    - stop converting sparse CSR to COO every forward
    - remove or tile away `to_dense()` in dense-reduce loss

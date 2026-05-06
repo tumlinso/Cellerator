@@ -7,6 +7,14 @@ The durable Cellerator scope boundary lives in `scope.md`, and the advisory migr
 
 `include/Cellerator/core/` is the CelleratorCore public surface for matrix representation ABI, quantized packing/metadata, CellShard-free runtime substrate, and lightweight primitives such as future sequence types. Its contract-first layout is `core/matrix/`, `core/runtime/`, `core/quantized/`, and `core/interop/`. `src/core/` contains the compiled Core implementation behind the single `Cellerator::core` target. `src/compute/` is the authoritative home for reusable math and operators: matrix conversion and bucketing, CUDA compute primitives, exact search math, preprocessing math kernels, sparse projection/matmul, ML reductions, Torch custom ops, and the sparse operator layer under `src/compute/sparse/ops/`. `src/preprocess/` owns biology-facing preprocessing policy, raw-count state validation, QC rule compilation, adapter staging, and workbench orchestration over `Cellerator::compute_preprocess`. `src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and reuses the Core runtime substrate. `src/models/` is the header-first workflow surface. `src/models/developmental_time/` and `src/models/dense_reduce/` split each model into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh` layers with umbrella headers (`developmentalTime.hh`, `denseReduction.hh`). Neighbor retrieval index/query policy is not a Cellerator public API.
 
+Workflow code must not own reusable math. If preprocessing, model, Torch,
+neighbor, or session/workbench code needs GPU math, reductions, dense adds,
+metric packets, sparse transforms, normalization, fleet collectives, or scratch
+mechanics, call the existing `src/compute/` primitive. If the primitive does
+not exist, implement the primitive in the owning compute layer first and make
+the workflow call it. Do not copy kernels or math into workflow/session files
+for convenience.
+
 Expected local checkout layout for source builds is:
 
 ```text

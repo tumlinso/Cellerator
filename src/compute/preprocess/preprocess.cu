@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <memory>
 #include <new>
 
@@ -325,7 +326,7 @@ __global__ void count_active_rows_kernel(unsigned int rows,
 }
 
 __global__ void build_gene_filter_mask_kernel(unsigned int cols,
-                                              float inv_cells,
+                                              const float *__restrict__ active_rows,
                                               gene_filter_params filter,
                                               const float *__restrict__ sum,
                                               const float *__restrict__ sq_sum,
@@ -333,6 +334,8 @@ __global__ void build_gene_filter_mask_kernel(unsigned int cols,
                                               unsigned char *__restrict__ keep) {
     const unsigned int tid = (unsigned int) (blockIdx.x * blockDim.x + threadIdx.x);
     const unsigned int stride = (unsigned int) (gridDim.x * blockDim.x);
+    const float active = active_rows != nullptr ? active_rows[0] : 0.0f;
+    const float inv_cells = active > 0.0f ? 1.0f / active : 0.0f;
     unsigned int gene = tid;
 
     while (gene < cols) {
@@ -343,11 +346,6 @@ __global__ void build_gene_filter_mask_kernel(unsigned int cols,
                                       && var >= filter.min_variance);
         gene += stride;
     }
-}
-
-__global__ void dense_add_inplace_kernel(float *dst, const float *src, std::size_t count) {
-    const std::size_t idx = (std::size_t) blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < count) dst[idx] += src[idx];
 }
 
 void bind_fleet_result(preprocess_fleet_workspace *fleet, unsigned int leader_index, unsigned int cols, preprocess_fleet_result *out) {
@@ -363,93 +361,8 @@ void bind_fleet_result(preprocess_fleet_workspace *fleet, unsigned int leader_in
 }
 
 int selected_device_id(const preprocess_fleet_workspace *fleet, unsigned int index) {
-    if (fleet == nullptr || index >= fleet->slot_count || fleet->slots == nullptr || fleet->local.device_ids == nullptr) return -1;
-    return fleet->local.device_ids[fleet->slots[index]];
-}
-
-cudaStream_t selected_stream(const preprocess_fleet_workspace *fleet, unsigned int index) {
-    if (fleet == nullptr || index >= fleet->slot_count || fleet->slots == nullptr || fleet->local.streams == nullptr) return (cudaStream_t) 0;
-    return fleet->local.streams[fleet->slots[index]];
-}
-
-void *request_reduce_scratch(preprocess_fleet_workspace *fleet, unsigned int index, std::size_t bytes) {
-    if (fleet == nullptr || index >= fleet->slot_count || fleet->reduce_scratch == nullptr || fleet->reduce_scratch_bytes == nullptr) return nullptr;
-    if (bytes <= fleet->reduce_scratch_bytes[index]) return fleet->reduce_scratch[index];
-    const int device = selected_device_id(fleet, index);
-    if (device < 0) return nullptr;
-    if (!cuda_ok(cudaSetDevice(device), "cudaSetDevice fleet scratch")) return nullptr;
-    if (fleet->reduce_scratch[index] != nullptr) {
-        (void) cudaFree(fleet->reduce_scratch[index]);
-        fleet->reduce_scratch[index] = nullptr;
-        fleet->reduce_scratch_bytes[index] = 0u;
-    }
-    if (bytes == 0u) return nullptr;
-    if (!cuda_ok(cudaMalloc(fleet->reduce_scratch + index, bytes), "cudaMalloc fleet scratch")) return nullptr;
-    fleet->reduce_scratch_bytes[index] = bytes;
-    return fleet->reduce_scratch[index];
-}
-
-int selected_index_for_slot(const preprocess_fleet_workspace *fleet, unsigned int slot) {
-    if (fleet == nullptr || fleet->slots == nullptr) return -1;
-    for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
-        if (fleet->slots[i] == slot) return (int) i;
-    }
-    return -1;
-}
-
-int sync_fleet_slots(preprocess_fleet_workspace *fleet) {
-    if (fleet == nullptr) return 0;
-    for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
-        const int device = selected_device_id(fleet, i);
-        if (device < 0) return 0;
-        if (!cuda_ok(cudaSetDevice(device), "cudaSetDevice fleet sync")) return 0;
-        if (!cuda_ok(cudaStreamSynchronize(selected_stream(fleet, i)), "cudaStreamSynchronize fleet")) return 0;
-    }
-    return 1;
-}
-
-int copy_or_alias_to_leader(preprocess_fleet_workspace *fleet,
-                            unsigned int leader_index,
-                            const float *src,
-                            unsigned int src_index,
-                            std::size_t count,
-                            float *leader_out) {
-    const int leader_device = selected_device_id(fleet, leader_index);
-    const int src_device = selected_device_id(fleet, src_index);
-    if (leader_device < 0 || src_device < 0 || leader_out == nullptr || (src == nullptr && count != 0u)) return 0;
-    if (!cuda_ok(cudaSetDevice(leader_device), "cudaSetDevice fleet copy leader")) return 0;
-    if (src == leader_out && src_device == leader_device) return 1;
-    const std::size_t bytes = count * sizeof(float);
-    if (src_device == leader_device) {
-        return cuda_ok(cudaMemcpyAsync(leader_out, src, bytes, cudaMemcpyDeviceToDevice, selected_stream(fleet, leader_index)),
-                       "cudaMemcpyAsync fleet leader local copy");
-    }
-    return cuda_ok(cudaMemcpyPeerAsync(leader_out,
-                                       leader_device,
-                                       src,
-                                       src_device,
-                                       bytes,
-                                       selected_stream(fleet, leader_index)),
-                   "cudaMemcpyPeerAsync fleet leader copy");
-}
-
-int add_partial_to_leader(preprocess_fleet_workspace *fleet,
-                          unsigned int leader_index,
-                          const float *partial,
-                          unsigned int partial_index,
-                          std::size_t count,
-                          float *leader_out) {
-    const int leader_device = selected_device_id(fleet, leader_index);
-    const int src_device = selected_device_id(fleet, partial_index);
-    if (leader_device < 0 || src_device < 0) return 0;
-    float *scratch = (float *) request_reduce_scratch(fleet, leader_index, count * sizeof(float));
-    if (scratch == nullptr && count != 0u) return 0;
-    if (!copy_or_alias_to_leader(fleet, leader_index, partial, partial_index, count, scratch)) return 0;
-    if (!cuda_ok(cudaSetDevice(leader_device), "cudaSetDevice fleet dense add")) return 0;
-    const int threads = 256;
-    const int blocks = (int) ((count + (std::size_t) threads - 1u) / (std::size_t) threads);
-    dense_add_inplace_kernel<<<blocks, threads, 0, selected_stream(fleet, leader_index)>>>(leader_out, scratch, count);
-    return cuda_ok(cudaGetLastError(), "dense_add_inplace_kernel fleet");
+    if (fleet == nullptr || index >= fleet->slot_count || fleet->slots == nullptr) return -1;
+    return cs_compute_runtime::fleet_device_id(fleet->fleet, fleet->slots[index]);
 }
 
 int reduce_sum_to_leader_f32(preprocess_fleet_workspace *fleet,
@@ -459,96 +372,22 @@ int reduce_sum_to_leader_f32(preprocess_fleet_workspace *fleet,
                              float *leader_out) {
     if (fleet == nullptr || partials == nullptr || leader_index >= fleet->slot_count || (leader_out == nullptr && count != 0u)) return 0;
     if (fleet->slot_count == 0u || count == 0u) return 1;
-
+    cs_compute_runtime::reduce_sum_to_leader_f32_options options{};
 #if CELLERATOR_DIST_HAS_NCCL
-    if (fleet->ranked_nccl.ready != 0u) {
-        const unsigned int comm_count = fleet->ranked_nccl.device_count;
-        std::unique_ptr<const void *[]> sendbufs(new (std::nothrow) const void *[comm_count]);
-        std::unique_ptr<void *[]> recvbufs(new (std::nothrow) void *[comm_count]);
-        std::unique_ptr<cudaStream_t[]> streams(new (std::nothrow) cudaStream_t[comm_count]);
-        if (!sendbufs || !recvbufs || !streams) return 0;
-        for (unsigned int rank = 0u; rank < comm_count; ++rank) {
-            const int selected = selected_index_for_slot(fleet, fleet->ranked_nccl.local_slots[rank]);
-            if (selected < 0) return 0;
-            sendbufs[rank] = partials[selected];
-            recvbufs[rank] = selected == (int) leader_index
-                ? (void *) leader_out
-                : request_reduce_scratch(fleet, (unsigned int) selected, count * sizeof(float));
-            if (recvbufs[rank] == nullptr && count != 0u) return 0;
-            streams[rank] = selected_stream(fleet, (unsigned int) selected);
-        }
-        const ncclResult_t result = cs_dist::communicator_allreduce(&fleet->ranked_nccl,
-                                                                    sendbufs.get(),
-                                                                    recvbufs.get(),
-                                                                    count,
-                                                                    ncclFloat32,
-                                                                    ncclSum,
-                                                                    streams.get());
-        return result == ncclSuccess;
-    }
-    if (fleet->slot_count > 1u) {
-        std::unique_ptr<void *[]> recvbufs(new (std::nothrow) void *[fleet->slot_count]);
-        if (!recvbufs) return 0;
-        for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
-            recvbufs[i] = i == leader_index
-                ? (void *) leader_out
-                : request_reduce_scratch(fleet, i, count * sizeof(float));
-            if (recvbufs[i] == nullptr && count != 0u) return 0;
-        }
-        const ncclResult_t result = cs_dist::local_allreduce(&fleet->local,
-                                                            fleet->slots,
-                                                            fleet->slot_count,
-                                                            (const void *const *) partials,
-                                                            recvbufs.get(),
-                                                            count,
-                                                            ncclFloat32,
-                                                            ncclSum);
-        if (result == ncclSuccess) return 1;
-    }
+    options.ranked_nccl = fleet->ranked_nccl.ready != 0u ? &fleet->ranked_nccl : nullptr;
 #endif
-
-    if (!sync_fleet_slots(fleet)) return 0;
-    if (!copy_or_alias_to_leader(fleet, leader_index, partials[leader_index], leader_index, count, leader_out)) return 0;
-    if (fleet->slot_count == 4u
-        && fleet->slots[0] == 0u && fleet->slots[1] == 1u && fleet->slots[2] == 2u && fleet->slots[3] == 3u
-        && leader_index == 0u) {
-        const int leader0_device = selected_device_id(fleet, 0u);
-        const int leader1_device = selected_device_id(fleet, 1u);
-        float *leader0_tmp = (float *) request_reduce_scratch(fleet, 0u, count * sizeof(float));
-        float *leader1_tmp = (float *) request_reduce_scratch(fleet, 1u, count * sizeof(float) * 2u);
-        if (leader0_tmp == nullptr || leader1_tmp == nullptr) return 0;
-        float *leader1_accum = leader1_tmp;
-        float *leader1_peer = leader1_tmp + count;
-
-        if (!add_partial_to_leader(fleet, 0u, partials[2], 2u, count, leader_out)) return 0;
-        if (!copy_or_alias_to_leader(fleet, 1u, partials[1], 1u, count, leader1_accum)) return 0;
-        if (!copy_or_alias_to_leader(fleet, 1u, partials[3], 3u, count, leader1_peer)) return 0;
-        if (!cuda_ok(cudaSetDevice(leader1_device), "cudaSetDevice fleet pair1 add")) return 0;
-        {
-            const int threads = 256;
-            const int blocks = (int) ((count + (std::size_t) threads - 1u) / (std::size_t) threads);
-            dense_add_inplace_kernel<<<blocks, threads, 0, selected_stream(fleet, 1u)>>>(leader1_accum, leader1_peer, count);
-            if (!cuda_ok(cudaGetLastError(), "dense_add_inplace_kernel fleet pair1")) return 0;
-        }
-        if (!cuda_ok(cudaSetDevice(leader1_device), "cudaSetDevice fleet pair1 sync")) return 0;
-        if (!cuda_ok(cudaStreamSynchronize(selected_stream(fleet, 1u)), "cudaStreamSynchronize fleet pair1")) return 0;
-        if (!cuda_ok(cudaSetDevice(leader0_device), "cudaSetDevice fleet leader exchange")) return 0;
-        if (!cuda_ok(cudaMemcpyPeerAsync(leader0_tmp,
-                                         leader0_device,
-                                         leader1_accum,
-                                         leader1_device,
-                                         count * sizeof(float),
-                                         selected_stream(fleet, 0u)),
-                     "cudaMemcpyPeerAsync fleet leader exchange")) return 0;
-        const int threads = 256;
-        const int blocks = (int) ((count + (std::size_t) threads - 1u) / (std::size_t) threads);
-        dense_add_inplace_kernel<<<blocks, threads, 0, selected_stream(fleet, 0u)>>>(leader_out, leader0_tmp, count);
-        return cuda_ok(cudaGetLastError(), "dense_add_inplace_kernel fleet leader exchange");
-    }
-
-    for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
-        if (i == leader_index) continue;
-        if (!add_partial_to_leader(fleet, leader_index, partials[i], i, count, leader_out)) return 0;
+    try {
+        cs_compute_runtime::reduce_sum_to_leader_f32(&fleet->fleet,
+                                                     fleet->slots,
+                                                     fleet->slot_count,
+                                                     (const float *const *) partials,
+                                                     count,
+                                                     fleet->slots[leader_index],
+                                                     leader_out,
+                                                     &options);
+    } catch (const std::exception &exc) {
+        std::fprintf(stderr, "Cellerator preprocess reduction error: %s\n", exc.what());
+        return 0;
     }
     return 1;
 }
@@ -557,6 +396,20 @@ int reduce_gene_metrics_to_leader(preprocess_fleet_workspace *fleet, unsigned in
     if (fleet == nullptr || cols == 0u) return fleet != nullptr;
     std::unique_ptr<float *[]> partials(new (std::nothrow) float *[fleet->slot_count]);
     if (!partials) return 0;
+    int contiguous = 1;
+    for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
+        preprocess_workspace *workspace = fleet->devices + i;
+        const gene_metric_packet_view packet{cols, workspace->gene_sum, workspace->gene_sq_sum, workspace->gene_detected, workspace->active_rows};
+        contiguous = contiguous && gene_metric_packet_is_contiguous(&packet, 1u);
+    }
+    if (contiguous != 0) {
+        for (unsigned int i = 0u; i < fleet->slot_count; ++i) partials[i] = fleet->devices[i].gene_sum;
+        return reduce_sum_to_leader_f32(fleet,
+                                        partials.get(),
+                                        gene_metric_packet_float_count(cols, 1u),
+                                        leader_index,
+                                        fleet->devices[leader_index].gene_sum);
+    }
     for (unsigned int i = 0u; i < fleet->slot_count; ++i) partials[i] = fleet->devices[i].gene_sum;
     if (!reduce_sum_to_leader_f32(fleet, partials.get(), cols, leader_index, fleet->devices[leader_index].gene_sum)) return 0;
     for (unsigned int i = 0u; i < fleet->slot_count; ++i) partials[i] = fleet->devices[i].gene_sq_sum;
@@ -629,7 +482,7 @@ void init(preprocess_workspace *workspace) {
 void init(preprocess_fleet_workspace *fleet) {
     if (fleet == nullptr) return;
     std::memset(fleet, 0, sizeof(*fleet));
-    cs_dist::init(&fleet->local);
+    cs_compute_runtime::init(&fleet->fleet);
 #if CELLERATOR_DIST_HAS_NCCL
     cs_dist::init(&fleet->ranked_nccl);
 #endif
@@ -650,24 +503,13 @@ void clear(preprocess_fleet_workspace *fleet) {
     if (fleet->devices != nullptr) {
         for (unsigned int i = 0u; i < fleet->slot_count; ++i) clear(fleet->devices + i);
     }
-    if (fleet->reduce_scratch != nullptr) {
-        for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
-            if (fleet->reduce_scratch[i] != nullptr) {
-                const int device = selected_device_id(fleet, i);
-                if (device >= 0) (void) cudaSetDevice(device);
-                (void) cudaFree(fleet->reduce_scratch[i]);
-            }
-        }
-    }
 #if CELLERATOR_DIST_HAS_NCCL
     cs_dist::clear(&fleet->ranked_nccl);
 #endif
-    std::free(fleet->reduce_scratch);
-    std::free(fleet->reduce_scratch_bytes);
     std::free(fleet->results);
     std::free(fleet->devices);
     std::free(fleet->slots);
-    cs_dist::clear(&fleet->local);
+    cs_compute_runtime::clear(&fleet->fleet);
     init(fleet);
 }
 
@@ -696,30 +538,37 @@ int setup_fleet(preprocess_fleet_workspace *fleet, const preprocess_fleet_config
     const unsigned int stream_flags = config != nullptr ? config->stream_flags : cudaStreamNonBlocking;
     const unsigned int enable_peer = config == nullptr || config->enable_peer_access != 0u;
     if (config != nullptr && config->device_count != 0u && config->device_ids == nullptr) return 0;
-    if (!cuda_ok(cs_dist::discover_local(&fleet->local, 1, stream_flags), "discover preprocess fleet")) return 0;
-    if (fleet->local.device_count == 0u) return 0;
-    if (enable_peer != 0u && !cuda_ok(cs_dist::enable_peer_access(&fleet->local), "enable preprocess fleet peer access")) return 0;
+    try {
+        cs_compute_runtime::discover_fleet(&fleet->fleet, true, stream_flags, enable_peer != 0u);
+    } catch (const std::exception &exc) {
+        std::fprintf(stderr, "Cellerator preprocess fleet setup error: %s\n", exc.what());
+        return 0;
+    }
+    if (fleet->fleet.local.device_count == 0u) return 0;
 
     const unsigned int requested = config != nullptr ? config->device_count : 0u;
-    const unsigned int selected_count = requested != 0u ? requested : fleet->local.device_count;
+    const unsigned int selected_count = requested != 0u ? requested : fleet->fleet.local.device_count;
     fleet->slots = (unsigned int *) std::calloc((std::size_t) selected_count, sizeof(unsigned int));
     fleet->devices = (preprocess_workspace *) std::calloc((std::size_t) selected_count, sizeof(preprocess_workspace));
     fleet->results = (part_preprocess_result *) std::calloc((std::size_t) selected_count, sizeof(part_preprocess_result));
-    fleet->reduce_scratch = (void **) std::calloc((std::size_t) selected_count, sizeof(void *));
-    fleet->reduce_scratch_bytes = (std::size_t *) std::calloc((std::size_t) selected_count, sizeof(std::size_t));
-    if (fleet->slots == nullptr || fleet->devices == nullptr || fleet->results == nullptr
-        || fleet->reduce_scratch == nullptr || fleet->reduce_scratch_bytes == nullptr) {
+    if (fleet->slots == nullptr || fleet->devices == nullptr || fleet->results == nullptr) {
         clear(fleet);
         return 0;
     }
     fleet->slot_count = selected_count;
     for (unsigned int i = 0u; i < selected_count; ++i) init(fleet->devices + i);
 
-    for (unsigned int i = 0u; i < selected_count; ++i) {
-        const int requested_device = requested != 0u ? config->device_ids[i] : fleet->local.device_ids[i];
+    if (requested == 0u) {
+        unsigned int default_count = cs_compute_runtime::default_mode_fleet_slots(fleet->fleet, fleet->slots, selected_count);
+        if (default_count == 0u) default_count = cs_compute_runtime::default_generic_fleet_slots(fleet->fleet, fleet->slots, selected_count);
+        fleet->slot_count = default_count;
+    }
+
+    for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
+        const int requested_device = requested != 0u ? config->device_ids[i] : cs_compute_runtime::fleet_device_id(fleet->fleet, fleet->slots[i]);
         int found = -1;
-        for (unsigned int slot = 0u; slot < fleet->local.device_count; ++slot) {
-            if (fleet->local.device_ids[slot] == requested_device) {
+        for (unsigned int slot = 0u; slot < fleet->fleet.local.device_count; ++slot) {
+            if (fleet->fleet.local.device_ids[slot] == requested_device) {
                 found = (int) slot;
                 break;
             }
@@ -729,7 +578,7 @@ int setup_fleet(preprocess_fleet_workspace *fleet, const preprocess_fleet_config
             return 0;
         }
         fleet->slots[i] = (unsigned int) found;
-        if (!setup(fleet->devices + i, requested_device, fleet->local.streams != nullptr ? fleet->local.streams[found] : (cudaStream_t) 0)) {
+        if (!setup(fleet->devices + i, requested_device, cs_compute_runtime::fleet_stream(fleet->fleet, (unsigned int) found))) {
             clear(fleet);
             return 0;
         }
@@ -761,8 +610,6 @@ int setup_fleet(preprocess_fleet_workspace *fleet, const preprocess_fleet_config
             clear(fleet);
             return 0;
         }
-    } else if (selected_count > 1u) {
-        (void) cs_dist::init_local_nccl(&fleet->local);
     }
 #else
     if (config != nullptr && config->ranked_nccl != nullptr && config->ranked_nccl->unique_id != nullptr) {
@@ -805,8 +652,6 @@ int reserve_qc_groups(preprocess_workspace *workspace,
         bytes += (std::size_t) alloc_rows * alloc_groups * sizeof(float);
         bytes = align_up_bytes(bytes, alignof(float));
         bytes += (std::size_t) alloc_rows * alloc_groups * sizeof(float);
-        bytes = align_up_bytes(bytes, alignof(float));
-        bytes += sizeof(float);
 
         if (bytes != 0u && !cuda_ok(cudaMalloc(&workspace->cell_block, bytes), "cudaMalloc preprocess cell block")) return 0;
         base = (char *) workspace->cell_block;
@@ -832,8 +677,6 @@ int reserve_qc_groups(preprocess_workspace *workspace,
         bytes = align_up_bytes(bytes, alignof(float));
         workspace->cell_group_pct = (float *) (base + bytes);
         bytes += (std::size_t) alloc_rows * alloc_groups * sizeof(float);
-        bytes = align_up_bytes(bytes, alignof(float));
-        workspace->active_rows = (float *) (base + bytes);
         workspace->rows_capacity = alloc_rows;
         workspace->group_capacity = alloc_groups;
     }
@@ -850,6 +693,8 @@ int reserve_qc_groups(preprocess_workspace *workspace,
         bytes += (std::size_t) cols * sizeof(float);
         bytes = align_up_bytes(bytes, alignof(float));
         bytes += (std::size_t) cols * sizeof(float);
+        bytes = align_up_bytes(bytes, alignof(float));
+        bytes += sizeof(float);
         bytes = align_up_bytes(bytes, alignof(unsigned char));
         bytes += (std::size_t) cols * sizeof(unsigned char);
         bytes = align_up_bytes(bytes, alignof(unsigned char));
@@ -869,6 +714,9 @@ int reserve_qc_groups(preprocess_workspace *workspace,
         bytes = align_up_bytes(bytes, alignof(float));
         workspace->gene_detected = (float *) (base + bytes);
         bytes += (std::size_t) cols * sizeof(float);
+        bytes = align_up_bytes(bytes, alignof(float));
+        workspace->active_rows = (float *) (base + bytes);
+        bytes += sizeof(float);
         bytes = align_up_bytes(bytes, alignof(unsigned char));
         workspace->keep_genes = (unsigned char *) (base + bytes);
         bytes += (std::size_t) cols * sizeof(unsigned char);
@@ -944,15 +792,25 @@ int upload_gene_flags(preprocess_workspace *workspace,
 int zero_gene_metrics(preprocess_workspace *workspace, unsigned int cols) {
     if (workspace == nullptr) return 0;
     if (!reserve(workspace, workspace->rows_capacity, cols, workspace->values_capacity)) return 0;
-    if (!cuda_ok(cudaMemsetAsync(workspace->gene_sum, 0, (std::size_t) cols * sizeof(float), workspace->stream),
-                 "cudaMemsetAsync gene sum")) return 0;
-    if (!cuda_ok(cudaMemsetAsync(workspace->gene_sq_sum, 0, (std::size_t) cols * sizeof(float), workspace->stream),
-                 "cudaMemsetAsync gene sq sum")) return 0;
-    if (!cuda_ok(cudaMemsetAsync(workspace->gene_detected, 0, (std::size_t) cols * sizeof(float), workspace->stream),
-                 "cudaMemsetAsync gene detected")) return 0;
-    if (workspace->active_rows != nullptr
-        && !cuda_ok(cudaMemsetAsync(workspace->active_rows, 0, sizeof(float), workspace->stream),
-                    "cudaMemsetAsync active rows")) return 0;
+    if (workspace->gene_sq_sum == workspace->gene_sum + cols
+        && workspace->gene_detected == workspace->gene_sum + 2u * cols
+        && workspace->active_rows == workspace->gene_sum + 3u * cols) {
+        if (!cuda_ok(cudaMemsetAsync(workspace->gene_sum,
+                                     0,
+                                     ((std::size_t) 3u * cols + 1u) * sizeof(float),
+                                     workspace->stream),
+                     "cudaMemsetAsync contiguous gene metrics")) return 0;
+    } else {
+        if (!cuda_ok(cudaMemsetAsync(workspace->gene_sum, 0, (std::size_t) cols * sizeof(float), workspace->stream),
+                     "cudaMemsetAsync gene sum")) return 0;
+        if (!cuda_ok(cudaMemsetAsync(workspace->gene_sq_sum, 0, (std::size_t) cols * sizeof(float), workspace->stream),
+                     "cudaMemsetAsync gene sq sum")) return 0;
+        if (!cuda_ok(cudaMemsetAsync(workspace->gene_detected, 0, (std::size_t) cols * sizeof(float), workspace->stream),
+                     "cudaMemsetAsync gene detected")) return 0;
+        if (workspace->active_rows != nullptr
+            && !cuda_ok(cudaMemsetAsync(workspace->active_rows, 0, sizeof(float), workspace->stream),
+                        "cudaMemsetAsync active rows")) return 0;
+    }
     return cuda_ok(cudaMemsetAsync(workspace->keep_genes, 0, (std::size_t) cols, workspace->stream),
                    "cudaMemsetAsync keep genes");
 }
@@ -1381,23 +1239,12 @@ int build_gene_filter_mask(preprocess_workspace *workspace,
                            gene_metrics_view *out) {
     if (workspace == nullptr || filter == nullptr) return 0;
     if (!reserve(workspace, workspace->rows_capacity, cols, workspace->values_capacity)) return 0;
-    float active_rows = 0.0f;
-    if (workspace->active_rows != nullptr) {
-        if (!cuda_ok(cudaMemcpyAsync(&active_rows,
-                                     workspace->active_rows,
-                                     sizeof(float),
-                                     cudaMemcpyDeviceToHost,
-                                     workspace->stream),
-                     "cudaMemcpyAsync active rows")) return 0;
-        if (!cuda_ok(cudaStreamSynchronize(workspace->stream), "cudaStreamSynchronize active rows")) return 0;
-    }
-    const float inv_cells = active_rows > 0.0f ? 1.0f / active_rows : 0.0f;
     unsigned int blocks = (cols + 255u) >> 8;
     if (blocks < 1u) blocks = 1u;
     if (blocks > 4096u) blocks = 4096u;
     build_gene_filter_mask_kernel<<<blocks, 256, 0, workspace->stream>>>(
         cols,
-        inv_cells,
+        workspace->active_rows,
         *filter,
         workspace->gene_sum,
         workspace->gene_sq_sum,

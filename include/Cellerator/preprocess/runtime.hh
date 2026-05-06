@@ -30,6 +30,13 @@ enum value_precision : std::uint32_t {
     value_precision_fp32_accumulator = 2u
 };
 
+enum preprocess_reduction_mode : std::uint32_t {
+    preprocess_reduction_unknown = 0u,
+    preprocess_reduction_single_device = 1u,
+    preprocess_reduction_nccl = 2u,
+    preprocess_reduction_peer_copy = 3u
+};
+
 struct status {
     int code;
     char message[192];
@@ -78,6 +85,66 @@ struct qc_group_rule_view {
     const char *modality;
 };
 
+struct preprocess_cellshard_session_options {
+    const char *input_path = nullptr;
+    const int *device_ids = nullptr;
+    std::uint32_t device_count = 0u;
+    std::uint32_t enable_peer_access = 1u;
+    std::uint32_t stream_flags = cudaStreamNonBlocking;
+    const preprocess_ranked_nccl_config *ranked_nccl = nullptr;
+
+    const char *assay = "scrna";
+    const char *matrix_orientation = "observations_by_features";
+    const char *matrix_state = "raw_counts";
+    const char *feature_namespace = "gene_symbol";
+    const char *mito_prefix = "MT-";
+
+    float target_sum = 10000.0f;
+    float min_counts = 1.0f;
+    std::uint32_t min_features = 1u;
+    float max_group_fraction = 1.0f;
+    std::uint32_t fraction_group_index = qc_group_mt;
+    float min_gene_sum = 0.0f;
+    float min_detected_cells = 0.0f;
+    float min_variance = 0.0f;
+
+    const std::uint32_t *feature_group_masks = nullptr;
+    const char * const *group_names = nullptr;
+    std::uint32_t group_count = 0u;
+};
+
+struct preprocess_cellshard_session_result {
+    native_sparse_layout layout = native_sparse_unknown;
+    preprocess_reduction_mode reduction_mode = preprocess_reduction_unknown;
+
+    std::uint64_t rows = 0u;
+    std::uint64_t cols = 0u;
+    std::uint64_t nnz = 0u;
+    std::uint64_t partitions_processed = 0u;
+    std::uint64_t shards_visited = 0u;
+    std::uint64_t kept_cells = 0u;
+    std::uint32_t kept_genes = 0u;
+    std::uint32_t group_count = 0u;
+    std::uint32_t device_count = 0u;
+    double gene_sum_checksum = 0.0;
+
+    const char *group_names[CELLERATOR_PREPROCESS_MAX_QC_GROUPS] = {};
+    std::uint32_t *feature_group_masks = nullptr;
+
+    std::uint8_t *cell_keep = nullptr;
+    float *cell_total_counts = nullptr;
+    float *cell_mito_counts = nullptr;
+    float *cell_max_counts = nullptr;
+    std::uint32_t *cell_detected_genes = nullptr;
+    float *cell_group_counts = nullptr;
+    float *cell_group_pct = nullptr;
+
+    std::uint8_t *gene_keep = nullptr;
+    float *gene_sum = nullptr;
+    float *gene_sq_sum = nullptr;
+    float *gene_detected_cells = nullptr;
+};
+
 const char *version();
 
 void clear_status(status *out);
@@ -104,5 +171,11 @@ int compile_default_qc_feature_group_masks(const qc_feature_annotation_view *fea
 int plan_cellshard_adapter_stage(const adapter_source_view *source,
                                  cellshard_stage_plan *plan,
                                  status *out);
+
+void clear(preprocess_cellshard_session_result *result);
+
+int preprocess_cellshard_session_all_gpus(const preprocess_cellshard_session_options *options,
+                                          preprocess_cellshard_session_result *result,
+                                          status *out);
 
 } // namespace cellerator::preprocess

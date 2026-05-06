@@ -1,5 +1,6 @@
 #include <Cellerator/preprocess/runtime.hh>
 
+#include <Cellerator/compute/runtime.hh>
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 
@@ -31,8 +32,8 @@ T *upload_on_device(int device, const T *host, std::size_t count, const char *la
 int sync_fleet(cpre::preprocess_fleet_workspace *fleet) {
     for (unsigned int i = 0u; i < fleet->slot_count; ++i) {
         const unsigned int slot = fleet->slots[i];
-        if (!check_cuda(cudaSetDevice(fleet->local.device_ids[slot]), "cudaSetDevice sync fleet")) return 0;
-        if (!check_cuda(cudaStreamSynchronize(fleet->local.streams[slot]), "cudaStreamSynchronize fleet")) return 0;
+        if (!check_cuda(cudaSetDevice(::cellerator::compute::runtime::fleet_device_id(fleet->fleet, slot)), "cudaSetDevice sync fleet")) return 0;
+        if (!check_cuda(cudaStreamSynchronize(::cellerator::compute::runtime::fleet_stream(fleet->fleet, slot)), "cudaStreamSynchronize fleet")) return 0;
     }
     return 1;
 }
