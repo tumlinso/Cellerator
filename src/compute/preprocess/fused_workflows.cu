@@ -271,11 +271,27 @@ int preprocess_blocked_ell_qc_groups_inplace(cs_device::blocked_ell_view *src,
                                              const cell_qc_filter_params *cell_filter,
                                              float target_sum,
                                              part_preprocess_result *out) {
+    return preprocess_blocked_ell_qc_groups_plan_inplace(
+        src, workspace, groups, cell_filter, target_sum, preprocess_execution_default, out);
+}
+
+int preprocess_blocked_ell_qc_groups_plan_inplace(cs_device::blocked_ell_view *src,
+                                                  preprocess_workspace *workspace,
+                                                  const qc_group_config_view *groups,
+                                                  const cell_qc_filter_params *cell_filter,
+                                                  float target_sum,
+                                                  preprocess_execution_plan plan,
+                                                  part_preprocess_result *out) {
     cell_metrics_view cell{};
     gene_metrics_view gene{};
     if (!compute_qc_metrics(src, workspace, groups, cell_filter, &cell)) return 0;
     if (!zero_gene_metrics(workspace, src->cols)) return 0;
-    if (!fused_normalize_gene_metrics(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) return 0;
+    if (plan == preprocess_execution_separate) {
+        if (!normalize_log1p_inplace(src, workspace, cell.total_counts, cell.keep_cells, target_sum)) return 0;
+        if (!accumulate_gene_metrics(src, workspace, cell.keep_cells, &gene)) return 0;
+    } else if (!fused_normalize_gene_metrics(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) {
+        return 0;
+    }
     if (out != nullptr) {
         out->cell = cell;
         out->gene = gene;
@@ -289,11 +305,27 @@ int preprocess_sliced_ell_qc_groups_inplace(cs_device::sliced_ell_view *src,
                                             const cell_qc_filter_params *cell_filter,
                                             float target_sum,
                                             part_preprocess_result *out) {
+    return preprocess_sliced_ell_qc_groups_plan_inplace(
+        src, workspace, groups, cell_filter, target_sum, preprocess_execution_default, out);
+}
+
+int preprocess_sliced_ell_qc_groups_plan_inplace(cs_device::sliced_ell_view *src,
+                                                 preprocess_workspace *workspace,
+                                                 const qc_group_config_view *groups,
+                                                 const cell_qc_filter_params *cell_filter,
+                                                 float target_sum,
+                                                 preprocess_execution_plan plan,
+                                                 part_preprocess_result *out) {
     cell_metrics_view cell{};
     gene_metrics_view gene{};
     if (!compute_qc_metrics(src, workspace, groups, cell_filter, &cell)) return 0;
     if (!zero_gene_metrics(workspace, src->cols)) return 0;
-    if (!fused_normalize_gene_metrics(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) return 0;
+    if (plan == preprocess_execution_separate) {
+        if (!normalize_log1p_inplace(src, workspace, cell.total_counts, cell.keep_cells, target_sum)) return 0;
+        if (!accumulate_gene_metrics(src, workspace, cell.keep_cells, &gene)) return 0;
+    } else if (!fused_normalize_gene_metrics(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) {
+        return 0;
+    }
     if (out != nullptr) {
         out->cell = cell;
         out->gene = gene;
@@ -307,11 +339,27 @@ int preprocess_compressed_fallback_qc_groups_inplace(cs_device::compressed_view 
                                                      const cell_qc_filter_params *cell_filter,
                                                      float target_sum,
                                                      part_preprocess_result *out) {
+    return preprocess_compressed_fallback_qc_groups_plan_inplace(
+        src, workspace, groups, cell_filter, target_sum, preprocess_execution_default, out);
+}
+
+int preprocess_compressed_fallback_qc_groups_plan_inplace(cs_device::compressed_view *src,
+                                                          preprocess_workspace *workspace,
+                                                          const qc_group_config_view *groups,
+                                                          const cell_qc_filter_params *cell_filter,
+                                                          float target_sum,
+                                                          preprocess_execution_plan plan,
+                                                          part_preprocess_result *out) {
     cell_metrics_view cell{};
     gene_metrics_view gene{};
     if (!compute_qc_metrics_compressed_fallback(src, workspace, groups, cell_filter, &cell)) return 0;
     if (!zero_gene_metrics(workspace, src->cols)) return 0;
-    if (!fused_normalize_gene_metrics_compressed_fallback(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) return 0;
+    if (plan == preprocess_execution_separate) {
+        if (!normalize_log1p_compressed_fallback_inplace(src, workspace, cell.total_counts, cell.keep_cells, target_sum)) return 0;
+        if (!accumulate_gene_metrics_compressed_fallback(src, workspace, cell.keep_cells, &gene)) return 0;
+    } else if (!fused_normalize_gene_metrics_compressed_fallback(src, workspace, cell.total_counts, cell.keep_cells, target_sum, &gene)) {
+        return 0;
+    }
     if (out != nullptr) {
         out->cell = cell;
         out->gene = gene;

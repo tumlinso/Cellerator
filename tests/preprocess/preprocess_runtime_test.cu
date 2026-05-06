@@ -73,6 +73,28 @@ int main() {
     if (keep[0] == 0u || keep[1] == 0u) return 4;
     if (!(gene_sum[0] > 0.0f && gene_sum[1] > 0.0f && gene_sum[2] > 0.0f && gene_sum[3] > 0.0f)) return 5;
 
+    if (!check_cuda(cudaMemcpy(d_values, h_values, sizeof(h_values), cudaMemcpyHostToDevice), "reset values")) return 1;
+    cpre::qc_group_config_view groups{};
+    groups.group_count = 1u;
+    groups.feature_group_masks = workspace.feature_group_masks;
+    cpre::cell_qc_filter_params qc_filter{filter.min_counts, filter.min_genes, filter.max_mito_fraction, cpre::qc_group_mt};
+    cpre::part_preprocess_result separate{};
+    if (!cpre::preprocess_blocked_ell_qc_groups_plan_inplace(&view,
+                                                             &workspace,
+                                                             &groups,
+                                                             &qc_filter,
+                                                             10000.0f,
+                                                             cpre::preprocess_execution_separate,
+                                                             &separate)) {
+        return 6;
+    }
+    if (!check_cuda(cudaStreamSynchronize(workspace.stream), "sync separate preprocess")) return 1;
+    float separate_gene_sum[4] = {};
+    if (!check_cuda(cudaMemcpy(separate_gene_sum, separate.gene.sum, sizeof(separate_gene_sum), cudaMemcpyDeviceToHost), "copy separate gene sum")) return 1;
+    for (int i = 0; i < 4; ++i) {
+        if (!close_enough(separate_gene_sum[i], gene_sum[i])) return 7;
+    }
+
     cpre::clear(&workspace);
     cudaFree(d_values);
     cudaFree(d_cols);

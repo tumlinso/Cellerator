@@ -21,6 +21,7 @@ Use this file as the canonical index for substantial multi-step work.
 ## Workstreams
 - `sequence-bits-dna2`: done / closed - Added the first narrow SequenceBits primitive with packed word64 and planes32 DNA encoding, CUDA proof kernels, CPU/CUDA tests, benchmark target, and docs.
 - `cellerator-sparse-ml-layout`: in_progress / idle - Refactored Cellerator Core into contract-first matrix/runtime/quantized/interop layers, moved conversion and CUDA compute primitives under `src/compute`, updated CellShard shims, and kept `src/compute` as the sparse math/operator layer. Needs a decision on the standalone CellShard mask-groups exit-14 expectation.
+- `cellerator-runtime-autotune`: done / closed - Added optional close-enough runtime autotuning for Cellerator preprocessing, exposed as Python `autotune=True` while keeping C++ mode explicit/off by default.
 - `cellerator-preprocess-scanpy-validation`: done / closed - Added PBMC3K Scanpy comparison coverage for Cellerator GPU-native preprocessing metrics and fixed the Python session device-reservation plus mitochondrial-count alias issues it exposed.
 - `cellerator-python-preprocess-runtime`: done / closed - Added the Cellerator-owned Python package, pybind module, `cellerator.pp` facade, and GPU-native preprocessing session delegation for `.csh5`/CellShard-backed scRNA preprocessing.
 - `cellerator-preprocess-rehome`: done / closed - Moved the standalone preprocessing project back into Cellerator with split `Cellerator::compute_preprocess` and `Cellerator::preprocess` targets, removed CellShard's nested preprocessing package path, and removed the root submodule entry.
@@ -54,6 +55,8 @@ _None recorded yet._
 - Finished `cellerator-python-preprocess-runtime`: direct `_cellerator` build, source smoke test, wheel build, and installed-wheel import smoke passed. A fixture-backed GPU session test remains a future follow-up because no stable tiny `.csh5` fixture is currently checked in.
 - Started `cellerator-preprocess-scanpy-validation`: the PBMC3K `.h5ad` and `.csh5` fixtures now exist under `data/test/reference`, so the missing fixture-backed validation can compare Cellerator GPU-native preprocessing metrics against a Scanpy reference.
 - Finished `cellerator-preprocess-scanpy-validation`: added `tests/validate_scanpy_preprocess.py`, exposed missing Python session metrics, fixed direct Python session device-reservation, fixed the `cell_mito_counts` alias, and passed the PBMC3K Scanpy comparison for all metric families.
+- Started `cellerator-runtime-autotune`: requested scope is an optional, bounded runtime optimizer that is callable from Cellerator, defaults off in C++ mode, and is exposed in Python preprocessing as `autotune=True`.
+- Finished `cellerator-runtime-autotune`: added the reusable light optimizer surface, plan-aware preprocessing compute calls, Python autotune/session metrics, README notes, and focused validation including PBMC3K `.csh5` autotune smoke.
 
 ## Next Actions
 - Decide whether CellShard `cellShardMaskGroupsRuntimeTest` exit 14 is an existing CellShard behavior issue or should be fixed under `cellerator-sparse-ml-layout`.

@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <Cellerator/optimize/runtime_optimizer.hh>
 #include <Cellerator/preprocess/aliases.hh>
 
 namespace cellerator::preprocess {
@@ -111,6 +112,8 @@ struct preprocess_cellshard_session_options {
     const std::uint32_t *feature_group_masks = nullptr;
     const char * const *group_names = nullptr;
     std::uint32_t group_count = 0u;
+
+    const ::cellerator::optimize::optimizer_options *optimizer = nullptr;
 };
 
 struct preprocess_cellshard_session_result {
@@ -126,6 +129,8 @@ struct preprocess_cellshard_session_result {
     std::uint32_t kept_genes = 0u;
     std::uint32_t group_count = 0u;
     std::uint32_t device_count = 0u;
+    preprocess_execution_plan execution_plan = preprocess_execution_default;
+    ::cellerator::optimize::optimizer_result optimizer_result{};
     double gene_sum_checksum = 0.0;
 
     const char *group_names[CELLERATOR_PREPROCESS_MAX_QC_GROUPS] = {};

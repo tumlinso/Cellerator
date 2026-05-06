@@ -61,24 +61,26 @@ def plan(data: Any = None, *, path: str | None = None, format: str = "h5ad",
 
 def preprocess(data: Any, *, cellshard_path: str | None = None,
                options: PreprocessOptions | None = None, copy: bool = True,
-               inplace: bool = False, **kwargs):
+               inplace: bool = False, autotune: bool | None = None, **kwargs):
     if inplace:
         raise ValueError("inplace=True is metadata-only future work; GPU preprocessing returns a session")
     if not copy:
         raise ValueError("copy=False would imply hidden mutation; use the returned PreprocessSession")
     active_options = _make_options(options, kwargs)
+    if autotune is not None:
+        active_options.autotune = bool(autotune)
     return preprocess_cellshard(_dataset_path(data, cellshard_path), active_options)
 
 
 def qc(data: Any, *, cellshard_path: str | None = None,
-       options: PreprocessOptions | None = None, **kwargs):
-    session = preprocess(data, cellshard_path=cellshard_path, options=options, **kwargs)
+       options: PreprocessOptions | None = None, autotune: bool | None = None, **kwargs):
+    session = preprocess(data, cellshard_path=cellshard_path, options=options, autotune=autotune, **kwargs)
     return session.metrics()
 
 
 def normalize_log1p(data: Any, *, cellshard_path: str | None = None,
-                    options: PreprocessOptions | None = None, **kwargs):
-    return preprocess(data, cellshard_path=cellshard_path, options=options, **kwargs)
+                    options: PreprocessOptions | None = None, autotune: bool | None = None, **kwargs):
+    return preprocess(data, cellshard_path=cellshard_path, options=options, autotune=autotune, **kwargs)
 
 
 __all__ = [

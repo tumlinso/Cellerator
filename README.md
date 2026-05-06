@@ -90,6 +90,16 @@ CellShard's preprocessed dataset finalize path, which publishes filtered
 CellShard data plus preprocessing metadata while storage ownership remains in
 CellShard.
 
+Python preprocessing can optionally run a bounded light autotune pass with
+`cellerator.pp.preprocess(path, autotune=True)`. The first provider samples an
+eligible small CellShard partition, compares the fused preprocessing traversal
+against the separate primitive sequence, and keeps the default fused path when
+the measured difference is within the close-enough threshold or when sampling
+would cost too much for the dataset. C++ mode remains explicit: callers can
+benchmark and choose the plan-aware preprocessing primitives directly, while
+fleet session preprocessing keeps the fused default unless that caller wires its
+own optimizer policy around those primitives.
+
 CMake resolves CellShard in this order:
 
 1. `-DCELLERATOR_CELLSHARD_SOURCE_DIR=/path/to/CellShard`

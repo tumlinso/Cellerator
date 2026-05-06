@@ -17,6 +17,7 @@
 #include <string>
 
 namespace cpre = ::cellerator::preprocess;
+namespace copt = ::cellerator::optimize;
 namespace crt = ::cellerator::compute::runtime;
 namespace cse = ::cellshard::exporting;
 namespace csd = ::cellshard::device;
@@ -424,6 +425,15 @@ int run_layout(const cse::dataset_summary &summary,
     result->layout = layout;
     result->device_count = main_fleet.slot_count;
     result->reduction_mode = configured_reduction_mode(&main_fleet);
+    result->execution_plan = preprocess_execution_fused;
+    if (options->optimizer == nullptr || options->optimizer->mode == copt::optimizer_mode::disabled) {
+        copt::mark_disabled(&result->optimizer_result);
+    } else {
+        result->optimizer_result.provider = copt::optimizer_provider::preprocess;
+        result->optimizer_result.selected_plan = preprocess_execution_fused;
+        result->optimizer_result.stop_reason = copt::optimizer_stop_reason::budget_skipped;
+        copt::set_message(&result->optimizer_result, "C++ fleet session keeps fused default; use plan-aware compute primitives for explicit calibration");
+    }
 
     if (!setup_device_accumulator(&gene_acc, fleet_device_id(&main_fleet, 0u), fleet_stream(&main_fleet, 0u), result->cols, out)) goto done;
 

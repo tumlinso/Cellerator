@@ -21,6 +21,7 @@
 
 namespace py = pybind11;
 namespace cpre = ::cellerator::preprocess;
+namespace copt = ::cellerator::optimize;
 namespace cse = ::cellshard::exporting;
 namespace csd = ::cellshard::device;
 
@@ -104,6 +105,13 @@ struct PreprocessOptions {
     float min_variance = 0.0f;
     int device = 0;
     bool allow_processed = false;
+    bool autotune = false;
+    std::uint32_t autotune_max_trials = 2u;
+    std::uint32_t autotune_warmup_iters = 0u;
+    std::uint32_t autotune_timed_iters = 1u;
+    std::uint32_t autotune_sample_rows = 512u;
+    std::uint64_t autotune_max_sample_nnz = 1ull << 20;
+    float autotune_close_enough_fraction = 0.10f;
 };
 
 struct AdapterStagePlan {
@@ -124,6 +132,8 @@ struct PreprocessSession {
     std::uint64_t partitions_processed = 0u;
     std::uint64_t kept_cells = 0u;
     std::uint32_t kept_genes = 0u;
+    std::string execution_plan = "fused";
+    copt::optimizer_result optimizer_result{};
     double gene_sum_checksum = 0.0;
     std::vector<std::string> group_names = {"mt", "ribo", "hb"};
     std::vector<std::uint32_t> feature_group_masks;
@@ -148,8 +158,19 @@ struct PreprocessSession {
         out["partitions_processed"] = py::int_(partitions_processed);
         out["kept_cells"] = py::int_(kept_cells);
         out["kept_genes"] = py::int_(kept_genes);
+        out["execution_plan"] = execution_plan;
         out["target_sum"] = options.target_sum;
         out["gene_sum_checksum"] = gene_sum_checksum;
+        py::dict tune;
+        tune["enabled"] = options.autotune;
+        tune["provider"] = "preprocess";
+        tune["selected_plan"] = execution_plan;
+        tune["baseline_ms"] = optimizer_result.baseline_ms;
+        tune["best_ms"] = optimizer_result.best_ms;
+        tune["trials_run"] = py::int_(optimizer_result.trials_run);
+        tune["stop_reason"] = (std::uint32_t) optimizer_result.stop_reason;
+        tune["message"] = optimizer_result.message;
+        out["autotune"] = tune;
         out["cell_total_counts"] = copy_array(cell_total_counts);
         out["cell_detected_genes"] = copy_array(cell_detected_genes);
         out["cell_mito_counts"] = copy_array(cell_mito_counts);
@@ -268,6 +289,33 @@ void validate_raw_or_throw(const PreprocessOptions &options) {
     if (!cpre::validate_raw_count_state(&state, &status)) throw std::runtime_error(status.message);
 }
 
+const char *plan_name(cpre::preprocess_execution_plan plan) {
+    if (plan == cpre::preprocess_execution_separate) return "separate";
+    if (plan == cpre::preprocess_execution_fused) return "fused";
+    return "fused";
+}
+
+copt::optimizer_options optimizer_options_from_preprocess(const PreprocessOptions &options) {
+    copt::optimizer_options out = copt::light_options();
+    out.max_trials = options.autotune_max_trials != 0u ? options.autotune_max_trials : 1u;
+    out.warmup_iters = options.autotune_warmup_iters;
+    out.timed_iters = options.autotune_timed_iters != 0u ? options.autotune_timed_iters : 1u;
+    out.sample_rows = options.autotune_sample_rows;
+    out.max_sample_nnz = options.autotune_max_sample_nnz;
+    out.close_enough_fraction = options.autotune_close_enough_fraction;
+    return out;
+}
+
+template<typename MatrixT>
+std::uint64_t sample_nnz(const MatrixT *part) {
+    return part != nullptr ? (std::uint64_t) part->nnz : 0u;
+}
+
+template<typename MatrixT>
+std::uint32_t sample_rows(const MatrixT *part) {
+    return part != nullptr ? (std::uint32_t) part->rows : 0u;
+}
+
 template<typename MatrixT>
 struct loaded_dataset {
     cellshard::sharded<MatrixT> view;
@@ -307,8 +355,9 @@ int preprocess_part(csd::blocked_ell_view *view,
                     const cpre::qc_group_config_view *groups,
                     const cpre::cell_qc_filter_params *filter,
                     float target_sum,
+                    cpre::preprocess_execution_plan plan,
                     cpre::part_preprocess_result *out) {
-    return cpre::preprocess_blocked_ell_qc_groups_inplace(view, workspace, groups, filter, target_sum, out);
+    return cpre::preprocess_blocked_ell_qc_groups_plan_inplace(view, workspace, groups, filter, target_sum, plan, out);
 }
 
 int preprocess_part(csd::sliced_ell_view *view,
@@ -316,8 +365,154 @@ int preprocess_part(csd::sliced_ell_view *view,
                     const cpre::qc_group_config_view *groups,
                     const cpre::cell_qc_filter_params *filter,
                     float target_sum,
+                    cpre::preprocess_execution_plan plan,
                     cpre::part_preprocess_result *out) {
-    return cpre::preprocess_sliced_ell_qc_groups_inplace(view, workspace, groups, filter, target_sum, out);
+    return cpre::preprocess_sliced_ell_qc_groups_plan_inplace(view, workspace, groups, filter, target_sum, plan, out);
+}
+
+template<typename MatrixT>
+float time_preprocess_candidate(loaded_dataset<MatrixT> *loaded,
+                                cellshard::device::sharded_device<MatrixT> *device_state,
+                                cpre::preprocess_workspace *workspace,
+                                unsigned long part_id,
+                                const cpre::qc_group_config_view *groups,
+                                const cpre::cell_qc_filter_params *cell_filter,
+                                float target_sum,
+                                cpre::preprocess_execution_plan plan,
+                                const copt::optimizer_options &options) {
+    const std::uint32_t warmup = options.warmup_iters;
+    const std::uint32_t timed = options.timed_iters != 0u ? options.timed_iters : 1u;
+    float total_ms = 0.0f;
+
+    for (std::uint32_t iter = 0u; iter < warmup + timed; ++iter) {
+        cudaEvent_t start = nullptr;
+        cudaEvent_t stop = nullptr;
+        bool uploaded = false;
+        try {
+            if (!cellshard::fetch_partition(&loaded->view, &loaded->storage, part_id)) {
+                throw std::runtime_error("failed to fetch autotune sample partition");
+            }
+            require_cuda(
+                cellshard::device::upload_partition_async(device_state, &loaded->view, part_id, workspace->device, workspace->stream),
+                "upload autotune sample partition");
+            uploaded = true;
+            require_cuda(cudaStreamSynchronize(workspace->stream), "synchronize autotune sample upload");
+
+            MatrixT *host_part = loaded->view.parts[part_id];
+            auto device_view = make_device_view(host_part, device_state->parts[part_id]);
+            cpre::part_preprocess_result result{};
+
+            require_cuda(cudaEventCreate(&start), "create autotune start event");
+            require_cuda(cudaEventCreate(&stop), "create autotune stop event");
+            require_cuda(cudaEventRecord(start, workspace->stream), "record autotune start event");
+            if (!preprocess_part(&device_view, workspace, groups, cell_filter, target_sum, plan, &result)) {
+                throw std::runtime_error("autotune preprocessing candidate failed");
+            }
+            require_cuda(cudaEventRecord(stop, workspace->stream), "record autotune stop event");
+            require_cuda(cudaEventSynchronize(stop), "synchronize autotune stop event");
+            if (iter >= warmup) {
+                float elapsed = 0.0f;
+                require_cuda(cudaEventElapsedTime(&elapsed, start, stop), "measure autotune candidate");
+                total_ms += elapsed;
+            }
+            require_cuda(cudaEventDestroy(start), "destroy autotune start event");
+            require_cuda(cudaEventDestroy(stop), "destroy autotune stop event");
+            start = nullptr;
+            stop = nullptr;
+            require_cuda(cellshard::device::release_partition(device_state, part_id), "release autotune sample partition");
+        } catch (...) {
+            if (start != nullptr) cudaEventDestroy(start);
+            if (stop != nullptr) cudaEventDestroy(stop);
+            if (uploaded) cellshard::device::release_partition(device_state, part_id);
+            throw;
+        }
+    }
+    return total_ms / (float) timed;
+}
+
+template<typename MatrixT>
+cpre::preprocess_execution_plan choose_preprocess_plan(loaded_dataset<MatrixT> *loaded,
+                                                       cellshard::device::sharded_device<MatrixT> *device_state,
+                                                       cpre::preprocess_workspace *workspace,
+                                                       const PreprocessOptions &options,
+                                                       const cpre::qc_group_config_view *groups,
+                                                       const cpre::cell_qc_filter_params *cell_filter,
+                                                       copt::optimizer_result *result) {
+    if (result != nullptr) *result = copt::optimizer_result{};
+    if (!options.autotune) {
+        copt::mark_disabled(result);
+        return cpre::preprocess_execution_fused;
+    }
+    if (result != nullptr) {
+        result->provider = copt::optimizer_provider::preprocess;
+        result->selected_plan = cpre::preprocess_execution_fused;
+    }
+
+    const copt::optimizer_options tune = optimizer_options_from_preprocess(options);
+    if (loaded->view.num_partitions <= tune.max_trials) {
+        if (result != nullptr) {
+            result->stop_reason = copt::optimizer_stop_reason::budget_skipped;
+            copt::set_message(result, "skipped autotune because sample overhead would dominate the run");
+        }
+        return cpre::preprocess_execution_fused;
+    }
+    if (!cellshard::fetch_partition(&loaded->view, &loaded->storage, 0u)) {
+        if (result != nullptr) {
+            result->stop_reason = copt::optimizer_stop_reason::failed;
+            copt::set_message(result, "failed to fetch autotune sample; using fused default");
+        }
+        return cpre::preprocess_execution_fused;
+    }
+    MatrixT *sample = loaded->view.parts[0u];
+    const std::uint64_t nnz = sample_nnz(sample);
+    const std::uint32_t rows = sample_rows(sample);
+    if ((tune.max_sample_nnz != 0u && nnz > tune.max_sample_nnz)
+        || (tune.sample_rows != 0u && rows > tune.sample_rows * 4u)) {
+        if (result != nullptr) {
+            result->stop_reason = copt::optimizer_stop_reason::budget_skipped;
+            copt::set_message(result, "skipped autotune because the first partition exceeds the light sample budget");
+        }
+        return cpre::preprocess_execution_fused;
+    }
+
+    try {
+        const float fused_ms = time_preprocess_candidate(
+            loaded, device_state, workspace, 0u, groups, cell_filter, options.target_sum, cpre::preprocess_execution_fused, tune);
+        float separate_ms = fused_ms;
+        std::uint32_t trials = 1u;
+        cpre::preprocess_execution_plan selected = cpre::preprocess_execution_fused;
+        copt::optimizer_stop_reason reason = copt::optimizer_stop_reason::close_enough;
+        if (tune.max_trials > 1u) {
+            separate_ms = time_preprocess_candidate(
+                loaded, device_state, workspace, 0u, groups, cell_filter, options.target_sum, cpre::preprocess_execution_separate, tune);
+            trials = 2u;
+            const float required = fused_ms * (1.0f - tune.close_enough_fraction);
+            if (separate_ms < required) {
+                selected = cpre::preprocess_execution_separate;
+                reason = copt::optimizer_stop_reason::completed;
+            }
+        }
+        if (result != nullptr) {
+            result->provider = copt::optimizer_provider::preprocess;
+            result->selected_plan = (std::uint32_t) selected;
+            result->baseline_ms = fused_ms;
+            result->best_ms = selected == cpre::preprocess_execution_separate ? separate_ms : fused_ms;
+            result->trials_run = trials;
+            result->stop_reason = reason;
+            copt::set_message(result, selected == cpre::preprocess_execution_separate
+                ? "selected separate preprocessing primitives from light sample"
+                : "kept fused preprocessing path from light sample");
+        }
+        return selected;
+    } catch (const std::exception &err) {
+        if (result != nullptr) {
+            result->provider = copt::optimizer_provider::preprocess;
+            result->selected_plan = cpre::preprocess_execution_fused;
+            result->stop_reason = copt::optimizer_stop_reason::failed;
+            copt::set_message(result, err.what());
+        }
+        return cpre::preprocess_execution_fused;
+    }
 }
 
 template<typename MatrixT>
@@ -376,6 +571,9 @@ PreprocessSession run_dataset_layout(const std::string &path,
         options.max_group_fraction,
         options.fraction_group_index
     };
+    cpre::preprocess_execution_plan execution_plan = choose_preprocess_plan(
+        &loaded, &device_state, &workspace, options, &groups, &cell_filter, &session.optimizer_result);
+    session.execution_plan = plan_name(execution_plan);
 
     try {
         for (unsigned long part_id = 0; part_id < loaded.view.num_partitions; ++part_id) {
@@ -390,7 +588,7 @@ PreprocessSession run_dataset_layout(const std::string &path,
             auto device_view = make_device_view(host_part, device_state.parts[part_id]);
 
             cpre::part_preprocess_result result{};
-            if (!preprocess_part(&device_view, &workspace, &groups, &cell_filter, options.target_sum, &result)) {
+            if (!preprocess_part(&device_view, &workspace, &groups, &cell_filter, options.target_sum, execution_plan, &result)) {
                 throw std::runtime_error("native Cellerator preprocessing failed on partition " + std::to_string(part_id));
             }
             require_cuda(cudaStreamSynchronize(workspace.stream), "synchronize native preprocessing");
@@ -626,7 +824,14 @@ PYBIND11_MODULE(_cellerator, m) {
         .def_readwrite("min_detected_cells", &PreprocessOptions::min_detected_cells)
         .def_readwrite("min_variance", &PreprocessOptions::min_variance)
         .def_readwrite("device", &PreprocessOptions::device)
-        .def_readwrite("allow_processed", &PreprocessOptions::allow_processed);
+        .def_readwrite("allow_processed", &PreprocessOptions::allow_processed)
+        .def_readwrite("autotune", &PreprocessOptions::autotune)
+        .def_readwrite("autotune_max_trials", &PreprocessOptions::autotune_max_trials)
+        .def_readwrite("autotune_warmup_iters", &PreprocessOptions::autotune_warmup_iters)
+        .def_readwrite("autotune_timed_iters", &PreprocessOptions::autotune_timed_iters)
+        .def_readwrite("autotune_sample_rows", &PreprocessOptions::autotune_sample_rows)
+        .def_readwrite("autotune_max_sample_nnz", &PreprocessOptions::autotune_max_sample_nnz)
+        .def_readwrite("autotune_close_enough_fraction", &PreprocessOptions::autotune_close_enough_fraction);
 
     py::class_<AdapterStagePlan>(m, "AdapterStagePlan")
         .def_readonly("layout", &AdapterStagePlan::layout)
@@ -644,6 +849,7 @@ PYBIND11_MODULE(_cellerator, m) {
         .def_readonly("partitions_processed", &PreprocessSession::partitions_processed)
         .def_readonly("kept_cells", &PreprocessSession::kept_cells)
         .def_readonly("kept_genes", &PreprocessSession::kept_genes)
+        .def_readonly("execution_plan", &PreprocessSession::execution_plan)
         .def("metrics", &PreprocessSession::metrics)
         .def("publish", &PreprocessSession::publish, py::arg("output_path"), py::arg("working_root") = "");
 

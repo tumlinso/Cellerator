@@ -31,6 +31,12 @@ enum qc_group_index : unsigned int {
     qc_group_hb = 2u
 };
 
+enum preprocess_execution_plan : unsigned int {
+    preprocess_execution_default = 0u,
+    preprocess_execution_fused = 1u,
+    preprocess_execution_separate = 2u
+};
+
 constexpr std::uint32_t qc_group_bit(unsigned int group) {
     return group < CELLERATOR_PREPROCESS_MAX_QC_GROUPS ? (1u << group) : 0u;
 }
@@ -314,6 +320,14 @@ int preprocess_blocked_ell_qc_groups_inplace(cs_device::blocked_ell_view *src,
                                              float target_sum,
                                              part_preprocess_result *out);
 
+int preprocess_blocked_ell_qc_groups_plan_inplace(cs_device::blocked_ell_view *src,
+                                                  preprocess_workspace *workspace,
+                                                  const qc_group_config_view *groups,
+                                                  const cell_qc_filter_params *cell_filter,
+                                                  float target_sum,
+                                                  preprocess_execution_plan plan,
+                                                  part_preprocess_result *out);
+
 int preprocess_sliced_ell_qc_groups_inplace(cs_device::sliced_ell_view *src,
                                             preprocess_workspace *workspace,
                                             const qc_group_config_view *groups,
@@ -321,12 +335,28 @@ int preprocess_sliced_ell_qc_groups_inplace(cs_device::sliced_ell_view *src,
                                             float target_sum,
                                             part_preprocess_result *out);
 
+int preprocess_sliced_ell_qc_groups_plan_inplace(cs_device::sliced_ell_view *src,
+                                                 preprocess_workspace *workspace,
+                                                 const qc_group_config_view *groups,
+                                                 const cell_qc_filter_params *cell_filter,
+                                                 float target_sum,
+                                                 preprocess_execution_plan plan,
+                                                 part_preprocess_result *out);
+
 int preprocess_compressed_fallback_qc_groups_inplace(cs_device::compressed_view *src,
                                                      preprocess_workspace *workspace,
                                                      const qc_group_config_view *groups,
                                                      const cell_qc_filter_params *cell_filter,
                                                      float target_sum,
                                                      part_preprocess_result *out);
+
+int preprocess_compressed_fallback_qc_groups_plan_inplace(cs_device::compressed_view *src,
+                                                         preprocess_workspace *workspace,
+                                                         const qc_group_config_view *groups,
+                                                         const cell_qc_filter_params *cell_filter,
+                                                         float target_sum,
+                                                         preprocess_execution_plan plan,
+                                                         part_preprocess_result *out);
 
 int preprocess_blocked_ell_qc_groups_fleet_inplace(cs_device::blocked_ell_view *src_by_slot,
                                                    preprocess_fleet_workspace *fleet,
