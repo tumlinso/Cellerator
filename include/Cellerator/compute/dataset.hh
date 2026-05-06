@@ -121,6 +121,13 @@ bool rebuild_cellshard_rows_as_compressed(const char *path,
                                           cm::compressed *out,
                                           std::string *error = nullptr);
 
+bool rebuild_sharded_compressed_rows_as_compressed(
+    const ::cellshard::sharded< ::cellshard::sparse::compressed > *source,
+    const std::uint64_t *row_indices,
+    std::uint64_t row_count,
+    cm::compressed *out,
+    std::string *error = nullptr);
+
 bool build_stratified_downsample(const dataset_matrix_handle &source,
                                  const stratified_downsample_request &request,
                                  owned_dataset_artifact *out,

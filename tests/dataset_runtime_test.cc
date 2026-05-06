@@ -93,10 +93,57 @@ int test_in_memory_rebuild() {
     return 0;
 }
 
+int test_sharded_rebuild() {
+    cm::compressed source;
+    cd::owned_dataset_artifact artifact;
+    cellshard::sharded<cellshard::sparse::compressed> sharded;
+    cellshard::sparse::compressed *parts[] = {&source};
+    unsigned long partition_offsets[] = {0u, 5u};
+    unsigned long partition_rows[] = {5u};
+    unsigned long partition_nnz[] = {9u};
+    unsigned long partition_aux[] = {0u};
+    unsigned long shard_offsets[] = {0u, 5u};
+    unsigned long shard_parts[] = {0u, 1u};
+    const char *labels[] = {"late", "early", "late", "early", "late"};
+    cd::stratified_downsample_request req;
+    std::string error;
+    cm::init(&source);
+    cellshard::init(&sharded);
+    if (!require(fill_source(&source), "failed to allocate sharded source matrix")) return 20;
+    sharded.rows = 5u;
+    sharded.cols = 4u;
+    sharded.nnz = 9u;
+    sharded.num_partitions = 1u;
+    sharded.partition_capacity = 1u;
+    sharded.parts = parts;
+    sharded.partition_offsets = partition_offsets;
+    sharded.partition_rows = partition_rows;
+    sharded.partition_nnz = partition_nnz;
+    sharded.partition_aux = partition_aux;
+    sharded.num_shards = 1u;
+    sharded.shard_capacity = 1u;
+    sharded.shard_offsets = shard_offsets;
+    sharded.shard_parts = shard_parts;
+    req.labels = {labels, 5u};
+    req.max_rows_per_stratum = 1u;
+    req.seed = 17u;
+    const cd::dataset_matrix_handle handle = cd::make_cellshard_sharded_compressed_handle(&sharded);
+    if (!require(cd::build_stratified_downsample(handle, req, &artifact, &error), error.c_str())) {
+        cm::clear(&source);
+        return 21;
+    }
+    if (!require(artifact.matrix.rows == 2u && artifact.matrix.cols == 4u, "sharded rebuild shape mismatch")) return 22;
+    if (!require(artifact.row_groups.size() == 2u, "sharded rebuild group count mismatch")) return 23;
+    cm::clear(&source);
+    return 0;
+}
+
 int main() {
     int rc = test_stratified_plan();
     if (rc != 0) return rc;
     rc = test_in_memory_rebuild();
+    if (rc != 0) return rc;
+    rc = test_sharded_rebuild();
     if (rc != 0) return rc;
     return 0;
 }

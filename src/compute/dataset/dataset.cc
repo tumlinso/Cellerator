@@ -298,6 +298,78 @@ bool rebuild_cellshard_rows_as_compressed(const char *path,
     return assign_compressed_from_csr(csr, out, error);
 }
 
+bool rebuild_sharded_compressed_rows_as_compressed(
+    const ::cellshard::sharded< ::cellshard::sparse::compressed > *source,
+    const std::uint64_t *row_indices,
+    std::uint64_t row_count,
+    cm::compressed *out,
+    std::string *error) {
+    std::uint64_t nnz = 0u;
+    std::uint64_t cursor = 0u;
+    if (source == nullptr || out == nullptr || (row_count != 0u && row_indices == nullptr)) {
+        set_error(error, "sharded compressed rebuild received a null input");
+        return false;
+    }
+    if (source->partition_offsets == nullptr || source->parts == nullptr) {
+        set_error(error, "sharded compressed rebuild requires materialized partitions and offsets");
+        return false;
+    }
+    for (std::uint64_t i = 0u; i < row_count; ++i) {
+        const std::uint64_t row = row_indices[(std::size_t) i];
+        if (row >= source->rows) {
+            set_error(error, "selected row is outside sharded source matrix");
+            return false;
+        }
+        const unsigned long part_id = ::cellshard::find_partition(source, (unsigned long) row);
+        if (part_id >= source->num_partitions || source->parts[part_id] == nullptr) {
+            set_error(error, "selected row belongs to an unmaterialized partition");
+            return false;
+        }
+        const cm::compressed *part = source->parts[part_id];
+        if (part->axis != cm::compressed_by_row) {
+            set_error(error, "sharded compressed rebuild requires row-compressed partitions");
+            return false;
+        }
+        const std::uint64_t local_row = row - source->partition_offsets[part_id];
+        if (local_row >= part->rows) {
+            set_error(error, "selected row resolved outside local partition");
+            return false;
+        }
+        nnz += (std::uint64_t) part->majorPtr[local_row + 1u] - (std::uint64_t) part->majorPtr[local_row];
+    }
+    if (!fits_u32(row_count) || !fits_u32(source->cols) || !fits_u32(nnz)) {
+        set_error(error, "rebuilt sharded matrix exceeds Cellerator compressed index limits");
+        return false;
+    }
+    cm::clear(out);
+    cm::init(out,
+             (ct::dim_t) row_count,
+             (ct::dim_t) source->cols,
+             (ct::nnz_t) nnz,
+             cm::compressed_by_row);
+    if (!cm::allocate(out)) {
+        set_error(error, "failed to allocate rebuilt sharded compressed matrix");
+        cm::init(out);
+        return false;
+    }
+    out->majorPtr[0] = 0u;
+    for (std::uint64_t i = 0u; i < row_count; ++i) {
+        const std::uint64_t row = row_indices[(std::size_t) i];
+        const unsigned long part_id = ::cellshard::find_partition(source, (unsigned long) row);
+        const cm::compressed *part = source->parts[part_id];
+        const std::uint64_t local_row = row - source->partition_offsets[part_id];
+        const ct::ptr_t begin = part->majorPtr[local_row];
+        const ct::ptr_t end = part->majorPtr[local_row + 1u];
+        for (ct::ptr_t slot = begin; slot < end; ++slot) {
+            out->minorIdx[(std::size_t) cursor] = part->minorIdx[slot];
+            out->val[(std::size_t) cursor] = part->val[slot];
+            ++cursor;
+        }
+        out->majorPtr[(std::size_t) i + 1u] = (ct::ptr_t) cursor;
+    }
+    return true;
+}
+
 bool build_stratified_downsample(const dataset_matrix_handle &source,
                                  const stratified_downsample_request &request,
                                  owned_dataset_artifact *out,
@@ -347,6 +419,12 @@ bool build_stratified_downsample(const dataset_matrix_handle &source,
                                         (std::uint64_t) plan.row_indices.size(),
                                         &out->matrix,
                                         error)) return false;
+    } else if (source.kind == dataset_matrix_kind::cellshard_sharded_compressed) {
+        if (!rebuild_sharded_compressed_rows_as_compressed(source.cellshard_compressed,
+                                                          plan.row_indices.data(),
+                                                          (std::uint64_t) plan.row_indices.size(),
+                                                          &out->matrix,
+                                                          error)) return false;
     } else if (source.kind == dataset_matrix_kind::cellshard_file) {
         if (!rebuild_cellshard_rows_as_compressed(source.cellshard_path,
                                                   plan.row_indices.data(),
