@@ -56,7 +56,7 @@ operator table and ABI rules.
 Do not let cleanup masquerade as feature design.
 
 1. Use `out_of_scope_inventory.md` as the advisory migration queue.
-   - Preprocessing implementation moves to CellShardPreprocess.
+   - Preprocessing implementation lives in Cellerator.
    - Ingest, layout construction, and pack/runtime publication move to
      CellShard.
    - Legacy Torch-first dense prototypes are either rewritten around sparse
@@ -65,7 +65,7 @@ Do not let cleanup masquerade as feature design.
 2. Keep migration targets measurable.
    - A moved surface should retain or improve its current compile/runtime test.
    - Cellerator should keep only wrapper, interop, or benchmark glue when the
-     owner is CellShard or CellShardPreprocess.
+     owner is CellShard.
 
 3. Do not add new features to migration-held code unless the same change is
    part of moving it to the right owner.
@@ -133,7 +133,7 @@ Before accepting a new Cellerator surface, answer:
 - Is it training-capable, or does it support a training-capable primitive?
 - Is Torch insufficient because of layout, differentiation, residency, or distributed
   sparse execution?
-- Does the surface belong in CellShard or CellShardPreprocess instead?
+- Does the surface belong in CellShard instead?
 - Is it future `.cellerator` model-format work? If yes, defer it.
 
 If the answer is unclear, add a `review` entry to

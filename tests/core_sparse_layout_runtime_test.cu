@@ -1,6 +1,5 @@
-#include <Cellerator/core/matrix/sparse.cuh>
-#include <Cellerator/compute/matrix/convert/bucket.cuh>
-#include <Cellerator/compute/matrix/convert/compressed.cuh>
+#include <Cellerator/core/matrix.cuh>
+#include <Cellerator/core/sequence.cuh>
 
 #include <cub/cub.cuh>
 
@@ -14,6 +13,8 @@
 
 namespace convert = ::cellerator::compute::matrix::convert;
 namespace bucket = ::cellerator::compute::matrix::convert::bucket;
+namespace matrix = ::cellerator::core::matrix;
+namespace sequence = ::cellerator::core::sequence;
 
 namespace {
 
@@ -49,12 +50,63 @@ bool close_half(__half value, float expected) {
     return std::fabs(__half2float(value) - expected) <= 1.0e-3f;
 }
 
+void check_dense_layouts() {
+    __half row_values[8] = {
+        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
+        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
+    };
+    matrix::dense row_major{};
+    matrix::attach(&row_major, 2u, 3u, row_values, matrix::dense_row_major, 4u);
+    require(close_half(*matrix::at(&row_major, 1u, 2u), 6.0f), "dense row-major access mismatch");
+    require(matrix::at(&row_major, 2u, 0u) == nullptr, "dense row-major bounds check failed");
+    matrix::clear(&row_major);
+
+    __half col_values[8] = {
+        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f), __float2half(-1.0f),
+        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f), __float2half(-1.0f)
+    };
+    matrix::dense col_major{};
+    matrix::attach(&col_major, 3u, 2u, col_values, matrix::dense_col_major, 4u);
+    require(close_half(*matrix::at(&col_major, 2u, 1u), 6.0f), "dense column-major access mismatch");
+    require(matrix::payload_elements(&col_major) == 8u, "dense column-major payload size mismatch");
+    matrix::clear(&col_major);
+
+    matrix::dense owned{};
+    matrix::init(&owned, 2u, 3u);
+    require(matrix::payload_elements(&owned) == 6u, "dense packed payload size mismatch");
+    require(matrix::bytes(&owned) == sizeof(matrix::dense) + 6u * sizeof(::cellerator::core::real::storage_t),
+            "dense byte count mismatch");
+    require(matrix::allocate(&owned) != 0, "dense allocate failed");
+    *matrix::at(&owned, 1u, 2u) = __float2half(7.0f);
+    require(close_half(*matrix::at(&owned, 1u, 2u), 7.0f), "dense owned access mismatch");
+    matrix::clear(&owned);
+}
+
+void check_sequence_bases() {
+    std::uint64_t word = 0u;
+    require(sequence::is_defined_base_char('A'), "A should be a defined base");
+    require(sequence::is_defined_base_char('u'), "u should be a defined base");
+    require(!sequence::is_defined_base_char('N'), "N should not be a 2-bit defined base");
+    require(sequence::base_from_char('U') == sequence::base::t, "U should map to T storage");
+    require(sequence::char_from_base(sequence::complement(sequence::base::a)) == 'T', "A complement mismatch");
+    word = sequence::store_base(word, 0u, sequence::base::a);
+    word = sequence::store_base(word, 1u, sequence::base::c);
+    word = sequence::store_base(word, 2u, sequence::base::g);
+    word = sequence::store_base(word, 3u, sequence::base::t);
+    require(sequence::load_base(word, 0u) == sequence::base::a, "packed A mismatch");
+    require(sequence::load_base(word, 1u) == sequence::base::c, "packed C mismatch");
+    require(sequence::load_base(word, 2u) == sequence::base::g, "packed G mismatch");
+    require(sequence::load_base(word, 3u) == sequence::base::t, "packed T mismatch");
+}
+
 } // namespace
 
 int main() {
     int device_count = 0;
     cuda_require(cudaGetDeviceCount(&device_count), "cudaGetDeviceCount failed");
     require(device_count > 0, "core sparse runtime test requires a CUDA device");
+    check_dense_layouts();
+    check_sequence_bases();
 
     const std::uint32_t rows = 3u;
     const std::uint32_t cols = 4u;

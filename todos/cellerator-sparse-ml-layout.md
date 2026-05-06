@@ -37,7 +37,7 @@ bucket planning, and CUDA compute primitives live under `compute`. Forward-neigh
 - This is a layout/refactor pass, not a new math-feature implementation pass.
 - Library-backed NVIDIA paths remain the default unless an existing custom path
   already owns the operation.
-- CellShard is data handling only; CellShardPreprocess is bio policy only.
+- CellShard is data handling only; Cellerator owns preprocessing policy and compute.
 - Cellerator is unpublished, so old Core includes were removed rather than kept as wrappers.
 - Core owns substrate and format mechanics; `src/compute` owns sparse math such as SpMM, matmul, ML reductions, and training operators.
 

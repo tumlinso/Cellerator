@@ -1,10 +1,10 @@
 # `compute/neighbors`
 
-Compute-facing home for neighbor search math.
+Compute-facing home for neighbor search math and forward-neighbor caller policy.
 
-the neighbor-caller sibling package owns caller policy, index/query lifecycle, graph semantics,
-and forward-neighbor APIs. Cellerator owns the reusable math that those callers
-use.
+`forward_neighbors/` owns forward-neighbor index/query lifecycle, routing,
+caller-facing search configuration, and result semantics for CellShard-backed
+matrices.
 
 `exact_search/` owns the reusable CUDA exact top-`k` routines for shard-local routed segment scans and compact device-side result merges. Task-specific policy such as forward-time routing stays above that layer.
 

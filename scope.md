@@ -1,6 +1,6 @@
 # Cellerator Scope Boundary
 
-Last updated: 2026-04-29
+Last updated: 2026-05-04
 
 ## Purpose
 
@@ -19,18 +19,20 @@ capability. It should not replace Torch as the general ML framework.
 - CelleratorCore owns sparse layout primitives and is the migration target for
   generic sparse math: Blocked-ELL, Sliced-ELL, quantized Blocked-ELL, layout
   helpers, device views, sparse GPU operators, reductions, transforms, sparse
-  training primitives, and quantized sparse kernels. Some compatibility runtime
-  wrappers may remain in CellShard during migration.
+  training primitives, forward-neighbor index/query policy over CellShard-backed
+  matrices, and quantized sparse kernels. Some compatibility runtime wrappers
+  may remain in CellShard during migration.
 - Higher-level Cellerator owns biological model components, trajectory/model
   math, and explicit Torch/libtorch extension or export boundaries.
 - CellShard owns data handling over CelleratorCore payloads: `.csh5`,
   `.cshard`, CSPACK generations, source ingest, retrieval, sharded runtime
   staging, compaction/finalization, and pack publication.
-- CellShardPreprocess owns biology-facing preprocessing policy and APIs:
+- Cellerator preprocessing owns biology-facing preprocessing policy and APIs:
   QC metric definitions, normalization/log1p workflow semantics, feature/cell
-  keep-mask semantics, raw-count validation, and preprocessing workbench/runtime
-  orchestration. Numerical kernels over CellShard matrices should live in
-  Cellerator compute and be called through explicit layout-aware boundaries.
+  keep-mask semantics, raw-count validation, adapter staging, and preprocessing
+  workbench/runtime orchestration. Reusable numerical kernels over CellShard
+  matrices live in `src/compute/preprocess/` and are called through explicit
+  layout-aware boundaries.
 - AnnData/H5AD remains an ecosystem interchange and workflow format.
   Cellerator may import from or export to it through CellShard-facing paths,
   but AnnData is not the execution format.
@@ -64,9 +66,8 @@ capability. It should not replace Torch as the general ML framework.
   training or CellShard execution layouts.
 - Source ingest, durable storage, pack generation, and runtime publication
   outside the CellShard owner surface.
-- Biology-facing preprocessing policy and workflow implementation outside
-  CellShardPreprocess.
-- Neighbor index/query caller policy and graph construction workflows.
+- Graph construction workflows that are not part of Cellerator-owned model,
+  trajectory, or forward-neighbor search execution.
 - High-level workflow or notebook ergonomics that hide layout, residency,
   transfer, or launch costs in performance-sensitive paths.
 
@@ -80,8 +81,7 @@ capability. It should not replace Torch as the general ML framework.
 - If a new surface is outside this scope but temporarily necessary, add or
   update an inventory entry instead of normalizing it as Cellerator-owned.
 - If a surface is data handling, prefer migration to CellShard. If a surface is
-  biology-facing preprocessing policy, prefer migration to CellShardPreprocess.
-  If a surface is numerical math over CellShard matrices, keep or migrate it
-  into Cellerator compute.
+  preprocessing policy or numerical preprocessing math over CellShard matrices,
+  keep or migrate it into Cellerator.
 - If work touches scope drift, remind the user that
   `out_of_scope_inventory.md` is the advisory migration queue.

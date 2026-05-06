@@ -6,9 +6,9 @@ title: "Compute And Models"
 
 `src/compute/` is the authoritative home for reusable sparse ML math over CellShard matrices. That includes sparse linalg, reductions, transforms, selection, neighbor scoring/search math, sparse operator contexts and kernels, preprocessing math kernels, and other fleet or shard-scoped numerical building blocks.
 
-The rule is simple: math stays in Cellerator, data handling stays in CellShard, and biology-facing preprocessing policy stays in CellShardPreprocess. Reusable runtime kernels should not be hidden inside model wrappers, storage code, or one-off workflow code. Source ingest belongs to CellShard's optional ingest component.
+The rule is simple: math and preprocessing stay in Cellerator, while data handling stays in CellShard. Reusable runtime kernels should not be hidden inside model wrappers, storage code, or one-off workflow code. Source ingest belongs to CellShard's optional ingest component.
 
-The forward-neighbor caller surface now lives in the neighbor-caller sibling package. Cellerator keeps the reusable math under `src/compute/neighbors/`:
+The forward-neighbor caller surface lives in `src/compute/neighbors/forward_neighbors/` and builds directly on the reusable math under `src/compute/neighbors/`:
 
 - routed exact top-`k` search now lives in the reusable `src/compute/neighbors/exact_search/` layer, so dense and sliced exact search stream routed segments on device and emit only compact candidate tables instead of updating per-interval score state in HBM
 - lower-level KNN scoring helpers live under `src/compute/neighbors/scoring/`
@@ -48,7 +48,7 @@ The downstream stages are stacked deliberately:
 
 1. `CellShard` provides persisted sparse layout, data handling, and runtime staging.
 2. `src/compute/` provides reusable Cellerator math over CellShard matrices.
-3. CellShardPreprocess provides biology-facing preprocessing policy and calls the layout-aware math layer.
+3. `src/preprocess/` provides biology-facing preprocessing policy and calls the layout-aware math layer.
 4. `src/trajectory/` and `src/models/` build task-specific workflows from those reusable pieces.
 5. `src/torch/` exposes a narrow library boundary when Cellerator data needs to cross into Torch-native code.
 

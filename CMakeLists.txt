@@ -47,11 +47,16 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE
 
 find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
+find_package(PkgConfig QUIET)
 
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
+option(CELLERATOR_ENABLE_HIGHWAY "Enable Google Highway portable SIMD sequence kernels" ON)
+option(CELLERATOR_BUILD_PREPROCESS_WORKBENCH "Build the optional Cellerator preprocessing ncurses workbench." ON)
+option(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS "Build Cellerator preprocessing benchmarks." ON)
+option(CELLERATOR_ENABLE_PYTHON "Build the optional Cellerator Python bindings." OFF)
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
     "CUDA optimization mode: generic, native, or native-extreme")
 set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
@@ -81,6 +86,19 @@ set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
     "Preferred root for the source-built libtorch installation")
 set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
     "Optional local CellShard source checkout. Defaults to ../CellShard before find_package(CellShard).")
+
+if(CELLERATOR_ENABLE_HIGHWAY)
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/highway/CMakeLists.txt")
+        message(FATAL_ERROR
+            "CELLERATOR_ENABLE_HIGHWAY=ON requires the vendored Highway submodule at external/highway. "
+            "Run: git submodule update --init --recursive")
+    endif()
+    set(HWY_ENABLE_CONTRIB OFF CACHE BOOL "Include Highway contrib/" FORCE)
+    set(HWY_ENABLE_EXAMPLES OFF CACHE BOOL "Build Highway examples" FORCE)
+    set(HWY_ENABLE_INSTALL OFF CACHE BOOL "Install Highway" FORCE)
+    set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable Highway tests" FORCE)
+    add_subdirectory(external/highway EXCLUDE_FROM_ALL)
+endif()
 
 function(cellerator_require_choice var)
     set(cellerator_allowed_values ${ARGN})
@@ -195,6 +213,16 @@ set_target_properties(cellerator_core PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+add_library(cellerator_compute_matrix_convert STATIC
+    src/compute/matrix/convert/bucket.cu
+    src/compute/matrix/convert/compressed.cu
+)
+add_library(Cellerator::compute_matrix_convert ALIAS cellerator_compute_matrix_convert)
+target_include_directories(cellerator_compute_matrix_convert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::core)
+target_link_libraries(cellerator_compute_matrix_convert PRIVATE CUDA::cudart CUDA::cusparse)
+set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+
 function(cellerator_add_cellshard_source cellshard_source_dir)
     if(NOT EXISTS "${cellshard_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "CELLERATOR_CELLSHARD_SOURCE_DIR does not point to a CellShard source tree: ${cellshard_source_dir}")
@@ -239,6 +267,9 @@ endif()
 
 if(NOT TARGET CellShard::runtime)
     message(FATAL_ERROR "Cellerator requires CellShard::runtime")
+endif()
+if(NOT TARGET CellShard::export)
+    message(FATAL_ERROR "Cellerator compute dataset utilities require CellShard::export")
 endif()
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
@@ -371,6 +402,38 @@ function(cellerator_enable_perf target)
 endfunction()
 
 cellerator_enable_perf(cellerator_core)
+cellerator_enable_perf(cellerator_compute_matrix_convert)
+
+set(CELLERATOR_SEQ_SOURCES
+    src/seq/dna2.cu
+)
+list(APPEND CELLERATOR_SEQ_SOURCES src/seq/dna2_scalar.cpp)
+if(CELLERATOR_ENABLE_HIGHWAY)
+    list(APPEND CELLERATOR_SEQ_SOURCES src/seq/dna2_highway.cpp)
+endif()
+
+add_library(cellerator_seq STATIC
+    ${CELLERATOR_SEQ_SOURCES}
+)
+add_library(Cellerator::seq ALIAS cellerator_seq)
+target_include_directories(cellerator_seq PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_seq PUBLIC CUDA::cudart)
+if(CELLERATOR_ENABLE_HIGHWAY)
+    target_link_libraries(cellerator_seq PRIVATE hwy)
+    target_compile_definitions(cellerator_seq PUBLIC CELLERATOR_ENABLE_HIGHWAY=1)
+else()
+    target_compile_definitions(cellerator_seq PUBLIC CELLERATOR_ENABLE_HIGHWAY=0)
+endif()
+set_target_properties(cellerator_seq PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellerator_seq)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_library(cellerator_torch INTERFACE)
@@ -451,6 +514,27 @@ target_link_libraries(cellerator_compute_exact_search PRIVATE CUDA::cudart)
 set_target_properties(cellerator_compute_exact_search PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_exact_search)
 
+add_library(cellerator_compute_forward_neighbors STATIC
+    src/compute/neighbors/forward_neighbors/forward_neighbors.cu
+)
+add_library(Cellerator::forward_neighbors ALIAS cellerator_compute_forward_neighbors)
+target_include_directories(cellerator_compute_forward_neighbors
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(cellerator_compute_forward_neighbors
+    PUBLIC
+        cellerator_compute_exact_search
+        CellShard::runtime
+        CUDA::cudart
+        CUDA::cusparse
+)
+set_target_properties(cellerator_compute_forward_neighbors PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_forward_neighbors)
+
 add_library(cellerator_neighbor_math INTERFACE)
 target_link_libraries(cellerator_neighbor_math INTERFACE cellerator_compute_exact_search)
 
@@ -463,15 +547,22 @@ target_link_libraries(cellerator_compute_runtime PRIVATE CUDA::cudart CUDA::cusp
 set_target_properties(cellerator_compute_runtime PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_runtime)
 
-add_library(cellerator_compute_matrix_convert STATIC
-    src/compute/matrix/convert/bucket.cu
-    src/compute/matrix/convert/compressed.cu
+add_library(cellerator_compute_dataset STATIC
+    src/compute/dataset/dataset.cc
 )
-target_include_directories(cellerator_compute_matrix_convert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::core)
-target_link_libraries(cellerator_compute_matrix_convert PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(cellerator_compute_matrix_convert)
+add_library(Cellerator::compute_dataset ALIAS cellerator_compute_dataset)
+target_include_directories(cellerator_compute_dataset PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_compute_dataset PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_compute_dataset PUBLIC
+    cellerator_compute_runtime
+    CellShard::export
+    CUDA::cudart
+)
+set_target_properties(cellerator_compute_dataset PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_dataset)
 
 add_library(cellerator_compute_sparse_ops STATIC
     src/compute/sparse/ops/kernels/base_sparse.cu
@@ -492,12 +583,127 @@ target_link_libraries(cellerator_compute_sparse_project PRIVATE CUDA::cudart CUD
 set_target_properties(cellerator_compute_sparse_project PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_sparse_project)
 
+add_library(cellerator_compute_preprocess STATIC
+    src/compute/preprocess/preprocess.cu
+)
+add_library(Cellerator::compute_preprocess ALIAS cellerator_compute_preprocess)
+target_include_directories(cellerator_compute_preprocess PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_compute_preprocess PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_compute_preprocess PUBLIC
+    cellerator_compute_runtime
+    CellShard::runtime
+    Cellerator::dist
+    CUDA::cudart
+)
+set_target_properties(cellerator_compute_preprocess PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_preprocess)
+
+add_library(cellerator_preprocess STATIC
+    src/preprocess/runtime.cc
+)
+add_library(Cellerator::preprocess ALIAS cellerator_preprocess)
+target_include_directories(cellerator_preprocess PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_preprocess PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellerator_preprocess PUBLIC Cellerator::compute_preprocess)
+set_target_properties(cellerator_preprocess PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_preprocess)
+
+if(CELLERATOR_BUILD_PREPROCESS_WORKBENCH AND PkgConfig_FOUND)
+    pkg_check_modules(CELLERATOR_NCURSESW QUIET ncursesw)
+    if(CELLERATOR_NCURSESW_FOUND)
+        add_executable(celleratorPreprocessWorkbench
+            src/preprocess/apps/workbench_main.cc
+        )
+        target_include_directories(celleratorPreprocessWorkbench PRIVATE
+            ${CELLERATOR_NCURSESW_INCLUDE_DIRS}
+        )
+        target_compile_options(celleratorPreprocessWorkbench PRIVATE
+            ${CELLERATOR_NCURSESW_CFLAGS_OTHER}
+        )
+        target_link_directories(celleratorPreprocessWorkbench PRIVATE
+            ${CELLERATOR_NCURSESW_LIBRARY_DIRS}
+        )
+        target_link_libraries(celleratorPreprocessWorkbench PRIVATE
+            Cellerator::preprocess
+            ${CELLERATOR_NCURSESW_LIBRARIES}
+        )
+        set_target_properties(celleratorPreprocessWorkbench PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED YES
+        )
+    endif()
+endif()
+
+if(CELLERATOR_ENABLE_PYTHON)
+    set(PYBIND11_FINDPYTHON ON)
+    find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+    find_package(pybind11 CONFIG QUIET)
+    if(NOT pybind11_FOUND)
+        execute_process(
+            COMMAND ${Python_EXECUTABLE} -c "import pybind11; print(pybind11.get_cmake_dir())"
+            OUTPUT_VARIABLE CELLERATOR_PYBIND11_CMAKE_DIR
+            RESULT_VARIABLE CELLERATOR_PYBIND11_CMAKE_DIR_STATUS
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(CELLERATOR_PYBIND11_CMAKE_DIR_STATUS EQUAL 0 AND NOT "${CELLERATOR_PYBIND11_CMAKE_DIR}" STREQUAL "")
+            list(PREPEND CMAKE_PREFIX_PATH "${CELLERATOR_PYBIND11_CMAKE_DIR}")
+            find_package(pybind11 CONFIG QUIET)
+        endif()
+    endif()
+    if(NOT pybind11_FOUND)
+        include(FetchContent)
+        FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11.git
+            GIT_TAG v2.13.6
+            GIT_SHALLOW TRUE
+        )
+        FetchContent_MakeAvailable(pybind11)
+    endif()
+    if(NOT TARGET CellShard::export)
+        message(FATAL_ERROR "CELLERATOR_ENABLE_PYTHON requires CellShard::export")
+    endif()
+
+    pybind11_add_module(_cellerator
+        python/module.cc
+    )
+    target_include_directories(_cellerator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(_cellerator PRIVATE
+        Cellerator::preprocess
+        CellShard::export
+        CUDA::cudart
+    )
+    set_target_properties(_cellerator PROPERTIES
+        OUTPUT_NAME _cellerator
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+    )
+    cellerator_enable_perf(_cellerator)
+
+    install(TARGETS _cellerator
+        LIBRARY DESTINATION cellerator
+        RUNTIME DESTINATION cellerator
+    )
+    install(FILES
+        python/cellerator/__init__.py
+        python/cellerator/pp.py
+        DESTINATION cellerator
+    )
+endif()
+
 add_library(cellerator_sparse_math INTERFACE)
 target_link_libraries(cellerator_sparse_math INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime)
 add_library(cellerator_sparse_linalg INTERFACE)
 target_link_libraries(cellerator_sparse_linalg INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime)
 add_library(cellerator_sparse_ml INTERFACE)
-target_link_libraries(cellerator_sparse_ml INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime)
+target_link_libraries(cellerator_sparse_ml INTERFACE cellerator_compute_dataset cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime cellerator_compute_preprocess)
 
 add_library(cellerator_abi STATIC
     src/abi/abi.cu
@@ -519,6 +725,40 @@ target_include_directories(sparseOpsBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(sparseOpsBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime CUDA::cudart CUDA::cusparse)
 set_target_properties(sparseOpsBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(sparseOpsBench)
+
+if(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS)
+    add_executable(celleratorPreprocessScrnaBench
+        bench/preprocess/scrna_preprocess_bench.cu
+    )
+    target_include_directories(celleratorPreprocessScrnaBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(celleratorPreprocessScrnaBench PRIVATE Cellerator::preprocess CUDA::cudart)
+    set_target_properties(celleratorPreprocessScrnaBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(celleratorPreprocessScrnaBench)
+
+    add_executable(celleratorPreprocessFormatCompareBench
+        bench/preprocess/preprocess_format_compare_bench.cu
+    )
+    target_include_directories(celleratorPreprocessFormatCompareBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(celleratorPreprocessFormatCompareBench PRIVATE Cellerator::preprocess CUDA::cudart)
+    set_target_properties(celleratorPreprocessFormatCompareBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(celleratorPreprocessFormatCompareBench)
+endif()
+
+add_executable(sequenceDna2Bench
+    bench/seq/bench_dna2.cu
+)
+target_include_directories(sequenceDna2Bench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(sequenceDna2Bench PRIVATE cellerator_seq CUDA::cudart)
+set_target_properties(sequenceDna2Bench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(sequenceDna2Bench)
+
+add_executable(sequenceDna2CpuBench
+    bench/seq/bench_dna2_cpu.cpp
+)
+target_include_directories(sequenceDna2CpuBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(sequenceDna2CpuBench PRIVATE cellerator_seq)
+set_target_properties(sequenceDna2CpuBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(sequenceDna2CpuBench)
 
 add_executable(exactSearchRuntimeTest
     tests/exact_search_runtime_test.cu
@@ -543,6 +783,78 @@ target_include_directories(coreSparseLayoutRuntimeTest PRIVATE ${CMAKE_CURRENT_S
 target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert CUDA::cudart CUDA::cusparse)
 set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(coreSparseLayoutRuntimeTest)
+
+add_executable(datasetRuntimeTest
+    tests/dataset_runtime_test.cc
+)
+target_include_directories(datasetRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(datasetRuntimeTest PRIVATE cellerator_compute_dataset CUDA::cudart)
+set_target_properties(datasetRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(datasetRuntimeTest)
+
+add_executable(celleratorPreprocessRuntimeTest
+    tests/preprocess/preprocess_runtime_test.cu
+)
+target_include_directories(celleratorPreprocessRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessRuntimeTest PRIVATE Cellerator::preprocess CUDA::cudart)
+set_target_properties(celleratorPreprocessRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessRuntimeTest)
+
+add_executable(celleratorPreprocessQCMetricsEquivalenceTest
+    tests/preprocess/qc_metrics_equivalence_test.cu
+)
+target_include_directories(celleratorPreprocessQCMetricsEquivalenceTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessQCMetricsEquivalenceTest PRIVATE Cellerator::preprocess CUDA::cudart)
+set_target_properties(celleratorPreprocessQCMetricsEquivalenceTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessQCMetricsEquivalenceTest)
+
+add_executable(celleratorPreprocessQCMaskGroupsTest
+    tests/preprocess/qc_mask_groups_test.cu
+)
+target_include_directories(celleratorPreprocessQCMaskGroupsTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessQCMaskGroupsTest PRIVATE Cellerator::preprocess CUDA::cudart)
+set_target_properties(celleratorPreprocessQCMaskGroupsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessQCMaskGroupsTest)
+
+add_executable(celleratorPreprocessQCFleetTest
+    tests/preprocess/qc_fleet_test.cu
+)
+target_include_directories(celleratorPreprocessQCFleetTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessQCFleetTest PRIVATE Cellerator::preprocess CUDA::cudart)
+set_target_properties(celleratorPreprocessQCFleetTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessQCFleetTest)
+
+add_executable(celleratorPreprocessAdapterStagingTest
+    tests/preprocess/adapter_staging_test.cc
+)
+target_include_directories(celleratorPreprocessAdapterStagingTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessAdapterStagingTest PRIVATE Cellerator::preprocess)
+set_target_properties(celleratorPreprocessAdapterStagingTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessAdapterStagingTest)
+
+add_executable(celleratorPreprocessDoublePreprocessRejectionTest
+    tests/preprocess/double_preprocess_rejection_test.cc
+)
+target_include_directories(celleratorPreprocessDoublePreprocessRejectionTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(celleratorPreprocessDoublePreprocessRejectionTest PRIVATE Cellerator::preprocess)
+set_target_properties(celleratorPreprocessDoublePreprocessRejectionTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorPreprocessDoublePreprocessRejectionTest)
+
+add_executable(sequenceDna2Test
+    tests/seq/test_dna2.cpp
+)
+target_include_directories(sequenceDna2Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(sequenceDna2Test PRIVATE cellerator_seq CUDA::cudart)
+set_target_properties(sequenceDna2Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(sequenceDna2Test)
+
+add_executable(sequenceDna2CudaTest
+    tests/seq/test_dna2_cuda.cu
+)
+target_include_directories(sequenceDna2CudaTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(sequenceDna2CudaTest PRIVATE cellerator_seq CUDA::cudart)
+set_target_properties(sequenceDna2CudaTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(sequenceDna2CudaTest)
 
 add_executable(abiRuntimeTest
     tests/abi_runtime_test.cu

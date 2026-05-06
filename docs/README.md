@@ -11,6 +11,7 @@ Primary source files:
 - `compute_and_models.qmd`: reusable compute plus downstream trajectory and model layers
 - `local_pipeline_ops.qmd`: local operational wrappers under `docs/pipeline/`
 - `developer_reference.qmd`: build, test, and repo-map quick reference
+- `sequence_simd_backend.md`: packed DNA/RNA words, bitplanes, scalar sequence kernels, and the optional Highway backend
 
 Supporting material that may still live here:
 

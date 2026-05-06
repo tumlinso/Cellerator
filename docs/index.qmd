@@ -2,7 +2,7 @@
 title: "Cellerator Pipeline"
 ---
 
-Cellerator is a GPU-oriented ML compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns data handling: canonical sparse storage, optional ingest, CSPACK delivery, compaction/finalization, execution staging, and generic sparse row/feature masking for runtime layouts. Cellerator owns model-facing math over CellShard matrices, including reusable sparse compute, trajectory logic, model workflows, quantized kernels, and Torch interop boundaries. Biology-facing preprocessing policy and workflow APIs live in `CellShardPreprocess`.
+Cellerator is a GPU-oriented ML compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns data handling: canonical sparse storage, optional ingest, CSPACK delivery, compaction/finalization, execution staging, and generic sparse row/feature masking for runtime layouts. Cellerator owns preprocessing, model-facing math over CellShard matrices, reusable sparse compute, trajectory logic, model workflows, quantized kernels, and Torch interop boundaries.
 
 This documentation is not a paper workspace. It is the active source for explaining how the Cellerator pipeline is organized, what each stage owns, and where local operations still live outside the packaged product surface.
 
@@ -12,7 +12,7 @@ The canonical scope boundary lives in `../scope.md`; current temporary or out-of
 
 - The ownership split from optional CellShard ingest to runtime execution.
 - The contract between Cellerator and `CellShard`.
-- Where CellShardPreprocess, compute, trajectory, model, quantized, and Torch-facing surfaces fit.
+- Where preprocessing, compute, trajectory, model, quantized, and Torch-facing surfaces fit.
 - The current quantized transfer-versus-decode architecture questions for sparse inference.
 - The current local-only download and preprocessing helpers under `docs/pipeline/`.
 - The build and test entrypoints that validate the pipeline.
@@ -25,9 +25,9 @@ flowchart LR
     B --> C[Canonical Emission]
     C --> D[CellShard csh5 and Pack Generations]
     D --> E[Cellerator Matrix Math]
-    E --> I[CellShardPreprocess Policy API]
+    E --> I[Cellerator Preprocess API]
     I --> F[Trajectory and Model Workflows]
-    D --> G[CellShardPreprocess Workbench]
+    D --> G[Cellerator Preprocess Workbench]
     D --> H[Torch Export Boundary]
 ```
 
@@ -35,7 +35,7 @@ flowchart LR
 
 - CellShard owns data handling: persisted sparse storage, optional source ingest, layout publication, compaction/finalization, execution-CSPACK delivery, and owner-side runtime coordination.
 - `src/compute/` is the authoritative home for reusable Cellerator math over CellShard matrices.
-- CellShardPreprocess owns biology-facing preprocessing policy, state validation, workflow APIs, and the native workbench.
+- Cellerator owns biology-facing preprocessing policy, state validation, workflow APIs, and the native workbench.
 - `src/models/`, `src/trajectory/`, and `src/torch/` sit on top of those lower-level surfaces instead of redefining them.
 - `docs/pipeline/` remains local-only operational glue. It can call external tools or built binaries, but it is not part of the CMake or install surface.
 - Scope drift should be recorded in `../out_of_scope_inventory.md` before it is treated as Cellerator-owned.

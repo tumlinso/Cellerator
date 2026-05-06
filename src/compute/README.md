@@ -10,8 +10,9 @@ Rules:
   NCCL matches the operation cleanly
 - put measured or layout-specific hot paths under `custom/` folders beside the
   library path they replace
-- keep CellShard data handling, CellShardPreprocess biology policy, and
-  the neighbor-caller sibling package caller policy out of this tree
+- keep CellShard data handling out of this tree; biology-facing preprocessing
+  policy lives under `src/preprocess/`, while reusable preprocessing math lives
+  under `src/compute/preprocess/`
 - keep framework-independent sparse training code under `compute/sparse/ops`;
   libtorch-facing wrappers belong above that layer, not inside the runtime core
 - keep reusable forward sparse projection contracts under `compute/sparse/project`
@@ -26,4 +27,4 @@ Primary folders:
 - `layouts/`: lightweight views over CellShard-owned layouts
 - `sparse/`: reusable sparse math contracts and backend families
 - `ml/`: ML-facing sparse math, sparse operators, and model-adjacent operators
-- `neighbors/`: reusable neighbor scoring/search/top-k math only
+- `neighbors/`: reusable neighbor scoring/search/top-k math plus forward-neighbor caller policy

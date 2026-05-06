@@ -70,6 +70,8 @@ Testing/
 *.out
 *.exe
 *.app
+__pycache__/
+*.pyc
 
 # CUDA / NVCC / NVHPC generated artifacts
 *.cubin
@@ -88,6 +90,8 @@ core
 core.*
 !include/Cellerator/core/
 !include/Cellerator/core/**
+!include/Cellerator/compute/core/
+!include/Cellerator/compute/core/**
 !src/core/
 !src/core/**
 vgcore.*

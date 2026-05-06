@@ -1,14 +1,15 @@
 #pragma once
 
 #include "abi.h"
-#include "core/matrix/sparse.cuh"
+#include "core/matrix.cuh"
 #include "core/quantized/api.cuh"
 #include "core/runtime/runtime.cuh"
 #include "core/interop/cellshard.cuh"
-#include "compute/matrix/convert/bucket.cuh"
-#include "compute/matrix/convert/compressed.cuh"
 #include "compute/runtime.hh"
+#include "compute/dataset.hh"
+#include "preprocess/runtime.hh"
 #include "compute/sparse/ops.hh"
+#include "compute/neighbors/forward_neighbors.hh"
 #include "compute/ml/quantize.hh"
 #include "compute/sparse/project.hh"
 #include "models/developmental_time.hh"

@@ -1,8 +1,8 @@
 # Cellerator
 
-Cellerator is a GPU-oriented math, compute, and model package for large sparse single-cell datasets in the CellStack family.
+Cellerator is a GPU-oriented preprocessing, math, compute, and model package for large sparse single-cell datasets in the CellStack family.
 
-It consumes CellShard as an external dependency for sparse matrix/runtime ABI types. Cellerator owns math over those matrices: reusable sparse compute, model code, trajectory logic, quantized kernels, and Torch-facing boundaries. Storage, ingest, preprocessing workflow policy, neighbor-caller orchestration, and biological semantic validation live in sibling CellStack projects or installed packages.
+It consumes CellShard as an external dependency for sparse matrix/runtime ABI types. Cellerator owns preprocessing and math over those matrices: reusable sparse compute, forward-neighbor index/query policy, model code, trajectory logic, quantized kernels, and Torch-facing boundaries. Storage and ingest live in CellShard.
 
 This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, distributed sparse execution, and explicit Torch interop. It does not replace Torch, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now.
 
@@ -11,6 +11,7 @@ Surfaces that are temporarily inside this repo but do not belong in Cellerator l
 ## What Is Here
 
 - `src/compute/`: reusable sparse compute, neighbors, sparse operators, and custom-op building blocks
+- `src/preprocess/`: biology-facing preprocessing policy, runtime API, and workbench orchestration
 - `src/models/`: libtorch model workflows
 - `src/trajectory/`: trajectory scoring and assembly
 - `include/Cellerator/core/`: CelleratorCore format, conversion, quantized packing, and CUDA substrate
@@ -23,9 +24,7 @@ Expected local source checkout layout:
 ```text
 cellstack/
 ├── CellShard/
-├── Cellerator/
-├── CellShardPreprocess/
-└── NeighborCaller/
+└── Cellerator/
 ```
 
 ## Source Layout
@@ -50,7 +49,8 @@ The main source areas are:
 - `include/Cellerator/core/quantized/`: quantized format metadata, access, packing, and dispatch helpers
 - `src/compute/`: sparse ML math over CellShard matrices
 - `src/compute/sparse/ops/`: sparse operator contexts, scratch, and kernels
-- `src/compute/neighbors/`: exact-search and scoring math only; index/query caller policy is external
+- `src/compute/neighbors/`: exact-search/scoring math plus forward-neighbor index/query policy
+- `include/Cellerator/seq/` and `src/seq/`: packed sequence bit primitives, CPU SIMD backends, and CUDA sequence kernels
 - `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
 - `src/torch/`: explicit Torch interop boundary
 
@@ -69,6 +69,27 @@ cmake -S . -B build
 cmake --build build -j 4
 ```
 
+Python package basics:
+
+```bash
+python -m pip install .
+python -m pip wheel . --no-deps
+```
+
+The Python package is intentionally an orchestration layer, not a CPU
+preprocessing implementation. `cellerator.pp.preprocess(...)` accepts a
+CellShard `.csh5` path, a `cellshard.Dataset`, or an AnnData object that
+explicitly carries `uns["cellshard_path"]`; the hot path stages CellShard-native
+Blocked-ELL or Sliced-ELL partitions to GPU and delegates QC,
+normalize-total/log1p, and metrics to Cellerator kernels. AnnData and SciPy are
+adapter/egress surfaces only and are not used for hidden matrix transforms.
+
+The returned `PreprocessSession` keeps preprocessing metrics and keep masks as
+the explicit boundary. `session.publish(path)` delegates persistence to
+CellShard's preprocessed dataset finalize path, which publishes filtered
+CellShard data plus preprocessing metadata while storage ownership remains in
+CellShard.
+
 CMake resolves CellShard in this order:
 
 1. `-DCELLERATOR_CELLSHARD_SOURCE_DIR=/path/to/CellShard`
@@ -78,6 +99,10 @@ CMake resolves CellShard in this order:
 CUDA mode defaults to `generic`. Use `-DCELLERATOR_CUDA_MODE=native` for the
 host-specific fast path and `-DCELLERATOR_CUDA_MODE=native-extreme` for the
 separate Volta-only/PTX-heavy path.
+
+Portable CPU SIMD sequence kernels use the vendored Google Highway backend by
+default. Configure with `-DCELLERATOR_ENABLE_HIGHWAY=OFF` to build only the
+scalar sequence backend.
 
 The generated CelleratorCore config also records default scalar and policy
 choices for new, unspecified work:
@@ -155,7 +180,7 @@ Useful build targets include:
 - CUDA mode selection is explicit: `generic` is the default topology-agnostic path, while `native` and `native-extreme` unlock the host-specific V100 ordering only after runtime discovery confirms that topology.
 - Blocked-ELL is the preferred native sparse execution layout for CelleratorCore/Cellerator hot paths; CSR/compressed remains an explicit fallback or interop representation where a surface still requires it.
 - CelleratorCore owns substrate and format mechanics; `src/compute/` owns math such as sparse projection, matmul, ML reductions, and training operators.
-- Cellerator owns model-facing numerical math over CellShard matrices. Data handling, source ingest, preprocessing policy, neighbor-caller policy, and biological semantic validation stay outside this package.
+- Cellerator owns preprocessing, model-facing numerical math over CellShard matrices, and the forward-neighbor caller surface built on that math. Data handling and source ingest stay in CellShard.
 - `docs/` hosts Cellerator architecture and local-only workflow notes; it is not part of the default build or packaging surface.
 - `docs/quantized_transfer_architecture.qmd` records the current Volta-oriented report for quantized sparse transport, decode cost, and tensor-op-oriented follow-up work.
 

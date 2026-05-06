@@ -55,7 +55,7 @@
 
 ### 3.1 What Is Already Good
 
-- `CellShardPreprocess src/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
+- `src/compute/preprocess/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
 - The quantized backend under `include/Cellerator/core/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
@@ -258,10 +258,10 @@ Optimization comment:
 
 ### 6.1 Relevant Surface
 
-- `CellShardPreprocessinclude/CellShardPreprocess/preprocess.cuh`
-- `CellShardPreprocess src/preprocess.cu`
-- `CellShardPreprocessbench/scrna_preprocess_bench.cu`
-- `CellShardPreprocessbench/preprocess_format_compare_bench.cu`
+- `include/Cellerator/compute/preprocess/preprocess.cuh`
+- `src/compute/preprocess/preprocess.cu`
+- `bench/preprocess/scrna_preprocess_bench.cu`
+- `bench/preprocess/preprocess_format_compare_bench.cu`
 
 This is the cleanest performance-oriented subsystem in the repo today.
 
@@ -283,7 +283,7 @@ Why this matters:
 
 Relevant code:
 
-- `compute_qc_metrics_*_kernel` in `CellShardPreprocess src/preprocess.cu`
+- `compute_qc_metrics_*_kernel` in `src/compute/preprocess/preprocess.cu`
 
 Shape:
 
@@ -402,7 +402,7 @@ Performance comment:
 
 Relevant code:
 
-- `reduce_gene_metrics_to_leader()` in `CellShardPreprocess src/preprocess.cu`
+- `reduce_gene_metrics_to_leader()` in `src/compute/preprocess/preprocess.cu`
 
 NCCL path:
 

@@ -2,5 +2,6 @@
 
 Reusable neighbor scoring and merge math.
 
-Caller policy belongs in the neighbor-caller sibling package. Keep only distance/similarity,
-row-normalization, candidate merge, and refine kernels here.
+Forward-neighbor caller policy belongs in `compute/neighbors/forward_neighbors/`.
+Keep only distance/similarity, row-normalization, candidate merge, and refine
+kernels here.
