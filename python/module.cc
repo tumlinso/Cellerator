@@ -151,10 +151,14 @@ struct PreprocessSession {
         out["target_sum"] = options.target_sum;
         out["gene_sum_checksum"] = gene_sum_checksum;
         out["cell_total_counts"] = copy_array(cell_total_counts);
+        out["cell_detected_genes"] = copy_array(cell_detected_genes);
+        out["cell_mito_counts"] = copy_array(cell_mito_counts);
+        out["cell_max_counts"] = copy_array(cell_max_counts);
         out["cell_keep"] = copy_array(cell_keep);
         out["cell_group_counts"] = copy_array(cell_group_counts);
         out["cell_group_pct"] = copy_array(cell_group_pct);
         out["gene_sum"] = copy_array(gene_sum);
+        out["gene_sq_sum"] = copy_array(gene_sq_sum);
         out["gene_detected_cells"] = copy_array(gene_detected_cells);
         out["gene_keep"] = copy_array(gene_keep);
         out["feature_group_masks"] = copy_array(feature_group_masks);
@@ -337,6 +341,10 @@ PreprocessSession run_dataset_layout(const std::string &path,
 
     cellshard::device::sharded_device<MatrixT> device_state;
     cellshard::device::init(&device_state);
+    if (!cellshard::device::reserve(&device_state, loaded.view.num_partitions)) {
+        cpre::clear(&workspace);
+        throw std::runtime_error("failed to reserve CellShard GPU partition residency records");
+    }
 
     PreprocessSession session;
     session.source_path = path;
@@ -404,6 +412,10 @@ PreprocessSession run_dataset_layout(const std::string &path,
                                 result.cell.cell_group_pct,
                                 part_rows * session.group_names.size(),
                                 "cell group pct");
+            for (std::size_t row = 0u; row < part_rows; ++row) {
+                session.cell_mito_counts[row_offset + row] =
+                    session.cell_group_counts[(row_offset + row) * session.group_names.size() + cpre::qc_group_mt];
+            }
 
             std::vector<float> part_gene_sum((std::size_t) summary.cols, 0.0f);
             std::vector<float> part_gene_sq_sum((std::size_t) summary.cols, 0.0f);

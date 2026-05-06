@@ -228,7 +228,6 @@ int copy_cell_metrics(const ::cellshard::sharded<MatrixT> *view,
     const std::uint64_t part_rows = (std::uint64_t) view->partition_rows[part_id];
     const std::uint64_t group_values = part_rows * group_count;
     if (!copy_device_to_host(result->cell_total_counts + row_offset, part->cell.total_counts, part_rows, device, out, "copy cell total counts")) return 0;
-    if (!copy_device_to_host(result->cell_mito_counts + row_offset, part->cell.mito_counts, part_rows, device, out, "copy cell mito counts")) return 0;
     if (!copy_device_to_host(result->cell_max_counts + row_offset, part->cell.max_counts, part_rows, device, out, "copy cell max counts")) return 0;
     if (!copy_device_to_host(result->cell_detected_genes + row_offset, part->cell.detected_genes, part_rows, device, out, "copy cell detected genes")) return 0;
     if (!copy_device_to_host(result->cell_keep + row_offset, part->cell.keep_cells, part_rows, device, out, "copy cell keep mask")) return 0;
@@ -236,6 +235,11 @@ int copy_cell_metrics(const ::cellshard::sharded<MatrixT> *view,
         const std::uint64_t group_offset = row_offset * group_count;
         if (!copy_device_to_host(result->cell_group_counts + group_offset, part->cell.cell_group_counts, group_values, device, out, "copy cell group counts")) return 0;
         if (!copy_device_to_host(result->cell_group_pct + group_offset, part->cell.cell_group_pct, group_values, device, out, "copy cell group pct")) return 0;
+        for (std::uint64_t row = 0u; row < part_rows; ++row) {
+            result->cell_mito_counts[row_offset + row] = result->cell_group_counts[(row_offset + row) * group_count + qc_group_mt];
+        }
+    } else if (!copy_device_to_host(result->cell_mito_counts + row_offset, part->cell.mito_counts, part_rows, device, out, "copy cell mito counts")) {
+        return 0;
     }
     return 1;
 }
