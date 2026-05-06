@@ -15,6 +15,12 @@ not exist, implement the primitive in the owning compute layer first and make
 the workflow call it. Do not copy kernels or math into workflow/session files
 for convenience.
 
+Implementation organization follows `style_hint.md`. Read it before changing
+preprocessing compute/runtime code, adding private CUDA helpers, or extending a
+large CUDA implementation file. It is the local rule for file-size pressure,
+inline device helpers, fused workflow placement, and the current monolith
+follow-up list.
+
 Expected local checkout layout for source builds is:
 
 ```text

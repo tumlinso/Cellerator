@@ -540,6 +540,7 @@ target_link_libraries(cellerator_neighbor_math INTERFACE cellerator_compute_exac
 
 add_library(cellerator_compute_runtime STATIC
     src/compute/runtime/runtime.cu
+    src/compute/runtime/reduce.cu
 )
 target_include_directories(cellerator_compute_runtime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(cellerator_compute_runtime PUBLIC CellShard::runtime Cellerator::core Cellerator::dist CUDA::cublas)
@@ -584,7 +585,13 @@ set_target_properties(cellerator_compute_sparse_project PROPERTIES CXX_STANDARD 
 cellerator_enable_perf(cellerator_compute_sparse_project)
 
 add_library(cellerator_compute_preprocess STATIC
+    src/compute/preprocess/fleet.cu
+    src/compute/preprocess/fused_workflows.cu
+    src/compute/preprocess/gene_stats.cu
+    src/compute/preprocess/normalize.cu
     src/compute/preprocess/preprocess.cu
+    src/compute/preprocess/qc_metrics.cu
+    src/compute/preprocess/workspace.cu
 )
 add_library(Cellerator::compute_preprocess ALIAS cellerator_compute_preprocess)
 target_include_directories(cellerator_compute_preprocess PUBLIC
