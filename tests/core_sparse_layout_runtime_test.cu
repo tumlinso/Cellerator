@@ -1,5 +1,5 @@
 #include <Cellerator/core/matrix.cuh>
-#include <Cellerator/core/sequence.cuh>
+#include <Baseplane/seq/dna2.cuh>
 
 #include <cub/cub.cuh>
 
@@ -14,7 +14,7 @@
 namespace convert = ::cellerator::compute::matrix::convert;
 namespace bucket = ::cellerator::compute::matrix::convert::bucket;
 namespace matrix = ::cellerator::core::matrix;
-namespace sequence = ::cellerator::core::sequence;
+namespace sequence = ::baseplane::seq;
 
 namespace {
 
@@ -83,20 +83,19 @@ void check_dense_layouts() {
 }
 
 void check_sequence_bases() {
-    std::uint64_t word = 0u;
-    require(sequence::is_defined_base_char('A'), "A should be a defined base");
-    require(sequence::is_defined_base_char('u'), "u should be a defined base");
-    require(!sequence::is_defined_base_char('N'), "N should not be a 2-bit defined base");
-    require(sequence::base_from_char('U') == sequence::base::t, "U should map to T storage");
-    require(sequence::char_from_base(sequence::complement(sequence::base::a)) == 'T', "A complement mismatch");
-    word = sequence::store_base(word, 0u, sequence::base::a);
-    word = sequence::store_base(word, 1u, sequence::base::c);
-    word = sequence::store_base(word, 2u, sequence::base::g);
-    word = sequence::store_base(word, 3u, sequence::base::t);
-    require(sequence::load_base(word, 0u) == sequence::base::a, "packed A mismatch");
-    require(sequence::load_base(word, 1u) == sequence::base::c, "packed C mismatch");
-    require(sequence::load_base(word, 2u) == sequence::base::g, "packed G mismatch");
-    require(sequence::load_base(word, 3u) == sequence::base::t, "packed T mismatch");
+    sequence::dna2_word64 word{0u};
+    require(sequence::make_base('A') == static_cast<std::uint8_t>(sequence::dna2_base::A), "A base mismatch");
+    require(sequence::make_base('u') == static_cast<std::uint8_t>(sequence::dna2_base::T), "u should map to T storage");
+    require(sequence::make_base('N') == static_cast<std::uint8_t>(sequence::dna2_base::A), "N should collapse to A in dna2");
+    require(sequence::base_to_char(static_cast<std::uint8_t>(sequence::dna2_base::A) ^ 0x3u) == 'T', "A complement mismatch");
+    sequence::set_base(word, 0, static_cast<std::uint8_t>(sequence::dna2_base::A));
+    sequence::set_base(word, 1, static_cast<std::uint8_t>(sequence::dna2_base::C));
+    sequence::set_base(word, 2, static_cast<std::uint8_t>(sequence::dna2_base::G));
+    sequence::set_base(word, 3, static_cast<std::uint8_t>(sequence::dna2_base::T));
+    require(sequence::get_base(word, 0) == static_cast<std::uint8_t>(sequence::dna2_base::A), "packed A mismatch");
+    require(sequence::get_base(word, 1) == static_cast<std::uint8_t>(sequence::dna2_base::C), "packed C mismatch");
+    require(sequence::get_base(word, 2) == static_cast<std::uint8_t>(sequence::dna2_base::G), "packed G mismatch");
+    require(sequence::get_base(word, 3) == static_cast<std::uint8_t>(sequence::dna2_base::T), "packed T mismatch");
 }
 
 } // namespace

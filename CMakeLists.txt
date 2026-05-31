@@ -53,7 +53,6 @@ option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
-option(CELLERATOR_ENABLE_HIGHWAY "Enable Google Highway portable SIMD sequence kernels" ON)
 option(CELLERATOR_BUILD_PREPROCESS_WORKBENCH "Build the optional Cellerator preprocessing ncurses workbench." ON)
 option(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS "Build Cellerator preprocessing benchmarks." ON)
 option(CELLERATOR_ENABLE_PYTHON "Build the optional Cellerator Python bindings." OFF)
@@ -86,19 +85,8 @@ set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
     "Preferred root for the source-built libtorch installation")
 set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
     "Optional local CellShard source checkout. Defaults to ../CellShard before find_package(CellShard).")
-
-if(CELLERATOR_ENABLE_HIGHWAY)
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/highway/CMakeLists.txt")
-        message(FATAL_ERROR
-            "CELLERATOR_ENABLE_HIGHWAY=ON requires the vendored Highway submodule at external/highway. "
-            "Run: git submodule update --init --recursive")
-    endif()
-    set(HWY_ENABLE_CONTRIB OFF CACHE BOOL "Include Highway contrib/" FORCE)
-    set(HWY_ENABLE_EXAMPLES OFF CACHE BOOL "Build Highway examples" FORCE)
-    set(HWY_ENABLE_INSTALL OFF CACHE BOOL "Install Highway" FORCE)
-    set(HWY_ENABLE_TESTS OFF CACHE BOOL "Enable Highway tests" FORCE)
-    add_subdirectory(external/highway EXCLUDE_FROM_ALL)
-endif()
+set(BASEPLANE_SOURCE_DIR "" CACHE PATH
+    "Optional local Baseplane source checkout. Defaults to ../Baseplane before find_package(Baseplane).")
 
 function(cellerator_require_choice var)
     set(cellerator_allowed_values ${ARGN})
@@ -272,6 +260,39 @@ if(NOT TARGET CellShard::export)
     message(FATAL_ERROR "Cellerator compute dataset utilities require CellShard::export")
 endif()
 
+function(cellerator_add_baseplane_source baseplane_source_dir)
+    if(NOT EXISTS "${baseplane_source_dir}/CMakeLists.txt")
+        message(FATAL_ERROR "BASEPLANE_SOURCE_DIR does not point to a Baseplane source tree: ${baseplane_source_dir}")
+    endif()
+    if(NOT EXISTS "${baseplane_source_dir}/include/Baseplane/seq/dna2.cuh")
+        message(FATAL_ERROR
+            "Baseplane source tree must expose include/Baseplane/seq/dna2.cuh. "
+            "Update the Baseplane checkout or set BASEPLANE_SOURCE_DIR to a compatible source tree: "
+            "${baseplane_source_dir}")
+    endif()
+    if(NOT DEFINED BASEPLANE_ENABLE_CUDA)
+        set(BASEPLANE_ENABLE_CUDA ON CACHE BOOL
+            "Enable the CUDA Baseplane sequence kernels preferred by Cellerator.")
+    endif()
+    if(NOT DEFINED BASEPLANE_ENABLE_CUDA_LINEINFO)
+        set(BASEPLANE_ENABLE_CUDA_LINEINFO ${CELLERATOR_ENABLE_CUDA_LINEINFO} CACHE BOOL
+            "Emit CUDA line mapping for Nsight profiling inside Baseplane.")
+    endif()
+    add_subdirectory("${baseplane_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/Baseplane" EXCLUDE_FROM_ALL)
+endfunction()
+
+if(BASEPLANE_SOURCE_DIR)
+    cellerator_add_baseplane_source("${BASEPLANE_SOURCE_DIR}")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../Baseplane/CMakeLists.txt")
+    cellerator_add_baseplane_source("${CMAKE_CURRENT_SOURCE_DIR}/../Baseplane")
+else()
+    find_package(Baseplane CONFIG REQUIRED)
+endif()
+
+if(NOT TARGET Baseplane::seq)
+    message(FATAL_ERROR "Cellerator requires Baseplane::seq for sequence bit primitives")
+endif()
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
         list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
@@ -403,37 +424,6 @@ endfunction()
 
 cellerator_enable_perf(cellerator_core)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
-
-set(CELLERATOR_SEQ_SOURCES
-    src/seq/dna2.cu
-)
-list(APPEND CELLERATOR_SEQ_SOURCES src/seq/dna2_scalar.cpp)
-if(CELLERATOR_ENABLE_HIGHWAY)
-    list(APPEND CELLERATOR_SEQ_SOURCES src/seq/dna2_highway.cpp)
-endif()
-
-add_library(cellerator_seq STATIC
-    ${CELLERATOR_SEQ_SOURCES}
-)
-add_library(Cellerator::seq ALIAS cellerator_seq)
-target_include_directories(cellerator_seq PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_seq PUBLIC CUDA::cudart)
-if(CELLERATOR_ENABLE_HIGHWAY)
-    target_link_libraries(cellerator_seq PRIVATE hwy)
-    target_compile_definitions(cellerator_seq PUBLIC CELLERATOR_ENABLE_HIGHWAY=1)
-else()
-    target_compile_definitions(cellerator_seq PUBLIC CELLERATOR_ENABLE_HIGHWAY=0)
-endif()
-set_target_properties(cellerator_seq PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
-cellerator_enable_perf(cellerator_seq)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_library(cellerator_torch INTERFACE)
@@ -769,22 +759,6 @@ if(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS)
 
 endif()
 
-add_executable(sequenceDna2Bench
-    bench/seq/bench_dna2.cu
-)
-target_include_directories(sequenceDna2Bench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sequenceDna2Bench PRIVATE cellerator_seq CUDA::cudart)
-set_target_properties(sequenceDna2Bench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(sequenceDna2Bench)
-
-add_executable(sequenceDna2CpuBench
-    bench/seq/bench_dna2_cpu.cpp
-)
-target_include_directories(sequenceDna2CpuBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sequenceDna2CpuBench PRIVATE cellerator_seq)
-set_target_properties(sequenceDna2CpuBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-cellerator_enable_perf(sequenceDna2CpuBench)
-
 add_executable(exactSearchRuntimeTest
     tests/exact_search_runtime_test.cu
 )
@@ -805,7 +779,7 @@ add_executable(coreSparseLayoutRuntimeTest
     tests/core_sparse_layout_runtime_test.cu
 )
 target_include_directories(coreSparseLayoutRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert CUDA::cudart CUDA::cusparse)
+target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_matrix_convert Baseplane::seq CUDA::cudart CUDA::cusparse)
 set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(coreSparseLayoutRuntimeTest)
 
@@ -872,22 +846,6 @@ target_include_directories(celleratorPreprocessDoublePreprocessRejectionTest PRI
 target_link_libraries(celleratorPreprocessDoublePreprocessRejectionTest PRIVATE Cellerator::preprocess)
 set_target_properties(celleratorPreprocessDoublePreprocessRejectionTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(celleratorPreprocessDoublePreprocessRejectionTest)
-
-add_executable(sequenceDna2Test
-    tests/seq/test_dna2.cpp
-)
-target_include_directories(sequenceDna2Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sequenceDna2Test PRIVATE cellerator_seq CUDA::cudart)
-set_target_properties(sequenceDna2Test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-cellerator_enable_perf(sequenceDna2Test)
-
-add_executable(sequenceDna2CudaTest
-    tests/seq/test_dna2_cuda.cu
-)
-target_include_directories(sequenceDna2CudaTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(sequenceDna2CudaTest PRIVATE cellerator_seq CUDA::cudart)
-set_target_properties(sequenceDna2CudaTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(sequenceDna2CudaTest)
 
 add_executable(abiRuntimeTest
     tests/abi_runtime_test.cu

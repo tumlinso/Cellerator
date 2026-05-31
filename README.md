@@ -50,7 +50,6 @@ The main source areas are:
 - `src/compute/`: sparse ML math over CellShard matrices
 - `src/compute/sparse/ops/`: sparse operator contexts, scratch, and kernels
 - `src/compute/neighbors/`: exact-search/scoring math plus forward-neighbor index/query policy
-- `include/Cellerator/seq/` and `src/seq/`: packed sequence bit primitives, CPU SIMD backends, and CUDA sequence kernels
 - `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
 - `src/torch/`: explicit Torch interop boundary
 
@@ -106,13 +105,15 @@ CMake resolves CellShard in this order:
 2. sibling `../CellShard`
 3. `find_package(CellShard CONFIG REQUIRED)`
 
+CMake resolves Baseplane sequence bit primitives in this order:
+
+1. `-DBASEPLANE_SOURCE_DIR=/path/to/Baseplane`
+2. sibling `../Baseplane`
+3. `find_package(Baseplane CONFIG REQUIRED)`
+
 CUDA mode defaults to `generic`. Use `-DCELLERATOR_CUDA_MODE=native` for the
 host-specific fast path and `-DCELLERATOR_CUDA_MODE=native-extreme` for the
 separate Volta-only/PTX-heavy path.
-
-Portable CPU SIMD sequence kernels use the vendored Google Highway backend by
-default. Configure with `-DCELLERATOR_ENABLE_HIGHWAY=OFF` to build only the
-scalar sequence backend.
 
 The generated CelleratorCore config also records default scalar and policy
 choices for new, unspecified work:

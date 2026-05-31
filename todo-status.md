@@ -8,7 +8,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `closed`: completed or removed from pickup rotation.
 
 ## Workstreams
-- `sequence-bits-dna2`: closed. Added and validated the first SequenceBits dna2 primitive with packed word64 storage, planes32 warp compute representation, correctness kernels, tests, benchmark, and docs.
+- `sequence-bits-dna2`: closed. Added and validated the first SequenceBits dna2 primitive, then migrated ownership to sibling Baseplane.
 - `cellerator-sparse-ml-layout`: idle. Contract-first CelleratorCore matrix/runtime/quantized layout, compute-owned matrix conversion and CUDA primitives, and CellShard shims are checkpointed and build-tested; remaining pickup is deciding whether the CellShard mask-groups exit-14 expectation belongs here or a separate CellShard test fix.
 - `cellerator-runtime-autotune`: closed. Added optional close-enough preprocessing autotune with Python `autotune=True`, reusable optimizer options/results, and C++ default-off execution-plan vocabulary.
 - `cellerator-preprocess-scanpy-validation`: closed. Added and passed PBMC3K Scanpy comparison coverage for Cellerator preprocessing metrics.

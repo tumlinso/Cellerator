@@ -34,6 +34,14 @@ _None recorded yet._
 ## Progress Notes
 - Started `sequence-bits-dna2`: requested scope is a new `include/Cellerator/seq/dna2.cuh` GPU-native DNA 2-bit primitive with packed storage words, warp-compute bitplanes, correctness kernels, tests, primitive benchmark, and docs. This work is separate from the existing `include/Cellerator/core/sequence/` port material.
 - Finished `sequence-bits-dna2`: configured Cellerator, built `sequenceDna2Test`, `sequenceDna2CudaTest`, and `sequenceDna2Bench`, ran both focused tests, and ran the primitive benchmark with `./build/sequenceDna2Bench 1048576 16 1 10`.
+- Migrated `sequence-bits-dna2` out of Cellerator to the sibling Baseplane
+  project. Cellerator now consumes `Baseplane::seq` for sequence bit primitive
+  smoke coverage and no longer owns the sequence headers, target, tests,
+  benches, or docs.
+- Validated the hard cut with sibling Baseplane: `cmake -S Cellerator -B
+  Cellerator/build`, `cmake --build Cellerator/build --target
+  coreSparseLayoutRuntimeTest quantizedMatrixTest exactSearchRuntimeTest -j 4`,
+  and the three resulting runtime smokes passed.
 - Extended `sequence-bits-dna2` validation: added `tests/seq/dna2_test_helpers.hh` for deterministic random sequence generation, changed the benchmark to use random DNA input with independent representation selection, and ran a packed-word64 vs warp-planes32 comparison matrix plus Nsight Systems profiles.
 - Finished the first CPU SIMD backend pass: Highway now uses SIMD mask extraction/materialization for full 32-base ASCII pack/unpack, the CPU benchmark reports the active backend, and both Highway-enabled and scalar-only builds pass `sequenceDna2Test` plus `sequenceDna2CpuBench`.
 - Added the first CelleratorCore ownership slice: `Cellerator::core` now exposes
