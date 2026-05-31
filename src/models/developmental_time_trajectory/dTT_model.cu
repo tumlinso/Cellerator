@@ -13,7 +13,7 @@ namespace cellerator::models::developmental_time_trajectory {
 
 namespace {
 
-namespace css = ::cellshard::sparse;
+namespace css = ::cellerator::core::matrix;
 namespace runtime = dt::runtime;
 namespace csv = dt::csv;
 namespace sparse_project = ::cellerator::compute::sparse::project;

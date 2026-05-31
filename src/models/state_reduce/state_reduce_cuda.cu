@@ -15,7 +15,7 @@ namespace cellerator::models::state_reduce {
 namespace {
 
 namespace cs = ::cellshard;
-namespace css = ::cellshard::sparse;
+namespace css = ::cellerator::core::matrix;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 
 constexpr int kScalarThreads = 256;

@@ -1,7 +1,6 @@
 #include <Cellerator/models/state_reduce.hh>
 
-#include <CellShard/formats/blocked_ell.cuh>
-#include <CellShard/formats/sliced_ell.cuh>
+#include <Cellerator/core/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -16,7 +15,7 @@
 namespace sr = ::cellerator::models::state_reduce;
 namespace runtime = ::cellerator::compute::runtime;
 namespace cs = ::cellshard;
-namespace css = ::cellshard::sparse;
+namespace css = ::cellerator::core::matrix;
 namespace csv = ::cellshard::device;
 
 namespace {

@@ -102,7 +102,7 @@ struct loaded_dataset {
     }
 };
 
-csd::blocked_ell_view device_view_from_record(const csd::partition_record<::cellshard::sparse::blocked_ell> &record,
+csd::blocked_ell_view device_view_from_record(const csd::partition_record<::cellerator::core::matrix::blocked_ell> &record,
                                               status *out) {
     csd::blocked_ell_view view{};
     if (record.view == nullptr) {
@@ -115,7 +115,7 @@ csd::blocked_ell_view device_view_from_record(const csd::partition_record<::cell
     return view;
 }
 
-csd::sliced_ell_view device_view_from_record(const csd::partition_record<::cellshard::sparse::sliced_ell> &record,
+csd::sliced_ell_view device_view_from_record(const csd::partition_record<::cellerator::core::matrix::sliced_ell> &record,
                                              status *out) {
     csd::sliced_ell_view view{};
     if (record.view == nullptr) {
@@ -596,10 +596,10 @@ int preprocess_cellshard_session_all_gpus(const preprocess_cellshard_session_opt
 
     int ok = 0;
     if (summary.matrix_format == "blocked_ell") {
-        ok = run_layout<::cellshard::sparse::blocked_ell, csd::blocked_ell_view>(
+        ok = run_layout<::cellerator::core::matrix::blocked_ell, csd::blocked_ell_view>(
             summary, native_sparse_blocked_ell, options, result, out);
     } else if (summary.matrix_format == "sliced_ell") {
-        ok = run_layout<::cellshard::sparse::sliced_ell, csd::sliced_ell_view>(
+        ok = run_layout<::cellerator::core::matrix::sliced_ell, csd::sliced_ell_view>(
             summary, native_sparse_sliced_ell, options, result, out);
     } else {
         fail(out, status_unsupported_layout, "C++ CellShard preprocessing supports blocked_ell and sliced_ell .csh5 datasets");

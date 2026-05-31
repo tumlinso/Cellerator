@@ -10,8 +10,7 @@
 
 #include <CellShard/core/types.cuh>
 #include <CellShard/formats/dense.cuh>
-#include <CellShard/formats/blocked_ell.cuh>
-#include <CellShard/formats/sliced_ell.cuh>
+#include <Cellerator/core/interop/cellshard_access.cuh>
 #include <Cellerator/compute/core/host_buffer.hh>
 
 namespace cellerator::compute::neighbors::forward_neighbors {
@@ -23,7 +22,7 @@ using const_array_view = ::cellerator::compute::core::const_buffer_view<T>;
 
 using ::cellerator::compute::core::view_of;
 namespace cs = ::cellshard;
-namespace css = ::cellshard::sparse;
+namespace css = ::cellerator::core::matrix;
 
 enum class ForwardNeighborBackend {
     exact_windowed = 0,

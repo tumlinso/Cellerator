@@ -332,8 +332,8 @@ struct loaded_dataset {
     }
 };
 
-csd::blocked_ell_view make_device_view(const cellshard::sparse::blocked_ell *part,
-                                       const csd::partition_record<cellshard::sparse::blocked_ell> &record) {
+csd::blocked_ell_view make_device_view(const cellerator::core::matrix::blocked_ell *part,
+                                       const csd::partition_record<cellerator::core::matrix::blocked_ell> &record) {
     csd::blocked_ell_view out{};
     (void) part;
     if (record.view == nullptr) throw std::runtime_error("missing uploaded blocked-ELL device descriptor");
@@ -341,8 +341,8 @@ csd::blocked_ell_view make_device_view(const cellshard::sparse::blocked_ell *par
     return out;
 }
 
-csd::sliced_ell_view make_device_view(const cellshard::sparse::sliced_ell *part,
-                                      const csd::partition_record<cellshard::sparse::sliced_ell> &record) {
+csd::sliced_ell_view make_device_view(const cellerator::core::matrix::sliced_ell *part,
+                                      const csd::partition_record<cellerator::core::matrix::sliced_ell> &record) {
     csd::sliced_ell_view out{};
     (void) part;
     if (record.view == nullptr) throw std::runtime_error("missing uploaded Sliced-ELL device descriptor");
@@ -659,10 +659,10 @@ PreprocessSession preprocess_cellshard(const std::string &path, const Preprocess
     if (!cse::load_dataset_summary(path.c_str(), &summary, &error)) throw std::runtime_error(error);
     std::vector<std::uint32_t> masks = compile_default_masks_from_summary(summary);
     if (summary.matrix_format == "blocked_ell") {
-        return run_dataset_layout<cellshard::sparse::blocked_ell>(path, "blocked_ell", summary, options, masks);
+        return run_dataset_layout<cellerator::core::matrix::blocked_ell>(path, "blocked_ell", summary, options, masks);
     }
     if (summary.matrix_format == "sliced_ell") {
-        return run_dataset_layout<cellshard::sparse::sliced_ell>(path, "sliced_ell", summary, options, masks);
+        return run_dataset_layout<cellerator::core::matrix::sliced_ell>(path, "sliced_ell", summary, options, masks);
     }
     throw std::runtime_error("Cellerator Python preprocessing supports blocked_ell and sliced_ell .csh5 datasets in v1");
 }

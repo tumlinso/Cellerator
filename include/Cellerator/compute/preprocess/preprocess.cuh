@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CellShard/formats/blocked_ell.cuh>
+#include <Cellerator/core/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 #include <Cellerator/compute/runtime.hh>
 #include <Cellerator/dist/distributed.cuh>

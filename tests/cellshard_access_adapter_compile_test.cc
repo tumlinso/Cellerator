@@ -1,4 +1,5 @@
 #include <Cellerator/core/interop/cellshard_access.cuh>
+#include <CellShard/runtime/layout/sharded.cuh>
 
 #include <cassert>
 
@@ -22,6 +23,24 @@ int main() {
     assert(blocked_archive.nnz == 12u);
     assert(blocked_archive.archive_format == cellshard::disk_format_blocked_ell);
     assert(blocked_archive.execution_format == cellshard::dataset_execution_format_blocked_ell);
+    assert(cellshard::partition_aux(&blocked) == ccm::pack_blocked_ell_aux(2u, 2u));
+
+    cellshard::sharded<ccm::blocked_ell> blocked_sharded{};
+    cellshard::init(&blocked_sharded);
+    blocked_sharded.cols = blocked.cols;
+    blocked_sharded.num_partitions = 1u;
+    blocked_sharded.partition_capacity = 1u;
+    ccm::blocked_ell *blocked_parts[] = {&blocked};
+    unsigned long blocked_offsets[] = {0u, blocked.rows};
+    unsigned long blocked_rows[] = {blocked.rows};
+    unsigned long blocked_nnz[] = {blocked.nnz};
+    unsigned long blocked_aux[] = {cellshard::partition_aux(&blocked)};
+    blocked_sharded.parts = blocked_parts;
+    blocked_sharded.partition_offsets = blocked_offsets;
+    blocked_sharded.partition_rows = blocked_rows;
+    blocked_sharded.partition_nnz = blocked_nnz;
+    blocked_sharded.partition_aux = blocked_aux;
+    assert(cellshard::partition_bytes(&blocked_sharded, 0u) == ccm::bytes(&blocked));
 
     ccm::sliced_ell sliced{};
     ccm::init(&sliced, 5u, 9u, 11u);

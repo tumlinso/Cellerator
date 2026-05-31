@@ -2,7 +2,7 @@
 #include <Cellerator/compute/sparse/ops.hh>
 #include <Cellerator/compute/sparse/project.hh>
 #include <Cellerator/core/quantized/api.cuh>
-#include <CellShard/formats/blocked_ell.cuh>
+#include <Cellerator/core/interop/cellshard_access.cuh>
 
 #include <cmath>
 #include <cstdint>

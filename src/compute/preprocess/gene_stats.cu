@@ -38,8 +38,8 @@ __global__ void accumulate_gene_metrics_blocked_ell_kernel(
         const unsigned int lane = block_size != 0u ? ell_col % block_size : 0u;
         const unsigned int block_col = ell_width_blocks != 0u
             ? src.blockColIdx[(unsigned long) row_block * ell_width_blocks + slot]
-            : cellshard::sparse::blocked_ell_invalid_col;
-        const unsigned int col = block_col != cellshard::sparse::blocked_ell_invalid_col
+            : cellerator::core::matrix::blocked_ell_invalid_col;
+        const unsigned int col = block_col != cellerator::core::matrix::blocked_ell_invalid_col
             ? block_col * block_size + lane
             : src.cols;
         if ((keep_cells == nullptr || keep_cells[row] != 0u) && col < src.cols) {

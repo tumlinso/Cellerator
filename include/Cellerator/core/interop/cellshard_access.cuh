@@ -120,6 +120,125 @@ inline cellshard_matrix_binding<MatrixT> make_cellshard_matrix_binding(
 
 namespace cellshard::access {
 
+template<>
+struct payload_traits<cellerator::core::matrix::blocked_ell> {
+    using matrix_type = cellerator::core::matrix::blocked_ell;
+
+    __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t nnz(const matrix_type *matrix) { return matrix != nullptr ? matrix->nnz : 0u; }
+
+    __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
+        return matrix != nullptr
+            ? cellerator::core::matrix::pack_blocked_ell_aux(matrix->block_size, cellerator::core::matrix::ell_width_blocks(matrix))
+            : 0u;
+    }
+
+    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+        const matrix_type *matrix,
+        std::uint64_t rows,
+        std::uint64_t,
+        std::uint64_t,
+        std::uint64_t aux_value) {
+        const std::uint32_t block_size = cellerator::core::matrix::unpack_blocked_ell_block_size(aux_value);
+        const std::uint64_t ell_width = cellerator::core::matrix::unpack_blocked_ell_ell_width(aux_value);
+        return matrix != nullptr ? cellerator::core::matrix::bytes(matrix)
+                                 : sizeof(matrix_type)
+                                     + static_cast<std::size_t>((rows + block_size - 1u) / block_size) * static_cast<std::size_t>(ell_width) * sizeof(cellerator::core::types::idx_t)
+                                     + static_cast<std::size_t>(rows) * static_cast<std::size_t>(ell_width * block_size) * sizeof(cellerator::core::real::storage_t);
+    }
+
+    __host__ __device__ __forceinline__ static const cellshard::types::storage_value_t *debug_at(
+        const matrix_type *matrix,
+        std::uint64_t row,
+        cellshard::types::idx_t col) {
+        return cellerator::core::matrix::at(matrix, static_cast<cellerator::core::types::dim_t>(row), col);
+    }
+};
+
+template<>
+struct payload_traits<cellerator::core::matrix::sliced_ell> {
+    using matrix_type = cellerator::core::matrix::sliced_ell;
+
+    __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t nnz(const matrix_type *matrix) { return matrix != nullptr ? matrix->nnz : 0u; }
+
+    __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
+        return matrix != nullptr
+            ? cellerator::core::matrix::pack_sliced_ell_aux(matrix->slice_count, cellerator::core::matrix::total_slots(matrix))
+            : 0u;
+    }
+
+    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+        const matrix_type *matrix,
+        std::uint64_t,
+        std::uint64_t,
+        std::uint64_t,
+        std::uint64_t aux_value) {
+        const std::uint32_t slice_count = cellerator::core::matrix::unpack_sliced_ell_slice_count(aux_value);
+        const std::uint32_t total_slot_count = cellerator::core::matrix::unpack_sliced_ell_total_slots(aux_value);
+        return matrix != nullptr ? cellerator::core::matrix::bytes(matrix)
+                                 : sizeof(matrix_type)
+                                     + static_cast<std::size_t>(slice_count + 1u) * sizeof(cellerator::core::types::u32)
+                                     + static_cast<std::size_t>(slice_count) * sizeof(cellerator::core::types::u32)
+                                     + static_cast<std::size_t>(total_slot_count) * sizeof(cellerator::core::types::idx_t)
+                                     + static_cast<std::size_t>(total_slot_count) * sizeof(cellerator::core::real::storage_t);
+    }
+
+    __host__ __device__ __forceinline__ static const cellshard::types::storage_value_t *debug_at(
+        const matrix_type *matrix,
+        std::uint64_t row,
+        cellshard::types::idx_t col) {
+        return cellerator::core::matrix::at(matrix, static_cast<cellerator::core::types::dim_t>(row), col);
+    }
+};
+
+template<>
+struct payload_traits<cellerator::core::matrix::quantized_blocked_ell> {
+    using matrix_type = cellerator::core::matrix::quantized_blocked_ell;
+
+    __host__ __device__ __forceinline__ static std::uint64_t rows(const matrix_type *matrix) { return matrix != nullptr ? matrix->rows : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t cols(const matrix_type *matrix) { return matrix != nullptr ? matrix->cols : 0u; }
+    __host__ __device__ __forceinline__ static std::uint64_t nnz(const matrix_type *matrix) { return matrix != nullptr ? matrix->nnz : 0u; }
+
+    __host__ __device__ __forceinline__ static std::uint64_t aux(const matrix_type *matrix) {
+        return matrix != nullptr
+            ? cellerator::core::matrix::pack_quantized_blocked_ell_aux(matrix->bits, matrix->block_size, cellerator::core::matrix::ell_width_blocks(matrix))
+            : 0u;
+    }
+
+    __host__ __device__ __forceinline__ static std::size_t host_bytes(
+        const matrix_type *matrix,
+        std::uint64_t rows,
+        std::uint64_t cols,
+        std::uint64_t,
+        std::uint64_t aux_value) {
+        const std::uint64_t bits = cellerator::core::matrix::unpack_quantized_blocked_ell_bits(aux_value);
+        const std::uint64_t block_size = cellerator::core::matrix::unpack_quantized_blocked_ell_block_size(aux_value);
+        const std::uint64_t ell_cols = cellerator::core::matrix::unpack_quantized_blocked_ell_cols(aux_value);
+        const std::uint64_t row_stride_bytes = cellerator::core::matrix::quantized_blocked_ell_aligned_row_bytes(
+            static_cast<cellerator::core::matrix::u32>(bits),
+            static_cast<cellerator::core::matrix::u32>(ell_cols));
+        const std::uint64_t row_blocks = block_size == 0u ? 0u : (rows + block_size - 1u) / block_size;
+        const std::uint64_t ell_width = block_size == 0u ? 0u : ell_cols / block_size;
+        return matrix != nullptr ? cellerator::core::matrix::bytes(matrix)
+                                 : sizeof(matrix_type)
+                                     + static_cast<std::size_t>(row_blocks * ell_width) * sizeof(cellerator::core::matrix::idx_t)
+                                     + static_cast<std::size_t>(rows * row_stride_bytes)
+                                     + static_cast<std::size_t>(cols) * sizeof(float)
+                                     + static_cast<std::size_t>(cols) * sizeof(float)
+                                     + static_cast<std::size_t>(rows) * sizeof(float);
+    }
+
+    __host__ __device__ __forceinline__ static const cellshard::types::storage_value_t *debug_at(
+        const matrix_type *,
+        std::uint64_t,
+        cellshard::types::idx_t) {
+        return nullptr;
+    }
+};
+
 template<class MatrixT>
 struct archive_adapter<cellerator::core::interop::cellshard_matrix_binding<MatrixT>> {
     using binding_type = cellerator::core::interop::cellshard_matrix_binding<MatrixT>;

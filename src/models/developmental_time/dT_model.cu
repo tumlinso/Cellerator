@@ -14,7 +14,7 @@ namespace cellerator::models::developmental_time {
 
 namespace {
 
-namespace css = ::cellshard::sparse;
+namespace css = ::cellerator::core::matrix;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 
 constexpr int kScalarThreads = 256;
