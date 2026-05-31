@@ -474,6 +474,14 @@ target_link_libraries(quantizedMatrixTest PRIVATE CUDA::cudart)
 set_target_properties(quantizedMatrixTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixTest)
 
+add_executable(cellshardAccessAdapterCompileTest
+    tests/cellshard_access_adapter_compile_test.cc
+)
+target_include_directories(cellshardAccessAdapterCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(cellshardAccessAdapterCompileTest PRIVATE Cellerator::core CellShard::headers)
+set_target_properties(cellshardAccessAdapterCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellshardAccessAdapterCompileTest)
+
 add_executable(quantizedMatrixBench
     bench/quantized_matrix_bench.cu
 )
