@@ -42,8 +42,12 @@ cmake --build build -j 4
 Useful focused targets:
 
 ```bash
-cmake --build build --target baseplaneDna2Test cellShardInspectPackageTest celleratorFoundationRuntimeTest -j 4
+cmake --build build --target baseplaneDna2Test cellshard_inspect cellshard_runtime celleratorFoundationRuntimeTest -j 4
 ```
+
+Local and generated fixture payloads belong under `data/`. The scaffold is
+tracked, while large biological data files and generated conversion outputs are
+ignored by default.
 
 The old implementation is not part of the default build graph. To expose the
 archive as source-only CMake metadata:

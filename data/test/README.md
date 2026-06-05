@@ -1,5 +1,6 @@
-Root-level test data scaffold for local and CI-adjacent fixtures shared across
-the Cellerator umbrella workspace.
+Cellerator-local test data scaffold for local and CI-adjacent fixtures shared
+across the umbrella workspace. Deprecated CellStack wrapper checkouts should not
+keep a separate root-level `data/` tree; local fixture payloads live here.
 
 Layout:
 
@@ -17,5 +18,6 @@ Layout:
   - Scratch space for temporary conversion outputs and staging files.
 
 The directory structure is tracked, but real fixture payloads are gitignored.
-Keep canonical reference fixture names stable once chosen so tests and scripts
-can target them consistently.
+This includes large `.h5ad`, `.csh5`, `.mtx`, `.npy`, sequence alignment, and
+FASTQ/FASTA files. Keep canonical reference fixture names stable once chosen so
+tests and scripts can target them consistently.
