@@ -36,9 +36,9 @@ _None recorded yet._
 - `todo-orchestrator` - Track benchmark code, commands, outputs, and final interpretation.
 
 ## Useful Reference Files
-- `components/Baseplane/bench/seq/bench_dna2.cu` - CUDA scanner benchmark driver.
-- `components/Baseplane/bench/seq/bench_dna2_cpu.cpp` - CPU sequence primitive benchmark driver.
-- `components/Baseplane/src/seq/dna2.cu` - CUDA sequence kernels.
+- `../Baseplane/bench/seq/bench_dna2.cu` - CUDA scanner benchmark driver.
+- `../Baseplane/bench/seq/bench_dna2_cpu.cpp` - CPU sequence primitive benchmark driver.
+- `../Baseplane/src/seq/dna2.cu` - CUDA sequence kernels.
 
 ## Plan
 _None recorded yet._

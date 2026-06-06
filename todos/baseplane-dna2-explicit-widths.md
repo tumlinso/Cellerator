@@ -21,7 +21,7 @@ Implement explicit-width dna2 packed, split-plane, and inline-plane representati
 - Out of scope / dependencies: _List handoffs, upstream dependencies, or adjacent streams._
 - Required skills: _List the exact repo-local skills to read before starting._
 - Required references: _List the exact repo-local references to read before starting._
-- Read AGENTS.md and components/Baseplane/AGENTS.md before modifying Baseplane.
+- Read `../Baseplane/AGENTS.md` before modifying sibling Baseplane.
 - Use cuda guidance for device helper changes; no benchmark variant is required in this pass.
 - Hard rename ambiguous dna2_word and dna2_planes to explicit-width public types; do not leave compatibility aliases.
 
@@ -36,10 +36,10 @@ _None recorded yet._
 - `todo-orchestrator` - Track this multi-file Baseplane API migration through validation.
 
 ## Useful Reference Files
-- `components/Baseplane/AGENTS.md` - Baseplane scope, CUDA policy, and style constraints.
-- `components/Baseplane/include/Baseplane/seq/dna2.cuh` - Public dna2 API and device-inline helpers.
-- `components/Baseplane/tests/seq/test_dna2.cpp` - CPU correctness coverage for representations.
-- `components/Baseplane/tests/seq/test_dna2_cuda.cu` - CUDA device helper coverage.
+- `../Baseplane/AGENTS.md` - Baseplane scope, CUDA policy, and style constraints.
+- `../Baseplane/include/Baseplane/seq/dna2.cuh` - Public dna2 API and device-inline helpers.
+- `../Baseplane/tests/seq/test_dna2.cpp` - CPU correctness coverage for representations.
+- `../Baseplane/tests/seq/test_dna2_cuda.cu` - CUDA device helper coverage.
 
 ## Plan
 _None recorded yet._
@@ -56,7 +56,7 @@ _None recorded yet._
 ## Progress Notes
 - Added explicit dna2_word32/64, dna2_planes32/64, and dna2_inlplane32/64 representations plus conversion, mismatch, exact-match, and reverse-complement helpers.
 - Removed active ambiguous dna2_word and dna2_planes names from Baseplane call sites.
-- Validation passed: cmake --build build --target baseplaneDna2Test baseplaneDna2CudaTest -j 4; ./build/components/Baseplane/baseplaneDna2Test; ./build/components/Baseplane/baseplaneDna2CudaTest.
+- Validation passed in sibling Baseplane: `cmake -S . -B build`; `cmake --build build --target baseplaneDna2Test baseplaneDna2CudaTest -j 4`; `./build/baseplaneDna2Test`; `./build/baseplaneDna2CudaTest`.
 
 ## Next Actions
 - Edit dna2.cuh first, then update implementation and tests until rg finds no active dna2_word/dna2_planes ambiguous names.

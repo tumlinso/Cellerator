@@ -1,3 +1,27 @@
+# Docs
+docs/*
+!docs/README.md
+!docs/_quarto.yml
+!docs/*.qmd
+!docs/preamble.tex
+!docs/pipeline/
+docs/pipeline/*
+!docs/pipeline/README.md
+!docs/pipeline/config/
+docs/pipeline/config/*
+!docs/pipeline/config/README.md
+!docs/pipeline/config/*.example
+!docs/pipeline/config/*.example.tsv
+!docs/pipeline/download/
+docs/pipeline/download/*
+!docs/pipeline/download/README.md
+!docs/pipeline/download/*.sh
+!docs/pipeline/preprocess/
+docs/pipeline/preprocess/*
+!docs/pipeline/preprocess/README.md
+!docs/pipeline/preprocess/*.sh
+docs/_book/
+
 # Build directories
 build/
 build-*/
@@ -7,8 +31,10 @@ bin/
 lib/
 lib64/
 dist/
+!include/Cellerator/dist/
+!include/Cellerator/dist/**
 
-# CMake / build-system output
+# CMake / make / ninja output
 CMakeCache.txt
 CMakeFiles/
 CTestTestfile.cmake
@@ -43,6 +69,9 @@ Testing/
 *.ipdb
 *.out
 *.exe
+*.app
+__pycache__/
+*.pyc
 
 # CUDA / NVCC / NVHPC generated artifacts
 *.cubin
@@ -59,6 +88,12 @@ Testing/
 # Debugger / crash output
 core
 core.*
+!include/Cellerator/core/
+!include/Cellerator/core/**
+!include/Cellerator/compute/core/
+!include/Cellerator/compute/core/**
+!src/core/
+!src/core/**
 vgcore.*
 *.stackdump
 *.dSYM/
@@ -66,7 +101,7 @@ vgcore.*
 .cuda-gdb_history
 
 # Profiler output
-profile_out/
+/profile_out/
 nsight/
 *.ncu-rep
 *.nsys-rep
@@ -78,15 +113,8 @@ nsight/
 cuda_profile_*
 cuda_profile*.log
 
-# Python cache / bytecode
-__pycache__/
-*.py[cod]
-
-# Local agent state
-.codex
-
-# Shared fixture scaffold. Real payloads are local/generated unless explicitly
-# promoted through a separate data decision.
+# Local fixture payloads. The scaffold under data/test is tracked, but large
+# biological inputs and generated conversion outputs remain local.
 /data/**/*.h5ad
 /data/**/*.csh5
 /data/**/*.mtx
@@ -104,8 +132,6 @@ __pycache__/
 /data/**/*.fasta.gz
 /data/**/*.fa
 /data/**/*.fa.gz
-/data/test/*.csh5
-/data/test/**/*.csh5
 /data/test/reference/*
 !/data/test/reference/.gitkeep
 /data/test/generated/csh5/*
