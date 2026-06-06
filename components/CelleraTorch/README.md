@@ -33,6 +33,21 @@ Reusable math discovered during migration should stay in native Cellerator
 under the appropriate compute/runtime layer, with CelleraTorch holding only the
 Torch adapter around it.
 
+## Parameter Exposure Direction
+
+CelleraTorch should become the efficient Torch view over learned parameters that
+native Cellerator owns. The native side should expose Torch-free non-owning
+descriptors for parameter name, scalar type, host/device residency, device
+ordinal, raw pointer, shape, stride, writability, and role. The current native
+hook for that contract is `include/Cellerator/core/parameters.hh`.
+
+Future CelleraTorch adapters should use those descriptors to create Torch tensor
+views over native Cellerator storage without copying where possible. That means
+allocator work in Cellerator needs to preserve pointer stability, explicit
+contiguity decisions, and correct stride metadata. CelleraTorch can interpret
+and wrap those allocations for Torch, but it should not become the owner of the
+canonical learned-parameter buffers.
+
 ## Build Status
 
 This component is wired through the existing `CELLERATOR_ENABLE_TORCH_MODELS`

@@ -165,6 +165,23 @@ cmake --build build -j 4
 
 Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the CelleraTorch default.
 
+## CelleraTorch Parameter Exposure
+
+CelleraTorch is also the intended Torch-facing view over learned Cellerator
+parameters. Native Cellerator should keep owning allocation, residency, scalar
+type, shape, stride, writability, and learned-parameter versus optimizer-state
+metadata through Torch-free descriptors such as
+`include/Cellerator/core/parameters.hh`. CelleraTorch should later consume those
+descriptors to build efficient Torch tensor views over native parameter storage,
+preferably without copies.
+
+This matters for allocator and model-layout work. New native model parameters
+should stay pointer-stable, explicitly shaped and strided, and allocation-aware
+enough for CelleraTorch to expose contiguous or intentionally strided Torch
+views. Do not make Torch own the canonical parameter allocation in native
+Cellerator, and do not hide parameter storage behind abstractions that prevent a
+future zero-copy bridge.
+
 ## Running Things
 
 `ctest` is not configured. Run the built binaries directly.
