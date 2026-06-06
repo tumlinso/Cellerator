@@ -1,4 +1,4 @@
-#include <Cellerator/compute/ml/quantize.hh>
+#include <CelleraTorch/quantize.hh>
 
 #include <torch/torch.h>
 
@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace quant = ::cellerator::compute::ml::quantize;
+namespace quant = ::celleratorch::quantize;
 
 namespace {
 

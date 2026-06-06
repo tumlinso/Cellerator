@@ -1,4 +1,4 @@
-#include "model_ops.hh"
+#include <CelleraTorch/model_ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
@@ -14,7 +14,7 @@
 #include <string>
 #include <tuple>
 
-namespace cellerator::compute::model_ops {
+namespace celleratorch::model_ops {
 
 namespace {
 
@@ -503,4 +503,4 @@ torch::Tensor weighted_future_target(
     return weighted_future_target_cuda_(reference_dense, neighbor_row_indices, neighbor_weights);
 }
 
-} // namespace cellerator::compute::model_ops
+} // namespace celleratorch::model_ops

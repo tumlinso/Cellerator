@@ -14,7 +14,7 @@ Rules:
   policy lives under `src/preprocess/`, while reusable preprocessing math lives
   under `src/compute/preprocess/`
 - keep framework-independent sparse training code under `compute/sparse/ops`;
-  libtorch-facing wrappers belong above that layer, not inside the runtime core
+  framework-facing wrappers belong above that layer, not inside the runtime core
 - keep reusable forward sparse projection contracts under `compute/sparse/project`
 - keep reusable CUDA library handles and scratch ownership under `compute/runtime`;
   model code should acquire cuSPARSE/cuBLAS there instead of creating per-call handles

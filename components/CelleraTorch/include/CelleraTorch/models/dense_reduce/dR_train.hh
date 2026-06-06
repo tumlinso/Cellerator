@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace cellerator::models::dense_reduce {
+namespace celleratorch::models::dense_reduce {
 
 struct DenseReduceTrainConfig {
     double learning_rate = 1.0e-3;
@@ -78,4 +78,4 @@ inline DenseReduceTrainStep evaluate_dense_reduce_step(
     return DenseReduceTrainStep{ std::move(output), std::move(loss) };
 }
 
-} // namespace cellerator::models::dense_reduce
+} // namespace celleratorch::models::dense_reduce

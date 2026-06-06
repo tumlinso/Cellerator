@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dR_model.hh"
-#include "../../torch/bindings.hh"
+#include <CelleraTorch/bindings.hh>
 
 #include <CellShard/runtime/host/sharded_host.cuh>
 
@@ -14,7 +14,7 @@
 #include <string>
 #include <utility>
 
-namespace cellerator::models::dense_reduce {
+namespace celleratorch::models::dense_reduce {
 
 struct DenseReduceInferConfig {
     torch::Device device = torch::Device(torch::kCPU);
@@ -144,7 +144,7 @@ void for_each_dense_reduce_encoded_batch(
 
         // Partition-wise inference exports host CSR to a CPU Torch tensor, moves it
         // to device, then copies latent embeddings back to CPU.
-        torch::Tensor features = cellerator::torch_bindings::export_as_tensor(*part);
+        torch::Tensor features = celleratorch::bindings::export_as_tensor(*part);
         features = features.to(config.device);
         torch::Tensor latent = model->encode(features).to(torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU)).contiguous();
 
@@ -187,4 +187,4 @@ inline DenseReduceEmbeddingTable infer_dense_reduce_embeddings(
     return detail::materialize_dense_reduce_batches_(batches);
 }
 
-} // namespace cellerator::models::dense_reduce
+} // namespace celleratorch::models::dense_reduce

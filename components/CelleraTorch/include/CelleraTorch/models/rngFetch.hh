@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include <utility>
 
-namespace cellerator {
+namespace celleratorch {
 
 template<typename T>
 class host_buffer {
@@ -203,4 +203,4 @@ private:
     std::mt19937_64 rng_;
 };
 
-} // namespace cellerator
+} // namespace celleratorch

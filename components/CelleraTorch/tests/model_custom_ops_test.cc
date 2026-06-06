@@ -1,5 +1,5 @@
-#include <Cellerator/compute/model_ops.hh>
-#include <Cellerator/models/dense_reduce.hh>
+#include <CelleraTorch/model_ops.hh>
+#include <CelleraTorch/models/dense_reduce.hh>
 
 #include <torch/torch.h>
 
@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace dr = ::cellerator::models::dense_reduce;
-namespace ops = ::cellerator::compute::model_ops;
+namespace dr = ::celleratorch::models::dense_reduce;
+namespace ops = ::celleratorch::model_ops;
 
 namespace {
 

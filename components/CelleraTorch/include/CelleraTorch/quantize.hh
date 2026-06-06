@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-namespace cellerator::compute::ml::quantize {
+namespace celleratorch::quantize {
 
 namespace msq = ::cellerator::core::quantized;
 
@@ -522,4 +522,4 @@ inline torch::Tensor unpack_dense_quantized_matrix(const PackedDenseQuantizedMat
     });
 }
 
-} // namespace cellerator::compute::ml::quantize
+} // namespace celleratorch::quantize

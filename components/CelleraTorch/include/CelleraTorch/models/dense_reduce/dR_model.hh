@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dR_dataloader.hh"
-#include "../../compute/ml/model_ops/model_ops.hh"
+#include <CelleraTorch/model_ops.hh>
 
 #include <torch/torch.h>
 
@@ -12,9 +12,9 @@
 #include <stdexcept>
 #include <utility>
 
-namespace cellerator::models::dense_reduce {
+namespace celleratorch::models::dense_reduce {
 
-namespace model_ops = ::cellerator::compute::model_ops;
+namespace model_ops = ::celleratorch::model_ops;
 
 struct SparseDenseReduceConfig {
     std::int64_t input_genes = 0;
@@ -293,4 +293,4 @@ inline DenseReduceLoss compute_dense_reduce_loss(
     };
 }
 
-} // namespace cellerator::models::dense_reduce
+} // namespace celleratorch::models::dense_reduce

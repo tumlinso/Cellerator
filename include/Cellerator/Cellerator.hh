@@ -2,6 +2,7 @@
 
 #include "abi.h"
 #include "core/matrix.cuh"
+#include "core/parameters.hh"
 #include "core/quantized/api.cuh"
 #include "core/runtime/runtime.cuh"
 #include "core/interop/cellshard.cuh"
@@ -10,10 +11,8 @@
 #include "preprocess/runtime.hh"
 #include "compute/sparse/ops.hh"
 #include "compute/neighbors/forward_neighbors.hh"
-#include "compute/ml/quantize.hh"
 #include "compute/sparse/project.hh"
 #include "models/developmental_time.hh"
 #include "models/developmental_time_trajectory.hh"
 #include "models/state_reduce.hh"
-#include "torch/bindings.hh"
 #include "trajectory/trajectory_tree.cuh"

@@ -1,10 +1,10 @@
 # Cellerator
 
-Cellerator is a GPU-oriented preprocessing, math, compute, and model package for large sparse single-cell datasets in the CellStack family.
+Cellerator is a GPU-oriented base math and compute package for large sparse single-cell datasets in the CellStack family.
 
-It consumes CellShard as an external dependency for sparse matrix/runtime ABI types. Cellerator owns preprocessing and math over those matrices: reusable sparse compute, forward-neighbor index/query policy, model code, trajectory logic, quantized kernels, and Torch-facing boundaries. Storage and ingest live in CellShard.
+It consumes CellShard as an external dependency for sparse matrix/runtime ABI types. Cellerator owns reusable sparse compute, preprocessing kernels, model math, trajectory math, and quantized kernels. Storage and ingest live in CellShard, while Torch-facing boundaries live in the CelleraTorch component.
 
-This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, distributed sparse execution, and explicit Torch interop. It does not replace Torch, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now.
+This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, and distributed sparse execution. It does not replace framework libraries, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now.
 
 Surfaces that are temporarily inside this repo but do not belong in Cellerator long term are tracked in `out_of_scope_inventory.md`.
 
@@ -12,10 +12,10 @@ Surfaces that are temporarily inside this repo but do not belong in Cellerator l
 
 - `src/compute/`: reusable sparse compute, neighbors, sparse operators, and custom-op building blocks
 - `src/preprocess/`: biology-facing preprocessing policy, runtime API, and workbench orchestration
-- `src/models/`: libtorch model workflows
+- `src/models/`: native model workflows
 - `src/trajectory/`: trajectory scoring and assembly
 - `include/Cellerator/core/`: CelleratorCore format, conversion, quantized packing, and CUDA substrate
-- `src/torch/`: explicit CellShard-to-Torch boundary
+- `components/CelleraTorch/`: explicit CellShard/Cellerator-to-Torch boundary
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
 
@@ -52,7 +52,7 @@ The main source areas are:
 - `src/compute/sparse/ops/`: sparse operator contexts, scratch, and kernels
 - `src/compute/neighbors/`: exact-search/scoring math plus forward-neighbor index/query policy
 - `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
-- `src/torch/`: explicit Torch interop boundary
+- `components/CelleraTorch/`: explicit Torch interop boundary
 
 Public in-repo includes should use `#include <Cellerator/...>` rather than reaching into `src/` directly.
 CelleratorCore's `real` traits define `f16_t`, `f32_t`, `f64_t`, and, when the
@@ -154,16 +154,16 @@ precision instead of reinterpreting payloads as the local build default.
 
 The Cellerator build is accelerator-oriented and requires CUDA at configure time.
 
-Torch-enabled builds prefer the source-built libtorch installation under `/usr/local/share/cmake/Torch`.
+CelleraTorch-enabled builds prefer the source-built installation under `/usr/local/share/cmake/Torch`.
 
-If libtorch is not available, disable Torch models:
+If the CelleraTorch dependencies are not available, disable CelleraTorch targets:
 
 ```bash
 cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
 cmake --build build -j 4
 ```
 
-Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the default libtorch.
+Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the CelleraTorch default.
 
 ## Running Things
 
@@ -174,7 +174,7 @@ Examples:
 ```bash
 ./build/exactSearchRuntimeTest
 ./build/sparseOpsRuntimeTest
-./build/quantizeModelTest
+./build/celleraTorchQuantizePrimitiveTest
 ```
 
 Useful build targets include:
@@ -185,10 +185,10 @@ Useful build targets include:
 - `exactSearchRuntimeTest`
 - `sparseOpsRuntimeTest`
 - `developmentalTimeCompileTest`
-- `denseReduceCompileTest`
-- `quantizeModelTest`
-- `torchBindingsCompileTest`
-- `modelCustomOpsTest`
+- `celleraTorchBindingsCompileTest`
+- `celleraTorchDenseReduceCompileTest`
+- `celleraTorchQuantizePrimitiveTest`
+- `celleraTorchModelCustomOpsTest`
 
 ## Repository Notes
 

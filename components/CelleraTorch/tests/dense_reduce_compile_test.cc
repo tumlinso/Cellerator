@@ -1,9 +1,9 @@
-#include <Cellerator/models/dense_reduce.hh>
+#include <CelleraTorch/models/dense_reduce.hh>
 
 #include <torch/torch.h>
 
 int main() {
-    using namespace cellerator::models::dense_reduce;
+    using namespace celleratorch::models::dense_reduce;
 
     SparseDenseReduceConfig model_config;
     model_config.input_genes = 5;

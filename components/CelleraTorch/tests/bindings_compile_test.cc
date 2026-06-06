@@ -1,12 +1,12 @@
-#include <Cellerator/torch/bindings.hh>
+#include <CelleraTorch/bindings.hh>
 
 #include <CellShard/runtime/host/sharded_host.cuh>
 
 #include <torch/torch.h>
 
 int main() {
-    using cellerator::torch_bindings::ExportOptions;
-    using cellerator::torch_bindings::export_as_tensor;
+    using celleratorch::bindings::ExportOptions;
+    using celleratorch::bindings::export_as_tensor;
 
     auto *part_a = new cellshard::sparse::compressed;
     auto *part_b = new cellshard::sparse::compressed;

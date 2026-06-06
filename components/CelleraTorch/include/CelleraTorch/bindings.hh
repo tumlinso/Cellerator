@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace cellerator::torch_bindings {
+namespace celleratorch::bindings {
 
 // This bridge is intentionally narrow and intentionally explicit about cost.
 //
@@ -208,4 +208,4 @@ inline torch::Tensor export_as_tensor(
         torch::TensorOptions().dtype(options.value_dtype).device(torch::kCPU));
 }
 
-} // namespace cellerator::torch_bindings
+} // namespace celleratorch::bindings

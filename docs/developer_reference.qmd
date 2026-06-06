@@ -9,7 +9,7 @@ cmake -S . -B build
 cmake --build build -j 4
 ```
 
-If libtorch is unavailable:
+If CelleraTorch dependencies are unavailable:
 
 ```bash
 cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
@@ -28,10 +28,10 @@ Useful pipeline-adjacent targets include:
 - `developmentalTimeCompileTest`
 - `developmentalTimeRuntimeTest`
 - `developmentalTimeTrajectoryRuntimeTest`
-- `denseReduceCompileTest`
-- `quantizeModelTest`
-- `torchBindingsCompileTest`
-- `modelCustomOpsTest`
+- `celleraTorchBindingsCompileTest`
+- `celleraTorchDenseReduceCompileTest`
+- `celleraTorchQuantizePrimitiveTest`
+- `celleraTorchModelCustomOpsTest`
 
 Run the built binaries directly because `ctest` is not configured.
 
@@ -40,7 +40,7 @@ Examples:
 ```bash
 ./build/exactSearchRuntimeTest
 ./build/sparseOpsRuntimeTest
-./build/quantizeModelTest
+./build/celleraTorchQuantizePrimitiveTest
 ```
 
 ## Repo Map
@@ -49,7 +49,7 @@ Examples:
 - `src/models/`: model workflows, including native CUDA developmental-time paths
 - `src/trajectory/`: trajectory scoring and assembly
 - `include/Cellerator/core/quantized/`: Volta-oriented quantized sparse format and packing helpers
-- `src/torch/`: explicit Torch export boundary
+- `components/CelleraTorch/`: explicit Torch export boundary
 - `tests/`: compile and runtime checks
 - `bench/`: benchmark binaries
 

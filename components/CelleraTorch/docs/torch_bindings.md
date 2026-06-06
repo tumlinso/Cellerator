@@ -64,7 +64,7 @@ Good boundary:
 
 - `CellShard / Cellerator` does storage, staging, sparse runtime, and custom
   CUDA work
-- `src/torch/` exposes an explicit conversion point
+- `components/CelleraTorch/` exposes an explicit conversion point
 - Torch-native models start on the other side of that conversion
 
 Bad boundary:

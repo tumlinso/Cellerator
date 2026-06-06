@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace cellerator::models::dense_reduce {
+namespace celleratorch::models::dense_reduce {
 
 struct DenseReduceBatch {
     torch::Tensor features;
@@ -371,4 +371,4 @@ private:
     std::mutex mutex_;
 };
 
-} // namespace cellerator::models::dense_reduce
+} // namespace celleratorch::models::dense_reduce

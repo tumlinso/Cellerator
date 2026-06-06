@@ -1,11 +1,35 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled implementation code for Core and higher Cellerator layers. Primary non-Core surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, `src/trajectory/`, and `src/torch/`. `tests/` contains compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone CellStack math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is Cellerator-owned under `src/compute/neighbors/forward_neighbors/`.
+`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled implementation code for Core and higher Cellerator layers. Primary non-Core surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone CellStack math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
 
 The durable Cellerator scope boundary lives in `scope.md`, and the advisory migration queue for surfaces that do not belong in Cellerator lives in `out_of_scope_inventory.md`. Read both before adding public APIs, new CMake targets, model modules, preprocessing code, ingest/runtime code, or Torch boundaries. If work touches scope drift, remind the user that `out_of_scope_inventory.md` is the migration queue and update it before normalizing the drift as Cellerator-owned.
 
-`include/Cellerator/core/` is the CelleratorCore public surface for matrix representation ABI, quantized packing/metadata, CellShard-free runtime substrate, and interop contracts. Sequence bit primitives live in the sibling Baseplane project, not in Cellerator. Its contract-first layout is `core/matrix/`, `core/runtime/`, `core/quantized/`, and `core/interop/`. `src/core/` contains the compiled Core implementation behind the single `Cellerator::core` target. `src/compute/` is the authoritative home for reusable math and operators: matrix conversion and bucketing, CUDA compute primitives, exact search math, preprocessing math kernels, sparse projection/matmul, ML reductions, Torch custom ops, and the sparse operator layer under `src/compute/sparse/ops/`. `src/preprocess/` owns biology-facing preprocessing policy, raw-count state validation, QC rule compilation, adapter staging, and workbench orchestration over `Cellerator::compute_preprocess`. `src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and reuses the Core runtime substrate. `src/models/` is the header-first workflow surface. `src/models/developmental_time/` and `src/models/dense_reduce/` split each model into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh` layers with umbrella headers (`developmentalTime.hh`, `denseReduction.hh`). Neighbor retrieval index/query policy is not a Cellerator public API.
+Current direction: finish Cellerator as the CellStack base math and execution
+engine before spending attention on new human-facing UI/API surfaces. CellShard
+is the only project with the beginnings of a publishable user API, but a
+meaningful CellShard release depends on Cellerator being complete enough to
+provide the sparse math, preprocessing engines, neighbor/search engines, layout
+optimization, and file/runtime build primitives that CellShard needs. Treat
+Cellerator completion as the current priority.
+
+Preprocessing and neighbor/search work are not automatically out of scope for
+Cellerator. They may remain native Cellerator capabilities when they are
+implemented as layout-aware engines, metric/stat kernels, optimization inputs,
+or execution primitives used to build and optimize Blocked-ELL/Sliced-ELL files
+and runtime payloads. Do not spend current effort designing Scanpy-like
+preprocessing APIs, neighbor workflow ergonomics, UI/workbench behavior, or
+other human-facing product surfaces unless explicitly requested. If those
+surfaces are exposed later, they should be thin wrappers over the native engines
+instead of a separate math implementation.
+
+Torch/libtorch is the clear split exception: do not expand Torch-linked code as
+core Cellerator. Its intended destination is the separate `CelleraTorch` project
+staged under `components/CelleraTorch/`. Keep reusable kernels, layouts,
+reductions, sparse transforms, quantized primitives, and runtime scratch
+mechanics in native Cellerator, and keep framework adapters in CelleraTorch.
+
+`include/Cellerator/core/` is the CelleratorCore public surface for matrix representation ABI, parameter descriptors, quantized packing/metadata, CellShard-free runtime substrate, and interop contracts. Sequence bit primitives live in the sibling Baseplane project, not in Cellerator. Its contract-first layout is `core/matrix/`, `core/runtime/`, `core/quantized/`, and `core/interop/`. `src/core/` contains the compiled Core implementation behind the single `Cellerator::core` target. `src/compute/` is the authoritative home for reusable math and operators: matrix conversion and bucketing, CUDA compute primitives, exact search math, preprocessing math kernels, sparse projection/matmul, ML reductions, and the sparse operator layer under `src/compute/sparse/ops/`. `components/CelleraTorch/` owns Torch tensor export, Torch custom-op wrappers, Torch-linked quantizer wrappers, and the legacy dense-reduce prototype. `src/preprocess/` owns biology-facing preprocessing policy, raw-count state validation, QC rule compilation, adapter staging, and workbench orchestration over `Cellerator::compute_preprocess`. `src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and reuses the Core runtime substrate. Native `src/models/` contains Cellerator-owned model implementations that do not expose framework tensor types. Neighbor retrieval index/query policy is not a Cellerator public API.
 
 Workflow code must not own reusable math. If preprocessing, model, Torch,
 neighbor, or session/workbench code needs GPU math, reductions, dense adds,
@@ -34,7 +58,7 @@ For substantial repo work, consult root `todos.md` first. Detailed workstream le
 For custom gradients, the first intended handwritten gradient-calculator target is the quantized path. Treat that backend as the leading candidate for explicit backward logic before introducing broader custom-gradient machinery elsewhere.
 
 ## Build, Test, and Development Commands
-Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. CMake resolves CellShard in this order: `CELLERATOR_CELLSHARD_SOURCE_DIR`, sibling `../CellShard`, then `find_package(CellShard CONFIG REQUIRED)`. Useful Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `exactSearchRuntimeTest`, `sparseOpsRuntimeTest`, `developmentalTimeCompileTest`, `denseReduceCompileTest`, `quantizeModelTest`, `torchBindingsCompileTest`, and `modelCustomOpsTest`. Run built tests directly because `ctest` is not configured, for example `./build/exactSearchRuntimeTest`, `./build/sparseOpsRuntimeTest`, or `./build/quantizeModelTest`. Torch-enabled builds now prefer the source-built libtorch installed at `/usr/local` via `/usr/local/share/cmake/Torch`. If libtorch is unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override that default.
+Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. CMake resolves CellShard in this order: `CELLERATOR_CELLSHARD_SOURCE_DIR`, sibling `../CellShard`, then `find_package(CellShard CONFIG REQUIRED)`. Useful native Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `exactSearchRuntimeTest`, `sparseOpsRuntimeTest`, and `developmentalTimeCompileTest`. CelleraTorch targets include `celleraTorchBindingsCompileTest`, `celleraTorchDenseReduceCompileTest`, `celleraTorchQuantizePrimitiveTest`, and `celleraTorchModelCustomOpsTest`. Run built tests directly because `ctest` is not configured, for example `./build/exactSearchRuntimeTest`, `./build/sparseOpsRuntimeTest`, or `./build/celleraTorchQuantizePrimitiveTest`. If CelleraTorch dependencies are unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override the component default.
 
 ## Coding Style & Naming Conventions
 Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep file/storage orchestration and ingest outside Cellerator; keep preprocessing, sparse layout primitives, math, forward-neighbor orchestration, and model logic in CelleratorCore/Cellerator.
@@ -55,7 +79,7 @@ Prefer structure-of-arrays over array-of-structures when access is columnar or w
 
 When several local variables share the same type and form one obvious working set, prefer compressed declarations on one statement instead of one-per-line boilerplate so readers do not need to scan extra vertical context just to recover the type; split them back out only when initialization, ownership, comments, or future type drift make that clearer.
 
-For `src/models/`, preserve the current header-only libtorch pattern unless there is a clear build or compile-time reason to split it. New model workflows should follow the existing `dataloader` / `model` / `train` / `infer` breakdown and expose a single umbrella header per module.
+For native `src/models/`, keep framework-linked wrappers out of Cellerator. New native model workflows should keep learned parameters and execution buffers visible enough for direct CUDA optimization and future `core/parameters.hh` descriptor exposure.
 
 ## Testing Guidelines
 Add tests under `tests/` beside the nearest feature area and name them after the unit or workflow being checked, for example `series_ingest_compile_test.cu`. Cover both compile-only integration points and small runtime checks when behavior can be exercised locally. For model work, prefer compile coverage for the umbrella header and a focused runtime test for loss, inference, or retrieval behavior when the path can run locally. For GPU-facing changes, build the affected target and run the corresponding binary; include the exact command in your PR notes.
@@ -64,12 +88,12 @@ Benchmark and profiler runs must be serialized across workers. Treat the reposit
 
 Model-facing and compute-adjacent targets currently map to:
 - `developmentalTimeCompileTest` for `src/models/developmental_time/`
-- `denseReduceCompileTest` for `src/models/dense_reduce/`
 - `exactSearchRuntimeTest` for `src/compute/neighbors/exact_search/`
-- `quantizeModelTest` for `src/models/quantize/`
-- `torchBindingsCompileTest` for `src/torch/` and CellShard-to-libtorch tensor export
 - `sparseOpsRuntimeTest` for `src/compute/sparse/ops/`
-- `modelCustomOpsTest` for `src/compute/model_ops/`
+- `celleraTorchBindingsCompileTest` for `components/CelleraTorch/` tensor export
+- `celleraTorchDenseReduceCompileTest` for the CelleraTorch dense-reduce prototype
+- `celleraTorchQuantizePrimitiveTest` for CelleraTorch quantizer wrappers
+- `celleraTorchModelCustomOpsTest` for CelleraTorch custom-op wrappers
 
 ## Model Design And Skills
 When the task is deciding what model family, objective, latent structure, decoder, or loss should exist in `src/models/`, use `$v100-model-design` first. That includes new developmental-time models, latent reduction variants, multimodal or temporal extensions, and decisions about whether the work should stay in libtorch or begin in Python PyTorch with a later C++ path. Stay in that skill until the model choice, scaling posture, and any custom-op boundary are stable.
@@ -88,7 +112,7 @@ If work around `docs/`, notes, or manuscript-like material turns into writing, f
 
 When code changes materially alter runtime, storage, ingest, pack, or other pipeline behavior, update the corresponding documentation in `docs/` and any primary README surface that describes that behavior as part of the same change. Do not leave behavior documentation stale after the implementation lands.
 
-If new model work in `src/models/` appears to need custom Torch ops, record the proposed op boundary in `custom_torch_ops.md` before implementing it and keep the op scope minimal. Prefer library-backed Torch, ATen, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
+If new model work appears to need framework custom ops, place that adapter under `components/CelleraTorch/` and keep the op scope minimal. Prefer library-backed framework, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
 
 For CUDA/C++ implementation work outside `src/models/`, default to `$cuda-v100` whenever kernel shape, memory fit, communication topology, HtoD staging, sparse layout, or profiler interpretation is material to the answer. Recommendations should explicitly say whether they are library-backed or custom-kernel, whether they assume `sm_70`, and what the dominant limiter is: PCIe, HBM traffic, occupancy, register pressure, launch overhead, or cross-GPU communication.
 
@@ -100,7 +124,7 @@ Recent commits use short, lowercase summaries such as `move ingest to smellerato
 ## Configuration Notes
 CMake defaults to the local HPC SDK CUDA toolchain and `g++-12` host compiler when no override is supplied. Prefer explicit overrides with `CUDACXX` and `CUDAHOSTCXX` if you need a different toolchain.
 
-For libtorch, prefer the source-built installation under `/usr/local` over a Python-packaged or PyTorch-bundled libtorch. That `/usr/local` build is the repository default because it is tuned for this host's V100/NVLink layout. Only point CMake at another libtorch with `Torch_DIR` or `LIBTORCH_PATH` when you are deliberately testing or debugging against a different build.
+For CelleraTorch, prefer the source-built installation under `/usr/local` over a Python-packaged or PyTorch-bundled build. That `/usr/local` build is the repository default because it is tuned for this host's V100/NVLink layout. Only point CMake at another dependency root with `Torch_DIR` or `LIBTORCH_PATH` when you are deliberately testing or debugging against a different build.
 
 Model and quantization work should assume the repository is targeting Volta `sm_70` on Tesla V100 16 GB GPUs unless the task says otherwise. Treat PCIe as a bottleneck to be minimized, keep steady-state traffic within the real NVLink pairs (`GPU0 <-> GPU2`, `GPU1 <-> GPU3`) when multi-GPU work is involved, do not assume Ampere-only features, and do not lock in NCCL environment settings without measurement.
 

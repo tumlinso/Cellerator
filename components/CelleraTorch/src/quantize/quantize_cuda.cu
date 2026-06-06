@@ -1,12 +1,12 @@
-#include "quantize.hh"
+#include <CelleraTorch/quantize.hh>
 
-#include "../../runtime/runtime.hh"
-#include "../../sparse/ops/ops.hh"
+#include <Cellerator/compute/runtime.hh>
+#include <Cellerator/compute/sparse/ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
 
-namespace cellerator::compute::ml::quantize::detail {
+namespace celleratorch::quantize::detail {
 
 namespace runtime = ::cellerator::compute::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
@@ -90,4 +90,4 @@ SparseCudaLossBundle sparse_cuda_reconstruction_range_backward_(
     return SparseCudaLossBundle{ std::move(reconstruction_loss), std::move(range_loss) };
 }
 
-} // namespace cellerator::compute::ml::quantize::detail
+} // namespace celleratorch::quantize::detail

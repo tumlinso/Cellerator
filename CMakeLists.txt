@@ -49,7 +49,7 @@ find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
 find_package(PkgConfig QUIET)
 
-option(CELLERATOR_ENABLE_TORCH_MODELS "Enable libtorch-backed model targets" ON)
+option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch component targets" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
@@ -81,8 +81,6 @@ set(CELLERATOR_DEFAULT_GRADIENT_CLIP_NORM "1.0" CACHE STRING
     "Default global-norm gradient clipping threshold for future model configs")
 set(CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE "1.0" CACHE STRING
     "Default value gradient clipping threshold for future model configs")
-set(CELLERATOR_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
-    "Preferred root for the source-built libtorch installation")
 set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
     "Optional local CellShard source checkout. Defaults to ../CellShard before find_package(CellShard).")
 set(BASEPLANE_SOURCE_DIR "" CACHE PATH
@@ -293,42 +291,6 @@ if(NOT TARGET Baseplane::seq)
     message(FATAL_ERROR "Cellerator requires Baseplane::seq for sequence bit primitives")
 endif()
 
-if(CELLERATOR_ENABLE_TORCH_MODELS)
-    if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
-        list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
-    elseif(EXISTS "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch/TorchConfig.cmake")
-        if(NOT Torch_DIR OR Torch_DIR MATCHES ".*/site-packages/torch/share/cmake/Torch/?$")
-            set(Torch_DIR
-                "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch"
-                CACHE PATH "Torch CMake package directory" FORCE)
-            message(STATUS "Defaulting Torch_DIR to source-built libtorch at ${Torch_DIR}")
-        endif()
-        if(EXISTS "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2/Caffe2Config.cmake")
-            if(NOT Caffe2_DIR OR Caffe2_DIR MATCHES ".*/site-packages/torch/share/cmake/Caffe2/?$")
-                set(Caffe2_DIR
-                    "${CELLERATOR_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2"
-                    CACHE PATH "Caffe2 CMake package directory" FORCE)
-                message(STATUS "Defaulting Caffe2_DIR to source-built libtorch at ${Caffe2_DIR}")
-            endif()
-        endif()
-        foreach(cellerator_torch_cache_var
-                IN ITEMS
-                    TORCH_LIBRARY
-                    C10_CUDA_LIBRARY
-                    c10_LIBRARY
-                    kineto_LIBRARY)
-            if(DEFINED ${cellerator_torch_cache_var}
-               AND "${${cellerator_torch_cache_var}}" MATCHES ".*/site-packages/torch/.*")
-                unset(${cellerator_torch_cache_var} CACHE)
-            endif()
-        endforeach()
-    endif()
-endif()
-
-if(CELLERATOR_ENABLE_TORCH_MODELS)
-    find_package(Torch REQUIRED)
-endif()
-
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
@@ -424,37 +386,6 @@ endfunction()
 
 cellerator_enable_perf(cellerator_core)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
-
-if(CELLERATOR_ENABLE_TORCH_MODELS)
-    add_library(cellerator_torch INTERFACE)
-    target_link_libraries(cellerator_torch INTERFACE CUDA::cudart ${TORCH_LIBRARIES})
-    target_compile_features(cellerator_torch INTERFACE cxx_std_17)
-    if(DEFINED TORCH_INCLUDE_DIRS)
-        target_include_directories(cellerator_torch SYSTEM INTERFACE ${TORCH_INCLUDE_DIRS})
-    endif()
-    if(TORCH_CXX_FLAGS)
-        separate_arguments(CELLERATOR_TORCH_CXX_FLAGS NATIVE_COMMAND "${TORCH_CXX_FLAGS}")
-        target_compile_options(cellerator_torch INTERFACE ${CELLERATOR_TORCH_CXX_FLAGS})
-    endif()
-
-    add_library(cellerator_torch_bindings INTERFACE)
-    target_include_directories(cellerator_torch_bindings INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(cellerator_torch_bindings INTERFACE cellerator_torch CellShard::runtime)
-    target_compile_features(cellerator_torch_bindings INTERFACE cxx_std_17)
-
-    add_library(cellerator_compute_model_ops STATIC
-        src/compute/ml/model_ops/model_ops.cu
-    )
-    target_include_directories(cellerator_compute_model_ops PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(cellerator_compute_model_ops PRIVATE cellerator_torch CUDA::cudart)
-    set_target_properties(cellerator_compute_model_ops PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CUDA_STANDARD 17
-        CUDA_STANDARD_REQUIRED YES
-    )
-    cellerator_enable_perf(cellerator_compute_model_ops)
-endif()
 
 add_executable(quantizedMatrixTest
     tests/quantized_matrix_test.cu
@@ -912,43 +843,5 @@ set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STAN
 cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 
 if(CELLERATOR_ENABLE_TORCH_MODELS)
-    add_library(cellerator_compute_quantize STATIC
-        src/compute/ml/quantize/quantize_cuda.cu
-    )
-    target_include_directories(cellerator_compute_quantize PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(cellerator_compute_quantize PRIVATE cellerator_torch cellerator_compute_sparse_ops cellerator_compute_runtime CUDA::cudart)
-    set_target_properties(cellerator_compute_quantize PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(cellerator_compute_quantize)
-
-    add_executable(torchBindingsCompileTest
-        tests/torch_bindings_compile_test.cc
-    )
-    target_include_directories(torchBindingsCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(torchBindingsCompileTest PRIVATE cellerator_torch_bindings)
-    set_target_properties(torchBindingsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(torchBindingsCompileTest)
-
-    add_executable(denseReduceCompileTest
-        tests/dense_reduce_compile_test.cc
-    )
-    target_include_directories(denseReduceCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(denseReduceCompileTest PRIVATE cellerator_torch cellerator_compute_model_ops CellShard::runtime)
-    set_target_properties(denseReduceCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(denseReduceCompileTest)
-
-    add_executable(quantizePrimitiveTest
-        tests/quantize_primitive_test.cc
-    )
-    target_include_directories(quantizePrimitiveTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(quantizePrimitiveTest PRIVATE cellerator_torch cellerator_compute_model_ops cellerator_compute_quantize CUDA::cudart)
-    set_target_properties(quantizePrimitiveTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(quantizePrimitiveTest)
-
-    add_executable(modelCustomOpsTest
-        tests/model_custom_ops_test.cc
-    )
-    target_include_directories(modelCustomOpsTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(modelCustomOpsTest PRIVATE cellerator_torch cellerator_compute_model_ops CellShard::runtime)
-    set_target_properties(modelCustomOpsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(modelCustomOpsTest)
+    add_subdirectory(components/CelleraTorch)
 endif()

@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-namespace cellerator::compute::model_ops {
+namespace celleratorch::model_ops {
 
 std::tuple<torch::Tensor, torch::Tensor> dense_reduce_pair_losses(
     const torch::Tensor &pair_rows,
@@ -28,4 +28,4 @@ torch::Tensor weighted_future_target(
     const torch::Tensor &neighbor_row_indices,
     const torch::Tensor &neighbor_weights);
 
-} // namespace cellerator::compute::model_ops
+} // namespace celleratorch::model_ops
