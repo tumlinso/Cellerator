@@ -4,6 +4,13 @@ title: "Architecture"
 
 ## System Split
 
+The first principle is that Cellerator is a compute/ML library, not a storage
+container or high-level workflow shell. It makes CellShard-backed single-cell
+omics matrices GPU-accessible by finding denseifiable biological structure in
+genes, chromatin peaks, feature modules, pathways, and graph neighborhoods, then
+routing those structures through modified ELLPACK-style sparse layouts such as
+Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
+
 The repo is organized around an explicit boundary:
 
 - `CellShard` owns canonical sparse storage, `.csh5` metadata, shard and pack generation, and runtime staging.

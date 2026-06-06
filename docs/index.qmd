@@ -2,7 +2,20 @@
 title: "Cellerator Pipeline"
 ---
 
-Cellerator is a GPU-oriented ML compute stack for large sparse single-cell datasets. It sits on top of `CellShard`, which owns data handling: canonical sparse storage, optional ingest, CSPACK delivery, compaction/finalization, execution staging, and generic sparse row/feature masking for runtime layouts. Cellerator owns preprocessing, model-facing math over CellShard matrices, reusable sparse compute, trajectory logic, model workflows, quantized kernels, and Torch interop boundaries.
+Cellerator is a compute and ML stack for making large sparse single-cell omics
+matrices practical on GPUs. Its central job is to exploit biological structure
+in sparse data: genes, chromatin peaks, and other features often organize into
+modules, pathways, neighborhoods, or related feature sets that can be processed
+together. Cellerator searches for and uses those denseifiable structures to run
+CellShard-backed data through modified ELLPACK-style sparse layouts such as
+Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
+
+It sits on top of `CellShard`, which owns data handling: canonical sparse
+storage, optional ingest, CSPACK delivery, compaction/finalization, execution
+staging, and generic sparse row/feature masking for runtime layouts. Cellerator
+owns preprocessing, model-facing math over CellShard matrices, reusable sparse
+compute, trajectory logic, model workflows, structure-aware layout optimization,
+quantized kernels, and Torch interop boundaries.
 
 This documentation is not a paper workspace. It is the active source for explaining how the Cellerator pipeline is organized, what each stage owns, and where local operations still live outside the packaged product surface.
 

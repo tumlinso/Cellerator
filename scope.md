@@ -5,11 +5,19 @@ Last updated: 2026-05-04
 ## Purpose
 
 Cellerator is a sparse biological ML runtime and operator library for training
-and inference on CellShard-scale omics data. Its dependency-light
-CelleratorCore layer owns sparse layout primitives, GPU operators, sparse
-differentiation and training primitives, biologically structured model
-components, distributed sparse execution, and explicit Torch interop boundaries
-that Torch does not natively provide well for sparse biological structure.
+and inference on CellShard-scale omics data. Its central scope is to make
+single-cell omics matrices accessible to GPU compute by finding and exploiting
+denseifiable biological structure in otherwise sparse data. Genes, chromatin
+peaks, and other assay features often organize into modules or related feature
+sets; Cellerator uses that structure to build and execute modified
+ELLPACK-style sparse layouts such as Blocked-ELL, Sliced-ELL, and quantized
+Blocked-ELL.
+
+Its dependency-light CelleratorCore layer owns sparse layout primitives, GPU
+operators, sparse differentiation and training primitives, biologically
+structured model components, distributed sparse execution, layout optimization
+inputs, and explicit Torch interop boundaries that Torch does not natively
+provide well for sparse biological structure.
 
 Cellerator should extend Torch where sparse omics execution needs new
 capability. It should not replace Torch as the general ML framework.
@@ -46,6 +54,9 @@ capability. It should not replace Torch as the general ML framework.
   paths, sparse-dense projections, reductions, gather/scatter, row/feature
   selection, exact-search/scoring math, pathway/module reductions, and graph-aware
   sparse transforms.
+- Layout search and optimization inputs that discover denseifiable feature,
+  pathway, gene-module, peak-module, or graph-neighborhood structure and map it
+  onto GPU-efficient sparse execution layouts.
 - Training-capable sparse operator where Torch sparse support is missing,
   layout-mismatched, or too costly for CellShard-scale data.
 - Biological model primitives that make sparsity part of the model: pathway

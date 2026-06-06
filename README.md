@@ -1,8 +1,19 @@
 # Cellerator
 
-Cellerator is a GPU-oriented base math and compute package for large sparse single-cell datasets in the CellStack family.
+Cellerator is a compute and ML library for making large single-cell omics
+matrices practical on GPUs. Its central scope is sparse biological ML over
+CellShard-backed data: it exploits the fact that genes, chromatin peaks, and
+other omics features are highly structured, often forming modules that can be
+processed together. Cellerator searches for and uses those denseifiable
+structures to route work through modified ELLPACK-style sparse layouts such as
+Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
 
-It consumes CellShard as an external dependency for sparse matrix/runtime ABI types. Cellerator owns reusable sparse compute, preprocessing kernels, model math, trajectory math, and quantized kernels. Storage and ingest live in CellShard, while Torch-facing boundaries live in the CelleraTorch component.
+That scope is deliberately compute-owned, not storage-owned. Cellerator consumes
+CellShard as an external dependency for sparse matrix/runtime ABI types, runtime
+staging, and dataset publication. Cellerator owns reusable sparse compute,
+layout-aware preprocessing kernels, model math, trajectory math, structure-aware
+layout optimization, and quantized kernels. Storage and ingest live in
+CellShard, while Torch-facing boundaries live in the CelleraTorch component.
 
 This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, and distributed sparse execution. It does not replace framework libraries, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now.
 

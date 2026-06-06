@@ -1,17 +1,23 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled implementation code for Core and higher Cellerator layers. Primary non-Core surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone CellStack math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
+`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled implementation code for Core and higher Cellerator layers. Primary non-Core surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
 
 The durable Cellerator scope boundary lives in `scope.md`, and the advisory migration queue for surfaces that do not belong in Cellerator lives in `out_of_scope_inventory.md`. Read both before adding public APIs, new CMake targets, model modules, preprocessing code, ingest/runtime code, or Torch boundaries. If work touches scope drift, remind the user that `out_of_scope_inventory.md` is the migration queue and update it before normalizing the drift as Cellerator-owned.
 
-Current direction: finish Cellerator as the CellStack base math and execution
-engine before spending attention on new human-facing UI/API surfaces. CellShard
-is the only project with the beginnings of a publishable user API, but a
-meaningful CellShard release depends on Cellerator being complete enough to
-provide the sparse math, preprocessing engines, neighbor/search engines, layout
-optimization, and file/runtime build primitives that CellShard needs. Treat
-Cellerator completion as the current priority.
+Current direction: finish Cellerator as the compute and ML library for
+GPU-accessible single-cell omics data before spending attention on new
+human-facing UI/API surfaces. The core thesis is sparse biological ML over
+CellShard-backed matrices: Cellerator should exploit denseifiable structure in
+genes, chromatin peaks, feature modules, pathway/module groupings, and
+graph/neighborhood structure so sparse omics data can run efficiently through
+modified ELLPACK-style layouts such as Blocked-ELL, Sliced-ELL, and quantized
+Blocked-ELL. CellShard is the only project with the beginnings of a publishable
+user API, but a meaningful CellShard release depends on Cellerator being
+complete enough to provide the sparse math, preprocessing engines,
+neighbor/search engines, structure-aware layout optimization, and runtime
+execution primitives that CellShard-backed workloads need. Treat Cellerator
+completion as the current priority.
 
 Preprocessing and neighbor/search work are not automatically out of scope for
 Cellerator. They may remain native Cellerator capabilities when they are
