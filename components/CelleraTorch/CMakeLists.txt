@@ -33,9 +33,17 @@ endif()
 
 find_package(Torch REQUIRED)
 
+set(CELLERATORCH_TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}")
+
 add_library(cellera_torch INTERFACE)
 add_library(CelleraTorch::torch ALIAS cellera_torch)
-target_link_libraries(cellera_torch INTERFACE CUDA::cudart ${TORCH_LIBRARIES})
+target_link_libraries(cellera_torch INTERFACE
+    CUDA::cudart
+    ${TORCH_LIBRARIES}
+    CUDA::cublas
+    CUDA::cusolver
+    CUDA::cusparse
+)
 target_compile_features(cellera_torch INTERFACE cxx_std_17)
 if(DEFINED TORCH_INCLUDE_DIRS)
     target_include_directories(cellera_torch SYSTEM INTERFACE ${TORCH_INCLUDE_DIRS})
@@ -111,14 +119,22 @@ add_executable(celleraTorchBindingsCompileTest
     tests/bindings_compile_test.cc
 )
 target_link_libraries(celleraTorchBindingsCompileTest PRIVATE CelleraTorch::bindings)
-set_target_properties(celleraTorchBindingsCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(celleraTorchBindingsCompileTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
 cellerator_enable_perf(celleraTorchBindingsCompileTest)
 
 add_executable(celleraTorchDenseReduceCompileTest
     tests/dense_reduce_compile_test.cc
 )
 target_link_libraries(celleraTorchDenseReduceCompileTest PRIVATE CelleraTorch::dense_reduce)
-set_target_properties(celleraTorchDenseReduceCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(celleraTorchDenseReduceCompileTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
 cellerator_enable_perf(celleraTorchDenseReduceCompileTest)
 
 add_executable(celleraTorchQuantizePrimitiveTest
@@ -129,7 +145,11 @@ target_link_libraries(celleraTorchQuantizePrimitiveTest PRIVATE
     CelleraTorch::model_ops
     CUDA::cudart
 )
-set_target_properties(celleraTorchQuantizePrimitiveTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(celleraTorchQuantizePrimitiveTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
 cellerator_enable_perf(celleraTorchQuantizePrimitiveTest)
 
 add_executable(celleraTorchModelCustomOpsTest
@@ -140,5 +160,9 @@ target_link_libraries(celleraTorchModelCustomOpsTest PRIVATE
     CelleraTorch::model_ops
     CellShard::runtime
 )
-set_target_properties(celleraTorchModelCustomOpsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+set_target_properties(celleraTorchModelCustomOpsTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
 cellerator_enable_perf(celleraTorchModelCustomOpsTest)
