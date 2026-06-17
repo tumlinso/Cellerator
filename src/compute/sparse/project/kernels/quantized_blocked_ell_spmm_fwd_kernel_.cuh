@@ -1,6 +1,6 @@
 template<int Bits, typename Metadata>
 __global__ void quantized_blocked_ell_spmm_fwd_kernel_(
-    ::cellerator::core::quantized::blocked_ell::matrix<Bits, float, Metadata> matrix,
+    ::cellerator::quantized::blocked_ell::matrix<Bits, float, Metadata> matrix,
     const float *rhs,
     std::int64_t rhs_ld,
     std::int64_t out_cols,
@@ -17,17 +17,17 @@ __global__ void quantized_blocked_ell_spmm_fwd_kernel_(
 
     for (std::uint32_t slot = 0u; slot < ell_width; ++slot) {
         const std::uint32_t block_col = matrix.block_col_idx[static_cast<std::size_t>(row_block) * ell_width + slot];
-        if (block_col == ::cellerator::core::quantized::blocked_ell::invalid_block_col) continue;
+        if (block_col == ::cellerator::quantized::blocked_ell::invalid_block_col) continue;
         const std::int64_t rhs_base = static_cast<std::int64_t>(block_col) * static_cast<std::int64_t>(matrix.block_size);
         const std::uint32_t slot_base = slot * static_cast<std::uint32_t>(matrix.block_size);
         for (std::uint32_t col_in_block = 0u; col_in_block < static_cast<std::uint32_t>(matrix.block_size); ++col_in_block) {
             const std::int64_t rhs_col = rhs_base + static_cast<std::int64_t>(col_in_block);
             if (rhs_col >= static_cast<std::int64_t>(matrix.cols)) break;
-            const unsigned int code = ::cellerator::core::quantized::blocked_ell::get_code(
+            const unsigned int code = ::cellerator::quantized::blocked_ell::get_code(
                 &matrix,
                 static_cast<int>(row),
                 static_cast<int>(slot_base + col_in_block));
-            const float value = ::cellerator::core::quantized::dequantize_code<Bits>(
+            const float value = ::cellerator::quantized::dequantize_code<Bits>(
                 code,
                 matrix.metadata,
                 row_cache,

@@ -1,6 +1,6 @@
 #include <Cellerator/models/state_reduce.hh>
 
-#include <Cellerator/core/interop/cellshard_access.cuh>
+#include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -15,7 +15,7 @@
 namespace sr = ::cellerator::models::state_reduce;
 namespace runtime = ::cellerator::compute::runtime;
 namespace cs = ::cellshard;
-namespace css = ::cellerator::core::matrix;
+namespace css = ::cellerator::matrix;
 namespace csv = ::cellshard::device;
 
 namespace {

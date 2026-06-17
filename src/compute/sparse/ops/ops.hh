@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../runtime/runtime.hh"
-#include <Cellerator/core/quantized/blocked_ell.cuh>
+#include <Cellerator/quantized/blocked_ell.cuh>
 
 #include <cuda_runtime.h>
 #include <cusparse.h>
@@ -33,7 +33,7 @@ struct quantized_blocked_ell_view {
     std::uint32_t ell_cols = 0u;
     std::uint32_t row_stride_bytes = 0u;
     std::uint32_t bits = 0u;
-    std::uint32_t decode_policy = ::cellerator::core::quantized::blocked_ell::decode_policy_unknown;
+    std::uint32_t decode_policy = ::cellerator::quantized::blocked_ell::decode_policy_unknown;
     const std::uint32_t *block_col_idx = nullptr;
     const std::uint8_t *packed_values = nullptr;
     const float *column_scales = nullptr;

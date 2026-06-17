@@ -12,7 +12,7 @@ namespace cellerator::compute::dataset {
 
 namespace {
 
-namespace ct = ::cellerator::core::types;
+namespace ct = ::cellerator::types;
 
 void set_error(std::string *error, const std::string &message) {
     if (error != nullptr) *error = message;

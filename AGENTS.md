@@ -35,7 +35,25 @@ staged under `components/CelleraTorch/`. Keep reusable kernels, layouts,
 reductions, sparse transforms, quantized primitives, and runtime scratch
 mechanics in native Cellerator, and keep framework adapters in CelleraTorch.
 
-`include/Cellerator/core/` is the CelleratorCore public surface for matrix representation ABI, parameter descriptors, quantized packing/metadata, CellShard-free runtime substrate, and interop contracts. Sequence bit primitives live in the sibling Baseplane project, not in Cellerator. Its contract-first layout is `core/matrix/`, `core/runtime/`, `core/quantized/`, and `core/interop/`. `src/core/` contains the compiled Core implementation behind the single `Cellerator::core` target. `src/compute/` is the authoritative home for reusable math and operators: matrix conversion and bucketing, CUDA compute primitives, exact search math, preprocessing math kernels, sparse projection/matmul, ML reductions, and the sparse operator layer under `src/compute/sparse/ops/`. `components/CelleraTorch/` owns Torch tensor export, Torch custom-op wrappers, Torch-linked quantizer wrappers, and the legacy dense-reduce prototype. `src/preprocess/` owns biology-facing preprocessing policy, raw-count state validation, QC rule compilation, adapter staging, and workbench orchestration over `Cellerator::compute_preprocess`. `src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and reuses the Core runtime substrate. Native `src/models/` contains Cellerator-owned model implementations that do not expose framework tensor types. Neighbor retrieval index/query policy is not a Cellerator public API.
+`include/Cellerator/` exposes Cellerator's public substrate directly: `matrix/`
+for representation ABI, `runtime/` for CellShard-free CUDA runtime helpers,
+`quantized/` for quantized packing/metadata, `interop/` for external layout
+bindings, plus top-level parameter and type descriptors. Sequence bit
+primitives live in the sibling Baseplane project, not in Cellerator.
+`src/runtime/` contains the compiled CellShard-free runtime implementation
+behind `Cellerator::runtime`. `src/compute/` is the authoritative home for
+reusable math and operators: matrix conversion and bucketing, CUDA compute
+primitives, exact search math, preprocessing math kernels, sparse
+projection/matmul, ML reductions, and the sparse operator layer under
+`src/compute/sparse/ops/`. `components/CelleraTorch/` owns Torch tensor export,
+Torch custom-op wrappers, Torch-linked quantizer wrappers, and the legacy
+dense-reduce prototype. `src/preprocess/` owns biology-facing preprocessing
+policy, raw-count state validation, QC rule compilation, adapter staging, and
+workbench orchestration over `Cellerator::compute_preprocess`.
+`src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and
+reuses the `Cellerator::runtime` substrate. Native `src/models/` contains
+Cellerator-owned model implementations that do not expose framework tensor
+types. Neighbor retrieval index/query policy is not a Cellerator public API.
 
 Workflow code must not own reusable math. If preprocessing, model, Torch,
 neighbor, or session/workbench code needs GPU math, reductions, dense adds,
@@ -67,7 +85,7 @@ For custom gradients, the first intended handwritten gradient-calculator target 
 Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. CMake resolves CellShard in this order: `CELLERATOR_CELLSHARD_SOURCE_DIR`, sibling `../CellShard`, then `find_package(CellShard CONFIG REQUIRED)`. Useful native Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `exactSearchRuntimeTest`, `sparseOpsRuntimeTest`, and `developmentalTimeCompileTest`. CelleraTorch targets include `celleraTorchBindingsCompileTest`, `celleraTorchDenseReduceCompileTest`, `celleraTorchQuantizePrimitiveTest`, and `celleraTorchModelCustomOpsTest`. Run built tests directly because `ctest` is not configured, for example `./build/exactSearchRuntimeTest`, `./build/sparseOpsRuntimeTest`, or `./build/celleraTorchQuantizePrimitiveTest`. If CelleraTorch dependencies are unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override the component default.
 
 ## Coding Style & Naming Conventions
-Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep file/storage orchestration and ingest outside Cellerator; keep preprocessing, sparse layout primitives, math, forward-neighbor orchestration, and model logic in CelleratorCore/Cellerator.
+Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep file/storage orchestration and ingest outside Cellerator; keep preprocessing, sparse layout primitives, math, forward-neighbor orchestration, and model logic in Cellerator.
 
 The old preprocessing project names have been retired. If future work encounters `MosaiCell`, `Mosaicell`, `mosaicell`, `mosaiCell`, or `CellShardPreprocess`, change it automatically to Cellerator preprocessing names unless the text is explicitly historical. For C++ caller aliases, prefer `cpre`.
 
@@ -85,7 +103,7 @@ Prefer structure-of-arrays over array-of-structures when access is columnar or w
 
 When several local variables share the same type and form one obvious working set, prefer compressed declarations on one statement instead of one-per-line boilerplate so readers do not need to scan extra vertical context just to recover the type; split them back out only when initialization, ownership, comments, or future type drift make that clearer.
 
-For native `src/models/`, keep framework-linked wrappers out of Cellerator. New native model workflows should keep learned parameters and execution buffers visible enough for direct CUDA optimization and future `core/parameters.hh` descriptor exposure.
+For native `src/models/`, keep framework-linked wrappers out of Cellerator. New native model workflows should keep learned parameters and execution buffers visible enough for direct CUDA optimization and future `parameters.hh` descriptor exposure.
 
 ## Testing Guidelines
 Add tests under `tests/` beside the nearest feature area and name them after the unit or workflow being checked, for example `series_ingest_compile_test.cu`. Cover both compile-only integration points and small runtime checks when behavior can be exercised locally. For model work, prefer compile coverage for the umbrella header and a focused runtime test for loss, inference, or retrieval behavior when the path can run locally. For GPU-facing changes, build the affected target and run the corresponding binary; include the exact command in your PR notes.
@@ -108,7 +126,7 @@ When the task moves from model choice to implementation constraints on the 4x V1
 
 For repository-specific performance context, read `optimization.md` at the repo root before making or defending changes in hot paths. It documents the current subsystem-level bottlenecks, likely fixed-call overheads, V100-oriented optimization priorities, and the repo's bias toward explicit low-level building blocks over abstraction-heavy surfaces.
 
-Sparse layout policy in CelleratorCore remains Blocked-ELL-first. Treat Blocked-ELL as the native sparse type for persisted Cellerator execution, staging, and hot-path compute unless a subsystem is explicitly operating in a fallback compressed-only mode. Cellerator preprocessing treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, with compressed / CSR as fallback. Do not describe compressed / CSR as the default sparse representation in new Cellerator code or docs unless that specific surface really is still fallback-only.
+Sparse layout policy in Cellerator remains Blocked-ELL-first. Treat Blocked-ELL as the native sparse type for persisted Cellerator execution, staging, and hot-path compute unless a subsystem is explicitly operating in a fallback compressed-only mode. Cellerator preprocessing treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, with compressed / CSR as fallback. Do not describe compressed / CSR as the default sparse representation in new Cellerator code or docs unless that specific surface really is still fallback-only.
 
 For migration work aimed at removing `std::vector` and abstraction from hot code, also read `pointer_migration_plan.md` at the repo root. It defines the subsystem ordering, target representations, and exit criteria for the pointer-first rewrite.
 

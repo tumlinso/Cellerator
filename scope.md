@@ -13,26 +13,26 @@ sets; Cellerator uses that structure to build and execute modified
 ELLPACK-style sparse layouts such as Blocked-ELL, Sliced-ELL, and quantized
 Blocked-ELL.
 
-Its dependency-light CelleratorCore layer owns sparse layout primitives, GPU
-operators, sparse differentiation and training primitives, biologically
-structured model components, distributed sparse execution, layout optimization
-inputs, and explicit Torch interop boundaries that Torch does not natively
-provide well for sparse biological structure.
+Cellerator owns sparse layout primitives, GPU operators, sparse differentiation
+and training primitives, biologically structured model components, distributed
+sparse execution, layout optimization inputs, and explicit Torch interop
+boundaries that Torch does not natively provide well for sparse biological
+structure.
 
 Cellerator should extend Torch where sparse omics execution needs new
 capability. It should not replace Torch as the general ML framework.
 
 ## Ownership Boundary
 
-- CelleratorCore owns sparse layout primitives and is the migration target for
-  generic sparse math: Blocked-ELL, Sliced-ELL, quantized Blocked-ELL, layout
-  helpers, device views, sparse GPU operators, reductions, transforms, sparse
-  training primitives, forward-neighbor index/query policy over CellShard-backed
-  matrices, and quantized sparse kernels. Some compatibility runtime wrappers
-  may remain in CellShard during migration.
+- Cellerator owns sparse layout primitives and generic sparse math: Blocked-ELL,
+  Sliced-ELL, quantized Blocked-ELL, layout helpers, device views, sparse GPU
+  operators, reductions, transforms, sparse training primitives,
+  forward-neighbor index/query policy over CellShard-backed matrices, and
+  quantized sparse kernels. Some compatibility runtime wrappers may remain in
+  CellShard during migration.
 - Higher-level Cellerator owns biological model components, trajectory/model
   math, and explicit Torch/libtorch extension or export boundaries.
-- CellShard owns data handling over CelleratorCore payloads: `.csh5`,
+- CellShard owns data handling over Cellerator payloads: `.csh5`,
   `.cshard`, CSPACK generations, source ingest, retrieval, sharded runtime
   staging, compaction/finalization, and pack publication.
 - Cellerator preprocessing owns biology-facing preprocessing policy and APIs:

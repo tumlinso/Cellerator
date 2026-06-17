@@ -1,6 +1,6 @@
 #include <Cellerator/models/developmental_time_trajectory.hh>
 
-#include <Cellerator/core/interop/cellshard_access.cuh>
+#include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -13,7 +13,7 @@
 
 namespace dtt = ::cellerator::models::developmental_time_trajectory;
 namespace runtime = ::cellerator::compute::runtime;
-namespace css = ::cellerator::core::matrix;
+namespace css = ::cellerator::matrix;
 namespace csv = ::cellshard::device;
 
 namespace {

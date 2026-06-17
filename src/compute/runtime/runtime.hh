@@ -1,7 +1,7 @@
 #pragma once
 
 #include <CellShard/CellShard.hh>
-#include <Cellerator/core/runtime/runtime.cuh>
+#include <Cellerator/runtime/runtime.cuh>
 #include <Cellerator/dist/distributed.cuh>
 #include "cellerator_cuda_mode.hh"
 
@@ -15,23 +15,23 @@ namespace cellerator::compute::runtime {
 namespace cs = ::cellshard;
 namespace cdist = ::cellerator::dist;
 
-using ::cellerator::core::runtime::cuda_require;
-using ::cellerator::core::runtime::device_buffer;
-using ::cellerator::core::runtime::allocate_device_buffer;
-using ::cellerator::core::runtime::upload_device_buffer;
-using ::cellerator::core::runtime::download_device_buffer;
-using ::cellerator::core::runtime::execution_context;
-using ::cellerator::core::runtime::scratch_arena;
-using ::cellerator::core::runtime::cusparse_cache;
-using ::cellerator::core::runtime::cublas_cache;
-using ::cellerator::core::runtime::request_scratch;
-using ::cellerator::core::runtime::acquire_cusparse;
-using ::cellerator::core::runtime::acquire_csr_f32_descriptor;
-using ::cellerator::core::runtime::acquire_blocked_ell_f16_descriptor;
-using ::cellerator::core::runtime::cached_spmv_bytes;
-using ::cellerator::core::runtime::cached_spmm_bytes;
-using ::cellerator::core::runtime::cached_blocked_ell_spmm_bytes;
-using ::cellerator::core::runtime::acquire_cublas;
+using ::cellerator::runtime::cuda_require;
+using ::cellerator::runtime::device_buffer;
+using ::cellerator::runtime::allocate_device_buffer;
+using ::cellerator::runtime::upload_device_buffer;
+using ::cellerator::runtime::download_device_buffer;
+using ::cellerator::runtime::execution_context;
+using ::cellerator::runtime::scratch_arena;
+using ::cellerator::runtime::cusparse_cache;
+using ::cellerator::runtime::cublas_cache;
+using ::cellerator::runtime::request_scratch;
+using ::cellerator::runtime::acquire_cusparse;
+using ::cellerator::runtime::acquire_csr_f32_descriptor;
+using ::cellerator::runtime::acquire_blocked_ell_f16_descriptor;
+using ::cellerator::runtime::cached_spmv_bytes;
+using ::cellerator::runtime::cached_spmm_bytes;
+using ::cellerator::runtime::cached_blocked_ell_spmm_bytes;
+using ::cellerator::runtime::acquire_cublas;
 
 struct fleet_topology_descriptor {
     enum class profile {
@@ -58,8 +58,8 @@ struct reduce_sum_to_leader_f32_options {
 #endif
 };
 
-using ::cellerator::core::runtime::init;
-using ::cellerator::core::runtime::clear;
+using ::cellerator::runtime::init;
+using ::cellerator::runtime::clear;
 
 void init(fleet_context *fleet);
 void clear(fleet_context *fleet);

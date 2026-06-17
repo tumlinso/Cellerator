@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/core/matrix/compressed.cuh>
+#include <Cellerator/matrix/compressed.cuh>
 
 #include <CellShard/export/dataset_export.hh>
 #include <CellShard/formats/compressed.cuh>
@@ -13,7 +13,7 @@
 
 namespace cellerator::compute::dataset {
 
-namespace cm = ::cellerator::core::matrix;
+namespace cm = ::cellerator::matrix;
 namespace cse = ::cellshard::exporting;
 
 enum class dataset_matrix_kind : std::uint32_t {

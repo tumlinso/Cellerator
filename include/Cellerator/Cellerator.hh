@@ -1,11 +1,11 @@
 #pragma once
 
 #include "abi.h"
-#include "core/matrix.cuh"
-#include "core/parameters.hh"
-#include "core/quantized/api.cuh"
-#include "core/runtime/runtime.cuh"
-#include "core/interop/cellshard.cuh"
+#include "matrix.cuh"
+#include "parameters.hh"
+#include "quantized/api.cuh"
+#include "runtime/runtime.cuh"
+#include "interop/cellshard.cuh"
 #include "compute/runtime.hh"
 #include "compute/dataset.hh"
 #include "preprocess/runtime.hh"

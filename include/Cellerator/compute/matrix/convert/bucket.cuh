@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Cellerator/core/matrix/compressed.cuh>
+#include <Cellerator/matrix/compressed.cuh>
 
 #include <cstddef>
 
 namespace cellerator::compute::matrix::convert::bucket {
 
-namespace real = ::cellerator::core::real;
-namespace types = ::cellerator::core::types;
+namespace real = ::cellerator::real;
+namespace types = ::cellerator::types;
 
 struct alignas(16) major_nnz_bucket_plan_view {
     types::dim_t major_dim;

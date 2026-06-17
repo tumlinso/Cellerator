@@ -1,4 +1,4 @@
-#include <Cellerator/core/matrix.cuh>
+#include <Cellerator/matrix.cuh>
 #include <Baseplane/seq/dna2.cuh>
 
 #include <cub/cub.cuh>
@@ -13,7 +13,7 @@
 
 namespace convert = ::cellerator::compute::matrix::convert;
 namespace bucket = ::cellerator::compute::matrix::convert::bucket;
-namespace matrix = ::cellerator::core::matrix;
+namespace matrix = ::cellerator::matrix;
 namespace sequence = ::baseplane::seq;
 
 namespace {
@@ -74,7 +74,7 @@ void check_dense_layouts() {
     matrix::dense owned{};
     matrix::init(&owned, 2u, 3u);
     require(matrix::payload_elements(&owned) == 6u, "dense packed payload size mismatch");
-    require(matrix::bytes(&owned) == sizeof(matrix::dense) + 6u * sizeof(::cellerator::core::real::storage_t),
+    require(matrix::bytes(&owned) == sizeof(matrix::dense) + 6u * sizeof(::cellerator::real::storage_t),
             "dense byte count mismatch");
     require(matrix::allocate(&owned) != 0, "dense allocate failed");
     *matrix::at(&owned, 1u, 2u) = __float2half(7.0f);

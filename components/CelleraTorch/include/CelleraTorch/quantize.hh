@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cellerator/core/quantized/layout.cuh>
-#include <Cellerator/core/quantized/packing.cuh>
+#include <Cellerator/quantized/layout.cuh>
+#include <Cellerator/quantized/packing.cuh>
 
 #include <torch/torch.h>
 
@@ -17,7 +17,7 @@
 
 namespace celleratorch::quantize {
 
-namespace msq = ::cellerator::core::quantized;
+namespace msq = ::cellerator::quantized;
 
 // Primitive/training wrapper around the lower-level quantized backend.
 

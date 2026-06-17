@@ -180,19 +180,19 @@ else()
     target_compile_definitions(cellerator_dist INTERFACE CELLERATOR_DIST_HAS_NCCL=0)
 endif()
 
-add_library(cellerator_core STATIC
-    src/core/runtime/runtime.cu
+add_library(cellerator_runtime STATIC
+    src/runtime/runtime.cu
 )
-add_library(Cellerator::core ALIAS cellerator_core)
-target_include_directories(cellerator_core PUBLIC
+add_library(Cellerator::runtime ALIAS cellerator_runtime)
+target_include_directories(cellerator_runtime PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(cellerator_core PUBLIC cxx_std_17)
-target_link_libraries(cellerator_core PUBLIC CUDA::cudart)
-target_link_libraries(cellerator_core PRIVATE CUDA::cublas CUDA::cusparse)
-set_target_properties(cellerator_core PROPERTIES
+target_compile_features(cellerator_runtime PUBLIC cxx_std_17)
+target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart)
+target_link_libraries(cellerator_runtime PRIVATE CUDA::cublas CUDA::cusparse)
+set_target_properties(cellerator_runtime PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
@@ -205,7 +205,7 @@ add_library(cellerator_compute_matrix_convert STATIC
 )
 add_library(Cellerator::compute_matrix_convert ALIAS cellerator_compute_matrix_convert)
 target_include_directories(cellerator_compute_matrix_convert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::core)
+target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::runtime)
 target_link_libraries(cellerator_compute_matrix_convert PRIVATE CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 
@@ -343,8 +343,8 @@ configure_file(
 )
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/core/config.cuh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/core/config.cuh
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cuh.in
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh
     @ONLY
 )
 
@@ -384,7 +384,7 @@ function(cellerator_enable_perf target)
     )
 endfunction()
 
-cellerator_enable_perf(cellerator_core)
+cellerator_enable_perf(cellerator_runtime)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
 
 add_executable(quantizedMatrixTest
@@ -399,7 +399,7 @@ add_executable(cellshardAccessAdapterCompileTest
     tests/cellshard_access_adapter_compile_test.cc
 )
 target_include_directories(cellshardAccessAdapterCompileTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellshardAccessAdapterCompileTest PRIVATE Cellerator::core CellShard::headers)
+target_link_libraries(cellshardAccessAdapterCompileTest PRIVATE Cellerator::runtime CellShard::headers)
 set_target_properties(cellshardAccessAdapterCompileTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellshardAccessAdapterCompileTest)
 
@@ -472,7 +472,7 @@ add_library(cellerator_compute_runtime STATIC
     src/compute/runtime/reduce.cu
 )
 target_include_directories(cellerator_compute_runtime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_compute_runtime PUBLIC CellShard::runtime Cellerator::core Cellerator::dist CUDA::cublas)
+target_link_libraries(cellerator_compute_runtime PUBLIC CellShard::runtime Cellerator::runtime Cellerator::dist CUDA::cublas)
 target_link_libraries(cellerator_compute_runtime PRIVATE CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_compute_runtime PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_runtime)

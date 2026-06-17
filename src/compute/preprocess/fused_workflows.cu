@@ -51,8 +51,8 @@ __global__ void fused_normalize_gene_metrics_blocked_ell_kernel(
                 const unsigned int col_lane = block_size != 0u ? ell_col % block_size : 0u;
                 const unsigned int block_col = ell_width_blocks != 0u
                     ? src.blockColIdx[(unsigned long) row_block * ell_width_blocks + slot]
-                    : cellerator::core::matrix::blocked_ell_invalid_col;
-                const unsigned int col = block_col != cellerator::core::matrix::blocked_ell_invalid_col
+                    : cellerator::matrix::blocked_ell_invalid_col;
+                const unsigned int col = block_col != cellerator::matrix::blocked_ell_invalid_col
                     ? block_col * block_size + col_lane
                     : src.cols;
                 kernels::accumulate_gene_stat(normalized, col, src.cols, gene_sum, gene_detected, gene_sq_sum);

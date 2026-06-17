@@ -22,7 +22,7 @@ Use this file as the canonical index for substantial multi-step work.
 - `sequence-bits-dna2`: done / closed - Added the first narrow SequenceBits primitive with packed word64 and planes32 DNA encoding, CUDA proof kernels, CPU/CUDA tests, benchmark target, and docs.
 - `baseplane-dna2-explicit-widths`: done / closed - Preserved the post-umbrella Baseplane explicit-width DNA2 representation work in the restored sibling Baseplane repository.
 - `baseplane-dna2-benchmark`: done / closed - Preserved the post-umbrella Baseplane DNA2 benchmark and performance notes in the restored sibling Baseplane repository.
-- `cellerator-sparse-ml-layout`: in_progress / idle - Refactored Cellerator Core into contract-first matrix/runtime/quantized/interop layers, moved conversion and CUDA compute primitives under `src/compute`, updated CellShard shims, and kept `src/compute` as the sparse math/operator layer. Needs a decision on the standalone CellShard mask-groups exit-14 expectation.
+- `cellerator-sparse-ml-layout`: done / closed - Refactored the former core split into first-class Cellerator matrix/runtime/quantized/interop domains, moved conversion and CUDA compute primitives under `src/compute`, updated CellShard shims, and kept `src/compute` as the sparse math/operator layer. The standalone CellShard mask-groups exit-14 behavior is separate.
 - `cellerator-runtime-autotune`: done / closed - Added optional close-enough runtime autotuning for Cellerator preprocessing, exposed as Python `autotune=True` while keeping C++ mode explicit/off by default.
 - `cellerator-preprocess-scanpy-validation`: done / closed - Added PBMC3K Scanpy comparison coverage for Cellerator GPU-native preprocessing metrics and fixed the Python session device-reservation plus mitochondrial-count alias issues it exposed.
 - `cellerator-python-preprocess-runtime`: done / closed - Added the Cellerator-owned Python package, pybind module, `cellerator.pp` facade, and GPU-native preprocessing session delegation for `.csh5`/CellShard-backed scRNA preprocessing.
@@ -34,7 +34,7 @@ Use this file as the canonical index for substantial multi-step work.
 _None recorded yet._
 
 ## Progress Notes
-- Started `sequence-bits-dna2`: requested scope is a new `include/Cellerator/seq/dna2.cuh` GPU-native DNA 2-bit primitive with packed storage words, warp-compute bitplanes, correctness kernels, tests, primitive benchmark, and docs. This work is separate from the existing `include/Cellerator/core/sequence/` port material.
+- Started `sequence-bits-dna2`: requested scope is a new `include/Cellerator/seq/dna2.cuh` GPU-native DNA 2-bit primitive with packed storage words, warp-compute bitplanes, correctness kernels, tests, primitive benchmark, and docs. This work was separate from the historical core sequence port material.
 - Finished `sequence-bits-dna2`: configured Cellerator, built `sequenceDna2Test`, `sequenceDna2CudaTest`, and `sequenceDna2Bench`, ran both focused tests, and ran the primitive benchmark with `./build/sequenceDna2Bench 1048576 16 1 10`.
 - Migrated `sequence-bits-dna2` out of Cellerator to the sibling Baseplane
   project. Cellerator now consumes `Baseplane::seq` for sequence bit primitive
@@ -49,10 +49,10 @@ _None recorded yet._
   and the three resulting runtime smokes passed.
 - Extended `sequence-bits-dna2` validation: added `tests/seq/dna2_test_helpers.hh` for deterministic random sequence generation, changed the benchmark to use random DNA input with independent representation selection, and ran a packed-word64 vs warp-planes32 comparison matrix plus Nsight Systems profiles.
 - Finished the first CPU SIMD backend pass: Highway now uses SIMD mask extraction/materialization for full 32-base ASCII pack/unpack, the CPU benchmark reports the active backend, and both Highway-enabled and scalar-only builds pass `sequenceDna2Test` plus `sequenceDna2CpuBench`.
-- Added the first CelleratorCore ownership slice: `Cellerator::core` now exposes
-  sparse layout primitives/device views under `include/Cellerator/core`, and
-  CellShard layout headers are compatibility shims over those types.
-- Verified the CelleratorCore/CellShard wiring with CellShard package-consumer
+- Added the first former-core ownership slice: the then-current core include path exposed
+  sparse layout primitives/device views, and CellShard layout headers were
+  compatibility shims over those types.
+- Verified the former-core/CellShard wiring with CellShard package-consumer
   checks, Cellerator sparse/quantized tests, and a CellShardPreprocess build.
 - Started `cellerator-sparse-ml-layout` from the supplied source layout plan. The intended first pass is behavior-preserving except for moving forward-neighbor policy/API ownership into the new the external neighbor-caller package.
 - Checkpointed `cellerator-sparse-ml-layout`: moved sparse-operator/model-op code under `src/compute/ml`, moved shared host buffering to `src/compute/core`, moved cuVS/KNN scoring helpers under `src/compute/neighbors/scoring`, and removed Cellerator-owned forward-neighbor compatibility wrappers.
@@ -60,7 +60,7 @@ _None recorded yet._
 - Ran `todo-cleanup --partial` and cleared workstreams: dual-cuda-optimization-modes, cellshard-first-stable-release, cellshard-blocked-ell-ingest-runtime, cellshard-runtime-service-contract, quantized-blocked-ell-codecs, cellshard-user-metadata-annotations, gpu-prototype-ingest-blocked-ell, gpu-prototype-model-sparse-boundaries, gpu-prototype-neighbors-trajectory, blocked-ell-optimization-study, gpu-benchmark-sliced-preprocess-campaign, cellshard-hierarchy-reset, implement-derived-subset-and-reorder-materialization-for-cellshard-and-workbench.
 - Started `cellshard-preprocess-gpu-biology-backbone` from the supplied implementation plan.
 - Finished `cellshard-preprocess-gpu-biology-backbone`: moved Blocked-ELL/Sliced-ELL native preprocessing and CSR fallback ownership into CellShardPreprocess, moved preprocessing benchmarks there, and removed Cellerator preprocessing APIs and root targets.
-- Checkpointed CelleratorCore layout migration: old `core/sparse` and `quantized` public paths were removed, Core owns matrix representation/runtime substrate/quantized packing under `include/Cellerator/core`, compute owns conversion and CUDA primitives, CellShard shims were updated, and focused Cellerator runtime checks passed. Standalone CellShard `cellShardMaskGroupsRuntimeTest` builds but exits 14 on its row-keep expectation.
+- Checkpointed the earlier core layout migration: old `core/sparse` and `quantized` public paths were removed, matrix representation/runtime substrate/quantized packing moved under the then-current core include path, compute owns conversion and CUDA primitives, CellShard shims were updated, and focused Cellerator runtime checks passed. Standalone CellShard `cellShardMaskGroupsRuntimeTest` builds but exits 14 on its row-keep expectation.
 - Checkpointed the matrix/compute boundary cleanup: `core/format` became `core/matrix`, conversion and bucket moved to `compute/matrix/convert`, `warp_reduce.cuh` moved under `src/compute/core/primitives`, and `cmake --build build -j 4` plus `./build/coreSparseLayoutRuntimeTest` passed.
 - Started `cellerator-preprocess-rehome`: requested scope is a hard cutover that removes the CellShardPreprocess submodule/package and splits the moved implementation into Cellerator compute preprocessing kernels plus the Cellerator preprocessing policy/runtime API.
 - Finished `cellerator-preprocess-rehome`: Cellerator now builds preprocessing compute and pipeline targets, ported preprocessing tests and benchmarks, CellShard no longer fetches or installs the old package, and the root no longer tracks the preprocessing submodule. Validation passed for the Cellerator build, focused preprocessing tests, adjacent Cellerator smoke tests, CellShard build, and CellShard package-consumer install check. `cellShardMaskGroupsRuntimeTest` still exits 14 as previously recorded under `cellerator-sparse-ml-layout`.
@@ -70,9 +70,10 @@ _None recorded yet._
 - Finished `cellerator-preprocess-scanpy-validation`: added `tests/validate_scanpy_preprocess.py`, exposed missing Python session metrics, fixed direct Python session device-reservation, fixed the `cell_mito_counts` alias, and passed the PBMC3K Scanpy comparison for all metric families.
 - Started `cellerator-runtime-autotune`: requested scope is an optional, bounded runtime optimizer that is callable from Cellerator, defaults off in C++ mode, and is exposed in Python preprocessing as `autotune=True`.
 - Finished `cellerator-runtime-autotune`: added the reusable light optimizer surface, plan-aware preprocessing compute calls, Python autotune/session metrics, README notes, and focused validation including PBMC3K `.csh5` autotune smoke.
+- Finished `cellerator-sparse-ml-layout`: hard-cut the former core identity into direct Cellerator domains with no compatibility headers or `Cellerator::core` alias, updated sibling CellShard shims/package config, and validated Cellerator plus CellShard configure/build and focused Cellerator runtime tests.
 
 ## Next Actions
-- Decide whether CellShard `cellShardMaskGroupsRuntimeTest` exit 14 is an existing CellShard behavior issue or should be fixed under `cellerator-sparse-ml-layout`.
+_None recorded yet._
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.

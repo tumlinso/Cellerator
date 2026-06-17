@@ -57,7 +57,7 @@
 
 - `src/compute/preprocess/preprocess.cu` preallocates large device slabs and avoids repeated steady-state allocation when dimensions are stable.
 - `src/ingest/mtx/compressed_parts.cuh` uses pinned host staging and bulk copies instead of a stream of tiny transfers.
-- The quantized backend under `include/Cellerator/core/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
+- The quantized backend under `include/Cellerator/quantized/` is explicitly custom-kernel and does not pretend sparse irregular work is a Tensor Core problem.
 - NCCL is wired in as the fast path for multi-GPU gene-metric reduction.
 - The torch binding layer is explicit about being a copy boundary instead of hiding expensive aliasing semantics.
 
@@ -648,7 +648,7 @@ Observations:
 Interpretation:
 
 - This is fine as a training or export scaffold.
-- The actual hot backend lives in `include/Cellerator/core/quantized/`, not in the model wrapper.
+- The actual hot backend lives in `include/Cellerator/quantized/`, not in the model wrapper.
 
 ## 8. Custom Model Ops
 
@@ -977,9 +977,9 @@ Optimization comment:
 
 Relevant files:
 
-- `src/core/quantized/README.md`
-- `include/Cellerator/core/quantized/kernels.cuh`
-- `include/Cellerator/core/quantized/packing.cuh`
+- `src/quantized/README.md`
+- `include/Cellerator/quantized/kernels.cuh`
+- `include/Cellerator/quantized/packing.cuh`
 
 This subsystem is architecturally aligned with the repo goals.
 
@@ -1178,7 +1178,7 @@ If only one principle is carried forward from this document, it should be this:
 
 ### 16.1 Commented Active Surfaces
 
-- `src/models/*`, `include/Cellerator/core/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
+- `src/models/*`, `include/Cellerator/quantized/*`, `src/ingest/*`, `src/trajectory/*`, `src/torch/bindings.hh`, and the active non-`_TODO` CellShard residency/layout surfaces now carry concise inline comments.
 - The comments are intentionally short and mostly attached to:
   - host versus device materialization boundaries
   - alloc/free or realloc/copy points

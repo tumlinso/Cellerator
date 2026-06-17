@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Cellerator/core/matrix/compressed.cuh>
-#include <Cellerator/core/matrix/coo.cuh>
+#include <Cellerator/matrix/compressed.cuh>
+#include <Cellerator/matrix/coo.cuh>
 
 #include <cstddef>
 
 namespace cellerator::compute::matrix::convert {
 
-namespace real = ::cellerator::core::real;
-namespace types = ::cellerator::core::types;
+namespace real = ::cellerator::real;
+namespace types = ::cellerator::types;
 
 int compressed_from_coo_library_workspace_bytes(
     types::dim_t cDim,

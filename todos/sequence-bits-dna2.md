@@ -23,7 +23,7 @@ Add Cellerator's first narrow GPU-native regulatory sequence primitive. The publ
 - Required references: `AGENTS.md`, root CellStack `AGENTS.md`, user SequenceBits spec, `CMakeLists.txt`.
 
 ## Planning Notes
-- Keep the new surface separate from the currently dirty `include/Cellerator/core/sequence/` port material.
+- Keep the new surface separate from the historical core sequence port material.
 - Public active masks are one bit per base. Internal packed-field masks stay hidden.
 - Correctness is the first target. The scan kernels are proof kernels, not the final high-throughput scanner.
 
@@ -39,7 +39,7 @@ Add Cellerator's first narrow GPU-native regulatory sequence primitive. The publ
 ## Useful Reference Files
 - `AGENTS.md`
 - `CMakeLists.txt`
-- `include/Cellerator/core/sequence/base.cuh`
+- historical core sequence port material
 - `tests/core_sparse_layout_runtime_test.cu`
 
 ## Plan

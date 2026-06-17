@@ -1,7 +1,7 @@
 #include "project.hh"
 #include "../ops/primitives/common.cuh"
-#include <Cellerator/core/quantized/dispatch.cuh>
-#include <Cellerator/core/quantized/metadata.cuh>
+#include <Cellerator/quantized/dispatch.cuh>
+#include <Cellerator/quantized/metadata.cuh>
 
 #include <stdexcept>
 #include <string>
@@ -79,9 +79,9 @@ void launch_quantized_blocked_ell_spmm_(
     std::int64_t out_cols,
     float *out,
     std::int64_t out_ld) {
-    using matrix_t = ::cellerator::core::quantized::blocked_ell::matrix<Bits, float, Metadata>;
+    using matrix_t = ::cellerator::quantized::blocked_ell::matrix<Bits, float, Metadata>;
 
-    const matrix_t matrix = ::cellerator::core::quantized::blocked_ell::make_matrix<Bits>(
+    const matrix_t matrix = ::cellerator::quantized::blocked_ell::make_matrix<Bits>(
         static_cast<int>(view.rows),
         static_cast<int>(view.cols),
         static_cast<int>(view.nnz),
@@ -118,7 +118,7 @@ void quantized_blocked_ell_spmm_fwd_f32(
     if (matrix.block_col_idx == nullptr || matrix.packed_values == nullptr) {
         throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires packed values and block columns");
     }
-    if (!::cellerator::core::quantized::valid_bits(static_cast<int>(matrix.bits))) {
+    if (!::cellerator::quantized::valid_bits(static_cast<int>(matrix.bits))) {
         throw std::invalid_argument("quantized_blocked_ell_spmm_fwd requires 1/2/4/8-bit quantization");
     }
     if (matrix.row_stride_bytes == 0u) {
@@ -126,16 +126,16 @@ void quantized_blocked_ell_spmm_fwd_f32(
     }
 
     switch (matrix.decode_policy) {
-        case ::cellerator::core::quantized::blocked_ell::decode_policy_per_gene_affine:
+        case ::cellerator::quantized::blocked_ell::decode_policy_per_gene_affine:
             if (matrix.column_scales == nullptr) {
                 throw std::invalid_argument("quantized_blocked_ell_spmm_fwd per_gene_affine requires column_scales");
             }
-            ::cellerator::core::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
                 constexpr int kBits = decltype(bit_tag)::value;
-                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::core::quantized::per_gene_affine<float>>(
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::per_gene_affine<float>>(
                     ctx,
                     matrix,
-                    ::cellerator::core::quantized::make_per_gene_affine(matrix.column_scales, matrix.column_offsets),
+                    ::cellerator::quantized::make_per_gene_affine(matrix.column_scales, matrix.column_offsets),
                     rhs,
                     rhs_ld,
                     out_cols,
@@ -144,16 +144,16 @@ void quantized_blocked_ell_spmm_fwd_f32(
                 return 0;
             });
             return;
-        case ::cellerator::core::quantized::blocked_ell::decode_policy_column_scale_row_offset:
+        case ::cellerator::quantized::blocked_ell::decode_policy_column_scale_row_offset:
             if (matrix.column_scales == nullptr || matrix.row_offsets == nullptr) {
                 throw std::invalid_argument("quantized_blocked_ell_spmm_fwd column_scale_row_offset requires column_scales and row_offsets");
             }
-            ::cellerator::core::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
+            ::cellerator::quantized::dispatch_bits(static_cast<int>(matrix.bits), [&](auto bit_tag) {
                 constexpr int kBits = decltype(bit_tag)::value;
-                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::core::quantized::column_scale_row_offset<float>>(
+                launch_quantized_blocked_ell_spmm_<kBits, ::cellerator::quantized::column_scale_row_offset<float>>(
                     ctx,
                     matrix,
-                    ::cellerator::core::quantized::make_column_scale_row_offset(matrix.column_scales, matrix.row_offsets),
+                    ::cellerator::quantized::make_column_scale_row_offset(matrix.column_scales, matrix.row_offsets),
                     rhs,
                     rhs_ld,
                     out_cols,

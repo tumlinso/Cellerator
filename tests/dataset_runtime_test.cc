@@ -9,8 +9,8 @@
 #include <vector>
 
 namespace cd = cellerator::compute::dataset;
-namespace cm = cellerator::core::matrix;
-namespace ct = cellerator::core::types;
+namespace cm = cellerator::matrix;
+namespace ct = cellerator::types;
 
 int require(bool ok, const char *label) {
     if (!ok) std::fprintf(stderr, "%s\n", label);

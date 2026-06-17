@@ -1,11 +1,11 @@
-#include <Cellerator/core/interop/cellshard_access.cuh>
+#include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 
 #include <cassert>
 
 int main() {
-    namespace ccm = cellerator::core::matrix;
-    namespace cci = cellerator::core::interop;
+    namespace ccm = cellerator::matrix;
+    namespace cci = cellerator::interop;
     namespace csa = cellshard::access;
 
     ccm::blocked_ell blocked{};
@@ -13,9 +13,9 @@ int main() {
     auto blocked_binding = cci::make_cellshard_matrix_binding(blocked, 3u);
     auto blocked_view = csa::make_adapter_view(blocked_binding);
     static_assert(csa::is_archive_adapter<decltype(blocked_binding)>::value,
-                  "CelleratorCore Blocked-ELL binding must satisfy the CellShard archive adapter contract");
+                  "Cellerator Blocked-ELL binding must satisfy the CellShard archive adapter contract");
     static_assert(csa::is_pack_adapter<decltype(blocked_binding)>::value,
-                  "CelleratorCore Blocked-ELL binding must satisfy the CellShard pack adapter contract");
+                  "Cellerator Blocked-ELL binding must satisfy the CellShard pack adapter contract");
 
     const cellshard::access::archive_descriptor blocked_archive = csa::describe_archive(blocked_view);
     assert(blocked_archive.cell_count == 4u);

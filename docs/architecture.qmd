@@ -44,7 +44,7 @@ Owns trajectory-specific scoring, pruning, and assembly. Reusable graph or neigh
 
 Owns header-first libtorch workflows. Model wrappers and training orchestration live here, while reusable compute stays in `src/compute/`.
 
-### `include/Cellerator/core/quantized/`
+### `include/Cellerator/quantized/`
 
 Owns the Volta-oriented quantized format metadata, access, packing, and dispatch helpers. Sparse matmul and model-facing quantized math stay in `src/compute/`.
 

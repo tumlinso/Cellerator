@@ -34,7 +34,7 @@ The forward-neighbor caller surface lives in `src/compute/neighbors/forward_neig
 
 ### Quantized Format And Packing
 
-`include/Cellerator/core/quantized/` contains the quantized sparse format metadata, accessors, packing, unpacking, and dispatch helpers for Volta `sm_70`. Sparse projection and training uses of those payloads remain in `src/compute/`.
+`include/Cellerator/quantized/` contains the quantized sparse format metadata, accessors, packing, unpacking, and dispatch helpers for Volta `sm_70`. Sparse projection and training uses of those payloads remain in `src/compute/`.
 
 The current architecture report for whether quantized sparse payloads actually win after transfer plus decode lives in [quantized_transfer_architecture.qmd](quantized_transfer_architecture.qmd). The first focused benchmark target for that question is `quantizedTransferSpmmBench`.
 

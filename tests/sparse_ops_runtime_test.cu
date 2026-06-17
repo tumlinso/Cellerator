@@ -1,8 +1,8 @@
 #include <Cellerator/compute/runtime.hh>
 #include <Cellerator/compute/sparse/ops.hh>
 #include <Cellerator/compute/sparse/project.hh>
-#include <Cellerator/core/quantized/api.cuh>
-#include <Cellerator/core/interop/cellshard_access.cuh>
+#include <Cellerator/quantized/api.cuh>
+#include <Cellerator/interop/cellshard_access.cuh>
 
 #include <cmath>
 #include <cstdint>
@@ -14,7 +14,7 @@ namespace runtime = ::cellerator::compute::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 namespace cs = ::cellshard;
-namespace msq = ::cellerator::core::quantized;
+namespace msq = ::cellerator::quantized;
 
 namespace {
 

@@ -39,7 +39,7 @@ CelleraTorch should become the efficient Torch view over learned parameters that
 native Cellerator owns. The native side should expose Torch-free non-owning
 descriptors for parameter name, scalar type, host/device residency, device
 ordinal, raw pointer, shape, stride, writability, and role. The current native
-hook for that contract is `include/Cellerator/core/parameters.hh`.
+hook for that contract is `include/Cellerator/parameters.hh`.
 
 Future CelleraTorch adapters should use those descriptors to create Torch tensor
 views over native Cellerator storage without copying where possible. That means

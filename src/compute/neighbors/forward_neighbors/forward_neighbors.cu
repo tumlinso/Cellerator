@@ -25,7 +25,7 @@ namespace cellerator::compute::neighbors::forward_neighbors {
 namespace detail {
 
 namespace cg = ::cellerator::compute::graph;
-namespace css = ::cellerator::core::matrix;
+namespace css = ::cellerator::matrix;
 namespace ex = ::cellerator::compute::neighbors::exact_search;
 namespace build = ::cellerator::build;
 
