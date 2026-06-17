@@ -842,6 +842,8 @@ target_link_libraries(developmentalTimeTrajectoryRuntimeTest PRIVATE cellerator_
 set_target_properties(developmentalTimeTrajectoryRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 
+add_subdirectory(components/CellPack)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_subdirectory(components/CelleraTorch)
 endif()

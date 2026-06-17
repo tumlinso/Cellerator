@@ -9,4 +9,5 @@ Cellerator checkout but is not part of Cellerator sensu stricto.
 
 Current components:
 
+- `CellPack/`: static semantic sparse-packing layout compiler substrate.
 - `CelleraTorch/`: Torch and libtorch integration boundary.
