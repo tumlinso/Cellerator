@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-16T19:45:16Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-16T20:14:53Z"
+last_reviewed_at: "2026-08-16T20:14:53Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,8 +33,8 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Current forkable assignments are CP-BP-06 phase A and CP-BP-11 phase A only.
-  Later IDs must satisfy their gates below before claiming.
+- Barrier A is integrated. The next forkable assignments are CP-BP-06 Phase B
+  and CP-BP-07; later IDs must satisfy their gates below before claiming.
 
 ## Planning Notes
 
@@ -135,7 +135,7 @@ stream's implementation.
 ## Handoff Gates
 
 - [x] `BASE_00_05_READY`: CP-BP-00 through CP-BP-05 compose and are validated.
-- [ ] `CP06_HOST_ABI_READY`: versioned exact plan-geometry identity, checked
+- [x] `CP06_HOST_ABI_READY`: versioned exact plan-geometry identity, checked
   width-32 record ABI, CPU builder/validator/decoder, and adversarial exact
   reconstruction tests exist.
 - [ ] `CP06_DEVICE_READY`: CUDA detect/scan/emit is exactly equivalent, explicit
@@ -153,7 +153,7 @@ stream's implementation.
   CPU/canonical reference and a direct packed consumer contract.
 - [ ] `CP09_RUNTIME_READY`: native V100 consumer executes directly from tiles,
   matches the reference, and has fair CSR/current-layout benchmarks.
-- [ ] `CP11_FOUNDATIONS_READY`: metric schema, immutable split/bootstrap/null
+- [x] `CP11_FOUNDATIONS_READY`: metric schema, immutable split/bootstrap/null
   provenance, leakage checks, and an exact degree-preserving binary-incidence
   null reference with conservation tests exist.
 - [ ] `CP11_HELDOUT_READY`: frozen-plan and available record/tile/runtime metrics
@@ -161,6 +161,14 @@ stream's implementation.
   prerequisite.
 - [ ] `CP10_READY`: CP-BP-07/08 are complete, CP-BP-09 runtime is measurable,
   and `CP11_HELDOUT_READY` is published.
+
+## Integration Barriers
+
+- [x] `BARRIER_A_INTEGRATED`: the combined CP-BP-06 host record contract and
+  CP-BP-11 statistical foundations were rebuilt and tested together on V100
+  `sm_70`; the checkpoint commit is recorded in Progress Notes.
+- [ ] `BARRIER_B_INTEGRATED`: CP-BP-06 CUDA records and CP-BP-07 local ordering
+  are closed, jointly validated, committed, and pushed.
 
 ## Checkpointed Parallel Phases
 
@@ -185,20 +193,19 @@ stream's implementation.
 
 ### If assigned CP-BP-06
 
-- Claim only Phase A now. Own new cell-block-record API/source/test files and,
-  if required, the narrow plan-geometry fingerprint seam. Accept the exact
-  `frozen_packing_plan` plus `ordered_plan_partition_view`; a schema version or
-  dataset identity alone is not sufficient to decode masks.
-- V1 uses one `u32` gene mask and must reject maximum block widths above 32.
-  Define row-to-record offsets, record block IDs/masks, record-to-value offsets,
-  compact byte payload order, capacities, validators, and exact decoder.
+- Barrier A is recorded; claim Phase B only. Treat the versioned host ABI,
+  exact plan-geometry fingerprint, width-32 mask/rank rules, and CPU reference
+  as frozen read-only behavior unless a demonstrated correctness defect is
+  first recorded under the shared lock.
+- Own the CUDA API/source/test/benchmark additions for CUB-backed
+  detect/scan/emit with caller-owned stream and scratch. Preserve exact output
+  equivalence for row-to-record offsets, block IDs/masks, record-to-value
+  offsets, compact bytes, identities, capacities, and overflow behavior.
 - Do not store per-NNZ canonical IDs merely to avoid validating the plan; do not
   implement row ordering, tiles, runtime consumers, persistence, or CP-BP-11.
-- At `CP06_HOST_ABI_READY`, stop, publish the gate under the lock, release every
-  lease, set the stream `in_progress/idle`, and perform no git operation.
-- When later assigned Phase B after Barrier A, reclaim CP-BP-06 and implement
-  CUB-backed CUDA detect/scan/emit with caller-owned stream/scratch, exact CPU
-  agreement, sanitizer coverage, and a serialized V100 benchmark. Then close.
+- Publish `CP06_DEVICE_READY` only after exact CPU agreement, sanitizer
+  coverage, and a serialized V100 benchmark. Release every lease, set the
+  stream idle, and perform no git operation; the Barrier B integrator closes it.
 
 ### If assigned CP-BP-07
 
@@ -251,9 +258,10 @@ stream's implementation.
 
 ### If assigned CP-BP-11
 
-- Claim Phase A now only. Assume sparse scRNA binary incidence with rows=cells
-  and columns=canonical genes; do not normalize, transform magnitudes, densify,
-  use labels to learn packing, or alter CP-BP-01 sampling sources.
+- Phase A is integrated; do not claim CP-BP-11 during Phase B. When the
+  coordinator explicitly opens Phase C, assume sparse scRNA binary incidence
+  with rows=cells and columns=canonical genes; do not normalize, transform
+  magnitudes, densify, use labels to learn packing, or alter CP-BP-01 sources.
 - Define metrics with denominators; immutable train/held-out/bootstrap/null
   identities; and an exact row/column-degree-preserving bipartite double-edge-
   swap reference that rejects duplicate edges and records seed, attempts,
@@ -261,11 +269,10 @@ stream's implementation.
 - Splits must use caller-supplied donor/sample/study groups when provided. A
   cell-level split without such metadata must be labeled cell-level structural
   validation and must not claim donor/study generalization.
-- At `CP11_FOUNDATIONS_READY`, stop, release all leases, set
-  `in_progress/idle`, and perform no git operation. Resume only for the phase
-  named by the coordinator: record metrics in C, tile/bootstrap metrics in E,
-  and final runtime/stability reporting in F. Never edit CP-BP-06/08/09-owned
-  representation or runtime files to make validation convenient.
+- Resume only for the phase named by the coordinator: record metrics in C,
+  tile/bootstrap metrics in E, and final runtime/stability reporting in F.
+  Never edit CP-BP-06/08/09-owned representation or runtime files to make
+  validation convenient.
 
 ## Tasks
 
@@ -273,26 +280,49 @@ stream's implementation.
 - [x] Define concrete host/device handoff gates for CP-BP-06 through CP-BP-11.
 - [x] Add conditional assignment rules to every CP-BP-06 through CP-BP-11
   child ledger.
-- [ ] Execute and integrate Phase A.
+- [x] Execute and integrate Phase A.
 - [ ] Execute and integrate Phases B through F as their gates open.
 
 ## Blockers
 
-- No blocker for Phase A: CP-BP-06 and CP-BP-11 are ready and unclaimed.
+- No blocker for Phase B: CP-BP-06 and CP-BP-07 are unclaimed and may be forked
+  after reading their conditional instructions and claiming disjoint leases.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-16: Barrier A combined validation passed from fresh
+  `build-cp-bp-barrier-a` with CUDA 12.9.86, GNU 13.3.0, and V100 `sm_70`.
+  Passed `cellPackCellBlockRecordsTest`, `cellPackStatisticalValidationTest`,
+  `cellPackPlannerTest`, `cellPackEvaluatorTest`, `cellPackOptimizerTest`,
+  `samplingMaterializationRuntimeTest`, exact CPU/CUDA
+  `cellPackMergeCostTest`, and `cellPackInferredPackingPipelineTest`, plus
+  `git diff --check`, TODO summary, and staleness dry-run. The checkpoint source
+  commit is recorded by the integrator after creation.
+- 2026-08-16: CP-BP-11 published `CP11_FOUNDATIONS_READY` after isolated CPU
+  validation and released its statistical-validation, root-CMake, test, and
+  ledger leases without committing or pushing. Both Phase A children are now
+  idle; Barrier A is ready for the appointed integrator.
+- 2026-08-16: CP-BP-06 published `CP06_HOST_ABI_READY` and released its record,
+  plan-geometry, component-CMake, and ledger leases without committing or
+  pushing. CP-BP-11 remains claimed on its disjoint Phase A files/root CMake;
+  CP-BP-06 Phase B and CP-BP-07 remain blocked until Barrier A.
+- 2026-08-16: Both Phase A streams are claimed with disjoint leases. CP-BP-06
+  owns record/plan-geometry files and component CMake; CP-BP-11 owns isolated
+  statistical-validation files and root CMake.
+- 2026-08-16: CP-BP-06 Phase A was claimed by
+  `codex-cp-bp06-phase-a` at pushed base `8773f87`; CP-BP-11 Phase A remains
+  ready for a disjoint parallel claim.
 - 2026-08-16: Created the checkpointed one-worktree protocol after the serial
   CP-BP-00→05 audit. The first legal fork pair is CP-BP-06 host ABI/reference
   plus CP-BP-11 validation foundations.
 
 ## Next Actions
 
-- At the clean pushed setup checkpoint, fork one thread with the assignment
-  `CP-BP-06 Phase A` and another with `CP-BP-11 Phase A`. Each thread can claim
-  and proceed from this ledger without additional scope instructions.
+- Fork CP-BP-06 Phase B and CP-BP-07 as the next parallel pair. Neither stream
+  is claimed yet; both must use the shared/file/GPU interlocks and stop at their
+  recorded gates for Barrier B.
 
 ## Done Criteria
 

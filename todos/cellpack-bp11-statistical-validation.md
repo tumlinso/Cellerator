@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp11-statistical-validation"
-status: "planned"
-execution: "ready"
+status: "in_progress"
+execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T19:45:16Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-16T20:14:53Z"
+last_reviewed_at: "2026-08-16T20:14:53Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -41,20 +41,22 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## CP-BP-06→11 Fork Interlock
 
-- Read `todos/cellpack-bp06-11-parallel-execution.md`. Phase A may run now in
-  parallel only with CP-BP-06 Phase A.
-- If assigned CP-BP-11 now, claim under
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Phase A is integrated;
+  CP-BP-11 remains idle throughout Phase B and resumes only when the coordinator
+  explicitly opens Phase C.
+- If later assigned CP-BP-11 Phase C, claim under
   `/tmp/cellerator-cp-bp06-11-shared.lock`, use `build-cp-bp11`, and own only
   new statistical-validation/metric/null/provenance files and tests. Consume
   CP-BP-01/04 APIs read-only; do not edit sampling, optimizer, record, tile, or
   runtime implementations.
-- Publish `CP11_FOUNDATIONS_READY`, release all leases, and become
-  `in_progress/idle` at Barrier A. Resume only for the coordinator-named phase;
-  do not remain claimed while waiting on CP-BP-06/08/09. No git operations.
+- Consume the integrated foundations without redefining them, publish the
+  coordinator-named Phase C gate, release all leases, and become idle. Do not
+  remain claimed while waiting on CP-BP-08/09. No git operations.
 
 ## File Lease
 
-_Unclaimed._ Record exact intended paths here atomically at claim time.
+- Released at `CP11_FOUNDATIONS_READY` by `codex-cp-bp11-phase-a` on
+  2026-08-16. No CP-BP-11 source, CMake, test, or ledger lease remains active.
 
 ## Assumptions
 
@@ -88,19 +90,41 @@ _Unclaimed._ Record exact intended paths here atomically at claim time.
 
 ## Tasks
 
-- [ ] Define metrics: bytes/NNZ, metadata/NNZ, blocks/cell, tile-union size, padding/NNZ where relevant, compression, preprocessing throughput, runtime throughput/bandwidth, and correctness.
-- [ ] Implement deterministic held-out and bootstrap provenance without modifying CP-BP-01-owned files.
-- [ ] Add degree-preserving null reference generator and conservation tests.
+- [x] Define metrics: bytes/NNZ, metadata/NNZ, blocks/cell, tile-union size, padding/NNZ where relevant, compression, preprocessing throughput, runtime throughput/bandwidth, and correctness.
+- [x] Implement deterministic held-out and bootstrap provenance without modifying CP-BP-01-owned files.
+- [x] Add degree-preserving null reference generator and conservation tests.
 - [ ] Integrate completed plan/tile/runtime stages as they land.
 
 ## Blockers
 
-- No blocker for foundational validation contracts/reference generators.
-- Full acceptance waits on CP-BP-06, CP-BP-08, and CP-BP-09 outputs; the
-  frozen-plan/evaluator prerequisite is complete.
+- Phase A foundations are complete and idle at `CP11_FOUNDATIONS_READY`.
+- Resume only after Barrier A for the coordinator-named Phase C; full acceptance
+  still waits on CP-BP-08 and CP-BP-09 outputs.
 
 ## Progress Notes
 
+- 2026-08-16: Barrier A jointly validated and integrated these foundations with
+  the CP-BP-06 host record ABI. CP-BP-11 stays idle; it is not part of the next
+  Phase B fork and resumes only for the coordinator-named Phase C.
+- 2026-08-16: Published `CP11_FOUNDATIONS_READY`. Added the pointer-first
+  `statistical_validation` CPU/reference library with versioned raw metric
+  denominators, separate preprocessing/runtime repeat counts, deterministic
+  exact-count row/group held-out splits, group-aware bootstrap multiplicities,
+  immutable identities, and validators that reject leakage or tampering.
+- 2026-08-16: Added the deterministic duplicate-rejecting bipartite double-edge
+  swap null reference. It preserves row and canonical-feature degrees exactly,
+  records source/output identities plus requested/attempted/accepted swaps, and
+  reports an unreached mixing target instead of relaxing conservation.
+- 2026-08-16: Fresh `build-cp-bp11` configuration and target build passed with
+  CUDA 12.9.86, GNU 13.3.0, and `sm_70`. Passed
+  `cellPackStatisticalValidationTest`, `cellPackEvaluatorTest`,
+  `cellPackOptimizerTest`, `samplingMaterializationRuntimeTest`, and
+  `git diff --check`. No GPU validation or benchmark was required for this
+  CPU/reference phase.
+- 2026-08-16: Phase A claimed by `codex-cp-bp11-phase-a` after rereading the
+  concurrently claimed CP-BP-06 lease. CP-BP-11 owns isolated statistical
+  validation files and root-CMake target blocks only; CP-BP-06 owns the
+  component CMake and packing-plan/record seams.
 - 2026-08-14: Added as a missing ready workstream; existing sampling provenance and exact plan evaluator are reusable inputs, but no statistical validation implementation was found.
 - 2026-08-16: Reconciliation credits partial foundations without claiming this
   stream complete: CP-BP-01 provides deterministic disjoint hash-quantile
@@ -112,7 +136,9 @@ _Unclaimed._ Record exact intended paths here atomically at claim time.
 
 ## Next Actions
 
-- Begin with metric/provenance contracts and CPU/reference null conservation in isolated CellPack validation files; coordinate read-only use of CP-BP-01 sampling contracts.
+- Remain idle while CP-BP-06 Phase B and CP-BP-07 run. Resume only when assigned
+  Phase C to add frozen-plan/CP-BP-06 record-level held-out metric adapters; do
+  not absorb CP-BP-08 tile or CP-BP-09 runtime ownership.
 
 ## Done Criteria
 

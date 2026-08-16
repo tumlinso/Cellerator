@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp07-local-cell-ordering"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-16T20:14:53Z"
+last_reviewed_at: "2026-08-16T20:14:53Z"
 stale_after_days: 7
 objective: "CP-BP-07: Infer cheap local cell ordering from active gene-block signatures for warp-friendly groups."
 ---
@@ -44,7 +44,8 @@ Represent each transformed cell by its sorted active-block set, compute a compac
 
 ## File Lease
 
-_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
+_Ready and unclaimed._ Record exact intended paths atomically at claim time;
+CP-BP-06 record files are read-only inputs.
 
 ## Assumptions
 
@@ -71,22 +72,30 @@ _Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Tasks
 
-- [!] Wait for CP-BP-06 active-block record/view contract.
+- [x] Wait for CP-BP-06 active-block record/view contract.
 - [ ] Implement signature and local grouping.
 - [ ] Preserve row permutation and inverse maps.
 - [ ] Benchmark against original/random and row-length ordering.
 
 ## Blockers
 
-- Blocked on CP-BP-06's active-block set and offset semantics.
+_None._ `CP06_HOST_ABI_READY` and Barrier A provide stable row-to-record
+offsets and sorted block IDs; CP-BP-06 Phase B may proceed independently.
 
 ## Progress Notes
 
+- 2026-08-16: Reactivated as `planned/ready` after Barrier A integrated the
+  versioned CP-BP-06 host record ABI. CP-BP-07 may consume row-to-record
+  offsets and sorted block IDs read-only while CP-BP-06 independently adds its
+  CUDA emitter.
 - 2026-08-14: Added as a missing blocked workstream; no implementation evidence was found.
 
 ## Next Actions
 
-- Reactivate after CP-BP-06 exposes a stable active-block view per cell.
+- Claim under the shared lock and own new local-order API/source/test/benchmark
+  files. Implement bounded-window deterministic permutation/inverse maps,
+  original/random/row-NNZ baselines, then library-backed CUDA signature/sort;
+  never rewrite CP-BP-06 payloads or globally reorder/relearn the dataset.
 
 ## Done Criteria
 

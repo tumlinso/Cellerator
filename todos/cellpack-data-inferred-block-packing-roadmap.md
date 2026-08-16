@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T19:45:16Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-16T20:14:53Z"
+last_reviewed_at: "2026-08-16T20:14:53Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -38,9 +38,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - Cellerator owns discovery semantics, plan inference, transformation, CUDA representation, and native consumption.
 - CellShard will eventually own durable `.cspack` serialization, validation, fetch, and upload integration, but not plan discovery or semantic definition.
 - The completed `cellpack-packing-plan-evaluator` is reusable evidence and infrastructure, not CP-BP-04 completion and not a physical codec.
-- CP-BP-01 through CP-BP-05 are complete and closed. CP-BP-06 is ready and
-  unclaimed over CP-BP-05's ordered partition view; consult each child ledger
-  and the shared interlock before touching downstream work.
+- CP-BP-01 through CP-BP-05 are complete and closed. Barrier A integrated
+  CP-BP-06's host record contract and CP-BP-11's validation foundations;
+  CP-BP-06 Phase B and CP-BP-07 are now the unclaimed parallel frontier.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -82,12 +82,16 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-06 is ready over CP-BP-05's completed ordered partition view.
-  CP-BP-07 through CP-BP-10 and CP-BP-13 depend on unresolved/future record,
-  local-row, tile, or consumer contracts recorded in their child ledgers.
+- CP-BP-06 Phase B and CP-BP-07 are ready in parallel after Barrier A.
+  CP-BP-08 through CP-BP-10 and CP-BP-13 depend on unresolved/future local-row,
+  tile, or consumer contracts recorded in their child ledgers.
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-16: Barrier A integrated the tested versioned CP-BP-06 width-32 host
+  record ABI/reference with CP-BP-11 metric, split/bootstrap provenance, and
+  exact degree-preserving null foundations. The next legal fork pair is
+  CP-BP-06 Phase B plus CP-BP-07; neither is claimed by this integration.
 - 2026-08-16: Added a checkpointed one-worktree execution schedule for
   CP-BP-06 through CP-BP-11. Phase A parallelizes CP-BP-06's exact record
   ABI/CPU reference with CP-BP-11's metrics, group-aware split provenance, and
@@ -124,10 +128,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. CP-BP-01 through CP-BP-05 are closed.
-  Fork Phase A as CP-BP-06 host ABI/reference and CP-BP-11 validation
-  foundations. Both are ready/unclaimed and must stop at their recorded gates
-  for Barrier A integration.
+- Do not implement from this parent. Fork CP-BP-06 Phase B and CP-BP-07 as the
+  next pair, following the coordinator's leases and GPU serialization. They
+  must stop at `CP06_DEVICE_READY` and both CP-BP-07 gates for Barrier B.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

@@ -8,6 +8,45 @@
 namespace cellpack {
 namespace {
 
+constexpr u64 fnv1a_offset = 1469598103934665603ull;
+constexpr u64 fnv1a_prime = 1099511628211ull;
+
+void hash_byte(u64 *hash, unsigned char value) noexcept {
+    *hash ^= value;
+    *hash *= fnv1a_prime;
+}
+
+void hash_u32(u64 *hash, u32 value) noexcept {
+    for (u32 byte = 0u; byte < 4u; ++byte) {
+        hash_byte(hash, static_cast<unsigned char>(value >> (byte * 8u)));
+    }
+}
+
+void hash_literal(u64 *hash, const char *value) noexcept {
+    while (*value != '\0') hash_byte(hash, static_cast<unsigned char>(*value++));
+    hash_byte(hash, 0u);
+}
+
+u64 compute_feature_block_geometry_identity(
+    u32 feature_count,
+    const u32 *feature_permutation,
+    u32 feature_block_count,
+    const u32 *feature_block_offsets) noexcept {
+    u64 hash = fnv1a_offset;
+    hash_literal(&hash, "cellerator_feature_block_geometry_identity_v1");
+    hash_u32(&hash, feature_block_geometry_identity_version);
+    hash_u32(&hash, packing_plan_semantic_schema_version);
+    hash_u32(&hash, feature_count);
+    hash_u32(&hash, feature_block_count);
+    for (u32 block = 0u; block <= feature_block_count; ++block) {
+        hash_u32(&hash, feature_block_offsets[block]);
+    }
+    for (u32 execution = 0u; execution < feature_count; ++execution) {
+        hash_u32(&hash, feature_permutation[execution]);
+    }
+    return hash == 0u ? 1u : hash;
+}
+
 std::unique_ptr<u32[]> copy_u32(const u32 *source, std::size_t count) {
     if (count == 0u) return {};
     std::unique_ptr<u32[]> result(new u32[count]);
@@ -112,7 +151,16 @@ validation_result frozen_packing_plan::validate() const {
     source.cost_policy_identity = cost_policy_identity_;
     source.baseline = baseline_;
     source.final = final_;
-    return validate_build_view(source);
+    const validation_result status = validate_build_view(source);
+    if (!status) return status;
+    const u64 expected_geometry_identity = compute_feature_block_geometry_identity(
+        feature_count_, feature_permutation_.get(), feature_block_count_,
+        feature_block_offsets_.get());
+    if (feature_block_geometry_identity_ != expected_geometry_identity) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "frozen plan feature-block geometry identity is inconsistent");
+    }
+    return validation_ok();
 }
 
 validation_result frozen_packing_plan::validate_compatibility(
@@ -147,6 +195,9 @@ validation_result freeze_packing_plan(
         result.row_group_count_ = source.row_group_count;
         result.maximum_feature_block_width_ = source.maximum_feature_block_width;
         result.row_group_width_ = source.row_group_width;
+        result.feature_block_geometry_identity_ = compute_feature_block_geometry_identity(
+            source.feature_count, source.feature_permutation,
+            source.feature_block_count, source.feature_block_offsets);
         result.feature_permutation_ = copy_u32(source.feature_permutation, source.feature_count);
         result.inverse_feature_permutation_ = copy_u32(source.inverse_feature_permutation, source.feature_count);
         result.feature_block_offsets_ = copy_u32(source.feature_block_offsets,

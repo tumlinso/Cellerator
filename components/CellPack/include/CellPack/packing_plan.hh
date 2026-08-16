@@ -7,6 +7,7 @@
 namespace cellpack {
 
 inline constexpr u32 packing_plan_semantic_schema_version = 1u;
+inline constexpr u32 feature_block_geometry_identity_version = 1u;
 
 enum class packing_row_domain_kind : u32 {
     unknown = 0u,
@@ -79,6 +80,9 @@ public:
     u32 row_group_count() const noexcept { return row_group_count_; }
     u32 maximum_feature_block_width() const noexcept { return maximum_feature_block_width_; }
     u32 row_group_width() const noexcept { return row_group_width_; }
+    u64 feature_block_geometry_identity() const noexcept {
+        return feature_block_geometry_identity_;
+    }
     const u32 *feature_permutation() const noexcept { return feature_permutation_.get(); }
     const u32 *inverse_feature_permutation() const noexcept { return inverse_feature_permutation_.get(); }
     const u32 *feature_block_offsets() const noexcept { return feature_block_offsets_.get(); }
@@ -102,6 +106,7 @@ private:
     u32 row_group_count_ = 0u;
     u32 maximum_feature_block_width_ = 0u;
     u32 row_group_width_ = 0u;
+    u64 feature_block_geometry_identity_ = 0u;
     std::unique_ptr<u32[]> feature_permutation_;
     std::unique_ptr<u32[]> inverse_feature_permutation_;
     std::unique_ptr<u32[]> feature_block_offsets_;

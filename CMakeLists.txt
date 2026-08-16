@@ -960,6 +960,35 @@ cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 
 add_subdirectory(components/CellPack)
 
+add_library(cellpack_statistical_validation STATIC
+    components/CellPack/src/statistical_validation.cc
+)
+add_library(CellPack::statistical_validation ALIAS cellpack_statistical_validation)
+target_include_directories(cellpack_statistical_validation PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_statistical_validation
+    PUBLIC CellPack::cellpack
+    PRIVATE Cellerator::compute_sampling
+)
+set_target_properties(cellpack_statistical_validation PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_statistical_validation)
+
+add_executable(cellPackStatisticalValidationTest
+    components/CellPack/tests/statistical_validation_test.cc
+)
+target_link_libraries(cellPackStatisticalValidationTest PRIVATE
+    CellPack::statistical_validation
+)
+set_target_properties(cellPackStatisticalValidationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackStatisticalValidationTest)
+
 add_library(cellpack_apply_plan STATIC
     components/CellPack/src/apply_plan.cc
     components/CellPack/src/apply_plan_cuda.cu

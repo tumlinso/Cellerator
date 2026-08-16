@@ -1,5 +1,6 @@
 add_library(cellpack STATIC
     src/candidate_relation.cc
+    src/cell_block_records.cc
     src/evaluator.cc
     src/gating.cc
     src/layout_metrics.cc
@@ -116,6 +117,19 @@ set_target_properties(cellPackReconstructionTest PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackReconstructionTest)
+endif()
+
+add_executable(cellPackCellBlockRecordsTest
+    tests/cell_block_records_test.cc
+)
+target_link_libraries(cellPackCellBlockRecordsTest PRIVATE CellPack::cellpack)
+set_target_properties(cellPackCellBlockRecordsTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackCellBlockRecordsTest)
 endif()
 
 add_executable(cellPackLayoutMetricsTest
