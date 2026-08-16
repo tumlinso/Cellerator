@@ -99,7 +99,8 @@ Use this file as the canonical index for substantial multi-step work.
   CP-BP-11 statistical foundations from fresh `build-cp-bp-barrier-a` on V100
   `sm_70`. Both new tests, planner/evaluator/optimizer, sampling materialization,
   exact merge-cost CPU/CUDA, and the inferred packing pipeline passed. The
-  next unclaimed fork pair is CP-BP-06 Phase B plus CP-BP-07.
+  integrated source checkpoint is `25fcb43`; the next unclaimed fork pair is
+  CP-BP-06 Phase B plus CP-BP-07.
 - 2026-08-16: CP-BP-11 Phase A published `CP11_FOUNDATIONS_READY` with tested
   metric, group-aware split/bootstrap, immutable provenance, leakage detection,
   and exact row/feature-degree-preserving null foundations. Both Phase A streams

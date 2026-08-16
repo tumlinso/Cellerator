@@ -298,8 +298,8 @@ stream's implementation.
   `cellPackPlannerTest`, `cellPackEvaluatorTest`, `cellPackOptimizerTest`,
   `samplingMaterializationRuntimeTest`, exact CPU/CUDA
   `cellPackMergeCostTest`, and `cellPackInferredPackingPipelineTest`, plus
-  `git diff --check`, TODO summary, and staleness dry-run. The checkpoint source
-  commit is recorded by the integrator after creation.
+  `git diff --check`, TODO summary, and staleness dry-run. The integrated source
+  checkpoint is commit `25fcb43`.
 - 2026-08-16: CP-BP-11 published `CP11_FOUNDATIONS_READY` after isolated CPU
   validation and released its statistical-validation, root-CMake, test, and
   ledger leases without committing or pushing. Both Phase A children are now
