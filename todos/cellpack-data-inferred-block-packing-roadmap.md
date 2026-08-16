@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:38:44Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-16T15:48:00Z"
+last_reviewed_at: "2026-08-16T15:48:00Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -35,7 +35,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - Cellerator owns discovery semantics, plan inference, transformation, CUDA representation, and native consumption.
 - CellShard will eventually own durable `.cspack` serialization, validation, fetch, and upload integration, but not plan discovery or semantic definition.
 - The completed `cellpack-packing-plan-evaluator` is reusable evidence and infrastructure, not CP-BP-04 completion and not a physical codec.
-- CP-BP-01 and CP-BP-04 are complete and closed. CP-BP-05 is ready against the frozen semantic plan; consult each child ledger before starting downstream work.
+- CP-BP-01 through CP-BP-05 are complete and closed. CP-BP-06 is ready and
+  unclaimed over CP-BP-05's ordered partition view; consult each child ledger
+  and the shared interlock before touching downstream work.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -64,9 +66,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 ## Tasks
 - [x] CP-BP-01 representative sparse-support extraction.
 - [x] CP-BP-02 candidate gene-block discovery.
-- [ ] CP-BP-03 exact packing-cost and merge-gain scoring.
+- [x] CP-BP-03 exact packing-cost and merge-gain scoring.
 - [x] CP-BP-04 global gene-block optimization and durable semantic `PackingPlan`.
-- [ ] CP-BP-05 apply a frozen plan to full partitions.
+- [x] CP-BP-05 apply a frozen plan to full partitions.
 - [ ] CP-BP-06 emit compact per-cell block records.
 - [ ] CP-BP-07 infer local cell order from active-block signatures.
 - [ ] CP-BP-08 build warp-oriented 32-cell tiles.
@@ -83,16 +85,21 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-16: CP-BP-05 completed pointer-first CPU/CUDA application of
+  full-domain frozen plans, exact canonical reconstruction, CUB segmented
+  ordering, focused validation, and a serialized V100 benchmark. CP-BP-06 is
+  now ready; compact record emission remains deliberately unimplemented.
 - 2026-08-16: Repository reconciliation verified CP-BP-01, CP-BP-02, and
   CP-BP-04 against focused CPU/CUDA tests and serialized V100 benchmarks. They
   satisfied their child acceptance criteria in the dirty worktree based at
   `1ebb734`; their implementation was checkpointed as `597a3eb`. Older
   supplied-plan coordinate/evaluator/gating scaffolding
   remains distinct from inferred-plan application and compact physical packing.
-- 2026-08-16: CP-BP-03 remains unimplemented as a reusable exact candidate
-  merge-cost API. CP-BP-04 contains exact support-intersection proxies and an
-  exact whole-plan evaluator, which are reusable seams but do not supersede
-  CP-BP-03. CP-BP-11 can reuse deterministic disjoint sampling/replay
+- 2026-08-16: CP-BP-03 completed a reusable versioned CPU/CUDA exact candidate
+  merge-cost API and optimizer-valid exact relation output. CP-BP-04's private
+  support proxies and whole-plan evaluator remain distinct consumers/seams;
+  singleton pair gain is not an exact score for later merged blocks. CP-BP-11
+  can reuse deterministic disjoint sampling/replay
   provenance and frozen-plan/evaluator contracts, but null generation,
   bootstrap stability, and held-out reporting are not implemented.
 - 2026-08-14: Inspected Cellerator/root guidance, current root and Cellerator ledgers, active worktree state, the completed exact plan evaluator, CellPack guidance, and new sampling source/tests.
@@ -103,10 +110,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. CP-BP-01, CP-BP-02, and CP-BP-04 are
-  closed in verified worktree state. Prefer CP-BP-05 as the next implementation
-  because it unlocks the physical record/tile/runtime chain; CP-BP-03 is the
-  independent runner-up for production candidate evidence.
+- Do not implement from this parent. CP-BP-01 through CP-BP-05 are closed.
+  CP-BP-06 is the next unclaimed representation frontier because it defines
+  the compact per-cell record and offset grammar required by downstream work.
 - CP-BP-11's foundational validation work remains independently available,
   subject to its collision notes.
 

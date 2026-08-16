@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp06-cell-block-records"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:38:44Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-16T15:34:00Z"
+last_reviewed_at: "2026-08-16T15:34:00Z"
 stale_after_days: 7
 objective: "CP-BP-06: Collapse ordered row entries into compact per-cell gene-block records with complete offset metadata."
 ---
@@ -54,18 +54,24 @@ Detect adjacent block runs and emit `block_id`, within-block `gene_mask`, compac
 
 ## Tasks
 
-- [!] Wait for CP-BP-05 ordered-row/value contract; CP-BP-04 plan semantics are complete.
+- [x] Consume CP-BP-05 ordered-row/value contract; CP-BP-04 plan semantics are complete.
 - [ ] Specify complete logical record and access rules.
 - [ ] Implement CPU/GPU run detection and compact emission.
 - [ ] Add exact reconstruction and adversarial offset tests.
 
 ## Blockers
 
-- Blocked only on CP-BP-05 ordered-row/value output; CP-BP-04 already supplies the required plan width and canonical block/local mappings.
-- Final persistence field widths/versioning are coordinated later in CP-BP-13, but runtime logical access must be settled here.
+_None; this stream is ready and unclaimed._ CP-BP-05 now supplies ordered row
+offsets, block/local coordinates, canonical feature IDs, and exact value bytes
+for arbitrary full-domain partitions. Final persistence field widths/versioning
+remain CP-BP-13 work and do not block the runtime logical record contract here.
 
 ## Progress Notes
 
+- 2026-08-16: Reactivated as `planned/ready` after CP-BP-05 completed
+  `ordered_plan_partition_view` and exact host/CUDA application of full-domain
+  frozen plans. CP-BP-06 can consume that view read-only; no record emission
+  was implemented by CP-BP-05.
 - 2026-08-14: Added as a missing blocked workstream; existing CellPack packed-coordinate scaffolding is not accepted as this compact physical record.
 - 2026-08-16: Reconciliation found no compact per-cell block record, gene-mask,
   variable-payload offset, or exact decoder implementation. The older
@@ -74,7 +80,10 @@ Detect adjacent block runs and emit `block_id`, within-block `gene_mask`, compac
 
 ## Next Actions
 
-- Reactivate after CP-BP-05 settles ordered rows and values, then resolve the logical row/block/value offset contract.
+- Define the pointer-first row/block/value offset and mask-rank contract over
+  `ordered_plan_partition_view`, then implement exact CPU/CUDA run detection
+  and emission without absorbing CP-BP-07 ordering, CP-BP-08 tiles, runtime
+  kernels, or persistence.
 
 ## Done Criteria
 

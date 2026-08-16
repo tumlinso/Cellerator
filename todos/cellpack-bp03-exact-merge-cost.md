@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp03-exact-merge-cost"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp-03-fork"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:57:37Z"
-last_reviewed_at: "2026-08-16T14:57:37Z"
+last_heartbeat_at: "2026-08-16T15:27:39Z"
+last_reviewed_at: "2026-08-16T15:27:39Z"
 stale_after_days: 3
 objective: "CP-BP-03: Score candidate merges with exact structural overlap and a replaceable target-layout cost model."
 ---
@@ -57,8 +57,9 @@ Implement exact wordwise support overlap and `estimate_merge_gain`/layout-cost c
 
 ## File Lease
 
-- Unclaimed. The assigned fork must replace this line with exact paths before
-  editing source.
+- Released for final integration on 2026-08-16. The completed `merge_cost` files
+  remain CP-BP-03-owned and must not be modified by the active CP-BP-05 stream;
+  the shared `components/CellPack/CMakeLists.txt` lease is released.
 
 ## Suggested Skills
 
@@ -82,19 +83,42 @@ Implement exact wordwise support overlap and `estimate_merge_gain`/layout-cost c
 
 ## Tasks
 
-- [ ] Reconcile the new policy with the completed evaluator cost seam.
-- [ ] Implement CPU/reference `cost` and `merge_gain`.
-- [ ] Implement and test GPU candidate scoring.
-- [ ] Document provisional versus physically validated cost terms.
+- [x] Reconcile the new policy with the completed evaluator cost seam.
+- [x] Implement CPU/reference `cost` and `merge_gain`.
+- [x] Implement and test GPU candidate scoring.
+- [x] Document provisional versus physically validated cost terms.
 
 ## Blockers
 
-- No candidate-input blocker remains: CP-BP-01 support and CP-BP-02's immutable
-  canonical `gene_candidate_pair_view` are complete in the current worktree.
-- Final codec-byte terms remain provisional until CP-BP-06/08 settle the physical record and tile ABI.
+_None; this stream is complete and closed._ Final codec calibration remains a
+documented CP-BP-06/08/12 responsibility, not an acceptance blocker for the
+versioned provisional policy.
 
 ## Progress Notes
 
+- 2026-08-16: Completed a versioned, replaceable exact byte policy covering
+  block metadata, canonical feature identifiers, block/active-row offsets,
+  masks, compact-or-dense value slots, and three explicit alignment stages.
+  Zero byte terms deliberately defer components; no policy is represented as a
+  finalized CP-BP-06 physical ABI.
+- 2026-08-16: Added exact CPU `estimate_exact_block_cost`,
+  `estimate_merge_gain`, and `score_gene_merges_cpu`, plus a host-staged native
+  V100 scorer. Both paths consume immutable CP-BP-01 support and CP-BP-02
+  candidate provenance and emit optimizer-valid `exact_merge_gain`
+  `candidate_relation` evidence without changing discovery or optimization.
+- 2026-08-16: `cellPackMergeCostTest` passed CPU/CUDA exact agreement for
+  empty/zero-row, identical, overlapping, disjoint, tail-word, maximum-width,
+  unprofitable, deferred-term, invalid-provenance/count, determinism, and
+  overflow cases. Adjacent evaluator, optimizer, and candidate-discovery tests
+  also passed from `build-cp-bp03`.
+- 2026-08-16: Mutex benchmark on Tesla V100 (`65,536` cells, `30,000` genes,
+  `2,048` words/gene, `105,000` candidates) measured `308.250 ms` CPU and
+  `77.924/78.895 ms` CUDA minimum/median including allocation, 245,760,000-byte
+  support staging, kernel, and D2H output. All integer fields matched exactly;
+  persistent device support remains an explicit future optimization.
+- 2026-08-16: Claimed as `codex-cp-bp-03-fork` under the single-worktree
+  interlock. Leased only the exact scorer files above and the CellPack CMake
+  integration seam; CP-BP-05 remains independently ready and untouched.
 - 2026-08-14: Added as a missing ready workstream and linked to the completed exact plan evaluator; no merge scorer implementation was found.
 - 2026-08-16: Reconciliation found reusable but non-superseding pieces:
   CP-BP-04 normalizes `candidate_relation`, computes exact sampled-support
@@ -107,10 +131,9 @@ Implement exact wordwise support overlap and `estimate_merge_gain`/layout-cost c
 
 ## Next Actions
 
-- Start with the evaluator-compatible CPU policy, consume
-  `gene_candidate_pair_view`, and emit exact `candidate_relation` evidence for
-  the completed optimizer without treating its private support proxy as the
-  codec-cost API. Keep physical-format assumptions explicit and replaceable.
+- No CP-BP-03 implementation remains. CP-BP-12 may later replace/calibrate the
+  policy after CP-BP-08/09 provide measurable physical consumers; singleton
+  pair scores must still not be misused as exact later-block merge scores.
 
 ## Done Criteria
 

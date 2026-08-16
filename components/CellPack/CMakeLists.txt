@@ -4,6 +4,7 @@ add_library(cellpack STATIC
     src/gating.cc
     src/layout_metrics.cc
     src/layout_selector.cc
+    src/merge_cost.cc
     src/optimizer.cc
     src/packing_plan.cc
     src/pack.cc
@@ -42,6 +43,27 @@ set_target_properties(cellpack_gating_cuda PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_gating_cuda)
+endif()
+
+add_library(cellpack_merge_cost_cuda STATIC
+    src/merge_cost_cuda.cu
+)
+add_library(CellPack::merge_cost_cuda ALIAS cellpack_merge_cost_cuda)
+target_include_directories(cellpack_merge_cost_cuda PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellpack_merge_cost_cuda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(cellpack_merge_cost_cuda PUBLIC CellPack::cellpack CUDA::cudart)
+target_compile_features(cellpack_merge_cost_cuda PUBLIC cxx_std_17)
+set_target_properties(cellpack_merge_cost_cuda PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellpack_merge_cost_cuda)
 endif()
 
 add_executable(cellPackFormatTest
@@ -177,6 +199,21 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackOptimizerTest)
 endif()
 
+add_executable(cellPackMergeCostTest
+    tests/merge_cost_test.cu
+)
+target_link_libraries(cellPackMergeCostTest PRIVATE CellPack::merge_cost_cuda)
+set_target_properties(cellPackMergeCostTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackMergeCostTest)
+endif()
+
 add_executable(cellPackLayoutBench
     bench/cellpack_layout_bench.cc
 )
@@ -233,4 +270,20 @@ set_target_properties(cellPackOptimizerBench PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackOptimizerBench)
+endif()
+
+add_executable(cellPackMergeCostBench
+    bench/cellpack_merge_cost_bench.cu
+)
+target_include_directories(cellPackMergeCostBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
+target_link_libraries(cellPackMergeCostBench PRIVATE CellPack::merge_cost_cuda)
+set_target_properties(cellPackMergeCostBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackMergeCostBench)
 endif()

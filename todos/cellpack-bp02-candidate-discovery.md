@@ -5,7 +5,7 @@ execution: "closed"
 owner: "codex-cp-bp-02"
 created_at: "2026-08-14T13:00:00Z"
 last_heartbeat_at: "2026-08-14T14:12:29Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_reviewed_at: "2026-08-16T15:29:50Z"
 stale_after_days: 3
 objective: "CP-BP-02 deterministic sketch/LSH candidate generation and deduplication; approximate similarity proposes only."
 ---
@@ -73,7 +73,9 @@ _None; CP-BP-01 is complete and CP-BP-02 acceptance uses synthetic high-overlap 
 - 2026-08-14: Benchmark provenance reports 14,060,031 bytes of CUB scratch, 333,424,355 bytes of accounted peak device allocation, and a 534,306,000-byte conservative fixed bound excluding CUB. The result is synthetic correctness smoke, not a production recall threshold.
 
 ## Next Actions
-- CP-BP-02 is closed. CP-BP-03 may consume gene_candidate_pair_view and its immutable provenance without reinterpretation; persistent device-resident Step 1 support remains an optional optimization.
+- CP-BP-02 is closed. CP-BP-03 now consumes `gene_candidate_pair_view` and its
+  immutable provenance without reinterpretation; persistent device-resident
+  Step 1 support remains an optional optimization.
 
 ## Done Criteria
 - Candidate list is deterministic and duplicate-free.

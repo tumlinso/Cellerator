@@ -14,10 +14,10 @@ Use this file as the canonical index for substantial multi-step work.
   representation, and native consumption. CellShard may later own durable
   `.cspack` serialization/validation/fetch/upload integration without learning
   or defining the plan.
-- CP-BP-01, CP-BP-02, and CP-BP-04 satisfy their recorded acceptance criteria
-  and are closed. Their sources, build wiring, tests, and benchmarks are
-  checkpointed in commit `597a3eb`; CP-BP-03 still owns exact candidate scoring
-  and CP-BP-05 is ready against the frozen semantic plan contract.
+- CP-BP-01 through CP-BP-05 satisfy their recorded acceptance criteria and are
+  closed. CP-BP-01/02/04 are checkpointed in commit `597a3eb`; CP-BP-03/05 are
+  complete in the current integration. CP-BP-06 is the next unclaimed
+  representation frontier.
 - CP-BP-03 and CP-BP-05 may run concurrently in one worktree only under this
   cooperative protocol. Before claiming, changing a lease, or editing a shared
   file, atomically acquire `/tmp/cellerator-cp-bp-shared.lock` with `mkdir`.
@@ -59,26 +59,49 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-data-inferred-block-packing-roadmap` | status: in_progress | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | objective: CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent.
 - `cellpack-bp01-support-extraction` | status: done | owner: parallel-agent-step-1 | file: `todos/cellpack-bp01-support-extraction.md` | objective: CP-BP-01 representative sampling, binary support, per-gene bitsets, counts, provenance, and exact reconstruction.
 - `cellpack-bp02-candidate-discovery` | status: done | owner: codex-cp-bp-02 | file: `todos/cellpack-bp02-candidate-discovery.md` | objective: CP-BP-02 deterministic sketch/LSH candidate generation and deduplication; approximate similarity proposes only.
-- `cellpack-bp03-exact-merge-cost` | status: planned | owner: unassigned | file: `todos/cellpack-bp03-exact-merge-cost.md` | objective: CP-BP-03 exact bitset overlap and replaceable codec-cost/merge-gain scoring, reconciled with the completed evaluator.
+- `cellpack-bp03-exact-merge-cost` | status: done | owner: codex-cp-bp-03-fork | file: `todos/cellpack-bp03-exact-merge-cost.md` | objective: CP-BP-03 exact bitset overlap and replaceable codec-cost/merge-gain scoring, reconciled with the completed evaluator.
 - `cellpack-bp04-packing-plan-optimizer` | status: done | owner: codex-cp-bp-04 | file: `todos/cellpack-bp04-packing-plan-optimizer.md` | objective: CP-BP-04 supplied-candidate deterministic optimizer, exact-oracle rollback, and immutable semantic PackingPlan are complete.
-- `cellpack-bp05-apply-frozen-plan` | status: planned | owner: unassigned | file: `todos/cellpack-bp05-apply-frozen-plan.md` | objective: CP-BP-05 GPU-oriented remap and segmented packed-coordinate ordering; ready against `frozen_packing_plan`.
+- `cellpack-bp05-apply-frozen-plan` | status: done | owner: codex-cp-bp-05-fork | file: `todos/cellpack-bp05-apply-frozen-plan.md` | objective: CP-BP-05 host/CUDA remap and segmented packed-coordinate ordering are complete and closed.
 - `cellpack-packing-plan-cuda-evaluator` | status: planned | owner: unassigned | file: `todos/cellpack-packing-plan-cuda-evaluator.md` | objective: deferred native V100 CUB acceleration of exact PackingPlan evaluation; opened by measured oracle share and not prerequisite to CP-BP-05.
-- `cellpack-bp06-cell-block-records` | status: blocked | owner: unassigned | file: `todos/cellpack-bp06-cell-block-records.md` | objective: CP-BP-06 compact per-cell block records and complete variable-payload offsets; the CP-BP-04 plan contract is complete and this now waits only on CP-BP-05 ordered rows.
+- `cellpack-bp06-cell-block-records` | status: planned | owner: unassigned | file: `todos/cellpack-bp06-cell-block-records.md` | objective: CP-BP-06 compact per-cell block records and complete variable-payload offsets over CP-BP-05's completed ordered partition view; ready and unclaimed.
 - `cellpack-bp07-local-cell-ordering` | status: blocked | owner: unassigned | file: `todos/cellpack-bp07-local-cell-ordering.md` | objective: CP-BP-07 bounded local active-block-signature ordering; waits on CP-BP-06.
 - `cellpack-bp08-warp-tiles` | status: blocked | owner: unassigned | file: `todos/cellpack-bp08-warp-tiles.md` | objective: CP-BP-08 compact 32-cell tile dictionary, cell/gene masks, payloads, and offsets; waits on CP-BP-06/07.
 - `cellpack-bp09-native-runtime-consumers` | status: blocked | owner: unassigned | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: CP-BP-09 direct packed-tile kernels with no CSR/BELL unpack; waits on CP-BP-08.
 - `cellpack-bp10-alternating-refinement` | status: blocked | owner: unassigned | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: CP-BP-10 bounded held-out gene/cell alternating refinement; waits on the first complete plan/tile/runtime loop.
 - `cellpack-bp11-statistical-validation` | status: planned | owner: unassigned | file: `todos/cellpack-bp11-statistical-validation.md` | objective: CP-BP-11 held-out, degree-preserving null, bootstrap/stability, metric, and correctness infrastructure.
-- `cellpack-bp12-hardware-cost-autotune` | status: blocked | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: CP-BP-12 replaceable measured execution-cost model; waits on CP-BP-03 and measured CP-BP-08/09 paths.
+- `cellpack-bp12-hardware-cost-autotune` | status: blocked | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: CP-BP-12 replaceable measured execution-cost model; its CP-BP-03 policy seam is complete and it now waits only on measured CP-BP-08/09 paths.
 - `cellpack-bp13-persistence-integration` | status: blocked | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: CP-BP-13 Cellerator/CellShard .cspack lifecycle integration; waits on stable plan/record/tile/runtime contracts.
 
 ## Global Blockers
-- CP-BP-06 through CP-BP-10 and CP-BP-13 remain intentionally blocked by the
-  unresolved per-cell record, warp-tile, or direct-consumer APIs identified in
-  their child ledgers. CP-BP-05 is no longer blocked on PackingPlan semantics.
+- CP-BP-06 is ready. CP-BP-07 through CP-BP-10 and CP-BP-13 remain
+  intentionally blocked by the unresolved per-cell record, warp-tile, or
+  direct-consumer APIs identified in their child ledgers.
 - CP-BP-12 cannot fit a hardware model until correct CP-BP-08/09 kernels exist.
 
 ## Progress Notes
+- 2026-08-16: Final single-worktree integration configured a fresh
+  `build-cp-bp-integration` for CUDA `sm_70` with Torch models disabled, built
+  CP-BP-03/05 together, and passed `cellPackMergeCostTest`,
+  `cellPackApplyPlanTest`, `cellPackEvaluatorTest`, `cellPackOptimizerTest`,
+  `cellPackReconstructionTest`, and `geneCandidateDiscoveryRuntimeTest`.
+  `git diff --check` and the TODO staleness dry run also passed; both child
+  leases were already released before integration began.
+- 2026-08-16: CP-BP-05 completed and released its lease. The shared worktree
+  now contains pointer-first host/CUDA frozen-plan application, CUB segmented
+  ordering, exact reconstruction tests, compute-sanitizer coverage, and a
+  serialized V100 benchmark. CP-BP-06 is reactivated as ready/unclaimed over
+  the new ordered partition view; no CP-BP-06 records were implemented.
+- 2026-08-16: CP-BP-03 completed and released its shared-file lease. The shared
+  worktree now contains the versioned CPU/CUDA exact scorer, optimizer-valid
+  exact relations, focused tests, and a serialized V100 benchmark; final git
+  integration remains reserved for the integrator after CP-BP-05 closes.
+- 2026-08-16: `codex-cp-bp-05-fork` claimed CP-BP-05 under the shared
+  interlock. It leases root CMake plus new `apply_plan` source/test/benchmark
+  paths and must not edit CP-BP-03's component-CMake or merge-cost lease.
+- 2026-08-16: CP-BP-03 was claimed by `codex-cp-bp-03-fork` under the
+  single-worktree interlock with exact merge-cost source/test/benchmark leases
+  and the CellPack CMake integration seam. CP-BP-05 was unclaimed at that
+  instant and was subsequently claimed under the same protocol.
 - 2026-08-16: Added the single-worktree CP-BP-03/05 claim, file-lease, build,
   benchmark, and git-integration interlock. The streams remain unclaimed until
   a fork records one specific assignment under the cooperative lock.
@@ -174,19 +197,19 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Primary next implementation: CP-BP-05 frozen-plan application. It is the
-  first missing transform after the completed semantic plan and unlocks
-  CP-BP-06/07/08/09 and later persistence work without absorbing their record,
-  tile, kernel, or serialization contracts.
-- Runner-up: CP-BP-03 exact merge-cost scoring, which can independently adapt
-  completed CP-BP-02 pairs into exact `candidate_relation` evidence through the
-  evaluator-compatible cost seam. The CUDA evaluator remains a separate
-  deferred acceleration stream.
+- Current implementation frontier: CP-BP-06 compact per-cell block records over
+  CP-BP-05's completed `ordered_plan_partition_view`. It must own complete
+  row/record/payload offsets and exact decode without absorbing CP-BP-07 local
+  ordering, CP-BP-08 tiles, runtime kernels, or persistence.
+- CP-BP-03 is complete. Its provisional storage policy may later be calibrated
+  by CP-BP-12, but CP-BP-12 remains blocked on measurable CP-BP-08/09 paths.
 - CP-BP-11 validation contracts/null references are also independently
   available. Read each child ledger before claiming it.
 - Reactivate blocked children only when their recorded representation/API
   prerequisite lands; do not guess a downstream physical ABI.
-- CP-BP-02 is closed. CP-BP-03 may consume gene_candidate_pair_view and its immutable provenance without reinterpretation; persistent device-resident Step 1 support remains an optional optimization.
+- CP-BP-02 is closed and CP-BP-03 now consumes `gene_candidate_pair_view` plus
+  its immutable provenance without reinterpretation; persistent device-resident
+  Step 1 support remains an optional optimization.
 
 ## Done Criteria
 - Every active workstream in `todos/` is reflected here with a current status.

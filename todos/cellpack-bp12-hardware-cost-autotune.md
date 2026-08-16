@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-16T15:27:39Z"
+last_reviewed_at: "2026-08-16T15:27:39Z"
 stale_after_days: 7
 objective: "CP-BP-12: Fit a replaceable hardware-aware execution-cost model and autotune storage/runtime tradeoffs."
 ---
@@ -56,18 +56,21 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Tasks
 
-- [!] Wait for correct CP-BP-08/09 kernels and stable CP-BP-03 policy interface.
+- [!] Wait for correct CP-BP-08/09 kernels; the CP-BP-03 policy interface is complete.
 - [ ] Build benchmark campaign and data-quality checks.
 - [ ] Fit and validate replaceable execution-cost model.
 - [ ] Integrate configurable storage-plus-runtime objective.
 
 ## Blockers
 
-- Blocked on CP-BP-03 interface and measured CP-BP-08/09 implementation.
+- Blocked only on measured CP-BP-08/09 implementation.
 
 ## Progress Notes
 
 - 2026-08-14: Added as a missing blocked workstream; existing layout-estimate benchmarks do not constitute this packed-tile hardware model.
+- 2026-08-16: CP-BP-03 completed the versioned replaceable storage-cost seam;
+  CP-BP-12 remains blocked because no correct CP-BP-08/09 tile consumer exists
+  to supply execution measurements.
 
 ## Next Actions
 

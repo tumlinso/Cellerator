@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp05-apply-frozen-plan"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp-05-fork"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:57:37Z"
-last_reviewed_at: "2026-08-16T14:57:37Z"
+last_heartbeat_at: "2026-08-16T15:34:00Z"
+last_reviewed_at: "2026-08-16T15:34:00Z"
 stale_after_days: 7
 objective: "CP-BP-05: Apply a frozen PackingPlan to arbitrary/full sparse partitions in packed gene-coordinate order."
 ---
@@ -57,8 +57,16 @@ Map canonical gene IDs to stable `(block_id, local_gene)` coordinates and reorde
 
 ## File Lease
 
-- Unclaimed. The assigned fork must replace this line with exact paths before
-  editing source.
+- Released for final integration on 2026-08-16. The completed `apply_plan`
+  files remain CP-BP-05-owned and must not be changed without a new claim.
+- Historical implementation lease: `CMakeLists.txt`,
+  `components/CellPack/include/CellPack/apply_plan.hh`,
+  `components/CellPack/src/apply_plan.cc`,
+  `components/CellPack/src/apply_plan_cuda.cu`,
+  `components/CellPack/tests/apply_plan_test.cu`, and
+  `components/CellPack/bench/cellpack_apply_plan_bench.cu`.
+- The coordination-only lease on
+  `todos/cellpack-bp06-cell-block-records.md` is released by this handoff.
 
 ## Suggested Skills
 
@@ -81,16 +89,39 @@ Map canonical gene IDs to stable `(block_id, local_gene)` coordinates and reorde
 ## Tasks
 
 - [x] Confirm CP-BP-04's stable semantic `frozen_packing_plan` mapping/version/compatibility contract.
-- [ ] Implement remap and segmented packed-coordinate ordering.
-- [ ] Add exact reconstruction, determinism, and memory-bound tests.
-- [ ] Compare library path before considering specialized sorts.
+- [x] Implement remap and segmented packed-coordinate ordering.
+- [x] Add exact reconstruction, determinism, and memory-bound tests.
+- [x] Compare library path before considering specialized sorts.
 
 ## Blockers
 
-- No CP-BP-04 contract blocker remains. Production candidate quality is upstream of optimization and does not block implementation/testing of plan application.
+_None; this stream is complete and closed._ Production candidate quality is
+upstream of optimization and does not block applying an already-frozen plan.
 
 ## Progress Notes
 
+- 2026-08-16: Completed pointer-first host and CUDA application contracts for
+  arbitrary contiguous partitions. The implementation validates full-domain
+  plan compatibility, maps every canonical feature to `(block_id, local)`,
+  preserves row order and exact value bytes, and emits explicit canonical IDs
+  alongside packed coordinates. Sample-scoped plans are rejected rather than
+  silently projected onto the full dataset.
+- 2026-08-16: The regular CUDA path uses small map/gather kernels plus CUB
+  segmented radix sort with caller-owned device maps, output, scratch, stream,
+  and no internal synchronization. CPU and CUDA outputs match exactly for
+  empty, short, long, partial-partition, invalid-domain, invalid-CSR,
+  insufficient-buffer, and index-overflow cases; compute-sanitizer memcheck
+  reported zero errors.
+- 2026-08-16: Serialized Tesla V100 `sm_70` benchmark at 65,536 rows, 30,000
+  features, 2,097,152 nonzeros, and width 16 measured 34.461 ms CUDA minimum
+  and 35.592 ms mean versus 51.442 ms CPU. CUB scratch was 25,166,079 bytes;
+  transfers were excluded and the API performed no synchronization. A custom
+  short-row sort remains deferred because the library path is already correct
+  and no evidence yet justifies replacing it.
+- 2026-08-16: Claimed by `codex-cp-bp-05-fork` under the single-worktree
+  interlock. CP-BP-03 owns `components/CellPack/CMakeLists.txt` and its
+  merge-cost files; CP-BP-05 will integrate only through the root CMake file
+  and the exact new paths in `File Lease`.
 - 2026-08-14: Added as a missing blocked workstream; no implementation evidence was found.
 - 2026-08-14: Reactivated as `planned/ready` after CP-BP-04 implemented `frozen_packing_plan`, lifetime-bound evaluator view, canonical feature permutation/inverse, feature block/local lookups, fixed identity-row groups, schema/configuration fields, exact summaries, and feature/row compatibility validation. No CP-BP-05 implementation was performed.
 - 2026-08-16: Reconciliation confirmed `frozen_packing_plan` has no consumer
@@ -103,7 +134,9 @@ Map canonical gene IDs to stable `(block_id, local_gene)` coordinates and reorde
 
 ## Next Actions
 
-- Implement the pointer-first remap and segmented ordering contract against `CellPack/packing_plan.hh`; do not add discovery, physical block records, or serialization.
+- CP-BP-06 may consume `ordered_plan_partition_view` to define compact
+  per-cell block records. It must not move record emission, tile construction,
+  runtime kernels, or persistence back into CP-BP-05.
 
 ## Done Criteria
 

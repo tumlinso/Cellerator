@@ -5,7 +5,7 @@ execution: "closed"
 owner: "codex-cp-bp-04"
 created_at: "2026-08-14T13:00:00Z"
 last_heartbeat_at: "2026-08-14T14:09:02Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_reviewed_at: "2026-08-16T15:29:50Z"
 stale_after_days: 3
 objective: "CP-BP-04: Optimize exact candidate gains into constrained reusable gene blocks and a durable PackingPlan."
 ---
@@ -71,7 +71,7 @@ Turn canonical feature relations and sampled structural support into globally re
 - [x] Complete the conceptual Step 5 v1 architecture, candidate contract, mutable/frozen plan contract, oracle cadence, row strategy, test plan, benchmark plan, and deferred CUDA route.
 - [x] Implement the owning mutable plan and immutable semantic optimizer output contracts.
 - [x] Define and validate the supplied candidate-relation seam for CP-BP-02/03 without duplicating discovery or scoring.
-- [ ] Connect completed CP-BP-02 canonical pairs through CP-BP-03's future exact scored-relation adapter; synthetic and hand-authored exact relations currently exercise the complete optimizer path.
+- [x] Connect completed CP-BP-02 canonical pairs through CP-BP-03's exact scored-relation adapter; synthetic and hand-authored exact relations continue to exercise the optimizer independently.
 - [x] Add deterministic optimization/refinement and adversarial tests.
 - [x] Benchmark configurable widths through the repository mutex.
 - [x] Profile the CPU oracle and open `cellpack-packing-plan-cuda-evaluator` as a separate deferred CUB-backed workstream after oracle share exceeded the routing threshold.
@@ -83,7 +83,9 @@ Turn canonical feature relations and sampled structural support into globally re
 ## Blockers
 
 - No blocker remains for the CP-BP-04 v1 supplied-candidate optimizer contract.
-- CP-BP-02 canonical pair discovery is complete. Production candidate-quality integration still awaits CP-BP-03 exact scoring/adaptation, but it does not block supplied-candidate operation or the CP-BP-05 frozen-plan handoff.
+- CP-BP-02 canonical pair discovery and CP-BP-03 exact scoring/adaptation are
+  complete. Production candidate-quality tuning remains separate from the
+  supplied-candidate optimizer and CP-BP-05 frozen-plan handoff.
 - Persistence ABI details remain deliberately deferred to CP-BP-13.
 
 ## Progress Notes
@@ -96,7 +98,8 @@ Turn canonical feature relations and sampled structural support into globally re
 ## Next Actions
 
 - CP-BP-05 may consume `frozen_packing_plan`, its lifetime-bound `packing_plan_view`, feature block/local lookups, and `validate_compatibility()`; it remains responsible only for applying the semantic plan.
-- CP-BP-03 should combine completed CP-BP-02 canonical pairs with exact evidence into `candidate_relation_view` without moving discovery/scoring into CellPack.
+- CP-BP-03 now combines completed CP-BP-02 canonical pairs with exact evidence
+  into `candidate_relation_view` without moving discovery into CellPack.
 - The separate CUDA evaluator workstream may be picked up for profiling/acceleration, but it is not a prerequisite to CP-BP-05.
 
 ## Done Criteria
@@ -442,14 +445,18 @@ This section records what was implemented after the conceptual Step 5 plan above
 
 ### Known limitations and explicitly unimplemented work
 
-- CP-BP-02 canonical pair discovery is complete, but the CP-BP-03 exact scored-relation adapter and production candidate-quality acceptance remain pending; current tests/bench use supplied synthetic or exact-support fixtures. CP-BP-04 does not implement MinHash, LSH, candidate discovery, or a codec-specific merge scorer.
+- CP-BP-02 canonical pair discovery and CP-BP-03's exact scored-relation
+  adapter are complete. Production candidate-quality acceptance remains a
+  validation concern; CP-BP-04 tests/bench continue to use supplied synthetic
+  or exact-support fixtures. CP-BP-04 does not implement MinHash, LSH,
+  candidate discovery, or a codec-specific merge scorer.
 - General split, within-block ordering, row optimization/signatures, incremental exact deltas, beam/global search, GPU evaluator/search, physical packing, masks/bitmaps/BELL/SELL selection, execution kernels, `.cspack`, endian/alignment/file offsets, and CellShard changes remain unimplemented.
 - The v1 optimizer is deterministic but intentionally bounded. Candidate fanout/shortlist and pass/oracle budgets can stop before all profitable geometry is explored. The final exact plan remains monotonic relative to baseline.
 - `packing_plan_semantic_schema_version` is a semantic in-memory version, not a durable ABI. CP-BP-05 may rely on the current mapping/view/compatibility semantics; serialization ownership remains CP-BP-13/CellShard.
 
 ### Handoff decision
 
-CP-BP-04 v1 is complete for its supplied-candidate contract. CP-BP-05 is unblocked because `frozen_packing_plan` owns and validates every canonical/execution mapping it needs without defining a physical representation. Completed CP-BP-02 pairs plus future CP-BP-03 exact evidence can connect through `candidate_relation_view` without changing the optimizer/evaluator/frozen-plan boundary.
+CP-BP-04 v1 is complete for its supplied-candidate contract. CP-BP-05 is unblocked because `frozen_packing_plan` owns and validates every canonical/execution mapping it needs without defining a physical representation. Completed CP-BP-02 pairs plus CP-BP-03 exact evidence connect through `candidate_relation_view` without changing the optimizer/evaluator/frozen-plan boundary.
 
 ### 2026-08-16 reconciliation
 

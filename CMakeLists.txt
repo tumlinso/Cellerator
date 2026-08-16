@@ -960,6 +960,48 @@ cellerator_enable_perf(developmentalTimeTrajectoryRuntimeTest)
 
 add_subdirectory(components/CellPack)
 
+add_library(cellpack_apply_plan STATIC
+    components/CellPack/src/apply_plan.cc
+    components/CellPack/src/apply_plan_cuda.cu
+)
+add_library(CellPack::apply_plan ALIAS cellpack_apply_plan)
+target_include_directories(cellpack_apply_plan PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_apply_plan PUBLIC CellPack::cellpack CUDA::cudart)
+set_target_properties(cellpack_apply_plan PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_apply_plan)
+
+add_executable(cellPackApplyPlanTest
+    components/CellPack/tests/apply_plan_test.cu
+)
+target_link_libraries(cellPackApplyPlanTest PRIVATE CellPack::apply_plan)
+set_target_properties(cellPackApplyPlanTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackApplyPlanTest)
+
+add_executable(cellPackApplyPlanBench
+    components/CellPack/bench/cellpack_apply_plan_bench.cu
+)
+target_include_directories(cellPackApplyPlanBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bench)
+target_link_libraries(cellPackApplyPlanBench PRIVATE CellPack::apply_plan)
+set_target_properties(cellPackApplyPlanBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackApplyPlanBench)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_subdirectory(components/CelleraTorch)
 endif()
