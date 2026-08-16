@@ -16,7 +16,12 @@ enum class validation_code : u32 {
     duplicate_id = 7u,
     invalid_permutation = 8u,
     unknown_module = 9u,
-    invalid_signature = 10u
+    invalid_signature = 10u,
+    invalid_matrix_view = 11u,
+    missing_region = 12u,
+    invalid_plan_geometry = 13u,
+    insufficient_capacity = 14u,
+    integer_overflow = 15u
 };
 
 struct validation_result {

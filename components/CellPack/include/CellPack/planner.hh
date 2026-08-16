@@ -39,6 +39,10 @@ struct static_plan {
     std::vector<feature_module_desc> modules;
     std::vector<row_group_desc> row_groups;
     std::vector<packed_region_desc> regions;
+    // Execution-axis boundaries derived from modules and row groups. These are
+    // geometry, not a physical sparse-format commitment.
+    std::vector<u32> feature_block_offsets;
+    std::vector<u32> row_group_offsets;
 };
 
 validation_result build_static_plan(

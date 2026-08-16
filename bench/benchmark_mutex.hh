@@ -25,7 +25,12 @@ public:
 
     benchmark_mutex_guard(const char *name, const int *device_ids, std::size_t device_count) {
         const char *tag = name != nullptr ? name : "gpu-bench";
-        const char *override_path = std::getenv("CUDA_V100_BENCHMARK_MUTEX_PATH");
+        const char *override_path = std::getenv("COMPARE_BENCHMARK_MUTEX_PATH");
+        if (override_path != nullptr && *override_path != '\0') {
+            acquire_path_(override_path, tag);
+            return;
+        }
+        override_path = std::getenv("CUDA_V100_BENCHMARK_MUTEX_PATH");
         if (override_path != nullptr && *override_path != '\0') {
             acquire_path_(override_path, tag);
             return;

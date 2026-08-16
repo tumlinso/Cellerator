@@ -84,6 +84,8 @@ validation_result build_static_plan(
 
     static_plan plan;
     const u32 residual_module_id = resolve_residual_module_id(features, config);
+    plan.feature_block_offsets.push_back(0u);
+    plan.row_group_offsets.push_back(0u);
 
     std::vector<module_builder> modules;
     module_builder residual_module;
@@ -123,6 +125,7 @@ validation_result build_static_plan(
         desc.flags = module_flag_none;
         plan.modules.push_back(desc);
         plan.feature_permutation.insert(plan.feature_permutation.end(), module.features.begin(), module.features.end());
+        plan.feature_block_offsets.push_back(static_cast<u32>(plan.feature_permutation.size()));
     }
     const u32 residual_feature_begin = static_cast<u32>(plan.feature_permutation.size());
     if (!residual_module.features.empty()) {
@@ -136,6 +139,7 @@ validation_result build_static_plan(
             plan.feature_permutation.end(),
             residual_module.features.begin(),
             residual_module.features.end());
+        plan.feature_block_offsets.push_back(static_cast<u32>(plan.feature_permutation.size()));
     }
 
     plan.inverse_feature_permutation.resize(features.feature_count);
@@ -213,6 +217,7 @@ validation_result build_static_plan(
         row_group.signature_count = static_cast<u32>(signature.modules.size());
         row_group.flags = 0u;
         plan.row_groups.push_back(row_group);
+        plan.row_group_offsets.push_back(group_end);
 
         const region_role role = row_group.row_count < config.min_primary_rows
             ? region_role::conditional

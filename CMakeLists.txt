@@ -494,6 +494,58 @@ target_link_libraries(cellerator_compute_dataset PUBLIC
 set_target_properties(cellerator_compute_dataset PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_compute_dataset)
 
+add_library(cellerator_compute_sampling STATIC
+    src/compute/dataset/sampling.cc
+    src/compute/dataset/sampling_materialization.cc
+)
+add_library(Cellerator::compute_sampling ALIAS cellerator_compute_sampling)
+target_include_directories(cellerator_compute_sampling PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_compute_sampling PUBLIC CellShard::export)
+set_target_properties(cellerator_compute_sampling PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(cellerator_compute_sampling)
+
+add_library(cellerator_compute_gene_support STATIC
+    src/compute/dataset/gene_support_bitset.cu
+)
+add_library(Cellerator::compute_gene_support ALIAS cellerator_compute_gene_support)
+target_include_directories(cellerator_compute_gene_support PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_compute_gene_support PUBLIC cellerator_compute_sampling CUDA::cudart)
+set_target_properties(cellerator_compute_gene_support PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellerator_compute_gene_support)
+
+add_library(cellerator_compute_gene_candidates STATIC
+    src/compute/packing/gene_candidate_discovery.cc
+    src/compute/packing/gene_candidate_minhash.cu
+    src/compute/packing/gene_candidate_discovery_cuda.cu
+)
+add_library(Cellerator::compute_gene_candidates ALIAS cellerator_compute_gene_candidates)
+target_include_directories(cellerator_compute_gene_candidates PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_compute_gene_candidates PUBLIC
+    cellerator_compute_gene_support
+    CUDA::cudart
+)
+set_target_properties(cellerator_compute_gene_candidates PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellerator_compute_gene_candidates)
+
 add_library(cellerator_compute_sparse_ops STATIC
     src/compute/sparse/ops/kernels/base_sparse.cu
     src/compute/sparse/ops/kernels/dist_sparse.cu
@@ -640,7 +692,7 @@ target_link_libraries(cellerator_sparse_math INTERFACE cellerator_compute_sparse
 add_library(cellerator_sparse_linalg INTERFACE)
 target_link_libraries(cellerator_sparse_linalg INTERFACE cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime)
 add_library(cellerator_sparse_ml INTERFACE)
-target_link_libraries(cellerator_sparse_ml INTERFACE cellerator_compute_dataset cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime cellerator_compute_preprocess)
+target_link_libraries(cellerator_sparse_ml INTERFACE cellerator_compute_gene_candidates cellerator_compute_gene_support cellerator_compute_sampling cellerator_compute_dataset cellerator_compute_sparse_project cellerator_compute_sparse_ops cellerator_compute_runtime cellerator_compute_preprocess)
 
 add_library(cellerator_abi STATIC
     src/abi/abi.cu
@@ -721,6 +773,70 @@ target_include_directories(datasetRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR
 target_link_libraries(datasetRuntimeTest PRIVATE cellerator_compute_dataset CUDA::cudart)
 set_target_properties(datasetRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(datasetRuntimeTest)
+
+add_executable(samplingRuntimeTest
+    tests/sampling_runtime_test.cc
+)
+target_include_directories(samplingRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(samplingRuntimeTest PRIVATE cellerator_compute_sampling cellerator_compute_dataset CUDA::cudart)
+set_target_properties(samplingRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(samplingRuntimeTest)
+
+add_executable(samplingMaterializationRuntimeTest
+    tests/sampling_materialization_runtime_test.cc
+)
+target_include_directories(samplingMaterializationRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(samplingMaterializationRuntimeTest PRIVATE cellerator_compute_sampling CUDA::cudart)
+set_target_properties(samplingMaterializationRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+cellerator_enable_perf(samplingMaterializationRuntimeTest)
+
+add_executable(geneSupportBitsetRuntimeTest
+    tests/gene_support_bitset_runtime_test.cu
+)
+target_include_directories(geneSupportBitsetRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(geneSupportBitsetRuntimeTest PRIVATE cellerator_compute_gene_support CUDA::cudart)
+set_target_properties(geneSupportBitsetRuntimeTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(geneSupportBitsetRuntimeTest)
+
+add_executable(geneCandidateDiscoveryRuntimeTest
+    tests/gene_candidate_discovery_runtime_test.cu
+)
+target_include_directories(geneCandidateDiscoveryRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(geneCandidateDiscoveryRuntimeTest PRIVATE
+    cellerator_compute_gene_candidates
+    CUDA::cudart
+)
+set_target_properties(geneCandidateDiscoveryRuntimeTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(geneCandidateDiscoveryRuntimeTest)
+
+add_executable(geneCandidateDiscoveryBench
+    bench/gene_candidate_discovery_bench.cu
+)
+target_include_directories(geneCandidateDiscoveryBench PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/bench
+)
+target_link_libraries(geneCandidateDiscoveryBench PRIVATE
+    cellerator_compute_gene_candidates
+    CUDA::cudart
+)
+set_target_properties(geneCandidateDiscoveryBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(geneCandidateDiscoveryBench)
 
 add_executable(celleratorPreprocessRuntimeTest
     tests/preprocess/preprocess_runtime_test.cu

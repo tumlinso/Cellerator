@@ -432,3 +432,77 @@ CellPack succeeds when biological sparse data becomes easier for hardware to con
 - correctness preserved against canonical sparse input.
 
 The final product should feel like a compiler: it studies the data, chooses a physical layout, emits static executable regions, and then gets out of the kernel's way.
+
+## 2026-08-14 — Exact PackingPlan evaluator stage
+
+### Architectural correction
+
+An earlier reconnaissance centered one hypothetical future physical realization (`row_block_offsets`, block ids, masks, and compact values). That is downstream of the current compiler stage and must not define the PackingPlan abstraction.
+
+For evaluation and future inference work, a PackingPlan is two-sided execution geometry over canonical sparse support:
+
+- execution-position-to-canonical and canonical-to-execution feature mappings;
+- feature-block boundaries on the execution feature axis;
+- execution-position-to-canonical and canonical-to-execution row mappings; and
+- row-group boundaries on the execution row axis.
+
+In this subsystem, "module" or "block" means an execution grouping inferred from structural incidence. It is not required to be a biological gene program. Canonical dataset feature and row ids remain the semantic identities; the plan changes execution order only.
+
+### Implemented in this stage
+
+- `include/CellPack/evaluator.hh` defines `csr_support_view`, `prepared_csr_support`, `packing_plan_view`, caller-owned workspace/output buffer views, exact tile/group/row occupancy records, mergeable summaries, and a reference-only `packing_cost_model`.
+- `src/evaluator.cc` validates/prepares canonical CSR support once, validates two-sided plan geometry, maps each structural nonzero to `(row_group, feature_block, execution_row)`, deterministically sorts those records, and emits sparse occupied-tile statistics.
+- `static_plan` now records derived `row_group_offsets` and `feature_block_offsets`; `make_packing_plan_view(const static_plan&)` adapts the existing planner without interpreting module ids biologically.
+- Exact output includes total NNZ; logical, occupied, and empty tiles; per-occupied-tile NNZ, density, participating rows, row participation/reuse, logical slots, and dense padding; per-execution-row active feature-block counts; per-row-group active blocks, NNZ, participating row/block references, dense slots, and padding; and mergeable count/real distributions.
+- `estimate_packing_cost()` consumes completed occupancy. Compact-value versus dense-within-occupied-tile assumptions and metadata/score weights can change without recomputing or redefining the plan. This model is reference policy, not a durable codec ABI.
+
+### Complete validation
+
+- `tests/evaluator_test.cc` covers an identity plan with hand-computed tiles; a nontrivial row and feature permutation with every reported tile count checked; explicit versus implicit identity equivalence; 64 deterministic randomized conservation trials; empty rows/features; one dense row; a ubiquitous feature; diagonal structure; all NNZ in one tile; one NNZ per tile; uneven final groups/blocks; maximum `uint32` group/block widths; canonical row/feature round trips; static-plan adaptation; invalid boundaries; and insufficient buffers.
+- On 2026-08-14, `cellPackFormatTest`, `cellPackPlannerTest`, `cellPackMatrixViewTest`, `cellPackReconstructionTest`, `cellPackEvaluatorTest`, `cellPackLayoutMetricsTest`, `cellPackLayoutSelectorTest`, `cellPackGatingTest`, and `cellPackGatingCudaTest` built and passed on the native V100 checkout.
+
+### Benchmark status
+
+- `cellPackEvaluatorBench` is mutex-serialized and reports source bytes, rows, features, NNZ, row-group width, feature-block width, one-time source preparation, repeated evaluation time, temporary/output bytes, occupied/empty tiles, mean NNZ per occupied tile, and dense-padding implications.
+- Smoke command: `./build/cellPackEvaluatorBench --rows 20000 --features 5000 --nnz-row 32 --row-group-width 128 --feature-block-width 128 --warmup 1 --repeats 3`.
+- Observed on 2026-08-14: 2,640,004 source bytes, 640,000 NNZ, 0.552438 ms one-time source preparation, 22.1785 ms mean reference evaluation, 10,240,000 temporary bytes, 439,216 output bytes, 6,224 occupied of 6,280 logical tiles, and 102.828 mean NNZ per occupied tile.
+- This is a host reference measurement. It is not a final packed-kernel, GPU-speedup, or physical-format performance claim.
+
+### Known limitations and provisional surfaces
+
+- Initial input is canonical compressed-by-row structural support only. Values are deliberately ignored and host COO is not a staging requirement.
+- The exact reference path is CPU-centric, uses `O(nnz)` reusable scratch, and performs an `O(nnz log nnz)` comparison sort per plan. Output is sparse in occupied tiles and never allocates the complete logical tile grid.
+- `prepared_csr_support` is non-owning. Source arrays must stay immutable and alive for repeated evaluations.
+- Existing CellPack M2-M4 coordinate packing, layout labels/estimates, and gating remain provisional. They are not physical-format proof and are not reclassified by this evaluator.
+- The cost model estimates hypothetical bytes and weighted events only. It is intentionally not versioned as a persisted ABI.
+
+### Invariants future work must preserve
+
+- A plan is row and feature execution geometry, not a final sparse codec.
+- `permutation[execution_position] = canonical_id`; inverse mappings must exactly round trip.
+- Structural conservation requires `sum(occupied_tile.nnz) == source.nnz`.
+- Occupancy computation must stay separate from format-specific cost estimation and selection.
+- Plan inference must consume support evidence and must not require biological labels or reinterpret canonical feature ids.
+- Source preparation, per-plan evaluation, and later physical packing remain separately measurable phases.
+
+### Explicitly not implemented
+
+- PackingPlan inference, initialization, refinement, or optimizer search.
+- Physical packed buffers, masks, Blocked-ELL/SELL/BCSR/bitmap commitment, `.cspack`, serialization, or upload.
+- Preprocessing/model semantic changes.
+- CUDA occupancy kernels, warp execution kernels, Tensor Core paths, gating changes, or learned routing.
+- Full-layout GPU execution or real CellShard-scale evaluation sweeps.
+
+### Intended next stage and routing
+
+The next stage should build candidate-plan inference/refinement over `prepared_csr_support` and call this exact evaluator as the correctness oracle. Before broad search, decide whether the next bottleneck is candidate quality or evaluator throughput.
+
+If evaluator throughput is next, preserve the current contracts and add a device-resident implementation with explicit stream and caller-owned scratch. The native route is Tesla V100 `sm_70`; the operation is not Tensor Core eligible. The expected implementation owner is regular CUDA backed by CUB radix sort, run-length encoding, scans, and reduce-by-key over 64-bit tile/row keys. Profile HBM traffic, sort passes, temporary memory, and launch count before introducing fusion or a custom sort. PTX/SASS work is premature until that GPU hot path exists and is isolated.
+
+### 2026-08-14 optimizer-facing audit
+
+The completed evaluator subsequently passed a Step 5 readiness audit without code changes. `packing_plan_view` is the stable semantic oracle input; `static_plan` is only an adapter source and is not yet the durable mutable optimizer artifact. The first optimizer should use support-derived/exact-candidate proxies for many proposals and call the CPU evaluator on high-quality candidates and checkpoints. The measured 22.1785 ms at 640,000 NNZ does not make CUDA acceleration a prerequisite. Reconsider a CUB-backed device evaluator only after measured oracle volume dominates. Detailed complexity, delta-operation feasibility, stable/provisional API surfaces, and the separate CP-BP-04-ready versus CP-BP-05-blocked gates are recorded in `todos/cellpack-bp04-packing-plan-optimizer.md`.
+
+### 2026-08-14 conceptual Step 5 plan
+
+CP-BP-04 v1 is feature-first: deterministic canonical candidate ingestion, variable-width constrained coarsening, bounded feature move/swap refinement, sampled-support active-block-reference proxies, and CPU exact-oracle checkpoints with whole-batch rollback/shrink. Rows remain identity-ordered with explicit fixed-width grouping until inferred feature blocks make row signatures meaningful. Mutable authority is canonical block membership, not `static_plan`; execution maps/boundaries are derived at explicit materialization checkpoints. The frozen result is an immutable semantic plan with feature/block/local maps and feature/row compatibility identity, not a codec or serialized ABI. GPU evaluator acceleration remains deferred but expected: native V100 `sm_70`, device-resident support, CUB radix sort/reduction, explicit stream/scratch, activated only by the thresholds in the CP-BP-04 ledger. No physical packing, kernel, or `.cspack` work belongs in this optimizer stage.
