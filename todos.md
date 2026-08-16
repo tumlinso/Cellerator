@@ -93,11 +93,13 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-16: Focused rebuilds and runtime tests passed for sampled CSR
   materialization, CPU/CUDA gene support, CPU/CUDA candidate discovery, exact
   plan evaluation, optimizer, and reconstruction. Serialized V100 candidate
-  and optimizer benchmarks passed. The normal `samplingRuntimeTest` target
-  dependency build remains blocked by unrelated dirty
-  `include/Cellerator/dist/nccl_communicator.cuh` parse errors reached through
-  CellShard runtime; the test source was separately rebuilt/linked against the
-  existing runtime archive and passed. No repair was attempted.
+  and optimizer benchmarks passed. After checkpointing, a fresh
+  `cmake -S . -B build-checkpoint-validation -DCMAKE_CUDA_ARCHITECTURES=70`
+  followed by `cmake --build build-checkpoint-validation --target
+  samplingRuntimeTest -j 4` failed while compiling CellShard runtime because
+  committed `b69a168` `nccl_communicator.cuh` uses `local_context` before its
+  definition. The test source separately rebuilt/linked against the prior
+  runtime archive and passed. No repair was attempted in this status-only task.
 - 2026-08-14: Completed the post-evaluator CP-BP-04 optimizer-readiness audit. The evaluator passed without code changes; CP-BP-04 is ready to begin with a proxy-plus-CPU-oracle architecture, while CP-BP-05 remains blocked on the owning/versioned frozen-plan contract.
 - 2026-08-14: Completed the conceptual CP-BP-04 v1 implementation plan without source changes. Selected feature-first deterministic constrained coarsening plus bounded move/swap refinement, integer support-derived proxy batches, CPU exact-oracle checkpoints with rollback, identity/fixed-width row geometry, and an immutable semantic plan. GPU evaluator acceleration remains an expected deferred CUB/V100 workstream with explicit profiling triggers.
 - 2026-08-14: Completed CP-BP-04 v1 for its supplied-candidate contract. Added deterministic score-kind-preserving normalization, membership-authoritative mutable blocks, zero-copy sampled-support proxy caches, constrained merge/move/swap search, exact evaluator rollback/shrink/blacklisting, immutable semantic `frozen_packing_plan`, adversarial/property tests, and a mutex optimizer benchmark. CP-BP-05 is ready; completed CP-BP-02 pairs still require CP-BP-03 exact scored-relation adaptation for production candidate quality.

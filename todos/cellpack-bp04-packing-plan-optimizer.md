@@ -431,7 +431,7 @@ This section records what was implemented after the conceptual Step 5 plan above
 - Passed `cmake --build Cellerator/build -j 4 --target cellPackOptimizerTest cellPackOptimizerBench` and `./Cellerator/build/cellPackOptimizerTest`.
 - Passed all host CellPack tests together: `cellPackFormatTest`, `cellPackPlannerTest`, `cellPackMatrixViewTest`, `cellPackReconstructionTest`, `cellPackLayoutMetricsTest`, `cellPackEvaluatorTest`, `cellPackLayoutSelectorTest`, `cellPackGatingTest`, and `cellPackOptimizerTest`.
 - Passed `./Cellerator/build/quantizedMatrixTest` and `./Cellerator/build/exactSearchRuntimeTest`.
-- A full `cmake --build Cellerator/build -j 4` reached and built every CellPack target, then failed in unrelated pre-existing parallel distributed/NCCL header work: `include/Cellerator/dist/nccl_communicator.cuh` could not see `local_context` while compiling CellShard `mask_groups.cu`. CP-BP-04 does not own or modify those files.
+- A full `cmake --build Cellerator/build -j 4` reached and built every CellPack target, then failed in unrelated parallel distributed/NCCL header work: `include/Cellerator/dist/nccl_communicator.cuh` could not see `local_context` while compiling CellShard `mask_groups.cu`. That extraction was subsequently checkpointed as `b69a168`; CP-BP-04 does not own or modify those files.
 
 ### Benchmark evidence and CUDA routing
 

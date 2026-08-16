@@ -63,8 +63,8 @@ _None; this stream is complete and closed._
 
 ## Progress Notes
 - 2026-08-16: Reconciled against the dirty worktree at `HEAD` `1ebb734`.
-  `samplingRuntimeTest` (separately rebuilt/linked because an unrelated dirty
-  NCCL header breaks its normal dependency build),
+  `samplingRuntimeTest` (separately rebuilt/linked because the subsequently
+  committed `b69a168` NCCL extraction breaks its normal dependency build),
   `samplingMaterializationRuntimeTest`, and `geneSupportBitsetRuntimeTest`
   passed on the V100 host. The acceptance-complete implementation was
   checkpointed in `597a3eb` after this inspection.
