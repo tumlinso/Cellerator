@@ -16,6 +16,7 @@
 #include <map>
 #include <new>
 #include <set>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,6 +25,62 @@ namespace cellpack {
 namespace {
 
 using clock_type = std::chrono::steady_clock;
+
+constexpr u64 fnv1a_offset = 1469598103934665603ull;
+constexpr u64 fnv1a_prime = 1099511628211ull;
+
+void hash_byte(u64 *hash, unsigned char value) noexcept {
+    *hash ^= value;
+    *hash *= fnv1a_prime;
+}
+
+void hash_u64(u64 *hash, u64 value) noexcept {
+    for (u32 byte = 0u; byte < 8u; ++byte) {
+        hash_byte(hash, static_cast<unsigned char>(value >> (byte * 8u)));
+    }
+}
+
+void hash_string(u64 *hash, const std::string &value) noexcept {
+    hash_u64(hash, static_cast<u64>(value.size()));
+    for (unsigned char byte : value) hash_byte(hash, byte);
+}
+
+template<class Values>
+void hash_u64_values(u64 *hash, const Values &values) noexcept {
+    hash_u64(hash, static_cast<u64>(values.size()));
+    for (const auto value : values) hash_u64(hash, static_cast<u64>(value));
+}
+
+u64 sampled_support_identity_unchecked(const sampled_feature_support_view &support) noexcept {
+    const auto &provenance = *support.provenance;
+    u64 hash = fnv1a_offset;
+    hash_string(&hash, "cellerator_sampled_feature_support_identity_v1");
+    hash_u64(&hash, sampled_feature_support_identity_version);
+    hash_u64(&hash, provenance.seed);
+    hash_string(&hash, provenance.hash_algorithm);
+    hash_u64(&hash, provenance.hash_version);
+    hash_u64(&hash, provenance.total_rows);
+    hash_u64(&hash, provenance.selected_rows);
+    hash_u64(&hash, static_cast<u64>(provenance.mode));
+    hash_string(&hash, provenance.split_name);
+    hash_u64(&hash, static_cast<u64>(provenance.cell_identity));
+    hash_u64(&hash, provenance.quantile.begin.numerator);
+    hash_u64(&hash, provenance.quantile.begin.denominator);
+    hash_u64(&hash, provenance.quantile.end.numerator);
+    hash_u64(&hash, provenance.quantile.end.denominator);
+    hash_u64(&hash, provenance.requested_row_count);
+    hash_u64(&hash, provenance.requested_density_strata);
+    hash_u64(&hash, provenance.density_strata);
+    hash_u64_values(&hash, provenance.density_bin_upper_bounds_inclusive);
+    hash_u64_values(&hash, provenance.stratum_total_rows);
+    hash_u64_values(&hash, provenance.stratum_sampled_rows);
+    hash_string(&hash, provenance.weighting_rule);
+    hash_u64(&hash, support.sampled_row_count);
+    for (u32 row = 0u; row < support.sampled_row_count; ++row) {
+        hash_u64(&hash, support.sampled_position_to_global_row[row]);
+    }
+    return hash == 0u ? 1u : hash;
+}
 
 enum class mutation_kind : u32 { merge = 0u, move = 1u, swap = 2u };
 
@@ -102,6 +159,21 @@ validation_result validate_optimizer_config(
     }
     if (source.support.feature_count != support.feature_count) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id, "sampled support and evaluator feature counts differ");
+    }
+    if (support.provenance != nullptr) {
+        u64 actual_sampling_identity = 0u;
+        const validation_result identity_status = query_sampled_feature_support_identity(
+            support, &actual_sampling_identity);
+        if (!identity_status) return identity_status;
+        if (config.plan_identity.sampling_provenance_identity != actual_sampling_identity) {
+            return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+                "optimizer sampling provenance identity does not match sampled support");
+        }
+        if (config.plan_identity.row_domain_kind == packing_row_domain_kind::full_dataset_identity
+            && source.support.row_count != support.provenance->total_rows) {
+            return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+                "full-domain optimizer evaluator row count does not match sampling provenance population");
+        }
     }
     if (config.maximum_feature_block_width == 0u || config.row_group_width == 0u
         || config.candidate_fanout == 0u || config.proposal_shortlist == 0u
@@ -489,6 +561,7 @@ validation_result make_sampled_feature_support_view(
     result.support_words = reinterpret_cast<const u32 *>(source.gene_support);
     result.detected_row_counts = reinterpret_cast<const u32 *>(source.detected_cell_counts);
     result.sampled_position_to_global_row = source.sampled_position_to_global_row;
+    result.provenance = source.provenance;
     const validation_result status = validate_sampled_feature_support_view(result);
     if (!status) return status;
     *out = result;
@@ -507,6 +580,21 @@ validation_result validate_sampled_feature_support_view(const sampled_feature_su
     if (support.sampled_row_count != 0u && support.sampled_position_to_global_row == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "sampled/global row mapping is null");
     }
+    if (support.provenance != nullptr) {
+        if (support.provenance->selected_rows != support.sampled_row_count
+            || support.provenance->total_rows < support.sampled_row_count) {
+            return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+                "sampled feature support provenance dimensions are inconsistent");
+        }
+        for (u32 row = 0u; row < support.sampled_row_count; ++row) {
+            const u64 global_row = support.sampled_position_to_global_row[row];
+            if (global_row >= support.provenance->total_rows
+                || (row != 0u && global_row <= support.sampled_position_to_global_row[row - 1u])) {
+                return validation_error(validation_code::invalid_plan_geometry, row,
+                    "sampled/global row mapping is not canonical for its provenance");
+            }
+        }
+    }
     if (support.detected_row_counts != nullptr) {
         for (u32 feature = 0u; feature < support.feature_count; ++feature) {
             if (support.detected_row_counts[feature] > support.sampled_row_count) {
@@ -514,6 +602,23 @@ validation_result validate_sampled_feature_support_view(const sampled_feature_su
             }
         }
     }
+    return validation_ok();
+}
+
+validation_result query_sampled_feature_support_identity(
+    const sampled_feature_support_view &support,
+    u64 *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "sampled feature support identity output is null");
+    }
+    const validation_result status = validate_sampled_feature_support_view(support);
+    if (!status) return status;
+    if (support.provenance == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "sampled feature support provenance is unavailable for identity");
+    }
+    *out = sampled_support_identity_unchecked(support);
     return validation_ok();
 }
 

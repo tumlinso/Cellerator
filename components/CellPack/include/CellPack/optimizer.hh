@@ -8,8 +8,13 @@
 namespace cellerator::compute::gene_support {
 struct gene_support_bitset_view;
 }
+namespace cellerator::compute::sampling {
+struct sample_provenance;
+}
 
 namespace cellpack {
+
+inline constexpr u32 sampled_feature_support_identity_version = 1u;
 
 struct sampled_feature_support_view {
     u32 sampled_row_count = 0u;
@@ -18,6 +23,7 @@ struct sampled_feature_support_view {
     const u32 *support_words = nullptr;
     const u32 *detected_row_counts = nullptr;
     const u64 *sampled_position_to_global_row = nullptr;
+    const ::cellerator::compute::sampling::sample_provenance *provenance = nullptr;
 };
 
 validation_result make_sampled_feature_support_view(
@@ -25,6 +31,12 @@ validation_result make_sampled_feature_support_view(
     sampled_feature_support_view *out);
 
 validation_result validate_sampled_feature_support_view(const sampled_feature_support_view &support);
+
+// Deterministic identity of the selection contract and exact sampled-position
+// to global-row mapping. It deliberately excludes expression/support contents.
+validation_result query_sampled_feature_support_identity(
+    const sampled_feature_support_view &support,
+    u64 *out);
 
 struct packing_optimizer_workspace_view {
     packing_evaluation_workspace_view evaluator_workspace{};

@@ -16,9 +16,12 @@ Use this file as the canonical index for substantial multi-step work.
   or defining the plan.
 - CP-BP-01 through CP-BP-05 satisfy their recorded acceptance criteria and are
   closed. CP-BP-01/02/04 are checkpointed in commit `597a3eb`; CP-BP-03/05 are
-  complete in the current integration. CP-BP-06 is the next unclaimed
-  representation frontier.
-- CP-BP-03 and CP-BP-05 may run concurrently in one worktree only under this
+  complete in the current integration. A serial public-API integration test now
+  proves the complete sampled-support→plan-application chain. CP-BP-06 is the
+  next unclaimed representation frontier.
+- The CP-BP-03/05 protocol below is preserved as completed history; it is no
+  longer an active implementation interlock. CP-BP-03 and CP-BP-05 ran
+  concurrently in one worktree only under this
   cooperative protocol. Before claiming, changing a lease, or editing a shared
   file, atomically acquire `/tmp/cellerator-cp-bp-shared.lock` with `mkdir`.
   While holding it, reread both child ledgers, record the claim and exact file
@@ -37,6 +40,18 @@ Use this file as the canonical index for substantial multi-step work.
   integrator waits until both ledgers are idle or done, acquires the lock,
   rereads leases and diffs, validates the combined tree, and alone performs
   integration git operations.
+- Active CP-BP-06 through CP-BP-11 concurrency is governed by
+  `todos/cellpack-bp06-11-parallel-execution.md`. Claims, leases, handoff gates,
+  and shared edits use `/tmp/cellerator-cp-bp06-11-shared.lock`; all GPU tests,
+  sanitizers, profilers, and benchmarks additionally use
+  `/tmp/cellerator-cp-bp06-11-gpu.lock`. Child threads use distinct
+  `build-cp-bp06` through `build-cp-bp11` directories and never perform git
+  state changes. One integrator validates, commits, pushes, and updates the
+  CellStack submodule pointer at every recorded barrier.
+- Phase A is the only immediately forkable pair: CP-BP-06 host record
+  ABI/reference and CP-BP-11 metrics/split/null foundations. CP-BP-07 through
+  CP-BP-10 remain gate-blocked; neither early assignment may invent a temporary
+  downstream ABI.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -56,6 +71,8 @@ Use this file as the canonical index for substantial multi-step work.
   static-packing rules.
 
 ## Workstreams
+- `cellpack-bp00-05-integration-audit` | status: done | owner: codex-cp-bp00-05-integration | file: `todos/cellpack-bp00-05-integration-audit.md` | objective: serially proved the completed CP-BP-01→05 public contracts compose end to end without entering CP-BP-06.
+- `cellpack-bp06-11-parallel-execution` | status: in_progress | owner: coordination | file: `todos/cellpack-bp06-11-parallel-execution.md` | objective: checkpointed single-worktree execution protocol, handoff gates, file leases, GPU serialization, and fork-ready conditional instructions for CP-BP-06 through CP-BP-11.
 - `cellpack-data-inferred-block-packing-roadmap` | status: in_progress | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | objective: CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent.
 - `cellpack-bp01-support-extraction` | status: done | owner: parallel-agent-step-1 | file: `todos/cellpack-bp01-support-extraction.md` | objective: CP-BP-01 representative sampling, binary support, per-gene bitsets, counts, provenance, and exact reconstruction.
 - `cellpack-bp02-candidate-discovery` | status: done | owner: codex-cp-bp-02 | file: `todos/cellpack-bp02-candidate-discovery.md` | objective: CP-BP-02 deterministic sketch/LSH candidate generation and deduplication; approximate similarity proposes only.
@@ -79,6 +96,22 @@ Use this file as the canonical index for substantial multi-step work.
 - CP-BP-12 cannot fit a hardware model until correct CP-BP-08/09 kernels exist.
 
 ## Progress Notes
+- 2026-08-16: Added the checkpointed CP-BP-06→11 single-worktree protocol.
+  Phase A permits CP-BP-06 host ABI/reference and CP-BP-11 validation
+  foundations in parallel; every later assignment is conditionally gated.
+  Shared edits, GPU work, and checkpoint git integration are serialized, and
+  every CP-BP-06 through CP-BP-11 child ledger now contains fork-time rules.
+- 2026-08-16: Closed the serial CP-BP-00→05 integration audit. A permanent
+  public-API test now composes sampling, sampled CSR, support bitsets,
+  candidate discovery, exact scoring, full-domain optimization, frozen-plan
+  application, and exact reconstruction. Sample/mapping identity is versioned
+  through the optimizer boundary, and incomplete exact sources cannot claim a
+  full row domain. Focused `sm_70` regressions passed; the unrelated committed
+  NCCL `local_context` blocker remains limited to rebuilding the dataset-backed
+  `samplingRuntimeTest` target.
+- 2026-08-16: Started a serial CP-BP-00→05 integration audit after both parallel
+  streams were committed. The audit owns only an end-to-end contract test,
+  build wiring, and coordination notes; CP-BP-06 remains ready and untouched.
 - 2026-08-16: Final single-worktree integration configured a fresh
   `build-cp-bp-integration` for CUDA `sm_70` with Torch models disabled, built
   CP-BP-03/05 together, and passed `cellPackMergeCostTest`,

@@ -5,7 +5,7 @@ execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
 last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -28,6 +28,24 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 - Logical masks may use `uint32_t gene_mask` and `uint32_t cell_mask`, but values remain compact. Tail tiles and narrower configured gene blocks require explicit validity semantics.
 - Ballot/popcount are natural tools, not mandatory proof of speed; library/custom choices need correctness and benchmark evidence.
+- Tile identity must bind the exact feature-block geometry and the CP-BP-07 row
+  permutation configuration; dataset identity or schema version alone is not
+  sufficient for safe decode.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Do not claim until
+  CP-BP-06 is closed and both CP-BP-07 handoff gates are recorded.
+- Claim Phase C under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
+  `build-cp-bp08`, and stop/release at `CP08_HOST_ABI_READY`. Resume CUDA Phase
+  D only after Barrier C; publish `CP08_DEVICE_READY` and close without git
+  operations.
+- Consume CP-BP-06/07 contracts read-only. Do not implement CP-BP-09 runtime or
+  CP-BP-13 persistence.
+
+## File Lease
+
+_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Assumptions
 

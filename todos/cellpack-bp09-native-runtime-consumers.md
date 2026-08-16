@@ -5,7 +5,7 @@ execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
 last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-09: Execute directly from compact warp tiles without unpacking to CSR or BELL."
 ---
@@ -28,6 +28,24 @@ Implement benchmark-driven native consumers that use shared block IDs, cell/gene
 
 - Candidate execution paths include lane-per-cell, compact active lanes, subwarp cooperation, and dense/sparse occupancy dispatch. Select only with measurements on supported V100 `sm_70` hardware.
 - Compare against canonical/reference math and relevant CSR/current Cellerator sparse layouts, not only an intentionally weak baseline.
+- The first and only v1 operation is canonical feature-weighted row reduction,
+  `y[row] = sum(value * weight[canonical_feature])`. Broader SpMM/operator
+  coverage is future scope after this direct path is proven.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Before
+  `CP08_HOST_ABI_READY` and Barrier C, remain read-only if assigned.
+- Phase D may claim only the reference/API portion, use `build-cp-bp09`, publish
+  `CP09_REFERENCE_READY`, release, and become idle. Device implementation waits
+  for `CP08_DEVICE_READY` and Barrier D.
+- Phase E implements one direct V100 consumer without CSR/BELL reconstruction,
+  extra operations, per-cell launches, or universal dispatch. Publish
+  `CP09_RUNTIME_READY`, release/close, and perform no git operation.
+
+## File Lease
+
+_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Assumptions
 
@@ -48,7 +66,7 @@ Implement benchmark-driven native consumers that use shared block IDs, cell/gene
 
 ## Plan
 
-1. Select one relevant operation/reference and define packed runtime view/scratch contracts.
+1. Define the canonical feature-weighted row-reduction reference and packed runtime view/scratch contracts.
 2. Implement direct correctness path with no unpacking.
 3. Benchmark occupancy-dependent execution alternatives under the mutex.
 4. Document selected dispatch conditions, limiter, tolerance, and reference fallback.

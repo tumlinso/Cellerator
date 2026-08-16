@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:38:44Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-16T19:45:16Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-10: Refine global gene blocks and local cell packing against measured held-out tile costs."
 ---
@@ -28,6 +28,26 @@ Alternate frozen gene packing and local cell/tile packing, accepting determinist
 
 - The refined objective can include duplicated per-cell/block metadata, duplicated tile references/masks, and measured/predicted runtime cost.
 - Preserve the best accepted plan and make iteration/seed/tolerance configuration reproducible.
+- V1 may optimize storage plus the measured CP-BP-09 runtime surface. Predicted
+  CP-BP-12 hardware terms remain a later optional extension and do not justify
+  fabricating a model before CP-BP-12 is ready.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Do not claim until
+  `CP10_READY` is published. If assigned earlier, remain read-only and report
+  the exact missing gate.
+- Claim under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
+  `build-cp-bp10`, consume CP-BP-04/07/08/09/11 public APIs, and prefer new
+  alternating-controller files. Editing optimizer or representation internals
+  requires a transferred shared-seam lease.
+- Implement only offline bounded acceptance/rollback; no minibatch repacking,
+  no neural optimizer, no train-only acceptance, and no CP-BP-12/13 scope. Do
+  not perform git operations.
+
+## File Lease
+
+_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Assumptions
 

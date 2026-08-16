@@ -4,8 +4,8 @@ status: "planned"
 execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:38:44Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-16T19:45:16Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -31,6 +31,30 @@ Build statistical validation into the feature: held-out cells, degree-preserving
   end-to-end physical/runtime acceptance naturally waits on CP-BP-06/08/09.
 - Stability should prioritize achievable cost/performance distributions because exact block memberships may be non-unique.
 - Degree-preserving nulls should approximately preserve cell NNZ and gene detection frequency; record deviation rather than hiding it.
+- Phase A's reference null uses duplicate-rejecting bipartite double-edge swaps
+  and preserves row and column degrees exactly. Provenance records seed,
+  requested/attempted/accepted swaps and conservation results; later approximate
+  GPU generators, if any, require separately reported deviations.
+- Caller-supplied donor/sample/study groups govern splits when available. A
+  cell-level split without those identities is explicitly cell-level structural
+  validation and cannot claim donor- or study-level generalization.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Phase A may run now in
+  parallel only with CP-BP-06 Phase A.
+- If assigned CP-BP-11 now, claim under
+  `/tmp/cellerator-cp-bp06-11-shared.lock`, use `build-cp-bp11`, and own only
+  new statistical-validation/metric/null/provenance files and tests. Consume
+  CP-BP-01/04 APIs read-only; do not edit sampling, optimizer, record, tile, or
+  runtime implementations.
+- Publish `CP11_FOUNDATIONS_READY`, release all leases, and become
+  `in_progress/idle` at Barrier A. Resume only for the coordinator-named phase;
+  do not remain claimed while waiting on CP-BP-06/08/09. No git operations.
+
+## File Lease
+
+_Unclaimed._ Record exact intended paths here atomically at claim time.
 
 ## Assumptions
 
@@ -52,10 +76,15 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Plan
 
-1. Define metric schema and deterministic split/bootstrap/null provenance.
-2. Implement/reference-test degree-preserving sparse-incidence randomization and structural conservation checks.
-3. Evaluate frozen plans on held-out cells and compare real versus null achievable packing.
-4. Relearn across bootstrap samples and summarize cost/performance stability plus mapping variability.
+1. Phase A: define metric schema and immutable group-aware
+   split/bootstrap/null provenance.
+2. Phase A: implement/reference-test exact degree-preserving sparse-incidence
+   randomization and conservation/leakage checks; publish
+   `CP11_FOUNDATIONS_READY` and stop at Barrier A.
+3. Phases C/E: evaluate frozen plans and available record/tile/runtime stages on
+   held-out cells and compare real versus null achievable packing.
+4. Phase F: relearn across bootstrap samples and summarize cost/performance
+   stability plus mapping variability.
 
 ## Tasks
 

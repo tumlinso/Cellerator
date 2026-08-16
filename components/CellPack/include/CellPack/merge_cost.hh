@@ -73,6 +73,10 @@ struct exact_gene_merge_score_view {
     const exact_gene_merge_cost *costs = nullptr;
     u64 count = 0u;
     const exact_merge_scoring_provenance *provenance = nullptr;
+
+    candidate_relation_view relation_view() const noexcept {
+        return {relations, count};
+    }
 };
 
 class owned_exact_gene_merge_scores {

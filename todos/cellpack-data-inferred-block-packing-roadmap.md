@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T15:48:00Z"
-last_reviewed_at: "2026-08-16T15:48:00Z"
+last_heartbeat_at: "2026-08-16T19:45:16Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -21,6 +21,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - Out of scope: implementation; pick an executable child workstream instead.
 - Required skills: `todo-orchestrator`; implementation children generally require `cuda`, and CP-BP-11 also requires `bio-experiments`.
 - Required references: `AGENTS.md`, `components/CellPack/AGENTS.md`, `style_hint.md`, this file, `todos.md`, and `todo-status.md`.
+- Parallel CP-BP-06→11 execution additionally requires
+  `todos/cellpack-bp06-11-parallel-execution.md`; its gates and integration
+  barriers are authoritative over optimistic downstream pickup.
 
 ## Planning Notes
 - Parent ID: CP-BP-00. Child IDs CP-BP-01 through CP-BP-13 map one-to-one to roadmap Steps 1 through 13.
@@ -79,12 +82,23 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-05 is ready against the completed semantic plan. CP-BP-06 through
-  CP-BP-10 and CP-BP-13 depend on unresolved/future ordered-row, record, tile,
-  or consumer contracts recorded in their child ledgers.
+- CP-BP-06 is ready over CP-BP-05's completed ordered partition view.
+  CP-BP-07 through CP-BP-10 and CP-BP-13 depend on unresolved/future record,
+  local-row, tile, or consumer contracts recorded in their child ledgers.
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-16: Added a checkpointed one-worktree execution schedule for
+  CP-BP-06 through CP-BP-11. Phase A parallelizes CP-BP-06's exact record
+  ABI/CPU reference with CP-BP-11's metrics, group-aware split provenance, and
+  exact degree-preserving null reference. Later CP-BP-07/08/09/10 claims are
+  tied to tested host/device handoff gates rather than calendar order.
+- 2026-08-16: A serial CP-BP-00→05 audit proved the real public APIs compose in
+  one deterministic test from sampled support through exact scored candidates,
+  full-domain optimization, frozen-plan application, and exact canonical/value
+  reconstruction. The CP-BP-01 sample/mapping identity now reaches CP-BP-04,
+  and full-domain plans reject partial evaluator sources. CP-BP-06 scope was
+  not entered.
 - 2026-08-16: CP-BP-05 completed pointer-first CPU/CUDA application of
   full-domain frozen plans, exact canonical reconstruction, CUB segmented
   ordering, focused validation, and a serialized V100 benchmark. CP-BP-06 is
@@ -106,15 +120,14 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: Reconciled CP-BP-01 with existing untracked deterministic sampling work and CP-BP-04 with the completed evaluator plus user-confirmed parallel optimizer work; neither was marked complete.
 - 2026-08-14: Added child ledgers for the complete roadmap and encoded safe parallel seams, prerequisite blockers, architectural invariants, and acceptance criteria.
 - 2026-08-14: Completed CP-BP-01 with deterministic sampled CSR, exact CPU/CUDA gene-major support bitsets, detected-cell counts, immutable provenance/global-row mapping, boundary/overflow tests, and a V100 full-size allocation smoke.
-- 2026-08-14: Completed CP-BP-04 v1 supplied-candidate optimization and immutable semantic `frozen_packing_plan`; CP-BP-05 is reactivated. Production CP-BP-02/03 evidence adapters remain pending and do not alter the optimizer/frozen-plan boundary.
+- 2026-08-14: Completed CP-BP-04 v1 supplied-candidate optimization and immutable semantic `frozen_packing_plan`; CP-BP-05 was reactivated. The later CP-BP-03 implementation and serial integration audit supplied the production exact-relation adapter without altering the optimizer/frozen-plan boundary.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
 - Do not implement from this parent. CP-BP-01 through CP-BP-05 are closed.
-  CP-BP-06 is the next unclaimed representation frontier because it defines
-  the compact per-cell record and offset grammar required by downstream work.
-- CP-BP-11's foundational validation work remains independently available,
-  subject to its collision notes.
+  Fork Phase A as CP-BP-06 host ABI/reference and CP-BP-11 validation
+  foundations. Both are ready/unclaimed and must stop at their recorded gates
+  for Barrier A integration.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

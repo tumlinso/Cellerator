@@ -5,7 +5,7 @@ execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
 last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-07: Infer cheap local cell ordering from active gene-block signatures for warp-friendly groups."
 ---
@@ -28,6 +28,23 @@ Represent each transformed cell by its sorted active-block set, compute a compac
 
 - Windows should remain partition/chunk oriented, plausibly hundreds to a few thousand rows, and preserve explicit reversible row identity.
 - Compare against original/random order and simple row-NNZ sorting; neither is an intentionally weak sole baseline.
+- CP-BP-07 emits bounded local permutation and inverse arrays. It does not
+  physically rewrite CP-BP-06 record payloads; CP-BP-08 consumes the records
+  through these maps.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Do not claim before
+  `CP06_HOST_ABI_READY` and Barrier A are recorded. If assigned too early,
+  remain read-only and report the missing gate without inventing an ABI.
+- Claim/lease under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
+  `build-cp-bp07`, consume CP-BP-06 files read-only, publish
+  `CP07_ORDER_ABI_READY` and `CP07_DEVICE_READY`, then release/close without git
+  operations.
+
+## File Lease
+
+_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Assumptions
 

@@ -4,8 +4,8 @@ status: "planned"
 execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T15:34:00Z"
-last_reviewed_at: "2026-08-16T15:34:00Z"
+last_heartbeat_at: "2026-08-16T19:45:16Z"
+last_reviewed_at: "2026-08-16T19:45:16Z"
 stale_after_days: 7
 objective: "CP-BP-06: Collapse ordered row entries into compact per-cell gene-block records with complete offset metadata."
 ---
@@ -28,6 +28,27 @@ Detect adjacent block runs and emit `block_id`, within-block `gene_mask`, compac
 
 - Only real values are stored. This representation is not Blocked-ELL/BELL.
 - A consumer must be able to locate each row, block record, and variable-length value payload through explicit offsets/rank rules; underspecified masks plus values are unacceptable.
+- Compact mask decode depends on the exact feature-block geometry, not only the
+  dataset/row identity. Phase A must add or consume a versioned fingerprint of
+  the frozen plan's authoritative block offsets/permutation.
+- V1 uses exactly one `uint32_t` mask and rejects plans whose maximum feature
+  block width exceeds 32; multiword masks are future scope.
+
+## CP-BP-06→11 Fork Interlock
+
+- Read `todos/cellpack-bp06-11-parallel-execution.md` before claiming. Phase A
+  may run now in parallel only with CP-BP-11 Phase A.
+- If assigned CP-BP-06, follow the coordinator's CP-BP-06 conditional section
+  exactly. Claim and lease under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
+  `build-cp-bp06`, stop/release at `CP06_HOST_ABI_READY`, and perform no git
+  operation. Resume CUDA work only after Barrier A.
+- Prefer new `cell_block_records` API/source/test/benchmark files. Any edit to
+  `packing_plan.*`, `apply_plan.*`, either CMake file, or common format files is
+  a shared seam requiring an explicit lease under the lock.
+
+## File Lease
+
+_Unclaimed._ Record exact intended paths here atomically at claim time.
 
 ## Assumptions
 
@@ -47,10 +68,14 @@ Detect adjacent block runs and emit `block_id`, within-block `gene_mask`, compac
 
 ## Plan
 
-1. Resolve logical record fields, offset/index widths, and value-rank semantics.
-2. Implement CPU/reference run detection and emission.
-3. Implement GPU detect/scan/emit using established scan primitives where appropriate.
-4. Validate exact decode and every monotonicity/range/terminal-offset invariant.
+1. Phase A: resolve plan-geometry identity, checked width-32 record fields,
+   offset/index widths, capacities, and value-rank semantics.
+2. Phase A: implement CPU/reference run detection, emission, validation, and
+   exact decode; publish `CP06_HOST_ABI_READY` and stop at Barrier A.
+3. Phase B: implement GPU detect/scan/emit using established scan primitives
+   with caller-owned scratch/stream semantics.
+4. Validate exact decode and every monotonicity/range/terminal-offset invariant;
+   publish `CP06_DEVICE_READY` and close at Barrier B.
 
 ## Tasks
 

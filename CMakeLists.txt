@@ -989,6 +989,20 @@ set_target_properties(cellPackApplyPlanTest PROPERTIES
 )
 cellerator_enable_perf(cellPackApplyPlanTest)
 
+add_executable(cellPackInferredPackingPipelineTest
+    components/CellPack/tests/inferred_packing_pipeline_test.cc
+)
+target_link_libraries(cellPackInferredPackingPipelineTest PRIVATE
+    Cellerator::compute_gene_candidates
+    CellPack::merge_cost_cuda
+    CellPack::apply_plan
+)
+set_target_properties(cellPackInferredPackingPipelineTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackInferredPackingPipelineTest)
+
 add_executable(cellPackApplyPlanBench
     components/CellPack/bench/cellpack_apply_plan_bench.cu
 )
