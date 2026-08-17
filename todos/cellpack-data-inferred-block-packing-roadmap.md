@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T20:14:53Z"
-last_reviewed_at: "2026-08-16T20:14:53Z"
+last_heartbeat_at: "2026-08-17T08:04:27Z"
+last_reviewed_at: "2026-08-17T08:04:27Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -40,7 +40,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - The completed `cellpack-packing-plan-evaluator` is reusable evidence and infrastructure, not CP-BP-04 completion and not a physical codec.
 - CP-BP-01 through CP-BP-05 are complete and closed. Barrier A integrated
   CP-BP-06's host record contract and CP-BP-11's validation foundations;
-  CP-BP-06 Phase B and CP-BP-07 are now the unclaimed parallel frontier.
+  CP-BP-06 and CP-BP-07 are complete and closed after combined Barrier B
+  validation. The validated checkpoint must be pushed before Phase C opens.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -72,8 +73,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [x] CP-BP-03 exact packing-cost and merge-gain scoring.
 - [x] CP-BP-04 global gene-block optimization and durable semantic `PackingPlan`.
 - [x] CP-BP-05 apply a frozen plan to full partitions.
-- [ ] CP-BP-06 emit compact per-cell block records.
-- [ ] CP-BP-07 infer local cell order from active-block signatures.
+- [x] CP-BP-06 emit compact per-cell block records.
+- [x] CP-BP-07 infer local cell order from active-block signatures.
 - [ ] CP-BP-08 build warp-oriented 32-cell tiles.
 - [ ] CP-BP-09 implement native packed-runtime consumers.
 - [ ] CP-BP-10 alternating/refined packing optimization.
@@ -82,12 +83,16 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-06 Phase B and CP-BP-07 are ready in parallel after Barrier A.
-  CP-BP-08 through CP-BP-10 and CP-BP-13 depend on unresolved/future local-row,
-  tile, or consumer contracts recorded in their child ledgers.
+- CP-BP-06/07 are complete; CP-BP-08 remains blocked only until the validated
+  Barrier B source checkpoint is pushed and recorded. CP-BP-09/10/13 retain
+  their later tile/runtime dependencies.
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-17: Combined Barrier B validation accepted the exact asynchronous
+  CUDA record builder and bounded host/CUDA local-order contracts. Both child
+  streams are closed; the checkpoint is pushed and recorded before CP-BP-08 is
+  reactivated.
 - 2026-08-16: Barrier A integrated the tested versioned CP-BP-06 width-32 host
   record ABI/reference with CP-BP-11 metric, split/bootstrap provenance, and
   exact degree-preserving null foundations. The next legal fork pair is
@@ -128,9 +133,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Fork CP-BP-06 Phase B and CP-BP-07 as the
-  next pair, following the coordinator's leases and GPU serialization. They
-  must stop at `CP06_DEVICE_READY` and both CP-BP-07 gates for Barrier B.
+- Do not implement from this parent. Push and record Barrier B, then follow the
+  coordinator's Phase C instructions for CP-BP-08 host tiles in parallel with
+  CP-BP-11 record-level held-out adapters.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

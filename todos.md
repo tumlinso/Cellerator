@@ -19,7 +19,9 @@ Use this file as the canonical index for substantial multi-step work.
   complete in the current integration. A serial public-API integration test now
   proves the complete sampled-support→plan-application chain. Barrier A now
   integrates CP-BP-06's host record contract and CP-BP-11's statistical
-  foundations; CP-BP-06 Phase B and CP-BP-07 are the next parallel frontier.
+  foundations. CP-BP-06 and CP-BP-07 satisfy their acceptance criteria, are
+  closed, and passed combined Barrier B validation; pushing and recording that
+  checkpoint is the current frontier.
 - The CP-BP-03/05 protocol below is preserved as completed history; it is no
   longer an active implementation interlock. CP-BP-03 and CP-BP-05 ran
   concurrently in one worktree only under this
@@ -49,9 +51,9 @@ Use this file as the canonical index for substantial multi-step work.
   `build-cp-bp06` through `build-cp-bp11` directories and never perform git
   state changes. One integrator validates, commits, pushes, and updates the
   CellStack submodule pointer at every recorded barrier.
-- `BARRIER_A_INTEGRATED` is published. CP-BP-06 Phase B and CP-BP-07 are ready
-  and unclaimed as the next fork pair. CP-BP-08 through CP-BP-10 remain
-  gate-blocked.
+- `BARRIER_A_INTEGRATED`, `CP06_DEVICE_READY`, `CP07_ORDER_ABI_READY`, and
+  `CP07_DEVICE_READY` are published. CP-BP-06/07 are idle with leases released;
+  Barrier B and CP-BP-08 through CP-BP-10 remain gate-blocked.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -80,8 +82,8 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-bp04-packing-plan-optimizer` | status: done | owner: codex-cp-bp-04 | file: `todos/cellpack-bp04-packing-plan-optimizer.md` | objective: CP-BP-04 supplied-candidate deterministic optimizer, exact-oracle rollback, and immutable semantic PackingPlan are complete.
 - `cellpack-bp05-apply-frozen-plan` | status: done | owner: codex-cp-bp-05-fork | file: `todos/cellpack-bp05-apply-frozen-plan.md` | objective: CP-BP-05 host/CUDA remap and segmented packed-coordinate ordering are complete and closed.
 - `cellpack-packing-plan-cuda-evaluator` | status: planned | owner: unassigned | file: `todos/cellpack-packing-plan-cuda-evaluator.md` | objective: deferred native V100 CUB acceleration of exact PackingPlan evaluation; opened by measured oracle share and not prerequisite to CP-BP-05.
-- `cellpack-bp06-cell-block-records` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp06-cell-block-records.md` | objective: Phase A host compact per-cell record ABI/reference is integrated; Phase B CUDA detect/scan/emit is ready and unclaimed.
-- `cellpack-bp07-local-cell-ordering` | status: planned | owner: unassigned | file: `todos/cellpack-bp07-local-cell-ordering.md` | objective: CP-BP-07 bounded local active-block-signature ordering is ready and unclaimed over the read-only CP-BP-06 host record view.
+- `cellpack-bp06-cell-block-records` | status: done | owner: codex-cp-bp06-phase-b | file: `todos/cellpack-bp06-cell-block-records.md` | objective: exact compact host/CUDA cell-block records are complete and closed.
+- `cellpack-bp07-local-cell-ordering` | status: done | owner: codex-cp-bp07 | file: `todos/cellpack-bp07-local-cell-ordering.md` | objective: bounded local active-block-signature host/CUDA ordering is complete and closed.
 - `cellpack-bp08-warp-tiles` | status: blocked | owner: unassigned | file: `todos/cellpack-bp08-warp-tiles.md` | objective: CP-BP-08 compact 32-cell tile dictionary, cell/gene masks, payloads, and offsets; waits on CP-BP-06/07.
 - `cellpack-bp09-native-runtime-consumers` | status: blocked | owner: unassigned | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: CP-BP-09 direct packed-tile kernels with no CSR/BELL unpack; waits on CP-BP-08.
 - `cellpack-bp10-alternating-refinement` | status: blocked | owner: unassigned | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: CP-BP-10 bounded held-out gene/cell alternating refinement; waits on the first complete plan/tile/runtime loop.
@@ -90,11 +92,40 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-bp13-persistence-integration` | status: blocked | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: CP-BP-13 Cellerator/CellShard .cspack lifecycle integration; waits on stable plan/record/tile/runtime contracts.
 
 ## Global Blockers
-- CP-BP-06 Phase B and CP-BP-07 have no blocker and are the next parallel pair.
-  CP-BP-08 through CP-BP-10 and CP-BP-13 remain representation/runtime blocked.
+- CP-BP-06/07 passed Barrier B joint validation and are closed. CP-BP-08 through
+  CP-BP-10 and CP-BP-13 remain blocked until the validated checkpoint is pushed
+  and recorded.
 - CP-BP-12 cannot fit a hardware model until correct CP-BP-08/09 kernels exist.
 
 ## Progress Notes
+- 2026-08-17: Fresh Barrier B combined validation closed CP-BP-06/07. Exact
+  record/order CPU/CUDA tests, downstream host/CUDA regressions, and CUDA 12.9
+  memcheck/racecheck passed on V100 `sm_70`; serialized benchmarks reproduced
+  0.395 ms record-build and 0.23344 ms local-order medians with exact agreement.
+  The source checkpoint is pushed before Phase C is opened.
+- 2026-08-17: CP-BP-07 published both ordering gates, released every lease,
+  and became idle without git operations. Its deterministic bounded-window
+  host/CUDA order maps agree exactly and CUDA 12.9 memcheck/racecheck report
+  zero errors/hazards.
+  The serialized V100 benchmark measured 0.233472 ms CUDA median versus
+  22.7307 ms CPU for 65,536 rows and reduced group-union metadata to 131,072
+  bytes versus 4,194,304 original/row-NNZ and 2,701,568 random bytes. Both
+  256- and 4,096-row window variants also preserved exact agreement and reduced
+  metadata against every baseline. Both Phase B streams now await the appointed
+  Barrier B integrator.
+- 2026-08-17: CP-BP-06 published `CP06_DEVICE_READY`, released every lease,
+  and became idle without git operations. Its asynchronous CUB-backed CUDA
+  record builder matches the CPU oracle exactly, passes memcheck/racecheck and
+  downstream regressions, and measured 0.393 ms median for 2,097,152 NNZ on
+  V100 `sm_70` with transfers excluded. CP-BP-07 remains independently active.
+- 2026-08-17: `codex-cp-bp07` claimed CP-BP-07 at pushed base `1e25e11`,
+  leasing new host/CUDA local-order files, tests/benchmark, root-CMake blocks,
+  and ledgers. CP-BP-06 remains independently claimed on disjoint CUDA record
+  files and component-CMake blocks.
+- 2026-08-17: `codex-cp-bp06-phase-b` claimed CP-BP-06 Phase B at pushed base
+  `1e25e11`, leasing only new CUDA record API/source/test/benchmark files,
+  component-CMake target blocks, and coordination ledgers. CP-BP-07 remains
+  ready for a disjoint parallel claim and consumes host records read-only.
 - 2026-08-16: Barrier A jointly rebuilt and validated CP-BP-06 host records and
   CP-BP-11 statistical foundations from fresh `build-cp-bp-barrier-a` on V100
   `sm_70`. Both new tests, planner/evaluator/optimizer, sampling materialization,
@@ -252,10 +283,9 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Fork CP-BP-06 Phase B and CP-BP-07 in parallel. CP-BP-06 owns only CUDA
-  record emission; CP-BP-07 consumes the host records read-only and owns local
-  reversible ordering. Both stop at their gates for Barrier B and must not
-  absorb tiles, runtime kernels, or persistence.
+- Push and record the validated Barrier B checkpoint. Then open—but do not
+  automatically claim—the CP-BP-08 host tile ABI and CP-BP-11 record-level
+  held-out adapter Phase C pair.
 - CP-BP-03 is complete. Its provisional storage policy may later be calibrated
   by CP-BP-12, but CP-BP-12 remains blocked on measurable CP-BP-08/09 paths.
 - CP-BP-11 validation contracts/null references are also independently

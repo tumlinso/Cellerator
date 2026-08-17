@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp06-cell-block-records"
-status: "in_progress"
-execution: "idle"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp06-phase-b"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T20:14:53Z"
-last_reviewed_at: "2026-08-16T20:14:53Z"
+last_heartbeat_at: "2026-08-17T08:04:27Z"
+last_reviewed_at: "2026-08-17T08:04:27Z"
 stale_after_days: 7
 objective: "CP-BP-06: Collapse ordered row entries into compact per-cell gene-block records with complete offset metadata."
 ---
@@ -48,11 +48,11 @@ Detect adjacent block runs and emit `block_id`, within-block `gene_mask`, compac
 
 ## File Lease
 
-_No active lease._ Phase A owner `codex-cp-bp06-phase-a` released the host
-record, plan-geometry, component-CMake, and coordination leases at
-`CP06_HOST_ABI_READY`; Barrier A integrated them. Phase B must record its new
-CUDA/API/test/benchmark lease before editing, while CP-BP-07 consumes the host
-record contract read-only.
+No active CP-BP-06 lease. Phase B owner `codex-cp-bp06-phase-b` released the
+new CUDA API/source/test/benchmark, its component-CMake target blocks, and the
+coordination ledgers at `CP06_DEVICE_READY`. The Barrier B integrator accepted
+the combined CP-BP-06/07 tree from pushed base `1e25e11`; no implementation
+work remains in this stream.
 
 ## Assumptions
 
@@ -87,16 +87,42 @@ record contract read-only.
 - [x] Specify complete logical record and access rules.
 - [x] Implement CPU run detection, compact emission, validation, and decoder.
 - [x] Add exact reconstruction and adversarial offset tests for Phase A.
-- [ ] Implement GPU run detection and compact emission in Phase B.
+- [x] Implement GPU run detection and compact emission in Phase B.
 
 ## Blockers
 
-_None for Phase B._ Barrier A integrated and pushed the host contract. Final
-persistence field widths/versioning remain CP-BP-13 work and do not block the
-runtime logical record contract here.
+_None; implementation and validation are complete._ Final persistence field
+widths/versioning remain CP-BP-13 work and do not alter this closed runtime
+logical record contract.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier B integrator rebuilt CP-BP-06 and CP-BP-07 together from
+  fresh `build-cp-bp-barrier-b` with CUDA 12.9.86, GNU 13.3.0, and V100
+  `sm_70`. Exact CUDA records, local ordering, apply-plan, merge-cost,
+  planner/evaluator/optimizer, inferred-pipeline, statistical-validation, and
+  sampling-materialization tests passed. CUDA 12.9 memcheck reported zero
+  errors and racecheck zero hazards for both new device paths. The serialized
+  record benchmark reproduced exact byte agreement at 0.395 ms CUDA median
+  versus 13.723 ms CPU build for 2,097,152 NNZ. CP-BP-06 is closed; the source
+  checkpoint is committed and pushed before `BARRIER_B_INTEGRATED` is opened.
+- 2026-08-17: Published `CP06_DEVICE_READY` and released every Phase B lease.
+  Added an asynchronous caller-stream/device-scratch API; CUB exclusive scan;
+  narrow boundary, compact mask/value-offset, and row-offset kernels; exact
+  CPU/CUDA reconstruction tests; and isolated component build wiring. On Tesla
+  V100 `sm_70`, the serialized 65,536-row, 2,097,152-NNZ, 131,072-record smoke
+  measured CPU build 13.055 ms and CUDA min/median/mean
+  0.391/0.393/0.394 ms with transfers excluded, 16,786,695 scratch bytes, and
+  exact byte agreement. CUDA 12.9 compute-sanitizer memcheck reported zero
+  errors and racecheck zero hazards. Focused records, apply-plan, planner,
+  evaluator, optimizer, exact merge-cost CPU/CUDA, inferred-pipeline, and
+  sampling-materialization regressions passed. No git operation was performed.
+- 2026-08-17: `codex-cp-bp06-phase-b` claimed Phase B at pushed base
+  `1e25e11`. The lease is limited to a new CUDA record API/source/test/benchmark,
+  CP-BP-06 component-CMake blocks, and coordination ledgers. The selected route
+  is native 4x V100 `sm_70`, CUB-backed scan plus narrow regular custom kernels;
+  mask/rank/index construction is not Tensor Core eligible. CP-BP-07 retains
+  independent ownership and reads the integrated host record ABI unchanged.
 - 2026-08-16: Barrier A jointly validated and integrated the host record ABI
   with CP-BP-11 foundations. CP-BP-06 remains unclaimed; Phase B may now add
   only the CUDA detect/scan/emit implementation required by the coordinator.
@@ -125,10 +151,9 @@ runtime logical record contract here.
 
 ## Next Actions
 
-- Claim Phase B under the shared lock, lease only CP-BP-06 CUDA/API/test/bench
-  seams, and implement caller-owned stream/scratch CUB-backed detect/scan/emit.
-  Prove exact CPU agreement, sanitizer coverage, and serialized V100 benchmark
-  evidence; do not absorb CP-BP-07 row ordering or later tile/runtime work.
+- Complete and closed. CP-BP-08 may consume the integrated record contract only
+  after the coordinator records the pushed Barrier B checkpoint; no CP-BP-06
+  implementation remains.
 
 ## Done Criteria
 

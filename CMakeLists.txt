@@ -989,6 +989,50 @@ set_target_properties(cellPackStatisticalValidationTest PROPERTIES
 )
 cellerator_enable_perf(cellPackStatisticalValidationTest)
 
+# CP-BP-07: bounded local cell ordering. Kept in the root CMake seam so the
+# concurrently leased CP-BP-06 component-CMake blocks remain disjoint.
+add_library(cellpack_local_cell_ordering STATIC
+    components/CellPack/src/local_cell_ordering.cc
+    components/CellPack/src/local_cell_ordering_cuda.cu
+)
+add_library(CellPack::local_cell_ordering ALIAS cellpack_local_cell_ordering)
+target_include_directories(cellpack_local_cell_ordering PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_local_cell_ordering PUBLIC CellPack::cellpack CUDA::cudart)
+set_target_properties(cellpack_local_cell_ordering PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_local_cell_ordering)
+
+add_executable(cellPackLocalCellOrderingTest
+    components/CellPack/tests/local_cell_ordering_test.cu
+)
+target_link_libraries(cellPackLocalCellOrderingTest PRIVATE CellPack::local_cell_ordering)
+set_target_properties(cellPackLocalCellOrderingTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackLocalCellOrderingTest)
+
+add_executable(cellPackLocalCellOrderingBench
+    components/CellPack/bench/local_cell_ordering_bench.cu
+)
+target_include_directories(cellPackLocalCellOrderingBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bench)
+target_link_libraries(cellPackLocalCellOrderingBench PRIVATE CellPack::local_cell_ordering)
+set_target_properties(cellPackLocalCellOrderingBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackLocalCellOrderingBench)
+
 add_library(cellpack_apply_plan STATIC
     components/CellPack/src/apply_plan.cc
     components/CellPack/src/apply_plan_cuda.cu

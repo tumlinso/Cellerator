@@ -67,6 +67,26 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_merge_cost_cuda)
 endif()
 
+add_library(cellpack_cell_block_records_cuda STATIC
+    src/cell_block_records_cuda.cu
+)
+add_library(CellPack::cell_block_records_cuda ALIAS cellpack_cell_block_records_cuda)
+target_include_directories(cellpack_cell_block_records_cuda PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellpack_cell_block_records_cuda PUBLIC CellPack::cellpack CUDA::cudart)
+target_compile_features(cellpack_cell_block_records_cuda PUBLIC cxx_std_17)
+set_target_properties(cellpack_cell_block_records_cuda PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellpack_cell_block_records_cuda)
+endif()
+
 add_executable(cellPackFormatTest
     tests/format_test.cc
 )
@@ -228,6 +248,21 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackMergeCostTest)
 endif()
 
+add_executable(cellPackCellBlockRecordsCudaTest
+    tests/cell_block_records_cuda_test.cu
+)
+target_link_libraries(cellPackCellBlockRecordsCudaTest PRIVATE CellPack::cell_block_records_cuda)
+set_target_properties(cellPackCellBlockRecordsCudaTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackCellBlockRecordsCudaTest)
+endif()
+
 add_executable(cellPackLayoutBench
     bench/cellpack_layout_bench.cc
 )
@@ -300,4 +335,20 @@ set_target_properties(cellPackMergeCostBench PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackMergeCostBench)
+endif()
+
+add_executable(cellPackCellBlockRecordsBench
+    bench/cell_block_records_bench.cu
+)
+target_include_directories(cellPackCellBlockRecordsBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
+target_link_libraries(cellPackCellBlockRecordsBench PRIVATE CellPack::cell_block_records_cuda)
+set_target_properties(cellPackCellBlockRecordsBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackCellBlockRecordsBench)
 endif()

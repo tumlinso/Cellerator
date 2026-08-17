@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-16T20:14:53Z"
-last_reviewed_at: "2026-08-16T20:14:53Z"
+last_heartbeat_at: "2026-08-17T08:04:27Z"
+last_reviewed_at: "2026-08-17T08:04:27Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -138,11 +138,11 @@ stream's implementation.
 - [x] `CP06_HOST_ABI_READY`: versioned exact plan-geometry identity, checked
   width-32 record ABI, CPU builder/validator/decoder, and adversarial exact
   reconstruction tests exist.
-- [ ] `CP06_DEVICE_READY`: CUDA detect/scan/emit is exactly equivalent, explicit
+- [x] `CP06_DEVICE_READY`: CUDA detect/scan/emit is exactly equivalent, explicit
   about scratch/stream/overflow, sanitized, and benchmarked.
-- [ ] `CP07_ORDER_ABI_READY`: bounded local permutation/inverse contract and CPU
+- [x] `CP07_ORDER_ABI_READY`: bounded local permutation/inverse contract and CPU
   reference/baselines consume CP-BP-06 records without rewriting payloads.
-- [ ] `CP07_DEVICE_READY`: CUDA ordering agrees exactly and measured local-union
+- [x] `CP07_DEVICE_READY`: CUDA ordering agrees exactly and measured local-union
   metrics justify the selected path.
 - [ ] `CP08_HOST_ABI_READY`: versioned tile dictionary/mask/payload/rank view,
   CPU builder/decoder, identity propagation, and adversarial decode tests exist.
@@ -281,17 +281,54 @@ stream's implementation.
 - [x] Add conditional assignment rules to every CP-BP-06 through CP-BP-11
   child ledger.
 - [x] Execute and integrate Phase A.
-- [ ] Execute and integrate Phases B through F as their gates open.
+- [x] Execute and validate Phase B for integration.
+- [ ] Execute and integrate Phases C through F as their gates open.
 
 ## Blockers
 
-- No blocker for Phase B: CP-BP-06 and CP-BP-07 are unclaimed and may be forked
-  after reading their conditional instructions and claiming disjoint leases.
+- Phase B implementation and combined validation are complete; CP-BP-06/07 are
+  closed. Barrier B waits only for the validated source commit to be pushed and
+  recorded before Phase C is opened.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier B combined validation passed from fresh
+  `build-cp-bp-barrier-b` with CUDA 12.9.86, GNU 13.3.0, and V100 `sm_70`.
+  Passed exact CPU/CUDA cell-block records and local ordering, CUDA apply-plan
+  and merge-cost, planner/evaluator/optimizer, inferred-pipeline,
+  statistical-validation, and sampling-materialization tests. Matching CUDA
+  12.9 memcheck/racecheck runs reported zero errors/hazards for both new paths;
+  serialized benchmarks reproduced 0.395 ms record-build and 0.23344 ms
+  local-order CUDA medians with exact agreement. `git diff --check`, TODO
+  summary, and staleness checks must pass again immediately before commit.
+- 2026-08-17: CP-BP-07 published `CP07_ORDER_ABI_READY` and
+  `CP07_DEVICE_READY`, released all leases, and became idle without git
+  operations. Its versioned bounded-window host/CUDA order maps agree exactly;
+  CUDA 12.9 memcheck reports zero errors and racecheck zero hazards. The
+  serialized V100 benchmark at
+  65,536 rows measured 0.233472 ms CUDA median versus 22.7307 ms CPU and reduced
+  group-union metadata from 4,194,304 original/row-NNZ bytes and 2,701,568
+  deterministic-random bytes to 131,072 bytes. Serialized 256- and 4,096-row
+  window variants also preserved exact agreement and baseline improvements.
+  Both Phase B streams are now
+  ready for the appointed Barrier B integrator; CP-BP-08 must not start yet.
+- 2026-08-17: CP-BP-06 published `CP06_DEVICE_READY` after exact CPU/CUDA
+  reconstruction, memcheck and racecheck with zero findings, downstream
+  regressions, and a serialized V100 benchmark. Its CUB scan plus narrow
+  regular kernels measured 0.393 ms median for 2,097,152 NNZ versus 13.055 ms
+  for the CPU builder with transfers excluded and exact byte agreement. Every
+  CP-BP-06 lease is released; the uncommitted implementation remains Barrier B
+  input and CP-BP-07 remains actively claimed and untouched.
+- 2026-08-17: CP-BP-07 was claimed by `codex-cp-bp07` at pushed base
+  `1e25e11`, owning new local-order host/CUDA files and root-CMake target blocks.
+  CP-BP-06 retains its new CUDA record files and component-CMake blocks; both
+  streams share only coordination ledgers under this lock.
+- 2026-08-17: CP-BP-06 Phase B was claimed by `codex-cp-bp06-phase-b` at
+  pushed base `1e25e11`. It owns new CUDA record API/source/test/benchmark files
+  and CP-BP-06 component-CMake blocks. CP-BP-07 remains ready and must consume
+  the integrated host ABI read-only through disjoint files/build wiring.
 - 2026-08-16: Barrier A combined validation passed from fresh
   `build-cp-bp-barrier-a` with CUDA 12.9.86, GNU 13.3.0, and V100 `sm_70`.
   Passed `cellPackCellBlockRecordsTest`, `cellPackStatisticalValidationTest`,
@@ -320,9 +357,9 @@ stream's implementation.
 
 ## Next Actions
 
-- Fork CP-BP-06 Phase B and CP-BP-07 as the next parallel pair. Neither stream
-  is claimed yet; both must use the shared/file/GPU interlocks and stop at their
-  recorded gates for Barrier B.
+- Push the validated Barrier B source commit, record its hash, then open the
+  parallel Phase C pair: CP-BP-08 host tile ABI/reference and CP-BP-11 frozen-
+  plan/record-level held-out adapters. Do not claim either from this integrator.
 
 ## Done Criteria
 

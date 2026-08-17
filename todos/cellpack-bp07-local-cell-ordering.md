@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp07-local-cell-ordering"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp07"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T20:14:53Z"
-last_reviewed_at: "2026-08-16T20:14:53Z"
+last_heartbeat_at: "2026-08-17T08:04:27Z"
+last_reviewed_at: "2026-08-17T08:04:27Z"
 stale_after_days: 7
 objective: "CP-BP-07: Infer cheap local cell ordering from active gene-block signatures for warp-friendly groups."
 ---
@@ -44,8 +44,11 @@ Represent each transformed cell by its sorted active-block set, compute a compac
 
 ## File Lease
 
-_Ready and unclaimed._ Record exact intended paths atomically at claim time;
-CP-BP-06 record files are read-only inputs.
+No active CP-BP-07 lease. Owner `codex-cp-bp07` released the new local-order
+host/CUDA API, source, focused test, benchmark, root-CMake target blocks, and
+coordination ledgers at both CP-BP-07 gates. The Barrier B integrator accepted
+the combined CP-BP-06/07 tree from pushed base `1e25e11`; no implementation
+work remains in this stream.
 
 ## Assumptions
 
@@ -73,17 +76,52 @@ CP-BP-06 record files are read-only inputs.
 ## Tasks
 
 - [x] Wait for CP-BP-06 active-block record/view contract.
-- [ ] Implement signature and local grouping.
-- [ ] Preserve row permutation and inverse maps.
-- [ ] Benchmark against original/random and row-length ordering.
+- [x] Implement signature and local grouping.
+- [x] Preserve row permutation and inverse maps.
+- [x] Benchmark against original/random and row-length ordering.
 
 ## Blockers
 
-_None._ `CP06_HOST_ABI_READY` and Barrier A provide stable row-to-record
-offsets and sorted block IDs; CP-BP-06 Phase B may proceed independently.
+_None; implementation and validation are complete._ CP-BP-08 remains gated
+only until the coordinator records the pushed Barrier B checkpoint.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier B integrator rebuilt CP-BP-06 and CP-BP-07 together from
+  fresh `build-cp-bp-barrier-b` with CUDA 12.9.86, GNU 13.3.0, and V100
+  `sm_70`. Exact device maps, record/apply-plan/merge-cost CUDA tests, all host
+  regressions, CUDA 12.9 memcheck, and racecheck passed. The serialized
+  65,536-row benchmark reproduced exact agreement at 0.23344 ms CUDA median
+  versus 22.2067 ms CPU, with inferred metadata 131,072 bytes versus 4,194,304
+  original/row-NNZ and 2,701,568 random bytes. CP-BP-07 is closed; the source
+  checkpoint is committed and pushed before `BARRIER_B_INTEGRATED` is opened.
+- 2026-08-17: Published `CP07_ORDER_ABI_READY` and `CP07_DEVICE_READY`, then
+  released every lease without a git operation. Added a versioned pointer-first
+  bounded-window order view, deterministic four-lane active-block MinHash,
+  original/random/row-NNZ baselines, reversible local/global row identity, and
+  exact group-union/metadata metrics. The asynchronous CUDA path uses two
+  stable CUB segmented radix sorts plus narrow signature/index kernels with
+  caller-owned stream/scratch and exact CPU agreement for every order kind.
+  `cellPackLocalCellOrderingTest`, CUDA 12.9 compute-sanitizer memcheck and
+  racecheck, record, evaluator, optimizer, and CUDA apply-plan regressions
+  passed. On Tesla V100
+  `sm_70`, 65,536 rows, 16 active blocks/row, 1,024-row windows, and 32-row
+  groups measured CPU 22.7307 ms and CUDA median 0.233472 ms with transfers
+  excluded and 2,359,811 temporary bytes. Inferred block-id metadata was
+  131,072 bytes versus 4,194,304 original/row-NNZ and 2,701,568 deterministic
+  random bytes. Additional 256/4,096-row windows preserved exact agreement:
+  CUDA medians were 0.439296/0.326624 ms and inferred metadata was
+  524,288/131,072 bytes versus 4,194,304 original/row-NNZ bytes and
+  2,780,032/2,677,824 random bytes. The default HPC SDK sanitizer wrapper
+  incorrectly targeted an
+  absent CUDA 13.1 install; the matching installed CUDA 12.9 sanitizer reported
+  zero memory errors and zero race hazards.
+- 2026-08-17: `codex-cp-bp07` claimed CP-BP-07 at pushed base `1e25e11` with
+  new local-order host/CUDA API/source/test/benchmark files, root-CMake target
+  blocks, and coordination ledgers. The route is native V100 `sm_70` with CUB
+  device sorting plus narrow signature/index kernels; sparse signature ordering
+  is not Tensor Core eligible. CP-BP-06 host records are read-only and its
+  component-CMake/CUDA record lease remains untouched.
 - 2026-08-16: Reactivated as `planned/ready` after Barrier A integrated the
   versioned CP-BP-06 host record ABI. CP-BP-07 may consume row-to-record
   offsets and sorted block IDs read-only while CP-BP-06 independently adds its
@@ -92,10 +130,9 @@ offsets and sorted block IDs; CP-BP-06 Phase B may proceed independently.
 
 ## Next Actions
 
-- Claim under the shared lock and own new local-order API/source/test/benchmark
-  files. Implement bounded-window deterministic permutation/inverse maps,
-  original/random/row-NNZ baselines, then library-backed CUDA signature/sort;
-  never rewrite CP-BP-06 payloads or globally reorder/relearn the dataset.
+- Complete and closed. CP-BP-08 may consume the integrated order contract only
+  after the coordinator records the pushed Barrier B checkpoint; no CP-BP-07
+  implementation remains.
 
 ## Done Criteria
 
