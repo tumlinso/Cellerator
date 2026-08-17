@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T09:42:37Z"
-last_reviewed_at: "2026-08-17T09:42:37Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 7
 objective: "CP-BP-09: Execute directly from compact warp tiles without unpacking to CSR or BELL."
 ---
@@ -39,9 +39,9 @@ Implement benchmark-driven native consumers that use shared block IDs, cell/gene
 
 ## CP-BP-06→11 Fork Interlock
 
-- Read `todos/cellpack-bp06-11-parallel-execution.md`. Barrier C source
-  checkpoint `ebe0509` integrates `CP08_HOST_ABI_READY`; Phase D reference/API
-  work is complete at `CP09_REFERENCE_READY` and awaits Barrier D.
+- Read `todos/cellpack-bp06-11-parallel-execution.md`. Barrier D source
+  checkpoint `0bf9acf` integrates `CP08_DEVICE_READY` and
+  `CP09_REFERENCE_READY`; Phase E is fork-ready but unclaimed.
 - Phase D may claim only the reference/API portion, use `build-cp-bp09`, publish
   `CP09_REFERENCE_READY`, release, and become idle. Device implementation waits
   for `CP08_DEVICE_READY` and Barrier D.
@@ -63,10 +63,26 @@ The completed Phase D lease was exactly:
 - this ledger and CP-BP-09 entries in the coordinator, `todos.md`,
   `todo-status.md`, and parent roadmap while holding the shared lock.
 
-No implementation lease is active. `warp_tiles.hh/.cc`, every
-`warp_tiles_cuda.*`, component `CMakeLists.txt`, plan/record/order files, and all
-statistical-validation files remain unmodified by this stream. Phase E is a
-separate claim after `CP08_DEVICE_READY` and Barrier D.
+No implementation lease is active. On exact assignment, the available Phase E
+lease is:
+
+- new
+  `components/CellPack/include/CellPack/feature_weighted_row_reduction_cuda.hh`;
+- new
+  `components/CellPack/src/feature_weighted_row_reduction_cuda.cu`;
+- new
+  `components/CellPack/tests/feature_weighted_row_reduction_cuda_test.cu`;
+- new
+  `components/CellPack/bench/feature_weighted_row_reduction_bench.cu`;
+- only clearly labelled CP-BP-09 Phase E blocks in
+  `components/CellPack/CMakeLists.txt`;
+- CP-BP-09 entries in this ledger, the coordinator, parent roadmap, `todos.md`,
+  and `todo-status.md` while holding the shared lock.
+
+Root `CMakeLists.txt`, the frozen host `feature_weighted_row_reduction.hh/.cc`,
+all `warp_tiles*`, plan/record/order files, and every CP-BP-11 validation file
+are read-only. CP-BP-11 exclusively owns its new tile-validation files and root-
+CMake blocks in the parallel branch.
 
 ## Assumptions
 
@@ -83,6 +99,8 @@ separate claim after `CP08_DEVICE_READY` and Barrier D.
 
 - `components/CellPack/include/CellPack/gating_cuda.cuh`
 - `components/CellPack/src/gating_cuda.cu`
+- `components/CellPack/include/CellPack/feature_weighted_row_reduction.hh`
+- `components/CellPack/include/CellPack/warp_tiles_cuda.hh`
 - `src/compute/sparse/ops/`
 - `bench/benchmark_mutex.hh`
 
@@ -98,18 +116,24 @@ separate claim after `CP08_DEVICE_READY` and Barrier D.
 - [x] Wait for the stable CP-BP-08 host tile ABI and Barrier C.
 - [x] Phase D: freeze the direct packed consumer contract and CPU/canonical
   feature-weighted row-reduction reference.
-- [!] Phase E: wait for `CP08_DEVICE_READY` and Barrier D before the direct CUDA
-  consumer and runtime benchmark.
+- [ ] Phase E: implement the direct CUDA consumer and runtime benchmark from
+  pushed Barrier D checkpoint `0bf9acf`.
 - [ ] Explore and benchmark occupancy dispatch paths.
 - [ ] Record header benchmark justification for custom GPU math.
 
 ## Blockers
 
-- Phase D is complete at `CP09_REFERENCE_READY`. Device implementation remains
-  blocked on `CP08_DEVICE_READY` and Barrier D.
+- None for the exact Phase E lease. The stream is idle/unclaimed and may begin
+  only after explicit assignment.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` after a
+  fresh combined CUDA 12.9.86/GNU 13.3.0 `sm_70` build. Phase E is now
+  fork-ready: implement exactly one direct configured-precision weighted-row-
+  reduction CUDA consumer, focused exact/tolerance tests, sanitizer coverage,
+  and a serialized V100 benchmark. CP-BP-08 and the Phase D host contract are
+  frozen read-only inputs.
 - 2026-08-17: Published `CP09_REFERENCE_READY`, released every Phase D lease,
   and returned idle without git operations. Added a versioned trivially-copyable
   pointer-first plan/tile/weight contract with exact plan/tile/weight-generation,
@@ -150,9 +174,40 @@ separate claim after `CP08_DEVICE_READY` and Barrier D.
 
 ## Next Actions
 
-- Remain idle at `CP09_REFERENCE_READY`. Await `CP08_DEVICE_READY` and the
-  appointed Barrier D integrator; do not claim or begin the Phase E CUDA
-  consumer, benchmark, or runtime dispatch early.
+- Await exact assignment “You are assigned CP-BP-09 Phase E.” Then claim only
+  the published Phase E lease at current pushed `origin/main`, use
+  `build-cp-bp09`, publish `CP09_RUNTIME_READY`, release to idle, and stop
+  without git operations for Barrier E.
+
+## Phase E Acceptance Boundary
+
+- Provide an asynchronous caller-stream API over device-resident CP-BP-08
+  tiles, canonical-feature weights, and caller-owned canonical-row output. No
+  allocation, transfer, device-wide synchronization, CSR/BELL reconstruction,
+  per-cell launch, or runtime feature lookup is allowed in the hot path.
+- Preserve the Phase D configured storage/compute/accumulator types, immutable
+  identities, canonical output order, capacity/alias checks, CUDA error
+  propagation, and versioned absolute-plus-relative comparison rule.
+- Start with one lane-per-cell/warp-per-tile regular custom kernel. At most one
+  additional precompiled low-occupancy specialization may be retained, and only
+  if its serialized repeated median improves its declared regime by at least
+  5% while preserving the same numerical contract. Otherwise publish one path
+  and explicitly record that dispatch was rejected. No universal dispatcher.
+- This irregular single-RHS sparse reduction is not Tensor Core eligible. Keep
+  the binary `sm_70`-specific for this phase. Benchmark direct packed execution
+  against the existing Cellerator CSR SpMV path and cuSPARSE where configured
+  types permit, using identical resident inputs/outputs, excluded transfers and
+  setup, fixed warmups/repeats, occupancy regimes, bytes, NNZ/s, bandwidth,
+  launch count, and scratch. Do not create a weaker duplicate CSR baseline.
+- Tests must cover empty/tail tiles, sparse/full masks, non-identity row order,
+  canonical feature recovery, zero NNZ, configured numeric values, tampered
+  identities/capacities/aliases, repeat determinism within the comparison rule,
+  and direct agreement with both canonical and host-tile references.
+- Run CUDA 12.9 memcheck and racecheck plus host-reference, tile host/CUDA,
+  record, order, apply-plan, evaluator, optimizer, inferred-pipeline, and the
+  CP-BP-11 Phase E test if visible. The benchmark uses both shared GPU and
+  repository benchmark locks. Publish `CP09_RUNTIME_READY`, release, and stop;
+  do not implement CP-BP-10/11/12, extra operators, persistence, or git.
 
 ## Done Criteria
 

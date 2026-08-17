@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp08-warp-tiles"
-status: "in_progress"
-execution: "idle"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp08-phase-d"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T09:46:57Z"
-last_reviewed_at: "2026-08-17T09:46:57Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -44,7 +44,8 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 ## File Lease
 
-_Released at `CP08_DEVICE_READY` by `codex-cp-bp08-phase-d` on 2026-08-17._
+_Closed by Barrier D at pushed source checkpoint `0bf9acf` on 2026-08-17._
+Released at `CP08_DEVICE_READY` by `codex-cp-bp08-phase-d` on 2026-08-17.
 The completed Phase D lease at pushed base
 `fe095fb6d6592a0194b0a86f13f0421e23081cd0` was exactly:
 
@@ -101,11 +102,15 @@ No implementation lease is active. `warp_tiles.hh/.cc`,
 
 ## Blockers
 
-- Phase D is complete at `CP08_DEVICE_READY`. Barrier D integration is now the
-  sole blocker before CP-BP-08 can close and Phase E may open.
+- None. CP-BP-08 satisfies its recorded acceptance criteria and is closed.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_D_INTEGRATED` accepted and pushed CP-BP-08 at source
+  checkpoint `0bf9acf`. Fresh CUDA 12.9.86/GNU 13.3.0 `sm_70` validation passed
+  exact host/CUDA tile agreement, memcheck with zero errors, racecheck with zero
+  hazards, and the required upstream/downstream regressions. CP-BP-08 is now
+  complete and closed; CP-BP-09 Phase E consumes its ABI read-only.
 - 2026-08-17: Published `CP08_DEVICE_READY`, released every Phase D lease, and
   returned idle without git operations. Added a versioned asynchronous CUDA
   constructor over caller-owned device scratch/output and caller stream. Narrow
@@ -181,9 +186,8 @@ No implementation lease is active. `warp_tiles.hh/.cc`,
 
 ## Next Actions
 
-- Remain idle at `CP08_DEVICE_READY`. Await the appointed Barrier D integrator;
-  do not claim or begin CP-BP-09 Phase E runtime work, persistence, or any git
-  integration operation from this child stream.
+- Complete and closed. Do not reopen this stream to fit CP-BP-09 runtime or
+  CP-BP-13 persistence; consumers must use the pushed ABI.
 
 ## Done Criteria
 

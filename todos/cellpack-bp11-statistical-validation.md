@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T09:00:11Z"
-last_reviewed_at: "2026-08-17T09:00:11Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -49,18 +49,33 @@ Build statistical validation into the feature: held-out cells, degree-preserving
   new statistical-validation/metric/null/provenance files and tests. Consume
   CP-BP-01/04 APIs read-only; do not edit sampling, optimizer, record, tile, or
   runtime implementations.
-- Consume the integrated foundations without redefining them, publish the
-  coordinator-named Phase C gate, release all leases, and become idle. Do not
-  remain claimed while waiting on CP-BP-08/09. No git operations.
+- Barrier D is integrated at pushed source checkpoint `0bf9acf`. Phase E may
+  consume the frozen CP-BP-08 tile ABI and existing validation foundations
+  read-only, publish `CP11_TILE_BOOTSTRAP_READY`, release, and stop without git.
 
 ## File Lease
 
 - Released by `codex-cp-bp11-phase-c` at `CP11_HELDOUT_READY` on 2026-08-17.
-  The uncommitted Barrier C input is exactly new
+  The integrated Phase C input is exactly new
   `record_statistical_validation.hh/.cc/_test.cc`, labelled CP-BP-11 Phase C
   root-CMake blocks, and these coordination notes. Existing Phase A, plan,
   evaluator/optimizer, CP-BP-06/07, every `warp_tiles.*`, and component CMake
   file remain unmodified by this stream.
+
+No implementation lease is active. On exact assignment, the available Phase E
+lease is:
+
+- new `components/CellPack/include/CellPack/tile_statistical_validation.hh`;
+- new `components/CellPack/src/tile_statistical_validation.cc`;
+- new `components/CellPack/tests/tile_statistical_validation_test.cc`;
+- only clearly labelled CP-BP-11 Phase E blocks in root `CMakeLists.txt`;
+- CP-BP-11 entries in this ledger, the coordinator, parent roadmap, `todos.md`,
+  and `todo-status.md` while holding the shared lock.
+
+The existing statistical/record-validation APIs, every CP-BP-08 tile file,
+CP-BP-09 host/CUDA/runtime file, component `CMakeLists.txt`, plan/record/order
+files, sampling, optimizer, and evaluator are read-only. CP-BP-09 exclusively
+owns its new CUDA consumer files and component-CMake blocks in parallel.
 
 ## Assumptions
 
@@ -78,6 +93,9 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 - `include/Cellerator/compute/sampling.hh`
 - `tests/sampling_runtime_test.cc`
 - `todos/cellpack-packing-plan-evaluator.md`
+- `components/CellPack/include/CellPack/statistical_validation.hh`
+- `components/CellPack/include/CellPack/record_statistical_validation.hh`
+- `components/CellPack/include/CellPack/warp_tiles.hh`
 - `bench/benchmark_mutex.hh`
 
 ## Plan
@@ -104,16 +122,22 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 - [x] Add degree-preserving null reference generator and conservation tests.
 - [x] Add frozen-plan CP-BP-06 record held-out/null adapters and publish
   `CP11_HELDOUT_READY`.
-- [ ] Integrate completed plan/tile/runtime stages as they land.
+- [ ] Phase E: add frozen-plan tile held-out/null metrics and bootstrap physical-
+  layout stability summaries; publish `CP11_TILE_BOOTSTRAP_READY`.
+- [ ] Phase F: add relearned-plan membership and final runtime stability.
 
 ## Blockers
 
-- No blocker for Phase C frozen-plan/CP-BP-06 record-level held-out adapters:
-  Barrier B source checkpoint `eeb8c39` is pushed and both input contracts are
-  stable. Full tile/runtime/bootstrap acceptance still waits on later phases.
+- None for the exact Phase E tile/bootstrap lease. Final relearned-plan and
+  runtime stability remain Phase F and must not be absorbed now.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` with
+  the exact CP-BP-08 host/CUDA tile contract and CP-BP-09 reference API. Phase E
+  is now fork-ready for a host-only tile held-out/null/bootstrap adapter in new
+  validation files. It must preserve binary sparse incidence, immutable donor/
+  sample/study-aware identities, and the existing no-relearning boundary.
 - 2026-08-17: Barrier C integrated `CP11_HELDOUT_READY` with the CP-BP-08 host
   tile ABI in pushed source checkpoint `ebe0509` after fresh combined
   validation. CP-BP-11 remains idle and unclaimed; Phase D does not lease any
@@ -191,9 +215,45 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Next Actions
 
-- Remain idle with `CP11_HELDOUT_READY` integrated. Wait for Barrier D and the
-  coordinator-named Phase E tile/bootstrap extension; do not remain claimed,
-  edit CP-BP-08, begin runtime reporting, or perform git operations.
+- Await exact assignment “You are assigned CP-BP-11 Phase E.” Then claim only
+  the published Phase E lease at current pushed `origin/main`, use
+  `build-cp-bp11`, publish `CP11_TILE_BOOTSTRAP_READY`, release to idle, and
+  stop without git operations for Barrier E.
+
+## Phase E Acceptance Boundary
+
+- Assume sparse scRNA binary structural incidence with rows=cells and
+  columns=canonical genes. Expression bytes are preserved for reconstruction
+  only; do not normalize, log-transform, densify, change feature order, use
+  labels to learn packing, or claim donor/study generalization without supplied
+  grouping identities.
+- Add a versioned allocation-free adapter that accepts one const frozen plan,
+  immutable Phase A split/bootstrap/null provenance, canonical source rows, and
+  caller-built CP-BP-08 tile views. Validate plan/feature-axis/row-domain/order/
+  split/bootstrap/source identities before computing any result.
+- Held-out and real-versus-degree-null evaluation must exactly reconstruct
+  canonical row/feature/value bytes and report raw denominator-preserving tile
+  metrics: encoded and metadata bytes, NNZ, rows, tile count, tile-block union,
+  active block references, zero padding, correctness items/mismatches, and
+  explicit group-versus-cell-level scope. Do not report runtime throughput.
+- Bootstrap evidence evaluates the same frozen plan across caller-materialized
+  bootstrap tile realizations bound to existing row multiplicities; it does not
+  relearn blocks or order on held-out/null inputs. Preserve every per-replicate
+  raw metric packet as authoritative and derive repeat count plus deterministic
+  min/mean/max and sample-standard-deviation summaries with explicit zero-
+  denominator handling. Mapping variability and relearned-plan stability stay
+  in Phase F.
+- Tests must cover grouped and cell-level splits, repeated bootstrap rows,
+  empty/zero-NNZ/tail tiles, bit 31, non-identity local order, real/null exact
+  degree conservation, canonical/value-byte reconstruction, zero denominators,
+  deterministic repeat summaries, and rejection of overlapping/tampered plan,
+  split, bootstrap, null, source, row-domain, feature-axis, and tile identities.
+- Run the Phase A and record-validation tests plus tile host/CUDA, records,
+  ordering, plan/apply/evaluator/optimizer, inferred-pipeline, TODO, staleness,
+  and diff checks. GPU regressions use the shared GPU lock; no CP-BP-11 CUDA
+  kernel or performance benchmark is required. Publish
+  `CP11_TILE_BOOTSTRAP_READY`, release, and stop; do not edit CP-BP-08/09,
+  implement Phase F relearning/runtime summaries, or perform git operations.
 
 ## Done Criteria
 

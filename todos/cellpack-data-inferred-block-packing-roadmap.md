@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T09:46:57Z"
-last_reviewed_at: "2026-08-17T09:46:57Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -42,8 +42,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
   CP-BP-06's host record contract and CP-BP-11's validation foundations;
   CP-BP-06 and CP-BP-07 are complete and closed in pushed Barrier B source
   checkpoint `eeb8c39`. Barrier C integrated the CP-BP-08 host tile and
-  CP-BP-11 held-out contracts in pushed source checkpoint `ebe0509`; CP-BP-08
-  and CP-BP-09 are idle at their Phase D gates awaiting Barrier D integration.
+  CP-BP-11 held-out contracts in pushed source checkpoint `ebe0509`; Barrier D
+  pushed CP-BP-08 CUDA tiles and CP-BP-09's host consumer contract at `0bf9acf`.
+  CP-BP-08 is closed and the disjoint CP-BP-09/11 Phase E pair is fork-ready.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -77,7 +78,7 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [x] CP-BP-05 apply a frozen plan to full partitions.
 - [x] CP-BP-06 emit compact per-cell block records.
 - [x] CP-BP-07 infer local cell order from active-block signatures.
-- [ ] CP-BP-08 build warp-oriented 32-cell tiles.
+- [x] CP-BP-08 build warp-oriented 32-cell tiles.
 - [ ] CP-BP-09 implement native packed-runtime consumers.
 - [ ] CP-BP-10 alternating/refined packing optimization.
 - [ ] CP-BP-11 statistical legitimacy and anti-overfitting validation.
@@ -85,13 +86,19 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- Phase D CP-BP-08 CUDA construction and CP-BP-09 CPU/reference API are complete
-  and idle at their named gates. Barrier D must integrate them before CP-BP-08
-  closes or CP-BP-09 device runtime opens; CP-BP-10/12/13 retain their later
-  tile/runtime dependencies.
-- CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
+- CP-BP-09 direct CUDA runtime and CP-BP-11 tile/bootstrap validation are
+  unblocked with exact disjoint Phase E leases. CP-BP-10/12/13 retain their
+  later runtime/stability dependencies.
+- CP-BP-12 has measured CP-BP-08 construction but still needs integrated
+  measured CP-BP-09 runtime before selecting a hardware objective.
 
 ## Progress Notes
+- 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` after
+  fresh combined V100 `sm_70` validation. CP-BP-08 is complete/closed. Published
+  unclaimed disjoint Phase E leases: CP-BP-09 owns only the direct weighted-row-
+  reduction CUDA/test/benchmark and component-CMake blocks; CP-BP-11 owns only
+  host tile-statistical-validation files and root-CMake blocks. Phase E children
+  stop at separate gates without git for Barrier E.
 - 2026-08-17: CP-BP-08 published `CP08_DEVICE_READY`, released its exact Phase D
   lease, and returned idle. Its caller-stream/caller-scratch V100 constructor is
   exactly CPU-equivalent, sanitizer-clean, and benchmarked at 0.756 ms median
@@ -188,9 +195,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. `CP08_DEVICE_READY` and
-  `CP09_REFERENCE_READY` are published with both children idle; appoint the
-  Barrier D integrator and do not open Phase E in that integration turn.
+- Do not implement from this parent. Phase E is fork-ready but unclaimed; assign
+  CP-BP-09 Phase E and CP-BP-11 Phase E using the coordinator's exact strings
+  and leases. Do not start CP-BP-10/12/13 or Phase F early.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

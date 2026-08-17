@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T15:27:39Z"
-last_reviewed_at: "2026-08-16T15:27:39Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 7
 objective: "CP-BP-12: Fit a replaceable hardware-aware execution-cost model and autotune storage/runtime tradeoffs."
 ---
@@ -32,7 +32,8 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 ## Assumptions
 
 - CP-BP-03 exposes a replaceable cost-policy seam.
-- CP-BP-08/09 expose correct representative construction and execution paths before timing begins.
+- CP-BP-08 exposes correct measured construction and CP-BP-09 exposes correct
+  measured execution before model fitting begins.
 
 ## Suggested Skills
 
@@ -56,17 +57,21 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Tasks
 
-- [!] Wait for correct CP-BP-08/09 kernels; the CP-BP-03 policy interface is complete.
+- [!] Wait for the correct measured CP-BP-09 runtime; CP-BP-03 and measured
+  CP-BP-08 construction are complete.
 - [ ] Build benchmark campaign and data-quality checks.
 - [ ] Fit and validate replaceable execution-cost model.
 - [ ] Integrate configurable storage-plus-runtime objective.
 
 ## Blockers
 
-- Blocked only on measured CP-BP-08/09 implementation.
+- Blocked only on measured CP-BP-09 direct runtime and Barrier E integration.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier D integrated exact measured CP-BP-08 tile construction at
+  `0bf9acf`; that dependency is satisfied. CP-BP-12 remains blocked only on the
+  Phase E direct CP-BP-09 runtime and its fair CSR/current-layout measurements.
 - 2026-08-14: Added as a missing blocked workstream; existing layout-estimate benchmarks do not constitute this packed-tile hardware model.
 - 2026-08-16: CP-BP-03 completed the versioned replaceable storage-cost seam;
   CP-BP-12 remains blocked because no correct CP-BP-08/09 tile consumer exists
@@ -74,7 +79,8 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Next Actions
 
-- Reactivate only after correct native tile consumers exist and can be benchmarked without unpacking.
+- Reactivate after `CP09_RUNTIME_READY` is integrated at Barrier E; do not fit
+  from construction timing alone.
 
 ## Done Criteria
 

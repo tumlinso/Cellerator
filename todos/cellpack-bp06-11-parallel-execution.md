@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T09:46:57Z"
-last_reviewed_at: "2026-08-17T09:46:57Z"
+last_heartbeat_at: "2026-08-17T10:14:49Z"
+last_reviewed_at: "2026-08-17T10:14:49Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,9 +33,9 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Barrier C is integrated at source checkpoint `ebe0509`. CP-BP-08 and CP-BP-09
-  are idle at `CP08_DEVICE_READY` and `CP09_REFERENCE_READY`; the appointed
-  Barrier D integrator is the sole next actor.
+- Barrier D is integrated at pushed source checkpoint `0bf9acf`. CP-BP-08 is
+  closed; CP-BP-09 and CP-BP-11 are idle with exact disjoint Phase E leases and
+  may be forked only by their explicit assignment strings below.
 
 ## Planning Notes
 
@@ -165,6 +165,35 @@ CP-BP-08 is claimed by `codex-cp-bp08-phase-d` and CP-BP-09 by
   condition. Record the evidence under the lock, release to idle, and do not
   normalize the collision by expanding scope.
 
+### Phase E exact lease map
+
+Barrier D source checkpoint `0bf9acf05e257235f4a4f652149c50513c89b6fa`
+is pushed. Neither Phase E stream is claimed. The available leases are:
+
+- **CP-BP-09 Phase E implementation lease:** new
+  `components/CellPack/include/CellPack/feature_weighted_row_reduction_cuda.hh`,
+  `components/CellPack/src/feature_weighted_row_reduction_cuda.cu`,
+  `components/CellPack/tests/feature_weighted_row_reduction_cuda_test.cu`, and
+  `components/CellPack/bench/feature_weighted_row_reduction_bench.cu`; only
+  clearly labelled CP-BP-09 Phase E blocks in
+  `components/CellPack/CMakeLists.txt`; and CP-BP-09/coordinator/index ledger
+  entries while holding the shared lock.
+- **CP-BP-11 Phase E implementation lease:** new
+  `components/CellPack/include/CellPack/tile_statistical_validation.hh`,
+  `components/CellPack/src/tile_statistical_validation.cc`, and
+  `components/CellPack/tests/tile_statistical_validation_test.cc`; only clearly
+  labelled CP-BP-11 Phase E blocks in root `CMakeLists.txt`; and CP-BP-11/
+  coordinator/index ledger entries while holding the shared lock.
+- CP-BP-09 consumes the pushed CP-BP-08 tile host/CUDA ABI and its own Phase D
+  host contract read-only; every validation file and root CMake file is read-
+  only. CP-BP-11 consumes the pushed tile/record/order/plan and Phase A/C
+  validation contracts read-only; every CP-BP-09 file and component CMake file
+  is read-only. Neither stream may edit the other's new files or CMake seam.
+- CP-BP-09 owns the only Phase E CUDA runtime/benchmark. CP-BP-11 is host-only;
+  it may invoke existing GPU regressions under the GPU lock but may not add a
+  CUDA kernel or runtime performance claim. A frozen-input defect is a stop-
+  and-release condition, not authority to widen either lease.
+
 ### Build and GPU lock
 
 - Build directories are `build-cp-bp06` through `build-cp-bp11`; never share a
@@ -222,6 +251,10 @@ stream's implementation.
 - [x] `CP11_HELDOUT_READY`: frozen-plan record metrics evaluate unseen identities
   without relearning; later tile/runtime adapters remain CP-BP-11 acceptance
   work but do not block this CP-BP-10 validation prerequisite.
+- [ ] `CP11_TILE_BOOTSTRAP_READY`: frozen-plan held-out/null tile metrics and
+  repeated bootstrap physical-layout summaries preserve immutable identities,
+  raw denominators, exact reconstruction, and group/cell-level scope without
+  runtime claims or relearning.
 - [ ] `CP10_READY`: CP-BP-07/08 are complete, CP-BP-09 runtime is measurable,
   and `CP11_HELDOUT_READY` is published.
 
@@ -235,9 +268,12 @@ stream's implementation.
 - [x] `BARRIER_C_INTEGRATED`: CP-BP-08 host tiles and CP-BP-11 record-level
   held-out adapters are jointly validated, committed, pushed, and recorded at
   one source checkpoint before Phase D opens.
-- [ ] `BARRIER_D_INTEGRATED`: CP-BP-08 CUDA construction and CP-BP-09's
+- [x] `BARRIER_D_INTEGRATED`: CP-BP-08 CUDA construction and CP-BP-09's
   CPU/reference API are jointly validated from one fresh tree, committed,
   pushed, and recorded before Phase E opens.
+- [ ] `BARRIER_E_INTEGRATED`: CP-BP-09 direct CUDA runtime and CP-BP-11 tile/
+  bootstrap validation are jointly validated from one fresh tree, committed,
+  pushed, and recorded before `CP10_READY` or Phase F opens.
 
 ## Checkpointed Parallel Phases
 
@@ -360,6 +396,22 @@ stream's implementation.
   without git for Barrier D. Do not create CUDA consumer/benchmark files, edit
   CP-BP-08 CUDA or host representation files, broaden to SpMM/operators,
   introduce per-cell launches/dispatch, or claim runtime performance.
+- Barrier D is integrated. If assigned **CP-BP-09 Phase E**, claim only the
+  exact Phase E lease above at pushed base `0bf9acf05e257235f4a4f652149c50513c89b6fa`.
+  Preserve the Phase D operation, configured numeric types, identities,
+  canonical-row output, capacities, aliases, and comparison rule byte-for-byte.
+- Implement one asynchronous device-resident direct tile consumer. Start with a
+  lane-per-cell/warp-per-tile `sm_70` regular custom kernel; retain at most one
+  precompiled low-occupancy specialization only after a declared-regime median
+  gain of at least 5%. No Tensor Cores, hidden conversion, allocation, transfer,
+  device-wide sync, runtime feature lookup, per-cell launch, extra operator, or
+  universal dispatch framework.
+- Exact/tolerance tests, CUDA 12.9 memcheck/racecheck, and a serialized V100
+  benchmark are mandatory. Compare resident packed execution fairly with the
+  existing Cellerator CSR SpMV and cuSPARSE where configured types permit;
+  report shapes, occupancy regimes, repeats, bytes, NNZ/s, bandwidth, scratch,
+  launches, and excluded setup/transfers. Publish `CP09_RUNTIME_READY`, release
+  to idle, and stop without git for Barrier E.
 
 ### If assigned CP-BP-10
 
@@ -413,6 +465,21 @@ stream's implementation.
   stability evidence required to close CP-BP-11. Use `build-cp-bp11`, run the
   statistical-foundation and relevant plan/record regressions, then publish the
   gate, release every lease, and perform no git operation.
+- Barrier D is integrated. If assigned **CP-BP-11 Phase E**, claim only the
+  exact host-only Phase E lease above at pushed base
+  `0bf9acf05e257235f4a4f652149c50513c89b6fa`. Consume all Phase A/C validation,
+  CP-BP-08 tile, plan, record, and order APIs read-only.
+- Add versioned frozen-plan held-out and degree-null tile metrics with exact
+  canonical feature/row/value reconstruction and raw denominator preservation.
+  Add bootstrap physical-layout summaries over caller-materialized tile views
+  bound to the existing multiplicity provenance: retain every raw replicate and
+  derive repeat count, min/mean/max, and sample standard deviation. Do not
+  relearn plans/order, report runtime, or absorb Phase F mapping variability.
+- Preserve sparse scRNA binary structural semantics: rows are cells, columns are
+  canonical genes; no normalization, log transform, densification, feature
+  reorder, label-trained packing, or donor/study claim without caller groups.
+  Publish `CP11_TILE_BOOTSTRAP_READY`, release to idle, and stop without CUDA
+  implementation, benchmark, cross-stream edits, or git for Barrier E.
 
 ## Phase D Fork and Stop Protocol
 
@@ -444,6 +511,40 @@ stream's implementation.
    `BARRIER_D_INTEGRATED`, update/push the CellStack pointer, and stop. It must
    not begin Phase E in that integration turn.
 
+## Phase E Fork and Stop Protocol
+
+1. Fork both children from the same pushed Cellerator `origin/main` containing
+   `BARRIER_D_INTEGRATED` and the exact Phase E leases. Assignment text is
+   exactly either “You are assigned CP-BP-09 Phase E” or “You are assigned
+   CP-BP-11 Phase E”; no addendum is required.
+2. Each child first acquires the shared lock, verifies base hash, idle ownership,
+   gates, and non-overlap, then records its unique owner, full pushed hash, and
+   exact lease in its child/coordinator/index ledgers. It releases the lock
+   before source work. A mismatch, frozen-input defect, or need for the other
+   lease means record evidence, release/remaining idle, and stop.
+3. Children use only `build-cp-bp09` and `build-cp-bp11`. CPU work may overlap.
+   Every GPU runtime, sanitizer, profiler, and benchmark uses the shared GPU
+   lock; CP-BP-09's benchmark additionally uses `benchmark_mutex.hh`. CP-BP-11
+   owns no Phase E benchmark and no CUDA implementation.
+4. CP-BP-09 may read but never edit CP-BP-11/root-CMake files; CP-BP-11 may read
+   but never edit CP-BP-09/component-CMake files. Both consume pushed CP-BP-08
+   and Phase A/C contracts read-only. Coordination edits occur only under the
+   shared lock and must preserve the other stream's current owner/evidence.
+5. At completion, each child reacquires the shared lock, records exact commands,
+   evidence, and any explicitly rejected specialization; publishes only
+   `CP09_RUNTIME_READY` or `CP11_TILE_BOOTSTRAP_READY`; releases every lease;
+   returns to `in_progress/idle`; releases the lock; and stops without commit,
+   push, stash, reset, branch change, amend, or CellStack pointer update.
+6. The appointed Barrier E integrator waits for both gates with both streams
+   idle, rereads the combined diff/leases, and validates from fresh
+   `build-cp-bp-barrier-e`. It runs both new focused tests, CP-BP-09
+   memcheck/racecheck and serialized benchmark smoke, Phase A/C validation,
+   tile host/CUDA, records/order, plan/apply/evaluator/optimizer, CSR baseline,
+   and inferred-pipeline regressions, plus `git diff --check`, TODO summary, and
+   staleness dry-run. Only then may it commit/push Cellerator, record the source
+   hash and `BARRIER_E_INTEGRATED`, close CP-BP-09, update/push the CellStack
+   pointer, and publish `CP10_READY`. It must not begin Phase F in that turn.
+
 ## Tasks
 
 - [x] Define fork-ready claim, lease, build, GPU, and git interlocks.
@@ -453,17 +554,32 @@ stream's implementation.
 - [x] Execute and integrate Phase A.
 - [x] Execute and validate Phase B for integration.
 - [x] Execute and integrate Phase C.
-- [ ] Execute and integrate Phases D through F as their gates open.
+- [x] Execute and integrate Phase D.
+- [ ] Execute and integrate Phases E and F as their gates open.
 
 ## Blockers
 
-- `CP08_DEVICE_READY` and `CP09_REFERENCE_READY` are published with both streams
-  idle. Barrier D integration is the sole next action; Phase E remains closed.
+- No blocker for the exact disjoint CP-BP-09/11 Phase E leases. Both streams are
+  idle/unclaimed; Barrier E remains blocked until both child gates publish.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_D_INTEGRATED` is published at pushed source checkpoint
+  `0bf9acf`. Fresh `build-cp-bp-barrier-d` used CUDA 12.9.86, GNU 13.3.0,
+  Torch models disabled, and V100 `sm_70`. CP-BP-08/09 focused tests, exact
+  host/CUDA tiles, CP-BP-06/07, host tiles, reconstruction, plan/apply/evaluator/
+  optimizer, inferred-pipeline, and Phase A/C statistical regressions passed.
+  CUDA 12.9 memcheck reported zero errors and racecheck zero hazards for the
+  tile constructor; TODO summary, staleness dry-run, and diff checks passed.
+  CP-BP-08 is closed.
+- 2026-08-17: Published complete unclaimed Phase E fork instructions at pushed
+  base `0bf9acf05e257235f4a4f652149c50513c89b6fa`. CP-BP-09 exclusively owns new
+  direct weighted-row-reduction CUDA/test/benchmark files and labelled component-
+  CMake blocks. CP-BP-11 exclusively owns new tile-statistical-validation host
+  files and labelled root-CMake blocks. Both use separate builds, serialize GPU
+  work, publish distinct gates, release, and stop without git for Barrier E.
 - 2026-08-17: CP-BP-08 published `CP08_DEVICE_READY`, released its CUDA tile,
   component-CMake, and coordination leases, and returned idle without git.
   Caller-stream/caller-scratch CUDA construction matches the CPU tile oracle
@@ -605,10 +721,10 @@ stream's implementation.
 
 ## Next Actions
 
-- Appoint one Barrier C integrator to freshly validate both idle Phase C
-  implementations, commit/push Cellerator, record the checkpoint, update/push
-  the CellStack pointer, and stop. Do not begin CP-BP-08 CUDA Phase D or
-  CP-BP-09 in the integration turn.
+- Phase E is fork-ready but unclaimed. The user may fork from this conversation
+  and assign exactly “You are assigned CP-BP-09 Phase E” and “You are assigned
+  CP-BP-11 Phase E” in either order. Each child follows the exact lease,
+  validation, gate, release, and no-git protocol above without addendum.
 
 ## Done Criteria
 
