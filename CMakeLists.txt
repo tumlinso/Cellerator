@@ -1055,11 +1055,66 @@ set_target_properties(cellPackTileStatisticalValidationTest PROPERTIES
 )
 cellerator_enable_perf(cellPackTileStatisticalValidationTest)
 
-# CP-BP-11 Phase F target insertion point. The Phase F owner may replace only
-# this labelled seam while holding the shared coordination lock.
+# CP-BP-10 Phase F: bounded host-side held-out alternating controller.
+add_library(cellpack_alternating_refinement STATIC
+    components/CellPack/src/alternating_refinement.cc
+)
+add_library(CellPack::alternating_refinement ALIAS
+    cellpack_alternating_refinement)
+target_include_directories(cellpack_alternating_refinement PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_alternating_refinement PUBLIC
+    CellPack::record_statistical_validation
+)
+set_target_properties(cellpack_alternating_refinement PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_alternating_refinement)
 
-# CP-BP-10 Phase F target insertion point. The Phase F owner may replace only
-# this labelled seam while holding the shared coordination lock.
+add_executable(cellPackAlternatingRefinementTest
+    components/CellPack/tests/alternating_refinement_test.cc
+)
+target_link_libraries(cellPackAlternatingRefinementTest PRIVATE
+    CellPack::alternating_refinement
+)
+set_target_properties(cellPackAlternatingRefinementTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackAlternatingRefinementTest)
+
+# CP-BP-11 Phase F: bootstrap-relearned mapping and measured-runtime stability.
+add_library(cellpack_runtime_statistical_validation STATIC
+    components/CellPack/src/runtime_statistical_validation.cc
+)
+add_library(CellPack::runtime_statistical_validation ALIAS
+    cellpack_runtime_statistical_validation)
+target_include_directories(cellpack_runtime_statistical_validation PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_runtime_statistical_validation PUBLIC
+    CellPack::alternating_refinement
+    CellPack::tile_statistical_validation
+)
+set_target_properties(cellpack_runtime_statistical_validation PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_runtime_statistical_validation)
+
+add_executable(cellPackRuntimeStatisticalValidationTest
+    components/CellPack/tests/runtime_statistical_validation_test.cc
+)
+target_link_libraries(cellPackRuntimeStatisticalValidationTest PRIVATE
+    CellPack::runtime_statistical_validation
+)
+set_target_properties(cellPackRuntimeStatisticalValidationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackRuntimeStatisticalValidationTest)
 
 # CP-BP-07: bounded local cell ordering. Kept in the root CMake seam so the
 # concurrently leased CP-BP-06 component-CMake blocks remain disjoint.
