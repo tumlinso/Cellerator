@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:17:44Z"
-last_reviewed_at: "2026-08-17T08:17:44Z"
+last_heartbeat_at: "2026-08-17T08:36:21Z"
+last_reviewed_at: "2026-08-17T08:36:21Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -55,24 +55,12 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## File Lease
 
-- Released at `CP11_FOUNDATIONS_READY` by `codex-cp-bp11-phase-a` on
-  2026-08-16. Phase C is ready and unclaimed. On assignment, atomically lease
-  exactly:
-
-  - new
-    `components/CellPack/include/CellPack/record_statistical_validation.hh`;
-  - new `components/CellPack/src/record_statistical_validation.cc`;
-  - new
-    `components/CellPack/tests/record_statistical_validation_test.cc`;
-  - only clearly labelled CP-BP-11 Phase C target blocks in root
-    `CMakeLists.txt`;
-  - this ledger and CP-BP-11 entries in the coordinator, `todos.md`,
-    `todo-status.md`, and parent roadmap while holding the shared lock.
-
-  Record the unique owner and full current pushed `origin/main` claim hash under
-  the shared lock before editing. Existing `statistical_validation.*`, plan/evaluator/optimizer,
-  CP-BP-06/07 representation/ordering files, all `warp_tiles.*`, and component
-  `CMakeLists.txt` are read-only.
+- Released by `codex-cp-bp11-phase-c` at `CP11_HELDOUT_READY` on 2026-08-17.
+  The uncommitted Barrier C input is exactly new
+  `record_statistical_validation.hh/.cc/_test.cc`, labelled CP-BP-11 Phase C
+  root-CMake blocks, and these coordination notes. Existing Phase A, plan,
+  evaluator/optimizer, CP-BP-06/07, every `warp_tiles.*`, and component CMake
+  file remain unmodified by this stream.
 
 ## Assumptions
 
@@ -114,6 +102,8 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 - [x] Define metrics: bytes/NNZ, metadata/NNZ, blocks/cell, tile-union size, padding/NNZ where relevant, compression, preprocessing throughput, runtime throughput/bandwidth, and correctness.
 - [x] Implement deterministic held-out and bootstrap provenance without modifying CP-BP-01-owned files.
 - [x] Add degree-preserving null reference generator and conservation tests.
+- [x] Add frozen-plan CP-BP-06 record held-out/null adapters and publish
+  `CP11_HELDOUT_READY`.
 - [ ] Integrate completed plan/tile/runtime stages as they land.
 
 ## Blockers
@@ -124,6 +114,33 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Progress Notes
 
+- 2026-08-17: Published `CP11_HELDOUT_READY` and released every Phase C lease.
+  Added a versioned pointer-first record-validation API that accepts one const
+  frozen plan, immutable split/training identities, canonical partition CSR and
+  CP-BP-06 records. It validates exact canonical feature and arbitrary value-byte
+  reconstruction on unseen rows, reports denominator-preserving projected
+  bytes/NNZ, metadata/NNZ, blocks/cell, exact correctness and group scope, and
+  compares real support against the existing exactly degree-preserving null.
+  Zero-NNZ rows preserve raw byte counts without fabricating a storage rate;
+  tile/runtime/hardware metrics remain unavailable by construction.
+- 2026-08-17: Fresh `build-cp-bp11` configuration used CUDA 12.9.86, GNU 13.3.0,
+  Torch models disabled, and `sm_70`. Passed
+  `cellPackRecordStatisticalValidationTest`,
+  `cellPackStatisticalValidationTest`, `cellPackCellBlockRecordsTest`,
+  `cellPackEvaluatorTest`, `cellPackOptimizerTest`, and
+  `cellPackInferredPackingPipelineTest`, plus `git diff --check`. Tests cover
+  deterministic group/cell splits, nonzero global partitions, empty/zero-NNZ
+  rows, exact projection arithmetic, stable frozen-plan/split identities,
+  real/null structural separation, exact degree conservation, leakage, source
+  identity, value-byte and null-provenance tampering. No GPU runtime or
+  benchmark was required or executed.
+- 2026-08-17: `codex-cp-bp11-phase-c` claimed the exact record-validation lease
+  at pushed base `3925c155de1dab89dd506dd229c97acb96de27a7`. Concurrent
+  CP-BP-08 owner `codex-cp-bp08-phase-c` retains its disjoint `warp_tiles` and
+  component-CMake lease. This stream owns only new
+  `record_statistical_validation` files, labelled root-CMake blocks, and locked
+  CP-BP-11 coordination entries; it will publish `CP11_HELDOUT_READY`, release
+  to idle, and stop without git operations.
 - 2026-08-17: Phase C's exact unclaimed lease and scientific boundary are
   frozen against the current pushed coordinator base. New record-level adapters must consume the
   Phase A metric/split/null contract read-only, never relearn on held-out/null
@@ -169,16 +186,9 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Next Actions
 
-- If explicitly assigned, claim only the recorded Phase C lease under the
-  shared lock. Add frozen-plan/CP-BP-06 record-level held-out and null metric
-  adapters with split/null/source/plan identity, bytes/NNZ, metadata/NNZ,
-  blocks/cell, exact reconstruction, and tests for disjoint/group-aware splits,
-  cell-level-only labeling, zero denominators, empty inputs, exact arithmetic,
-  real/null comparison, overlap/tamper rejection, and absence of relearning.
-  Validate from `build-cp-bp11` with Phase A, record, and plan/evaluator
-  regressions; publish `CP11_HELDOUT_READY`, release to idle, and stop without
-  git for Barrier C. Do not begin merely because this setup is committed; wait
-  for user assignment.
+- Remain idle with `CP11_HELDOUT_READY` published. Wait for Barrier C/D and the
+  coordinator-named Phase E tile/bootstrap extension; do not remain claimed,
+  edit CP-BP-08, begin runtime reporting, or perform git operations.
 
 ## Done Criteria
 

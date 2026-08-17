@@ -989,6 +989,38 @@ set_target_properties(cellPackStatisticalValidationTest PROPERTIES
 )
 cellerator_enable_perf(cellPackStatisticalValidationTest)
 
+# CP-BP-11 Phase C: frozen-plan, record-level held-out/null validation. This
+# remains in the root CMake seam so concurrent CP-BP-08 owns component CMake.
+add_library(cellpack_record_statistical_validation STATIC
+    components/CellPack/src/record_statistical_validation.cc
+)
+add_library(CellPack::record_statistical_validation ALIAS
+    cellpack_record_statistical_validation)
+target_include_directories(cellpack_record_statistical_validation PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_record_statistical_validation PUBLIC
+    CellPack::statistical_validation
+)
+set_target_properties(cellpack_record_statistical_validation PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_record_statistical_validation)
+
+add_executable(cellPackRecordStatisticalValidationTest
+    components/CellPack/tests/record_statistical_validation_test.cc
+)
+target_link_libraries(cellPackRecordStatisticalValidationTest PRIVATE
+    CellPack::record_statistical_validation
+    CellPack::apply_plan
+)
+set_target_properties(cellPackRecordStatisticalValidationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackRecordStatisticalValidationTest)
+
 # CP-BP-07: bounded local cell ordering. Kept in the root CMake seam so the
 # concurrently leased CP-BP-06 component-CMake blocks remain disjoint.
 add_library(cellpack_local_cell_ordering STATIC

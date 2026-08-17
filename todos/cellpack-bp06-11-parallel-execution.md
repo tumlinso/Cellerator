@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T08:17:44Z"
-last_reviewed_at: "2026-08-17T08:17:44Z"
+last_heartbeat_at: "2026-08-17T08:39:21Z"
+last_reviewed_at: "2026-08-17T08:39:21Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,9 +33,9 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Barrier B is integrated. The next forkable assignments are CP-BP-08 Phase C
-  host ABI/reference and CP-BP-11 Phase C record-level held-out adapters;
-  later IDs must satisfy their gates below before claiming.
+- Both Phase C children have published their gates and released their leases.
+  Barrier C integration is the sole next action; later IDs must satisfy that
+  checkpoint before claiming.
 
 ## Planning Notes
 
@@ -172,7 +172,7 @@ stream's implementation.
   reference/baselines consume CP-BP-06 records without rewriting payloads.
 - [x] `CP07_DEVICE_READY`: CUDA ordering agrees exactly and measured local-union
   metrics justify the selected path.
-- [ ] `CP08_HOST_ABI_READY`: versioned tile dictionary/mask/payload/rank view,
+- [x] `CP08_HOST_ABI_READY`: versioned tile dictionary/mask/payload/rank view,
   CPU builder/decoder, identity propagation, and adversarial decode tests exist.
 - [ ] `CP08_DEVICE_READY`: device view and CUDA tile construction are exact,
   sanitized, and benchmarked.
@@ -184,7 +184,7 @@ stream's implementation.
 - [x] `CP11_FOUNDATIONS_READY`: metric schema, immutable split/bootstrap/null
   provenance, leakage checks, and an exact degree-preserving binary-incidence
   null reference with conservation tests exist.
-- [ ] `CP11_HELDOUT_READY`: frozen-plan and available record/tile/runtime metrics
+- [x] `CP11_HELDOUT_READY`: frozen-plan and available record/tile/runtime metrics
   evaluate unseen identities without relearning; this is CP-BP-10's validation
   prerequisite.
 - [ ] `CP10_READY`: CP-BP-07/08 are complete, CP-BP-09 runtime is measurable,
@@ -385,14 +385,34 @@ stream's implementation.
 
 ## Blockers
 
-- No blocker for Phase C: CP-BP-08 host ABI/reference and CP-BP-11 record-level
-  held-out adapters are ready as a disjoint parallel pair from pushed Barrier B
-  source checkpoint `eeb8c39`.
+- Both Phase C gates are published and all child leases are released. Barrier C
+  combined validation and git integration is the sole next action.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: `CP08_HOST_ABI_READY` is published. CP-BP-08 Phase C passed its
+  focused host and upstream/downstream regressions, released its `warp_tiles`
+  and component-CMake/ledger leases, and returned idle without git. Together
+  with already-published `CP11_HELDOUT_READY`, this makes Barrier C integration
+  the sole next action; Phase D and CP-BP-09 remain closed.
+- 2026-08-17: `CP11_HELDOUT_READY` is published. CP-BP-11 Phase C passed its
+  focused and required regressions, released its new record-validation and
+  root-CMake/ledger leases, and returned idle without git. The gate is explicitly
+  record-level today; Phase E/F still own tile/bootstrap/runtime stability.
+  CP-BP-08 remains actively claimed on its disjoint host-tile lease, so Barrier C
+  must wait for `CP08_HOST_ABI_READY` and must not disturb that work.
+- 2026-08-17: `codex-cp-bp11-phase-c` claimed the exact CP-BP-11 Phase C lease
+  at pushed base `3925c15`: new `record_statistical_validation` files, labelled
+  root-CMake blocks, and CP-BP-11 coordination entries only. Concurrent
+  CP-BP-08 retains its disjoint `warp_tiles` and component-CMake lease. Both
+  Phase C streams are now claimed and must stop/release at their named gates.
+- 2026-08-17: `codex-cp-bp08-phase-c` claimed the exact CP-BP-08 host-only
+  lease at pushed base `3925c15`. It owns new `warp_tiles.hh/.cc/_test.cc`,
+  labelled component-CMake blocks, and CP-BP-08 coordination entries only.
+  CP-BP-11 remains idle/unassigned with its disjoint record-validation and
+  root-CMake lease and is still safe to claim in parallel.
 - 2026-08-17: Made Phase C fork-ready without claiming implementation. The
   CP-BP-08 host tile ABI/reference and CP-BP-11 record-held-out adapter leases
   are exact, disjoint, and bound to the same current pushed `origin/main`;
@@ -469,9 +489,10 @@ stream's implementation.
 
 ## Next Actions
 
-- Fork CP-BP-08 Phase C host tiles and CP-BP-11 Phase C record-level held-out
-  adapters in parallel under the existing claim/GPU/file interlocks. Each must
-  stop at its recorded gate; do not begin CP-BP-08 CUDA Phase D or CP-BP-09.
+- Appoint one Barrier C integrator to freshly validate both idle Phase C
+  implementations, commit/push Cellerator, record the checkpoint, update/push
+  the CellStack pointer, and stop. Do not begin CP-BP-08 CUDA Phase D or
+  CP-BP-09 in the integration turn.
 
 ## Done Criteria
 

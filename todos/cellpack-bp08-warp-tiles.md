@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp08-warp-tiles"
-status: "planned"
-execution: "ready"
+status: "in_progress"
+execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:17:44Z"
-last_reviewed_at: "2026-08-17T08:17:44Z"
+last_heartbeat_at: "2026-08-17T08:39:21Z"
+last_reviewed_at: "2026-08-17T08:39:21Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -45,8 +45,8 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 ## File Lease
 
-_Ready and unclaimed for Phase C host ABI/reference only._ On assignment,
-atomically lease exactly:
+_Released at `CP08_HOST_ABI_READY` by `codex-cp-bp08-phase-c` on 2026-08-17._
+The completed Phase C lease was exactly:
 
 - new `components/CellPack/include/CellPack/warp_tiles.hh`;
 - new `components/CellPack/src/warp_tiles.cc`;
@@ -56,11 +56,10 @@ atomically lease exactly:
 - this ledger and CP-BP-08 entries in the coordinator, `todos.md`,
   `todo-status.md`, and parent roadmap while holding the shared lock.
 
-Record the unique owner and full current pushed `origin/main` claim hash under
-the shared lock before editing. `cell_block_records.*`, `local_cell_ordering.*`,
-`packing_plan.*`, `apply_plan.*`, all statistical-validation files, and root
-`CMakeLists.txt` are read-only. CUDA Phase D remains a separate later claim
-after `BARRIER_C_INTEGRATED`.
+No implementation lease is active. `cell_block_records.*`,
+`local_cell_ordering.*`, `packing_plan.*`, `apply_plan.*`, all
+statistical-validation files, and root `CMakeLists.txt` remain read-only. CUDA
+Phase D is a separate later claim after `BARRIER_C_INTEGRATED`.
 
 ## Assumptions
 
@@ -93,19 +92,45 @@ after `BARRIER_C_INTEGRATED`.
 ## Tasks
 
 - [x] Wait for CP-BP-06 record and CP-BP-07 ordering contracts.
-- [ ] Define complete warp-tile logical ABI.
-- [ ] Implement reference/GPU construction and decode.
-- [ ] Measure bytes/NNZ, metadata/NNZ, union size, and build throughput.
+- [x] Define complete versioned pointer-first warp-tile logical ABI.
+- [x] Implement deterministic host construction, exact validation/decode, and
+  metadata/storage count metrics.
+- [ ] Implement CUDA construction and measure bytes/NNZ, metadata/NNZ, union
+  size, and build throughput in Phase D.
 
 ## Blockers
 
-- No blocker for Phase C host ABI/reference: Barrier B source checkpoint
-  `eeb8c39` closes CP-BP-06/07 with stable record and local-order contracts.
-- CUDA tile construction remains blocked until `CP08_HOST_ABI_READY` is
-  integrated at Barrier C.
+- Phase C host ABI/reference is complete at `CP08_HOST_ABI_READY`.
+- CUDA tile construction remains blocked until the host gate is integrated at
+  Barrier C.
 
 ## Progress Notes
 
+- 2026-08-17: Published `CP08_HOST_ABI_READY`, released every Phase C lease,
+  and returned idle without git operations. Added a versioned trivially-copyable
+  pointer/count ABI over caller-owned tile dictionary, cell masks, compact
+  row-block gene masks, terminal rank/value offsets, and arbitrary value bytes.
+  Tile identity binds exact feature-block geometry, CP-BP-07 ordering, partition
+  row domain, feature axis, tile width, and value width.
+- 2026-08-17: Deterministic allocation-free host query/build, exact source-bound
+  validator, canonical-row decoder, and metadata/storage metrics cover empty
+  partitions/tiles, 32-lane and tail tiles, shared/disjoint blocks, full/empty
+  cell masks, gene/cell bit 31, non-identity row order, 1/3/8-byte values,
+  insufficient capacities, offset/identity/mask/value tampering, and repeat
+  determinism. No zeros are materialized.
+- 2026-08-17: Fresh `build-cp-bp08` with CUDA 12.9.86, GNU 13.3.0, and
+  `sm_70` built and passed `cellPackWarpTilesTest`,
+  `cellPackCellBlockRecordsTest`, `cellPackReconstructionTest`,
+  `cellPackLocalCellOrderingTest`, `cellPackPlannerTest`,
+  `cellPackEvaluatorTest`, `cellPackOptimizerTest`, and
+  `cellPackInferredPackingPipelineTest`. The existing CP-BP-07 CPU/CUDA test
+  ran under the shared GPU lock; `git diff --check` passed.
+- 2026-08-17: `codex-cp-bp08-phase-c` claimed the exact Phase C lease at
+  pushed base `3925c155de1dab89dd506dd229c97acb96de27a7`. CP-BP-11 remains
+  independently idle/unassigned with its disjoint new-file and root-CMake
+  lease. This claim owns only host `warp_tiles` ABI/reference/test files,
+  CP-BP-08 component-CMake blocks, and locked coordination entries; it will
+  publish `CP08_HOST_ABI_READY`, release, and stop without git operations.
 - 2026-08-17: Phase C's exact unclaimed lease and acceptance boundary are
   frozen against the current pushed coordinator base. The host contract must be pointer-first and
   device-ready; represent at most 32 ordered rows, a sorted unique feature-block
@@ -122,15 +147,9 @@ after `BARRIER_C_INTEGRATED`.
 
 ## Next Actions
 
-- If explicitly assigned, claim only the recorded Phase C lease under the
-  shared lock. Define the pointer-first tile dictionary/mask/payload/rank ABI,
-  CPU builder/validator/decoder, exact identity propagation, and tests for
-  empty/tail rows, shared/disjoint blocks, full/sparse masks including bit 31,
-  arbitrary value bytes/widths, deterministic rebuild, overflow, and tampering.
-  Validate from `build-cp-bp08` with CP-BP-06/07 and plan/evaluator regressions;
-  publish `CP08_HOST_ABI_READY`, release to idle, and stop without git for
-  Barrier C. Do not begin merely because this setup is committed; wait for user
-  assignment.
+- Await the appointed Barrier C integrator. Do not claim CUDA Phase D or begin
+  CP-BP-09 until the combined CP-BP-08/11 tree is freshly validated, committed,
+  pushed, and `BARRIER_C_INTEGRATED` is recorded.
 
 ## Done Criteria
 

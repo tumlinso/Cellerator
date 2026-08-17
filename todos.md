@@ -54,9 +54,9 @@ Use this file as the canonical index for substantial multi-step work.
   CellStack submodule pointer at every recorded barrier.
 - `BARRIER_A_INTEGRATED`, `BARRIER_B_INTEGRATED`, `CP06_DEVICE_READY`,
   `CP07_ORDER_ABI_READY`, and `CP07_DEVICE_READY` are published. CP-BP-06/07
-  are closed; CP-BP-08 Phase C and CP-BP-11 Phase C have exact disjoint leases
-  from the same current pushed coordinator base, remain ready/unclaimed, and must not begin before an
-  explicit user assignment.
+  are closed; `CP08_HOST_ABI_READY` and `CP11_HELDOUT_READY` are published with
+  both Phase C children idle and leases released. Barrier C integration is the
+  sole next action.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -87,20 +87,44 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-packing-plan-cuda-evaluator` | status: planned | owner: unassigned | file: `todos/cellpack-packing-plan-cuda-evaluator.md` | objective: deferred native V100 CUB acceleration of exact PackingPlan evaluation; opened by measured oracle share and not prerequisite to CP-BP-05.
 - `cellpack-bp06-cell-block-records` | status: done | owner: codex-cp-bp06-phase-b | file: `todos/cellpack-bp06-cell-block-records.md` | objective: exact compact host/CUDA cell-block records are complete and closed.
 - `cellpack-bp07-local-cell-ordering` | status: done | owner: codex-cp-bp07 | file: `todos/cellpack-bp07-local-cell-ordering.md` | objective: bounded local active-block-signature host/CUDA ordering is complete and closed.
-- `cellpack-bp08-warp-tiles` | status: planned | owner: unassigned | file: `todos/cellpack-bp08-warp-tiles.md` | objective: Phase C host tile ABI/reference is ready; CUDA construction remains separately gated by Barrier C.
+- `cellpack-bp08-warp-tiles` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp08-warp-tiles.md` | objective: `CP08_HOST_ABI_READY` is published and idle; CUDA construction remains separately gated by Barrier C.
 - `cellpack-bp09-native-runtime-consumers` | status: blocked | owner: unassigned | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: CP-BP-09 direct packed-tile kernels with no CSR/BELL unpack; waits on CP-BP-08.
 - `cellpack-bp10-alternating-refinement` | status: blocked | owner: unassigned | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: CP-BP-10 bounded held-out gene/cell alternating refinement; waits on the first complete plan/tile/runtime loop.
-- `cellpack-bp11-statistical-validation` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp11-statistical-validation.md` | objective: foundations are integrated and Phase C record-level held-out adapters are ready for a disjoint claim.
+- `cellpack-bp11-statistical-validation` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp11-statistical-validation.md` | objective: `CP11_HELDOUT_READY` record-level validation is published; the stream is idle until later tile/bootstrap/runtime evidence is gate-eligible.
 - `cellpack-bp12-hardware-cost-autotune` | status: blocked | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: CP-BP-12 replaceable measured execution-cost model; its CP-BP-03 policy seam is complete and it now waits only on measured CP-BP-08/09 paths.
 - `cellpack-bp13-persistence-integration` | status: blocked | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: CP-BP-13 Cellerator/CellShard .cspack lifecycle integration; waits on stable plan/record/tile/runtime contracts.
 
 ## Global Blockers
-- No blocker for the Phase C CP-BP-08 host ABI/reference plus CP-BP-11 record-
-  level held-out adapter pair. CP-BP-09/10/12/13 retain their later explicit
-  tile/runtime dependencies.
+- Both Phase C children are gate-complete and idle; Barrier C integration is the
+  sole next action. CP-BP-09/10/12/13 retain their later explicit tile/runtime
+  dependencies.
 - CP-BP-12 cannot fit a hardware model until correct CP-BP-08/09 kernels exist.
 
 ## Progress Notes
+- 2026-08-17: CP-BP-08 Phase C published `CP08_HOST_ABI_READY`, released all
+  leases, and returned idle without git. Its host-only tile contract is
+  versioned, pointer-first, device-ready, identity-bound, compact/no-padding,
+  allocation-free, exactly validated/decoded, and adversarially tested across
+  tail/empty/bit-31/value-width/permutation/tamper cases. Focused, record,
+  ordering, reconstruction, planner/evaluator/optimizer, inferred-pipeline, and
+  diff checks passed. Both Phase C gates now await Barrier C integration.
+- 2026-08-17: CP-BP-11 Phase C published `CP11_HELDOUT_READY`, released all
+  leases, and returned idle without git operations. Its new versioned
+  record-level adapter binds one const frozen plan to immutable group/cell split
+  identity, exactly checks canonical support and arbitrary value bytes through
+  CP-BP-06 records, preserves raw zero-denominator metrics, and compares real
+  versus exact degree-preserving null records. Focused, foundation, record,
+  evaluator, optimizer, inferred-pipeline, and diff checks passed. CP-BP-08
+  remains independently claimed and untouched.
+- 2026-08-17: `codex-cp-bp11-phase-c` claimed CP-BP-11's exact record-held-out
+  lease at pushed base `3925c15`. Concurrent CP-BP-08 remains independently
+  claimed on new `warp_tiles` files and component-CMake blocks. CP-BP-11 owns
+  new `record_statistical_validation` files plus labelled root-CMake blocks and
+  must publish `CP11_HELDOUT_READY`, release, and stop without git operations.
+- 2026-08-17: `codex-cp-bp08-phase-c` claimed CP-BP-08's exact host-only lease
+  at pushed base `3925c15`. CP-BP-11 remains independently idle/unassigned;
+  neither stream may edit the other's implementation or CMake seam. CP-BP-08
+  must publish `CP08_HOST_ABI_READY`, release to idle, and stop without git.
 - 2026-08-17: Published fork-complete Phase C instructions without claiming
   either child. CP-BP-08 owns new host `warp_tiles` files plus labelled
   component-CMake blocks; CP-BP-11 owns new record-statistical-validation files
@@ -297,14 +321,13 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- When the user explicitly assigns them, fork CP-BP-08 host tile ABI/reference
-  and CP-BP-11 record-level held-out adapters in parallel under the recorded
-  Phase C exact leases and stop gates. CP-BP-08 is the
-  primary continuation because its host ABI unlocks the physical/runtime chain.
+- Appoint the Barrier C integrator to validate and publish the combined
+  CP-BP-08/11 checkpoint. Do not begin CP-BP-08 CUDA Phase D or CP-BP-09 in the
+  integration turn.
 - CP-BP-03 is complete. Its provisional storage policy may later be calibrated
   by CP-BP-12, but CP-BP-12 remains blocked on measurable CP-BP-08/09 paths.
-- CP-BP-11 validation contracts/null references are also independently
-  available. Read each child ledger before claiming it.
+- CP-BP-11 record validation is idle at `CP11_HELDOUT_READY`; do not reclaim it
+  before the coordinator opens its later tile/bootstrap phase.
 - Reactivate blocked children only when their recorded representation/API
   prerequisite lands; do not guess a downstream physical ABI.
 - CP-BP-02 is closed and CP-BP-03 now consumes `gene_candidate_pair_view` plus

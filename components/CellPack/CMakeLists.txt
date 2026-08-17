@@ -87,6 +87,29 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_cell_block_records_cuda)
 endif()
 
+# CP-BP-08 host warp-tile ABI/reference. CP-BP-07's local-order target is
+# defined by the parent Cellerator build after this subdirectory is added.
+add_library(cellpack_warp_tiles STATIC
+    src/warp_tiles.cc
+)
+add_library(CellPack::warp_tiles ALIAS cellpack_warp_tiles)
+target_include_directories(cellpack_warp_tiles PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellpack_warp_tiles PUBLIC
+    CellPack::cellpack
+    cellpack_local_cell_ordering
+)
+target_compile_features(cellpack_warp_tiles PUBLIC cxx_std_17)
+set_target_properties(cellpack_warp_tiles PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellpack_warp_tiles)
+endif()
+
 add_executable(cellPackFormatTest
     tests/format_test.cc
 )
@@ -150,6 +173,20 @@ set_target_properties(cellPackCellBlockRecordsTest PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackCellBlockRecordsTest)
+endif()
+
+# CP-BP-08 Phase C host warp-tile ABI/reference validation.
+add_executable(cellPackWarpTilesTest
+    tests/warp_tiles_test.cc
+)
+target_link_libraries(cellPackWarpTilesTest PRIVATE CellPack::warp_tiles)
+set_target_properties(cellPackWarpTilesTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackWarpTilesTest)
 endif()
 
 add_executable(cellPackLayoutMetricsTest
