@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:39:21Z"
-last_reviewed_at: "2026-08-17T08:39:21Z"
+last_heartbeat_at: "2026-08-17T09:00:11Z"
+last_reviewed_at: "2026-08-17T09:00:11Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -36,30 +36,30 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 - Read `todos/cellpack-bp06-11-parallel-execution.md`. Do not claim until
   CP-BP-06 is closed and both CP-BP-07 handoff gates are recorded.
-- Claim Phase C under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
-  `build-cp-bp08`, and stop/release at `CP08_HOST_ABI_READY`. Resume CUDA Phase
-  D only after Barrier C; publish `CP08_DEVICE_READY` and close without git
-  operations.
+- Barrier C is integrated at source checkpoint `ebe0509`. On explicit Phase D
+  assignment, claim the exact CUDA lease under the shared lock, use
+  `build-cp-bp08`, publish `CP08_DEVICE_READY`, release, and stop without git.
 - Consume CP-BP-06/07 contracts read-only. Do not implement CP-BP-09 runtime or
   CP-BP-13 persistence.
 
 ## File Lease
 
-_Released at `CP08_HOST_ABI_READY` by `codex-cp-bp08-phase-c` on 2026-08-17._
-The completed Phase C lease was exactly:
+_Phase D is ready and unclaimed._ On explicit assignment atomically lease
+exactly:
 
-- new `components/CellPack/include/CellPack/warp_tiles.hh`;
-- new `components/CellPack/src/warp_tiles.cc`;
-- new `components/CellPack/tests/warp_tiles_test.cc`;
-- only clearly labelled CP-BP-08 target blocks in
+- new `components/CellPack/include/CellPack/warp_tiles_cuda.hh`;
+- new `components/CellPack/src/warp_tiles_cuda.cu`;
+- new `components/CellPack/tests/warp_tiles_cuda_test.cu`;
+- new `components/CellPack/bench/warp_tiles_bench.cu`;
+- only clearly labelled CP-BP-08 Phase D target blocks in
   `components/CellPack/CMakeLists.txt`;
 - this ledger and CP-BP-08 entries in the coordinator, `todos.md`,
   `todo-status.md`, and parent roadmap while holding the shared lock.
 
-No implementation lease is active. `cell_block_records.*`,
-`local_cell_ordering.*`, `packing_plan.*`, `apply_plan.*`, all
-statistical-validation files, and root `CMakeLists.txt` remain read-only. CUDA
-Phase D is a separate later claim after `BARRIER_C_INTEGRATED`.
+Record a unique owner and the full current pushed `origin/main` hash before
+editing. `warp_tiles.hh/.cc`, `cell_block_records.*`, `local_cell_ordering.*`,
+`packing_plan.*`, `apply_plan.*`, all CP-BP-09/statistical-validation files, and
+root `CMakeLists.txt` remain read-only.
 
 ## Assumptions
 
@@ -100,12 +100,17 @@ Phase D is a separate later claim after `BARRIER_C_INTEGRATED`.
 
 ## Blockers
 
-- Phase C host ABI/reference is complete at `CP08_HOST_ABI_READY`.
-- CUDA tile construction remains blocked until the host gate is integrated at
-  Barrier C.
+- No blocker for Phase D: `CP08_HOST_ABI_READY` is integrated at Barrier C
+  checkpoint `ebe0509`. The stream remains unclaimed until user assignment.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier C integrated the host ABI/reference at source checkpoint
+  `ebe0509` after fresh combined validation. Phase D is now fork-ready but
+  unclaimed: add only the asynchronous caller-stream/device-scratch CUDA
+  constructor, exact CPU/CUDA tests, and serialized V100 construction benchmark
+  under the recorded lease. Preserve the frozen host ABI byte-for-byte; publish
+  `CP08_DEVICE_READY`, release, and stop for Barrier D.
 - 2026-08-17: Published `CP08_HOST_ABI_READY`, released every Phase C lease,
   and returned idle without git operations. Added a versioned trivially-copyable
   pointer/count ABI over caller-owned tile dictionary, cell masks, compact
@@ -147,9 +152,10 @@ Phase D is a separate later claim after `BARRIER_C_INTEGRATED`.
 
 ## Next Actions
 
-- Await the appointed Barrier C integrator. Do not claim CUDA Phase D or begin
-  CP-BP-09 until the combined CP-BP-08/11 tree is freshly validated, committed,
-  pushed, and `BARRIER_C_INTEGRATED` is recorded.
+- Await explicit assignment text “You are assigned CP-BP-08 Phase D”. Claim
+  only the exact Phase D lease, implement/validate/benchmark CUDA construction,
+  publish `CP08_DEVICE_READY`, release to idle, and stop without git. Do not
+  implement CP-BP-09 runtime consumers or persistence.
 
 ## Done Criteria
 

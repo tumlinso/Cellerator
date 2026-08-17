@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:39:21Z"
-last_reviewed_at: "2026-08-17T08:39:21Z"
+last_heartbeat_at: "2026-08-17T09:00:11Z"
+last_reviewed_at: "2026-08-17T09:00:11Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -41,8 +41,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - CP-BP-01 through CP-BP-05 are complete and closed. Barrier A integrated
   CP-BP-06's host record contract and CP-BP-11's validation foundations;
   CP-BP-06 and CP-BP-07 are complete and closed in pushed Barrier B source
-  checkpoint `eeb8c39`. Both Phase C gates are published and await Barrier C
-  integration.
+  checkpoint `eeb8c39`. Barrier C integrated the CP-BP-08 host tile and
+  CP-BP-11 held-out contracts in pushed source checkpoint `ebe0509`; Phase D is
+  the next unclaimed parallel frontier.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -84,12 +85,18 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-08/11 Phase C implementations are gate-complete and idle; Barrier C
-  integration is the sole next action. CP-BP-09/10/12/13 retain their later
-  tile/runtime dependencies.
+- Phase D CP-BP-08 CUDA construction and CP-BP-09 CPU/reference API are
+  unblocked with exact disjoint leases. CP-BP-09 device runtime and
+  CP-BP-10/12/13 retain their later tile/runtime dependencies.
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-17: `BARRIER_C_INTEGRATED` records Cellerator source checkpoint
+  `ebe0509`. Fresh combined validation accepted the versioned compact host tile
+  contract and frozen-plan record held-out/null adapter together with their
+  upstream/downstream regressions. Phase D may now fork CP-BP-08 CUDA tile
+  construction and CP-BP-09's fixed CPU/reference consumer API without sharing
+  implementation files; neither stream is claimed by this integration.
 - 2026-08-17: CP-BP-08 published `CP08_HOST_ABI_READY`, released its host-tile
   lease, and returned idle with a tested pointer-first compact tile contract.
   CP-BP-11 is already idle at `CP11_HELDOUT_READY`; Barrier C must integrate
@@ -160,9 +167,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Appoint the Barrier C integrator for the
-  combined CP-BP-08/11 checkpoint. Do not begin
-  CP-BP-08 CUDA Phase D or CP-BP-09 early.
+- Do not implement from this parent. Follow the coordinator's Phase D exact
+  leases for CP-BP-08 CUDA tile construction in parallel with CP-BP-09's fixed
+  weighted-row-reduction CPU/reference API; wait for explicit user assignment.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

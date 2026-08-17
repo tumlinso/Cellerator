@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:36:21Z"
-last_reviewed_at: "2026-08-17T08:36:21Z"
+last_heartbeat_at: "2026-08-17T09:00:11Z"
+last_reviewed_at: "2026-08-17T09:00:11Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -114,6 +114,11 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Progress Notes
 
+- 2026-08-17: Barrier C integrated `CP11_HELDOUT_READY` with the CP-BP-08 host
+  tile ABI in pushed source checkpoint `ebe0509` after fresh combined
+  validation. CP-BP-11 remains idle and unclaimed; Phase D does not lease any
+  validation file, and this stream resumes only for the coordinator-named
+  Phase E tile/bootstrap extension.
 - 2026-08-17: Published `CP11_HELDOUT_READY` and released every Phase C lease.
   Added a versioned pointer-first record-validation API that accepts one const
   frozen plan, immutable split/training identities, canonical partition CSR and
@@ -186,7 +191,7 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Next Actions
 
-- Remain idle with `CP11_HELDOUT_READY` published. Wait for Barrier C/D and the
+- Remain idle with `CP11_HELDOUT_READY` integrated. Wait for Barrier D and the
   coordinator-named Phase E tile/bootstrap extension; do not remain claimed,
   edit CP-BP-08, begin runtime reporting, or perform git operations.
 
