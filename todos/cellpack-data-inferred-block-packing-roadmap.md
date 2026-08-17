@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T14:17:23Z"
-last_reviewed_at: "2026-08-17T14:17:23Z"
+last_heartbeat_at: "2026-08-17T14:44:32Z"
+last_reviewed_at: "2026-08-17T14:44:32Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -46,7 +46,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
   pushed CP-BP-08 CUDA tiles and CP-BP-09's host consumer contract at `0bf9acf`.
   CP-BP-08 is closed. Barrier E pushed CP-BP-09 native runtime and CP-BP-11
   tile/bootstrap validation at `0334f95`; Barrier F pushed CP-BP-10/11 at
-  `2cfa5c8` and closed both streams. CP-BP-12 is the next ready child.
+  `2cfa5c8` and closed both streams. CP-BP-12 is complete; CP-BP-13 is the next
+  ready child.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -84,16 +85,26 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [x] CP-BP-09 implement native packed-runtime consumers.
 - [x] CP-BP-10 alternating/refined packing optimization.
 - [x] CP-BP-11 statistical legitimacy and anti-overfitting validation.
-- [ ] CP-BP-12 hardware-aware cost model and autotuning.
+- [x] CP-BP-12 hardware-aware cost model and autotuning.
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-12 has no blocker and is ready. CP-BP-13 remains deferred behind the
-  hardware-aware policy wave so the durable compatibility boundary is audited
-  against the final v1 plan-selection inputs rather than reopened immediately.
+- CP-BP-13 has no blocker and is `planned/ready`, unclaimed. Its first action is
+  a read-only cross-repository compatibility/ownership audit, not serialization.
 
 ## Progress Notes
 
+- 2026-08-17: CP-BP-12 completed and closed. Its versioned host-side model and
+  lambda/width-constrained selector retain hardware/toolchain/operation/cost-
+  policy provenance. The serialized 60-scenario V100 campaign produced 120
+  correct paired direct-tile/CSR observations and held-out MAPE of 5.15105% and
+  5.87580%, respectively. CP-BP-13 is now ready and unclaimed; aggressive
+  optimization remains a separate later pass.
+- 2026-08-17: `codex-cp-bp12` claimed the exact new-file/model/test/benchmark/
+  component-CMake lease from pushed ledger `46f648f8`. It owns calibration and
+  lambda-based selection over existing measured CP-BP-09/CSR paths only; all
+  logical packing ABIs and kernels are frozen. Aggressive workflow optimization
+  and CP-BP-13 remain out of scope.
 - 2026-08-17: `BARRIER_F_INTEGRATED` pushed Cellerator source checkpoint
   `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. CP-BP-10's bounded held-out
   controller and CP-BP-11's bootstrap-relearned mapping/runtime stability API
@@ -230,9 +241,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Claim the ready CP-BP-12 child from current
-  pushed `origin/main`; freeze its benchmark/provenance contract before running
-  the serialized V100 campaign. Keep CP-BP-13 closed during that wave.
+- Do not implement from this parent. Claim CP-BP-13 from current pushed
+  Cellerator and CellStack `origin/main`, then perform its read-only ownership
+  and compatibility inventory before proposing serialization edits.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

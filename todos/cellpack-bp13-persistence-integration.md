@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp13-persistence-integration"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T14:17:23Z"
-last_reviewed_at: "2026-08-17T14:17:23Z"
+last_heartbeat_at: "2026-08-17T14:44:32Z"
+last_reviewed_at: "2026-08-17T14:44:32Z"
 stale_after_days: 7
 objective: "CP-BP-13: Integrate stable Cellerator packing semantics with CellShard-owned durable .cspack publication and direct execution loading."
 ---
@@ -63,15 +63,17 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Blockers
 
-- CP-BP-04/06/08/09 v1 semantic, record, tile, and direct-runtime contracts and
-  CP-BP-10/11 validation are integrated through Barrier F. Cross-repo activation
-  remains intentionally deferred until CP-BP-12 stabilizes the final v1 plan-
-  selection policy, avoiding an archive compatibility boundary that must be
-  reopened immediately.
+- None. CP-BP-04/06/08/09 v1 semantic, record, tile, and direct-runtime
+  contracts, CP-BP-10/11 validation, and CP-BP-12's versioned replaceable
+  hardware-aware plan-selection policy are integrated inputs.
 - Cross-repo edits require reading current CellShard guidance and reconciling its evolving interfaces at pickup time.
 
 ## Progress Notes
 
+- 2026-08-17: CP-BP-12 completed its stable v1 measured-cost/autotune input and
+  released all leases. CP-BP-13 is now `planned/ready`, unclaimed, and begins
+  with a read-only Cellerator/CellShard compatibility and ownership inventory;
+  readiness is not authority to begin serialization before that audit.
 - 2026-08-17: Barrier F pushed `2cfa5c8` and removed the shared-worktree/git
   blocker. CP-BP-13 remains deliberately closed behind CP-BP-12; no cross-repo
   inventory or serialization implementation was started.
@@ -88,8 +90,10 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Next Actions
 
-- After CP-BP-12, begin with a read-only Cellerator/CellShard compatibility and
-  ownership inventory; do not start serialization before that pickup audit.
+- Claim from current pushed Cellerator and CellStack `origin/main`, then perform
+  the read-only Cellerator/CellShard compatibility and ownership inventory.
+  Do not start serialization before that pickup audit resolves exact versions,
+  pointer-free descriptors, identity linkage, and repository ownership.
 
 ## Done Criteria
 

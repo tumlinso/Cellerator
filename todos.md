@@ -96,14 +96,20 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-bp09-native-runtime-consumers` | status: done | owner: codex-cp-bp09-phase-e | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: direct packed weighted-row reduction is validated, benchmarked, integrated at Barrier E, and closed.
 - `cellpack-bp10-alternating-refinement` | status: done | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: bounded held-out alternating refinement is integrated and closed.
 - `cellpack-bp11-statistical-validation` | status: done | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp11-statistical-validation.md` | objective: held-out/null/bootstrap plus relearned mapping/runtime stability validation is integrated and closed.
-- `cellpack-bp12-hardware-cost-autotune` | status: planned | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: ready to fit a replaceable held-out-validated V100 execution-cost policy from the integrated measured runtime surfaces.
-- `cellpack-bp13-persistence-integration` | status: blocked | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: defer the cross-repo compatibility/persistence wave until CP-BP-12 stabilizes the final v1 plan-selection policy.
+- `cellpack-bp12-hardware-cost-autotune` | status: done | owner: codex-cp-bp12 | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: the replaceable V100 execution-cost policy and configurable storage/runtime selector are validated and closed without entering the later aggressive optimization pass.
+- `cellpack-bp13-persistence-integration` | status: planned | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: begin with a read-only cross-repo compatibility/ownership audit before durable packed-payload serialization.
 
 ## Global Blockers
-- CP-BP-12 is unblocked and ready. CP-BP-13 remains deferred until the
-  hardware-aware policy wave stabilizes the final v1 plan-selection inputs.
+- No CP-BP child blocker remains. CP-BP-13 is ready and unclaimed; its mandatory
+  first phase is read-only compatibility/ownership inventory.
 
 ## Progress Notes
+- 2026-08-17: CP-BP-12 completed its versioned hardware-cost model,
+  deterministic lambda/width-constrained selector, adversarial tests, and
+  serialized 60-scenario/120-observation V100 campaign. Direct-tile and CSR
+  held-out MAPE were 5.15105% and 5.87580% with zero correctness mismatches.
+  CP-BP-13 is now `planned/ready`; aggressive optimization remains explicitly
+  deferred to a later workflow pass.
 - 2026-08-17: `BARRIER_F_INTEGRATED` pushed source checkpoint
   `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. CP-BP-10/11 are complete and
   closed after combined host/CUDA/sanitizer/serialized-benchmark validation.
@@ -400,12 +406,9 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Claim CP-BP-12 from current pushed Cellerator `origin/main`. Freeze its
-  benchmark/provenance matrix before measurement, serialize GPU work, validate
-  model error on held-out configurations, and preserve replaceable policy and
-  logical-format boundaries.
-- Keep CP-BP-13 closed during CP-BP-12; its first later action is a read-only
-  Cellerator/CellShard compatibility inventory, not serialization edits.
+- Claim CP-BP-13 from current pushed Cellerator and CellStack `origin/main`.
+  Its first action is a read-only Cellerator/CellShard compatibility and
+  ownership inventory, not serialization edits.
 - Reactivate blocked children only when their recorded representation/API
   prerequisite lands; do not guess a downstream physical ABI.
 - CP-BP-02 is closed and CP-BP-03 now consumes `gene_candidate_pair_view` plus

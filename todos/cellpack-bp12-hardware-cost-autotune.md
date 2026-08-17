@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp12-hardware-cost-autotune"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp12"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T14:17:23Z"
-last_reviewed_at: "2026-08-17T14:17:23Z"
+last_heartbeat_at: "2026-08-17T14:44:32Z"
+last_reviewed_at: "2026-08-17T14:44:32Z"
 stale_after_days: 7
 objective: "CP-BP-12: Fit a replaceable hardware-aware execution-cost model and autotune storage/runtime tradeoffs."
 ---
@@ -28,6 +28,37 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 - Initial target is the repository's Tesla V100 `sm_70` environment. Hardware-specific tables sit behind a stable logical cost interface.
 - Benchmark dimensions include gene width, tile occupancy, active cells, blocks/cell/tile, payload size, index width, alignment, transactions, and kernel path.
+- This pass calibrates and selects; it does not aggressively optimize kernels.
+  It reuses the existing CP-BP-09 direct tile consumer and maintained CSR
+  fallback under one resident-I/O comparison contract. The later aggressive
+  end-to-end optimization pass remains explicitly separate.
+- Frozen v1 benchmark matrix: rows `{8192, 32768}`, feature-block widths
+  `{8, 16, 32}`, blocks/row `{1, 2}`, and sharing groups/tile
+  `{1, 4, 8, 16, 32}`. Every configuration measures both direct packed tiles
+  and the existing configured-type CSR path with 3 warmups and 11 repeats.
+  A deterministic configuration hash assigns held-out cases before timing.
+
+## Claim And File Lease
+
+Claimed by `codex-cp-bp12` from pushed Cellerator
+`46f648f8c12f6e31981df6a301fdebae80e156f2` under
+`/tmp/cellerator-cp-bp-shared.lock`. The exact implementation lease is:
+
+- new `components/CellPack/include/CellPack/hardware_cost_model.hh`;
+- new `components/CellPack/src/hardware_cost_model.cc`;
+- new `components/CellPack/tests/hardware_cost_model_test.cc`;
+- new `components/CellPack/bench/hardware_cost_autotune_bench.cu`;
+- only clearly labelled CP-BP-12 host target blocks in root `CMakeLists.txt`
+  and CUDA benchmark target blocks in `components/CellPack/CMakeLists.txt`;
+- CP-BP-12 entries in this ledger, `todos.md`, `todo-status.md`, and the parent
+  roadmap while holding the shared lock.
+
+All CP-BP-03/04/08/09/10/11 source and logical plan/record/tile/runtime ABIs are
+read-only inputs. A demonstrated frozen-input defect is a stop condition, not
+authority to widen this lease. Build in `build-cp-bp12`; serialize every GPU
+run through `/tmp/cellerator-cp-bp12-gpu.lock` and the repository benchmark
+mutex. No CP-BP-13, persistence, kernel tuning, profiler campaign, or git
+integration occurs before acceptance is complete.
 
 ## Assumptions
 
@@ -39,6 +70,7 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 - `cuda`
 - `todo-orchestrator`
+- `compare-benchmarks`
 
 ## Useful Reference Files
 
@@ -59,9 +91,9 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 - [x] Wait for the correct measured CP-BP-09 runtime; CP-BP-03 and measured
   CP-BP-08 construction are complete.
-- [ ] Build benchmark campaign and data-quality checks.
-- [ ] Fit and validate replaceable execution-cost model.
-- [ ] Integrate configurable storage-plus-runtime objective.
+- [x] Build benchmark campaign and data-quality checks.
+- [x] Fit and validate replaceable execution-cost model.
+- [x] Integrate configurable storage-plus-runtime objective.
 
 ## Blockers
 
@@ -71,6 +103,33 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Progress Notes
 
+- 2026-08-17: Completed the versioned pointer-first raw-observation, fixed-size
+  log-linear path-model, held-out error-report, and deterministic
+  storage-plus-runtime plan-selection API. Model identity binds the campaign,
+  hardware, toolchain, operation, supported widths, fit policy, and fitted
+  parameters; candidate results retain the replaceable storage-cost policy.
+- 2026-08-17: Serialized V100 `sm_70` campaign command
+  `flock /tmp/cellerator-cp-bp12-gpu.lock ./build-cp-bp12/cellPackHardwareCostAutotuneBench --output-dir build-cp-bp12/cp-bp12-compare`
+  measured all 60 frozen configurations and 120 paired resident one-launch
+  observations with 3 warmups/11 repeats. All outputs matched the versioned
+  CP-BP-09 numerical rule. The deterministic holdout contained 9 observations
+  per path; MAPE was 5.15105% for direct tiles and 5.87580% for CSR. With
+  storage-byte and runtime-nanosecond weights both 1, paired selection chose
+  direct tiles 57 times and CSR 3 times. Those selected paths totaled
+  105,495,452 representation bytes and 1,795,072 measured ns versus
+  105,447,336 bytes and 1,860,608 measured ns for storage-only selection.
+  Index width, alignment, and campaign-defined estimated transaction counts are
+  explicit raw features; no profiler-counter claim is made.
+- 2026-08-17: Focused model/adversarial tests and CP-BP-03/04/06/08/09/11 plus
+  inferred-pipeline regressions passed in `build-cp-bp12`; warning-clean host
+  syntax, artifact data-quality checks, and `git diff --check` passed. No
+  kernel, logical packing ABI, persistence surface, or aggressive optimization
+  was changed. Acceptance is complete and all leases are released.
+- 2026-08-17: Claimed as `codex-cp-bp12` from clean pushed Barrier F ledger
+  `46f648f8`. The native route is V100 `sm_70`, Volta benchmark micro-router,
+  device-resident direct tiles versus the exact configured-type CSR fallback.
+  This irregular single-RHS sparse workload is not Tensor Core eligible. The
+  model/autotuner is host-side and pointer-first; no new CUDA kernel is leased.
 - 2026-08-17: Reactivated as `planned/ready` after Barrier F pushed
   `2cfa5c8d26f0c973dfef4659d72ea5f635201835` and closed CP-BP-10/11. This is
   the single recommended continuation package; it is not claimed by the
@@ -89,9 +148,9 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Next Actions
 
-- Claim CP-BP-12 from current pushed `origin/main`, freeze the benchmark matrix
-  and provenance schema first, then collect held-out V100 measurements before
-  fitting. Do not modify logical record/tile semantics or begin CP-BP-13.
+- Complete/closed. CP-BP-13 is now unblocked and should begin with its recorded
+  read-only cross-repository compatibility/ownership audit. The later
+  aggressive optimization pass remains separate from both workstreams.
 
 ## Done Criteria
 

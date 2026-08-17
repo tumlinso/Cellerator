@@ -10,7 +10,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 ## Workstreams
 - `cellpack-bp00-05-integration-audit` | status: done | execution: closed | owner: codex-cp-bp00-05-integration | file: `todos/cellpack-bp00-05-integration-audit.md` | next: Complete; the real sampling→support→candidate→score→optimize→apply chain is covered and CP-BP-06 remains untouched.
 - `cellpack-bp06-11-parallel-execution` | status: done | execution: closed | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp06-11-parallel-execution.md` | next: Complete at pushed Barrier F source checkpoint `2cfa5c8`; historical interlocks remain for audit only.
-- `cellpack-data-inferred-block-packing-roadmap` | status: in_progress | execution: claimed | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | next: Do not implement from this parent. CP-BP-12 is the next ready unclaimed child.
+- `cellpack-data-inferred-block-packing-roadmap` | status: in_progress | execution: claimed | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | next: Do not implement from this parent. CP-BP-13 is the next ready unclaimed child and begins with a read-only audit.
 - `cellpack-bp01-support-extraction` | status: done | execution: closed | owner: parallel-agent-step-1 | file: `todos/cellpack-bp01-support-extraction.md` | next: Complete: deterministic sampled CSR now flows through exact CPU/CUDA gene-major support bitsets with counts, provenance, and global-row mapping.
 - `cellpack-bp02-candidate-discovery` | status: done | execution: closed | owner: codex-cp-bp-02 | file: `todos/cellpack-bp02-candidate-discovery.md` | next: Complete; CP-BP-03 consumes the frozen host pair view and provenance through its exact scorer.
 - `cellpack-bp03-exact-merge-cost` | status: done | execution: closed | owner: codex-cp-bp-03-fork | file: `todos/cellpack-bp03-exact-merge-cost.md` | next: Complete and closed; no CP-BP-03 implementation remains.
@@ -23,8 +23,8 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `cellpack-bp09-native-runtime-consumers` | status: done | execution: closed | owner: codex-cp-bp09-phase-e | file: `todos/cellpack-bp09-native-runtime-consumers.md` | next: Complete at pushed Barrier E source checkpoint `0334f95`; downstream consumers use the frozen v1 API.
 - `cellpack-bp10-alternating-refinement` | status: done | execution: closed | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp10-alternating-refinement.md` | next: Complete at pushed Barrier F checkpoint `2cfa5c8`; CP-BP-12 may consume the measured objective seam.
 - `cellpack-bp11-statistical-validation` | status: done | execution: closed | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp11-statistical-validation.md` | next: Complete at pushed Barrier F checkpoint `2cfa5c8`; final mapping/runtime stability is available.
-- `cellpack-bp12-hardware-cost-autotune` | status: planned | execution: ready | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | next: Claim from current origin/main, freeze the benchmark/provenance matrix, collect held-out V100 data, then fit the replaceable policy.
-- `cellpack-bp13-persistence-integration` | status: blocked | execution: closed | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | next: After CP-BP-12, start with a read-only Cellerator/CellShard compatibility audit before serialization edits.
+- `cellpack-bp12-hardware-cost-autotune` | status: done | execution: closed | owner: codex-cp-bp12 | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | next: Complete; CP-BP-13 may consume the stable v1 plan-selection policy.
+- `cellpack-bp13-persistence-integration` | status: planned | execution: ready | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | next: Claim from pushed Cellerator/CellStack, then perform the read-only compatibility/ownership audit before serialization edits.
 
 ## Staleness Review
 - Fresh: 4
@@ -48,5 +48,5 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 
 ## Cleanup Status
 - Cleanup mode is explicit only.
-- Safe to call `todo-cleanup`: no, active workstreams: cellpack-data-inferred-block-packing-roadmap, cellpack-packing-plan-cuda-evaluator, cellpack-bp12-hardware-cost-autotune, cellpack-bp13-persistence-integration.
+- Safe to call `todo-cleanup`: no, active workstreams: cellpack-data-inferred-block-packing-roadmap, cellpack-packing-plan-cuda-evaluator, cellpack-bp13-persistence-integration.
 - Partial cleanup is available via `todo-cleanup --partial`; include `stale` in `--scope` only when explicitly intended.

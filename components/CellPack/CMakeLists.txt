@@ -517,3 +517,31 @@ set_target_properties(cellPackFeatureWeightedRowReductionBench PROPERTIES
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackFeatureWeightedRowReductionBench)
 endif()
+
+# CP-BP-12 serialized measured-cost campaign. This is a host-side calibration
+# consumer of the stable CP-BP-09 runtime, not a new or tuned kernel path.
+add_executable(cellPackHardwareCostAutotuneBench
+    bench/hardware_cost_autotune_bench.cu
+)
+target_include_directories(cellPackHardwareCostAutotuneBench PRIVATE
+    ${CMAKE_SOURCE_DIR}/bench
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(cellPackHardwareCostAutotuneBench PRIVATE
+    CellPack::hardware_cost_model
+    CellPack::feature_weighted_row_reduction_cuda
+    cellerator_compute_sparse_ops
+    cellerator_compute_runtime
+    CUDA::cudart
+    CUDA::cusparse
+)
+set_target_properties(cellPackHardwareCostAutotuneBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackHardwareCostAutotuneBench)
+endif()
