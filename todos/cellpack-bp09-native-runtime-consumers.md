@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:14:49Z"
-last_reviewed_at: "2026-08-17T10:14:49Z"
+last_heartbeat_at: "2026-08-17T10:47:55Z"
+last_reviewed_at: "2026-08-17T10:47:55Z"
 stale_after_days: 7
 objective: "CP-BP-09: Execute directly from compact warp tiles without unpacking to CSR or BELL."
 ---
@@ -63,8 +63,8 @@ The completed Phase D lease was exactly:
 - this ledger and CP-BP-09 entries in the coordinator, `todos.md`,
   `todo-status.md`, and parent roadmap while holding the shared lock.
 
-No implementation lease is active. On exact assignment, the available Phase E
-lease is:
+Released by `codex-cp-bp09-phase-e` at `CP09_RUNTIME_READY` on 2026-08-17.
+The completed Phase E lease was:
 
 - new
   `components/CellPack/include/CellPack/feature_weighted_row_reduction_cuda.hh`;
@@ -116,18 +116,51 @@ CMake blocks in the parallel branch.
 - [x] Wait for the stable CP-BP-08 host tile ABI and Barrier C.
 - [x] Phase D: freeze the direct packed consumer contract and CPU/canonical
   feature-weighted row-reduction reference.
-- [ ] Phase E: implement the direct CUDA consumer and runtime benchmark from
+- [x] Phase E: implement the direct CUDA consumer and runtime benchmark from
   pushed Barrier D checkpoint `0bf9acf`.
-- [ ] Explore and benchmark occupancy dispatch paths.
-- [ ] Record header benchmark justification for custom GPU math.
+- [x] Explore and benchmark occupancy dispatch paths.
+- [x] Record header benchmark justification for custom GPU math.
 
 ## Blockers
 
-- None for the exact Phase E lease. The stream is idle/unclaimed and may begin
-  only after explicit assignment.
+- No implementation blocker remains. `CP09_RUNTIME_READY` is published and the
+  stream is idle/released; Barrier E waits for CP-BP-11's independent gate.
 
 ## Progress Notes
 
+- 2026-08-17: Published `CP09_RUNTIME_READY`, released every Phase E lease, and
+  returned `in_progress/idle` without git operations. Added a one-launch,
+  zero-scratch, allocation/transfer/synchronization-free caller-stream CUDA API
+  that consumes device-resident dictionaries, masks, compact configured values,
+  canonical-feature weights, and CP-BP-07 row permutation directly. It writes
+  caller-owned output in canonical partition-local row order and preserves all
+  Phase D versions, identities, capacities, aliases, numeric types, and result
+  metadata. No CSR/BELL reconstruction, feature lookup, per-cell launch, extra
+  operator, Tensor Core path, or universal dispatch was added.
+- 2026-08-17: Focused CUDA tests covered empty/tail tiles, zero NNZ, sparse and
+  full width-32 masks including bit 31, nonidentity row order, canonical feature
+  recovery, numeric values, identity/capacity/alias tampering, repeat equality,
+  and canonical/host-tile/CUDA tolerance agreement. CUDA 12.9 memcheck reported
+  zero errors and racecheck zero hazards. Host reference, tile host/CUDA,
+  record, order, apply-plan, planner, evaluator, optimizer, and inferred-pipeline
+  regressions passed from `build-cp-bp09`; `git diff --check` passed.
+- 2026-08-17: Serialized V100 `sm_70` benchmark used 65,536 rows, 32,768
+  features, 2,097,152 f16 NNZ, three warmups, and eleven repeats with resident
+  I/O and setup/transfers/synchronization excluded. Direct packed median was
+  0.017/0.041/0.117 ms for high/medium/low sharing versus the existing
+  Cellerator f16/f32 CSR kernel at 0.075/0.079/0.095 ms. Packed effective
+  bandwidth was 350.119/157.200/65.263 GB/s, scratch was zero, and each path
+  launched once. cuSPARSE was correctly not run because its existing Cellerator
+  wrapper requires f32 values while configured storage is f16. No additional
+  low-occupancy packed specialization demonstrated the required 5% median gain;
+  the low-sharing regime remains a measured CSR-fallback candidate rather than
+  a speculative dispatcher.
+- 2026-08-17: `codex-cp-bp09-phase-e` claimed the exact direct CUDA consumer,
+  focused CUDA test, serialized benchmark, and labelled component-CMake lease
+  at pushed coordinator `b76a861a5c21a908b1ed9368fa1f4961dbf42c3b`.
+  CP-BP-11 remains independently idle/unassigned under its disjoint host-only
+  Phase E lease. This stream must publish `CP09_RUNTIME_READY`, release, and
+  stop without git operations for Barrier E.
 - 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` after a
   fresh combined CUDA 12.9.86/GNU 13.3.0 `sm_70` build. Phase E is now
   fork-ready: implement exactly one direct configured-precision weighted-row-
@@ -174,10 +207,9 @@ CMake blocks in the parallel branch.
 
 ## Next Actions
 
-- Await exact assignment “You are assigned CP-BP-09 Phase E.” Then claim only
-  the published Phase E lease at current pushed `origin/main`, use
-  `build-cp-bp09`, publish `CP09_RUNTIME_READY`, release to idle, and stop
-  without git operations for Barrier E.
+- Do not resume implementation. `CP09_RUNTIME_READY` is published; the Barrier
+  E integrator must wait for `CP11_TILE_BOOTSTRAP_READY`, jointly validate the
+  combined tree, then commit/push and close CP-BP-09. Do not start Phase F.
 
 ## Phase E Acceptance Boundary
 

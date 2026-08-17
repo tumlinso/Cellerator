@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:14:49Z"
-last_reviewed_at: "2026-08-17T10:14:49Z"
+last_heartbeat_at: "2026-08-17T10:50:48Z"
+last_reviewed_at: "2026-08-17T10:50:48Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -62,8 +62,8 @@ Build statistical validation into the feature: held-out cells, degree-preserving
   evaluator/optimizer, CP-BP-06/07, every `warp_tiles.*`, and component CMake
   file remain unmodified by this stream.
 
-No implementation lease is active. On exact assignment, the available Phase E
-lease is:
+Released by `codex-cp-bp11-phase-e` at `CP11_TILE_BOOTSTRAP_READY` on
+2026-08-17. The completed Phase E lease is:
 
 - new `components/CellPack/include/CellPack/tile_statistical_validation.hh`;
 - new `components/CellPack/src/tile_statistical_validation.cc`;
@@ -122,17 +122,52 @@ owns its new CUDA consumer files and component-CMake blocks in parallel.
 - [x] Add degree-preserving null reference generator and conservation tests.
 - [x] Add frozen-plan CP-BP-06 record held-out/null adapters and publish
   `CP11_HELDOUT_READY`.
-- [ ] Phase E: add frozen-plan tile held-out/null metrics and bootstrap physical-
+- [x] Phase E: add frozen-plan tile held-out/null metrics and bootstrap physical-
   layout stability summaries; publish `CP11_TILE_BOOTSTRAP_READY`.
 - [ ] Phase F: add relearned-plan membership and final runtime stability.
 
 ## Blockers
 
-- None for the exact Phase E tile/bootstrap lease. Final relearned-plan and
-  runtime stability remain Phase F and must not be absorbed now.
+- Phase E is complete at its released gate. Phase F remains closed until
+  Barrier E integrates the tile-validation and native-runtime streams; its
+  relearned-plan mapping/runtime stability must not be absorbed early.
 
 ## Progress Notes
 
+- 2026-08-17: Published `CP11_TILE_BOOTSTRAP_READY`, released every Phase E
+  lease, and returned idle without git. Added a versioned pointer-first,
+  allocation-free host adapter over one const plan, immutable split/bootstrap/
+  null provenance, canonical rows, records, frozen local order, and caller-built
+  CP-BP-08 tiles. Held-out and degree-null paths preserve exact canonical row,
+  feature, and arbitrary value bytes; report raw encoded/metadata bytes, rows,
+  NNZ, tiles, tile-block union, active block references, zero padding, and
+  correctness denominators; retain explicit group-versus-cell scope; and reject
+  a changed real/null row permutation rather than silently relearning order.
+- 2026-08-17: Bootstrap validation binds explicit repeated-row realizations to
+  Phase A multiplicities and the frozen execution order, preserves each raw
+  replicate packet, and derives deterministic repeat/min/mean/max/sample-SD
+  summaries. Zero-NNZ replicates retain raw bytes/counts while rate summaries
+  expose zero observations instead of fabricating denominators. Plan mapping
+  variability, relearning, runtime summaries, and CUDA implementation remain
+  Phase F/out of scope.
+- 2026-08-17: Fresh `build-cp-bp11` validation used CUDA 12.9, GNU 13.3.0,
+  V100 `sm_70`. Passed `cellPackTileStatisticalValidationTest`,
+  `cellPackStatisticalValidationTest`, `cellPackRecordStatisticalValidationTest`,
+  `cellPackWarpTilesTest`, `cellPackCellBlockRecordsTest`,
+  `cellPackLocalCellOrderingTest`, `cellPackPlannerTest`,
+  `cellPackApplyPlanTest`, `cellPackEvaluatorTest`, `cellPackOptimizerTest`, and
+  `cellPackInferredPackingPipelineTest`. Under the shared GPU lock,
+  `cellPackWarpTilesCudaTest`, `cellPackCellBlockRecordsCudaTest`,
+  `cellPackLocalCellOrderingTest`, and `cellPackApplyPlanTest` passed. TODO
+  summary, staleness dry-run, and `git diff --check` passed. No CP-BP-11 CUDA
+  kernel, sanitizer, runtime benchmark, or performance claim was added.
+- 2026-08-17: `codex-cp-bp11-phase-e` claimed the exact host-only Phase E lease
+  at pushed coordinator `b76a861a5c21a908b1ed9368fa1f4961dbf42c3b`.
+  Concurrent owner `codex-cp-bp09-phase-e` retains the disjoint CUDA consumer,
+  component-CMake, and benchmark lease. CP-BP-11 owns only new
+  `tile_statistical_validation` host files, labelled root-CMake blocks, and
+  locked CP-BP-11 coordination entries; it must publish
+  `CP11_TILE_BOOTSTRAP_READY`, release, and stop without git.
 - 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` with
   the exact CP-BP-08 host/CUDA tile contract and CP-BP-09 reference API. Phase E
   is now fork-ready for a host-only tile held-out/null/bootstrap adapter in new
@@ -215,10 +250,9 @@ owns its new CUDA consumer files and component-CMake blocks in parallel.
 
 ## Next Actions
 
-- Await exact assignment “You are assigned CP-BP-11 Phase E.” Then claim only
-  the published Phase E lease at current pushed `origin/main`, use
-  `build-cp-bp11`, publish `CP11_TILE_BOOTSTRAP_READY`, release to idle, and
-  stop without git operations for Barrier E.
+- Do not resume CP-BP-11. Barrier E must jointly validate and integrate
+  `CP09_RUNTIME_READY` plus `CP11_TILE_BOOTSTRAP_READY`; Phase F remains closed
+  until the coordinator explicitly opens it after that checkpoint.
 
 ## Phase E Acceptance Boundary
 

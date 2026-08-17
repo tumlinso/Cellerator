@@ -58,8 +58,9 @@ Use this file as the canonical index for substantial multi-step work.
   `CP07_ORDER_ABI_READY`, and `CP07_DEVICE_READY` are published. CP-BP-06/07
   are closed; `CP08_HOST_ABI_READY` and `CP11_HELDOUT_READY` are integrated in
   source checkpoint `ebe0509`. Barrier D pushed CP-BP-08 CUDA construction and
-  CP-BP-09's reference API at `0bf9acf`; CP-BP-08 is closed. CP-BP-09 and
-  CP-BP-11 are idle with exact unclaimed Phase E leases.
+  CP-BP-09's reference API at `0bf9acf`; CP-BP-08 is closed.
+  `CP09_RUNTIME_READY` and `CP11_TILE_BOOTSTRAP_READY` are published and
+  released; Barrier E combined integration is the sole next action.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -91,20 +92,42 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-bp06-cell-block-records` | status: done | owner: codex-cp-bp06-phase-b | file: `todos/cellpack-bp06-cell-block-records.md` | objective: exact compact host/CUDA cell-block records are complete and closed.
 - `cellpack-bp07-local-cell-ordering` | status: done | owner: codex-cp-bp07 | file: `todos/cellpack-bp07-local-cell-ordering.md` | objective: bounded local active-block-signature host/CUDA ordering is complete and closed.
 - `cellpack-bp08-warp-tiles` | status: done | owner: codex-cp-bp08-phase-d | file: `todos/cellpack-bp08-warp-tiles.md` | objective: compact host/CUDA warp tiles are integrated at Barrier D and closed.
-- `cellpack-bp09-native-runtime-consumers` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: Phase E direct weighted-row-reduction CUDA runtime is fork-ready under its exact unclaimed lease.
+- `cellpack-bp09-native-runtime-consumers` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp09-native-runtime-consumers.md` | objective: `CP09_RUNTIME_READY` is published and released; await Barrier E validation/commit/closure.
 - `cellpack-bp10-alternating-refinement` | status: blocked | owner: unassigned | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: CP-BP-10 bounded held-out gene/cell alternating refinement; waits on the first complete plan/tile/runtime loop.
-- `cellpack-bp11-statistical-validation` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp11-statistical-validation.md` | objective: Phase E frozen-plan tile held-out/null/bootstrap validation is fork-ready under its exact unclaimed lease.
+- `cellpack-bp11-statistical-validation` | status: in_progress | owner: unassigned | file: `todos/cellpack-bp11-statistical-validation.md` | objective: `CP11_TILE_BOOTSTRAP_READY` is published and released; await Barrier E before Phase F.
 - `cellpack-bp12-hardware-cost-autotune` | status: blocked | owner: unassigned | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: CP-BP-03 and measured CP-BP-08 construction are complete; CP-BP-12 now waits only on integrated measured CP-BP-09 runtime.
 - `cellpack-bp13-persistence-integration` | status: blocked | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: CP-BP-13 Cellerator/CellShard .cspack lifecycle integration; waits on stable plan/record/tile/runtime contracts.
 
 ## Global Blockers
-- No blocker for the exact disjoint Phase E CP-BP-09 direct runtime plus CP-BP-11
-  tile/bootstrap pair. CP-BP-10/12/13 retain their later explicit runtime and
-  stability dependencies.
+- CP-BP-09 and CP-BP-11 Phase E are complete at their released gates. Barrier E
+  combined validation/integration is the sole next action; CP-BP-10/12/13 retain
+  their later explicit integration and stability dependencies.
 - CP-BP-12 cannot fit a hardware model until the correct measured CP-BP-09
   direct runtime is integrated at Barrier E.
 
 ## Progress Notes
+- 2026-08-17: CP-BP-11 Phase E published `CP11_TILE_BOOTSTRAP_READY`, released
+  every lease, and returned idle without git. The allocation-free host adapter
+  provides exact frozen-plan held-out/null tile reconstruction and raw physical
+  metrics plus multiplicity-bound repeated-row bootstrap summaries with
+  deterministic min/mean/max/sample-SD and explicit zero-denominator handling.
+  Both Phase E gates are now ready for Barrier E combined integration.
+- 2026-08-17: CP-BP-09 Phase E published `CP09_RUNTIME_READY`, released every
+  lease, and returned idle without git. The asynchronous one-launch direct tile
+  consumer is zero-scratch and allocation/transfer/synchronization-free, writes
+  canonical rows, passed focused/adversarial/reference/regression tests and CUDA
+  12.9 memcheck/racecheck, and was benchmarked under both locks. Packed V100
+  medians were 0.017/0.041/0.117 ms versus existing Cellerator CSR at
+  0.075/0.079/0.095 ms across high/medium/low sharing; no low-occupancy packed
+  specialization met the 5% retention rule. CP-BP-11 remains actively claimed.
+- 2026-08-17: `codex-cp-bp11-phase-e` claimed CP-BP-11's exact host-only tile-
+  validation/root-CMake lease at pushed coordinator `b76a861`. CP-BP-09 remains
+  concurrently claimed under disjoint CUDA consumer/component-CMake/benchmark
+  ownership. Both children stop without git at separate gates for Barrier E.
+- 2026-08-17: `codex-cp-bp09-phase-e` claimed the exact CP-BP-09 direct CUDA
+  consumer/test/benchmark and labelled component-CMake lease at pushed
+  coordinator `b76a861a5c21a908b1ed9368fa1f4961dbf42c3b`. CP-BP-11 remains
+  independently idle/unassigned and must not be disturbed.
 - 2026-08-17: `BARRIER_D_INTEGRATED` pushed Cellerator source checkpoint
   `0bf9acf` after a fresh CUDA 12.9.86/GNU 13.3.0 V100 `sm_70` build. Both new
   focused tests, exact host/CUDA tiles, CP-BP-06/07, plan/apply/evaluator/
@@ -367,13 +390,12 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Fork and assign exactly “You are assigned CP-BP-09 Phase E” and “You are
-  assigned CP-BP-11 Phase E”. Both are idle/unclaimed with disjoint leases and
-  need no addendum. Do not begin Phase F or CP-BP-10/12/13 early.
+- Both Phase E gates are published and released. Perform Barrier E combined
+  validation/integration; do not begin Phase F or CP-BP-10/12/13 early.
 - CP-BP-03 is complete. Its provisional storage policy may later be calibrated
   by CP-BP-12, but CP-BP-12 remains blocked on measurable CP-BP-09 runtime.
-- CP-BP-11 Phase E is open only for the published tile/bootstrap validation
-  lease; final relearning/runtime stability remains Phase F.
+- CP-BP-11 Phase E is complete at its released gate; final relearning/runtime
+  stability remains Phase F and is not open before Barrier E.
 - Reactivate blocked children only when their recorded representation/API
   prerequisite lands; do not guess a downstream physical ABI.
 - CP-BP-02 is closed and CP-BP-03 now consumes `gene_candidate_pair_view` plus

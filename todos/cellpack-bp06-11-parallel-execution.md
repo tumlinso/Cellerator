@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T10:14:49Z"
-last_reviewed_at: "2026-08-17T10:14:49Z"
+last_heartbeat_at: "2026-08-17T10:50:48Z"
+last_reviewed_at: "2026-08-17T10:50:48Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -34,8 +34,8 @@ claim.
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
 - Barrier D is integrated at pushed source checkpoint `0bf9acf`. CP-BP-08 is
-  closed; CP-BP-09 and CP-BP-11 are idle with exact disjoint Phase E leases and
-  may be forked only by their explicit assignment strings below.
+  closed; CP-BP-09 is released at `CP09_RUNTIME_READY`, while CP-BP-11 Phase E
+  remains actively claimed under its exact disjoint lease.
 
 ## Planning Notes
 
@@ -168,7 +168,9 @@ CP-BP-08 is claimed by `codex-cp-bp08-phase-d` and CP-BP-09 by
 ### Phase E exact lease map
 
 Barrier D source checkpoint `0bf9acf05e257235f4a4f652149c50513c89b6fa`
-is pushed. Neither Phase E stream is claimed. The available leases are:
+is pushed. CP-BP-09 Phase E published `CP09_RUNTIME_READY`; CP-BP-11 Phase E
+published `CP11_TILE_BOOTSTRAP_READY`; both released every lease and returned
+idle without git. The completed leases are:
 
 - **CP-BP-09 Phase E implementation lease:** new
   `components/CellPack/include/CellPack/feature_weighted_row_reduction_cuda.hh`,
@@ -243,7 +245,7 @@ stream's implementation.
 - [x] `CP09_REFERENCE_READY`: the first operation is frozen as canonical
   feature-weighted row reduction `y[row] = sum(value * weight[feature])`, with a
   CPU/canonical reference and a direct packed consumer contract.
-- [ ] `CP09_RUNTIME_READY`: native V100 consumer executes directly from tiles,
+- [x] `CP09_RUNTIME_READY`: native V100 consumer executes directly from tiles,
   matches the reference, and has fair CSR/current-layout benchmarks.
 - [x] `CP11_FOUNDATIONS_READY`: metric schema, immutable split/bootstrap/null
   provenance, leakage checks, and an exact degree-preserving binary-incidence
@@ -251,7 +253,7 @@ stream's implementation.
 - [x] `CP11_HELDOUT_READY`: frozen-plan record metrics evaluate unseen identities
   without relearning; later tile/runtime adapters remain CP-BP-11 acceptance
   work but do not block this CP-BP-10 validation prerequisite.
-- [ ] `CP11_TILE_BOOTSTRAP_READY`: frozen-plan held-out/null tile metrics and
+- [x] `CP11_TILE_BOOTSTRAP_READY`: frozen-plan held-out/null tile metrics and
   repeated bootstrap physical-layout summaries preserve immutable identities,
   raw denominators, exact reconstruction, and group/cell-level scope without
   runtime claims or relearning.
@@ -563,13 +565,40 @@ stream's implementation.
 
 ## Blockers
 
-- No blocker for the exact disjoint CP-BP-09/11 Phase E leases. Both streams are
-  idle/unclaimed; Barrier E remains blocked until both child gates publish.
+- Both Phase E children are complete at their released gates. Barrier E combined
+  validation, commit, push, closure, and downstream gate publication are the
+  sole next actions.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: CP-BP-11 Phase E published `CP11_TILE_BOOTSTRAP_READY`, released
+  its exact host tile-validation/root-CMake/ledger leases, and returned idle
+  without git. The allocation-free adapter directly validates canonical rows,
+  features, and arbitrary value bytes through frozen plan/order/record/tile
+  identities; reports held-out and degree-null raw tile bytes, unions, active
+  blocks, padding, and correctness; and summarizes multiplicity-bound repeated-
+  row bootstrap realizations with retained raw packets and deterministic
+  min/mean/max/sample-SD. Zero denominators remain explicit, group/cell scope is
+  preserved, and no runtime/CUDA/relearning claim was added. Required host and
+  locked V100 regressions plus TODO/staleness/diff checks passed. Both Phase E
+  gates are now released for Barrier E.
+- 2026-08-17: CP-BP-09 Phase E published `CP09_RUNTIME_READY`, released its
+  exact direct CUDA consumer/test/benchmark/component-CMake/ledger leases, and
+  returned idle without git. Its one-launch, zero-scratch direct V100 consumer
+  passed focused canonical/host-tile/CUDA agreement, required regressions, CUDA
+  12.9 memcheck/racecheck, and serialized occupancy benchmarking. Direct packed
+  medians were 0.017/0.041/0.117 ms versus existing Cellerator CSR at
+  0.075/0.079/0.095 ms for high/medium/low sharing; low sharing remains an
+  explicit CSR-fallback candidate and no speculative specialization/dispatcher
+  was retained. CP-BP-11 remains actively claimed and untouched.
+- 2026-08-17: `codex-cp-bp11-phase-e` claimed the exact host-only tile-
+  statistical-validation files and root-CMake blocks at pushed coordinator
+  `b76a861a5c21a908b1ed9368fa1f4961dbf42c3b`. CP-BP-09 remains concurrently
+  claimed under its disjoint CUDA consumer/component-CMake/benchmark lease.
+  Both Phase E streams are active and must publish separate gates, release, and
+  stop without git for Barrier E.
 - 2026-08-17: `BARRIER_D_INTEGRATED` is published at pushed source checkpoint
   `0bf9acf`. Fresh `build-cp-bp-barrier-d` used CUDA 12.9.86, GNU 13.3.0,
   Torch models disabled, and V100 `sm_70`. CP-BP-08/09 focused tests, exact
@@ -725,10 +754,9 @@ stream's implementation.
 
 ## Next Actions
 
-- Phase E is fork-ready but unclaimed. The user may fork from this conversation
-  and assign exactly “You are assigned CP-BP-09 Phase E” and “You are assigned
-  CP-BP-11 Phase E” in either order. Each child follows the exact lease,
-  validation, gate, release, and no-git protocol above without addendum.
+- CP-BP-09 is idle at its published runtime gate. CP-BP-11 must publish only
+  `CP11_TILE_BOOTSTRAP_READY`, release, and stop without git; Barrier E begins
+  only after it is also idle.
 
 ## Done Criteria
 

@@ -135,6 +135,32 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_warp_tiles_cuda)
 endif()
 
+# CP-BP-09 Phase E: asynchronous direct configured-precision warp-tile
+# weighted-row reduction. The root-owned Phase D host target remains frozen.
+add_library(cellpack_feature_weighted_row_reduction_cuda STATIC
+    src/feature_weighted_row_reduction_cuda.cu
+)
+add_library(CellPack::feature_weighted_row_reduction_cuda ALIAS
+    cellpack_feature_weighted_row_reduction_cuda)
+target_include_directories(cellpack_feature_weighted_row_reduction_cuda PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellpack_feature_weighted_row_reduction_cuda PUBLIC
+    cellpack_feature_weighted_row_reduction
+    CUDA::cudart
+)
+target_compile_features(cellpack_feature_weighted_row_reduction_cuda PUBLIC cxx_std_17)
+set_target_properties(cellpack_feature_weighted_row_reduction_cuda PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellpack_feature_weighted_row_reduction_cuda)
+endif()
+
 add_executable(cellPackFormatTest
     tests/format_test.cc
 )
@@ -228,6 +254,24 @@ set_target_properties(cellPackWarpTilesCudaTest PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackWarpTilesCudaTest)
+endif()
+
+# CP-BP-09 Phase E direct-runtime contract and numerical validation.
+add_executable(cellPackFeatureWeightedRowReductionCudaTest
+    tests/feature_weighted_row_reduction_cuda_test.cu
+)
+target_link_libraries(cellPackFeatureWeightedRowReductionCudaTest PRIVATE
+    CellPack::feature_weighted_row_reduction_cuda
+)
+set_target_properties(cellPackFeatureWeightedRowReductionCudaTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackFeatureWeightedRowReductionCudaTest)
 endif()
 
 add_executable(cellPackLayoutMetricsTest
@@ -446,4 +490,30 @@ set_target_properties(cellPackWarpTilesBench PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackWarpTilesBench)
+endif()
+
+# CP-BP-09 Phase E serialized V100 direct-runtime benchmark.
+add_executable(cellPackFeatureWeightedRowReductionBench
+    bench/feature_weighted_row_reduction_bench.cu
+)
+target_include_directories(cellPackFeatureWeightedRowReductionBench PRIVATE
+    ${CMAKE_SOURCE_DIR}/bench
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(cellPackFeatureWeightedRowReductionBench PRIVATE
+    CellPack::feature_weighted_row_reduction_cuda
+    cellerator_compute_sparse_ops
+    cellerator_compute_runtime
+    CUDA::cudart
+    CUDA::cusparse
+)
+set_target_properties(cellPackFeatureWeightedRowReductionBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackFeatureWeightedRowReductionBench)
 endif()

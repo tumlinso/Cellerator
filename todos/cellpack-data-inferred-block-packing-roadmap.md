@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:14:49Z"
-last_reviewed_at: "2026-08-17T10:14:49Z"
+last_heartbeat_at: "2026-08-17T10:50:48Z"
+last_reviewed_at: "2026-08-17T10:50:48Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -44,7 +44,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
   checkpoint `eeb8c39`. Barrier C integrated the CP-BP-08 host tile and
   CP-BP-11 held-out contracts in pushed source checkpoint `ebe0509`; Barrier D
   pushed CP-BP-08 CUDA tiles and CP-BP-09's host consumer contract at `0bf9acf`.
-  CP-BP-08 is closed and the disjoint CP-BP-09/11 Phase E pair is fork-ready.
+  CP-BP-08 is closed; CP-BP-09 and CP-BP-11 Phase E are released at
+  `CP09_RUNTIME_READY` and `CP11_TILE_BOOTSTRAP_READY`. Barrier E is the sole
+  next action.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -86,13 +88,29 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-09 direct CUDA runtime and CP-BP-11 tile/bootstrap validation are
-  unblocked with exact disjoint Phase E leases. CP-BP-10/12/13 retain their
-  later runtime/stability dependencies.
+- CP-BP-09 and CP-BP-11 published and released both Phase E gates. Barrier E
+  combined integration precedes CP-BP-10/12/13 or Phase F activation.
 - CP-BP-12 has measured CP-BP-08 construction but still needs integrated
   measured CP-BP-09 runtime before selecting a hardware objective.
 
 ## Progress Notes
+- 2026-08-17: CP-BP-11 published `CP11_TILE_BOOTSTRAP_READY` and released to
+  idle without git. Its allocation-free frozen-plan adapter supplies exact
+  held-out/null tile reconstruction and denominator-preserving physical metrics,
+  plus multiplicity-bound repeated-row bootstrap packets and deterministic
+  min/mean/max/sample-SD summaries with explicit zero-denominator semantics.
+  Both Phase E gates are now ready; Barrier E is the sole next action.
+- 2026-08-17: CP-BP-09 published `CP09_RUNTIME_READY` and released to idle
+  without git. Its direct one-launch, zero-scratch V100 weighted-row reduction
+  preserves canonical identities/output, matches canonical and host-tile
+  references, is sanitizer-clean, and has serialized high/medium/low-sharing
+  measurements against the existing Cellerator CSR path. CP-BP-11 remains
+  actively claimed and Barrier E must integrate both gates before closure or
+  downstream activation.
+- 2026-08-17: `codex-cp-bp09-phase-e` claimed the exact direct CUDA consumer,
+  test, benchmark, and labelled component-CMake lease at pushed coordinator
+  `b76a861a5c21a908b1ed9368fa1f4961dbf42c3b`. CP-BP-11 remains
+  idle/unassigned and safe to fork under its disjoint host-only lease.
 - 2026-08-17: `BARRIER_D_INTEGRATED` pushed source checkpoint `0bf9acf` after
   fresh combined V100 `sm_70` validation. CP-BP-08 is complete/closed. Published
   unclaimed disjoint Phase E leases: CP-BP-09 owns only the direct weighted-row-
@@ -195,9 +213,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Phase E is fork-ready but unclaimed; assign
-  CP-BP-09 Phase E and CP-BP-11 Phase E using the coordinator's exact strings
-  and leases. Do not start CP-BP-10/12/13 or Phase F early.
+- Do not implement from this parent. CP-BP-09's runtime gate is released; await
+  CP-BP-11's gate and Barrier E. Do not start CP-BP-10/12/13 or Phase F early.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.
