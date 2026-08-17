@@ -397,7 +397,9 @@ stream's implementation.
   CP-BP-08 CUDA or host representation files, broaden to SpMM/operators,
   introduce per-cell launches/dispatch, or claim runtime performance.
 - Barrier D is integrated. If assigned **CP-BP-09 Phase E**, claim only the
-  exact Phase E lease above at pushed base `0bf9acf05e257235f4a4f652149c50513c89b6fa`.
+  exact Phase E lease above from current pushed `origin/main` containing source
+  checkpoint `0bf9acf05e257235f4a4f652149c50513c89b6fa` and this protocol; record
+  the full current coordinator hash during the claim.
   Preserve the Phase D operation, configured numeric types, identities,
   canonical-row output, capacities, aliases, and comparison rule byte-for-byte.
 - Implement one asynchronous device-resident direct tile consumer. Start with a
@@ -466,9 +468,11 @@ stream's implementation.
   statistical-foundation and relevant plan/record regressions, then publish the
   gate, release every lease, and perform no git operation.
 - Barrier D is integrated. If assigned **CP-BP-11 Phase E**, claim only the
-  exact host-only Phase E lease above at pushed base
-  `0bf9acf05e257235f4a4f652149c50513c89b6fa`. Consume all Phase A/C validation,
-  CP-BP-08 tile, plan, record, and order APIs read-only.
+  exact host-only Phase E lease above from current pushed `origin/main`
+  containing source checkpoint `0bf9acf05e257235f4a4f652149c50513c89b6fa`
+  and this protocol; record the full current coordinator hash during the claim.
+  Consume all Phase A/C validation, CP-BP-08 tile, plan, record, and order APIs
+  read-only.
 - Add versioned frozen-plan held-out and degree-null tile metrics with exact
   canonical feature/row/value reconstruction and raw denominator preservation.
   Add bootstrap physical-layout summaries over caller-materialized tile views

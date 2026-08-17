@@ -113,9 +113,10 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-17: Published complete, unclaimed Phase E fork instructions. CP-BP-09
   owns new direct weighted-row-reduction CUDA/test/benchmark files plus labelled
   component-CMake blocks. CP-BP-11 owns new host tile-statistical-validation
-  files plus labelled root-CMake blocks. Both bind pushed base `0bf9acf`, use
-  separate builds and shared locks, publish separate gates, and stop without git
-  for Barrier E.
+  files plus labelled root-CMake blocks. Both consume Barrier D source checkpoint
+  `0bf9acf` through the current pushed coordinator and record that full hash at
+  claim; they use separate builds and shared locks, publish separate gates, and
+  stop without git for Barrier E.
 - 2026-08-17: CP-BP-08 Phase D published `CP08_DEVICE_READY`, released its
   CUDA tile/component-CMake/ledger leases, and returned idle without git. Its
   asynchronous caller-stream/caller-scratch V100 constructor exactly matches
