@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 7
 objective: "CP-BP-13: Integrate stable Cellerator packing semantics with CellShard-owned durable .cspack publication and direct execution loading."
 ---
@@ -63,14 +63,18 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Blockers
 
-- CP-BP-04/06/08/09 v1 semantic, record, tile, and direct-runtime contracts are
-  integrated at Barrier E. Cross-repo activation is intentionally deferred
-  until the one-worktree CP-BP-10/11 Phase F barrier is integrated, so its git
-  and CellStack pointer lifecycle cannot collide with the active wave.
+- CP-BP-04/06/08/09 v1 semantic, record, tile, and direct-runtime contracts and
+  CP-BP-10/11 validation are integrated through Barrier F. Cross-repo activation
+  remains intentionally deferred until CP-BP-12 stabilizes the final v1 plan-
+  selection policy, avoiding an archive compatibility boundary that must be
+  reopened immediately.
 - Cross-repo edits require reading current CellShard guidance and reconciling its evolving interfaces at pickup time.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier F pushed `2cfa5c8` and removed the shared-worktree/git
+  blocker. CP-BP-13 remains deliberately closed behind CP-BP-12; no cross-repo
+  inventory or serialization implementation was started.
 - 2026-08-17: Barrier E source checkpoint
   `0334f954b1b9e04366f2e2ce191e098c1d476597` satisfies the original Cellerator
   v1 contract prerequisite. CP-BP-13 remains coordination-blocked until Barrier
@@ -84,7 +88,7 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Next Actions
 
-- After Barrier F, begin with a read-only Cellerator/CellShard compatibility and
+- After CP-BP-12, begin with a read-only Cellerator/CellShard compatibility and
   ownership inventory; do not start serialization before that pickup audit.
 
 ## Done Criteria

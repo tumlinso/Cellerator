@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp06-11-parallel-execution"
-status: "in_progress"
-execution: "claimed"
-owner: "coordination"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp10-11-serial"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,9 +33,9 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Barrier E is integrated at pushed source checkpoint `0334f95`. CP-BP-09 is
-  complete/closed; `CP10_READY` is published. CP-BP-10 and CP-BP-11 Phase F are
-  unclaimed and fork-ready under the exact disjoint leases below.
+- Barrier F is integrated at pushed source checkpoint `2cfa5c8`. CP-BP-06
+  through CP-BP-11 and this coordinator are complete/closed; the lease maps
+  below are retained as implementation history.
 
 ## Planning Notes
 
@@ -199,7 +199,9 @@ idle without git. The completed leases are:
 ### Phase F exact lease map
 
 Barrier E source checkpoint `0334f954b1b9e04366f2e2ce191e098c1d476597`
-is pushed. `CP10_READY` is published. Both leases below are unclaimed:
+is pushed. `CP10_READY` is published. One serial owner
+`codex-cp-bp10-11-serial` claimed both leases from pushed coordinator
+`3fc28c4e7e6e780edd7207fd7b87895797cc0ab3`:
 
 - **CP-BP-10 Phase F implementation lease:** new
   `components/CellPack/include/CellPack/alternating_refinement.hh`,
@@ -215,9 +217,9 @@ is pushed. `CP10_READY` is published. Both leases below are unclaimed:
   labelled `CP-BP-11 Phase F target insertion point` block in root
   `CMakeLists.txt`; and CP-BP-11/coordinator/index ledger entries while holding
   the shared lock.
-- The two root-CMake insertion seams are coordination-owned shared source:
-  acquire the shared lock, reread the file, replace only the assigned labelled
-  seam, and release immediately. Never rewrite or reformat the other block.
+- The serial owner may replace both labelled root-CMake insertion seams under
+  this combined lease. It implements and validates CP-BP-10 before beginning
+  CP-BP-11, so the latter consumes actual controller outputs.
 - CP-BP-10 owns relearning/refinement decisions and consumes public CP-BP-04/
   07/08/09/11 contracts read-only. CP-BP-11 owns validation of caller-supplied
   relearned plans, mapping variability, and repeated runtime observations; it
@@ -291,9 +293,9 @@ stream's implementation.
   runtime claims or relearning.
 - [x] `CP10_READY`: CP-BP-07/08 are complete, CP-BP-09 runtime is measurable,
   and `CP11_HELDOUT_READY` is published.
-- [ ] `CP10_REFINEMENT_READY`: the bounded deterministic held-out controller is
-  tested and released without git.
-- [ ] `CP11_FINAL_VALIDATION_READY`: caller-supplied relearned-plan mapping and
+- [x] `CP10_REFINEMENT_READY`: the bounded deterministic held-out controller is
+  focused-tested in the serial tree and CP-BP-11 may consume its outputs.
+- [x] `CP11_FINAL_VALIDATION_READY`: caller-supplied relearned-plan mapping and
   repeated runtime stability are tested, benchmarked, and released without git.
 
 ## Integration Barriers
@@ -312,8 +314,20 @@ stream's implementation.
 - [x] `BARRIER_E_INTEGRATED`: CP-BP-09 direct CUDA runtime and CP-BP-11 tile/
   bootstrap validation are jointly validated from one fresh tree, committed,
   pushed, and recorded before `CP10_READY` or Phase F opens.
-- [ ] `BARRIER_F_INTEGRATED`: CP-BP-10 refinement and CP-BP-11 final validation
+- [x] `BARRIER_F_INTEGRATED`: CP-BP-10 refinement and CP-BP-11 final validation
   are jointly validated from one fresh tree, committed, pushed, and closed.
+
+## Barrier F Result
+
+- Pushed Cellerator source checkpoint:
+  `2cfa5c8d26f0c973dfef4659d72ea5f635201835`.
+- CP-BP-10 and CP-BP-11 are complete/closed and all implementation leases are
+  released. The reserved Phase F benchmark filename was not created; final
+  runtime evidence reused the already integrated CP-BP-09 packed/CSR harness,
+  preventing a duplicate benchmark implementation while preserving the exact
+  device-resident timing contract.
+- CP-BP-12 is the sole primary ready roadmap child. This coordinator is closed;
+  its historical interlocks remain authoritative evidence, not a new claim.
 
 ## Checkpointed Parallel Phases
 
@@ -623,42 +637,25 @@ stream's implementation.
    hash and `BARRIER_E_INTEGRATED`, close CP-BP-09, update/push the CellStack
    pointer, and publish `CP10_READY`. It must not begin Phase F in that turn.
 
-## Phase F Fork and Stop Protocol
+## Phase F Serial Completion and Integration Protocol
 
-1. Fork both children from the same current pushed Cellerator `origin/main`
-   containing `BARRIER_E_INTEGRATED`, `CP10_READY`, the two labelled CMake
-   insertion seams, and these exact Phase F leases. Assignment text is exactly
-   either “You are assigned CP-BP-10 Phase F” or “You are assigned CP-BP-11
-   Phase F”; no addendum is required.
-2. Each child first acquires the shared lock, verifies the pushed base, ready/
-   idle ownership, gates, exact non-overlap, and the other insertion seam, then
-   records its unique owner, full pushed hash, and lease in its child,
-   coordinator, parent, and indexes. It releases the lock before source work.
-   A mismatch, frozen-input defect, or need for the other lease means record
-   evidence, release/remain idle, and stop without source edits.
-3. Children use only `build-cp-bp10` and `build-cp-bp11`. CPU work may overlap.
-   The short replacement of either labelled root-CMake seam is itself performed
-   under the shared lock. Every GPU runtime, sanitizer, profiler, or benchmark
-   uses the GPU lock; only CP-BP-11 owns a Phase F benchmark, which additionally
-   uses `benchmark_mutex.hh`.
-4. CP-BP-10 may read but never edit CP-BP-11 validation/benchmark files or its
-   CMake seam. CP-BP-11 may read but never edit CP-BP-10 controller files or its
-   CMake seam. Both consume all Barrier E APIs read-only. CP-BP-10 decides and
-   rolls back; CP-BP-11 validates caller-supplied outputs and never relearns.
-5. At completion, each child reacquires the shared lock, records exact tests,
-   identities, evidence, and benchmark scope where applicable; publishes only
-   `CP10_REFINEMENT_READY` or `CP11_FINAL_VALIDATION_READY`; releases every
-   lease; returns to `in_progress/idle`; releases the lock; and stops without
-   commit, push, stash, reset, branch change, amend, or CellStack pointer update.
-6. The appointed Barrier F integrator waits for both gates with both streams
-   idle, rereads the combined diff/leases, and validates from fresh
-   `build-cp-bp-barrier-f`. It runs both new focused tests, the serialized
-   CP-BP-11 benchmark smoke, all Phase A/C/E validation, CP-BP-09 host/CUDA,
-   tile host/CUDA, records/order, plan/apply/evaluator/optimizer, CSR baseline,
-   and inferred-pipeline regressions, plus relevant sanitizer checks,
-   `git diff --check`, TODO summary, and staleness dry-run. Only then may it
-   commit/push Cellerator, record `BARRIER_F_INTEGRATED`, close CP-BP-10/11,
-   update/push the CellStack pointer, and choose the next work package.
+1. The combined owner starts from pushed Cellerator `origin/main`
+   `3fc28c4e7e6e780edd7207fd7b87895797cc0ab3`, holds both exact leases above,
+   and uses only `build-cp-bp10-11-serial` until final clean validation.
+2. Implement and validate CP-BP-10 first. Do not begin CP-BP-11 implementation
+   until the controller passes its focused acceptance tests. CP-BP-11 must then
+   consume actual controller-produced relearned plans, not fixture-only arrays.
+3. Every GPU runtime, sanitizer, profiler, or benchmark uses the GPU lock. The
+   CP-BP-11 benchmark additionally uses `benchmark_mutex.hh`. No new CUDA kernel
+   or dispatch policy is in the combined lease.
+4. A frozen-input defect is a stop condition. Otherwise the owner continues
+   non-interactively through both implementations and fresh combined validation
+   in `build-cp-bp10-11-serial`, including the prior Barrier F regression list.
+5. The same owner is the appointed Barrier F integrator. After both acceptance
+   criteria pass, it records both gates and `BARRIER_F_INTEGRATED`, closes
+   CP-BP-10/11 and this coordinator, commits/pushes Cellerator source and ledger
+   state, updates/pushes the CellStack pointer, makes CP-BP-12 ready, and stops
+   without beginning CP-BP-12/13.
 
 ## Tasks
 
@@ -671,15 +668,21 @@ stream's implementation.
 - [x] Execute and integrate Phase C.
 - [x] Execute and integrate Phase D.
 - [x] Execute and integrate Phase E.
-- [ ] Execute and integrate Phase F.
+- [x] Execute and integrate Phase F.
 
 ## Blockers
 
-- None for Phase F. CP-BP-10 and CP-BP-11 are unclaimed under disjoint leases;
-  the exact assignment text above starts either child without addendum.
+- None. This execution coordinator is complete and closed.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_F_INTEGRATED` at pushed Cellerator source checkpoint
+  `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. Fresh combined validation passed
+  the CP-BP-10/11 focused tests, actual optimizer/controller/bootstrap chain,
+  prior statistical/plan/record/tile/runtime regressions, locked V100 CUDA
+  tests, CUDA 12.9 memcheck, serialized CP-BP-09 packed-versus-CSR benchmark,
+  TODO summary, staleness dry-run, and `git diff --check`. CP-BP-10/11 and this
+  coordinator are closed; CP-BP-12 is ready and unclaimed.
 - 2026-08-17: `BARRIER_E_INTEGRATED` at pushed source checkpoint
   `0334f954b1b9e04366f2e2ce191e098c1d476597`. Fresh Barrier E validation used
   CUDA 12.9.86, GNU 13.3.0, V100 `sm_70`, and an explicit NCCL-disabled focused

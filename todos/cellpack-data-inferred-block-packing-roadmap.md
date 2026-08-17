@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -45,9 +45,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
   CP-BP-11 held-out contracts in pushed source checkpoint `ebe0509`; Barrier D
   pushed CP-BP-08 CUDA tiles and CP-BP-09's host consumer contract at `0bf9acf`.
   CP-BP-08 is closed. Barrier E pushed CP-BP-09 native runtime and CP-BP-11
-  tile/bootstrap validation at `0334f95`; CP-BP-09 is closed and
-  `CP10_READY` is published. CP-BP-10 and CP-BP-11 Phase F are the next
-  disjoint single-worktree pair.
+  tile/bootstrap validation at `0334f95`; Barrier F pushed CP-BP-10/11 at
+  `2cfa5c8` and closed both streams. CP-BP-12 is the next ready child.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -83,19 +82,28 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [x] CP-BP-07 infer local cell order from active-block signatures.
 - [x] CP-BP-08 build warp-oriented 32-cell tiles.
 - [x] CP-BP-09 implement native packed-runtime consumers.
-- [ ] CP-BP-10 alternating/refined packing optimization.
-- [ ] CP-BP-11 statistical legitimacy and anti-overfitting validation.
+- [x] CP-BP-10 alternating/refined packing optimization.
+- [x] CP-BP-11 statistical legitimacy and anti-overfitting validation.
 - [ ] CP-BP-12 hardware-aware cost model and autotuning.
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-10 and CP-BP-11 Phase F are unclaimed under exact disjoint leases.
-  CP-BP-12's technical runtime prerequisite and CP-BP-13's v1 Cellerator ABI
-  prerequisite are satisfied, but both remain out of the active wave until
-  Barrier F prevents benchmark/git/pointer collisions in the shared worktree.
+- CP-BP-12 has no blocker and is ready. CP-BP-13 remains deferred behind the
+  hardware-aware policy wave so the durable compatibility boundary is audited
+  against the final v1 plan-selection inputs rather than reopened immediately.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_F_INTEGRATED` pushed Cellerator source checkpoint
+  `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. CP-BP-10's bounded held-out
+  controller and CP-BP-11's bootstrap-relearned mapping/runtime stability API
+  passed combined host/CUDA/sanitizer/serialized-benchmark validation and are
+  complete/closed. CP-BP-12 is now `planned/ready` and unclaimed; no CP-BP-12
+  or CP-BP-13 implementation was started.
+- 2026-08-17: `codex-cp-bp10-11-serial` claimed a combined serial Phase F
+  lease from pushed coordinator `3fc28c4`. It implements CP-BP-10 first, then
+  requires CP-BP-11 to consume actual controller-produced bootstrap plans, and
+  is appointed to integrate Barrier F only after joint acceptance.
 - 2026-08-17: `BARRIER_E_INTEGRATED` at pushed source checkpoint
   `0334f954b1b9e04366f2e2ce191e098c1d476597`. CP-BP-09 is complete/closed and
   `CP10_READY` is published. Exact unclaimed Phase F leases allow CP-BP-10's
@@ -222,10 +230,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Fork the exact CP-BP-10/11 Phase F pair
-  from current pushed `origin/main`; each child claims only its recorded lease
-  and stops at its named gate without git. The appointed Barrier F integrator
-  alone publishes and closes the combined wave.
+- Do not implement from this parent. Claim the ready CP-BP-12 child from current
+  pushed `origin/main`; freeze its benchmark/provenance contract before running
+  the serialized V100 campaign. Keep CP-BP-13 closed during that wave.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

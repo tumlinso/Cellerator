@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp10-alternating-refinement"
-status: "planned"
-execution: "ready"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp10-11-serial"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 7
 objective: "CP-BP-10: Refine global gene blocks and local cell packing against measured held-out tile costs."
 ---
@@ -38,7 +38,7 @@ Alternate frozen gene packing and local cell/tile packing, accepting determinist
   `CP10_READY` is published. If assigned earlier, remain read-only and report
   the exact missing gate.
 - Claim under `/tmp/cellerator-cp-bp06-11-shared.lock`, use
-  `build-cp-bp10`, consume CP-BP-04/07/08/09/11 public APIs, and prefer new
+  `build-cp-bp10-11-serial`, consume CP-BP-04/07/08/09/11 public APIs, and prefer new
   alternating-controller files. Editing optimizer or representation internals
   requires a transferred shared-seam lease.
 - Implement only offline bounded acceptance/rollback; no minibatch repacking,
@@ -47,7 +47,8 @@ Alternate frozen gene packing and local cell/tile packing, accepting determinist
 
 ## File Lease
 
-_Phase F ready and unclaimed._ If assigned CP-BP-10 Phase F, atomically claim:
+Claimed together with CP-BP-11 Phase F by `codex-cp-bp10-11-serial` from pushed
+base `3fc28c4e7e6e780edd7207fd7b87895797cc0ab3`. The combined serial lease is:
 
 - new `components/CellPack/include/CellPack/alternating_refinement.hh`;
 - new `components/CellPack/src/alternating_refinement.cc`;
@@ -57,8 +58,17 @@ _Phase F ready and unclaimed._ If assigned CP-BP-10 Phase F, atomically claim:
 - CP-BP-10 entries in this ledger, the coordinator, parent roadmap,
   `todos.md`, and `todo-status.md` while holding the shared lock.
 
-Every CP-BP-11 runtime/stability file and its labelled CMake block are owned by
-the parallel CP-BP-11 Phase F stream. Existing optimizer, plan, record, order,
+and, after CP-BP-10 is validated:
+
+- new `components/CellPack/include/CellPack/runtime_statistical_validation.hh`;
+- new `components/CellPack/src/runtime_statistical_validation.cc`;
+- new `components/CellPack/tests/runtime_statistical_validation_test.cc`;
+- new `components/CellPack/bench/runtime_statistical_validation_bench.cu`;
+- only the labelled `CP-BP-11 Phase F target insertion point` block in root
+  `CMakeLists.txt`;
+- CP-BP-11 entries in its ledger and the shared coordination ledgers.
+
+Existing optimizer, plan, record, order,
 tile, runtime, and statistical-validation implementations are frozen read-only
 inputs. A demonstrated frozen-input defect must be recorded and the stream must
 stop; it does not authorize crossing the lease.
@@ -90,9 +100,9 @@ stop; it does not authorize crossing the lease.
 ## Tasks
 
 - [x] Wait for working plan, tile, consumer, and held-out cost surfaces.
-- [ ] Implement bounded alternating controller and best-plan rollback.
-- [ ] Validate deterministic convergence and held-out improvement.
-- [ ] Record preprocessing cost versus resulting runtime/storage benefit.
+- [x] Implement bounded alternating controller and best-plan rollback.
+- [x] Validate deterministic convergence and held-out improvement.
+- [x] Record preprocessing cost versus resulting runtime/storage benefit.
 
 ## Blockers
 
@@ -104,10 +114,28 @@ stop; it does not authorize crossing the lease.
 
 ## Progress Notes
 
+- 2026-08-17: Closed at `BARRIER_F_INTEGRATED`; the pushed implementation
+  checkpoint is `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. Combined host,
+  downstream CUDA, sanitizer, benchmark, TODO, staleness, and diff gates passed.
+- 2026-08-17: Released the combined Phase F implementation lease after focused
+  and combined validation. `CP10_REFINEMENT_READY` remains published; the
+  appointed serial owner now acts only as Barrier F integrator.
+- 2026-08-17: `CP10_REFINEMENT_READY` implementation gate passed in
+  `build-cp-bp10-11-serial`. The versioned pointer-first host controller binds
+  plan/domain/split/metric identities, requires exact correctness evidence,
+  preserves objective denominators, alternates gene and cell phases, accepts
+  only held-out improvement beyond tolerance, and restores the best plan after
+  regression or evaluation error. Focused tests cover reproducibility, strict
+  tolerance, training-only improvement rejection, caps, empty input, tampering,
+  and best-plan restoration. CP-BP-11 serial implementation may now begin.
 - 2026-08-17: `BARRIER_E_INTEGRATED` at source checkpoint
   `0334f954b1b9e04366f2e2ce191e098c1d476597` published `CP10_READY`.
   Phase F is unclaimed and fork-ready under the exact lease above. It may run
   in parallel with CP-BP-11 Phase F; both stop at distinct gates without git.
+- 2026-08-17: Serial combined owner `codex-cp-bp10-11-serial` claimed CP-BP-10
+  then CP-BP-11 from pushed coordinator `3fc28c4`. CP-BP-10 must pass before
+  CP-BP-11 consumes its actual relearned plans. This owner is also the appointed
+  Barrier F integrator and may commit/push only after joint acceptance.
 - 2026-08-14: Added as a missing blocked workstream; no implementation evidence was found.
 - 2026-08-16: Reconciliation found no alternating controller, held-out
   acceptance loop, or tile-cost refinement. CP-BP-04's bounded feature
@@ -116,9 +144,8 @@ stop; it does not authorize crossing the lease.
 
 ## Next Actions
 
-- If assigned exactly “You are assigned CP-BP-10 Phase F”, follow the Phase F
-  fork/stop protocol, claim the exact lease, implement the host-side bounded
-  controller, publish `CP10_REFINEMENT_READY`, release, and stop without git.
+- Complete and closed. CP-BP-12 may consume the measured objective/controller
+  seam but must not reopen CP-BP-10 or move hardware policy into this v1 API.
 
 ## Done Criteria
 

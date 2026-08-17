@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp12-hardware-cost-autotune"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 7
 objective: "CP-BP-12: Fit a replaceable hardware-aware execution-cost model and autotune storage/runtime tradeoffs."
 ---
@@ -65,12 +65,16 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Blockers
 
-- The technical runtime prerequisite is satisfied by Barrier E. This stream is
-  held out of the active single-worktree Phase F pair to avoid competing GPU
-  benchmark campaigns and integration/git barriers; reactivate after Barrier F.
+- None. Barrier F closed CP-BP-10/11 and released the shared GPU/integration
+  wave; CP-BP-03's replaceable cost-policy seam and CP-BP-08/09 measured tile
+  construction/runtime inputs are pushed and stable.
 
 ## Progress Notes
 
+- 2026-08-17: Reactivated as `planned/ready` after Barrier F pushed
+  `2cfa5c8d26f0c973dfef4659d72ea5f635201835` and closed CP-BP-10/11. This is
+  the single recommended continuation package; it is not claimed by the
+  integrator.
 - 2026-08-17: Barrier E integrated measured CP-BP-09 direct runtime at
   `0334f954b1b9e04366f2e2ce191e098c1d476597`. The technical input is now
   available. Coordination deliberately keeps CP-BP-12 closed during the
@@ -85,8 +89,9 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Next Actions
 
-- Reactivate after Barrier F closes the shared CP-BP-10/11 wave. Consume the
-  pushed Barrier E runtime evidence; do not fit from construction timing alone.
+- Claim CP-BP-12 from current pushed `origin/main`, freeze the benchmark matrix
+  and provenance schema first, then collect held-out V100 measurements before
+  fitting. Do not modify logical record/tile semantics or begin CP-BP-13.
 
 ## Done Criteria
 

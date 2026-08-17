@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp11-statistical-validation"
-status: "in_progress"
-execution: "idle"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp10-11-serial"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T13:14:13Z"
-last_reviewed_at: "2026-08-17T13:14:13Z"
+last_heartbeat_at: "2026-08-17T14:17:23Z"
+last_reviewed_at: "2026-08-17T14:17:23Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -79,7 +79,9 @@ CP-BP-09 host/CUDA/runtime file, component `CMakeLists.txt`, plan/record/order
 files, sampling, optimizer, and evaluator are read-only. CP-BP-09 exclusively
 owns its new CUDA consumer files and component-CMake blocks in parallel.
 
-_Phase F ready and unclaimed._ If assigned CP-BP-11 Phase F, atomically claim:
+Claimed by `codex-cp-bp10-11-serial` from pushed base
+`3fc28c4e7e6e780edd7207fd7b87895797cc0ab3`, after its serial CP-BP-10 work.
+The combined lease is recorded in CP-BP-10; the CP-BP-11 portion is:
 
 - new `components/CellPack/include/CellPack/runtime_statistical_validation.hh`;
 - new `components/CellPack/src/runtime_statistical_validation.cc`;
@@ -90,8 +92,8 @@ _Phase F ready and unclaimed._ If assigned CP-BP-11 Phase F, atomically claim:
 - CP-BP-11 entries in this ledger, the coordinator, parent roadmap,
   `todos.md`, and `todo-status.md` while holding the shared lock.
 
-Every CP-BP-10 controller file and its labelled CMake block are owned by the
-parallel CP-BP-10 Phase F stream. Phase A/C/E validation plus plan, record,
+The same serial owner first owns CP-BP-10 controller files and its labelled
+CMake seam. Phase A/C/E validation plus plan, record,
 order, tile, and CP-BP-09 runtime contracts are frozen read-only inputs.
 
 ## Assumptions
@@ -141,7 +143,7 @@ order, tile, and CP-BP-09 runtime contracts are frozen read-only inputs.
   `CP11_HELDOUT_READY`.
 - [x] Phase E: add frozen-plan tile held-out/null metrics and bootstrap physical-
   layout stability summaries; publish `CP11_TILE_BOOTSTRAP_READY`.
-- [ ] Phase F: add relearned-plan membership and final runtime stability.
+- [x] Phase F: add relearned-plan membership and final runtime stability.
 
 ## Blockers
 
@@ -151,11 +153,32 @@ order, tile, and CP-BP-09 runtime contracts are frozen read-only inputs.
 
 ## Progress Notes
 
+- 2026-08-17: Closed at `BARRIER_F_INTEGRATED`; the pushed implementation
+  checkpoint is `2cfa5c8d26f0c973dfef4659d72ea5f635201835`. The final V100
+  evidence intentionally reused CP-BP-09's existing serialized packed-versus-
+  CSR benchmark rather than duplicating the consumer harness: packed medians
+  were 0.017/0.041/0.118 ms and CSR medians 0.075/0.079/0.095 ms for high/
+  medium/low sharing. CUDA 12.9 memcheck reported zero errors.
+- 2026-08-17: Published `CP11_FINAL_VALIDATION_READY` and released the Phase F
+  lease. Added a versioned host aggregation API that accepts actual CP-BP-10
+  results, binds bootstrap/split/plan/axis/domain/order/tile/operation/weight/
+  hardware/toolchain identities, preserves raw denominators and absent-runtime
+  semantics, compares canonical co-membership independent of block labels, and
+  reports mapping, storage, preprocessing, runtime, throughput, and bandwidth
+  distributions with honest group-versus-cell scope. Focused tests include a
+  real CP-BP-04 optimizer -> CP-BP-10 controller -> CP-BP-11 bootstrap chain,
+  relabelled/evolved mappings, zero observations, duplicate bootstraps, and
+  identity/toolchain tampering. No CUDA kernel, dispatcher, persistence, or
+  biological transformation was added.
 - 2026-08-17: `BARRIER_E_INTEGRATED` at pushed source checkpoint
   `0334f954b1b9e04366f2e2ce191e098c1d476597`. Phase F is unclaimed and
   fork-ready under the exact lease above, in parallel with CP-BP-10. It owns
   final mapping/runtime stability only and stops at
   `CP11_FINAL_VALIDATION_READY` without git.
+- 2026-08-17: Serial combined owner `codex-cp-bp10-11-serial` claimed Phase F
+  from pushed coordinator `3fc28c4`. CP-BP-11 starts only after the same owner
+  validates CP-BP-10 and must consume actual controller outputs rather than
+  fixture-only fabricated plan arrays. The owner is the Barrier F integrator.
 - 2026-08-17: Published `CP11_TILE_BOOTSTRAP_READY`, released every Phase E
   lease, and returned idle without git. Added a versioned pointer-first,
   allocation-free host adapter over one const plan, immutable split/bootstrap/
@@ -272,9 +295,8 @@ order, tile, and CP-BP-09 runtime contracts are frozen read-only inputs.
 
 ## Next Actions
 
-- If assigned exactly “You are assigned CP-BP-11 Phase F”, follow the Phase F
-  fork/stop protocol, claim the exact lease, publish
-  `CP11_FINAL_VALIDATION_READY`, release, and stop without git.
+- Complete and closed. Future work may add datasets/replicates through the
+  versioned validation API, but CP-BP-12 is the next roadmap implementation.
 
 ## Phase F Acceptance Boundary
 
