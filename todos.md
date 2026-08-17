@@ -54,7 +54,9 @@ Use this file as the canonical index for substantial multi-step work.
   CellStack submodule pointer at every recorded barrier.
 - `BARRIER_A_INTEGRATED`, `BARRIER_B_INTEGRATED`, `CP06_DEVICE_READY`,
   `CP07_ORDER_ABI_READY`, and `CP07_DEVICE_READY` are published. CP-BP-06/07
-  are closed; CP-BP-08 Phase C and CP-BP-11 Phase C are ready and unclaimed.
+  are closed; CP-BP-08 Phase C and CP-BP-11 Phase C have exact disjoint leases
+  from the same current pushed coordinator base, remain ready/unclaimed, and must not begin before an
+  explicit user assignment.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -99,6 +101,13 @@ Use this file as the canonical index for substantial multi-step work.
 - CP-BP-12 cannot fit a hardware model until correct CP-BP-08/09 kernels exist.
 
 ## Progress Notes
+- 2026-08-17: Published fork-complete Phase C instructions without claiming
+  either child. CP-BP-08 owns new host `warp_tiles` files plus labelled
+  component-CMake blocks; CP-BP-11 owns new record-statistical-validation files
+  plus labelled root-CMake blocks. Frozen producer APIs are read-only, CPU build
+  directories are separate, GPU work is serialized, both children stop/release
+  at their named gates without git, and the appointed Barrier C integrator alone
+  validates/commits/pushes the combined result. Both streams remain unassigned.
 - 2026-08-17: `BARRIER_B_INTEGRATED` records pushed source checkpoint
   `eeb8c39`. CP-BP-06/07 are closed, and the integrator opened—but did not
   claim—the disjoint Phase C pair: CP-BP-08 host tile ABI/reference and
@@ -288,8 +297,9 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Fork CP-BP-08 host tile ABI/reference and CP-BP-11 record-level held-out
-  adapters in parallel under the recorded Phase C interlocks. CP-BP-08 is the
+- When the user explicitly assigns them, fork CP-BP-08 host tile ABI/reference
+  and CP-BP-11 record-level held-out adapters in parallel under the recorded
+  Phase C exact leases and stop gates. CP-BP-08 is the
   primary continuation because its host ABI unlocks the physical/runtime chain.
 - CP-BP-03 is complete. Its provisional storage policy may later be calibrated
   by CP-BP-12, but CP-BP-12 remains blocked on measurable CP-BP-08/09 paths.

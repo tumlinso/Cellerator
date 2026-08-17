@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:08:05Z"
-last_reviewed_at: "2026-08-17T08:08:05Z"
+last_heartbeat_at: "2026-08-17T08:17:44Z"
+last_reviewed_at: "2026-08-17T08:17:44Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -56,8 +56,23 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 ## File Lease
 
 - Released at `CP11_FOUNDATIONS_READY` by `codex-cp-bp11-phase-a` on
-  2026-08-16. Phase C is ready and unclaimed; record exact new adapter/test and
-  disjoint CMake/ledger paths under the shared lock before editing.
+  2026-08-16. Phase C is ready and unclaimed. On assignment, atomically lease
+  exactly:
+
+  - new
+    `components/CellPack/include/CellPack/record_statistical_validation.hh`;
+  - new `components/CellPack/src/record_statistical_validation.cc`;
+  - new
+    `components/CellPack/tests/record_statistical_validation_test.cc`;
+  - only clearly labelled CP-BP-11 Phase C target blocks in root
+    `CMakeLists.txt`;
+  - this ledger and CP-BP-11 entries in the coordinator, `todos.md`,
+    `todo-status.md`, and parent roadmap while holding the shared lock.
+
+  Record the unique owner and full current pushed `origin/main` claim hash under
+  the shared lock before editing. Existing `statistical_validation.*`, plan/evaluator/optimizer,
+  CP-BP-06/07 representation/ordering files, all `warp_tiles.*`, and component
+  `CMakeLists.txt` are read-only.
 
 ## Assumptions
 
@@ -84,9 +99,14 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 2. Phase A: implement/reference-test exact degree-preserving sparse-incidence
    randomization and conservation/leakage checks; publish
    `CP11_FOUNDATIONS_READY` and stop at Barrier A.
-3. Phases C/E: evaluate frozen plans and available record/tile/runtime stages on
-   held-out cells and compare real versus null achievable packing.
-4. Phase F: relearn across bootstrap samples and summarize cost/performance
+3. Phase C: add a record-level adapter that evaluates one frozen plan on
+   immutable held-out rows, reports denominator-preserving CP-BP-06 record
+   metrics and exact reconstruction, and compares real versus the existing
+   degree-preserving null without relearning; publish `CP11_HELDOUT_READY`,
+   release, and stop.
+4. Phase E: extend the same identities/schema with CP-BP-08 tile and bootstrap
+   evidence without depending on final runtime measurements.
+5. Phase F: relearn across bootstrap samples and summarize cost/performance
    stability plus mapping variability.
 
 ## Tasks
@@ -104,6 +124,13 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Progress Notes
 
+- 2026-08-17: Phase C's exact unclaimed lease and scientific boundary are
+  frozen against the current pushed coordinator base. New record-level adapters must consume the
+  Phase A metric/split/null contract read-only, never relearn on held-out/null
+  inputs, preserve sparse binary rows=cells and canonical-gene columns, retain
+  immutable identities, and report only currently measurable record metrics.
+  Tile, runtime, hardware, and final bootstrap-stability evidence remain later
+  phases.
 - 2026-08-17: Barrier B opened Phase C from pushed source checkpoint `eeb8c39`.
   CP-BP-11 may now add frozen-plan and CP-BP-06 record-level held-out/null
   metric adapters in files disjoint from CP-BP-08, publish
@@ -142,9 +169,16 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Next Actions
 
-- Ready for a Phase C claim adding frozen-plan/CP-BP-06 record-level held-out
-  and null metric adapters. Preserve the scientific contract and stop at
-  `CP11_HELDOUT_READY`; do not absorb CP-BP-08 tile or CP-BP-09 runtime scope.
+- If explicitly assigned, claim only the recorded Phase C lease under the
+  shared lock. Add frozen-plan/CP-BP-06 record-level held-out and null metric
+  adapters with split/null/source/plan identity, bytes/NNZ, metadata/NNZ,
+  blocks/cell, exact reconstruction, and tests for disjoint/group-aware splits,
+  cell-level-only labeling, zero denominators, empty inputs, exact arithmetic,
+  real/null comparison, overlap/tamper rejection, and absence of relearning.
+  Validate from `build-cp-bp11` with Phase A, record, and plan/evaluator
+  regressions; publish `CP11_HELDOUT_READY`, release to idle, and stop without
+  git for Barrier C. Do not begin merely because this setup is committed; wait
+  for user assignment.
 
 ## Done Criteria
 

@@ -4,8 +4,8 @@ status: "planned"
 execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:08:05Z"
-last_reviewed_at: "2026-08-17T08:08:05Z"
+last_heartbeat_at: "2026-08-17T08:17:44Z"
+last_reviewed_at: "2026-08-17T08:17:44Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -45,9 +45,22 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 ## File Lease
 
-_Ready and unclaimed for Phase C host ABI/reference only._ Record exact intended
-paths atomically under the shared lock before editing. CUDA Phase D remains a
-separate later claim after Barrier C.
+_Ready and unclaimed for Phase C host ABI/reference only._ On assignment,
+atomically lease exactly:
+
+- new `components/CellPack/include/CellPack/warp_tiles.hh`;
+- new `components/CellPack/src/warp_tiles.cc`;
+- new `components/CellPack/tests/warp_tiles_test.cc`;
+- only clearly labelled CP-BP-08 target blocks in
+  `components/CellPack/CMakeLists.txt`;
+- this ledger and CP-BP-08 entries in the coordinator, `todos.md`,
+  `todo-status.md`, and parent roadmap while holding the shared lock.
+
+Record the unique owner and full current pushed `origin/main` claim hash under
+the shared lock before editing. `cell_block_records.*`, `local_cell_ordering.*`,
+`packing_plan.*`, `apply_plan.*`, all statistical-validation files, and root
+`CMakeLists.txt` are read-only. CUDA Phase D remains a separate later claim
+after `BARRIER_C_INTEGRATED`.
 
 ## Assumptions
 
@@ -67,10 +80,15 @@ separate later claim after Barrier C.
 
 ## Plan
 
-1. Specify versionable tile descriptor, dictionary, mask, payload, and offset/rank contracts.
-2. Build CPU/reference tile construction and exact decoder.
-3. Implement GPU union/mask/payload emission with explicit scratch/stream ownership.
-4. Compare storage/metadata with relevant current Cellerator layouts.
+1. Phase C: specify versionable pointer-first tile descriptor, dictionary,
+   mask, identity, payload, capacity, and checked offset/rank contracts.
+2. Phase C: build deterministic CPU/reference construction, validator, exact
+   canonical decoder, and adversarial tests; publish `CP08_HOST_ABI_READY`,
+   release, and stop.
+3. After Barrier C only, Phase D: implement GPU union/mask/payload emission with
+   explicit caller stream/scratch ownership.
+4. Phase D: compare construction throughput and storage/metadata with relevant
+   current Cellerator layouts, then publish `CP08_DEVICE_READY`.
 
 ## Tasks
 
@@ -88,6 +106,13 @@ separate later claim after Barrier C.
 
 ## Progress Notes
 
+- 2026-08-17: Phase C's exact unclaimed lease and acceptance boundary are
+  frozen against the current pushed coordinator base. The host contract must be pointer-first and
+  device-ready; represent at most 32 ordered rows, a sorted unique feature-block
+  dictionary, block `cell_mask`, participating row/block `gene_mask`, compact
+  real value bytes, checked rank/offsets/capacities, and exact
+  plan/order/row-domain identity. Phase C must not add CUDA files or consume
+  CP-BP-09/11 scope.
 - 2026-08-17: Reactivated as `planned/ready` for Phase C after
   `BARRIER_B_INTEGRATED` pushed exact CP-BP-06 records and CP-BP-07 bounded
   order maps in source checkpoint `eeb8c39`. This phase is host ABI/reference,
@@ -97,10 +122,15 @@ separate later claim after Barrier C.
 
 ## Next Actions
 
-- Claim Phase C under the shared lock, define the pointer-first tile
-  dictionary/mask/payload/rank ABI, CPU builder/decoder, identity propagation,
-  tail/empty/adversarial tests, publish `CP08_HOST_ABI_READY`, release, and stop
-  for Barrier C.
+- If explicitly assigned, claim only the recorded Phase C lease under the
+  shared lock. Define the pointer-first tile dictionary/mask/payload/rank ABI,
+  CPU builder/validator/decoder, exact identity propagation, and tests for
+  empty/tail rows, shared/disjoint blocks, full/sparse masks including bit 31,
+  arbitrary value bytes/widths, deterministic rebuild, overflow, and tampering.
+  Validate from `build-cp-bp08` with CP-BP-06/07 and plan/evaluator regressions;
+  publish `CP08_HOST_ABI_READY`, release to idle, and stop without git for
+  Barrier C. Do not begin merely because this setup is committed; wait for user
+  assignment.
 
 ## Done Criteria
 

@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T08:08:05Z"
-last_reviewed_at: "2026-08-17T08:08:05Z"
+last_heartbeat_at: "2026-08-17T08:17:44Z"
+last_reviewed_at: "2026-08-17T08:17:44Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -103,6 +103,33 @@ workstream-specific headers/sources/tests/benchmarks. If two streams need the
 same source seam, the later stream waits for the earlier lease to release; do
 not normalize the collision with simultaneous edits.
 
+### Phase C exact lease map
+
+Neither stream is claimed by this setup. A fork must atomically record its
+unique owner, claim-base commit, and the applicable exact lease below before
+creating or editing source.
+
+- **CP-BP-08 Phase C implementation lease:** new
+  `components/CellPack/include/CellPack/warp_tiles.hh`,
+  `components/CellPack/src/warp_tiles.cc`, and
+  `components/CellPack/tests/warp_tiles_test.cc`; only CP-BP-08-labelled target
+  blocks in `components/CellPack/CMakeLists.txt`; and CP-BP-08/coordinator/index
+  ledger entries while holding the shared lock.
+- **CP-BP-11 Phase C implementation lease:** new
+  `components/CellPack/include/CellPack/record_statistical_validation.hh`,
+  `components/CellPack/src/record_statistical_validation.cc`, and
+  `components/CellPack/tests/record_statistical_validation_test.cc`; only
+  CP-BP-11-labelled target blocks in root `CMakeLists.txt`; and
+  CP-BP-11/coordinator/index ledger entries while holding the shared lock.
+- CP-BP-08 treats `cell_block_records.*`, `local_cell_ordering.*`,
+  `packing_plan.*`, `apply_plan.*`, and every statistical-validation file as
+  read-only inputs. CP-BP-11 treats those representation/ordering/plan files,
+  all `warp_tiles.*`, the evaluator/optimizer, and Phase A
+  `statistical_validation.*` as read-only inputs.
+- A correctness defect in a frozen input is a stop condition: record evidence
+  under the shared lock and return the stream to idle. Do not silently expand a
+  child lease or patch the producing contract.
+
 ### Build and GPU lock
 
 - Build directories are `build-cp-bp06` through `build-cp-bp11`; never share a
@@ -170,6 +197,9 @@ stream's implementation.
   `sm_70`; the checkpoint commit is recorded in Progress Notes.
 - [x] `BARRIER_B_INTEGRATED`: CP-BP-06 CUDA records and CP-BP-07 local ordering
   are closed, jointly validated, committed, and pushed.
+- [ ] `BARRIER_C_INTEGRATED`: CP-BP-08 host tiles and CP-BP-11 record-level
+  held-out adapters are jointly validated, committed, pushed, and recorded at
+  one source checkpoint before Phase D opens.
 
 ## Checkpointed Parallel Phases
 
@@ -228,9 +258,25 @@ stream's implementation.
 - Phase C owns the pointer-first tile dictionary, `cell_mask`, per-cell
   `gene_mask`, rank/offset, identity, tail-tile, CPU builder, and exact decoder
   contract. Consume CP-BP-06 records plus CP-BP-07 maps; never materialize zeros.
+- Claim only the exact Phase C lease above. The ABI must use trivially-copyable,
+  device-ready pointer/count views over caller-owned buffers with explicit
+  capacities and checked offsets; no owning pointer forest or hidden
+  allocation may become the semantic contract. Bind the plan-geometry,
+  local-order configuration, source row domain, and canonical row identity.
+- Each tile covers at most 32 locally ordered rows. Its sorted unique global
+  feature-block dictionary stores one `uint32_t cell_mask` per block, one
+  `uint32_t gene_mask` per participating row/block, and only real compact value
+  bytes. Offsets/rank rules must decode every byte and canonical feature/row
+  identity exactly, including tail tiles, empty rows, and bit 31.
+- Focused tests must cover empty partitions/tiles, tail rows, shared/disjoint
+  blocks, full and sparse masks, arbitrary value bytes and widths, deterministic
+  rebuilds, capacity/offset overflow, and tampered identity/offset/mask rejection.
+  Run the CP-BP-06/07 host regressions plus relevant plan/evaluator regressions
+  from `build-cp-bp08`.
 - Stop at `CP08_HOST_ABI_READY`, release, and wait for Barrier C. Phase D may
   then implement CUB/custom CUDA construction with explicit scratch/stream and
-  benchmark evidence. Do not implement runtime dispatch or persistence.
+  benchmark evidence. Phase C must not add `warp_tiles_cuda.*`, a CUDA
+  benchmark, runtime dispatch, persistence, CP-BP-09, or CP-BP-11 behavior.
 
 ### If assigned CP-BP-09
 
@@ -278,6 +324,54 @@ stream's implementation.
   metric adapters only, publish `CP11_HELDOUT_READY`, release, and stop. Do not
   absorb CP-BP-08 tile construction or claim donor/study generalization without
   caller-supplied grouping identities.
+- Claim only the exact Phase C lease above and consume the integrated Phase A
+  schema/splits/null generator without changing them. Evaluate one frozen plan
+  on immutable held-out rows through the CP-BP-06 record view; never relearn,
+  mutate, or retune the plan on held-out or null inputs.
+- Report versioned denominator-preserving record metrics available today
+  (including bytes/NNZ, metadata/NNZ, and blocks/cell), real-versus-null
+  comparison, split/null/source/plan identities, and exact reconstruction. Do
+  not fabricate tile-union, runtime-throughput, or hardware metrics before
+  CP-BP-08/09 exist.
+- Tests must cover disjoint and group-aware splits, cell-level-only labeling,
+  zero denominators, empty rows/partitions, exact metric arithmetic,
+  real-versus-null separation, and rejection of tampered or overlapping
+  identities. The binary sparse-incidence matrix is rows=cells and
+  columns=canonical genes; do not normalize, log-transform, densify, change
+  feature order, or transform expression values.
+- `CP11_HELDOUT_READY` in Phase C means the frozen-plan record-level held-out
+  contract is ready for CP-BP-10; Phase E/F still add tile/bootstrap/runtime
+  stability evidence required to close CP-BP-11. Use `build-cp-bp11`, run the
+  statistical-foundation and relevant plan/record regressions, then publish the
+  gate, release every lease, and perform no git operation.
+
+## Phase C Fork and Stop Protocol
+
+1. Fork both children from the same current pushed Cellerator `origin/main`
+   containing this protocol (implementation source checkpoint `eeb8c39`). The
+   claim must record that full current hash. Assignment text is exactly either “You are assigned
+   CP-BP-08 Phase C” or “You are assigned CP-BP-11 Phase C”; no addendum is
+   required.
+2. Each child first acquires the shared lock, verifies that its stream is still
+   unclaimed and the other lease does not overlap, records the claim/base/exact
+   lease in its child ledger plus `todos.md` and `todo-status.md`, then releases
+   the lock. A failed gate or collision means no source edit.
+3. Children work only in their named build directories. CPU work may overlap.
+   If either invokes any GPU test, sanitizer, profiler, or benchmark, it must
+   acquire the GPU lock even though neither Phase C acceptance contract requires
+   new GPU code or performance evidence.
+4. At completion, each child reacquires the shared lock, records exact tests and
+   evidence, publishes only its named gate, releases all leases, returns to
+   `in_progress/idle`, releases the lock, and stops without commit/push/stash,
+   branch changes, or CellStack pointer updates.
+5. The appointed Barrier C integrator waits for both gates and both streams to
+   be idle, rereads the combined diff/leases, and validates from fresh
+   `build-cp-bp-barrier-c`. It runs both new focused tests, CP-BP-06/07,
+   Phase-A statistical, plan/evaluator/optimizer and inferred-pipeline
+   regressions, `git diff --check`, TODO summary, and staleness dry-run. Only
+   then may it commit/push Cellerator, record the source hash and
+   `BARRIER_C_INTEGRATED`, update/push the CellStack pointer, and stop. It must
+   not begin CP-BP-08 CUDA Phase D or CP-BP-09 in that integration turn.
 
 ## Tasks
 
@@ -298,6 +392,14 @@ stream's implementation.
   not merely by TODO status labels.
 
 ## Progress Notes
+
+- 2026-08-17: Made Phase C fork-ready without claiming implementation. The
+  CP-BP-08 host tile ABI/reference and CP-BP-11 record-held-out adapter leases
+  are exact, disjoint, and bound to the same current pushed `origin/main`;
+  shared-input defect,
+  GPU serialization, gate publication, child stop, and Barrier C integration
+  rules are explicit. Both streams remain unassigned until the user assigns
+  them.
 
 - 2026-08-17: `BARRIER_B_INTEGRATED` is published. Combined CP-BP-06/07 source
   and validation landed on Cellerator `main` as `eeb8c39`; both children are

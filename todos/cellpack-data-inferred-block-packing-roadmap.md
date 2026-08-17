@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:08:05Z"
-last_reviewed_at: "2026-08-17T08:08:05Z"
+last_heartbeat_at: "2026-08-17T08:17:44Z"
+last_reviewed_at: "2026-08-17T08:17:44Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -89,6 +89,11 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-17: Phase C is fully fork-specified but not started. CP-BP-08 host
+  tiles and CP-BP-11 record-level held-out adapters have exact disjoint new-file,
+  CMake-block, build, read-only-input, validation, publication, release, and
+  Barrier C rules from the same current pushed coordinator base. Both remain unassigned pending the
+  user's explicit branch assignments.
 - 2026-08-17: `BARRIER_B_INTEGRATED` records Cellerator source checkpoint
   `eeb8c39`. CP-BP-06/07 are closed; CP-BP-08 host tiles and CP-BP-11 record-
   level held-out adapters are the next unclaimed parallel pair.
