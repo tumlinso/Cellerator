@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T09:00:11Z"
-last_reviewed_at: "2026-08-17T09:00:11Z"
+last_heartbeat_at: "2026-08-17T09:46:57Z"
+last_reviewed_at: "2026-08-17T09:46:57Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -44,8 +44,9 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 ## File Lease
 
-_Phase D is ready and unclaimed._ On explicit assignment atomically lease
-exactly:
+_Released at `CP08_DEVICE_READY` by `codex-cp-bp08-phase-d` on 2026-08-17._
+The completed Phase D lease at pushed base
+`fe095fb6d6592a0194b0a86f13f0421e23081cd0` was exactly:
 
 - new `components/CellPack/include/CellPack/warp_tiles_cuda.hh`;
 - new `components/CellPack/src/warp_tiles_cuda.cu`;
@@ -56,10 +57,10 @@ exactly:
 - this ledger and CP-BP-08 entries in the coordinator, `todos.md`,
   `todo-status.md`, and parent roadmap while holding the shared lock.
 
-Record a unique owner and the full current pushed `origin/main` hash before
-editing. `warp_tiles.hh/.cc`, `cell_block_records.*`, `local_cell_ordering.*`,
-`packing_plan.*`, `apply_plan.*`, all CP-BP-09/statistical-validation files, and
-root `CMakeLists.txt` remain read-only.
+No implementation lease is active. `warp_tiles.hh/.cc`,
+`cell_block_records.*`, `local_cell_ordering.*`, `packing_plan.*`,
+`apply_plan.*`, all CP-BP-09/statistical-validation files, and root
+`CMakeLists.txt` remained read-only.
 
 ## Assumptions
 
@@ -95,16 +96,44 @@ root `CMakeLists.txt` remain read-only.
 - [x] Define complete versioned pointer-first warp-tile logical ABI.
 - [x] Implement deterministic host construction, exact validation/decode, and
   metadata/storage count metrics.
-- [ ] Implement CUDA construction and measure bytes/NNZ, metadata/NNZ, union
+- [x] Implement CUDA construction and measure bytes/NNZ, metadata/NNZ, union
   size, and build throughput in Phase D.
 
 ## Blockers
 
-- No blocker for Phase D: `CP08_HOST_ABI_READY` is integrated at Barrier C
-  checkpoint `ebe0509`. The stream remains unclaimed until user assignment.
+- Phase D is complete at `CP08_DEVICE_READY`. Barrier D integration is now the
+  sole blocker before CP-BP-08 can close and Phase E may open.
 
 ## Progress Notes
 
+- 2026-08-17: Published `CP08_DEVICE_READY`, released every Phase D lease, and
+  returned idle without git operations. Added a versioned asynchronous CUDA
+  constructor over caller-owned device scratch/output and caller stream. Narrow
+  `sm_70` kernels perform warp-local sorted tile unions, descriptor/mask/row
+  emission, source-record mapping, and arbitrary-byte payload copies; CUB
+  exclusive scans build the three offset domains. The frozen host ABI and all
+  CP-BP-09 files remained unchanged.
+- 2026-08-17: Exact CPU/CUDA byte agreement passed for deterministic random row
+  order, zero-row and nonzero empty tiles, 34-row tail tiles, bit-31 cell/gene
+  masks, 1/3/5/8-byte values, inconsistent counts, null/undersized buffers,
+  alias rejection, and identity errors. CUDA 12.9 Compute Sanitizer memcheck
+  reported zero errors and racecheck zero hazards; record, ordering, host-tile,
+  reconstruction, planner, apply-plan, evaluator, optimizer, and inferred-
+  pipeline regressions passed.
+- 2026-08-17: Serialized Tesla V100 `sm_70` construction benchmark used 65,536
+  rows, 30,000 features, 2,097,152 NNZ, 1,048,576 source records, 2,048 tiles,
+  32,768 tile blocks, width-32 tiles, width-16 feature blocks, and 4-byte
+  values. Transfers were excluded. Exact CUDA construction measured 0.756 ms
+  min/median/mean after two warmups across seven repeats versus 31.954 ms CPU,
+  2.775 GNNZ/s, 8,664,075 scratch bytes, and 4.191 tile metadata bytes/NNZ
+  versus 6.125 source-record and 4.125 canonical-CSR metadata bytes/NNZ.
+- 2026-08-17: `codex-cp-bp08-phase-d` claimed the exact CUDA tile lease at
+  pushed base `fe095fb6d6592a0194b0a86f13f0421e23081cd0`. Concurrent CP-BP-09
+  owner `codex-cp-bp09-phase-d` retains its disjoint host
+  `feature_weighted_row_reduction` and root-CMake lease. This stream owns only
+  new `warp_tiles_cuda` API/source/test/benchmark files, labelled component-
+  CMake blocks, and locked CP-BP-08 coordination entries; it must publish
+  `CP08_DEVICE_READY`, release, and stop without git operations.
 - 2026-08-17: Barrier C integrated the host ABI/reference at source checkpoint
   `ebe0509` after fresh combined validation. Phase D is now fork-ready but
   unclaimed: add only the asynchronous caller-stream/device-scratch CUDA
@@ -152,10 +181,9 @@ root `CMakeLists.txt` remain read-only.
 
 ## Next Actions
 
-- Await explicit assignment text “You are assigned CP-BP-08 Phase D”. Claim
-  only the exact Phase D lease, implement/validate/benchmark CUDA construction,
-  publish `CP08_DEVICE_READY`, release to idle, and stop without git. Do not
-  implement CP-BP-09 runtime consumers or persistence.
+- Remain idle at `CP08_DEVICE_READY`. Await the appointed Barrier D integrator;
+  do not claim or begin CP-BP-09 Phase E runtime work, persistence, or any git
+  integration operation from this child stream.
 
 ## Done Criteria
 

@@ -110,6 +110,31 @@ if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellpack_warp_tiles)
 endif()
 
+# CP-BP-08 Phase D asynchronous CUDA tile construction. The Phase C host
+# target remains the exact semantic oracle and owns the frozen logical ABI.
+add_library(cellpack_warp_tiles_cuda STATIC
+    src/warp_tiles_cuda.cu
+)
+add_library(CellPack::warp_tiles_cuda ALIAS cellpack_warp_tiles_cuda)
+target_include_directories(cellpack_warp_tiles_cuda PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellpack_warp_tiles_cuda PUBLIC
+    CellPack::warp_tiles
+    CUDA::cudart
+)
+target_compile_features(cellpack_warp_tiles_cuda PUBLIC cxx_std_17)
+set_target_properties(cellpack_warp_tiles_cuda PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellpack_warp_tiles_cuda)
+endif()
+
 add_executable(cellPackFormatTest
     tests/format_test.cc
 )
@@ -187,6 +212,22 @@ set_target_properties(cellPackWarpTilesTest PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackWarpTilesTest)
+endif()
+
+# CP-BP-08 Phase D exact CPU/CUDA construction validation.
+add_executable(cellPackWarpTilesCudaTest
+    tests/warp_tiles_cuda_test.cu
+)
+target_link_libraries(cellPackWarpTilesCudaTest PRIVATE CellPack::warp_tiles_cuda)
+set_target_properties(cellPackWarpTilesCudaTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackWarpTilesCudaTest)
 endif()
 
 add_executable(cellPackLayoutMetricsTest
@@ -388,4 +429,21 @@ set_target_properties(cellPackCellBlockRecordsBench PROPERTIES
 )
 if(COMMAND cellerator_enable_perf)
     cellerator_enable_perf(cellPackCellBlockRecordsBench)
+endif()
+
+# CP-BP-08 Phase D serialized V100 construction benchmark.
+add_executable(cellPackWarpTilesBench
+    bench/warp_tiles_bench.cu
+)
+target_include_directories(cellPackWarpTilesBench PRIVATE ${CMAKE_SOURCE_DIR}/bench)
+target_link_libraries(cellPackWarpTilesBench PRIVATE CellPack::warp_tiles_cuda)
+set_target_properties(cellPackWarpTilesBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellPackWarpTilesBench)
 endif()

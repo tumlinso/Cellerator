@@ -1082,6 +1082,39 @@ set_target_properties(cellpack_apply_plan PROPERTIES
 )
 cellerator_enable_perf(cellpack_apply_plan)
 
+# CP-BP-09 Phase D: configured-precision canonical/record/direct-tile host
+# references and the pointer-first consumer contract. CUDA runtime work remains
+# separately gated by CP08_DEVICE_READY and Barrier D.
+add_library(cellpack_feature_weighted_row_reduction STATIC
+    components/CellPack/src/feature_weighted_row_reduction.cc
+)
+add_library(CellPack::feature_weighted_row_reduction ALIAS
+    cellpack_feature_weighted_row_reduction)
+target_include_directories(cellpack_feature_weighted_row_reduction PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_feature_weighted_row_reduction PUBLIC
+    CellPack::warp_tiles
+    CellPack::apply_plan
+)
+set_target_properties(cellpack_feature_weighted_row_reduction PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_feature_weighted_row_reduction)
+
+add_executable(cellPackFeatureWeightedRowReductionTest
+    components/CellPack/tests/feature_weighted_row_reduction_test.cc
+)
+target_link_libraries(cellPackFeatureWeightedRowReductionTest PRIVATE
+    CellPack::feature_weighted_row_reduction
+)
+set_target_properties(cellPackFeatureWeightedRowReductionTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackFeatureWeightedRowReductionTest)
+
 add_executable(cellPackApplyPlanTest
     components/CellPack/tests/apply_plan_test.cu
 )

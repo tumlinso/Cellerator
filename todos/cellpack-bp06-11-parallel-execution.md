@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T09:00:11Z"
-last_reviewed_at: "2026-08-17T09:00:11Z"
+last_heartbeat_at: "2026-08-17T09:46:57Z"
+last_reviewed_at: "2026-08-17T09:46:57Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,9 +33,9 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Barrier C is integrated at source checkpoint `ebe0509`. Phase D's CP-BP-08
-  CUDA construction and CP-BP-09 reference/API leases are exact, disjoint,
-  ready, and unclaimed; they begin only after explicit user assignments.
+- Barrier C is integrated at source checkpoint `ebe0509`. CP-BP-08 and CP-BP-09
+  are idle at `CP08_DEVICE_READY` and `CP09_REFERENCE_READY`; the appointed
+  Barrier D integrator is the sole next actor.
 
 ## Planning Notes
 
@@ -131,9 +131,9 @@ available for a new claim.
 
 ### Phase D exact lease map
 
-Neither stream is claimed by this setup. A fork must atomically record its
-unique owner, the full current pushed `origin/main` claim-base hash containing
-this protocol, and exactly one lease before creating or editing source.
+CP-BP-08 is claimed by `codex-cp-bp08-phase-d` and CP-BP-09 by
+`codex-cp-bp09-phase-d`, both at pushed base
+`fe095fb6d6592a0194b0a86f13f0421e23081cd0` under the exact leases below.
 
 - **CP-BP-08 Phase D implementation lease:** new
   `components/CellPack/include/CellPack/warp_tiles_cuda.hh`,
@@ -209,9 +209,9 @@ stream's implementation.
   metrics justify the selected path.
 - [x] `CP08_HOST_ABI_READY`: versioned tile dictionary/mask/payload/rank view,
   CPU builder/decoder, identity propagation, and adversarial decode tests exist.
-- [ ] `CP08_DEVICE_READY`: device view and CUDA tile construction are exact,
+- [x] `CP08_DEVICE_READY`: device view and CUDA tile construction are exact,
   sanitized, and benchmarked.
-- [ ] `CP09_REFERENCE_READY`: the first operation is frozen as canonical
+- [x] `CP09_REFERENCE_READY`: the first operation is frozen as canonical
   feature-weighted row reduction `y[row] = sum(value * weight[feature])`, with a
   CPU/canonical reference and a direct packed consumer contract.
 - [ ] `CP09_RUNTIME_READY`: native V100 consumer executes directly from tiles,
@@ -457,13 +457,44 @@ stream's implementation.
 
 ## Blockers
 
-- No blocker for the exact unclaimed Phase D pair. CP-BP-08 device construction
-  and CP-BP-09 reference/API may run in parallel only after explicit assignments.
+- `CP08_DEVICE_READY` and `CP09_REFERENCE_READY` are published with both streams
+  idle. Barrier D integration is the sole next action; Phase E remains closed.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: CP-BP-08 published `CP08_DEVICE_READY`, released its CUDA tile,
+  component-CMake, and coordination leases, and returned idle without git.
+  Caller-stream/caller-scratch CUDA construction matches the CPU tile oracle
+  exactly across empty/tail/bit-31/multiple-value-width/capacity/identity cases;
+  CUDA 12.9 memcheck found zero errors and racecheck zero hazards. Required
+  record/order/tile/plan/apply/evaluator/optimizer/pipeline regressions passed.
+  The serialized V100 benchmark measured 0.756 ms median for 2,097,152 NNZ
+  versus 31.954 ms CPU, with transfers excluded, 8,664,075 scratch bytes,
+  2.775 GNNZ/s, and exact byte agreement. Both Phase D gates are now published
+  and idle; the appointed Barrier D integrator is the sole next actor.
+- 2026-08-17: CP-BP-09 published `CP09_REFERENCE_READY`, released its new host
+  `feature_weighted_row_reduction` and root-CMake/ledger leases, and returned
+  idle without git. Its versioned configured-precision pointer-first contract,
+  canonical CSR reference, compact-record reference, and direct tile traversal
+  preserve immutable identities and canonical output row order without
+  CSR/BELL reconstruction. Focused and required regressions passed from fresh
+  `build-cp-bp09`; CP-BP-08 remains actively claimed and untouched. Barrier D
+  now waits only on `CP08_DEVICE_READY`.
+- 2026-08-17: `codex-cp-bp08-phase-d` joined the active Phase D pair at pushed
+  base `fe095fb6d6592a0194b0a86f13f0421e23081cd0`, owning only new
+  `warp_tiles_cuda.hh/.cu/_test.cu`, `warp_tiles_bench.cu`, labelled component-
+  CMake blocks, and CP-BP-08 coordination entries. CP-BP-09 retains its
+  disjoint host reference/API and root-CMake lease. Both stop without git at
+  their named gates for Barrier D.
+- 2026-08-17: `codex-cp-bp09-phase-d` claimed CP-BP-09's exact Phase D
+  reference/API lease at pushed base
+  `fe095fb6d6592a0194b0a86f13f0421e23081cd0`: new
+  `feature_weighted_row_reduction.hh/.cc/_test.cc`, labelled root-CMake blocks,
+  and CP-BP-09 coordination entries only. CP-BP-08 remains idle/unassigned with
+  a disjoint CUDA tile/component-CMake lease and may still be claimed in
+  parallel. CP-BP-09 stops at `CP09_REFERENCE_READY` without git.
 - 2026-08-17: `BARRIER_C_INTEGRATED` is published at pushed Cellerator source
   checkpoint `ebe0509`. Fresh `build-cp-bp-barrier-c` used CUDA 12.9.86, GNU
   13.3.0, Torch models disabled, and V100 `sm_70`; the new warp-tile and
