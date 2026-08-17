@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T14:38:44Z"
-last_reviewed_at: "2026-08-16T14:38:44Z"
+last_heartbeat_at: "2026-08-17T13:14:13Z"
+last_reviewed_at: "2026-08-17T13:14:13Z"
 stale_after_days: 7
 objective: "CP-BP-13: Integrate stable Cellerator packing semantics with CellShard-owned durable .cspack publication and direct execution loading."
 ---
@@ -56,19 +56,26 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Tasks
 
-- [!] Wait for stable plan, block-record, tile, and runtime contracts.
+- [x] Wait for stable v1 plan, block-record, tile, and runtime contracts.
 - [ ] Define cross-repo ownership and version compatibility matrix.
 - [ ] Integrate durable `.cspack` payload serialization and validation in CellShard.
 - [ ] Validate direct load/upload/execute lifecycle and pointer updates in repository order.
 
 ## Blockers
 
-- CP-BP-04 semantic plan identity is complete. This remains blocked on
-  CP-BP-06, CP-BP-08, and CP-BP-09 physical representation/runtime decisions.
+- CP-BP-04/06/08/09 v1 semantic, record, tile, and direct-runtime contracts are
+  integrated at Barrier E. Cross-repo activation is intentionally deferred
+  until the one-worktree CP-BP-10/11 Phase F barrier is integrated, so its git
+  and CellStack pointer lifecycle cannot collide with the active wave.
 - Cross-repo edits require reading current CellShard guidance and reconciling its evolving interfaces at pickup time.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier E source checkpoint
+  `0334f954b1b9e04366f2e2ce191e098c1d476597` satisfies the original Cellerator
+  v1 contract prerequisite. CP-BP-13 remains coordination-blocked until Barrier
+  F, then begins with the recorded cross-repo inventory rather than premature
+  serialization edits.
 - 2026-08-14: Added as a missing blocked workstream; existing `.cspack` support remains distinct from this not-yet-stable packed representation.
 - 2026-08-16: Reconciliation found existing CellShard `.cspack` artifacts and
   older CellPack coordinate/layout scaffolding, but no serializer/validator or
@@ -77,7 +84,8 @@ Define the final ownership/lifecycle boundary: Cellerator compiles and consumes 
 
 ## Next Actions
 
-- Do not start serialization until the Cellerator logical ABI is complete enough to reject incompatible payloads and decode exactly.
+- After Barrier F, begin with a read-only Cellerator/CellShard compatibility and
+  ownership inventory; do not start serialization before that pickup audit.
 
 ## Done Criteria
 

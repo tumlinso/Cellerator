@@ -1055,6 +1055,12 @@ set_target_properties(cellPackTileStatisticalValidationTest PROPERTIES
 )
 cellerator_enable_perf(cellPackTileStatisticalValidationTest)
 
+# CP-BP-11 Phase F target insertion point. The Phase F owner may replace only
+# this labelled seam while holding the shared coordination lock.
+
+# CP-BP-10 Phase F target insertion point. The Phase F owner may replace only
+# this labelled seam while holding the shared coordination lock.
+
 # CP-BP-07: bounded local cell ordering. Kept in the root CMake seam so the
 # concurrently leased CP-BP-06 component-CMake blocks remain disjoint.
 add_library(cellpack_local_cell_ordering STATIC

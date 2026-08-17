@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp10-alternating-refinement"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T19:45:16Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-17T13:14:13Z"
+last_reviewed_at: "2026-08-17T13:14:13Z"
 stale_after_days: 7
 objective: "CP-BP-10: Refine global gene blocks and local cell packing against measured held-out tile costs."
 ---
@@ -47,7 +47,21 @@ Alternate frozen gene packing and local cell/tile packing, accepting determinist
 
 ## File Lease
 
-_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
+_Phase F ready and unclaimed._ If assigned CP-BP-10 Phase F, atomically claim:
+
+- new `components/CellPack/include/CellPack/alternating_refinement.hh`;
+- new `components/CellPack/src/alternating_refinement.cc`;
+- new `components/CellPack/tests/alternating_refinement_test.cc`;
+- only the labelled `CP-BP-10 Phase F target insertion point` block in root
+  `CMakeLists.txt`;
+- CP-BP-10 entries in this ledger, the coordinator, parent roadmap,
+  `todos.md`, and `todo-status.md` while holding the shared lock.
+
+Every CP-BP-11 runtime/stability file and its labelled CMake block are owned by
+the parallel CP-BP-11 Phase F stream. Existing optimizer, plan, record, order,
+tile, runtime, and statistical-validation implementations are frozen read-only
+inputs. A demonstrated frozen-input defect must be recorded and the stream must
+stop; it does not authorize crossing the lease.
 
 ## Assumptions
 
@@ -75,19 +89,25 @@ _Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Tasks
 
-- [!] Wait for working plan, tile, consumer, and held-out cost surfaces.
+- [x] Wait for working plan, tile, consumer, and held-out cost surfaces.
 - [ ] Implement bounded alternating controller and best-plan rollback.
 - [ ] Validate deterministic convergence and held-out improvement.
 - [ ] Record preprocessing cost versus resulting runtime/storage benefit.
 
 ## Blockers
 
-- CP-BP-04 is complete. This remains blocked on CP-BP-07, CP-BP-08,
-  CP-BP-09, and foundational CP-BP-11 metrics.
-- Hardware-aware refinement terms additionally wait on CP-BP-12.
+- No v1 implementation blocker remains. `CP10_READY` is published from
+  `BARRIER_E_INTEGRATED`; CP-BP-04/07/08/09 and the required CP-BP-11 held-out
+  surfaces are available in pushed source.
+- CP-BP-12 hardware prediction remains an optional later extension and is not
+  part of Phase F acceptance.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_E_INTEGRATED` at source checkpoint
+  `0334f954b1b9e04366f2e2ce191e098c1d476597` published `CP10_READY`.
+  Phase F is unclaimed and fork-ready under the exact lease above. It may run
+  in parallel with CP-BP-11 Phase F; both stop at distinct gates without git.
 - 2026-08-14: Added as a missing blocked workstream; no implementation evidence was found.
 - 2026-08-16: Reconciliation found no alternating controller, held-out
   acceptance loop, or tile-cost refinement. CP-BP-04's bounded feature
@@ -96,7 +116,9 @@ _Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Next Actions
 
-- Reactivate after a complete first-pass plan -> tile -> consumer loop is measurable on held-out cells.
+- If assigned exactly “You are assigned CP-BP-10 Phase F”, follow the Phase F
+  fork/stop protocol, claim the exact lease, implement the host-side bounded
+  controller, publish `CP10_REFINEMENT_READY`, release, and stop without git.
 
 ## Done Criteria
 

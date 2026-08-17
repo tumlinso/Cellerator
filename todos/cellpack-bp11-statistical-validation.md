@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:50:48Z"
-last_reviewed_at: "2026-08-17T10:50:48Z"
+last_heartbeat_at: "2026-08-17T13:14:13Z"
+last_reviewed_at: "2026-08-17T13:14:13Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -52,6 +52,8 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 - Barrier D is integrated at pushed source checkpoint `0bf9acf`. Phase E may
   consume the frozen CP-BP-08 tile ABI and existing validation foundations
   read-only, publish `CP11_TILE_BOOTSTRAP_READY`, release, and stop without git.
+- Barrier E is integrated at pushed source checkpoint `0334f95`; Phase F is
+  ready to claim in parallel with CP-BP-10 under the exact lease below.
 
 ## File Lease
 
@@ -76,6 +78,21 @@ The existing statistical/record-validation APIs, every CP-BP-08 tile file,
 CP-BP-09 host/CUDA/runtime file, component `CMakeLists.txt`, plan/record/order
 files, sampling, optimizer, and evaluator are read-only. CP-BP-09 exclusively
 owns its new CUDA consumer files and component-CMake blocks in parallel.
+
+_Phase F ready and unclaimed._ If assigned CP-BP-11 Phase F, atomically claim:
+
+- new `components/CellPack/include/CellPack/runtime_statistical_validation.hh`;
+- new `components/CellPack/src/runtime_statistical_validation.cc`;
+- new `components/CellPack/tests/runtime_statistical_validation_test.cc`;
+- new `components/CellPack/bench/runtime_statistical_validation_bench.cu`;
+- only the labelled `CP-BP-11 Phase F target insertion point` block in root
+  `CMakeLists.txt`;
+- CP-BP-11 entries in this ledger, the coordinator, parent roadmap,
+  `todos.md`, and `todo-status.md` while holding the shared lock.
+
+Every CP-BP-10 controller file and its labelled CMake block are owned by the
+parallel CP-BP-10 Phase F stream. Phase A/C/E validation plus plan, record,
+order, tile, and CP-BP-09 runtime contracts are frozen read-only inputs.
 
 ## Assumptions
 
@@ -128,12 +145,17 @@ owns its new CUDA consumer files and component-CMake blocks in parallel.
 
 ## Blockers
 
-- Phase E is complete at its released gate. Phase F remains closed until
-  Barrier E integrates the tile-validation and native-runtime streams; its
-  relearned-plan mapping/runtime stability must not be absorbed early.
+- None for Phase F. Barrier E integrated the tile-validation and native-runtime
+  streams. CP-BP-10 supplies caller-materialized relearned plans/iterations;
+  CP-BP-11 reports their stability but never performs or tunes relearning.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_E_INTEGRATED` at pushed source checkpoint
+  `0334f954b1b9e04366f2e2ce191e098c1d476597`. Phase F is unclaimed and
+  fork-ready under the exact lease above, in parallel with CP-BP-10. It owns
+  final mapping/runtime stability only and stops at
+  `CP11_FINAL_VALIDATION_READY` without git.
 - 2026-08-17: Published `CP11_TILE_BOOTSTRAP_READY`, released every Phase E
   lease, and returned idle without git. Added a versioned pointer-first,
   allocation-free host adapter over one const plan, immutable split/bootstrap/
@@ -250,9 +272,29 @@ owns its new CUDA consumer files and component-CMake blocks in parallel.
 
 ## Next Actions
 
-- Do not resume CP-BP-11. Barrier E must jointly validate and integrate
-  `CP09_RUNTIME_READY` plus `CP11_TILE_BOOTSTRAP_READY`; Phase F remains closed
-  until the coordinator explicitly opens it after that checkpoint.
+- If assigned exactly “You are assigned CP-BP-11 Phase F”, follow the Phase F
+  fork/stop protocol, claim the exact lease, publish
+  `CP11_FINAL_VALIDATION_READY`, release, and stop without git.
+
+## Phase F Acceptance Boundary
+
+- Accept caller-supplied relearned plans and measured CP-BP-09 observations;
+  do not invoke, tune, accept, reject, or mutate CP-BP-10.
+- Bind raw observations to bootstrap/split, plan/mapping, feature-axis,
+  row-domain, order/tile, operation/weight, hardware/toolchain, repeat, and
+  timing-scope identities. Preserve raw denominators and zero-observation
+  semantics before computing summaries.
+- Mapping comparisons are invariant to block-label renumbering and operate on
+  canonical feature membership or canonical pair co-membership. Report
+  cell-level versus supplied group-level generalization honestly.
+- Benchmark only the existing CP-BP-09 path under both locks, with the relevant
+  existing CSR baseline and recorded resident-I/O timing scope. Add no kernel,
+  dispatcher, optimizer, data normalization, densification, or persistence.
+- Focused tests cover deterministic distributions, equivalent mappings with
+  different block labels, changed membership, zero observations, mixed timing
+  scope/toolchain/identity rejection, malformed replicate sets, and group/cell
+  labeling. Publish only after required regressions, TODO/staleness/diff checks,
+  and serialized V100 evidence pass.
 
 ## Phase E Acceptance Boundary
 

@@ -4,8 +4,8 @@ status: "blocked"
 execution: "closed"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:14:49Z"
-last_reviewed_at: "2026-08-17T10:14:49Z"
+last_heartbeat_at: "2026-08-17T13:14:13Z"
+last_reviewed_at: "2026-08-17T13:14:13Z"
 stale_after_days: 7
 objective: "CP-BP-12: Fit a replaceable hardware-aware execution-cost model and autotune storage/runtime tradeoffs."
 ---
@@ -57,7 +57,7 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Tasks
 
-- [!] Wait for the correct measured CP-BP-09 runtime; CP-BP-03 and measured
+- [x] Wait for the correct measured CP-BP-09 runtime; CP-BP-03 and measured
   CP-BP-08 construction are complete.
 - [ ] Build benchmark campaign and data-quality checks.
 - [ ] Fit and validate replaceable execution-cost model.
@@ -65,10 +65,16 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Blockers
 
-- Blocked only on measured CP-BP-09 direct runtime and Barrier E integration.
+- The technical runtime prerequisite is satisfied by Barrier E. This stream is
+  held out of the active single-worktree Phase F pair to avoid competing GPU
+  benchmark campaigns and integration/git barriers; reactivate after Barrier F.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier E integrated measured CP-BP-09 direct runtime at
+  `0334f954b1b9e04366f2e2ce191e098c1d476597`. The technical input is now
+  available. Coordination deliberately keeps CP-BP-12 closed during the
+  CP-BP-10/11 Phase F fork; it is the primary post-Barrier-F continuation.
 - 2026-08-17: Barrier D integrated exact measured CP-BP-08 tile construction at
   `0bf9acf`; that dependency is satisfied. CP-BP-12 remains blocked only on the
   Phase E direct CP-BP-09 runtime and its fair CSR/current-layout measurements.
@@ -79,8 +85,8 @@ Benchmark supported packed kernels/layouts and predict execution cost from block
 
 ## Next Actions
 
-- Reactivate after `CP09_RUNTIME_READY` is integrated at Barrier E; do not fit
-  from construction timing alone.
+- Reactivate after Barrier F closes the shared CP-BP-10/11 wave. Consume the
+  pushed Barrier E runtime evidence; do not fit from construction timing alone.
 
 ## Done Criteria
 

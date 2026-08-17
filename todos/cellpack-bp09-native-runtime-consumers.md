@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp09-native-runtime-consumers"
-status: "in_progress"
-execution: "idle"
-owner: "unassigned"
+status: "done"
+execution: "closed"
+owner: "codex-cp-bp09-phase-e"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T10:47:55Z"
-last_reviewed_at: "2026-08-17T10:47:55Z"
+last_heartbeat_at: "2026-08-17T13:14:13Z"
+last_reviewed_at: "2026-08-17T13:14:13Z"
 stale_after_days: 7
 objective: "CP-BP-09: Execute directly from compact warp tiles without unpacking to CSR or BELL."
 ---
@@ -123,11 +123,17 @@ CMake blocks in the parallel branch.
 
 ## Blockers
 
-- No implementation blocker remains. `CP09_RUNTIME_READY` is published and the
-  stream is idle/released; Barrier E waits for CP-BP-11's independent gate.
+- None. Barrier E jointly validated and integrated the host reference, direct
+  CUDA runtime, statistical tile consumer, sanitizer evidence, and benchmark.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_E_INTEGRATED` at pushed source checkpoint
+  `0334f954b1b9e04366f2e2ce191e098c1d476597`. Fresh CUDA 12.9.86/GNU 13.3.0
+  V100 `sm_70` validation passed the focused host/CUDA consumers, Phase A/C/E
+  statistical validation, tile/record/order and plan pipeline regressions,
+  CUDA memcheck/racecheck, and the serialized benchmark. CP-BP-09 satisfies
+  its recorded acceptance criteria and is complete/closed.
 - 2026-08-17: Published `CP09_RUNTIME_READY`, released every Phase E lease, and
   returned `in_progress/idle` without git operations. Added a one-launch,
   zero-scratch, allocation/transfer/synchronization-free caller-stream CUDA API
@@ -207,9 +213,8 @@ CMake blocks in the parallel branch.
 
 ## Next Actions
 
-- Do not resume implementation. `CP09_RUNTIME_READY` is published; the Barrier
-  E integrator must wait for `CP11_TILE_BOOTSTRAP_READY`, jointly validate the
-  combined tree, then commit/push and close CP-BP-09. Do not start Phase F.
+- Complete and closed. Downstream work consumes the pushed Barrier E ABI and
+  benchmark evidence read-only; broader operators require a new TODO.
 
 ## Phase E Acceptance Boundary
 
