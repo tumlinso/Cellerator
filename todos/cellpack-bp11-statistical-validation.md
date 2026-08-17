@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "idle"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-16T20:14:53Z"
-last_reviewed_at: "2026-08-16T20:14:53Z"
+last_heartbeat_at: "2026-08-17T08:08:05Z"
+last_reviewed_at: "2026-08-17T08:08:05Z"
 stale_after_days: 3
 objective: "CP-BP-11: Prove held-out generalization, null separation, and bootstrap stability of inferred packing."
 ---
@@ -56,7 +56,8 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 ## File Lease
 
 - Released at `CP11_FOUNDATIONS_READY` by `codex-cp-bp11-phase-a` on
-  2026-08-16. No CP-BP-11 source, CMake, test, or ledger lease remains active.
+  2026-08-16. Phase C is ready and unclaimed; record exact new adapter/test and
+  disjoint CMake/ledger paths under the shared lock before editing.
 
 ## Assumptions
 
@@ -97,12 +98,17 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Blockers
 
-- Phase A foundations are complete and idle at `CP11_FOUNDATIONS_READY`.
-- Resume only after Barrier A for the coordinator-named Phase C; full acceptance
-  still waits on CP-BP-08 and CP-BP-09 outputs.
+- No blocker for Phase C frozen-plan/CP-BP-06 record-level held-out adapters:
+  Barrier B source checkpoint `eeb8c39` is pushed and both input contracts are
+  stable. Full tile/runtime/bootstrap acceptance still waits on later phases.
 
 ## Progress Notes
 
+- 2026-08-17: Barrier B opened Phase C from pushed source checkpoint `eeb8c39`.
+  CP-BP-11 may now add frozen-plan and CP-BP-06 record-level held-out/null
+  metric adapters in files disjoint from CP-BP-08, publish
+  `CP11_HELDOUT_READY`, release, and stop. Tile/runtime metrics remain later
+  scope and no phase is claimed by the integrator.
 - 2026-08-16: Barrier A jointly validated and integrated these foundations with
   the CP-BP-06 host record ABI. CP-BP-11 stays idle; it is not part of the next
   Phase B fork and resumes only for the coordinator-named Phase C.
@@ -136,9 +142,9 @@ Build statistical validation into the feature: held-out cells, degree-preserving
 
 ## Next Actions
 
-- Remain idle while CP-BP-06 Phase B and CP-BP-07 run. Resume only when assigned
-  Phase C to add frozen-plan/CP-BP-06 record-level held-out metric adapters; do
-  not absorb CP-BP-08 tile or CP-BP-09 runtime ownership.
+- Ready for a Phase C claim adding frozen-plan/CP-BP-06 record-level held-out
+  and null metric adapters. Preserve the scientific contract and stop at
+  `CP11_HELDOUT_READY`; do not absorb CP-BP-08 tile or CP-BP-09 runtime scope.
 
 ## Done Criteria
 

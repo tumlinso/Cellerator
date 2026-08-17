@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-16T19:45:16Z"
-last_heartbeat_at: "2026-08-17T08:04:27Z"
-last_reviewed_at: "2026-08-17T08:04:27Z"
+last_heartbeat_at: "2026-08-17T08:08:05Z"
+last_reviewed_at: "2026-08-17T08:08:05Z"
 stale_after_days: 7
 objective: "Coordinate checkpointed single-worktree execution of CP-BP-06 through CP-BP-11 with explicit dependency gates, leases, validation barriers, and fork-ready conditional instructions."
 ---
@@ -33,8 +33,9 @@ claim.
 - Child threads never commit, push, stash, reset, switch branches, amend, or
   update the CellStack submodule pointer. The appointed integrator does that at
   explicit barriers after every participating claim is released.
-- Barrier A is integrated. The next forkable assignments are CP-BP-06 Phase B
-  and CP-BP-07; later IDs must satisfy their gates below before claiming.
+- Barrier B is integrated. The next forkable assignments are CP-BP-08 Phase C
+  host ABI/reference and CP-BP-11 Phase C record-level held-out adapters;
+  later IDs must satisfy their gates below before claiming.
 
 ## Planning Notes
 
@@ -167,7 +168,7 @@ stream's implementation.
 - [x] `BARRIER_A_INTEGRATED`: the combined CP-BP-06 host record contract and
   CP-BP-11 statistical foundations were rebuilt and tested together on V100
   `sm_70`; the checkpoint commit is recorded in Progress Notes.
-- [ ] `BARRIER_B_INTEGRATED`: CP-BP-06 CUDA records and CP-BP-07 local ordering
+- [x] `BARRIER_B_INTEGRATED`: CP-BP-06 CUDA records and CP-BP-07 local ordering
   are closed, jointly validated, committed, and pushed.
 
 ## Checkpointed Parallel Phases
@@ -273,6 +274,10 @@ stream's implementation.
   tile/bootstrap metrics in E, and final runtime/stability reporting in F.
   Never edit CP-BP-06/08/09-owned representation or runtime files to make
   validation convenient.
+- Phase C is now open. Add frozen-plan and CP-BP-06 record-level held-out/null
+  metric adapters only, publish `CP11_HELDOUT_READY`, release, and stop. Do not
+  absorb CP-BP-08 tile construction or claim donor/study generalization without
+  caller-supplied grouping identities.
 
 ## Tasks
 
@@ -286,14 +291,19 @@ stream's implementation.
 
 ## Blockers
 
-- Phase B implementation and combined validation are complete; CP-BP-06/07 are
-  closed. Barrier B waits only for the validated source commit to be pushed and
-  recorded before Phase C is opened.
+- No blocker for Phase C: CP-BP-08 host ABI/reference and CP-BP-11 record-level
+  held-out adapters are ready as a disjoint parallel pair from pushed Barrier B
+  source checkpoint `eeb8c39`.
 - Later phases are intentionally blocked by the unchecked handoff gates above,
   not merely by TODO status labels.
 
 ## Progress Notes
 
+- 2026-08-17: `BARRIER_B_INTEGRATED` is published. Combined CP-BP-06/07 source
+  and validation landed on Cellerator `main` as `eeb8c39`; both children are
+  `done/closed`. Phase C is now open for unclaimed CP-BP-08 host tiles in
+  parallel with idle CP-BP-11 record-level held-out adapters. Neither stream is
+  claimed by the integrator.
 - 2026-08-17: Barrier B combined validation passed from fresh
   `build-cp-bp-barrier-b` with CUDA 12.9.86, GNU 13.3.0, and V100 `sm_70`.
   Passed exact CPU/CUDA cell-block records and local ordering, CUDA apply-plan
@@ -357,9 +367,9 @@ stream's implementation.
 
 ## Next Actions
 
-- Push the validated Barrier B source commit, record its hash, then open the
-  parallel Phase C pair: CP-BP-08 host tile ABI/reference and CP-BP-11 frozen-
-  plan/record-level held-out adapters. Do not claim either from this integrator.
+- Fork CP-BP-08 Phase C host tiles and CP-BP-11 Phase C record-level held-out
+  adapters in parallel under the existing claim/GPU/file interlocks. Each must
+  stop at its recorded gate; do not begin CP-BP-08 CUDA Phase D or CP-BP-09.
 
 ## Done Criteria
 

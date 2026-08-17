@@ -4,8 +4,8 @@ status: "in_progress"
 execution: "claimed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T08:04:27Z"
-last_reviewed_at: "2026-08-17T08:04:27Z"
+last_heartbeat_at: "2026-08-17T08:08:05Z"
+last_reviewed_at: "2026-08-17T08:08:05Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -40,8 +40,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - The completed `cellpack-packing-plan-evaluator` is reusable evidence and infrastructure, not CP-BP-04 completion and not a physical codec.
 - CP-BP-01 through CP-BP-05 are complete and closed. Barrier A integrated
   CP-BP-06's host record contract and CP-BP-11's validation foundations;
-  CP-BP-06 and CP-BP-07 are complete and closed after combined Barrier B
-  validation. The validated checkpoint must be pushed before Phase C opens.
+  CP-BP-06 and CP-BP-07 are complete and closed in pushed Barrier B source
+  checkpoint `eeb8c39`. Phase C CP-BP-08/11 are ready and unclaimed.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -83,12 +83,15 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [ ] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-06/07 are complete; CP-BP-08 remains blocked only until the validated
-  Barrier B source checkpoint is pushed and recorded. CP-BP-09/10/13 retain
-  their later tile/runtime dependencies.
+- CP-BP-08 Phase C host ABI/reference and CP-BP-11 record-level held-out
+  adapters are unblocked. CP-BP-09/10/12/13 retain their later tile/runtime
+  dependencies.
 - CP-BP-12 needs measured CP-BP-08/09 kernels and cannot select a hardware objective yet.
 
 ## Progress Notes
+- 2026-08-17: `BARRIER_B_INTEGRATED` records Cellerator source checkpoint
+  `eeb8c39`. CP-BP-06/07 are closed; CP-BP-08 host tiles and CP-BP-11 record-
+  level held-out adapters are the next unclaimed parallel pair.
 - 2026-08-17: Combined Barrier B validation accepted the exact asynchronous
   CUDA record builder and bounded host/CUDA local-order contracts. Both child
   streams are closed; the checkpoint is pushed and recorded before CP-BP-08 is
@@ -133,9 +136,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Push and record Barrier B, then follow the
-  coordinator's Phase C instructions for CP-BP-08 host tiles in parallel with
-  CP-BP-11 record-level held-out adapters.
+- Do not implement from this parent. Follow the coordinator's Phase C
+  instructions for CP-BP-08 host tiles in parallel with CP-BP-11 record-level
+  held-out adapters; do not begin CP-BP-08 CUDA Phase D or CP-BP-09 early.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

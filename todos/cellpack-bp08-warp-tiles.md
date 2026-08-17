@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-bp08-warp-tiles"
-status: "blocked"
-execution: "closed"
+status: "planned"
+execution: "ready"
 owner: "unassigned"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-14T13:00:00Z"
-last_reviewed_at: "2026-08-16T19:45:16Z"
+last_heartbeat_at: "2026-08-17T08:08:05Z"
+last_reviewed_at: "2026-08-17T08:08:05Z"
 stale_after_days: 7
 objective: "CP-BP-08: Build compact 32-cell warp tiles with shared block dictionaries, cell masks, gene masks, and exact payload offsets."
 ---
@@ -45,7 +45,9 @@ Combine up to 32 genes per global block with 32 locally ordered cells per tile, 
 
 ## File Lease
 
-_Blocked and unclaimed._ Record exact intended paths atomically after the gate.
+_Ready and unclaimed for Phase C host ABI/reference only._ Record exact intended
+paths atomically under the shared lock before editing. CUDA Phase D remains a
+separate later claim after Barrier C.
 
 ## Assumptions
 
@@ -72,22 +74,33 @@ _Blocked and unclaimed._ Record exact intended paths atomically after the gate.
 
 ## Tasks
 
-- [!] Wait for CP-BP-06 record and CP-BP-07 ordering contracts.
+- [x] Wait for CP-BP-06 record and CP-BP-07 ordering contracts.
 - [ ] Define complete warp-tile logical ABI.
 - [ ] Implement reference/GPU construction and decode.
 - [ ] Measure bytes/NNZ, metadata/NNZ, union size, and build throughput.
 
 ## Blockers
 
-- Blocked on CP-BP-06 compact record semantics and CP-BP-07 local row grouping.
+- No blocker for Phase C host ABI/reference: Barrier B source checkpoint
+  `eeb8c39` closes CP-BP-06/07 with stable record and local-order contracts.
+- CUDA tile construction remains blocked until `CP08_HOST_ABI_READY` is
+  integrated at Barrier C.
 
 ## Progress Notes
 
+- 2026-08-17: Reactivated as `planned/ready` for Phase C after
+  `BARRIER_B_INTEGRATED` pushed exact CP-BP-06 records and CP-BP-07 bounded
+  order maps in source checkpoint `eeb8c39`. This phase is host ABI/reference,
+  exact decoder, adversarial tests, and identity propagation only; it must not
+  start CUDA construction, runtime consumers, or persistence.
 - 2026-08-14: Added as a missing blocked workstream; existing CellPack coordinate spans and layout labels do not implement this representation.
 
 ## Next Actions
 
-- Reactivate only after per-cell value-rank semantics and local 32-row grouping are stable.
+- Claim Phase C under the shared lock, define the pointer-first tile
+  dictionary/mask/payload/rank ABI, CPU builder/decoder, identity propagation,
+  tail/empty/adversarial tests, publish `CP08_HOST_ABI_READY`, release, and stop
+  for Barrier C.
 
 ## Done Criteria
 
