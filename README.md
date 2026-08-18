@@ -163,6 +163,13 @@ These are build defaults, not file-format assumptions. CellShard `.csh5` and
 `value_code` and `bits`; readers must dispatch or convert from the stored
 precision instead of reinterpreting payloads as the local build default.
 
+CellPack persistence uses the same ownership boundary: Cellerator builds and
+validates a pointer-free plan/order/warp-tile image, while CellShard wraps that
+opaque image in a versioned, checksummed CSPACK execution envelope and owns
+publication, fetch, and contiguous device staging. After loading, Cellerator
+rebinds image offsets to the staged device base and invokes the native tile
+consumer directly; it does not relearn the plan or reconstruct CSR/BELL.
+
 The Cellerator build is accelerator-oriented and requires CUDA at configure time.
 
 CelleraTorch-enabled builds prefer the source-built installation under `/usr/local/share/cmake/Torch`.

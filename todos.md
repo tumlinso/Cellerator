@@ -24,7 +24,7 @@ Use this file as the canonical index for substantial multi-step work.
   Barrier C integrates CP-BP-08 host tiles and CP-BP-11 record-level held-out
   adapters. Barrier D integrates the CUDA tiles plus CP-BP-09 reference and
   closes CP-BP-08. Barrier E integrates CP-BP-09 at `0334f95`; Barrier F
-  integrates and closes CP-BP-10/11 at `2cfa5c8`. CP-BP-12 is ready.
+  integrates and closes CP-BP-10/11 at `2cfa5c8`. CP-BP-12/13 are complete.
 - The CP-BP-03/05 protocol below is preserved as completed history; it is no
   longer an active implementation interlock. CP-BP-03 and CP-BP-05 ran
   concurrently in one worktree only under this
@@ -61,7 +61,7 @@ Use this file as the canonical index for substantial multi-step work.
   source checkpoint `ebe0509`. Barrier D pushed CP-BP-08 CUDA construction and
   CP-BP-09's reference API at `0bf9acf`; CP-BP-08 is closed.
   `BARRIER_E_INTEGRATED`, `CP10_READY`, and `BARRIER_F_INTEGRATED` are
-  published. CP-BP-09/10/11 are closed; CP-BP-12 is ready and unclaimed.
+  published. CP-BP-09/10/11/12/13 are closed.
 
 ## Suggested Skills
 - `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
@@ -83,7 +83,7 @@ Use this file as the canonical index for substantial multi-step work.
 ## Workstreams
 - `cellpack-bp00-05-integration-audit` | status: done | owner: codex-cp-bp00-05-integration | file: `todos/cellpack-bp00-05-integration-audit.md` | objective: serially proved the completed CP-BP-01→05 public contracts compose end to end without entering CP-BP-06.
 - `cellpack-bp06-11-parallel-execution` | status: done | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp06-11-parallel-execution.md` | objective: Barrier F is integrated and the CP-BP-06 through CP-BP-11 execution wave is closed.
-- `cellpack-data-inferred-block-packing-roadmap` | status: in_progress | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | objective: CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent.
+- `cellpack-data-inferred-block-packing-roadmap` | status: done | owner: coordination | file: `todos/cellpack-data-inferred-block-packing-roadmap.md` | objective: completed CP-BP-00 parent roadmap for the offline compiler, compact tile format, native runtime, validation, autotuning, and persistence.
 - `cellpack-bp01-support-extraction` | status: done | owner: parallel-agent-step-1 | file: `todos/cellpack-bp01-support-extraction.md` | objective: CP-BP-01 representative sampling, binary support, per-gene bitsets, counts, provenance, and exact reconstruction.
 - `cellpack-bp02-candidate-discovery` | status: done | owner: codex-cp-bp-02 | file: `todos/cellpack-bp02-candidate-discovery.md` | objective: CP-BP-02 deterministic sketch/LSH candidate generation and deduplication; approximate similarity proposes only.
 - `cellpack-bp03-exact-merge-cost` | status: done | owner: codex-cp-bp-03-fork | file: `todos/cellpack-bp03-exact-merge-cost.md` | objective: CP-BP-03 exact bitset overlap and replaceable codec-cost/merge-gain scoring, reconciled with the completed evaluator.
@@ -97,13 +97,22 @@ Use this file as the canonical index for substantial multi-step work.
 - `cellpack-bp10-alternating-refinement` | status: done | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp10-alternating-refinement.md` | objective: bounded held-out alternating refinement is integrated and closed.
 - `cellpack-bp11-statistical-validation` | status: done | owner: codex-cp-bp10-11-serial | file: `todos/cellpack-bp11-statistical-validation.md` | objective: held-out/null/bootstrap plus relearned mapping/runtime stability validation is integrated and closed.
 - `cellpack-bp12-hardware-cost-autotune` | status: done | owner: codex-cp-bp12 | file: `todos/cellpack-bp12-hardware-cost-autotune.md` | objective: the replaceable V100 execution-cost policy and configurable storage/runtime selector are validated and closed without entering the later aggressive optimization pass.
-- `cellpack-bp13-persistence-integration` | status: planned | owner: unassigned | file: `todos/cellpack-bp13-persistence-integration.md` | objective: begin with a read-only cross-repo compatibility/ownership audit before durable packed-payload serialization.
+- `cellpack-bp13-persistence-integration` | status: done | owner: codex-cp-bp13 | file: `todos/cellpack-bp13-persistence-integration.md` | objective: versioned CellShard CSPACK envelope and Cellerator pointer-free image now load/upload for direct no-repack execution.
 
 ## Global Blockers
-- No CP-BP child blocker remains. CP-BP-13 is ready and unclaimed; its mandatory
-  first phase is read-only compatibility/ownership inventory.
+- No CP-BP child blocker remains; CP-BP-00 through CP-BP-13 are closed.
 
 ## Progress Notes
+- 2026-08-18: CP-BP-13 and its CP-BP-00 parent closed. CellShard `197d268`
+  owns the generic CSPACK envelope, compatibility, publication, fetch, and
+  contiguous upload; Cellerator owns the pointer-free plan/order/tile image,
+  semantic validation, relocation, and direct CP-BP-09 handoff. The complete
+  archive-to-device no-repack test and CUDA 12.9 memcheck passed on V100
+  `sm_70`. Aggressive optimization remains a deliberately separate later pass.
+- 2026-08-18: `codex-cp-bp13` completed the mandatory audit and claimed a
+  serial cross-repository lease. CellShard owns a generic checksummed CSPACK
+  envelope and contiguous async staging; Cellerator owns the inner
+  plan/order/tile image, semantic validation, and direct execution rebinding.
 - 2026-08-17: CP-BP-12 completed its versioned hardware-cost model,
   deterministic lambda/width-constrained selector, adversarial tests, and
   serialized 60-scenario/120-observation V100 campaign. Direct-tile and CSR
@@ -406,9 +415,9 @@ Use this file as the canonical index for substantial multi-step work.
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Claim CP-BP-13 from current pushed Cellerator and CellStack `origin/main`.
-  Its first action is a read-only Cellerator/CellShard compatibility and
-  ownership inventory, not serialization edits.
+- Preserve the completed CP-BP roadmap. Any aggressive performance pass should
+  begin as a separate measured workstream with these v1 identities and
+  ownership boundaries as compatibility baselines.
 - Reactivate blocked children only when their recorded representation/API
   prerequisite lands; do not guess a downstream physical ABI.
 - CP-BP-02 is closed and CP-BP-03 now consumes `gene_candidate_pair_view` plus

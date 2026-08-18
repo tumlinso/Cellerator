@@ -1,11 +1,11 @@
 ---
 slug: "cellpack-data-inferred-block-packing-roadmap"
-status: "in_progress"
-execution: "claimed"
+status: "done"
+execution: "closed"
 owner: "coordination"
 created_at: "2026-08-14T13:00:00Z"
-last_heartbeat_at: "2026-08-17T14:44:32Z"
-last_reviewed_at: "2026-08-17T14:44:32Z"
+last_heartbeat_at: "2026-08-18T13:05:00Z"
+last_reviewed_at: "2026-08-18T13:05:00Z"
 stale_after_days: 7
 objective: "CP-BP-00 parent coordination epic for the complete offline compiler, compact tile format, native runtime, validation, autotuning, and persistence roadmap; do not implement from the parent."
 ---
@@ -46,8 +46,8 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
   pushed CP-BP-08 CUDA tiles and CP-BP-09's host consumer contract at `0bf9acf`.
   CP-BP-08 is closed. Barrier E pushed CP-BP-09 native runtime and CP-BP-11
   tile/bootstrap validation at `0334f95`; Barrier F pushed CP-BP-10/11 at
-  `2cfa5c8` and closed both streams. CP-BP-12 is complete; CP-BP-13 is the next
-  ready child.
+  `2cfa5c8` and closed both streams. CP-BP-12 and CP-BP-13 are complete; every
+  child is closed.
 - Every performance claim follows a CPU/reference correctness test and a relevant existing-layout baseline; benchmarks/profilers use the repository mutex.
 
 ## Suggested Skills
@@ -86,14 +86,24 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - [x] CP-BP-10 alternating/refined packing optimization.
 - [x] CP-BP-11 statistical legitimacy and anti-overfitting validation.
 - [x] CP-BP-12 hardware-aware cost model and autotuning.
-- [ ] CP-BP-13 persistence and execution integration.
+- [x] CP-BP-13 persistence and execution integration.
 
 ## Blockers
-- CP-BP-13 has no blocker and is `planned/ready`, unclaimed. Its first action is
-  a read-only cross-repository compatibility/ownership audit, not serialization.
+- None. CP-BP-01 through CP-BP-13 are complete and closed.
 
 ## Progress Notes
 
+- 2026-08-18: CP-BP-13 closed after CellShard/Cellerator archive, compatibility,
+  contiguous upload, pointer-rebinding, and no-repack direct-execution
+  integration passed focused V100 validation and CUDA memcheck. CP-BP-00 now
+  satisfies its done criteria. The requested later aggressive optimization is
+  a separate workflow, not unfinished roadmap implementation.
+- 2026-08-18: CP-BP-13 audit froze a serial ownership seam: CellShard owns a
+  generic versioned/checksummed CSPACK execution envelope, generation and
+  partition compatibility, fetch, and contiguous async staging; Cellerator owns
+  the pointer-free plan/order/tile image, semantic validation, and direct
+  CP-BP-09 rebinding. Implementation is claimed without changing prior logical
+  ABIs or starting the later aggressive optimization pass.
 - 2026-08-17: CP-BP-12 completed and closed. Its versioned host-side model and
   lambda/width-constrained selector retain hardware/toolchain/operation/cost-
   policy provenance. The serialized 60-scenario V100 campaign produced 120
@@ -241,9 +251,9 @@ Track the parent roadmap for a two-layer system: an offline compiler learns a re
 - 2026-08-14: CP-BP-02 completed deterministic SplitMix64-v1 global-row MinHash, configurable LSH, bounded oversized-bucket handling, CUB grouping/deduplication, canonical host candidate pairs, CPU/GPU exact tests, and a serialized V100 smoke benchmark. CP-BP-03 was not started.
 
 ## Next Actions
-- Do not implement from this parent. Claim CP-BP-13 from current pushed
-  Cellerator and CellStack `origin/main`, then perform its read-only ownership
-  and compatibility inventory before proposing serialization edits.
+- Complete and closed. Preserve this ledger as roadmap history; open a separate
+  measured optimization workstream rather than reopening a completed child by
+  implication.
 
 ## Done Criteria
 - Every child is `done/closed`, exact reconstruction and numerical equivalence pass, held-out/null/stability validation is recorded, hardware-aware benchmarks justify the selected layout, and CellShard/Cellerator persistence ownership is integrated without per-minibatch repacking.

@@ -1198,6 +1198,43 @@ set_target_properties(cellpack_feature_weighted_row_reduction PROPERTIES
 )
 cellerator_enable_perf(cellpack_feature_weighted_row_reduction)
 
+# CP-BP-13: pointer-free persistent CellPack execution image. CellShard owns
+# the outer CSPACK envelope and transfer; this target owns semantic validation
+# and pointer rebinding for the frozen plan/order/tile payload.
+add_library(cellpack_persistent_packing_payload STATIC
+    components/CellPack/src/persistent_packing_payload.cc
+)
+add_library(CellPack::persistent_packing_payload ALIAS
+    cellpack_persistent_packing_payload)
+target_include_directories(cellpack_persistent_packing_payload PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_persistent_packing_payload PUBLIC
+    CellPack::feature_weighted_row_reduction
+)
+set_target_properties(cellpack_persistent_packing_payload PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellpack_persistent_packing_payload)
+
+add_executable(cellPackPersistentPackingPayloadTest
+    components/CellPack/tests/persistent_packing_payload_test.cu
+)
+target_link_libraries(cellPackPersistentPackingPayloadTest PRIVATE
+    CellPack::persistent_packing_payload
+    CellPack::feature_weighted_row_reduction_cuda
+    CellShard::inspect
+    CUDA::cudart
+)
+set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
+
 add_executable(cellPackFeatureWeightedRowReductionTest
     components/CellPack/tests/feature_weighted_row_reduction_test.cc
 )
