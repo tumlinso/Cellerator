@@ -113,6 +113,17 @@ nsight/
 cuda_profile_*
 cuda_profile*.log
 
+# Generated local state
+.ctxpp.toml
+
+# Generated agent artifacts
+.ctxpp/
+.todo-orchestrator/runtime/
+.todo-orchestrator/runtime/**
+.todo-orchestrator/state.sqlite
+.todo-orchestrator/state.sqlite-shm
+.todo-orchestrator/state.sqlite-wal
+
 # Local fixture payloads. The scaffold under data/test is tracked, but large
 # biological inputs and generated conversion outputs remain local.
 /data/**/*.h5ad
