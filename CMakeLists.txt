@@ -1315,6 +1315,28 @@ set_target_properties(cellPackApplyPlanBench PROPERTIES
 )
 cellerator_enable_perf(cellPackApplyPlanBench)
 
+# CP-MATH-03 benchmark promoted from its standalone validation command so
+# background evidence can rebuild it from an immutable source snapshot.
+add_executable(cpMathPackedDenseOperandBench
+    bench/math/packed_dense_operand_bench.cu
+    src/compute/math/packed_dense_operand.cu
+)
+target_include_directories(cpMathPackedDenseOperandBench PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/bench
+)
+target_link_libraries(cpMathPackedDenseOperandBench PRIVATE
+    CellPack::cellpack
+    CUDA::cudart
+)
+set_target_properties(cpMathPackedDenseOperandBench PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+cellerator_enable_perf(cpMathPackedDenseOperandBench)
+
 if(CELLERATOR_ENABLE_TORCH_MODELS)
     add_subdirectory(components/CelleraTorch)
 endif()
