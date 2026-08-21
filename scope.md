@@ -1,98 +1,123 @@
 # Cellerator Scope Boundary
 
-Last updated: 2026-05-04
+Last updated: 2026-08-21
 
 ## Purpose
 
-Cellerator is a sparse biological ML runtime and operator library for training
-and inference on CellShard-scale omics data. Its central scope is to make
-single-cell omics matrices accessible to GPU compute by finding and exploiting
-denseifiable biological structure in otherwise sparse data. Genes, chromatin
-peaks, and other assay features often organize into modules or related feature
-sets; Cellerator uses that structure to build and execute modified
-ELLPACK-style sparse layouts such as Blocked-ELL, Sliced-ELL, and quantized
-Blocked-ELL.
+Cellerator is CellStack's performance-critical biological execution core. It
+exploits repeated, modular, hierarchical, and correlated biological structure
+when that structure reduces execution time, memory movement, synchronization,
+preparation, communication, or whole-module work. It is not a biological
+wrapper around generic sparse matrix multiplication.
 
-Cellerator owns sparse layout primitives, GPU operators, sparse differentiation
-and training primitives, biologically structured model components, distributed
-sparse execution, layout optimization inputs, and explicit Torch interop
-boundaries that Torch does not natively provide well for sparse biological
-structure.
+The central model is a biological program over typed domains and relations:
+sequence predicates, regulatory elements, genes and transcripts, cells,
+modules, pathways, learned state, and downstream behavior. SpMM remains one
+operation family, not the system ontology. Conventional CSR, SELL, BSR,
+Blocked-ELL, dense, and vendor-library paths remain first-class candidates and
+must win whenever measured end-to-end cost is lower.
 
-Cellerator should extend Torch where sparse omics execution needs new
-capability. It should not replace Torch as the general ML framework.
+## Core Contracts
 
-## Ownership Boundary
+Cellerator owns these versioned foundations:
 
-- Cellerator owns sparse layout primitives and generic sparse math: Blocked-ELL,
-  Sliced-ELL, quantized Blocked-ELL, layout helpers, device views, sparse GPU
-  operators, reductions, transforms, sparse training primitives,
-  forward-neighbor index/query policy over CellShard-backed matrices, and
-  quantized sparse kernels. Some compatibility runtime wrappers may remain in
-  CellShard during migration.
-- Higher-level Cellerator owns biological model components, trajectory/model
-  math, and explicit Torch/libtorch extension or export boundaries.
-- CellShard owns data handling over Cellerator payloads: `.csh5`,
-  `.cshard`, CSPACK generations, source ingest, retrieval, sharded runtime
-  staging, compaction/finalization, and pack publication.
-- Cellerator preprocessing owns biology-facing preprocessing policy and APIs:
-  QC metric definitions, normalization/log1p workflow semantics, feature/cell
-  keep-mask semantics, raw-count validation, adapter staging, and preprocessing
-  workbench/runtime orchestration. Reusable numerical kernels over CellShard
-  matrices live in `src/compute/preprocess/` and are called through explicit
-  layout-aware boundaries.
-- AnnData/H5AD remains an ecosystem interchange and workflow format.
-  Cellerator may import from or export to it through CellShard-facing paths,
-  but AnnData is not the execution format.
-- Torch remains the general tensor ML framework. Cellerator may expose custom
-  ops, DLPack/tensor exports, libtorch modules, and Python bindings, but hot
-  sparse runtime work should remain layout-explicit and Cellerator-owned.
+- biological domain, order, semantic geometry, partition, structure,
+  structure epoch, value generation, and projection identity;
+- heterogeneous dense, bit-plane, event, segment, sparse-relation, and small
+  parameter operand views;
+- immutable relation structures separated from mutable value planes and
+  per-launch bindings;
+- execution-order contracts that preserve compatible internal order and make
+  canonicalization an explicit graph operation;
+- one execution session with structure-persistent, plan-persistent, and
+  stream-ordered launch-transient storage;
+- an operation registry shared by native kernels, composed paths, and vendor
+  libraries;
+- a projection catalog and planner that charge all material preparation,
+  conversion, execution, order, synchronization, and communication cost;
+- pointer-free relocatable execution images with versioned projection
+  directories.
+
+Semantic geometry describes stable execution-relevant organization. A physical
+projection describes concrete bytes and scheduling for an operation, numeric
+policy, device class, and reuse regime. One geometry may have many projections;
+no universal layout is presumed.
+
+## Repository Ownership
+
+- Cellerator owns computational meaning, biological identity, numerical
+  interpretation, projection policy, operation preparation, execution-order
+  policy, and end-to-end planning.
+- CellPack owns Cellerator's packing and execution-image construction. CP-BP v1
+  plans, row order, tiles, canonical recovery, and CPK1 remain validated
+  compatibility artifacts behind adapters.
+- Baseplane owns packed sequence, validity-aware bit logic, exact motif and
+  grammar predicates, masks, events, segments, and low-level sequence-program
+  preparation. Baseplane consumes a small Cellerator-owned ABI and does not own
+  a separate numerical runtime. Cellerator owns materialize-versus-fuse
+  decisions and the first genuinely numerical sequence-to-state interaction.
+- CellShard owns storage, pack publication, fetch, delivery, staging, and
+  distributed placement. Its CSPACK01/CPEXEC01 envelope treats the inner
+  Cellerator image as opaque. CellShard does not choose or interpret physical
+  execution projections.
+- CelleraTorch owns Torch/libtorch adapters. Framework wrappers call stable
+  native operations and do not define Cellerator's hot execution model.
 
 ## In Scope
 
-- Sparse operators for Blocked-ELL, Sliced-ELL, CSR fallback, cuSPARSE-backed
-  paths, sparse-dense projections, reductions, gather/scatter, row/feature
-  selection, exact-search/scoring math, pathway/module reductions, and graph-aware
-  sparse transforms.
-- Layout search and optimization inputs that discover denseifiable feature,
-  pathway, gene-module, peak-module, or graph-neighborhood structure and map it
-  onto GPU-efficient sparse execution layouts.
-- Training-capable sparse operator where Torch sparse support is missing,
-  layout-mismatched, or too costly for CellShard-scale data.
-- Biological model primitives that make sparsity part of the model: pathway
-  layers, gene/module reductions, sparse latent models, developmental-time and
-  trajectory components, graph/neighborhood losses, and quantized sparse
-  reconstruction paths.
-- Distributed sparse execution when shard layout, data sparsity, or model
-  structure makes multi-GPU execution materially useful.
-- Explicit interop with Torch and major ML packages at deliberate boundaries,
-  not hidden conversion inside hot loops.
+- Domain-aware relation execution across cells, genes, regulatory elements,
+  sequence coordinates, modules, pathways, graphs, and learned state.
+- Structure-aware packing, semantic geometry, projection construction, value
+  remapping, and explicit order transforms.
+- Native and library-backed sparse/dense operators, reductions, transforms,
+  graph operations, quantized operations, and sequence-state fusion.
+- Forward and transpose projection contracts, sparse learned values, mixed
+  precision, and quantization mechanisms when activated by concrete work.
+- Real-data and adversarial evidence that can select a conventional fallback.
+- Device-fleet and nested partition identities needed by future multi-GPU and
+  multi-node work, without burdening every hot record with unused metadata.
+- Preprocessing and search kernels when they are reusable layout-aware compute
+  primitives. Human-facing workflow policy remains thin and separate.
 
-## Out Of Scope For Now
+## Out Of Scope
 
-- A compiled `.cellerator` model format. This is future work and must not drive
-  near-term interfaces.
-- Replacing Torch, PyTorch, JAX, Scanpy, AnnData, or scvi-tools.
-- Generic sparse matrix library work that is not tied to sparse biological ML
-  training or CellShard execution layouts.
-- Source ingest, durable storage, pack generation, and runtime publication
-  outside the CellShard owner surface.
-- Graph construction workflows that are not part of Cellerator-owned model,
-  trajectory, or forward-neighbor search execution.
-- High-level workflow or notebook ergonomics that hide layout, residency,
-  transfer, or launch costs in performance-sensitive paths.
+- Durable storage, publication, fetch policy, or interpretation of CellShard's
+  outer envelopes.
+- A generic sparse matrix package with no biological execution advantage.
+- A second CP-Math runtime, owned prepared-operation stream, hidden allocation,
+  or generic-SpMM-only planner.
+- Mandatory canonical order between compatible internal operations.
+- Mandatory dense, CSR, event-table, or matrix materialization at the Baseplane
+  boundary.
+- Expanding Torch-linked code as Cellerator core.
+- Placeholder implementations for hypothetical architectures, distributed
+  execution, backward kernels, or precision modes without a current consumer.
+
+## Compatibility Rules
+
+- Old persisted meanings are immutable. New objectives, identities,
+  projections, or execution images require new versions.
+- Preserve validated v1 objects through read-only adapters before considering
+  rewrites or removal.
+- CPK1 remains loadable; CPEXEC01 remains the CellShard-owned opaque envelope.
+- Pointer addresses never define semantic identity.
+- A prepared operation may freeze semantics, structure, projection, algorithm,
+  descriptors, and declared workspace requirements. Inputs, outputs, mutable
+  values, scalars, stream, and transient workspace remain launch bindings.
+- Hot run paths perform no allocation, discovery, hashing, device selection,
+  descriptor construction, or synchronization.
 
 ## Agent Rules
 
-- Before adding a public API, CMake target, model module, preprocessing path,
-  ingest/runtime path, or Torch bridge, check this file and
-  `out_of_scope_inventory.md`.
-- For roadmap work that changes what Cellerator should become next, use
-  `planning_strategy.md` as the pickup guide.
-- If a new surface is outside this scope but temporarily necessary, add or
-  update an inventory entry instead of normalizing it as Cellerator-owned.
-- If a surface is data handling, prefer migration to CellShard. If a surface is
-  preprocessing policy or numerical preprocessing math over CellShard matrices,
-  keep or migrate it into Cellerator.
-- If work touches scope drift, remind the user that
-  `out_of_scope_inventory.md` is the advisory migration queue.
+- Read this file, `optimization.md`, and `planning_strategy.md` before changing
+  execution ABI, runtime, packing, projection, planner, or Baseplane seams.
+- Preserve execution order unless an external or incompatible consumer
+  requires an explicit transform.
+- Treat the configured sparse-layout default as legacy compatibility policy,
+  not planner authority.
+- Record data movement, persistent bytes, transient workspace, preparation
+  break-even, and order-transform cost for performance claims.
+- Do not edit CellShard to accommodate an unproven Cellerator layout change;
+  stop at an external interface decision if CPEXEC01 cannot remain opaque.
+- Use `out_of_scope_inventory.md` for unrelated ownership migration rather than
+  normalizing scope drift.

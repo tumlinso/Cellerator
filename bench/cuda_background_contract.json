@@ -221,10 +221,10 @@
       "reason_not_watched": "No existing benchmark measures sampled CSR materialization or CUDA support-bitset construction; the full-size option is allocation smoke only."
     },
     {
-      "task_ids": ["CP-MATH-01", "CP-MATH-02", "CP-MATH-02A", "CP-MATH-08A"],
-      "component": "operation/runtime/referee foundations",
-      "correctness_targets": ["cpMathOperationContractTest", "cpMathRuntimeTest", "cpMathDeviceRuntimeTest", "cpMathRefereeFoundationTest"],
-      "reason_not_watched": "These completed foundations have stable correctness checks but no representative steady-state performance benchmark yet."
+      "task_ids": ["CP-MATH-01", "CP-MATH-02", "CP-MATH-02A", "CP-MATH-08A", "CE-ARCH-12", "CE-ARCH-22"],
+      "component": "operation/session/referee foundations",
+      "correctness_targets": ["cpMathOperationContractTest", "cpMathRefereeFoundationTest", "celleratorExecutionSessionTest", "celleratorOperationCoreTest"],
+      "reason_not_watched": "The harmful CP-Math runtime island is retired; frozen v1 contracts/referees and the supported session/operation core retain focused correctness targets without inventing a new performance watch."
     }
   ]
 }

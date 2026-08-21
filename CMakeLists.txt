@@ -69,7 +69,7 @@ set(CELLERATOR_REAL_ACCUM "f32" CACHE STRING
     "Default Cellerator real accumulation type for new, unspecified reductions: f32 or f64")
 set_property(CACHE CELLERATOR_REAL_ACCUM PROPERTY STRINGS f32 f64)
 set(CELLERATOR_DEFAULT_SPARSE_LAYOUT "blocked_ell" CACHE STRING
-    "Default sparse layout for new, unspecified Cellerator execution data: blocked_ell, sliced_ell, or csr")
+    "Legacy compatibility fallback for unspecified sparse surfaces; the planner selects operation projections: blocked_ell, sliced_ell, or csr")
 set_property(CACHE CELLERATOR_DEFAULT_SPARSE_LAYOUT PROPERTY STRINGS blocked_ell sliced_ell csr)
 set(CELLERATOR_DEFAULT_TRAINING_PRECISION "f32" CACHE STRING
     "Default training precision policy for future model configs: f32, mixed_f16, mixed_bf16, or mixed_fp8")
@@ -138,7 +138,9 @@ set(CELLERATOR_DEFAULT_GRADIENT_CLIPPING_ENUM "${CELLERATOR_DEFAULT_GRADIENT_CLI
 message(STATUS
     "Cellerator default real: storage=${CELLERATOR_REAL_STORAGE}, "
     "compute=${CELLERATOR_REAL_COMPUTE}, accum=${CELLERATOR_REAL_ACCUM}")
-message(STATUS "Cellerator default sparse layout: ${CELLERATOR_DEFAULT_SPARSE_LAYOUT}")
+message(STATUS
+    "Cellerator compatibility sparse fallback: ${CELLERATOR_DEFAULT_SPARSE_LAYOUT} "
+    "(operation projections remain planner-selected)")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/detect_hardware.cmake)
 cellerator_detect_host_vector_ops()
@@ -239,6 +241,25 @@ target_link_libraries(celleratorOperationCoreTest PRIVATE
 set_target_properties(celleratorOperationCoreTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
+)
+
+# CE-ARCH-60: keep the recovered execution substrate and its concurrency
+# contract in the normal build graph. This is the only supported math runtime;
+# the former DeviceMathContext island has been retired.
+add_executable(celleratorExecutionSessionTest
+    tests/runtime/execution_session_test.cu
+)
+target_link_libraries(celleratorExecutionSessionTest PRIVATE
+    Cellerator::runtime
+    CUDA::cudart
+    CUDA::cublas
+    CUDA::cusparse
+)
+set_target_properties(celleratorExecutionSessionTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 
 add_library(cellerator_compute_matrix_convert STATIC
@@ -1341,6 +1362,173 @@ set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
 )
 cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
 
+# CE-ARCH-60: recovered architecture foundations are reusable targets rather
+# than standalone source bursts. CellPack remains the owner of semantic
+# geometry and relocatable execution images; Cellerator owns planning.
+add_library(cellpack_semantic_geometry STATIC
+    components/CellPack/src/semantic_geometry.cc
+)
+add_library(CellPack::semantic_geometry ALIAS cellpack_semantic_geometry)
+target_include_directories(cellpack_semantic_geometry PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_semantic_geometry PUBLIC
+    CellPack::cellpack
+    Cellerator::biological_abi
+)
+target_compile_features(cellpack_semantic_geometry PUBLIC cxx_std_17)
+
+add_executable(cellPackSemanticGeometryAdapterTest
+    components/CellPack/tests/semantic_geometry_adapter_test.cc
+)
+target_link_libraries(cellPackSemanticGeometryAdapterTest PRIVATE
+    CellPack::semantic_geometry
+)
+set_target_properties(cellPackSemanticGeometryAdapterTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
+add_library(cellpack_execution_image_v2 STATIC
+    components/CellPack/src/persistence/execution_image_v2.cc
+    components/CellPack/src/persistence/execution_image_v2_cpk1.cc
+)
+add_library(CellPack::execution_image_v2 ALIAS cellpack_execution_image_v2)
+target_include_directories(cellpack_execution_image_v2 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellpack_execution_image_v2 PUBLIC
+    CellPack::persistent_packing_payload
+    CellPack::semantic_geometry
+    Cellerator::biological_abi
+)
+target_compile_features(cellpack_execution_image_v2 PUBLIC cxx_std_17)
+
+add_executable(cellPackExecutionImageV2Test
+    components/CellPack/tests/persistence/execution_image_v2_test.cc
+)
+target_link_libraries(cellPackExecutionImageV2Test PRIVATE
+    CellPack::execution_image_v2
+)
+set_target_properties(cellPackExecutionImageV2Test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
+add_library(cellerator_planner STATIC
+    src/planner/end_to_end_planner.cc
+    components/CellPack/src/optimization/objective_v2.cc
+)
+add_library(Cellerator::planner ALIAS cellerator_planner)
+target_include_directories(cellerator_planner PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_planner PUBLIC
+    Cellerator::operation_core
+    CellPack::semantic_geometry
+)
+target_compile_features(cellerator_planner PUBLIC cxx_std_17)
+
+add_executable(celleratorPlannerV1Test
+    tests/planner/end_to_end_planner_test.cc
+)
+target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
+set_target_properties(celleratorPlannerV1Test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
+# The surviving CP-Math v1 pieces are validation and compatibility evidence,
+# not a runtime or planner. They remain explicit, EXCLUDE_FROM_ALL targets so
+# old referees and projection adapters stay reproducible without entering the
+# supported operation/session graph.
+add_library(cellerator_math_v1_evidence STATIC EXCLUDE_FROM_ALL
+    src/compute/math/operation.cc
+    src/compute/math/operation_signature.cc
+    src/compute/math/physical_csr.cc
+    src/compute/math/physical_bell.cc
+    src/compute/math/physical_bell_candidates.cc
+    src/compute/math/native_tile_view.cc
+    src/compute/math/referee.cc
+)
+target_include_directories(cellerator_math_v1_evidence PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+)
+target_link_libraries(cellerator_math_v1_evidence PUBLIC
+    CellPack::persistent_packing_payload
+    CUDA::cudart
+)
+target_compile_features(cellerator_math_v1_evidence PUBLIC cxx_std_17)
+
+add_library(cellerator_packed_dense_operand STATIC
+    src/compute/math/packed_dense_operand.cu
+)
+add_library(Cellerator::packed_dense_operand ALIAS
+    cellerator_packed_dense_operand)
+target_include_directories(cellerator_packed_dense_operand PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_packed_dense_operand PUBLIC
+    cellerator_math_v1_evidence
+    CUDA::cudart
+)
+set_target_properties(cellerator_packed_dense_operand PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_executable(cpMathOperationContractTest EXCLUDE_FROM_ALL
+    tests/math_operation_contract_test.cc
+)
+target_link_libraries(cpMathOperationContractTest PRIVATE
+    cellerator_math_v1_evidence
+)
+
+add_executable(cpMathRefereeFoundationTest EXCLUDE_FROM_ALL
+    tests/math_referee_foundation_test.cc
+)
+target_include_directories(cpMathRefereeFoundationTest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(cpMathRefereeFoundationTest PRIVATE
+    cellerator_math_v1_evidence
+)
+
+add_executable(cpMathNativeTileAdapterTest EXCLUDE_FROM_ALL
+    tests/math_native_tile_adapter_test.cc
+)
+target_link_libraries(cpMathNativeTileAdapterTest PRIVATE
+    cellerator_math_v1_evidence
+)
+
+add_executable(cpMathBellLoweringTest EXCLUDE_FROM_ALL
+    tests/math_bell_lowering_test.cc
+)
+target_link_libraries(cpMathBellLoweringTest PRIVATE
+    cellerator_math_v1_evidence
+)
+
+add_executable(cpMathExecutionCsrTest EXCLUDE_FROM_ALL
+    tests/math_execution_csr_test.cu
+)
+target_link_libraries(cpMathExecutionCsrTest PRIVATE
+    Cellerator::packed_dense_operand
+    CUDA::cudart
+)
+set_target_properties(cpMathExecutionCsrTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_executable(cellPackFeatureWeightedRowReductionTest
     components/CellPack/tests/feature_weighted_row_reduction_test.cc
 )
@@ -1425,15 +1613,13 @@ cellerator_enable_perf(cellPackApplyPlanBench)
 # background evidence can rebuild it from an immutable source snapshot.
 add_executable(cpMathPackedDenseOperandBench
     bench/math/packed_dense_operand_bench.cu
-    src/compute/math/packed_dense_operand.cu
 )
 target_include_directories(cpMathPackedDenseOperandBench PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/bench
 )
 target_link_libraries(cpMathPackedDenseOperandBench PRIVATE
-    CellPack::cellpack
-    CUDA::cudart
+    Cellerator::packed_dense_operand
 )
 set_target_properties(cpMathPackedDenseOperandBench PROPERTIES
     CXX_STANDARD 17

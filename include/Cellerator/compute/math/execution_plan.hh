@@ -19,8 +19,9 @@ enum class epilogue_strategy_kind : u32 {
     generic_unfused = 2u
 };
 
-// Immutable, pointer-free decision metadata. Live descriptors, allocations,
-// graphs, bound views, and launch state belong to PreparedExecution.
+// Frozen CP-Math v1 evidence only. This pointer-free record remains for
+// compatibility/referee tests; supported preparation uses
+// operation_core::prepared_operation and execution::launch_bindings.
 struct execution_plan {
     u32 schema_version = execution_plan_schema_version;
     u32 physical_view_schema_version = 0u;

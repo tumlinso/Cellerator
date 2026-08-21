@@ -20,9 +20,9 @@ The fixed plan, projection, and order-transform caches accept already-computed
 semantic keys. They deliberately do not hash pointers or structures in the hot
 path. Higher layers own key construction and cache-value destruction.
 
-`DeviceMathContext` remains an experimental compatibility implementation until
-CE-ARCH-22 migrates its useful consumers. It is not part of this interface.
-The corresponding migration is:
+CE-ARCH-60 removed the experimental CP-Math runtime island after its useful
+consumers and evidence moved to the operation core, explicit launch bindings,
+and compatibility targets. The completed ownership migration is:
 
 | Experimental ownership | Session v1 ownership |
 | --- | --- |

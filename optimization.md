@@ -1,11 +1,22 @@
 # Cellerator Optimization Deep Dive
 
+> Architecture status, 2026-08-21: this document preserves measured subsystem
+> evidence, including valuable Blocked-ELL regimes, but its older universal
+> layout conclusions are superseded by the biological execution architecture.
+> Semantic geometry and physical projection are distinct. The end-to-end
+> planner may select row-masked CP-BP tiles, feature-major or CTA projections,
+> dense fragments, CSR, SELL, BSR, valid Blocked-ELL, vendor paths, or dense
+> execution. Preparation, data movement, execution order, synchronization,
+> communication, persistent bytes, transient workspace, and reuse
+> amortization all participate in the decision.
+
 ## 1. Scope
 
 ### 1.1 Assumptions
 
 - This document assumes Tesla V100 16 GB GPUs on Volta `sm_70`.
-- It follows the `cuda-v100` skill path: general V100 strategy first, then kernel-mechanics reasoning.
+- It follows the CUDA controller's V100 route: inspect the real host, then use
+  bounded correctness, benchmark, and profiler evidence.
 - The codebase state inspected here is the current working tree, including in-progress migration from older `_rna` and `_models` surfaces into `src/compute/*` and `src/models/*`.
 
 ### 1.2 Method
@@ -88,9 +99,11 @@
 - Pair-local row sharding across the real NVLink pairs scales well for CSR `SpMV` because it keeps the workload bandwidth-heavy and avoids expensive global merges.
 - Four-way feature-sharded CSR `SpMV` improves latency, but it does not drive all four V100s like a Tensor Core GEMM. The per-GPU shards become too thin and the math intensity stays low.
 - If the goal is high sustained board power and Tensor Core usage, CSR `SpMV` is the wrong target. The sparse Tensor Core direction for this host class is Blocked-ELL `SpMM`.
-- That makes the right Cellerator storage strategy Blocked-ELL-first:
-  - make Blocked-ELL the native sparse layout for persisted execution and hot-path staging
-  - retain CSR/row-compressed as the secondary fallback path for algorithms that still require row-compressed semantics
+- That makes Blocked-ELL an important high-intensity candidate for repeated
+  compatible SpMM, not the universal Cellerator storage strategy. Persist or
+  construct it when full workflow measurement repays projection and padding
+  cost; retain row-masked, feature-major, CSR, SELL, BSR, dense, and vendor
+  candidates for other structures and operations.
 
 ## 4. Build And Configuration Surface
 
@@ -715,7 +728,9 @@ Relevant files:
 
 Observations:
 
-- this surface is lower-level than a framework runtime: it is pointer-first, Blocked-ELL-first, and explicit about streams, scratch, cuSPARSE caches, and fleet topology
+- this surface is lower-level than a framework runtime: it is pointer-first,
+  projection-explicit, and explicit about streams, scratch, library handles,
+  and fleet topology
 - `runtime.hh` exposes raw-buffer contexts rather than tensor-wrapper-heavy hot paths
 - `base_sparse.cu` provides the single-GPU reference kernels and cuSPARSE-backed library paths for:
   - CSR row scaling with custom backward
@@ -1151,16 +1166,21 @@ Divergence note:
   - measured one-time repack cost ranged from about `303 ms` to `877 ms`
   - rough amortization on the measured slices is about `112` to `403` repeated `SpMM` calls depending on dataset and GPU count
 
-### 14.5 Design Decision
+### 14.5 Current Design Decision
 
-- Blocked-ELL should be treated as the native sparse layout for CellShard and Cellerator.
-- Compressed should remain available as a secondary fallback for preprocessing, indexing, Torch export, and any other subsystem that still requires row-compressed semantics.
-- The ingest planner should optimize shard cuts for the native Blocked-ELL execution path:
-  - cut row shards on the maximum supported block boundary
-  - plan pair-local resident bytes around the real V100 pairs
-  - persist execution metadata so replay can materialize padded Blocked-ELL directly
-- Compressed should now be considered an opt-in compatibility path, not the baseline design center.
-- When a surface still relies on compressed, that dependency should be documented explicitly so it can be ported or intentionally retained.
+- Preserve these measurements as strong evidence for a Blocked-ELL projection
+  on repeated, high-fill SpMM workloads.
+- Do not turn that winning regime into a matrix-wide or cross-operation default.
+  The semantic geometry may retain multiple projections and the planner charges
+  repack, padding, transfer, preparation, output-order, and reuse costs.
+- CellShard continues to stage an opaque Cellerator execution image through
+  CPEXEC01; it does not select Blocked-ELL or interpret projection policy.
+- CSR/compressed is a conventional candidate rather than a stigmatized
+  compatibility path. It should win for one-shot, changing-topology,
+  transpose-heavy, skewed, or low-fill regimes when total time is lower.
+- Shard cuts, pair-local placement, and persisted projections remain valuable
+  choices only when their measured biological workload and device class justify
+  them.
 ## 15. Final Read
 
 The repo already has the right strategic bias for Volta: explicit workspaces, explicit sparse layouts, custom kernels where library paths do not fit, and a refusal to hide expensive boundaries. The biggest remaining performance problems are not “missing CUDA” in the abstract. They are repeated format conversion, repeated device setup work, repeated host synchronization boundaries, and a few places where a sparse workload is being forced through dense or host-centric surfaces.

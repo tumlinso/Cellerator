@@ -1,23 +1,20 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled implementation code for Core and higher Cellerator layers. Primary non-Core surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
+`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled runtime and higher Cellerator implementation. Primary surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
 
 The durable Cellerator scope boundary lives in `scope.md`, and the advisory migration queue for surfaces that do not belong in Cellerator lives in `out_of_scope_inventory.md`. Read both before adding public APIs, new CMake targets, model modules, preprocessing code, ingest/runtime code, or Torch boundaries. If work touches scope drift, remind the user that `out_of_scope_inventory.md` is the migration queue and update it before normalizing the drift as Cellerator-owned.
 
-Current direction: finish Cellerator as the compute and ML library for
-GPU-accessible single-cell omics data before spending attention on new
-human-facing UI/API surfaces. The core thesis is sparse biological ML over
-CellShard-backed matrices: Cellerator should exploit denseifiable structure in
-genes, chromatin peaks, feature modules, pathway/module groupings, and
-graph/neighborhood structure so sparse omics data can run efficiently through
-modified ELLPACK-style layouts such as Blocked-ELL, Sliced-ELL, and quantized
-Blocked-ELL. CellShard is the only project with the beginnings of a publishable
-user API, but a meaningful CellShard release depends on Cellerator being
-complete enough to provide the sparse math, preprocessing engines,
-neighbor/search engines, structure-aware layout optimization, and runtime
-execution primitives that CellShard-backed workloads need. Treat Cellerator
-completion as the current priority.
+Current direction: Cellerator is CellStack's domain-aware biological execution
+core. It exploits correlated supports, repeated topology, modules, bounded
+state coherence, hierarchy, and sequence-derived predicates when they improve
+total execution cost. SpMM and Blocked-ELL are useful operations and physical
+projections, not the ontology or universal storage policy. New work starts from
+explicit biological identity, execution order, semantic geometry, immutable
+structure, mutable value planes, projection catalogs, one runtime session, and
+the end-to-end planner described in `scope.md` and `planning_strategy.md`.
+CellShard remains the storage/publication owner; Baseplane remains the
+sequence-level compute owner beneath the Cellerator computational model.
 
 Preprocessing and neighbor/search work are not automatically out of scope for
 Cellerator. They may remain native Cellerator capabilities when they are
@@ -122,11 +119,18 @@ Model-facing and compute-adjacent targets currently map to:
 ## Model Design And Skills
 When the task is deciding what model family, objective, latent structure, decoder, or loss should exist in `src/models/`, use `$v100-model-design` first. That includes new developmental-time models, latent reduction variants, multimodal or temporal extensions, and decisions about whether the work should stay in libtorch or begin in Python PyTorch with a later C++ path. Stay in that skill until the model choice, scaling posture, and any custom-op boundary are stable.
 
-When the task moves from model choice to implementation constraints on the 4x V100 host, use `$cuda-v100` as the default path. That includes `sm_70` build assumptions, CUDA 12.x compatibility, memory fit, host-device staging, NCCL or DDP topology, quantized kernels, profiler-driven tuning, and any custom Torch CUDA extension boundary. Follow the skill's path-selection logic instead of treating CUDA work as generic GPU programming: choose the matching V100 path first, load only the relevant addendum or base reference, and optimize for the real bottleneck.
+When the task moves from model choice to implementation constraints on the 4x V100 host, use `$cuda` as the default path. That includes `sm_70` build assumptions, CUDA 12.x compatibility, memory fit, host-device staging, NCCL or DDP topology, quantized kernels, profiler-driven tuning, and any custom Torch CUDA extension boundary. Follow the skill's controller and resource contracts instead of treating CUDA work as generic GPU programming, and optimize for the real bottleneck.
 
 For repository-specific performance context, read `optimization.md` at the repo root before making or defending changes in hot paths. It documents the current subsystem-level bottlenecks, likely fixed-call overheads, V100-oriented optimization priorities, and the repo's bias toward explicit low-level building blocks over abstraction-heavy surfaces.
 
-Sparse layout policy in Cellerator remains Blocked-ELL-first. Treat Blocked-ELL as the native sparse type for persisted Cellerator execution, staging, and hot-path compute unless a subsystem is explicitly operating in a fallback compressed-only mode. Cellerator preprocessing treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, with compressed / CSR as fallback. Do not describe compressed / CSR as the default sparse representation in new Cellerator code or docs unless that specific surface really is still fallback-only.
+Sparse layout policy is operation- and evidence-specific. Treat row-masked
+CP-BP tiles, feature-major projections, dense fragments, CSR, SELL, BSR,
+Blocked-ELL, vendor formats, and architecture-specific layouts as candidates
+over one semantic geometry. Preserve a selected execution order across
+compatible operations; canonicalize only through an explicit transform. The
+legacy `CELLERATOR_DEFAULT_SPARSE_LAYOUT` configure value is a compatibility
+fallback for older unspecified surfaces, not authority for the planner or
+execution image.
 
 For migration work aimed at removing `std::vector` and abstraction from hot code, also read `pointer_migration_plan.md` at the repo root. It defines the subsystem ordering, target representations, and exit criteria for the pointer-first rewrite.
 
@@ -138,7 +142,7 @@ When code changes materially alter runtime, storage, ingest, pack, or other pipe
 
 If new model work appears to need framework custom ops, place that adapter under `components/CelleraTorch/` and keep the op scope minimal. Prefer library-backed framework, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
 
-For CUDA/C++ implementation work outside `src/models/`, default to `$cuda-v100` whenever kernel shape, memory fit, communication topology, HtoD staging, sparse layout, or profiler interpretation is material to the answer. Recommendations should explicitly say whether they are library-backed or custom-kernel, whether they assume `sm_70`, and what the dominant limiter is: PCIe, HBM traffic, occupancy, register pressure, launch overhead, or cross-GPU communication.
+For CUDA/C++ implementation work outside `src/models/`, default to `$cuda` whenever kernel shape, memory fit, communication topology, HtoD staging, sparse layout, or profiler interpretation is material to the answer. Recommendations should explicitly say whether they are library-backed or custom-kernel, whether they assume `sm_70`, and what the dominant limiter is: PCIe, HBM traffic, occupancy, register pressure, launch overhead, or cross-GPU communication.
 
 Do not preserve a higher-level abstraction purely for compatibility if it blocks the fastest reasonable Volta path. Prefer explicit data layouts, pointer-stable ownership, fused kernels, and pair-local communication patterns when they are the better performance choice.
 

@@ -1,152 +1,128 @@
 # Cellerator Planning Strategy
 
-Last updated: 2026-04-28
+Last updated: 2026-08-21
 
-This document is a pickup guide for turning Cellerator toward a sparse
-biological ML runtime. It assumes the scope boundary in `scope.md` and the
-advisory migration queue in `out_of_scope_inventory.md`.
+The biological execution architecture recovery is complete. New work starts
+from the frozen identity, lifetime, runtime, projection, planner, and Baseplane
+contracts rather than reopening CP-BP v1 or reviving experimental CP-Math.
 
 ## Planning Principle
 
-Plan Cellerator around operator contracts before model families, file formats,
-or package ergonomics.
+Plan complete biological operations, not isolated formats or kernels. A task
+must identify its domains and orders, immutable structure, mutable values,
+candidate projections, launch bindings, correctness oracle, full data movement,
+workspace, reuse horizon, and measured fallback.
 
-Cellerator should become useful because it owns sparse biological training
-primitives that Torch does not express efficiently over CellShard-scale data:
-Blocked-ELL/Sliced-ELL execution, sparse operator, pathway/module reductions,
-graph/neighborhood operations, quantized sparse reconstruction, and deliberate
-Torch interop.
+Performance is the governing decision. Biological organization matters when it
+creates reusable supports, modules, bounded coherence, locality, scheduling,
+caching, communication reduction, fusion, or work skipping. A conventional
+layout is the correct result when those advantages do not pay for themselves.
 
-The compiled `.cellerator` model format stays out of scope until the operator
-and training contracts are stable.
+## Stable Foundations
 
-## Phase 1: Define The Runtime Contracts
+New work consumes these existing seams:
 
-Start here before implementing new models.
+1. The biological ABI distinguishes domain, exact order, semantic geometry,
+   partition, immutable structure and epoch, mutable value generation, and
+   physical projection.
+2. The execution-order contract makes transforms graph-visible and permits
+   compatible producers and consumers to stay packed.
+3. The execution session owns device facts, streams, library handles, and
+   persistent/transient allocation. No second math runtime is permitted.
+4. CellPack's semantic geometry and execution image v2 support a projection
+   catalog while preserving CP-BP v1 and CPK1 through adapters.
+5. The operation core represents native, vendor, and composed candidates with
+   direct prepared dispatch and launch-time bindings.
+6. The end-to-end planner separates semantic, structure, projection, device,
+   build, and policy keys and can select measured conventional fallbacks.
+7. The Baseplane seam supports native sequence operands and explicit
+   materialized or fused sequence-to-state execution.
+8. CellShard continues to wrap opaque Cellerator bytes in CPEXEC01.
 
-1. Define the sparse batch ABI.
-   - Inputs: rows, features, assay id, part/shard id, layout, device, stream.
-   - Layouts: Blocked-ELL primary, Sliced-ELL secondary, CSR fallback.
-   - Residency: spell which buffers are device-resident and which metadata is
-     host-side.
-   - Metadata: feature ids, pathway ids, graph ids, and assay ids must be
-     attachable without entering hot kernels accidentally.
+## Activation Workflow
 
-2. Define the operator registry.
-   - Use a table with: op name, biological purpose, layouts, forward contract,
-     backward contract, saved state, Torch exposure, and owner target.
-   - Initial candidate ops: sparse projection/SpMM, row reductions, feature
-     reductions, pathway/module reduction, graph aggregation, sparse
-     reconstruction loss, quantized sparse affine/reconstruction, and sparse
-     gather/scatter.
+### 1. State the biological operation
 
-3. Define the differentiation boundary.
-   - Decide per op whether Cellerator owns forward only, forward plus backward,
-     or forward/backward/optimizer state.
-   - Be explicit about which gradients exist: values, weights, gene parameters,
-     latent values, graph weights, pathway maps, or no metadata gradients.
-   - Prefer framework-independent C++/CUDA contracts first; Torch custom ops
-     should wrap stable contracts rather than define them.
+Name the source and destination domains, input and output orders, geometry,
+structure reuse, value-change rate, numeric policy, and whether forward,
+transpose, or backward behavior is required. Do not disguise a new operation as
+SpMM merely to reuse an existing backend interface.
 
-Deliverable: add `operator_scope.md` or `docs/operator_contracts.qmd` with the
-operator table and ABI rules.
+### 2. Register capabilities, not a preferred format
 
-## Phase 2: Separate Product Work From Migration Work
+Describe correctness limits, projection requirements, persistent preprocessing,
+transient workspace, determinism, graph compatibility, output order, and
+architecture class for each candidate. Reuse current projections before adding
+new bytes. New projections require an identity, schema, validation, ownership,
+and construction-cost contract.
 
-Do not let cleanup masquerade as feature design.
+### 3. Preserve structure/value/binding lifetimes
 
-1. Use `out_of_scope_inventory.md` as the advisory migration queue.
-   - Preprocessing implementation lives in Cellerator.
-   - Ingest, layout construction, and pack/runtime publication move to
-     CellShard.
-   - Legacy Torch-first dense prototypes are either rewritten around sparse
-     batches or moved out of the core runtime.
+Immutable relation structure and semantic geometry outlive mutable value
+planes. Value updates do not rebuild structure. Per-launch pointers, values,
+scalars, streams, and transient workspace do not enter semantic plan identity.
+Stale structure epochs, value generations, orders, and devices fail explicitly.
 
-2. Keep migration targets measurable.
-   - A moved surface should retain or improve its current compile/runtime test.
-   - Cellerator should keep only wrapper, interop, or benchmark glue when the
-     owner is CellShard.
+### 4. Establish correctness before performance
 
-3. Do not add new features to migration-held code unless the same change is
-   part of moving it to the right owner.
+Use independent scalar or logical referees, adversarial dimensions, invalid
+identity/order/generation cases, guard regions, and CUDA sanitizer checks where
+memory safety is at issue. Preserve accepted CP-BP and CPK1 reconstruction
+evidence when an adapter is involved.
 
-Deliverable: add one workstream per migration group only when implementation
-starts; do not overload the main operator-design plan with cleanup details.
+### 5. Measure the complete workflow
 
-## Phase 3: Build The First Useful Sparse Training Stack
+Separate host preparation, semantic packing, projection construction, H2D,
+dynamic packing, kernel, epilogue, order transform, synchronization,
+communication, D2H, persistent bytes, and transient workspace. Distinguish
+one-shot, bounded reuse, and persistent reuse. Use the CUDA background
+controller for serialized benchmarks and deep profiles.
 
-Pick one narrow vertical path and make it real end to end.
+### 6. Promote only measured winners
 
-Recommended first vertical:
+The planner rejects illegal candidates, analytically ranks the remainder,
+empirically measures a bounded shortlist when reuse warrants it, records the
+winner and confidence, and rejects stale evidence. Native Cellerator formats
+receive no unmeasured preference over CSR, SELL, BSR, valid Blocked-ELL,
+cuSPARSE, or dense cuBLAS.
 
-1. Sparse batch view from CellShard execution data.
-2. Sparse projection/SpMM plus row/pathway reduction.
-3. Native backward for the projection/reduction path.
-4. One biological primitive model that uses the ops directly.
-5. Optional Torch wrapper around the stable op/model boundary.
+## Baseplane Work
 
-Good first model candidates:
+Baseplane-local validity, coordinate, ambiguity, strand, predicate, event, and
+segment work remains Baseplane-owned. Cross-library work uses the frozen common
+ABI and stays lazy:
 
-- pathway-aware sparse reduction layer
-- developmental-time sparse head over CellShard batches
-- graph/neighborhood smoother with sparse latent state
-- quantized sparse reconstruction path
+- materialize masks/events/segments when static sequence results will be reused;
+- fuse predicates into regulatory or gene-state operations when avoiding an
+  intermediate wins end to end;
+- remain bitwise/integer until affinity, activity, occupancy, enhancer strength,
+  learned weight, or another quantitative interaction requires floating point.
 
-Avoid starting with a broad model zoo. The first model should prove that the
-operator ABI, differentiation boundary, and CellShard batch contract are correct.
+Do not introduce a host event-table requirement, dense motif tensor, mandatory
+CSR relation, arbitrary persisted device function pointer, or Baseplane-owned
+numerical runtime.
 
-## Phase 4: Define Torch Interop After The Native Contract
+## Future Compatibility
 
-Torch is the integration layer, not the execution owner.
+Transpose/backward projections, sparse-value gradients, mixed precision,
+module quantization, CUDA Graphs, persistent CTAs, work queues, nested GPU/node
+partitions, and architecture-specific kernels are activation-gated. They may
+use optional image sections and candidate capabilities already reserved by the
+foundations. They do not justify placeholder kernels or metadata in every hot
+record.
 
-Plan interop in this order:
+## Pickup Checklist
 
-1. Explicit export for deliberate conversion to Torch tensors.
-2. Torch custom ops for stable Cellerator operators.
-3. PyTorch modules that call Cellerator ops without hiding layout conversion.
-4. DLPack or Python bindings only where they preserve ownership boundaries.
+Before claiming implementation work, answer:
 
-Rules:
+- What biological operation exists when the task is done?
+- Which identities and orders are consumed and produced?
+- Which structure, value, prepared, and launch lifetimes change?
+- Which existing projection and compatibility adapters are reused?
+- What conventional fallback is legal?
+- What adversarial case should make the native approach lose?
+- What are the persistent, transient, transfer, and order-transform costs?
+- What evidence and checkpoint allow the next task to proceed?
+- Does the work preserve standalone Baseplane and opaque CellShard CPEXEC01?
 
-- No hidden per-step conversion through Torch for hot sparse training.
-- No Torch-only implementation of a Cellerator-owned sparse operator unless it
-  is explicitly a prototype.
-- Record new custom-op boundaries in `custom_torch_ops.md` before
-  implementation.
-
-## Suggested Pickup Order
-
-1. Create the operator contract document.
-2. Inventory existing compute/model targets against that contract.
-3. Pick one vertical sparse training path.
-4. Define tests for its forward, backward, and layout behavior.
-5. Implement the smallest native path.
-6. Add Torch exposure only after the native path is stable.
-7. Revisit `out_of_scope_inventory.md` and split cleanup workstreams.
-
-## Decision Checklist
-
-Before accepting a new Cellerator surface, answer:
-
-- Does it operate on CellShard-scale sparse biological data?
-- Does it need Blocked-ELL, Sliced-ELL, CSR fallback, cuSPARSE, or custom CUDA?
-- Is it training-capable, or does it support a training-capable primitive?
-- Is Torch insufficient because of layout, differentiation, residency, or distributed
-  sparse execution?
-- Does the surface belong in CellShard instead?
-- Is it future `.cellerator` model-format work? If yes, defer it.
-
-If the answer is unclear, add a `review` entry to
-`out_of_scope_inventory.md` instead of expanding Cellerator ownership.
-
-## Recommended Next Artifact
-
-Create `operator_scope.md` with this structure:
-
-| Op | Biological purpose | Layouts | Forward | Backward | Saved state | Torch exposure | Owner |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-
-Seed it with sparse projection, row reduction, pathway/module reduction, graph
-aggregation, sparse reconstruction loss, quantized sparse affine, and
-gather/scatter. That document should become the planning backbone for the next
-implementation pass.
+If these answers are absent, the task is not ready for implementation.

@@ -62,14 +62,14 @@
     {"id": "current_csr", "required_when": "CSR construction or persisted CSR is legal", "status": "existing", "current_target": "cellPackFeatureWeightedRowReductionBench", "current_symbol": "sparse_ops::base::csr_spmv_fwd_f16_f32", "source": "components/CellPack/bench/feature_weighted_row_reduction_bench.cu"},
     {"id": "sell_c_sigma", "required_when": "implemented and semantically legal", "status": "activation_gated"},
     {"id": "bsr", "required_when": "implemented and semantically legal", "status": "activation_gated"},
-    {"id": "blocked_ell", "required_when": "logical and padded capacities are proven safe", "status": "experimental_contained", "current_target": null, "current_evidence": "tests/math_cusparse_bell_test.cu and tests/math_bell_lowering_test.cc", "activation_gate": "CE-ARCH-02 padded-capacity safety"},
-    {"id": "cusparse", "required_when": "vendor capability query accepts the exact request", "status": "existing_experimental", "current_target": null, "current_evidence": "src/compute/math/backends/cusparse_csr.cc and src/compute/math/backends/cusparse_bell.cu"},
+    {"id": "blocked_ell", "required_when": "logical and padded capacities are proven safe", "status": "lowering_preserved_backend_retired", "current_target": "cpMathBellLoweringTest", "current_evidence": "tests/math_bell_lowering_test.cc plus historical CP-MATH-07 gate artifacts", "activation_gate": "new operation-core vendor candidate with capacity-safe bindings"},
+    {"id": "cusparse", "required_when": "an operation-core vendor capability accepts the exact request", "status": "registry_ready_backend_activation_gated", "current_target": "celleratorOperationCoreTest", "current_evidence": "native and vendor candidates share the operation-core registry; retired CP-Math descriptors remain historical evidence"},
     {"id": "dense_cublas", "required_when": "density and conversion cost make dense execution plausible", "status": "activation_gated"},
     {"id": "current_cpk1_load_execute", "required_when": "CPK1 source artifact is available", "status": "existing_adapter_evidence", "current_target": null, "current_evidence": "tests/math_native_tile_adapter_test.cc and tests/math_execution_csr_test.cu"},
     {"id": "canonical_order_pipeline", "required_when": "compatibility wrapper exists", "status": "existing_or_activation_gated"},
-    {"id": "persistent_execution_order_pipeline", "required_when": "CE-ARCH-11 contract exists", "status": "blocked_on_ce_arch_11"},
-    {"id": "baseplane_materialized", "required_when": "CE-ARCH-40 materialized path exists", "status": "blocked_on_ce_arch_40"},
-    {"id": "baseplane_fused", "required_when": "CE-ARCH-40 fused path exists", "status": "blocked_on_ce_arch_40"}
+    {"id": "persistent_execution_order_pipeline", "required_when": "compatible producer and consumer exist", "status": "contract_ready"},
+    {"id": "baseplane_materialized", "required_when": "predicate reuse warrants materialization", "status": "existing", "current_target": "celleratorBaseplaneSequenceIntegrationTest"},
+    {"id": "baseplane_fused", "required_when": "avoided intermediate traffic wins", "status": "existing", "current_target": "celleratorBaseplaneSequenceIntegrationTest"}
   ],
   "result_record_required_fields": [
     "schema_version",

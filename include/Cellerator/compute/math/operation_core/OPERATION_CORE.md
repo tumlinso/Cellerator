@@ -29,17 +29,17 @@ device queries, descriptor creation, hashing, allocation, workspace growth,
 and synchronization are forbidden in that run function.
 
 The operation core consumes `Cellerator::biological_abi` contracts and is
-integrated with the sole `Cellerator::runtime` substrate. It does not expose or
-stabilize experimental `DeviceMathContext`, `SpMMBackend`, or
-`PreparedExecution`. Those experiments remain evidence until their referees,
-physical-view validation, packed operand, native CPK1 adapter, and vendor
-descriptor lessons are migrated by later tasks.
+integrated with the sole `Cellerator::runtime` substrate. CE-ARCH-60 retired
+the duplicate `DeviceMathContext`, virtual `SpMMBackend`, and bound
+`PreparedExecution` implementation. Independent referees, physical-view
+validation, the packed dense operand, and the native CPK1 adapter remain as
+explicit v1 evidence targets; they are not a second runtime or planner.
 
 Compatibility and evidence policy:
 
 - CP-BP v1 and CPK1 continue through their versioned adapters.
-- Existing CP-Math sources are quarantined experiments, not silently wired into
-  `Cellerator::operation_core`.
+- Retained CP-Math v1 evidence is built only through explicit compatibility
+  targets and is not silently wired into `Cellerator::operation_core`.
 - Unsupported numeric combinations are rejected before preparation.
 - Output order is carried by `execution::output_axis_contract` and is never
   implicitly canonicalized.
