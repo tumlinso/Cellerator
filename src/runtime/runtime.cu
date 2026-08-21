@@ -248,4 +248,7 @@ std::size_t &cached_blocked_ell_spmm_bytes(cusparse_cache *cache, cusparseOperat
     return cache->blocked_ell_spmm_bytes_non_transpose;
 }
 
+#include "session_setup.cu.inc"
+#include "session_binding.cu.inc"
+
 } // namespace cellerator::runtime
