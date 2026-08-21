@@ -180,6 +180,17 @@ else()
     target_compile_definitions(cellerator_dist INTERFACE CELLERATOR_DIST_HAS_NCCL=0)
 endif()
 
+# Minimal CPU/CUDA-compatible biological identity and operand ABI. This target
+# intentionally has no runtime or CUDA-library dependency so Baseplane can
+# consume the contract without joining Cellerator's numerical runtime.
+add_library(cellerator_biological_abi INTERFACE)
+add_library(Cellerator::biological_abi ALIAS cellerator_biological_abi)
+target_include_directories(cellerator_biological_abi INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_compile_features(cellerator_biological_abi INTERFACE cxx_std_17)
+
 add_library(cellerator_runtime STATIC
     src/runtime/runtime.cu
 )
@@ -901,6 +912,32 @@ target_include_directories(abiRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(abiRuntimeTest PRIVATE cellerator_abi CUDA::cudart)
 set_target_properties(abiRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(abiRuntimeTest)
+
+add_executable(celleratorBiologicalAbiHostTest
+    tests/biological_abi/biological_abi_host_test.cc
+)
+target_link_libraries(celleratorBiologicalAbiHostTest PRIVATE
+    Cellerator::biological_abi
+    Baseplane::seq
+)
+set_target_properties(celleratorBiologicalAbiHostTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorBiologicalAbiCudaCompileTest
+    tests/biological_abi/biological_abi_cuda_compile_test.cu
+)
+target_link_libraries(celleratorBiologicalAbiCudaCompileTest PRIVATE
+    Cellerator::biological_abi
+    CUDA::cudart
+)
+set_target_properties(celleratorBiologicalAbiCudaCompileTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
 
 add_library(cellerator_state_reduce_cuda STATIC
     src/models/state_reduce/state_reduce_cuda.cu
