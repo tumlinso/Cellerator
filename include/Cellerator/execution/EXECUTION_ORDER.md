@@ -10,9 +10,9 @@ v1 without changing its frozen headers or the CPK1 v1 payload.
    structure epoch, projection catalog, and logical edge count.
 2. One or more `value_plane` records bind values, precision, quantization,
    value layout, and generation to that structure epoch.
-3. A `prepared_binding_contract` fixes the compatible structure epoch, operand
-   axes, output-order behavior, and transient-workspace requirement. It owns no
-   launch pointers or stream.
+3. A `prepared_binding_contract` fixes a bounded set of required structure
+   handles and epochs, operand axes, output-order and output-effect behavior,
+   and transient-workspace requirement. It owns no launch pointers or stream.
 4. `launch_bindings` supplies current operands, value bindings, scalars,
    stream, and transient workspace. Each value binding states the generation
    expected by that launch.
@@ -20,6 +20,16 @@ v1 without changing its frozen headers or the CPK1 v1 payload.
 A value-generation change does not invalidate structural preparation. A
 structure-epoch change invalidates value planes, value-position maps, and
 prepared contracts. Pointer equality never substitutes for either generation.
+Launch validation matches every value plane to its own bound relation; an
+unknown relation, missing or duplicate structure, stale epoch, or stale value
+generation fails before dispatch.
+
+## Output effect contract
+
+Each output declares whether it overwrites, accumulates, affine-accumulates, or
+partially writes its destination, whether initialized destination contents are
+required, whether detectable input/output aliasing is legal, and any affine
+scalar bindings. This is mutation metadata, not a generic epilogue engine.
 
 ## Order contract
 
@@ -44,9 +54,8 @@ valid. Native internal paths may preserve execution order and canonicalize only
 through an explicit transform contract.
 
 CPK1 v1 bytes and meaning are unchanged. It remains a combined v1 artifact.
-Structure/value separation in a persisted successor requires a new execution
-image schema under CE-ARCH-21; this contract does not reinterpret or rewrite
-CPK1.
+Structure/value separation in Execution Image v2 does not reinterpret or
+rewrite CPK1.
 
 ## Cost and memory accounting
 

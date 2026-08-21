@@ -6,15 +6,18 @@ not make SpMM the ontology of Cellerator.
 
 `operation_problem` names immutable mathematical semantics and arity.
 `structure_key` separates durable structure identity, its runtime-interned
-handle, and structure epoch. `projection_key` names concrete physical bytes
+handle, and structure epoch. A fixed-capacity deterministic `structure_set_key`
+records every immutable relation required by an operation; a one-relation
+operation simply has count one. `projection_key` names concrete physical bytes
 without changing biological identity. `numeric_policy` separately declares
 sparse, dense, output, multiply, accumulation, scalar, and bias types together
 with rounding, saturation, and quantization granularity. `prepare_policy`
 contains reuse, determinism, graph, preprocessing, and memory constraints.
 
 `prepared_operation` is a compact direct-dispatch record. It may freeze the
-problem, structure epoch, projection, kernel or vendor algorithm, persistent
-preprocessing state, transient workspace requirement, and output-axis contract.
+problem, structure set, projection, kernel or vendor algorithm, persistent
+preprocessing state, transient workspace requirement, output-axis contract,
+and output update/effect contract.
 The record borrows persistent state whose owner must outlive it. Per-launch
 input, output, value, bias, scalar, stream, and transient-workspace bindings are
 carried only by `execution::launch_bindings`; changing them never requires
@@ -43,6 +46,8 @@ Compatibility and evidence policy:
 - Unsupported numeric combinations are rejected before preparation.
 - Output order is carried by `execution::output_axis_contract` and is never
   implicitly canonicalized.
+- Output mutation is explicit: overwrite, accumulate, affine accumulation, or
+  partial write. Destination initialization remains caller-owned when required.
 - Persistent and transient bytes are declared separately by each candidate;
   later planner evidence accounts for preparation, conversion, launch, order,
   and synchronization independently.

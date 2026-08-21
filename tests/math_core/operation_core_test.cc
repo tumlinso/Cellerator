@@ -61,7 +61,7 @@ core::operation_status fake_run(
 core::operation_status fake_prepare(
     const core::operation_candidate &candidate,
     const core::operation_problem &problem,
-    const core::structure_key &structure,
+    const core::structure_set_key &structures,
     const core::projection_key &projection,
     const core::numeric_policy &numeric,
     const core::prepare_policy &,
@@ -69,6 +69,7 @@ core::operation_status fake_prepare(
     static execution::operand_axis_contract inputs[1];
     static execution::operand_axis_contract outputs[1];
     static execution::output_axis_contract output_orders[1];
+    static execution::output_effect_contract output_effects[1];
     ++prepare_count;
     const execution::axis_identity source_axis = axis(10u);
     const execution::axis_identity destination_axis = axis(20u);
@@ -85,22 +86,30 @@ core::operation_status fake_prepare(
         1u,
         {},
         {}};
+    output_effects[0] = {execution::output_update_kind::overwrite,
+        false, false, 0u, execution::invalid_scalar_binding_id,
+        execution::invalid_scalar_binding_id};
     *prepared = {};
     prepared->problem = problem;
-    prepared->structure = structure;
+    prepared->structures = structures;
     prepared->projection = projection;
     prepared->numeric = numeric;
     prepared->kernel = candidate.identity;
     prepared->backend = candidate.backend;
     prepared->capability_flags = candidate.capability_flags;
-    prepared->binding_contract.structure = structure.runtime;
-    prepared->binding_contract.epoch = structure.epoch;
+    for (std::uint32_t index = 0u; index < structures.count; ++index)
+        prepared->binding_contract.structures[index] = {
+            structures.structures[index].runtime,
+            structures.structures[index].epoch};
     prepared->binding_contract.inputs = inputs;
     prepared->binding_contract.outputs = outputs;
     prepared->binding_contract.output_orders = output_orders;
+    prepared->binding_contract.output_effects = output_effects;
     prepared->binding_contract.input_count = 1u;
     prepared->binding_contract.output_count = 1u;
     prepared->binding_contract.output_order_count = 1u;
+    prepared->binding_contract.structure_count = structures.count;
+    prepared->binding_contract.output_effect_count = 1u;
     prepared->binding_contract.workspace = {64u, 16u, 0u};
     prepared->run = fake_run;
     return core::validate_prepared_operation(*prepared);
@@ -147,7 +156,10 @@ int main() {
         1u,
         1u,
         4u};
-    const core::structure_key structure{{11u, 12u}, {31u, 1u}, {4u}};
+    core::structure_set_key structures{};
+    structures.count = 2u;
+    structures.structures[0] = {{11u, 12u}, {31u, 1u}, {4u}};
+    structures.structures[1] = {{21u, 22u}, {32u, 1u}, {7u}};
     const core::projection_key projection{{13u, 14u},
         {41u, 1u},
         core::projection_kind::native_row_masked,
@@ -165,23 +177,29 @@ int main() {
 
     core::prepared_operation prepared{};
     assert(core::prepare_candidate(
-        native, problem, structure, projection, numeric, policy, &prepared));
+        native, problem, structures, projection, numeric, policy, &prepared));
     assert(prepare_count == 1u);
 
-    execution::relation_structure relation{};
-    relation.identity = structure.runtime;
-    relation.epoch = structure.epoch;
-    relation.source_axis = axis(10u);
-    relation.destination_axis = axis(20u);
-    relation.projections = {51u, 1u};
-    relation.logical_edge_count = 4u;
+    execution::relation_structure relations[2]{};
+    relations[0].identity = structures.structures[0].runtime;
+    relations[0].epoch = structures.structures[0].epoch;
+    relations[0].source_axis = axis(10u);
+    relations[0].destination_axis = axis(15u);
+    relations[0].projections = {51u, 1u};
+    relations[0].logical_edge_count = 4u;
+    relations[1].identity = structures.structures[1].runtime;
+    relations[1].epoch = structures.structures[1].epoch;
+    relations[1].source_axis = axis(15u);
+    relations[1].destination_axis = axis(20u);
+    relations[1].projections = {52u, 1u};
+    relations[1].logical_edge_count = 4u;
 
     std::uint32_t input_a = 1u;
     std::uint32_t input_b = 2u;
     std::uint32_t output_a = 0u;
     std::uint32_t output_b = 0u;
-    std::uint8_t workspace_a[64]{};
-    std::uint8_t workspace_b[64]{};
+    alignas(16) std::uint8_t workspace_a[64]{};
+    alignas(16) std::uint8_t workspace_b[64]{};
     execution::biological_operand_view inputs[1]{};
     execution::biological_operand_view outputs[1]{};
     inputs[0].kind = execution::operand_kind::dense_tensor;
@@ -189,11 +207,12 @@ int main() {
     outputs[0].kind = execution::operand_kind::dense_tensor;
     outputs[0].storage.dense = dense(&output_a, axis(20u));
     execution::launch_bindings launch{};
-    launch.structure = &relation;
+    launch.structures = relations;
     launch.inputs = inputs;
     launch.outputs = outputs;
     launch.input_count = 1u;
     launch.output_count = 1u;
+    launch.structure_count = 2u;
     launch.scalars.count = 1u;
     launch.scalars.values[0] = {1u, execution::numeric_type::f32, {}, 100u};
     launch.stream = {reinterpret_cast<void *>(0x1000), 0, 0u};
@@ -215,10 +234,23 @@ int main() {
     assert(last_stream == reinterpret_cast<void *>(0x2000));
     assert(last_workspace == workspace_b && last_alpha == 200u);
 
-    relation.epoch.value = 5u;
+    relations[0].epoch.value = 5u;
     assert(core::run_prepared_operation(prepared, launch).code
         == core::operation_status_code::stale_structure);
-    relation.epoch = structure.epoch;
+    relations[0].epoch = structures.structures[0].epoch;
+    relations[1].epoch.value = 8u;
+    assert(core::run_prepared_operation(prepared, launch).code
+        == core::operation_status_code::stale_structure);
+    relations[1].epoch = structures.structures[1].epoch;
+    launch.structure_count = 1u;
+    assert(core::run_prepared_operation(prepared, launch).binding
+        == execution::binding_validation_code::structure_count_mismatch);
+    launch.structure_count = 2u;
+    const execution::relation_structure second_relation = relations[1];
+    relations[1] = relations[0];
+    assert(core::run_prepared_operation(prepared, launch).binding
+        == execution::binding_validation_code::duplicate_structure);
+    relations[1] = second_relation;
     launch.workspace.bytes = 63u;
     assert(core::run_prepared_operation(prepared, launch).binding
         == execution::binding_validation_code::insufficient_workspace);
@@ -226,12 +258,12 @@ int main() {
     core::numeric_policy unsupported = numeric;
     unsupported.dense_storage = execution::numeric_type::f16;
     assert(core::prepare_candidate(
-        native, problem, structure, projection, unsupported, policy, &prepared).code
+        native, problem, structures, projection, unsupported, policy, &prepared).code
         == core::operation_status_code::unsupported_numeric_policy);
     core::projection_key wrong_projection = projection;
     wrong_projection.kind = core::projection_kind::csr;
     assert(core::prepare_candidate(
-        native, problem, structure, wrong_projection, numeric, policy, &prepared).code
+        native, problem, structures, wrong_projection, numeric, policy, &prepared).code
         == core::operation_status_code::unsupported_projection);
 
     return 0;

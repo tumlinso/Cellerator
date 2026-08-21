@@ -13,6 +13,7 @@ namespace cellerator::runtime {
 
 inline constexpr std::uint32_t execution_session_max_streams = 8;
 inline constexpr std::uint32_t execution_session_cache_capacity = 64;
+inline constexpr std::uint32_t execution_session_max_persistent_allocations = 64;
 
 enum class session_status : std::uint8_t {
     success = 0,
@@ -69,6 +70,13 @@ struct allocation_accounting {
     std::uint64_t allocation_count = 0;
 };
 
+struct persistent_allocation_record {
+    void *data = nullptr;
+    std::size_t bytes = 0;
+    persistent_lifetime lifetime = persistent_lifetime::structure;
+    bool occupied = false;
+};
+
 struct session_accounting {
     allocation_accounting structure{};
     allocation_accounting plan{};
@@ -98,14 +106,14 @@ struct execution_session_options {
 struct execution_session {
     int device = -1;
     device_performance_class performance{};
-    scratch_arena structure_persistent{};
-    scratch_arena plan_persistent{};
-    scratch_arena graph_stable{};
+    persistent_allocation_record
+        persistent_allocations[execution_session_max_persistent_allocations]{};
     session_stream_slot streams[execution_session_max_streams]{};
     fixed_session_cache plans{};
     fixed_session_cache projections{};
     fixed_session_cache order_transforms{};
     session_accounting accounting{};
+    std::uint32_t persistent_allocation_count = 0;
     std::uint32_t stream_count = 0;
     bool initialized = false;
     bool sealed = false;

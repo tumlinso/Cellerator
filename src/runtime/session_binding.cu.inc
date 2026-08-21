@@ -70,10 +70,19 @@ bool graph_stable_address(
     const void *address,
     std::size_t bytes) noexcept {
     if (!session.initialized || !session.sealed || address == nullptr) return false;
-    const std::uintptr_t begin = reinterpret_cast<std::uintptr_t>(session.graph_stable.data);
     const std::uintptr_t query = reinterpret_cast<std::uintptr_t>(address);
-    if (query < begin || bytes > session.graph_stable.bytes) return false;
-    return query - begin <= session.graph_stable.bytes - bytes;
+    for (std::uint32_t index = 0;
+         index < session.persistent_allocation_count; ++index) {
+        const persistent_allocation_record &record =
+            session.persistent_allocations[index];
+        if (!record.occupied
+            || record.lifetime != persistent_lifetime::graph_stable
+            || record.data == nullptr || bytes > record.bytes) continue;
+        const std::uintptr_t begin =
+            reinterpret_cast<std::uintptr_t>(record.data);
+        if (query >= begin && query - begin <= record.bytes - bytes) return true;
+    }
+    return false;
 }
 
 device_fleet_view single_device_fleet(const execution_session &session) noexcept {

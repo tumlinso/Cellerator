@@ -25,33 +25,54 @@ bool valid_phases(const phase_costs &phases) noexcept {
         && finite_nonnegative(phases.d2h_ns);
 }
 
-bool same_persistent_identity(
-    const execution::structure_id &lhs,
-    const execution::structure_id &rhs) noexcept {
-    return execution::same_identity(lhs, rhs);
+bool less_persistent_structure(
+    const persistent_structure_dependency &lhs,
+    const persistent_structure_dependency &rhs) noexcept {
+    return lhs.identity.high < rhs.identity.high
+        || (lhs.identity.high == rhs.identity.high
+            && lhs.identity.low < rhs.identity.low);
 }
 
-bool same_projection_key(
-    const operation_core::projection_key &lhs,
-    const operation_core::projection_key &rhs) noexcept {
-    return execution::same_identity(lhs.persistent, rhs.persistent)
-        && execution::same_handle(lhs.runtime, rhs.runtime)
-        && lhs.kind == rhs.kind && lhs.schema_version == rhs.schema_version
-        && lhs.variant == rhs.variant;
+bool valid_structure_set(
+    const persistent_structure_set_key &structures) noexcept {
+    if (structures.count == 0u
+        || structures.count > execution::maximum_operation_structures)
+        return false;
+    for (std::uint32_t index = 0u; index < structures.count; ++index) {
+        const persistent_structure_dependency &current =
+            structures.structures[index];
+        if (!execution::valid_identity(current.identity)
+            || current.epoch.value == 0u)
+            return false;
+        if (index != 0u
+            && !less_persistent_structure(
+                structures.structures[index - 1u], current))
+            return false;
+    }
+    return true;
 }
 
-bool same_structure_key(
-    const operation_core::structure_key &lhs,
-    const operation_core::structure_key &rhs) noexcept {
-    return same_persistent_identity(lhs.persistent, rhs.persistent)
-        && execution::same_handle(lhs.runtime, rhs.runtime)
-        && lhs.epoch.value == rhs.epoch.value;
+bool same_structure_set(
+    const persistent_structure_set_key &lhs,
+    const persistent_structure_set_key &rhs) noexcept {
+    if (lhs.count != rhs.count) return false;
+    for (std::uint32_t index = 0u; index < lhs.count; ++index)
+        if (!execution::same_identity(
+                lhs.structures[index].identity,
+                rhs.structures[index].identity)
+            || lhs.structures[index].epoch.value
+                != rhs.structures[index].epoch.value)
+            return false;
+    return true;
 }
 
 bool same_geometry_key(
     const semantic_geometry_key &lhs,
     const semantic_geometry_key &rhs) noexcept {
-    return execution::same_identity(lhs.geometry, rhs.geometry)
+    return execution::same_identity(lhs.source_domain, rhs.source_domain)
+        && execution::same_identity(
+            lhs.destination_domain, rhs.destination_domain)
+        && execution::same_identity(lhs.geometry, rhs.geometry)
         && execution::same_identity(lhs.source_order, rhs.source_order)
         && execution::same_identity(lhs.destination_order, rhs.destination_order)
         && execution::same_identity(lhs.partition, rhs.partition);
@@ -106,11 +127,14 @@ bool within_tolerance(double lhs, double rhs, double percent) noexcept {
 std::uint32_t find_candidate_index(
     const planner_request &request,
     operation_core::stable_id identity,
+    const persistent_projection_key &projection,
     const planner_result &result) noexcept {
     for (std::uint32_t index = 0u; index < request.candidate_count; ++index)
         if (result.diagnostics[index].rejection == candidate_rejection::none
             && operation_core::same_stable_id(
-                request.candidates[index].identity, identity))
+                request.candidates[index].identity, identity)
+            && same_persistent_projection_key(
+                projection, request.candidates[index].projection))
             return index;
     return maximum_planner_candidates;
 }
@@ -128,6 +152,31 @@ bool valid_cache_evidence(
             == request.policy.practical_tolerance_percent
         && std::isfinite(entry.evidence.confidence)
         && entry.evidence.confidence >= request.policy.minimum_cache_confidence;
+}
+
+double measurement_confidence(
+    const candidate_diagnostic &selected,
+    const candidate_diagnostic *runner_up,
+    const planner_policy &policy) noexcept {
+    const double sample_factor = std::min(
+        1.0, static_cast<double>(selected.sample_count) / 5.0);
+    const double spread_scale = std::max(
+        1.0, policy.maximum_spread_percent);
+    const double spread_factor = std::max(
+        0.0, 1.0 - selected.spread_percent / spread_scale);
+    double separation_factor = 0.5;
+    if (runner_up != nullptr) {
+        const double selected_cost = selected.empirical.amortized_total_ns;
+        const double runner_cost = runner_up->empirical.amortized_total_ns;
+        const double scale = std::max(std::fabs(selected_cost),
+            std::fabs(runner_cost));
+        const double separation_percent = scale == 0.0 ? 0.0
+            : std::fabs(runner_cost - selected_cost) * 100.0 / scale;
+        separation_factor = std::min(1.0, separation_percent
+            / std::max(1.0, policy.practical_tolerance_percent));
+    }
+    return 0.5 * sample_factor + 0.3 * spread_factor
+        + 0.2 * separation_factor;
 }
 
 } // namespace
@@ -168,7 +217,7 @@ bool same_planning_keys(
     const planning_keys &rhs) noexcept {
     return operation_core::same_stable_id(
             lhs.problem.identity, rhs.problem.identity)
-        && same_structure_key(lhs.structure, rhs.structure)
+        && same_structure_set(lhs.structures, rhs.structures)
         && same_geometry_key(lhs.geometry, rhs.geometry)
         && lhs.device.vendor == rhs.device.vendor
         && lhs.device.architecture_major == rhs.device.architecture_major
@@ -177,12 +226,43 @@ bool same_planning_keys(
         && lhs.build.runtime == rhs.build.runtime
         && lhs.build.kernel_build == rhs.build.kernel_build
         && lhs.build.driver == rhs.build.driver
+        && lhs.build.library == rhs.build.library
         && lhs.policy.structure_reuse == rhs.policy.structure_reuse
         && lhs.policy.projection_reuse == rhs.policy.projection_reuse
         && lhs.policy.numeric_policy == rhs.policy.numeric_policy
         && lhs.policy.determinism_policy == rhs.policy.determinism_policy
         && lhs.policy.output_order_policy == rhs.policy.output_order_policy
         && lhs.policy.graph_policy == rhs.policy.graph_policy;
+}
+
+bool make_persistent_structure_set_key(
+    const operation_core::structure_set_key &live,
+    persistent_structure_set_key *persistent) noexcept {
+    if (persistent == nullptr || live.count == 0u
+        || live.count > execution::maximum_operation_structures)
+        return false;
+    *persistent = {};
+    persistent->count = live.count;
+    for (std::uint32_t index = 0u; index < live.count; ++index) {
+        if (!execution::valid_identity(live.structures[index].persistent)
+            || live.structures[index].epoch.value == 0u)
+            return false;
+        persistent->structures[index] = {
+            live.structures[index].persistent, live.structures[index].epoch};
+    }
+    std::sort(persistent->structures,
+        persistent->structures + persistent->count,
+        less_persistent_structure);
+    return valid_structure_set(*persistent);
+}
+
+bool same_persistent_projection_key(
+    const persistent_projection_key &persistent,
+    const operation_core::projection_key &live) noexcept {
+    return execution::same_identity(persistent.identity, live.persistent)
+        && persistent.kind == live.kind
+        && persistent.schema_version == live.schema_version
+        && persistent.variant == live.variant;
 }
 
 planner_status plan_end_to_end(
@@ -200,9 +280,9 @@ planner_status plan_end_to_end(
         || request.problem.logical_work_items == 0u
         || !operation_core::same_stable_id(
             request.problem.operation, request.keys.problem.identity)
-        || !execution::valid_identity(request.keys.structure.persistent)
-        || !execution::valid_handle(request.keys.structure.runtime)
-        || request.keys.structure.epoch.value == 0u
+        || !valid_structure_set(request.keys.structures)
+        || !execution::valid_identity(request.keys.geometry.source_domain)
+        || !execution::valid_identity(request.keys.geometry.destination_domain)
         || !execution::valid_identity(request.keys.geometry.geometry)
         || !execution::valid_identity(request.keys.geometry.source_order)
         || !execution::valid_identity(request.keys.geometry.destination_order)
@@ -211,6 +291,8 @@ planner_status plan_end_to_end(
         || request.keys.device.performance_class == 0u
         || request.keys.build.runtime == 0u
         || request.keys.build.kernel_build == 0u
+        || request.keys.build.driver == 0u
+        || request.keys.build.library == 0u
         || request.current_evidence_revision == 0u
         || request.keys.policy.structure_reuse == 0u
         || request.keys.policy.projection_reuse == 0u
@@ -275,10 +357,8 @@ planner_status plan_end_to_end(
             out->cache = cache_state::stale;
         } else {
             const std::uint32_t cached_index = find_candidate_index(
-                request, cached.winner, *out);
-            if (cached_index == maximum_planner_candidates
-                || !same_projection_key(cached.winner_projection,
-                    request.candidates[cached_index].projection)) {
+                request, cached.winner, cached.winner_projection, *out);
+            if (cached_index == maximum_planner_candidates) {
                 out->cache = cache_state::winner_unavailable;
             } else {
                 out->cache = cache_state::hit;
@@ -361,6 +441,17 @@ planner_status plan_end_to_end(
         measured_order[measured_count++] = index;
     }
     if (measured_count == 0u) {
+        if (request.policy.allow_analytical_fallback_after_measurement_failure) {
+            const std::uint32_t selected_index = order[0];
+            out->winner = request.candidates[selected_index].identity;
+            out->selected = &request.candidates[selected_index];
+            out->source = selection_source::analytical;
+            out->conventional_winner =
+                out->diagnostics[selected_index].conventional;
+            out->reason = "all empirical measurements failed; selected best legal analytical candidate without persistence";
+            out->status = {};
+            return {};
+        }
         out->status = {planner_status_code::no_correct_measurement,
             "bounded tuning produced no clean correct measurement"};
         out->reason = "no empirical winner was safe to persist";
@@ -393,8 +484,12 @@ planner_status plan_end_to_end(
     out->winner = request.candidates[selected_index].identity;
     out->selected = &request.candidates[selected_index];
     out->source = selection_source::empirical;
-    out->confidence = std::max(0.0,
-        1.0 - out->diagnostics[selected_index].spread_percent / 100.0);
+    const candidate_diagnostic *runner_up = measured_count > 1u
+        ? &out->diagnostics[measured_order[
+            measured_order[0] == selected_index ? 1u : 0u]]
+        : nullptr;
+    out->confidence = measurement_confidence(
+        out->diagnostics[selected_index], runner_up, request.policy);
     out->conventional_winner = out->diagnostics[selected_index].conventional;
     out->reason = out->conventional_winner
         ? "measured conventional fallback won end to end"
@@ -402,9 +497,12 @@ planner_status plan_end_to_end(
     out->status = {};
 
     if (request.cache.store != nullptr) {
+        const operation_core::projection_key &live_projection =
+            request.candidates[selected_index].projection;
         const plan_cache_entry entry{request.keys,
             out->winner,
-            request.candidates[selected_index].projection,
+            {live_projection.persistent, live_projection.kind,
+                live_projection.schema_version, live_projection.variant},
             {request.current_evidence_revision,
                 out->diagnostics[selected_index].sample_count,
                 0u,
@@ -413,7 +511,8 @@ planner_status plan_end_to_end(
                 out->confidence,
                 request.policy.practical_tolerance_percent},
             true};
-        request.cache.store(request.cache.context, entry);
+        if (!request.cache.store(request.cache.context, entry))
+            out->cache_store_failed = true;
     }
     return {};
 }

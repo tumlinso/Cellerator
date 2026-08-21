@@ -193,6 +193,26 @@ target_include_directories(cellerator_biological_abi INTERFACE
 )
 target_compile_features(cellerator_biological_abi INTERFACE cxx_std_17)
 
+add_library(cellerator_identity_registry STATIC
+    src/execution/identity_registry.cc
+)
+add_library(Cellerator::identity_registry ALIAS cellerator_identity_registry)
+target_include_directories(cellerator_identity_registry PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_identity_registry PUBLIC
+    Cellerator::biological_abi
+)
+target_compile_features(cellerator_identity_registry PUBLIC cxx_std_17)
+
+add_executable(celleratorIdentityRegistryTest
+    tests/execution_identity/identity_registry_test.cc
+)
+target_link_libraries(celleratorIdentityRegistryTest PRIVATE
+    Cellerator::identity_registry
+)
+
 add_library(cellerator_runtime STATIC
     src/runtime/runtime.cu
 )
@@ -325,12 +345,23 @@ function(cellerator_add_baseplane_source baseplane_source_dir)
     if(NOT EXISTS "${baseplane_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "BASEPLANE_SOURCE_DIR does not point to a Baseplane source tree: ${baseplane_source_dir}")
     endif()
-    if(NOT EXISTS "${baseplane_source_dir}/include/Baseplane/seq/dna2.cuh")
-        message(FATAL_ERROR
-            "Baseplane source tree must expose include/Baseplane/seq/dna2.cuh. "
-            "Update the Baseplane checkout or set BASEPLANE_SOURCE_DIR to a compatible source tree: "
-            "${baseplane_source_dir}")
-    endif()
+    set(cellerator_baseplane_required_sequence_headers
+        include/Baseplane/seq/dna2.cuh
+        include/Baseplane/seq/dna2_validity.hh
+        include/Baseplane/seq/predicate_plan.hh
+        include/Baseplane/seq/sequence_event.hh
+    )
+    foreach(cellerator_baseplane_header IN LISTS
+            cellerator_baseplane_required_sequence_headers)
+        if(NOT EXISTS "${baseplane_source_dir}/${cellerator_baseplane_header}")
+            message(FATAL_ERROR
+                "Baseplane sequence predicate ABI incompatibility: required "
+                "header ${cellerator_baseplane_header} is absent. Cellerator "
+                "requires Baseplane sequence predicate ABI version 1. Update "
+                "the Baseplane checkout or set BASEPLANE_SOURCE_DIR to a "
+                "compatible source tree: ${baseplane_source_dir}")
+        endif()
+    endforeach()
     if(NOT DEFINED BASEPLANE_ENABLE_CUDA)
         set(BASEPLANE_ENABLE_CUDA ON CACHE BOOL
             "Enable the CUDA Baseplane sequence kernels preferred by Cellerator.")
@@ -352,6 +383,16 @@ endif()
 
 if(NOT TARGET Baseplane::seq)
     message(FATAL_ERROR "Cellerator requires Baseplane::seq for sequence bit primitives")
+endif()
+get_target_property(cellerator_baseplane_sequence_predicate_abi
+    Baseplane::seq BASEPLANE_SEQUENCE_PREDICATE_ABI_VERSION)
+if(NOT cellerator_baseplane_sequence_predicate_abi
+   OR NOT cellerator_baseplane_sequence_predicate_abi STREQUAL "1")
+    message(FATAL_ERROR
+        "Baseplane sequence predicate ABI incompatibility: Cellerator requires "
+        "Baseplane::seq ABI version 1, but the target reports "
+        "'${cellerator_baseplane_sequence_predicate_abi}'. Update the "
+        "Baseplane checkout or package before configuring Cellerator.")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

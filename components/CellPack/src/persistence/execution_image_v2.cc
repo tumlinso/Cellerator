@@ -274,10 +274,13 @@ bool payload_reference(const execution_image_v2_view &view, u32 index) noexcept 
                 == execution_section_kind::cpk1_v1_compatibility);
 }
 
-const void *section_data(const execution_image_v2_view &view,
-    u32 index) noexcept {
-    return static_cast<const unsigned char *>(view.image_base)
-        + view.sections[index].offset;
+bool relocated_pointer(const void *base, u64 offset, const void **out) noexcept {
+    const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(base);
+    if (offset > std::numeric_limits<std::uintptr_t>::max() - address)
+        return false;
+    *out = reinterpret_cast<const void *>(
+        address + static_cast<std::uintptr_t>(offset));
+    return true;
 }
 
 } // namespace
@@ -541,18 +544,37 @@ validation_result prebind_execution_projection_host(
     const execution_image_v2_view &validated_host_view,
     u32 projection_index,
     prebound_projection_view_v1 *out) noexcept {
-    if (validated_host_view.image_base == nullptr || out == nullptr)
+    return prebind_execution_projection_for_base_host(validated_host_view,
+        projection_index, validated_host_view.image_base,
+        validated_host_view.image_bytes, out);
+}
+
+validation_result prebind_execution_projection_for_base_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    const void *destination_image_base,
+    std::size_t destination_image_bytes,
+    prebound_projection_view_v1 *out) noexcept {
+    if (validated_host_view.image_base == nullptr
+        || validated_host_view.sections == nullptr
+        || validated_host_view.projections == nullptr
+        || destination_image_base == nullptr || out == nullptr)
         return validation_error(validation_code::null_pointer, invalid_id,
             "projection prebind image or output is null");
+    if (destination_image_bytes != validated_host_view.image_bytes
+        || validated_host_view.header.image_bytes != destination_image_bytes)
+        return invalid("projection prebind destination size differs");
     if (projection_index >= validated_host_view.header.projection_count)
         return invalid("projection prebind index is out of range");
     const execution_projection_entry_v1 &entry =
         validated_host_view.projections[projection_index];
     prebound_projection_view_v1 result{};
     result.descriptor = entry;
+    bool valid_offsets = true;
     auto bind = [&](u32 section_index, const void **data, std::size_t *bytes) {
-        if (section_index == invalid_directory_index) return;
-        *data = section_data(validated_host_view, section_index);
+        if (section_index == invalid_directory_index || !valid_offsets) return;
+        valid_offsets = relocated_pointer(destination_image_base,
+            validated_host_view.sections[section_index].offset, data);
         *bytes = static_cast<std::size_t>(
             validated_host_view.sections[section_index].bytes);
     };
@@ -562,6 +584,8 @@ validation_result prebind_execution_projection_host(
         &result.transpose_map_bytes);
     bind(entry.scheduling_summary_section, &result.scheduling_summary,
         &result.scheduling_summary_bytes);
+    if (!valid_offsets)
+        return invalid("projection prebind destination pointer overflows");
     *out = result;
     return validation_ok();
 }

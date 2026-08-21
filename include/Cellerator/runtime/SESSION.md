@@ -9,12 +9,24 @@ Preparation has three explicit allocation lifetimes:
 - plan-persistent storage survives launches for one prepared strategy;
 - graph-stable storage has an address that cannot change after sealing.
 
+Every nonzero persistent reservation is an independent recorded CUDA
+allocation. Live persistent objects therefore never alias accidentally and
+never move when a later reservation is made. The fixed-capacity record table
+reports current bytes per lifetime, high-water bytes, and allocation count;
+capacity exhaustion is explicit. `clear_session()` releases every record, and
+`graph_stable_address()` recognizes every live graph-stable allocation and
+valid subrange rather than one monolithic arena.
+
 Each registered stream has its own transient arena and library handles. Streams
 may be caller-owned or session-owned. Caller-owned streams are never destroyed
 by session teardown. Library creation, device discovery, and workspace growth
 are preparation operations. `bind_launch` is valid only after `seal_session`;
 it performs no CUDA call, allocation, hashing, device selection, or
 synchronization.
+
+The per-stream transient arena is a pre-reserved launch-workspace capacity, not
+a persistent object allocator. Neither transient capacity nor persistent
+storage can grow after sealing.
 
 The fixed plan, projection, and order-transform caches accept already-computed
 semantic keys. They deliberately do not hash pointers or structures in the hot

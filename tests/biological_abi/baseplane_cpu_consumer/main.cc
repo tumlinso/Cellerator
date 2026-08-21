@@ -1,4 +1,5 @@
 #include <Baseplane/seq/dna2_views.hh>
+#include <Baseplane/seq/predicate_plan.hh>
 #include <Cellerator/execution/biological_abi.hh>
 
 #include <type_traits>
@@ -22,6 +23,8 @@ ce::bit_plane_view bind_planes(
 }
 
 int main() {
+    static_assert(bp::sequence_predicate_abi_version == 1u,
+        "Cellerator Baseplane consumer requires predicate ABI version 1");
     static_assert(std::is_trivially_copyable<bp::dna2_planes32_stream_view>::value,
         "Baseplane plane view must remain POD");
     static_assert(std::is_trivially_copyable<ce::bit_plane_view>::value,

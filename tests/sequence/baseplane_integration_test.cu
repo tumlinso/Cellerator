@@ -161,7 +161,7 @@ ce::dense_tensor_view gene_output(
 }
 
 ce::launch_bindings launch_bindings(
-    const ce::relation_structure *relation,
+    const ce::relation_structure *structures,
     const ce::biological_operand_view *input,
     ce::biological_operand_view *outputs,
     std::uint32_t output_count,
@@ -169,13 +169,14 @@ ce::launch_bindings launch_bindings(
     cudaStream_t stream,
     int device) {
     ce::launch_bindings launch{};
-    launch.structure = relation;
+    launch.structures = structures;
     launch.inputs = input;
     launch.outputs = outputs;
     launch.values = values;
     launch.input_count = 1u;
     launch.output_count = output_count;
     launch.value_count = 1u;
+    launch.structure_count = 2u;
     launch.stream = {stream, device, 0u};
     launch.workspace = {nullptr, 0u,
         {ce::residency_kind::device, {}, device, 0u}};
@@ -232,6 +233,7 @@ int main() {
             "unrepresentable contig identity was truncated");
 
         const ce::axis_identity coordinate_axis = axis(41u, 42u, 43u, 44u);
+        const ce::axis_identity regulatory_axis = axis(46u, 47u, 48u, 49u);
         const ce::axis_identity predicate_mask_axis = axis(41u, 42u, 45u, 44u);
         const ce::axis_identity gene_axis = axis(51u, 52u, 53u, 54u);
         const std::array<cs::regulatory_interval, 3> intervals{{
@@ -299,17 +301,30 @@ int main() {
                 bp::sequence_buffer_residency::device, device,
                 &missing_validity),
             "implicit nonempty validity was accepted at the Cellerator seam");
-        ce::relation_structure relation{
-            {61u, 1u}, {1u}, coordinate_axis, gene_axis, {62u, 1u}, 3u};
+        ce::relation_structure relations[2]{
+            {{61u, 1u}, {1u}, coordinate_axis, regulatory_axis,
+                {62u, 1u}, 3u},
+            {{64u, 1u}, {2u}, regulatory_axis, gene_axis,
+                {65u, 1u}, 3u}};
         const cs::regulatory_projection_view device_projection{
             device_intervals.get(), device_offsets.get(), device_genes.get(),
             3u, 3u, 3u, 3u,
             {ce::residency_kind::device, {}, device, 0u}};
-        const cs::sequence_prepare_request request{
-            &program, &baseplane_plan, {71u, 72u}, {73u, 74u}, {63u, 1u},
-            relation, source_domain, predicate_mask_axis, device_projection};
+        cs::sequence_prepare_request request{};
+        request.program = &program;
+        request.baseplane_plan = &baseplane_plan;
+        request.persistent_coordinate_structure = {71u, 72u};
+        request.persistent_regulatory_structure = {75u, 76u};
+        request.persistent_projection = {73u, 74u};
+        request.projection = {63u, 1u};
+        request.coordinate_to_regulatory = relations[0];
+        request.regulatory_to_gene = relations[1];
+        request.source_domain = source_domain;
+        request.regulatory_axis = regulatory_axis;
+        request.predicate_mask_axis = predicate_mask_axis;
+        request.regulatory = device_projection;
         ce::value_plane value_plane{
-            relation.identity, relation.epoch, device_weights.get(),
+            relations[1].identity, relations[1].epoch, device_weights.get(),
             {ce::residency_kind::device, {}, device, 0u},
             {ce::numeric_type::f32, ce::numeric_type::f32,
              ce::numeric_type::f32, 0u},
@@ -319,11 +334,11 @@ int main() {
             3u * sizeof(float)};
         const ce::value_binding value_binding{&value_plane, {1u}};
 
-        const std::array<float, 3> expected = scalar_reference(
+        const std::array<float, 3> contribution = scalar_reference(
             packed, validity, chunk, program.exact_motifs[0],
             intervals, offsets, genes, weights);
-        require(expected[0] == 2.0f && expected[1] == 0.5f
-                && expected[2] == 1.5f,
+        require(contribution[0] == 2.0f && contribution[1] == 0.5f
+                && contribution[2] == 1.5f,
             "scalar fixture does not cover expected regulatory mapping");
 
         cs::prepared_sequence_state fused_state{};
@@ -334,22 +349,65 @@ int main() {
             "fused operation did not prepare");
         require(fused_state.strategy == cs::sequence_strategy::fuse_predicate,
             "one-shot policy did not select fusion");
+        require(fused.binding_contract.output_effect_count == 1u
+                && fused.binding_contract.output_effects[0].update
+                    == ce::output_update_kind::accumulate
+                && fused.binding_contract.output_effects[0]
+                    .requires_initialized_destination,
+            "gene-state accumulation effect was not declared");
+        cs::prepared_sequence_state rejected_state{};
+        co::prepared_operation rejected{};
+        cs::sequence_prepare_request wrong_coordinate_relation = request;
+        wrong_coordinate_relation.coordinate_to_regulatory.destination_axis =
+            axis(46u, 47u, 148u, 49u);
+        require(!cs::prepare_sequence_regulatory_operation(
+                wrong_coordinate_relation, {}, &rejected_state, &rejected),
+            "coordinate-to-regulatory relation with wrong biology was accepted");
+        cs::sequence_prepare_request wrong_regulatory_relation = request;
+        wrong_regulatory_relation.regulatory_to_gene.source_axis =
+            axis(46u, 47u, 48u, 149u);
+        require(!cs::prepare_sequence_regulatory_operation(
+                wrong_regulatory_relation, {}, &rejected_state, &rejected),
+            "regulatory-to-gene relation with wrong biology was accepted");
         ce::biological_operand_view fused_output{};
         fused_output.kind = ce::operand_kind::dense_tensor;
         fused_output.storage.dense = gene_output(device_output.get(), gene_axis,
             {ce::residency_kind::device, {}, device, 0u});
-        cuda_require(cudaMemsetAsync(device_output.get(), 0, 3u * sizeof(float), stream),
-            "zero fused output");
+        const std::array<float, 3> initial{{10.0f, 20.0f, 30.0f}};
+        std::array<float, 3> accumulated_expected{};
+        for (std::size_t index = 0u; index < initial.size(); ++index)
+            accumulated_expected[index] = initial[index] + contribution[index];
+        cuda_require(cudaMemcpyAsync(device_output.get(), initial.data(),
+            sizeof(initial), cudaMemcpyHostToDevice, stream),
+            "initialize fused accumulated output");
         ce::launch_bindings fused_launch = launch_bindings(
-            &relation, &input, &fused_output, 1u, &value_binding, stream, device);
+            relations, &input, &fused_output, 1u, &value_binding, stream, device);
         require(static_cast<bool>(co::run_prepared_operation(fused, fused_launch)),
             "fused operation launch rejected");
+        ++relations[0].epoch.value;
+        require(!co::run_prepared_operation(fused, fused_launch),
+            "stale coordinate relation epoch was accepted");
+        relations[0] = request.coordinate_to_regulatory;
+        ++relations[1].epoch.value;
+        require(!co::run_prepared_operation(fused, fused_launch),
+            "stale regulatory relation epoch was accepted");
+        relations[1] = request.regulatory_to_gene;
+        ce::value_plane wrong_relation_value_plane = value_plane;
+        wrong_relation_value_plane.structure = relations[0].identity;
+        wrong_relation_value_plane.structure_epoch_value = relations[0].epoch;
+        const ce::value_binding wrong_relation_value{
+            &wrong_relation_value_plane, {1u}};
+        fused_launch.values = &wrong_relation_value;
+        require(!co::run_prepared_operation(fused, fused_launch),
+            "regulatory weights bound to coordinate relation were accepted");
+        fused_launch.values = &value_binding;
         std::array<float, 3> fused_result{};
         cuda_require(cudaMemcpyAsync(fused_result.data(), device_output.get(),
             sizeof(fused_result), cudaMemcpyDeviceToHost, stream),
             "copy fused output");
         cuda_require(cudaStreamSynchronize(stream), "finish fused path");
-        compare_output(fused_result, expected, "fused scalar parity failed");
+        compare_output(fused_result, accumulated_expected,
+            "fused accumulation did not preserve initial gene state");
 
         cs::prepared_sequence_state materialized_state{};
         co::prepared_operation materialized{};
@@ -360,6 +418,12 @@ int main() {
         require(materialized_state.strategy
                 == cs::sequence_strategy::materialize_mask,
             "reuse policy did not select materialization");
+        require(materialized.binding_contract.output_effect_count == 2u
+                && materialized.binding_contract.output_effects[0].update
+                    == ce::output_update_kind::accumulate
+                && materialized.binding_contract.output_effects[1].update
+                    == ce::output_update_kind::overwrite,
+            "materialized output effects are incomplete");
         ce::biological_operand_view materialized_outputs[2]{};
         materialized_outputs[0].kind = ce::operand_kind::dense_tensor;
         materialized_outputs[0].storage.dense = gene_output(
@@ -378,7 +442,7 @@ int main() {
         cuda_require(cudaMemsetAsync(device_output.get(), 0, 3u * sizeof(float), stream),
             "zero materialized output");
         ce::launch_bindings materialized_launch = launch_bindings(
-            &relation, &input, materialized_outputs, 2u,
+            relations, &input, materialized_outputs, 2u,
             &value_binding, stream, device);
         require(static_cast<bool>(
                 co::run_prepared_operation(materialized, materialized_launch)),
@@ -392,7 +456,7 @@ int main() {
             sizeof(mask_result), cudaMemcpyDeviceToHost, stream),
             "copy predicate mask");
         cuda_require(cudaStreamSynchronize(stream), "finish materialized path");
-        compare_output(materialized_result, expected,
+        compare_output(materialized_result, contribution,
             "materialized scalar parity failed");
         require(mask_result[0] == ((1u << 5u) | (1u << 30u))
                 && mask_result[1] == 0u && mask_result[2] == 0u,
@@ -412,7 +476,7 @@ int main() {
         ce::biological_operand_view stale_input = input;
         stale_input.storage.bits.coordinate_axis.order.slot += 1u;
         ce::launch_bindings stale_launch = launch_bindings(
-            &relation, &stale_input, &fused_output, 1u,
+            relations, &stale_input, &fused_output, 1u,
             &value_binding, stream, device);
         const co::operation_status stale_status =
             co::run_prepared_operation(fused, stale_launch);
@@ -425,8 +489,6 @@ int main() {
         ++stale_plan.semantic_hash;
         cs::sequence_prepare_request stale_request = request;
         stale_request.baseplane_plan = &stale_plan;
-        cs::prepared_sequence_state rejected_state{};
-        co::prepared_operation rejected{};
         require(!cs::prepare_sequence_regulatory_operation(
                 stale_request, {}, &rejected_state, &rejected),
             "stale Baseplane semantic hash was accepted");

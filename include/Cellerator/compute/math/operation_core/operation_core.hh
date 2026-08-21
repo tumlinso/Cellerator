@@ -85,6 +85,12 @@ struct structure_key {
     execution::structure_epoch epoch{};
 };
 
+struct structure_set_key {
+    structure_key structures[execution::maximum_operation_structures]{};
+    std::uint32_t count = 0u;
+    std::uint32_t reserved = 0u;
+};
+
 struct projection_key {
     execution::projection_id persistent{};
     execution::projection_handle runtime{};
@@ -161,7 +167,7 @@ using run_function = operation_status (*)(
 struct prepared_operation {
     std::uint32_t schema_version = operation_core_schema_version;
     operation_problem problem{};
-    structure_key structure{};
+    structure_set_key structures{};
     projection_key projection{};
     numeric_policy numeric{};
     stable_id kernel{};
@@ -180,7 +186,7 @@ using numeric_support_function = bool (*)(const numeric_policy &) noexcept;
 using prepare_function = operation_status (*)(
     const operation_candidate &,
     const operation_problem &,
-    const structure_key &,
+    const structure_set_key &,
     const projection_key &,
     const numeric_policy &,
     const prepare_policy &,
@@ -207,7 +213,7 @@ struct candidate_registry {
 
 operation_status validate_operation_problem(
     const operation_problem &problem,
-    const structure_key &structure) noexcept;
+    const structure_set_key &structures) noexcept;
 operation_status validate_numeric_policy(const numeric_policy &numeric) noexcept;
 operation_status validate_prepared_operation(
     const prepared_operation &prepared) noexcept;
@@ -224,7 +230,7 @@ const operation_candidate *find_candidate(
 operation_status prepare_candidate(
     const operation_candidate &candidate,
     const operation_problem &problem,
-    const structure_key &structure,
+    const structure_set_key &structures,
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
@@ -238,6 +244,8 @@ static_assert(std::is_trivially_copyable<operation_problem>::value,
     "operation problem must remain cache-key safe");
 static_assert(std::is_trivially_copyable<structure_key>::value,
     "structure key must remain cache-key safe");
+static_assert(std::is_trivially_copyable<structure_set_key>::value,
+    "structure set key must remain cache-key safe");
 static_assert(std::is_trivially_copyable<projection_key>::value,
     "projection key must remain cache-key safe");
 static_assert(std::is_trivially_copyable<numeric_policy>::value,

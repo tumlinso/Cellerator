@@ -179,6 +179,21 @@ int main() {
         && prebound.transpose_map_bytes == sizeof(transpose)
         && prebound.scheduling_summary_bytes == sizeof(summary),
         "prebound projection sections");
+    std::array<unsigned char, 8> destination_placeholder{};
+    px::prebound_projection_view_v1 destination_prebound;
+    require_status(px::prebind_execution_projection_for_base_host(built, 0u,
+        destination_placeholder.data(), image.size(), &destination_prebound),
+        "prebind projection for opaque destination base");
+    const auto destination_address = reinterpret_cast<std::uintptr_t>(
+        destination_placeholder.data());
+    require(reinterpret_cast<std::uintptr_t>(destination_prebound.payload)
+            == destination_address + built.sections[5].offset
+        && destination_prebound.payload_bytes == sizeof(payload),
+        "destination prebind did not preserve validated host offset");
+    require(!static_cast<bool>(px::prebind_execution_projection_for_base_host(
+        built, 0u, destination_placeholder.data(), image.size() - 1u,
+        &destination_prebound)),
+        "destination prebind accepted incorrect image size");
     px::prebound_projection_view_v1 lazy;
     require_status(px::prebind_execution_projection_host(built, 1u, &lazy),
         "prebind optional lazy projection");

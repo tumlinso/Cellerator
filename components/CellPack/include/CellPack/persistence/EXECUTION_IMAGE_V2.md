@@ -36,6 +36,14 @@ projection references, and the caller's structure/geometry/catalog identities.
 Relocation rebases only directory pointers. A hot kernel receives
 `prebound_projection_view_v1`, not the self-describing image.
 
+Device hot prebinding reads only an already validated host directory. It checks
+that the destination image byte count exactly matches the validated image, then
+forms every hot pointer as `destination_image_base + validated_section_offset`.
+The destination may be a device address: the host helper performs no
+destination dereference, allocation, copy, checksum scan, or CUDA call. Thus a
+kernel consumes a device-relative projection after one opaque upload without
+parsing the cold directory on device.
+
 Schema v2 assumes fixed-width little-endian records, recorded by the endian
 marker. All alignment values are offsets relative to the image base; this keeps
 the image compatible with CellShard's ordinary contiguous host allocation and

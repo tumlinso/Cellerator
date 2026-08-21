@@ -15,6 +15,24 @@ bool valid_structure_key(const structure_key &key) noexcept {
         && key.epoch.value != 0u;
 }
 
+bool valid_structure_set_key(const structure_set_key &keys) noexcept {
+    if (keys.count == 0u
+        || keys.count > execution::maximum_operation_structures)
+        return false;
+    for (std::uint32_t index = 0u; index < keys.count; ++index) {
+        if (!valid_structure_key(keys.structures[index])) return false;
+        for (std::uint32_t previous = 0u; previous < index; ++previous)
+            if (execution::same_identity(
+                    keys.structures[previous].persistent,
+                    keys.structures[index].persistent)
+                || execution::same_handle(
+                    keys.structures[previous].runtime,
+                    keys.structures[index].runtime))
+                return false;
+    }
+    return true;
+}
+
 bool valid_projection_key(const projection_key &key) noexcept {
     return execution::valid_identity(key.persistent)
         && execution::valid_handle(key.runtime)
@@ -29,7 +47,7 @@ bool valid_numeric_type(execution::numeric_type type) noexcept {
 
 operation_status validate_operation_problem(
     const operation_problem &problem,
-    const structure_key &structure) noexcept {
+    const structure_set_key &structures) noexcept {
     if (problem.schema_version != operation_core_schema_version)
         return {operation_status_code::unsupported_problem,
             execution::binding_validation_code::ok,
@@ -40,7 +58,7 @@ operation_status validate_operation_problem(
         return {operation_status_code::invalid_argument,
             execution::binding_validation_code::ok,
             "operation problem is incomplete"};
-    if (!valid_structure_key(structure))
+    if (!valid_structure_set_key(structures))
         return {operation_status_code::stale_structure,
             execution::binding_validation_code::stale_structure,
             "structure key is invalid"};
@@ -68,7 +86,7 @@ operation_status validate_numeric_policy(const numeric_policy &numeric) noexcept
 operation_status validate_prepared_operation(
     const prepared_operation &prepared) noexcept {
     const operation_status problem =
-        validate_operation_problem(prepared.problem, prepared.structure);
+        validate_operation_problem(prepared.problem, prepared.structures);
     if (!problem) return problem;
     const operation_status numeric = validate_numeric_policy(prepared.numeric);
     if (!numeric) return numeric;
@@ -80,14 +98,30 @@ operation_status validate_prepared_operation(
         return {operation_status_code::preparation_failed,
             execution::binding_validation_code::ok,
             "prepared operation has no direct dispatch"};
-    if (!execution::same_handle(
-            prepared.structure.runtime,
-            prepared.binding_contract.structure)
-        || prepared.structure.epoch.value
-            != prepared.binding_contract.epoch.value)
+    if (prepared.structures.count
+            != prepared.binding_contract.structure_count)
         return {operation_status_code::stale_structure,
             execution::binding_validation_code::stale_structure,
             "prepared binding contract does not match structure key"};
+    for (std::uint32_t index = 0u;
+         index < prepared.structures.count; ++index) {
+        const structure_key &key = prepared.structures.structures[index];
+        bool found = false;
+        for (std::uint32_t required = 0u;
+             required < prepared.binding_contract.structure_count; ++required)
+            if (execution::same_handle(
+                    key.runtime,
+                    prepared.binding_contract.structures[required].identity)
+                && key.epoch.value
+                    == prepared.binding_contract.structures[required].epoch.value) {
+                found = true;
+                break;
+            }
+        if (!found)
+            return {operation_status_code::stale_structure,
+                execution::binding_validation_code::stale_structure,
+                "prepared binding contract does not match structure key"};
+    }
     if (prepared.problem.input_count != prepared.binding_contract.input_count
         || prepared.problem.output_count != prepared.binding_contract.output_count)
         return {operation_status_code::preparation_failed,
@@ -145,7 +179,7 @@ const operation_candidate *find_candidate(
 operation_status prepare_candidate(
     const operation_candidate &candidate,
     const operation_problem &problem,
-    const structure_key &structure,
+    const structure_set_key &structures,
     const projection_key &projection,
     const numeric_policy &numeric,
     const prepare_policy &policy,
@@ -156,7 +190,7 @@ operation_status prepare_candidate(
             execution::binding_validation_code::ok,
             "prepare requires a complete candidate and output"};
     const operation_status problem_status =
-        validate_operation_problem(problem, structure);
+        validate_operation_problem(problem, structures);
     if (!problem_status) return problem_status;
     const operation_status numeric_status = validate_numeric_policy(numeric);
     if (!numeric_status) return numeric_status;
@@ -202,7 +236,7 @@ operation_status prepare_candidate(
             execution::binding_validation_code::ok,
             "candidate exceeds memory policy"};
     return candidate.prepare(
-        candidate, problem, structure, projection, numeric, policy, prepared);
+        candidate, problem, structures, projection, numeric, policy, prepared);
 }
 
 } // namespace cellerator::compute::math::core

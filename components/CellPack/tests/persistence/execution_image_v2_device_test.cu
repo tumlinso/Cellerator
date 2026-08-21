@@ -65,6 +65,16 @@ px::execution_section_source section(px::execution_section_kind kind,
     return result;
 }
 
+__global__ void read_prebound_payload(
+    px::prebound_projection_view_v1 projection,
+    std::uint32_t *result) {
+    const auto *payload = static_cast<const std::uint32_t *>(
+        projection.payload);
+    result[0] = payload[0];
+    result[1] = payload[2];
+    result[2] = static_cast<std::uint32_t>(projection.payload_bytes);
+}
+
 } // namespace
 
 int main() {
@@ -154,23 +164,32 @@ int main() {
     require(device_view.image_base == device.payload
         && device_view.image_bytes == image.size(), "device view aliases one allocation");
 
-    px::execution_image_v2_header copied_header{};
-    require_cuda(cudaMemcpyAsync(&copied_header, device.payload,
-        sizeof(copied_header), cudaMemcpyDeviceToHost, stream),
-        "copy header for test");
-    std::array<std::uint32_t, 4> copied_payload{};
-    const std::uint64_t payload_offset = host_view.sections[4].offset;
-    require_cuda(cudaMemcpyAsync(copied_payload.data(),
-        device.payload + payload_offset, sizeof(copied_payload),
-        cudaMemcpyDeviceToHost, stream), "copy projection payload for test");
-    require_cuda(cudaStreamSynchronize(stream), "synchronize test copies");
-    require(copied_header.image_identity == host_view.header.image_identity
-        && copied_payload == payload, "opaque upload preserves complete image");
+    px::prebound_projection_view_v1 hot_projection;
+    require_status(px::prebind_execution_projection_for_base_host(host_view, 0u,
+        device.payload, device.payload_bytes, &hot_projection),
+        "prebind device-relative projection from host directory");
+    require(!static_cast<bool>(px::prebind_execution_projection_for_base_host(
+        host_view, 0u, device.payload, device.payload_bytes - 1u,
+        &hot_projection)), "reject wrong device image size");
+    std::uint32_t *device_result = nullptr;
+    require_cuda(cudaMalloc(&device_result, 3u * sizeof(std::uint32_t)),
+        "allocate tiny kernel result");
+    read_prebound_payload<<<1, 1, 0, stream>>>(hot_projection, device_result);
+    require_cuda(cudaPeekAtLastError(), "launch prebound payload consumer");
+    std::array<std::uint32_t, 3> consumed{};
+    require_cuda(cudaMemcpyAsync(consumed.data(), device_result,
+        sizeof(consumed), cudaMemcpyDeviceToHost, stream),
+        "copy prebound payload result");
+    require_cuda(cudaStreamSynchronize(stream), "finish prebound payload consumer");
+    require(consumed[0] == payload[0] && consumed[1] == payload[2]
+        && consumed[2] == sizeof(payload),
+        "kernel did not consume device-relative prebound payload");
+    require_cuda(cudaFree(device_result), "release tiny kernel result");
 
     require_cuda(cs::clear_execution_payload_device(&device),
         "release device payload");
     require_cuda(cudaStreamDestroy(stream), "destroy stream");
     cs::clear_execution_payload_host(&host);
-    std::puts("cellPackExecutionImageV2DeviceTest passed uploads=1");
+    std::puts("cellPackExecutionImageV2DeviceTest passed uploads=1 hot_reads=1");
     return 0;
 }

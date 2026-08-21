@@ -336,28 +336,43 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
     if (!supported_exact_mask_program(*request.program, expected))
         return fail(operation_core::operation_status_code::unsupported_problem,
             "v1 integration supports one precompiled forward exact-mask predicate");
-    if (execution::validate_relation_structure(request.relation)
+    if (execution::validate_relation_structure(
+            request.coordinate_to_regulatory)
+            != execution::lifetime_validation_code::ok
+        || execution::validate_relation_structure(request.regulatory_to_gene)
             != execution::lifetime_validation_code::ok
         || execution::validate_sequence_domain(request.source_domain)
             != execution::biological_validation_code::ok
-        || !execution::valid_identity(request.persistent_structure)
+        || !execution::valid_identity(
+            request.persistent_coordinate_structure)
+        || !execution::valid_identity(
+            request.persistent_regulatory_structure)
         || !execution::valid_identity(request.persistent_projection)
         || !execution::valid_handle(request.projection)
         || !execution::same_handle(
-            request.relation.source_axis.domain,
+            request.coordinate_to_regulatory.source_axis.domain,
             request.source_domain.genome_domain)
+        || !execution::same_axis_identity(
+            request.coordinate_to_regulatory.destination_axis,
+            request.regulatory_axis)
+        || !execution::same_axis_identity(
+            request.regulatory_to_gene.source_axis,
+            request.regulatory_axis)
         || !execution::valid_axis_identity(request.predicate_mask_axis)
         || !execution::same_handle(
-            request.relation.source_axis.domain,
+            request.coordinate_to_regulatory.source_axis.domain,
             request.predicate_mask_axis.domain)
         || !execution::same_handle(
-            request.relation.source_axis.order,
+            request.coordinate_to_regulatory.source_axis.order,
             request.predicate_mask_axis.order)
         || !execution::same_handle(
-            request.relation.source_axis.partition,
+            request.coordinate_to_regulatory.source_axis.partition,
             request.predicate_mask_axis.partition)
         || request.source_domain.local_base_count == 0u
-        || request.regulatory.edge_count != request.relation.logical_edge_count
+        || request.regulatory.interval_count
+            != request.coordinate_to_regulatory.logical_edge_count
+        || request.regulatory.edge_count
+            != request.regulatory_to_gene.logical_edge_count
         || !execution::valid_location(request.regulatory.location)
         || request.regulatory.location.residency == execution::residency_kind::host
         || request.regulatory.regulatory_element_count == 0u
@@ -384,13 +399,20 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
     state->regulatory = request.regulatory;
     state->input_contracts[0].kind = execution::operand_kind::bit_plane;
     state->input_contracts[0].rank = 1u;
-    state->input_contracts[0].axes[0] = request.relation.source_axis;
+    state->input_contracts[0].axes[0] =
+        request.coordinate_to_regulatory.source_axis;
     state->output_contracts[0].kind = execution::operand_kind::dense_tensor;
     state->output_contracts[0].rank = 1u;
-    state->output_contracts[0].axes[0] = request.relation.destination_axis;
+    state->output_contracts[0].axes[0] =
+        request.regulatory_to_gene.destination_axis;
     state->output_orders[0] = execution::output_axis_contract{
-        request.relation.destination_axis, request.relation.destination_axis,
+        request.regulatory_to_gene.destination_axis,
+        request.regulatory_to_gene.destination_axis,
         execution::order_transition_kind::preserve, 0u, 0u, 0u, 1u, {}, {}};
+    state->output_effects[0] = execution::output_effect_contract{
+        execution::output_update_kind::accumulate, true, false, 0u,
+        execution::invalid_scalar_binding_id,
+        execution::invalid_scalar_binding_id};
     const std::uint32_t output_count =
         strategy == sequence_strategy::materialize_mask ? 2u : 1u;
     if (output_count == 2u) {
@@ -401,6 +423,10 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
             request.predicate_mask_axis, request.predicate_mask_axis,
             execution::order_transition_kind::preserve, 0u, 1u,
             0u, 1u, {}, {}};
+        state->output_effects[1] = execution::output_effect_contract{
+            execution::output_update_kind::overwrite, false, false, 0u,
+            execution::invalid_scalar_binding_id,
+            execution::invalid_scalar_binding_id};
     }
 
     *prepared = operation_core::prepared_operation{};
@@ -409,9 +435,15 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         operation_core::operation_kind::sequence_predicate_accumulate, 0u,
         sequence_operation_id, 1u, output_count,
         request.source_domain.local_base_count};
-    prepared->structure = operation_core::structure_key{
-        request.persistent_structure, request.relation.identity,
-        request.relation.epoch};
+    prepared->structures.count = 2u;
+    prepared->structures.structures[0] = operation_core::structure_key{
+        request.persistent_coordinate_structure,
+        request.coordinate_to_regulatory.identity,
+        request.coordinate_to_regulatory.epoch};
+    prepared->structures.structures[1] = operation_core::structure_key{
+        request.persistent_regulatory_structure,
+        request.regulatory_to_gene.identity,
+        request.regulatory_to_gene.epoch};
     prepared->projection = operation_core::projection_key{
         request.persistent_projection, request.projection,
         operation_core::projection_kind::native_feature_major,
@@ -430,11 +462,22 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
     prepared->backend = operation_core::backend_kind::native_direct;
     prepared->capability_flags = operation_core::candidate_graph_capture;
     prepared->persistent = {state, sizeof(*state)};
-    prepared->binding_contract = execution::prepared_binding_contract{
-        request.relation.identity, request.relation.epoch,
-        state->input_contracts, state->output_contracts,
-        state->output_orders, 1u, output_count, output_count, 0u,
-        {0u, 1u, 0u}};
+    prepared->binding_contract.structures[0] = {
+        request.coordinate_to_regulatory.identity,
+        request.coordinate_to_regulatory.epoch};
+    prepared->binding_contract.structures[1] = {
+        request.regulatory_to_gene.identity,
+        request.regulatory_to_gene.epoch};
+    prepared->binding_contract.inputs = state->input_contracts;
+    prepared->binding_contract.outputs = state->output_contracts;
+    prepared->binding_contract.output_orders = state->output_orders;
+    prepared->binding_contract.output_effects = state->output_effects;
+    prepared->binding_contract.input_count = 1u;
+    prepared->binding_contract.output_count = output_count;
+    prepared->binding_contract.output_order_count = output_count;
+    prepared->binding_contract.structure_count = 2u;
+    prepared->binding_contract.output_effect_count = output_count;
+    prepared->binding_contract.workspace = {0u, 1u, 0u};
     prepared->run = run_sequence_regulatory_operation;
     return operation_core::validate_prepared_operation(*prepared);
 }
@@ -458,6 +501,9 @@ operation_core::operation_status run_sequence_regulatory_operation(
     const execution::dense_tensor_view output = launch.outputs[0].storage.dense;
     const execution::value_plane &values = *launch.values[0].plane;
     if (input.base_count != state.source_domain.local_base_count
+        || prepared.structures.count != 2u
+        || !execution::same_structure_handle(
+            values.structure, prepared.structures.structures[1].runtime)
         || output.value_type != execution::numeric_type::f32
         || output.rank != 1u || output.shape[0] != state.regulatory.gene_count
         || output.stride[0] != 1

@@ -226,6 +226,16 @@ validation_result prebind_execution_projection_host(
     u32 projection_index,
     prebound_projection_view_v1 *out) noexcept;
 
+// Reads only the already validated host directories. Hot pointers are formed
+// from their validated section offsets plus destination_image_base, which may
+// be a device address; the destination image is never dereferenced here.
+validation_result prebind_execution_projection_for_base_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    const void *destination_image_base,
+    std::size_t destination_image_bytes,
+    prebound_projection_view_v1 *out) noexcept;
+
 // CPK1 remains a combined v1 compatibility section. This validates it through
 // the frozen v1 reader; it never converts the image to CSR, BELL, or v2 values.
 validation_result load_cpk1_v1_compatibility_host(

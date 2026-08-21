@@ -14,7 +14,7 @@ bool numeric_support(const core::numeric_policy &) noexcept { return true; }
 core::operation_status unused_prepare(
     const core::operation_candidate &,
     const core::operation_problem &,
-    const core::structure_key &,
+    const core::structure_set_key &,
     const core::projection_key &,
     const core::numeric_policy &,
     const core::prepare_policy &,
@@ -90,10 +90,15 @@ fixture candidates_fixture() {
 planner::planning_keys keys(std::uint64_t reuse = 8u) {
     planner::planning_keys value{};
     value.problem.identity = {71u, 72u};
-    value.structure = {{1u, 2u}, {11u, 1u}, {3u}};
-    value.geometry = {{4u, 5u}, {6u, 7u}, {8u, 9u}, {10u, 11u}};
+    core::structure_set_key live{};
+    live.count = 2u;
+    live.structures[0] = {{21u, 22u}, {12u, 1u}, {4u}};
+    live.structures[1] = {{1u, 2u}, {11u, 1u}, {3u}};
+    assert(planner::make_persistent_structure_set_key(live, &value.structures));
+    value.geometry = {{2u, 3u}, {3u, 4u}, {4u, 5u},
+        {6u, 7u}, {8u, 9u}, {10u, 11u}};
     value.device = {1u, 7u, 0u, 700u};
-    value.build = {100u, 200u, 300u};
+    value.build = {100u, 200u, 300u, 400u};
     value.policy = {reuse, reuse, 1u, 1u, 1u, 1u};
     return value;
 }
@@ -121,6 +126,7 @@ planner::planner_request request(
 
 struct measurement_fixture {
     std::uint32_t calls = 0u;
+    bool contaminate_all = false;
 };
 
 bool measure(void *context, const planner::planner_candidate &candidate,
@@ -129,6 +135,7 @@ bool measure(void *context, const planner::planner_candidate &candidate,
     ++state->calls;
     *out = {};
     out->correct = true;
+    out->contaminated = state->contaminate_all;
     out->sample_count = 7u;
     out->spread_percent = 1.0;
     if (candidate.identity.low == 1u)
@@ -143,6 +150,7 @@ bool measure(void *context, const planner::planner_candidate &candidate,
 struct cache_fixture {
     bool found = false;
     bool stored = false;
+    bool store_succeeds = true;
     planner::plan_cache_entry entry{};
 };
 
@@ -158,7 +166,7 @@ bool store(void *context, const planner::plan_cache_entry &entry) noexcept {
     auto *cache = static_cast<cache_fixture *>(context);
     cache->stored = true;
     cache->entry = entry;
-    return true;
+    return cache->store_succeeds;
 }
 
 void test_cost_accounting() {
@@ -183,19 +191,39 @@ void test_measured_conventional_winner_and_cache() {
     assert(result.winner.low == 2u && result.conventional_winner);
     assert(result.measurement_count == 3u && measurements.calls == 3u);
     assert(cache.stored && cache.entry.winner.low == 2u);
+    assert(result.confidence >= plan_request.policy.minimum_cache_confidence);
     assert(result.reason != nullptr);
 
     cache.found = true;
     plan_request.measurement = {};
+    for (planner::planner_candidate &candidate : value.candidates)
+        ++candidate.projection.runtime.generation;
     assert(planner::plan_end_to_end(plan_request, &result));
     assert(result.source == planner::selection_source::cache);
     assert(result.cache == planner::cache_state::hit);
     assert(result.winner.low == 2u);
+    assert(result.selected->projection.runtime.generation == 2u);
 
     cache.entry.keys.build.kernel_build += 1u;
     assert(planner::plan_end_to_end(plan_request, &result));
     assert(result.cache == planner::cache_state::stale);
     assert(result.source == planner::selection_source::analytical);
+
+    cache.entry.keys.build.kernel_build = plan_request.keys.build.kernel_build;
+    plan_request.keys.structures.structures[0].identity.low += 1u;
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.cache == planner::cache_state::stale);
+    assert(result.source == planner::selection_source::analytical);
+
+    cache.entry = {};
+    cache.found = false;
+    cache.store_succeeds = false;
+    plan_request = request(value);
+    plan_request.measurement = {&measurements, measure};
+    plan_request.cache = {&cache, lookup, store};
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.cache_store_failed && result.source
+        == planner::selection_source::empirical);
 }
 
 void test_bounded_and_one_shot_tuning() {
@@ -227,6 +255,29 @@ void test_policy_rejection() {
     assert(planner::plan_end_to_end(plan_request, &result));
     assert(result.diagnostics[0].rejection
         == planner::candidate_rejection::nondeterministic);
+}
+
+void test_persistent_structure_keys_and_measurement_fallback() {
+    fixture value = candidates_fixture();
+    planner::planner_request plan_request = request(value);
+    const planner::planning_keys original = plan_request.keys;
+    plan_request.keys.structures.structures[0].identity.low += 1u;
+    assert(!planner::same_planning_keys(original, plan_request.keys));
+
+    plan_request = request(value);
+    measurement_fixture measurements{};
+    measurements.contaminate_all = true;
+    plan_request.measurement = {&measurements, measure};
+    planner::planner_result result{};
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.source == planner::selection_source::analytical);
+    assert(result.reason != nullptr && result.measurement_count == 3u);
+
+    plan_request.policy.allow_analytical_fallback_after_measurement_failure =
+        false;
+    assert(!planner::plan_end_to_end(plan_request, &result));
+    assert(result.status.code
+        == planner::planner_status_code::no_correct_measurement);
 }
 
 void test_objective_v2() {
@@ -269,6 +320,7 @@ int main() {
     test_measured_conventional_winner_and_cache();
     test_bounded_and_one_shot_tuning();
     test_policy_rejection();
+    test_persistent_structure_keys_and_measurement_fallback();
     test_objective_v2();
     return 0;
 }

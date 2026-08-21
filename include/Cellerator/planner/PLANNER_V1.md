@@ -4,12 +4,12 @@ The planner selects the fastest correct complete execution strategy, including
 conventional fallbacks. It is downstream of the operation-core registry and
 upstream of preparation; it does not make kernel-only timing authoritative.
 
-Planning identity is deliberately factored into mathematical problem,
-immutable structure and epoch, semantic geometry and orders, device performance
-class, runtime/kernel/driver build, and policy/reuse keys. Each candidate and
-cached winner carries its separate physical-projection key. Live pointers and
-mutable value generations never enter a plan key. They remain launch validation
-state.
+Planning identity is deliberately factored into mathematical problem, the
+bounded deterministic set of persistent structure identities and epochs,
+persistent semantic geometry/order/partition identities, device performance
+class, runtime/kernel/driver build, and policy/reuse keys. Runtime identity
+slots and generations are process-local aliases and never enter durable
+evidence. Each candidate carries its current runtime handles separately.
 
 Candidate selection has seven bounded stages:
 
@@ -22,8 +22,17 @@ Candidate selection has seven bounded stages:
    remains legal under every factored key.
 6. Otherwise, empirically measure a bounded number of shortlisted candidates
    on the actual structure when reuse and workload size justify tuning.
-7. Persist the winner, confidence, practical tolerance, evidence revision, and
-   explanation; stale evidence is rejected rather than silently reused.
+7. Persist the winner's persistent projection identity/kind/schema/variant,
+   confidence, practical tolerance, evidence revision, and explanation; stale
+   evidence is rejected rather than silently reused. Lookup matches that
+   persistent projection to a legal candidate and uses the candidate's current
+   runtime handle.
+
+Confidence depends on sample count, measurement spread, and separation from the
+runner-up within the declared tolerance. If every empirical measurement is
+failed or contaminated, conservative policy may select the best legal
+analytical candidate, but no failed empirical winner is persisted. Cache-store
+failure is diagnostic and never falsely reported as persisted evidence.
 
 The total cost charges host preparation, semantic packing divided by structure
 reuse, projection construction and backend preparation divided by projection

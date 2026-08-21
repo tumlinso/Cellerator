@@ -8,11 +8,12 @@ values, strategy selection, execution order, stream binding, and the
 sequence-to-regulatory-to-gene operation.
 
 The first precompiled primitive accepts one verified forward exact-motif mask
-program. Unsupported programs fail preparation rather than entering a general
-device interpreter. A prepared operation freezes the Baseplane semantic hash,
-motif, immutable interval/element-to-gene projection, structure epoch, and
-output execution order. Input/output/value pointers, value generation, stream,
-and transient workspace remain launch bindings.
+program at the exact `baseplane::seq::sequence_predicate_abi_version` required
+by Cellerator. Unsupported programs fail preparation rather than entering a
+general device interpreter. A prepared operation freezes the Baseplane semantic
+hash, motif, coordinate-to-regulatory relation, regulatory-to-gene relation,
+both structure epochs, and output contracts. Input/output/value pointers, value
+generation, stream, and transient workspace remain launch bindings.
 
 Two strategies share one operation contract:
 
@@ -29,6 +30,23 @@ planes, explicit validity, typed biological axes, and caller-owned streams.
 They allocate nothing, synchronize nothing, perform no host round trip, create
 no dense motif tensor, and build no CSR intermediate. Floating point begins at
 the element-to-gene value plane.
+
+The biological chain is represented honestly as coordinate axis to regulatory
+axis to gene axis. Mutable weights belong only to the regulatory-to-gene
+relation. Preparation validates both relation identities, axes, epochs, logical
+counts, and the weight binding; the fused physical projection may contain both
+indexes without inventing a coordinate-to-gene relation or duplicating values.
+
+Validity is authoritative at this seam. Canonical A/C/G/T/U symbols encode with
+validity present; every other symbol is invalid. A raw two-bit payload cannot
+represent ambiguity, absent validity is rejected, and an invalid payload value
+of zero must never become biological A evidence. Predicate semantic hashes are
+validated at preparation and stale hashes fail.
+
+Gene-state output declares `accumulate` because the fused consumer adds into
+caller-initialized numerical state. A materialized predicate mask declares
+`overwrite`; neither strategy silently zeroes gene state. Materialization
+versus fusion remains a planner decision.
 
 The current interval projection is sorted and non-overlapping. Overlapping
 regulatory targets, allowed motifs, predicate DAGs, stable event composition,

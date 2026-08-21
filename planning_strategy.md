@@ -24,20 +24,26 @@ New work consumes these existing seams:
 
 1. The biological ABI distinguishes domain, exact order, semantic geometry,
    partition, immutable structure and epoch, mutable value generation, and
-   physical projection.
+   physical projection. Runtime handles are generation-checked aliases for
+   persistent identities, never durable identity themselves.
 2. The execution-order contract makes transforms graph-visible and permits
    compatible producers and consumers to stay packed.
 3. The execution session owns device facts, streams, library handles, and
-   persistent/transient allocation. No second math runtime is permitted.
+   persistent/transient allocation. Persistent objects never alias or move;
+   sealed launch binding allocates, discovers, and synchronizes nothing. No
+   second math runtime is permitted.
 4. CellPack's semantic geometry and execution image v2 support a projection
    catalog while preserving CP-BP v1 and CPK1 through adapters.
 5. The operation core represents native, vendor, and composed candidates with
-   direct prepared dispatch and launch-time bindings.
+   bounded multi-structure dependencies, explicit output effects, direct
+   prepared dispatch, and launch-time bindings.
 6. The end-to-end planner separates semantic, structure, projection, device,
    build, and policy keys and can select measured conventional fallbacks.
 7. The Baseplane seam supports native sequence operands and explicit
    materialized or fused sequence-to-state execution.
 8. CellShard continues to wrap opaque Cellerator bytes in CPEXEC01.
+9. Execution Image v2 is validated cold on host and prebound hot from validated
+   offsets plus the current host or device image base.
 
 ## Activation Workflow
 

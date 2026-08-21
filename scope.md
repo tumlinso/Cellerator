@@ -26,17 +26,18 @@ Cellerator owns these versioned foundations:
 - heterogeneous dense, bit-plane, event, segment, sparse-relation, and small
   parameter operand views;
 - immutable relation structures separated from mutable value planes and
-  per-launch bindings;
+  per-launch bindings, including bounded multi-relation operations;
 - execution-order contracts that preserve compatible internal order and make
   canonicalization an explicit graph operation;
 - one execution session with structure-persistent, plan-persistent, and
-  stream-ordered launch-transient storage;
+  stream-ordered launch-transient storage; persistent allocations are
+  independent, stable, and non-aliasing until session clear;
 - an operation registry shared by native kernels, composed paths, and vendor
   libraries;
 - a projection catalog and planner that charge all material preparation,
   conversion, execution, order, synchronization, and communication cost;
 - pointer-free relocatable execution images with versioned projection
-  directories.
+  directories, cold host validation, and hot device-relative prebinding.
 
 Semantic geometry describes stable execution-relevant organization. A physical
 projection describes concrete bytes and scheduling for an operation, numeric
@@ -101,9 +102,13 @@ no universal layout is presumed.
   rewrites or removal.
 - CPK1 remains loadable; CPEXEC01 remains the CellShard-owned opaque envelope.
 - Pointer addresses never define semantic identity.
+- Runtime handles are generation-checked interned aliases; durable planner
+  evidence uses persistent identities and never process-local handles.
 - A prepared operation may freeze semantics, structure, projection, algorithm,
   descriptors, and declared workspace requirements. Inputs, outputs, mutable
   values, scalars, stream, and transient workspace remain launch bindings.
+- Every mutable value plane names its immutable relation and epoch, and every
+  output declares its update/effect semantics.
 - Hot run paths perform no allocation, discovery, hashing, device selection,
   descriptor construction, or synchronization.
 

@@ -66,6 +66,7 @@ void test_identity_and_relocation() {
     const ce::axis_identity genes = axis(2u, 11u, 21u, 31u);
     const ce::axis_identity other_genes = axis(3u, 11u, 21u, 31u);
     const ce::axis_identity packed_genes = axis(2u, 12u, 21u, 31u);
+    const ce::axis_identity other_geometry = axis(2u, 11u, 121u, 31u);
     const ce::axis_identity other_partition = axis(2u, 11u, 21u, 32u);
 
     std::array<float, 15> first{}, relocated{};
@@ -81,6 +82,9 @@ void test_identity_and_relocation() {
     require(!ce::same_dense_contract(
         original, dense_view(relocated.data(), cells, packed_genes)),
         "equal domains with different orders were interchangeable");
+    require(!ce::same_dense_contract(
+        original, dense_view(relocated.data(), cells, other_geometry)),
+        "equal orders with different geometry were interchangeable");
     require(!ce::same_dense_contract(
         original, dense_view(relocated.data(), cells, other_partition)),
         "equal domains with different partitions were interchangeable");

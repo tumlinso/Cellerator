@@ -19,6 +19,8 @@ struct mathematical_problem_key {
 };
 
 struct semantic_geometry_key {
+    execution::domain_id source_domain{};
+    execution::domain_id destination_domain{};
     execution::geometry_id geometry{};
     execution::order_id source_order{};
     execution::order_id destination_order{};
@@ -36,6 +38,27 @@ struct runtime_build_key {
     std::uint64_t runtime = 0u;
     std::uint64_t kernel_build = 0u;
     std::uint64_t driver = 0u;
+    std::uint64_t library = 0u;
+};
+
+struct persistent_structure_dependency {
+    execution::structure_id identity{};
+    execution::structure_epoch epoch{};
+};
+
+struct persistent_structure_set_key {
+    persistent_structure_dependency
+        structures[execution::maximum_operation_structures]{};
+    std::uint32_t count = 0u;
+    std::uint32_t reserved = 0u;
+};
+
+struct persistent_projection_key {
+    execution::projection_id identity{};
+    operation_core::projection_kind kind =
+        operation_core::projection_kind::native_row_masked;
+    std::uint16_t schema_version = 0u;
+    std::uint32_t variant = 0u;
 };
 
 struct policy_reuse_key {
@@ -51,7 +74,7 @@ struct policy_reuse_key {
 // are launch validation state and deliberately have no field here.
 struct planning_keys {
     mathematical_problem_key problem{};
-    operation_core::structure_key structure{};
+    persistent_structure_set_key structures{};
     semantic_geometry_key geometry{};
     device_performance_key device{};
     runtime_build_key build{};
@@ -134,7 +157,7 @@ struct empirical_evidence {
 struct plan_cache_entry {
     planning_keys keys{};
     operation_core::stable_id winner{};
-    operation_core::projection_key winner_projection{};
+    persistent_projection_key winner_projection{};
     empirical_evidence evidence{};
     bool occupied = false;
 };
@@ -165,6 +188,7 @@ struct planner_policy {
     bool deterministic = false;
     bool graph_capture_required = false;
     bool tune_one_shot = false;
+    bool allow_analytical_fallback_after_measurement_failure = true;
 };
 
 struct planner_request {
@@ -246,7 +270,8 @@ struct planner_result {
     cache_state cache = cache_state::not_configured;
     bool tuning_skipped = false;
     bool conventional_winner = false;
-    std::uint8_t reserved[2]{};
+    bool cache_store_failed = false;
+    std::uint8_t reserved{};
     std::uint32_t legal_count = 0u;
     std::uint32_t shortlist_count = 0u;
     std::uint32_t measurement_count = 0u;
@@ -267,6 +292,12 @@ planner_status plan_end_to_end(
 bool same_planning_keys(
     const planning_keys &lhs,
     const planning_keys &rhs) noexcept;
+bool make_persistent_structure_set_key(
+    const operation_core::structure_set_key &live,
+    persistent_structure_set_key *persistent) noexcept;
+bool same_persistent_projection_key(
+    const persistent_projection_key &persistent,
+    const operation_core::projection_key &live) noexcept;
 
 // Versioned CP-BP objective v2. This is operation-aware planner input and does
 // not alter packing_exact_objective_kind or any CPK1 v1 bytes.
@@ -332,6 +363,8 @@ planner_status evaluate_objective_v2(
 
 static_assert(std::is_trivially_copyable<planning_keys>::value,
     "planner keys must remain persistable without pointers");
+static_assert(std::is_trivially_copyable<persistent_projection_key>::value,
+    "cached projection identity must remain persistable without handles");
 static_assert(std::is_trivially_copyable<phase_costs>::value,
     "phase costs must remain evidence-record friendly");
 static_assert(std::is_trivially_copyable<objective_v2_result>::value,

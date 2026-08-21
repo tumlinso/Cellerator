@@ -149,6 +149,9 @@ void test_persistent_execution_order() {
 void test_value_maps_and_launch_bindings() {
     const ce::axis_identity packed = axis(2u, 12u, 22u, 31u);
     const ce::relation_structure stable = relation({1u}, packed, packed);
+    ce::relation_structure auxiliary = relation({2u}, packed, packed);
+    auxiliary.identity = {101u, 1u};
+    auxiliary.projections = {201u, 1u};
     const std::array<ce::u32, 4> logical_to_projection{2u, 0u, 3u, 1u};
     const std::array<ce::u32, 4> projection_to_logical{1u, 3u, 0u, 2u};
     ce::value_position_map_view map{
@@ -181,20 +184,89 @@ void test_value_maps_and_launch_bindings() {
     const ce::output_axis_contract output_order{
         packed, packed, ce::order_transition_kind::preserve,
         0u, 0u, 1u, 1u, {}, {0u, 0u}};
-    const ce::prepared_binding_contract prepared{
-        stable.identity, stable.epoch,
-        &input_contract, &output_contract, &output_order,
-        1u, 1u, 1u, 0u, {64u, 64u, 0u}};
+    const ce::output_effect_contract output_effect{
+        ce::output_update_kind::overwrite, false, false, 0u,
+        ce::invalid_scalar_binding_id, ce::invalid_scalar_binding_id};
+    ce::prepared_binding_contract prepared{};
+    prepared.structures[0] = {stable.identity, stable.epoch};
+    prepared.structures[1] = {auxiliary.identity, auxiliary.epoch};
+    prepared.inputs = &input_contract;
+    prepared.outputs = &output_contract;
+    prepared.output_orders = &output_order;
+    prepared.output_effects = &output_effect;
+    prepared.input_count = 1u;
+    prepared.output_count = 1u;
+    prepared.output_order_count = 1u;
+    prepared.structure_count = 2u;
+    prepared.output_effect_count = 1u;
+    prepared.workspace = {64u, 64u, 0u};
     alignas(64) std::array<std::byte, 64> workspace{};
-    ce::launch_bindings launch{
-        &stable, &input, &output, &value_binding,
-        1u, 1u, 1u, 0u, {},
-        {nullptr, 0, 0u},
-        {workspace.data(), workspace.size(),
-            location(ce::residency_kind::device, 0)}};
+    const ce::relation_structure structures[2]{stable, auxiliary};
+    ce::launch_bindings launch{};
+    launch.structures = structures;
+    launch.inputs = &input;
+    launch.outputs = &output;
+    launch.values = &value_binding;
+    launch.input_count = 1u;
+    launch.output_count = 1u;
+    launch.value_count = 1u;
+    launch.structure_count = 2u;
+    launch.stream = {nullptr, 0, 0u};
+    launch.workspace = {workspace.data(), workspace.size(),
+        location(ce::residency_kind::device, 0)};
     require(ce::validate_launch_bindings(prepared, launch)
             == ce::binding_validation_code::ok,
         "valid per-launch bindings failed");
+
+    ce::output_effect_contract invalid_overwrite = output_effect;
+    invalid_overwrite.requires_initialized_destination = true;
+    ce::prepared_binding_contract bad_effect = prepared;
+    bad_effect.output_effects = &invalid_overwrite;
+    require(ce::validate_launch_bindings(bad_effect, launch)
+            == ce::binding_validation_code::invalid_output_effect,
+        "overwrite requiring initialized destination was accepted");
+    ce::output_effect_contract invalid_accumulate{
+        ce::output_update_kind::accumulate, false, false, 0u,
+        ce::invalid_scalar_binding_id, ce::invalid_scalar_binding_id};
+    bad_effect.output_effects = &invalid_accumulate;
+    require(ce::validate_launch_bindings(bad_effect, launch)
+            == ce::binding_validation_code::invalid_output_effect,
+        "accumulation without initialized destination was accepted");
+    ce::output_effect_contract affine{
+        ce::output_update_kind::affine_accumulate, true, false, 0u,
+        11u, 12u};
+    bad_effect.output_effects = &affine;
+    require(ce::validate_launch_bindings(bad_effect, launch)
+            == ce::binding_validation_code::missing_scalar_binding,
+        "affine accumulation without required scalars was accepted");
+    launch.scalars.count = 2u;
+    launch.scalars.values[0] = {11u, ce::numeric_type::f32, {}, 0u};
+    launch.scalars.values[1] = {12u, ce::numeric_type::f32, {}, 0u};
+    require(ce::validate_launch_bindings(bad_effect, launch)
+            == ce::binding_validation_code::ok,
+        "valid affine scalar references were rejected");
+    launch.scalars.count = 0u;
+    ce::biological_operand_view aliased_output = input;
+    launch.outputs = &aliased_output;
+    require(ce::validate_launch_bindings(prepared, launch)
+            == ce::binding_validation_code::illegal_operand_alias,
+        "forbidden input/output alias was accepted");
+    launch.outputs = &output;
+
+    ce::value_plane wrong_relation_plane = plane;
+    wrong_relation_plane.structure = {99u, 1u};
+    ce::value_binding wrong_relation_value{&wrong_relation_plane, {4u}};
+    launch.values = &wrong_relation_value;
+    require(ce::validate_launch_bindings(prepared, launch)
+            == ce::binding_validation_code::unknown_value_structure,
+        "value plane referencing an unknown relation was accepted");
+    ce::value_plane stale_generation_plane = plane;
+    ce::value_binding stale_generation_value{&stale_generation_plane, {5u}};
+    launch.values = &stale_generation_value;
+    require(ce::validate_launch_bindings(prepared, launch)
+            == ce::binding_validation_code::stale_value,
+        "stale value generation was accepted");
+    launch.values = &value_binding;
 
     ce::prepared_binding_contract missing_order = prepared;
     missing_order.output_order_count = 0u;

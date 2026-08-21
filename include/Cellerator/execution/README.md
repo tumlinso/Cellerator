@@ -20,7 +20,8 @@ be copied into every edge, tile, or event.
 Domain, order, semantic geometry, and partition remain separate. Structure and
 projection identifiers are also separate. Device performance class and build
 identity are planner/cache inputs and never biological identity. A handle is
-valid only in the registry generation that interned its persistent identity.
+an interned alias, not persistent identity, and is valid only in the registry
+generation that interned its persistent identity.
 
 ## Persistence and versioning
 
@@ -52,7 +53,9 @@ sequence bytes, validity-aware predicates, motif/event emission, and segment
 construction. This target has no allocation, STL ownership, CUDA runtime,
 vendor-library, biological ontology, or persistence-image dependency.
 
-The exact Baseplane conversion and public adapter surfaces remain gated on the
-Baseplane correctness/prepared-plan checkpoints and CE-ARCH-40. CE-ARCH-11 owns
-structure/value/binding lifetime and execution-order contracts; those concepts
-must not be added here by growing every operand record.
+Prepared operations may require a bounded set of immutable relation structures.
+Each mutable value plane names the exact relation handle and epoch whose logical
+edges it values. Prepared state owns no ordinary launch-time pointers, and every
+output has an explicit update/effect contract. These rules are implemented by
+the adjacent lifetime, launch-binding, and execution-contract headers rather
+than by growing every operand record.

@@ -8,14 +8,6 @@ allocation_accounting *accounting_for(
     return &session->accounting.graph_stable;
 }
 
-scratch_arena *arena_for(
-    execution_session *session,
-    persistent_lifetime lifetime) noexcept {
-    if (lifetime == persistent_lifetime::structure) return &session->structure_persistent;
-    if (lifetime == persistent_lifetime::plan) return &session->plan_persistent;
-    return &session->graph_stable;
-}
-
 fixed_session_cache *cache_for(
     execution_session *session,
     session_cache_kind kind) noexcept {
@@ -36,15 +28,10 @@ bool same_key(session_cache_key left, session_cache_key right) noexcept {
     return left.high == right.high && left.low == right.low;
 }
 
-void account_reservation(
-    allocation_accounting *accounting,
-    std::size_t previous_bytes,
-    std::size_t current_bytes) noexcept {
-    accounting->current_bytes = current_bytes;
-    if (current_bytes > accounting->high_water_bytes) {
-        accounting->high_water_bytes = current_bytes;
-    }
-    if (current_bytes > previous_bytes) ++accounting->allocation_count;
+bool valid_persistent_lifetime(persistent_lifetime lifetime) noexcept {
+    return lifetime == persistent_lifetime::structure
+        || lifetime == persistent_lifetime::plan
+        || lifetime == persistent_lifetime::graph_stable;
 }
 
 } // namespace
@@ -81,9 +68,6 @@ session_status init_session(
         session->performance.warp_size = properties.warpSize;
         session->performance.global_memory_bytes = properties.totalGlobalMem;
 
-        init(&session->structure_persistent);
-        init(&session->plan_persistent);
-        init(&session->graph_stable);
         for (std::uint32_t index = 0; index < stream_count; ++index) {
             session_stream_slot &slot = session->streams[index];
             init(&slot.cublas);
@@ -114,9 +98,13 @@ void clear_session(execution_session *session) noexcept {
         clear(&slot.execution);
         slot.libraries_prepared = false;
     }
-    clear(&session->graph_stable);
-    clear(&session->plan_persistent);
-    clear(&session->structure_persistent);
+    for (std::uint32_t index = 0;
+         index < execution_session_max_persistent_allocations; ++index) {
+        persistent_allocation_record &record =
+            session->persistent_allocations[index];
+        if (record.occupied && record.data != nullptr) (void) cudaFree(record.data);
+        record = persistent_allocation_record{};
+    }
     *session = execution_session{};
 }
 
@@ -128,15 +116,26 @@ session_status reserve_persistent(
     if (allocation != nullptr) *allocation = nullptr;
     if (session == nullptr || allocation == nullptr) return session_status::invalid_argument;
     if (!session->initialized || session->sealed) return session_status::invalid_state;
-    scratch_arena *arena = arena_for(session, lifetime);
-    allocation_accounting *accounting = accounting_for(session, lifetime);
-    const std::size_t previous_bytes = arena->bytes;
-    try {
-        *allocation = request_scratch(arena, bytes);
-    } catch (...) {
+    if (!valid_persistent_lifetime(lifetime)) return session_status::invalid_argument;
+    if (bytes == 0u) return session_status::success;
+    if (session->persistent_allocation_count
+        == execution_session_max_persistent_allocations) {
+        return session_status::capacity_exceeded;
+    }
+    if (cudaSetDevice(session->device) != cudaSuccess) {
         return session_status::cuda_failure;
     }
-    account_reservation(accounting, previous_bytes, arena->bytes);
+    void *data = nullptr;
+    if (cudaMalloc(&data, bytes) != cudaSuccess) return session_status::cuda_failure;
+    persistent_allocation_record &record = session->persistent_allocations[
+        session->persistent_allocation_count++];
+    record = persistent_allocation_record{data, bytes, lifetime, true};
+    allocation_accounting *accounting = accounting_for(session, lifetime);
+    accounting->current_bytes += bytes;
+    if (accounting->current_bytes > accounting->high_water_bytes)
+        accounting->high_water_bytes = accounting->current_bytes;
+    ++accounting->allocation_count;
+    *allocation = data;
     return session_status::success;
 }
 

@@ -13,6 +13,7 @@
 namespace cellerator::execution {
 
 inline constexpr u16 execution_lifetime_contract_version = 1u;
+inline constexpr u32 maximum_operation_structures = 8u;
 
 struct projection_catalog_handle {
     u32 slot;
@@ -55,6 +56,11 @@ struct relation_structure {
     axis_identity destination_axis;
     projection_catalog_handle projections;
     u64 logical_edge_count;
+};
+
+struct structure_requirement {
+    structure_handle identity;
+    structure_epoch epoch;
 };
 
 struct value_plane {
@@ -167,6 +173,8 @@ validate_value_binding(
 
 static_assert(std::is_trivially_copyable<relation_structure>::value,
     "relation structure must remain device-copyable");
+static_assert(std::is_trivially_copyable<structure_requirement>::value,
+    "structure requirement must remain device-copyable");
 static_assert(std::is_trivially_copyable<value_plane>::value,
     "value plane must remain device-copyable");
 static_assert(std::is_trivially_copyable<value_binding>::value,

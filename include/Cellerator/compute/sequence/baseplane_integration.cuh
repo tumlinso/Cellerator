@@ -12,6 +12,15 @@ namespace cellerator::compute::sequence {
 namespace operation_core = cellerator::compute::math::core;
 
 inline constexpr std::uint16_t baseplane_integration_schema_version = 1u;
+inline constexpr std::uint32_t required_baseplane_sequence_predicate_abi = 1u;
+static_assert(baseplane::seq::sequence_predicate_abi_version
+        == required_baseplane_sequence_predicate_abi,
+    "Cellerator requires Baseplane sequence predicate ABI version 1");
+#if defined(BASEPLANE_SEQUENCE_PREDICATE_ABI_VERSION)
+static_assert(BASEPLANE_SEQUENCE_PREDICATE_ABI_VERSION
+        == required_baseplane_sequence_predicate_abi,
+    "Baseplane target and public header report different predicate ABI versions");
+#endif
 
 enum class sequence_strategy : std::uint8_t {
     automatic = 0u,
@@ -53,11 +62,14 @@ struct sequence_prepare_policy {
 struct sequence_prepare_request {
     const baseplane::seq::sequence_predicate_program *program = nullptr;
     const baseplane::seq::prepared_predicate_plan *baseplane_plan = nullptr;
-    execution::structure_id persistent_structure{};
+    execution::structure_id persistent_coordinate_structure{};
+    execution::structure_id persistent_regulatory_structure{};
     execution::projection_id persistent_projection{};
     execution::projection_handle projection{};
-    execution::relation_structure relation{};
+    execution::relation_structure coordinate_to_regulatory{};
+    execution::relation_structure regulatory_to_gene{};
     execution::sequence_domain source_domain{};
+    execution::axis_identity regulatory_axis{};
     execution::axis_identity predicate_mask_axis{};
     regulatory_projection_view regulatory{};
 };
@@ -77,6 +89,7 @@ struct prepared_sequence_state {
     execution::operand_axis_contract input_contracts[1]{};
     execution::operand_axis_contract output_contracts[2]{};
     execution::output_axis_contract output_orders[2]{};
+    execution::output_effect_contract output_effects[2]{};
 };
 
 struct sequence_execution_accounting {
