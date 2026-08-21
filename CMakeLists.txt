@@ -210,6 +210,37 @@ set_target_properties(cellerator_runtime PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-ARCH-22: backend-neutral operation preparation and direct dispatch over
+# the biological execution contracts and the single Cellerator runtime.
+add_library(cellerator_operation_core STATIC
+    src/compute/math/operation_core/operation_core.cc
+)
+add_library(Cellerator::operation_core ALIAS cellerator_operation_core)
+target_include_directories(cellerator_operation_core PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_compile_features(cellerator_operation_core PUBLIC cxx_std_17)
+target_link_libraries(cellerator_operation_core PUBLIC
+    Cellerator::biological_abi
+    Cellerator::runtime
+)
+set_target_properties(cellerator_operation_core PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorOperationCoreTest
+    tests/math_core/operation_core_test.cc
+)
+target_link_libraries(celleratorOperationCoreTest PRIVATE
+    Cellerator::operation_core
+)
+set_target_properties(celleratorOperationCoreTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_compute_matrix_convert STATIC
     src/compute/matrix/convert/bucket.cu
     src/compute/matrix/convert/compressed.cu
