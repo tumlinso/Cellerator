@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "design_only_unarmed",
+  "controller_specs_to_arm_now": [],
+  "historical_watch_policy": {
+    "source": "../cuda_background_contract.json",
+    "preserve_all_existing_cp_bp_watches": true,
+    "known_watch_ids": [
+      "cellerator-cpbp09-row-reduction-v1",
+      "cellerator-cpmath03-packed-rhs-v1"
+    ],
+    "rule": "Do not replace, rename, or infer fresh baselines from historical watches during CE-ARCH-30."
+  },
+  "activation_requirements": [
+    "The named executable and every compared candidate exist in one clean source snapshot.",
+    "A CPU or independent referee validates semantics, identity, order, and numeric policy before timing.",
+    "The target accepts a workload manifest entry, trace digest, candidate set, N, numeric policy, output-order policy, and reuse horizon.",
+    "The target emits the benchmark-contract phase and memory records in machine-readable form.",
+    "The CUDA skill controller validates resource declarations and todo-orchestrator owns the corresponding benchmark or profiler lease.",
+    "A baseline is intentionally promoted from a representative run; no nonexistent kernel or provisional source path is watched."
+  ],
+  "deferred_watch_families": [
+    {
+      "id": "execution-order-pipeline",
+      "blocked_by": ["CE-ARCH-11", "CELLERATOR_OPERATION_CORE_V1_READY"],
+      "future_comparison": ["canonical_order_pipeline", "persistent_execution_order_pipeline"],
+      "required_tiers": ["smoke", "representative", "adversarial"],
+      "activation_state": "blocked_no_target"
+    },
+    {
+      "id": "projection-plurality",
+      "blocked_by": ["CP_BP_V1_COMPATIBILITY_ADAPTER_READY", "CELLERATOR_OPERATION_CORE_V1_READY"],
+      "future_comparison": ["current_cp_bp_direct", "current_csr", "cusparse", "other capability-legal projections"],
+      "required_tiers": ["representative", "throughput", "adversarial"],
+      "activation_state": "blocked_no_integrated_target"
+    },
+    {
+      "id": "planner-total-cost",
+      "blocked_by": ["CELLERATOR_PLANNER_V1_VALIDATED"],
+      "future_comparison": ["planner_selected", "measured_oracle_winner"],
+      "required_tiers": ["representative", "adversarial"],
+      "activation_state": "blocked_no_planner"
+    },
+    {
+      "id": "baseplane-materialize-versus-fuse",
+      "blocked_by": ["CELLERATOR_BASEPLANE_COMMON_ABI_V1_READY"],
+      "future_comparison": ["baseplane_materialized", "baseplane_fused"],
+      "required_tiers": ["smoke", "representative", "adversarial"],
+      "activation_state": "blocked_no_common_abi"
+    }
+  ],
+  "future_command_templates": {
+    "validate_package": "python3 Cellerator/bench/architecture_evidence/validate_evidence.py --verify-local-sources",
+    "correctness": "<snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/data/manifests/architecture_evidence/workloads.json --tier <tier> --correctness-only --json <result.json>",
+    "benchmark": "<cuda-controller-benchmark-wrapper> -- <snapshot>/build/architectureEvidenceBenchmark --contract <snapshot>/bench/architecture_evidence/benchmark_contract.json --workloads <snapshot>/data/manifests/architecture_evidence/workloads.json --tier <representative|throughput|adversarial> --json <result.json>",
+    "deep_profile": "<cuda-controller-profiler-wrapper> -- <snapshot>/build/architectureEvidenceBenchmark --workload <workload-id> --candidate <candidate-id> --profile-once --json <result.json>"
+  },
+  "prohibitions": [
+    "Do not arm a watch from this design file.",
+    "Do not use a dirty checkout as a benchmark snapshot.",
+    "Do not run deep profiling before correctness and representative timing.",
+    "Do not create a watch for an executable, kernel, or projection that does not exist.",
+    "Do not mix results from different architecture classes in one baseline series."
+  ]
+}

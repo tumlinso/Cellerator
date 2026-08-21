@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "orientation_contract": "observations_by_features",
+  "quantitative_values_enabled": false,
+  "sources": [
+    {
+      "id": "pbmc3k-raw-local",
+      "assay": "scRNA-seq",
+      "modality": "RNA",
+      "local_path": "data/test/reference/pbmc3k_raw.h5ad",
+      "sha256": "89a96f1beaa2dd83a687666d3f19a4513ac27a2a2d12581fcd77afed7ea653a1",
+      "bytes": 5855727,
+      "matrix": {
+        "encoding": "CSR",
+        "rows": 2700,
+        "columns": 32738,
+        "nnz": 2286884,
+        "storage_dtype": "float32"
+      },
+      "axes": {
+        "row_axis": "cell",
+        "column_axis": "gene_or_transcript_feature"
+      },
+      "processing_state": "raw-count candidate; sampled stored values are integral, but full quantitative validation is not part of CE-ARCH-30",
+      "feature_namespace": "unverified local H5AD var index",
+      "observation_unit": "cell barcode",
+      "required_provenance_present": [],
+      "required_provenance_missing": [
+        "donor",
+        "sample",
+        "batch",
+        "chemistry",
+        "species"
+      ],
+      "structure_only": true,
+      "allowed_uses": [
+        "sparse-support extraction",
+        "row and feature frequency statistics",
+        "layout and planner evidence"
+      ],
+      "forbidden_uses": [
+        "quantitative expression comparison",
+        "normalization claims",
+        "donor or study split construction"
+      ]
+    },
+    {
+      "id": "gse147520-local-x",
+      "assay": "scRNA-seq",
+      "modality": "RNA",
+      "local_path": "data/test/reference/GSE147520_all_cells_raw_counts.h5ad",
+      "sha256": "c6e2b5a4056b559b844f5f0c286b590a7f81edde1e0c1c1a2296d02e82284d7a",
+      "bytes": 286354359,
+      "matrix": {
+        "encoding": "CSR",
+        "rows": 68008,
+        "columns": 26587,
+        "nnz": 114455556,
+        "storage_dtype": "float32"
+      },
+      "axes": {
+        "row_axis": "cell",
+        "column_axis": "gene_feature"
+      },
+      "processing_state": "processed or transformed X; sampled stored values are non-integral and no count layer is present despite the local filename",
+      "feature_namespace": "mixed gene identifier columns; must be resolved before quantitative or cross-study use",
+      "observation_unit": "cell",
+      "required_provenance_present": [],
+      "required_provenance_missing": [
+        "donor",
+        "sample",
+        "batch",
+        "chemistry",
+        "species"
+      ],
+      "structure_only": true,
+      "allowed_uses": [
+        "binary sparse-support extraction",
+        "row and feature frequency statistics",
+        "layout and planner evidence"
+      ],
+      "forbidden_uses": [
+        "raw-count semantics",
+        "double normalization or log transformation",
+        "quantitative expression comparison",
+        "donor or study split construction"
+      ]
+    }
+  ],
+  "activation_recipes": [
+    {
+      "source_class": "scATAC-seq",
+      "required_axes": ["cell_or_nucleus", "genomic_peak"],
+      "required_metadata": ["species", "genome_build", "donor", "sample", "chemistry"],
+      "compatibility_policy": "Do not union or intersect peak spaces silently; pin the peak-set construction and genome build.",
+      "extraction": "Pin an immutable source archive and checksum, preserve the cells-by-peaks support matrix, and emit a deterministic row sample plus peak-coordinate namespace digest.",
+      "status": "blocked_until_source_checksum_and_peak_namespace_are_pinned"
+    },
+    {
+      "source_class": "matched_multiome",
+      "required_axes": ["paired_cell", "RNA_gene", "ATAC_peak"],
+      "required_metadata": ["pairing_granularity", "modality_coverage", "species", "genome_build", "donor", "sample", "chemistry"],
+      "compatibility_policy": "Keep RNA and ATAC feature spaces separate and preserve partial-modality status; donor-level alignment is not cell pairing.",
+      "extraction": "Pin checksums for both modality matrices and the barcode-linkage table, then emit separate support traces with a shared paired-cell identity digest.",
+      "status": "blocked_until_paired_source_and_checksums_are_pinned"
+    },
+    {
+      "source_class": "gene_regulatory_graph",
+      "required_axes": ["regulator", "target_gene"],
+      "required_metadata": ["species", "source_release", "edge_evidence", "identifier_namespace"],
+      "compatibility_policy": "Do not collapse directed, signed, or evidence-specific relations into one unlabeled graph.",
+      "extraction": "Pin release and checksum, normalize identifiers without changing direction or sign, and emit one trace per preserved relation class.",
+      "status": "blocked_until_release_checksum_is_pinned"
+    },
+    {
+      "source_class": "enhancer_promoter_relation",
+      "required_axes": ["regulatory_element", "gene_or_promoter"],
+      "required_metadata": ["species", "genome_build", "source_release", "relation_evidence"],
+      "compatibility_policy": "Preserve genomic coordinate domain and evidence class; liftover requires a separately checksummed derived artifact.",
+      "extraction": "Pin release/checksum and emit coordinate-domain, element-order, gene-order, and edge-support digests.",
+      "status": "blocked_until_release_checksum_and_genome_build_are_pinned"
+    },
+    {
+      "source_class": "developmental_trajectory",
+      "required_axes": ["cell", "gene_feature"],
+      "required_metadata": ["donor", "sample", "timepoint_or_stage", "lineage", "processing_state"],
+      "compatibility_policy": "Structural traces may use support only; any trajectory labels or values require provenance-preserving stage and donor splits.",
+      "extraction": "Pin source checksum, extract support before integration, and preserve stage/donor strata in the trace sidecar.",
+      "status": "blocked_until_stage_and_donor_provenance_are_available"
+    },
+    {
+      "source_class": "cell_neighborhood_graph",
+      "required_axes": ["cell", "cell"],
+      "required_metadata": ["source_matrix_checksum", "preprocessing_state", "distance_metric", "neighbor_rule"],
+      "compatibility_policy": "A neighborhood graph is a derived object, not raw assay data; pin every preprocessing and graph-construction parameter.",
+      "extraction": "Emit the directed or symmetric adjacency exactly as constructed plus the complete derivation digest.",
+      "status": "blocked_until_graph_derivation_is_reproducible"
+    },
+    {
+      "source_class": "pathway_or_module_membership",
+      "required_axes": ["module", "gene_or_feature"],
+      "required_metadata": ["species", "identifier_namespace", "release", "membership_semantics"],
+      "compatibility_policy": "Do not merge pathway databases or identifier namespaces without versioned remapping evidence.",
+      "extraction": "Pin release/checksum and emit memberships without weights unless the source defines quantitative weights.",
+      "status": "blocked_until_release_checksum_is_pinned"
+    },
+    {
+      "source_class": "baseplane_motif_regulatory_relation",
+      "required_axes": ["motif_event_or_predicate", "regulatory_element"],
+      "required_metadata": ["sequence_domain", "genome_build", "predicate_plan_digest", "validity_policy", "ownership_and_halo"],
+      "compatibility_policy": "Invalid bases, tails, strand, palindrome, chunk ownership, total matches, stored records, and dropped records must be explicit.",
+      "extraction": "Activate only after Baseplane correctness/prepared-plan checkpoints and the Cellerator common identity ABI; compare materialized and fused paths.",
+      "status": "blocked_until_ce_arch_40_dependencies_exist"
+    },
+    {
+      "source_class": "sparse_learned_biological_network",
+      "required_axes": ["source_biological_axis", "destination_biological_axis"],
+      "required_metadata": ["structure_epoch", "training_split_digest", "objective", "value_generation"],
+      "compatibility_policy": "Structure, weights, and train/validation provenance remain separate; no cell, donor, or study leakage across splits.",
+      "extraction": "Persist only a structure trace and split/provenance digest; mutable learned values remain separate benchmark bindings.",
+      "status": "blocked_until_model_and_split_contract_are_validated"
+    }
+  ]
+}

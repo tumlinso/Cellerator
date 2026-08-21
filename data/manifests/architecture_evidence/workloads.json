@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "generator_contract": {
+    "algorithm": "splitmix64-structural-v1",
+    "value_semantics": "structure_only",
+    "matrix_orientation": "rows_are_source_or_observation_axis; columns_are_destination_or_feature_axis",
+    "large_output": "Matrix Market pattern matrices are local and gitignored; committed compact JSON traces are capped at 1000000 edges"
+  },
+  "operation_regimes": {
+    "dense_width_n": [1, 2, 3, 4, 7, 8, 16, 24, 32, 64, 96, 128, 256, 512],
+    "required_power_of_two_n": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
+    "required_non_power_of_two_n": [3, 7, 24, 96],
+    "numeric_policies": [
+      "bit_or_integer_predicate_only",
+      "fp16_storage_fp32_accumulation",
+      "bf16_storage_fp32_accumulation",
+      "fp32_storage_fp32_accumulation"
+    ],
+    "activation_rule": "Measure only numeric policies advertised by every selected candidate; fp8 and quantized policies remain deferred until implemented."
+  },
+  "workloads": [
+    {
+      "id": "scrna-pbmc3k-support-smoke",
+      "source_class": "scRNA-seq",
+      "tier": "smoke",
+      "axes": {"row_axis": "cell", "column_axis": "gene_or_transcript_feature"},
+      "real_source": {"source_id": "pbmc3k-raw-local", "rows": 512, "row_selection_seed": 7},
+      "stressors": ["real_row_sparsity", "feature_frequency", "partial_blocks"],
+      "reuse_regime": "persistent_structure_mutable_values"
+    },
+    {
+      "id": "scrna-gse147520-support-representative",
+      "source_class": "scRNA-seq",
+      "tier": "representative",
+      "axes": {"row_axis": "cell", "column_axis": "gene_feature"},
+      "real_source": {"source_id": "gse147520-local-x", "rows": 16384, "row_selection_seed": 7},
+      "stressors": ["real_row_sparsity", "rare_genes", "feature_hubs", "row_length_skew"],
+      "reuse_regime": "persistent_structure_mutable_values",
+      "values_ignored": true
+    },
+    {
+      "id": "scatac-modular-smoke",
+      "source_class": "scATAC-seq",
+      "tier": "smoke",
+      "axes": {"row_axis": "cell_or_nucleus", "column_axis": "genomic_peak"},
+      "synthetic": {"family": "modular_coherent", "seed": 101, "rows": 64, "columns": 256, "degree": 12, "module_count": 8, "coherence_ppm": 900000},
+      "stressors": ["high_sparsity", "peak_modules", "rare_peaks", "partial_blocks"],
+      "reuse_regime": "persistent_structure_mutable_values",
+      "scientific_label": "synthetic structural proxy; not a measured chromatin assay"
+    },
+    {
+      "id": "multiome-paired-proxy",
+      "source_class": "matched_multiome",
+      "tier": "representative",
+      "axes": {"row_axis": "paired_cell", "column_axis": "modality_specific_feature"},
+      "synthetic": {"family": "modular_coherent", "seed": 103, "rows": 4096, "columns": 32768, "degree": 48, "module_count": 32, "coherence_ppm": 760000},
+      "stressors": ["module_overlap", "mixed_coherence", "modality_specific_feature_space"],
+      "reuse_regime": "persistent_structure_mutable_values",
+      "scientific_label": "synthetic joint-structure proxy; RNA and ATAC identities must remain separate in a real activation"
+    },
+    {
+      "id": "regulatory-graph-hub-skew",
+      "source_class": "gene_regulatory_graph",
+      "tier": "representative",
+      "axes": {"row_axis": "regulator", "column_axis": "target_gene"},
+      "synthetic": {"family": "hub_skew", "seed": 107, "rows": 4096, "columns": 30000, "degree": 24, "hub_count": 96, "hub_probability_ppm": 700000},
+      "stressors": ["power_law_hubs", "rare_targets", "forward_transpose_asymmetry"],
+      "reuse_regime": "persistent_structure_mutable_values"
+    },
+    {
+      "id": "enhancer-promoter-partitioned",
+      "source_class": "enhancer_promoter_relation",
+      "tier": "representative",
+      "axes": {"row_axis": "regulatory_element", "column_axis": "gene_or_promoter"},
+      "synthetic": {"family": "modular_coherent", "seed": 109, "rows": 32768, "columns": 30000, "degree": 8, "module_count": 64, "coherence_ppm": 820000},
+      "stressors": ["rare_elements", "module_overlap", "cross_partition_edges"],
+      "reuse_regime": "persistent_structure_mutable_values"
+    },
+    {
+      "id": "developmental-trajectory-shifting-modules",
+      "source_class": "developmental_trajectory",
+      "tier": "representative",
+      "axes": {"row_axis": "cell_in_stage_order", "column_axis": "gene_feature"},
+      "synthetic": {"family": "trajectory", "seed": 113, "rows": 16384, "columns": 30000, "degree": 32, "module_count": 24},
+      "stressors": ["bounded_state_coherence", "gradual_module_shift", "rare_cell_states"],
+      "reuse_regime": "persistent_structure_mutable_values"
+    },
+    {
+      "id": "cell-neighborhood-local-with-cross-edges",
+      "source_class": "cell_neighborhood_graph",
+      "tier": "representative",
+      "axes": {"row_axis": "cell", "column_axis": "neighbor_cell"},
+      "synthetic": {"family": "cell_neighborhood", "seed": 127, "rows": 8192, "columns": 8192, "degree": 32, "radius": 64, "cross_edge_ppm": 80000},
+      "stressors": ["locality", "cross_partition_edges", "symmetric_graph_candidate"],
+      "reuse_regime": "persistent_structure_static_values"
+    },
+    {
+      "id": "pathway-module-overlap",
+      "source_class": "pathway_or_module_membership",
+      "tier": "representative",
+      "axes": {"row_axis": "module", "column_axis": "gene_feature"},
+      "synthetic": {"family": "modular_coherent", "seed": 131, "rows": 2048, "columns": 30000, "degree": 96, "module_count": 64, "coherence_ppm": 650000},
+      "stressors": ["module_overlap", "feature_reuse", "metadata_to_value_ratio"],
+      "reuse_regime": "persistent_structure_static_values"
+    },
+    {
+      "id": "baseplane-motif-regulatory-smoke",
+      "source_class": "baseplane_motif_regulatory_relation",
+      "tier": "smoke",
+      "axes": {"row_axis": "motif_event_or_predicate", "column_axis": "regulatory_element"},
+      "synthetic": {"family": "sequence_regulatory", "seed": 137, "rows": 96, "columns": 192, "degree": 6, "module_count": 12, "coherence_ppm": 875000},
+      "stressors": ["predicate_reuse", "sparse_event_emission", "chunk_boundary_metadata"],
+      "reuse_regime": "compare_materialized_and_fused",
+      "activation_checkpoint": "CELLERATOR_BASEPLANE_COMMON_ABI_V1_READY"
+    },
+    {
+      "id": "sparse-learned-fixed-topology",
+      "source_class": "sparse_learned_biological_network",
+      "tier": "representative",
+      "axes": {"row_axis": "source_biological_axis", "column_axis": "latent_or_destination_axis"},
+      "synthetic": {"family": "sparse_learned", "seed": 139, "rows": 8192, "columns": 4096, "degree": 24, "module_count": 32, "coherence_ppm": 720000},
+      "stressors": ["fixed_topology", "mutable_value_generation", "transpose_heavy_training"],
+      "reuse_regime": "persistent_structure_many_value_generations"
+    },
+    {
+      "id": "adversarial-uniform-random-no-modules",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "uniform_random", "seed": 149, "rows": 4096, "columns": 30000, "degree": 32},
+      "adversarial_tags": ["uniform_random_sparsity", "no_reusable_modules"],
+      "falsification_role": "must allow CSR, SELL, or vendor fallback to win"
+    },
+    {
+      "id": "adversarial-global-hubs",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "hub_skew", "seed": 151, "rows": 4096, "columns": 30000, "degree": 32, "hub_count": 8, "hub_probability_ppm": 950000},
+      "adversarial_tags": ["global_hub_features"],
+      "falsification_role": "stress shared-feature contention and metadata concentration"
+    },
+    {
+      "id": "adversarial-isolated-rare-features",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "rare_features", "seed": 157, "rows": 4096, "columns": 30000, "degree": 16, "common_feature_count": 2048, "rare_period": 2},
+      "adversarial_tags": ["isolated_rare_features"],
+      "falsification_role": "defeat grouping that expands rare-feature storage"
+    },
+    {
+      "id": "adversarial-row-length-skew",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "long_tail", "seed": 163, "rows": 4096, "columns": 30000, "minimum_degree": 1, "maximum_degree": 2048},
+      "adversarial_tags": ["severe_row_length_skew", "heavy_rows"],
+      "falsification_role": "stress lane imbalance and heavy-row fallback"
+    },
+    {
+      "id": "adversarial-nearly-empty",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "uniform_random", "seed": 167, "rows": 4096, "columns": 30000, "degree": 1},
+      "adversarial_tags": ["nearly_empty_masks"],
+      "falsification_role": "metadata and launch overhead should dominate native packing"
+    },
+    {
+      "id": "adversarial-tiny-partial-blocks",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "uniform_random", "seed": 173, "rows": 33, "columns": 65, "degree": 2},
+      "adversarial_tags": ["tiny_partial_blocks", "misaligned_dimensions"],
+      "falsification_role": "expose padding and fixed-tile waste"
+    },
+    {
+      "id": "adversarial-dense-fragment-below-break-even",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "dense_fragment", "seed": 179, "rows": 512, "columns": 512, "fragment_rows": 127, "fragment_columns": 127, "fragment_degree": 112, "background_degree": 4},
+      "adversarial_tags": ["dense_fragments_below_break_even"],
+      "falsification_role": "force measured dense-fragment promotion threshold"
+    },
+    {
+      "id": "adversarial-high-cross-partition-cut",
+      "source_class": "adversarial",
+      "tier": "adversarial",
+      "axes": {"row_axis": "synthetic_row", "column_axis": "synthetic_feature"},
+      "synthetic": {"family": "modular_coherent", "seed": 181, "rows": 4096, "columns": 4096, "degree": 32, "module_count": 16, "coherence_ppm": 50000},
+      "adversarial_tags": ["high_cross_gpu_cut"],
+      "falsification_role": "communication-aware planner must reject a poor partition"
+    },
+    {
+      "id": "adversarial-runtime-regimes",
+      "source_class": "adversarial_control",
+      "tier": "adversarial",
+      "axes": {"row_axis": "declared_by_bound_trace", "column_axis": "declared_by_bound_trace"},
+      "control_only": true,
+      "adversarial_tags": [
+        "structure_changes_too_frequently",
+        "transpose_heavy_training",
+        "one_shot_operation",
+        "output_order_conversion_dominates",
+        "N_misaligned_to_matrix_fragments"
+      ],
+      "required_bindings": ["one synthetic or real support trace", "reuse horizon", "forward-to-transpose ratio", "requested output order", "N"]
+    },
+    {
+      "id": "adversarial-sequence-predicate-regimes",
+      "source_class": "adversarial_control",
+      "tier": "adversarial",
+      "axes": {"row_axis": "sequence_coordinate", "column_axis": "predicate_or_event"},
+      "control_only": true,
+      "adversarial_tags": [
+        "nearly_all_base_predicates",
+        "nearly_no_base_predicates",
+        "ambiguous_sequence_regions",
+        "chunk_boundary_motif_hits"
+      ],
+      "activation_checkpoint": "CELLERATOR_BASEPLANE_COMMON_ABI_V1_READY",
+      "required_bindings": ["validity-aware Baseplane scalar reference", "SequenceDomain ownership and halo", "materialized and fused candidates"]
+    }
+  ]
+}

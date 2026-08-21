@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "controller": "installed CUDA skill background controller",
+  "current_architecture_class": "v100-sm70",
+  "global_rules": [
+    "Correctness gates run before performance for every revision, workload, numeric policy, and candidate.",
+    "Measured runs use clean immutable snapshots; a dirty working tree is never benchmark input.",
+    "Benchmark and profiler ownership is serialized through todo-orchestrator and the CUDA resource controller.",
+    "A benchmark lease, profiler lease, GPU lease, and declared host-pressure allowance must all exist before the corresponding command starts.",
+    "Free device memory must be sampled immediately before acquisition and remain above the tier headroom floor after declared peak allocation.",
+    "V100 sm_70 is the current native baseline; Ampere, Hopper, and Blackwell results use distinct device-performance classes and never silently replace it.",
+    "Deep profiling is limited to one selected candidate-workload pair per source revision unless an explicit diagnostic exception is recorded.",
+    "This contract creates no lease, reservation, watch, or benchmark run by itself."
+  ],
+  "tiers": [
+    {
+      "id": "smoke",
+      "purpose": "Fast schema, fixture, build, scalar-parity, and launch-contract validation.",
+      "correctness_required": true,
+      "timing_authoritative": false,
+      "profiler_allowed": false,
+      "minimum_free_memory_fraction": 0.25,
+      "maximum_repetitions": 5,
+      "resource_class": "gpu:any only after an implementation target exists"
+    },
+    {
+      "id": "representative",
+      "purpose": "Decision-quality end-to-end measurements on pinned structural traces.",
+      "correctness_required": true,
+      "timing_authoritative": true,
+      "profiler_allowed": false,
+      "minimum_free_memory_fraction": 0.35,
+      "maximum_repetitions": 30,
+      "resource_class": "benchmark + gpu:v100-sm70"
+    },
+    {
+      "id": "throughput",
+      "purpose": "Sustained reuse and amortization evidence after a representative winner exists.",
+      "correctness_required": true,
+      "timing_authoritative": true,
+      "profiler_allowed": false,
+      "minimum_free_memory_fraction": 0.40,
+      "maximum_repetitions": 100,
+      "resource_class": "benchmark + gpu:v100-sm70 + host-pressure budget"
+    },
+    {
+      "id": "adversarial",
+      "purpose": "Falsification and fallback selection under hostile structure, order, reuse, and sequence regimes.",
+      "correctness_required": true,
+      "timing_authoritative": true,
+      "profiler_allowed": false,
+      "minimum_free_memory_fraction": 0.35,
+      "maximum_repetitions": 30,
+      "resource_class": "benchmark + gpu:v100-sm70"
+    },
+    {
+      "id": "deep_profile",
+      "purpose": "Explain one already-correct representative or adversarial result; never select a winner alone.",
+      "correctness_required": true,
+      "timing_authoritative": false,
+      "profiler_allowed": true,
+      "minimum_free_memory_fraction": 0.45,
+      "maximum_repetitions": 1,
+      "resource_class": "profiler + benchmark + exclusive gpu:v100-sm70",
+      "per_revision_limit": 1
+    }
+  ],
+  "contamination_policy": {
+    "reject_when": [
+      "another benchmark or profiler lease overlaps",
+      "unowned process materially consumes the selected GPU",
+      "host load exceeds the declared tier budget",
+      "clock, thermal, ECC, or power state changes invalidate comparability",
+      "median absolute deviation or another predeclared variance bound is exceeded"
+    ],
+    "retry_limit": 3,
+    "terminal_result": "inconclusive_no_winner"
+  },
+  "snapshot_contract": {
+    "required_fields": [
+      "source_revision",
+      "submodule_revisions",
+      "todo_revision",
+      "clean_status_digest",
+      "build_identity",
+      "fixture_digests",
+      "toolchain_identity"
+    ],
+    "dirty_tree_policy": "refuse measured execution and build a clean temporary snapshot instead"
+  },
+  "current_task_activity": {
+    "gpu_lease": false,
+    "benchmark_lease": false,
+    "profiler_lease": false,
+    "performance_run": false
+  }
+}
