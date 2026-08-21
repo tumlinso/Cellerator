@@ -1,62 +1,87 @@
 ---
-title: "Cellerator Pipeline"
+title: "Cellerator"
 ---
 
-Cellerator is a compute and ML stack for making large sparse single-cell omics
-matrices practical on GPUs. Its central job is to exploit biological structure
-in sparse data: genes, chromatin peaks, and other features often organize into
-modules, pathways, neighborhoods, or related feature sets that can be processed
-together. Cellerator searches for and uses those denseifiable structures to run
-CellShard-backed data through modified ELLPACK-style sparse layouts such as
-Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
+Cellerator is a performance-first biological execution system.
 
-It sits on top of `CellShard`, which owns data handling: canonical sparse
-storage, optional ingest, CSPACK delivery, compaction/finalization, execution
-staging, and generic sparse row/feature masking for runtime layouts. Cellerator
-owns preprocessing, model-facing math over CellShard matrices, reusable sparse
-compute, trajectory logic, model workflows, structure-aware layout optimization,
-quantized kernels, and Torch interop boundaries.
+Its purpose is to exploit the fact that cellular systems are regular rather than random. Genes co-occur in programs. Regulatory elements share targets. Cell states activate related modules. Sequence predicates are reused across enormous numbers of state evaluations. Sparse biological relations contain structure at warp, CTA, GPU, and node scales.
 
-This documentation is not a paper workspace. It is the active source for explaining how the Cellerator pipeline is organized, what each stage owns, and where local operations still live outside the packaged product surface.
+Cellerator compiles that organization into:
 
-The canonical scope boundary lives in `../scope.md`; current temporary or out-of-scope surfaces are tracked in `../out_of_scope_inventory.md`.
+- biological domain and order identity;
+- reusable semantic execution geometry;
+- one or more physical projections;
+- operation-specific native or vendor kernels;
+- persistent execution order;
+- explicit structure and value lifetimes;
+- graph-wide planning and autotuning.
 
-## What This Documentation Covers
+The project is not defined by one sparse format. CSR, SELL, BSR, Blocked-ELL, bitmask-driven tiles, dense fragments, Tensor Core paths, and vendor libraries are candidate physical mechanisms.
 
-- The ownership split from optional CellShard ingest to runtime execution.
-- The contract between Cellerator and `CellShard`.
-- Where preprocessing, compute, trajectory, model, quantized, and Torch-facing surfaces fit.
-- The current quantized transfer-versus-decode architecture questions for sparse inference.
-- The current local-only download and preprocessing helpers under `docs/pipeline/`.
-- The build and test entrypoints that validate the pipeline.
+## First-class architectural assumption
 
-## Pipeline At A Glance
+Baseplane is a subordinate library within the Cellerator conceptual and computational umbrella.
+
+It is a separate repository because sequence-level computation presents a sufficiently distinct engineering problem to justify its own implementation, not because it is intended to form an independent numerical ecosystem.
+
+Baseplane and Cellerator should ultimately interoperate at an extremely low-friction numerical level. The long-term goal is for sequence, regulatory structure, cellular state, expression level, and downstream biological behavior to occupy one coherent computational space rather than being separated by expensive representation boundaries.
+
+"Sequence" and "level" should eventually be interpretable as different structures, axes, or views within one biological execution model.
+
+## The system at a glance
 
 ```{mermaid}
 flowchart LR
-    A[Source Matrices and Metadata] --> B[CellShard Optional Ingest]
-    B --> C[Canonical Emission]
-    C --> D[CellShard csh5 and Pack Generations]
-    D --> E[Cellerator Matrix Math]
-    E --> I[Cellerator Preprocess API]
-    I --> F[Trajectory and Model Workflows]
-    D --> G[Cellerator Preprocess Workbench]
-    D --> H[Torch Export Boundary]
+    BP[Baseplane sequence primitives] --> ABI[Biological domains and relations]
+    DATA[Cell and regulatory data] --> CP[CellPack / CP-BP geometry compiler]
+    ABI --> CP
+    CP --> GEO[Semantic execution geometry]
+    GEO --> PROJ[Physical projection catalog]
+    PROJ --> MATH[Cellerator core / CP-Math planner]
+    MATH --> KERNELS[Native and vendor kernels]
+    KERNELS --> STATE[Expression and cellular state]
+    STATE --> HIGHER[Models, trajectories, phenotype, behavior]
+    CS[CellShard storage and delivery] --> PROJ
+    PROJ --> CS
 ```
 
-## Core Rules
+## What exists today
 
-- CellShard owns data handling: persisted sparse storage, optional source ingest, layout publication, compaction/finalization, execution-CSPACK delivery, and owner-side runtime coordination.
-- `src/compute/` is the authoritative home for reusable Cellerator math over CellShard matrices.
-- Cellerator owns biology-facing preprocessing policy, state validation, workflow APIs, and the native workbench.
-- `src/models/`, `src/trajectory/`, and `src/torch/` sit on top of those lower-level surfaces instead of redefining them.
-- `docs/pipeline/` remains local-only operational glue. It can call external tools or built binaries, but it is not part of the CMake or install surface.
-- Scope drift should be recorded in `../out_of_scope_inventory.md` before it is treated as Cellerator-owned.
+The repository already contains a substantial CP-BP v1 implementation:
 
-## Read Next
+- sampled structural support;
+- candidate discovery;
+- exact merge-cost scoring;
+- constrained geometry optimization;
+- frozen packing plans;
+- full-data application;
+- compact records;
+- bounded local row ordering;
+- warp tiles;
+- direct `N=1` weighted-row reduction;
+- statistical validation;
+- V100 cost calibration;
+- pointer-free persistence.
 
-- [Architecture](architecture.qmd) for the high-level ownership split.
-- [Ingest And Runtime](ingest_and_runtime.qmd) for the bounded-memory ingest and owner-service contract.
-- [Compute And Models](compute_and_models.qmd) for how downstream pipeline stages fit together.
-- [Quantized Transfer Architecture](quantized_transfer_architecture.qmd) for the current Volta-oriented quantized sparse execution report.
-- [Local Pipeline Ops](local_pipeline_ops.qmd) for the shell wrappers and manifest-driven local workflows under `docs/pipeline/`.
+It also contains an experimental CP-Math layer with SpMM contracts, backend capabilities, planning, runtime context, CSR and BELL projections, epilogues, and a referee.
+
+The current architecture is not yet the end state. The important missing pieces include universal domain and order identity, structure/value separation, projection plurality, measured end-to-end planning, graph-wide order preservation, training projections, and direct Baseplane integration.
+
+## Documentation map
+
+- [Architecture](architecture.qmd) defines the target system.
+- [Current implementation](current_implementation.qmd) records what is implemented and transitional.
+- [Biological execution model](biological_execution_model.qmd) defines domains, relations, identities, hierarchy, and sequence-plus-state semantics.
+- [CellPack and CP-BP](cellpack_cp_bp.qmd) defines biological geometry compilation.
+- [Core execution and CP-Math](core_execution_cp_math.qmd) defines planning, runtime ownership, projections, and kernels.
+- [Baseplane integration](baseplane_integration.qmd) defines the sequence-to-state mechanism.
+- [Storage, distribution, and interop](storage_distribution_and_interop.qmd) defines CellShard and framework boundaries.
+- [Performance and validation](performance_validation.qmd) defines evidence requirements.
+- [Migration roadmap](migration_roadmap.qmd) defines the transition from the present repository.
+- [Developer reference](developer_reference.qmd) records build, test, source, and documentation entry points.
+
+## Governing rule
+
+Cellerator should preserve biological meaning when that meaning helps execution, but performance decides the representation.
+
+Every additional layer must reduce time, traffic, synchronization, communication, or downstream cost. Otherwise it is decorative weight.

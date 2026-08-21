@@ -1,0 +1,323 @@
+---
+title: "Current Implementation"
+---
+
+## Snapshot
+
+This page records the repository state audited at Cellerator `main` commit:
+
+```text
+72f3012adf63bbd8308fea620c9d8d8841136b51
+```
+
+Audit date:
+
+```text
+2026-08-21
+```
+
+It is a migration snapshot, not the target architecture.
+
+## Repository-wide state
+
+The current repository contains three architectural generations at once:
+
+1. older CSR, Blocked-ELL, SELL, quantized, preprocessing, model, and workflow systems;
+2. the completed CP-BP v1 geometry and direct-execution work;
+3. an experimental CP-Math control plane intended to become core execution.
+
+The documentation before this replacement described the first generation as the durable architecture, especially through Blocked-ELL-first and CellShard-backed sparse-ML language. That description is superseded.
+
+## CP-BP v1
+
+CP-BP-01 through CP-BP-13 are implemented and closed.
+
+### Construction pipeline
+
+The source tree contains:
+
+- deterministic sampling and sampled support;
+- feature-major support bitsets;
+- MinHash or related candidate discovery;
+- exact merge-cost scoring;
+- a constrained deterministic optimizer;
+- frozen packing plans;
+- full-partition plan application;
+- compact cell-block records;
+- bounded local cell ordering;
+- host and CUDA warp-tile construction;
+- alternating refinement;
+- statistical validation;
+- a hardware-cost model;
+- persistent payload construction and rebinding.
+
+### Native execution
+
+The implemented direct CUDA operation is feature-weighted row reduction:
+
+\[
+y_r = \sum_f X_{r,f} w_f
+\]
+
+The kernel consumes device-resident CP-BP tiles directly.
+
+Its v1 contract provides:
+
+- one launch;
+- no scratch;
+- no allocation;
+- no transfer;
+- no device-wide synchronization;
+- no CSR or BELL reconstruction;
+- canonical-feature recovery;
+- canonical partition-local output rows.
+
+The last property is correct for the v1 API but should not become the future internal default.
+
+### Historical V100 evidence
+
+The recorded benchmark used:
+
+- 65,536 rows;
+- 32,768 features;
+- 2,097,152 f16 nonzeros;
+- resident input and output;
+- three warmups;
+- eleven repeats.
+
+Median direct-tile times for high, medium, and low sharing were approximately:
+
+```text
+0.017 ms
+0.041 ms
+0.117 ms
+```
+
+The existing Cellerator CSR path measured approximately:
+
+```text
+0.075 ms
+0.079 ms
+0.095 ms
+```
+
+The result proves regime-dependent value:
+
+- large win at high sharing;
+- useful win at medium sharing;
+- loss at low sharing.
+
+No low-occupancy specialization met the recorded five-percent retention threshold. Low-sharing tiles therefore remain a measured fallback regime.
+
+### Hardware cost model
+
+The CP-BP-12 campaign measured 60 configurations and 120 paired direct-tile and CSR observations on V100.
+
+Recorded held-out mean absolute percentage error was approximately:
+
+```text
+5.15 percent for direct tiles
+5.88 percent for CSR
+```
+
+This is useful calibration evidence. The campaign used regular synthetic structures and the `N=1` operation, so it is not a complete core planner model.
+
+### Persistence
+
+CP-BP-13 adds:
+
+- a 64-byte-aligned CPK1 pointer-free image;
+- frozen plan maps;
+- row order;
+- warp tiles;
+- semantic validation;
+- host-to-device rebinding;
+- direct runtime handoff.
+
+CellShard wraps the opaque image in a versioned execution envelope and owns publication, compatibility checks, fetch, and contiguous upload.
+
+The current image tightly reflects the v1 operation and projection. It should be adapted into a sectioned execution image rather than declared final.
+
+## CP-Math v1
+
+CP-Math currently lives under:
+
+```text
+include/Cellerator/compute/math/
+src/compute/math/
+tests/math_*.cc and tests/math_*.cu
+bench/math/
+```
+
+### Implemented contracts
+
+The public headers define:
+
+- `spmm_request`;
+- `spmm_bindings`;
+- `math_request`;
+- feature-order identity;
+- sparse-structure identity;
+- numeric storage, compute, and accumulation fields;
+- transpose and dense layout;
+- determinism;
+- workspace policy;
+- expected reuse;
+- epilogue;
+- operation signature;
+- backend capability;
+- pointer-free execution plan;
+- backend registry;
+- structural planner;
+- device capabilities and fingerprint;
+- device math context and workspace;
+- prepared execution.
+
+### Implemented physical and backend work
+
+The tree contains:
+
+- native tile adaptation;
+- physical CSR lowering;
+- physical BELL lowering;
+- cuSPARSE CSR or BELL execution experiments;
+- generic unfused epilogues;
+- packed dense operand support;
+- a CPU referee;
+- contract, planner, runtime, lowering, execution, and epilogue tests.
+
+### Build integration
+
+The root build currently exposes the packed-dense-operand benchmark explicitly. CP-Math is not yet assembled into one authoritative core library target and is not yet the execution owner for the repository's existing sparse systems.
+
+### Architectural gaps
+
+#### Prepared execution captures per-run state
+
+`PreparedExecution` currently owns a `DeviceMathContext`, copies the full `math_request`, and retains current bindings. New dense input, output, bias, or stream generally implies a new preparation path.
+
+The target architecture separates prepared immutable state from launch bindings.
+
+#### Runtime context is duplicated
+
+`DeviceMathContext` owns:
+
+- an execution context;
+- a CUDA stream;
+- cuBLAS and cuSPARSE caches;
+- one workspace allocation;
+- device capabilities;
+- device fingerprint.
+
+Cellerator already has older runtime and sparse-operation contexts. These responsibilities must be unified.
+
+#### Workspace is one reusable allocation
+
+The current `WorkspacePool` is one resizable scratch arena with an allocation count and high watermark. It is not yet a concurrent stream-ordered pool with separate persistent and transient lifetimes.
+
+#### Planning is structural
+
+The planner enumerates legal backend candidates and performs inexpensive structural pruning. Its own comments defer measured selection and persistence to an external autotuner or cache owner.
+
+The target core requires one integrated cost and measurement system.
+
+#### Operation scope is narrow
+
+The operation enum currently contains SpMM. The future core must also represent reductions, graph propagation, sequence-conditioned operations, sparse-to-dense projections, recurrent updates, and fused programs.
+
+#### Identity is partial
+
+Feature-order and sparse-structure identities are useful beginnings. They do not yet provide universal domain, row order, geometry, partition, structure epoch, and value-generation identity.
+
+#### Numeric policy is incomplete
+
+The request distinguishes storage, compute, and accumulation codes, but current scalar, bias, backend, and legal-tuple behavior does not yet form a complete mixed-precision contract.
+
+#### Padded BELL risk
+
+The physical BELL view records logical and padded dimensions. The vendor descriptor may use padded dimensions while generic bindings expose logical-sized dense input and output buffers.
+
+Until the backend owns padded B and C buffers with explicit pack and crop, or rejects mismatched padded dimensions, this is a correctness risk.
+
+Aligned tests do not establish safety for unaligned logical dimensions.
+
+## Existing sparse and model systems
+
+The repository also contains useful existing systems:
+
+- CSR and compressed sparse operations;
+- Blocked-ELL;
+- SELL and sliced execution;
+- quantized Blocked-ELL;
+- preprocessing kernels and workflows;
+- exact neighbor search;
+- trajectory logic;
+- native model implementations;
+- distributed and NCCL paths;
+- CelleraTorch adapters.
+
+These systems are not discarded.
+
+They should become:
+
+- planner candidates;
+- fallback projections;
+- reference implementations;
+- realistic benchmark workloads;
+- migration adapters.
+
+Their current ownership and assumptions do not define the final core.
+
+## Baseplane
+
+Baseplane currently provides:
+
+- two-bit nucleotide packing;
+- packed-word and 32-base plane representations;
+- reverse complements;
+- mismatch and motif-window operations;
+- exact count and compact emit;
+- resident plane streams;
+- base, GC, and CpG masks;
+- CPU, SIMD, and CUDA paths;
+- allocation-free hot APIs with caller-owned output.
+
+Current architectural limitations relevant to Cellerator include:
+
+- validity and ambiguous-base policy must be mandatory and explicit;
+- tail validity must travel with plane streams;
+- local and global coordinate widths need a stable chunk contract;
+- motif plans must be normalized and immutable;
+- output ordering and overflow semantics need stronger contracts;
+- shared Cellerator domain and relation identity is not yet present;
+- the planner cannot yet choose materialized versus fused sequence execution.
+
+## Documentation state before replacement
+
+Previous repository documentation contained several conflicting claims:
+
+- Blocked-ELL as the universal preferred sparse layout;
+- CellShard as the owner of layout derivation;
+- Cellerator as primarily sparse ML over CellShard matrices;
+- Baseplane as an external provider of bit primitives;
+- root strategy files as architecture authority;
+- closed TODO ledgers as pickup guidance.
+
+Several root documents also referenced missing files such as `pointer_migration_plan.md`.
+
+The replacement documentation removes those assumptions from the active guidance.
+
+## Current open work
+
+The remaining planned CUDA packing-plan evaluator is legitimate but not the highest architectural priority.
+
+Before accelerating it, the repository should define:
+
+- universal identity;
+- structure and value separation;
+- projection catalog;
+- operation-aware cost;
+- additional native kernel regimes;
+- real-data benchmark traces.
+
+A faster evaluator should optimize the final cost model rather than only the current v1 surrogate.

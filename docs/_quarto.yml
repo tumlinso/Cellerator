@@ -2,17 +2,21 @@ project:
   type: book
 
 book:
-  title: "Cellerator Pipeline"
-  subtitle: "Architecture, ingest, runtime, and local operations"
+  title: "Cellerator"
+  subtitle: "Architecture of a performance-first biological execution system"
   downloads:
     - pdf
   chapters:
     - index.qmd
     - architecture.qmd
-    - cellshard_behavior.qmd
-    - ingest_and_runtime.qmd
-    - compute_and_models.qmd
-    - local_pipeline_ops.qmd
+    - current_implementation.qmd
+    - biological_execution_model.qmd
+    - cellpack_cp_bp.qmd
+    - core_execution_cp_math.qmd
+    - baseplane_integration.qmd
+    - storage_distribution_and_interop.qmd
+    - performance_validation.qmd
+    - migration_roadmap.qmd
     - developer_reference.qmd
 
 format:
@@ -23,16 +27,15 @@ format:
   pdf:
     documentclass: scrreprt
     classoption:
-      - twocolumn
       - 10pt
     geometry:
-      - margin=1.1cm
-      - top=1.3cm
-      - bottom=1.5cm
+      - margin=1.8cm
+      - top=1.8cm
+      - bottom=1.8cm
     include-in-header: preamble.tex
     pdf-engine: xelatex
-    mainfont: "Liberation Sans Narrow"
-    sansfont: "Liberation Sans Narrow"
+    mainfont: "Liberation Sans"
+    sansfont: "Liberation Sans"
     monofont: "Menlo"
 
 execute:

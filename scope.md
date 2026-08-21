@@ -1,128 +1,142 @@
-# Cellerator Scope Boundary
-
-Last updated: 2026-08-21
+# Cellerator Scope
 
 ## Purpose
 
-Cellerator is CellStack's performance-critical biological execution core. It
-exploits repeated, modular, hierarchical, and correlated biological structure
-when that structure reduces execution time, memory movement, synchronization,
-preparation, communication, or whole-module work. It is not a biological
-wrapper around generic sparse matrix multiplication.
+Cellerator exists to make biological computation faster by compiling biological organization into accelerator organization.
 
-The central model is a biological program over typed domains and relations:
-sequence predicates, regulatory elements, genes and transcripts, cells,
-modules, pathways, learned state, and downstream behavior. SpMM remains one
-operation family, not the system ontology. Conventional CSR, SELL, BSR,
-Blocked-ELL, dense, and vendor-library paths remain first-class candidates and
-must win whenever measured end-to-end cost is lower.
+Its primary concern is not a file format, a model family, a sparse-matrix API, or a high-level workflow. Its concern is the complete path from biological structure to efficient execution:
 
-## Core Contracts
+```text
+biological domains and relations
+    → semantic execution geometry
+    → physical projections
+    → planned native or vendor kernels
+    → persistent execution order
+    → quantitative biological state
+```
 
-Cellerator owns these versioned foundations:
-
-- biological domain, order, semantic geometry, partition, structure,
-  structure epoch, value generation, and projection identity;
-- heterogeneous dense, bit-plane, event, segment, sparse-relation, and small
-  parameter operand views;
-- immutable relation structures separated from mutable value planes and
-  per-launch bindings, including bounded multi-relation operations;
-- execution-order contracts that preserve compatible internal order and make
-  canonicalization an explicit graph operation;
-- one execution session with structure-persistent, plan-persistent, and
-  stream-ordered launch-transient storage; persistent allocations are
-  independent, stable, and non-aliasing until session clear;
-- an operation registry shared by native kernels, composed paths, and vendor
-  libraries;
-- a projection catalog and planner that charge all material preparation,
-  conversion, execution, order, synchronization, and communication cost;
-- pointer-free relocatable execution images with versioned projection
-  directories, cold host validation, and hot device-relative prebinding.
-
-Semantic geometry describes stable execution-relevant organization. A physical
-projection describes concrete bytes and scheduling for an operation, numeric
-policy, device class, and reuse regime. One geometry may have many projections;
-no universal layout is presumed.
-
-## Repository Ownership
-
-- Cellerator owns computational meaning, biological identity, numerical
-  interpretation, projection policy, operation preparation, execution-order
-  policy, and end-to-end planning.
-- CellPack owns Cellerator's packing and execution-image construction. CP-BP v1
-  plans, row order, tiles, canonical recovery, and CPK1 remain validated
-  compatibility artifacts behind adapters.
-- Baseplane owns packed sequence, validity-aware bit logic, exact motif and
-  grammar predicates, masks, events, segments, and low-level sequence-program
-  preparation. Baseplane consumes a small Cellerator-owned ABI and does not own
-  a separate numerical runtime. Cellerator owns materialize-versus-fuse
-  decisions and the first genuinely numerical sequence-to-state interaction.
-- CellShard owns storage, pack publication, fetch, delivery, staging, and
-  distributed placement. Its CSPACK01/CPEXEC01 envelope treats the inner
-  Cellerator image as opaque. CellShard does not choose or interpret physical
-  execution projections.
-- CelleraTorch owns Torch/libtorch adapters. Framework wrappers call stable
-  native operations and do not define Cellerator's hot execution model.
+Performance is the governing criterion. Biological semantics belong in the core when they expose exploitable regularity, enable correct identity and ordering, or permit cheaper execution.
 
 ## In Scope
 
-- Domain-aware relation execution across cells, genes, regulatory elements,
-  sequence coordinates, modules, pathways, graphs, and learned state.
-- Structure-aware packing, semantic geometry, projection construction, value
-  remapping, and explicit order transforms.
-- Native and library-backed sparse/dense operators, reductions, transforms,
-  graph operations, quantized operations, and sequence-state fusion.
-- Forward and transpose projection contracts, sparse learned values, mixed
-  precision, and quantization mechanisms when activated by concrete work.
-- Real-data and adversarial evidence that can select a conventional fallback.
-- Device-fleet and nested partition identities needed by future multi-GPU and
-  multi-node work, without burdening every hot record with unused metadata.
-- Preprocessing and search kernels when they are reusable layout-aware compute
-  primitives. Human-facing workflow policy remains thin and separate.
+Cellerator owns:
 
-## Out Of Scope
+- biological domain, axis, order, geometry, partition, structure, and value-generation identity;
+- typed relations between biological domains;
+- immutable sparse and hierarchical structure;
+- mutable numerical value planes;
+- CellPack and CP-BP biological geometry compilation;
+- row, feature, module, and nested partition optimization;
+- physical projection construction and caching;
+- native sparse, masked, block-sparse, dense-fragment, reduction, graph, and sequence-conditioned kernels;
+- CP-Math planning, autotuning, prepared execution, epilogues, and backend selection;
+- graph-wide order and conversion optimization;
+- sparse-to-dense learned transitions that consume native biological structures directly;
+- training-oriented forward, transpose, backward, and optimizer primitives;
+- precision and quantization policy tied to biological modules or execution blocks;
+- single-GPU and multi-GPU execution planning;
+- layout-aware preprocessing and biological operators that are reused by higher layers;
+- independent correctness referees, structural validation, and performance instrumentation;
+- narrow shared ABI contracts used by Baseplane, CellShard, CelleraTorch, and other adapters.
 
-- Durable storage, publication, fetch policy, or interpretation of CellShard's
-  outer envelopes.
-- A generic sparse matrix package with no biological execution advantage.
-- A second CP-Math runtime, owned prepared-operation stream, hidden allocation,
-  or generic-SpMM-only planner.
-- Mandatory canonical order between compatible internal operations.
-- Mandatory dense, CSR, event-table, or matrix materialization at the Baseplane
-  boundary.
-- Expanding Torch-linked code as Cellerator core.
-- Placeholder implementations for hypothetical architectures, distributed
-  execution, backward kernels, or precision modes without a current consumer.
+## Subordinate and Adjacent Repositories
 
-## Compatibility Rules
+### Baseplane
 
-- Old persisted meanings are immutable. New objectives, identities,
-  projections, or execution images require new versions.
-- Preserve validated v1 objects through read-only adapters before considering
-  rewrites or removal.
-- CPK1 remains loadable; CPEXEC01 remains the CellShard-owned opaque envelope.
-- Pointer addresses never define semantic identity.
-- Runtime handles are generation-checked interned aliases; durable planner
-  evidence uses persistent identities and never process-local handles.
-- A prepared operation may freeze semantics, structure, projection, algorithm,
-  descriptors, and declared workspace requirements. Inputs, outputs, mutable
-  values, scalars, stream, and transient workspace remain launch bindings.
-- Every mutable value plane names its immutable relation and epoch, and every
-  output declares its update/effect semantics.
-- Hot run paths perform no allocation, discovery, hashing, device selection,
-  descriptor construction, or synchronization.
+Baseplane is a subordinate library within the Cellerator conceptual and computational umbrella.
 
-## Agent Rules
+It owns sequence-specialized engineering:
 
-- Read this file, `optimization.md`, and `planning_strategy.md` before changing
-  execution ABI, runtime, packing, projection, planner, or Baseplane seams.
-- Preserve execution order unless an external or incompatible consumer
-  requires an explicit transform.
-- Treat the configured sparse-layout default as legacy compatibility policy,
-  not planner authority.
-- Record data movement, persistent bytes, transient workspace, preparation
-  break-even, and order-transform cost for performance claims.
-- Do not edit CellShard to accommodate an unproven Cellerator layout change;
-  stop at an external interface decision if CPEXEC01 cannot remain opaque.
-- Use `out_of_scope_inventory.md` for unrelated ownership migration rather than
-  normalizing scope drift.
+- compact nucleotide representations;
+- validity-aware sequence views;
+- bit-plane transforms;
+- exact and bounded sequence predicates;
+- motif and grammar programs;
+- masks, events, segments, and sequence-local reductions;
+- CPU, SIMD, and CUDA implementations of those primitives.
+
+Cellerator owns their integration with regulatory structure, quantitative state, planning, and downstream execution.
+
+### CellShard
+
+CellShard owns storage and distribution:
+
+- canonical and sharded persistence;
+- source ingest and durable publication;
+- execution-envelope storage;
+- generation and compatibility validation;
+- fetch, cache, transport, upload, and delivery to workers;
+- storage-oriented partition metadata.
+
+CellShard does not own Cellerator's biological geometry, physical projection semantics, planner, or kernels.
+
+### CelleraTorch
+
+CelleraTorch owns Torch and libtorch adaptation:
+
+- tensor views;
+- custom-op registration;
+- framework module wrappers;
+- explicit conversion at framework boundaries.
+
+It does not own native Cellerator structures, parameters, planning, or reusable math.
+
+## Higher Layers
+
+Preprocessing, model, trajectory, and workflow code may remain in Cellerator when they:
+
+- exercise Cellerator-native biological operations;
+- provide reusable numerical policy;
+- expose performance-relevant execution structure;
+- validate the core on realistic workloads.
+
+They must not duplicate core math, runtime ownership, structure semantics, or planning.
+
+## Out of Scope
+
+Cellerator does not own:
+
+- canonical biological dataset storage;
+- generic object-store, HDF5, network, RDMA, or file-service infrastructure;
+- a replacement for CUDA, cuBLAS, cuSPARSE, CUB, NCCL, MPI, or UCX;
+- a general-purpose tensor framework;
+- a Scanpy, AnnData, or notebook-workflow replacement;
+- a universal sparse matrix library unrelated to biological structure;
+- automatic preservation of every historical API;
+- a requirement that one format win for every workload;
+- biological ontology for its own sake;
+- runtime reconstruction of modules that could have been compiled;
+- hidden conversion at framework or storage boundaries.
+
+## Scope Tests
+
+A proposed core feature belongs in Cellerator when most of the following are true:
+
+- it operates on biological domains or relations;
+- biological structure changes the efficient implementation;
+- it affects order, projection, scheduling, fusion, precision, or communication;
+- it can be reused across models or workflows;
+- a generic framework would obscure or mishandle the relevant cost;
+- its correctness requires biological identity beyond array shape;
+- it can reduce bytes, launches, synchronization, or communication.
+
+A proposed feature probably belongs elsewhere when it is primarily:
+
+- canonical storage or transport;
+- source parsing;
+- framework registration;
+- user-interface workflow;
+- generic numerical functionality with no biological execution advantage.
+
+## Transitional Exceptions
+
+The current repository contains older layout, preprocessing, model, and runtime surfaces that predate this scope. They may remain while they provide:
+
+- working fallbacks;
+- reference implementations;
+- tests;
+- migration adapters;
+- realistic workloads;
+- benchmark baselines.
+
+Do not interpret their continued presence as permanent ownership or as evidence for the future core ABI.

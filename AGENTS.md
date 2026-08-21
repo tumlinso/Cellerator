@@ -1,159 +1,568 @@
-# Repository Guidelines
+# Cellerator Repository Guidance
 
-## Project Structure & Module Organization
-`include/Cellerator/` is the canonical public include tree for in-repo callers. `src/` holds compiled runtime and higher Cellerator implementation. Primary surfaces live under `src/compute/`, `src/preprocess/`, `src/models/`, and `src/trajectory/`. Torch-facing integration lives under `components/CelleraTorch/`. `tests/` contains native compile and runtime checks, and `bench/` contains performance benches. Cellerator is a standalone math/compute and preprocessing package; storage and durable dataset publication live in CellShard. Forward-neighbor caller policy is currently under `src/compute/neighbors/forward_neighbors/` while the sister-project split is still in progress.
+## Authority
 
-The durable Cellerator scope boundary lives in `scope.md`, and the advisory migration queue for surfaces that do not belong in Cellerator lives in `out_of_scope_inventory.md`. Read both before adding public APIs, new CMake targets, model modules, preprocessing code, ingest/runtime code, or Torch boundaries. If work touches scope drift, remind the user that `out_of_scope_inventory.md` is the migration queue and update it before normalizing the drift as Cellerator-owned.
+This file is the operational contract for coding agents working in Cellerator.
 
-Current direction: Cellerator is CellStack's domain-aware biological execution
-core. It exploits correlated supports, repeated topology, modules, bounded
-state coherence, hierarchy, and sequence-derived predicates when they improve
-total execution cost. SpMM and Blocked-ELL are useful operations and physical
-projections, not the ontology or universal storage policy. New work starts from
-explicit biological identity, execution order, semantic geometry, immutable
-structure, mutable value planes, projection catalogs, one runtime session, and
-the end-to-end planner described in `scope.md` and `planning_strategy.md`.
-CellShard remains the storage/publication owner; Baseplane remains the
-sequence-level compute owner beneath the Cellerator computational model.
+Read these documents in this order before substantial architectural work:
 
-Preprocessing and neighbor/search work are not automatically out of scope for
-Cellerator. They may remain native Cellerator capabilities when they are
-implemented as layout-aware engines, metric/stat kernels, optimization inputs,
-or execution primitives used to build and optimize Blocked-ELL/Sliced-ELL files
-and runtime payloads. Do not spend current effort designing Scanpy-like
-preprocessing APIs, neighbor workflow ergonomics, UI/workbench behavior, or
-other human-facing product surfaces unless explicitly requested. If those
-surfaces are exposed later, they should be thin wrappers over the native engines
-instead of a separate math implementation.
+1. `AGENTS.md`
+2. `scope.md`
+3. `docs/architecture.qmd`
+4. `docs/current_implementation.qmd`
+5. The nearest component-level `AGENTS.md`
+6. `docs/migration_roadmap.qmd`
+7. Relevant tests, benchmarks, and source
 
-Torch/libtorch is the clear split exception: do not expand Torch-linked code as
-core Cellerator. Its intended destination is the separate `CelleraTorch` project
-staged under `components/CelleraTorch/`. Keep reusable kernels, layouts,
-reductions, sparse transforms, quantized primitives, and runtime scratch
-mechanics in native Cellerator, and keep framework adapters in CelleraTorch.
+The implementation is authoritative for what exists today. The architecture documents are authoritative for what new work must converge toward. Closed TODO ledgers and historical performance reports are evidence, not architecture.
 
-`include/Cellerator/` exposes Cellerator's public substrate directly: `matrix/`
-for representation ABI, `runtime/` for CellShard-free CUDA runtime helpers,
-`quantized/` for quantized packing/metadata, `interop/` for external layout
-bindings, plus top-level parameter and type descriptors. Sequence bit
-primitives live in the sibling Baseplane project, not in Cellerator.
-`src/runtime/` contains the compiled CellShard-free runtime implementation
-behind `Cellerator::runtime`. `src/compute/` is the authoritative home for
-reusable math and operators: matrix conversion and bucketing, CUDA compute
-primitives, exact search math, preprocessing math kernels, sparse
-projection/matmul, ML reductions, and the sparse operator layer under
-`src/compute/sparse/ops/`. `components/CelleraTorch/` owns Torch tensor export,
-Torch custom-op wrappers, Torch-linked quantizer wrappers, and the legacy
-dense-reduce prototype. `src/preprocess/` owns biology-facing preprocessing
-policy, raw-count state validation, QC rule compilation, adapter staging, and
-workbench orchestration over `Cellerator::compute_preprocess`.
-`src/compute/runtime/runtime.hh` keeps CellShard-aware fleet execution and
-reuses the `Cellerator::runtime` substrate. Native `src/models/` contains
-Cellerator-owned model implementations that do not expose framework tensor
-types. Neighbor retrieval index/query policy is not a Cellerator public API.
+When current code and the target architecture differ, do not silently normalize the current code into the future contract. Preserve compatibility where necessary, identify the transitional boundary, and move the implementation toward the documented end state.
 
-Workflow code must not own reusable math. If preprocessing, model, Torch,
-neighbor, or session/workbench code needs GPU math, reductions, dense adds,
-metric packets, sparse transforms, normalization, fleet collectives, or scratch
-mechanics, call the existing `src/compute/` primitive. If the primitive does
-not exist, implement the primitive in the owning compute layer first and make
-the workflow call it. Do not copy kernels or math into workflow/session files
-for convenience.
+## Project Thesis
 
-Implementation organization follows `style_hint.md`. Read it before changing
-preprocessing compute/runtime code, adding private CUDA helpers, or extending a
-large CUDA implementation file. It is the local rule for file-size pressure,
-inline device helpers, fused workflow placement, and the current monolith
-follow-up list.
+Cellerator is a performance-first biological execution system.
 
-Expected local checkout layout for source builds is:
+Its purpose is to exploit the regularized, modular, hierarchical, repeated, correlated, and highly non-random organization of cellular systems. Biological semantics matter when they reveal computational structure that reduces execution time, memory traffic, synchronization, conversion, or communication. Semantics do not justify a slower representation by themselves.
 
-```text
-cellstack/
-├── CellShard/
-└── Cellerator/
+Cellerator is not:
+
+- a biological wrapper around sparse matrix multiplication;
+- a generic sparse matrix library with biological names;
+- a framework that hides layouts, copies, streams, or launch structure;
+- a storage owner;
+- a Torch-owned runtime;
+- a requirement that every workload use one sparse format;
+- a reason to preserve an abstraction after measurements show that it is costly.
+
+The core abstraction is moving toward a biological sparse program:
+
+- biological domains define what axes contain;
+- typed relations connect domains;
+- immutable structures define topology and execution geometry;
+- mutable value planes carry quantitative state;
+- order and partition are first-class;
+- multiple physical projections may represent one logical structure;
+- the planner chooses the fastest correct strategy for the whole operation or graph.
+
+## Current Implementation Status
+
+The repository is transitional.
+
+Implemented and valuable:
+
+- CP-BP sampling, support extraction, candidate discovery, exact merge scoring, constrained optimization, frozen packing plans, full-data application, compact cell-block records, bounded local row ordering, warp tiles, statistical validation, a replaceable V100 cost model, and pointer-free persistence;
+- direct CP-BP execution for feature-weighted row reduction without reconstruction to CSR or BELL;
+- CPK1 pointer-free plan, order, and tile images, wrapped for persistence and staging through CellShard;
+- CSR, SELL, Blocked-ELL, quantized sparse, preprocessing, model, trajectory, distributed, and framework-adapter code that remains useful as implementation evidence and fallback machinery;
+- an experimental CP-Math surface under `include/Cellerator/compute/math/` and `src/compute/math/`;
+- Baseplane packed sequence, bit-plane, motif-scan, count, mask, and compact-event primitives.
+
+Not yet the end-state core:
+
+- CP-Math is not yet a unified Cellerator execution library;
+- its current planner performs structural pruning rather than measured end-to-end selection;
+- its prepared execution lifetime still captures per-run bindings and stream-owned runtime state;
+- the current CP-BP native tile orientation is proven primarily for the `N=1` weighted-row-reduction regime;
+- execution order, domain identity, partition identity, geometry identity, and value generation are not yet universal operand properties;
+- sparse structure and mutable values are not yet separated everywhere;
+- CPK1 is a successful v1 execution image, not the universal future runtime IR;
+- Baseplane does not yet share the complete Cellerator domain and relation ABI.
+
+Do not write documentation or code that presents these unfinished transitions as complete.
+
+## Non-Negotiable Architectural Invariants
+
+### 1. Performance governs
+
+A new abstraction, hierarchy, index, projection, cache, conversion, or preprocessing pass must pay rent through at least one of:
+
+- lower end-to-end latency;
+- higher throughput;
+- fewer bytes moved;
+- fewer launches;
+- less synchronization;
+- better cache or dense-operand reuse;
+- lower communication;
+- lower preparation cost after amortization;
+- materially cheaper downstream computation.
+
+Conceptual elegance is not sufficient.
+
+### 2. Biological axes have identity
+
+Dimensions alone never establish biological equivalence.
+
+Every core operand axis must eventually identify:
+
+- the biological domain;
+- the exact order;
+- the geometry interpretation when relevant;
+- the partition or ownership view when relevant.
+
+Two arrays with the same shape but different genes, cells, regulatory elements, coordinate chunks, latent modules, or permutations are not interchangeable.
+
+Do not add a new persistent core ABI that identifies a biological axis only by length.
+
+### 3. Execution order is first-class
+
+Canonical gene, cell, feature, or coordinate order is primarily an external boundary convention.
+
+Internal operations should remain in a compatible execution order across whole computation graphs. Do not gather into packed order and scatter back to canonical order after every operation. Canonicalization must be explicit, costed, and justified by a consumer contract.
+
+Kernels must declare the orders they consume and produce. Order transforms must be hoisted, fused, cached by value generation, or eliminated where possible.
+
+### 4. Structure and values are separate
+
+Immutable topology and mutable numerical state must have independent identities and lifetimes.
+
+Examples include:
+
+- one regulatory graph shared by many cells and time points;
+- one sparse neural topology with changing learned weights;
+- one CP-BP geometry with multiple precision value planes;
+- one Baseplane sequence program reused across many cellular states;
+- forward and transpose projections sharing logical edge identities.
+
+Changing values must not force structure reconstruction. A structural change creates a new structure epoch. A value change creates a new value generation.
+
+### 5. Semantic geometry is not a physical format
+
+Semantic geometry defines stable execution organization:
+
+- domain ordering;
+- feature and row grouping;
+- module boundaries;
+- nested partitions;
+- canonical identity recovery;
+- logical relation topology.
+
+A physical projection defines bytes and schedules for one operation, orientation, precision, accelerator, or reuse regime.
+
+One semantic geometry may generate several physical projections. A row-masked tile, feature-major tile, CTA macro-tile, dense MMA fragment, CSR, SELL, BSR, Blocked-ELL, and transpose projection may all be valid projections of one structure.
+
+No single layout is the repository-wide default by doctrine.
+
+### 6. Native formats must stay native through execution
+
+A Cellerator-native structure is valuable only when kernels consume it directly.
+
+Do not introduce hidden reconstruction to CSR, COO, BELL, or dense tensors in a hot path. A conventional format may be selected explicitly by the planner when it wins, but conversion cost must be visible and included in the decision.
+
+### 7. Prepared plans and launch bindings have different lifetimes
+
+A prepared operation may own or reference:
+
+- immutable structure;
+- a selected projection;
+- a selected backend or kernel;
+- persistent vendor descriptors;
+- persistent preprocessing;
+- graph-stable buffers;
+- workspace requirements.
+
+It must not require re-preparation merely because the following changed:
+
+- dense input pointer;
+- output pointer;
+- bias pointer;
+- scalar coefficients;
+- stream;
+- value generation;
+- caller-provided transient workspace.
+
+Streams belong to execution sessions or launch bindings, not immutable plans.
+
+### 8. Planning minimizes total measured cost
+
+The planner selects the fastest correct strategy, not the cleanest abstraction and not the smallest representation.
+
+Candidate cost includes:
+
+- projection construction;
+- persistent preprocessing;
+- input packing;
+- kernel execution;
+- epilogue;
+- output order transformation;
+- transient workspace;
+- synchronization;
+- communication;
+- expected reuse.
+
+Use cheap analytical models to reject and shortlist. Use bounded empirical autotuning for serious candidates. Persist measurements with device-performance and build identities.
+
+### 9. Runtime plurality is expected
+
+Cellerator may contain several formats, kernel families, and vendor paths.
+
+Plurality is acceptable when:
+
+- candidates have precise capability contracts;
+- correctness is independently checked;
+- planner selection is cheap;
+- preparation and conversion costs are represented;
+- fallbacks remain available;
+- the regime in which each path wins is measured.
+
+Do not force the preferred native layout into workloads where CSR, SELL, BSR, Blocked-ELL, or dense execution is faster.
+
+### 10. Baseplane is subordinate to Cellerator
+
+Baseplane is a separate repository because sequence computation is a distinct engineering problem. It is not an independent numerical ecosystem.
+
+Baseplane owns sequence-specialized primitives and representations. Cellerator owns the shared biological execution model, cross-domain relations, numerical propagation, planning, and sequence-to-state integration.
+
+The intended boundary is extremely narrow:
+
+- shared domain and order identities;
+- validity-aware packed sequence views;
+- bit planes, masks, event streams, segments, and relation-builder outputs;
+- direct producer-consumer fusion where materialization would be wasteful;
+- one planner that can compare materialized and fused sequence paths.
+
+Never describe Baseplane as merely an external provider of bit utilities.
+
+### 11. CellPack and CP-BP compile geometry
+
+CellPack and CP-BP own:
+
+- structural observation;
+- support extraction;
+- candidate generation;
+- semantic grouping;
+- row and feature ordering;
+- nested partition design;
+- statistics required by downstream scheduling;
+- construction and validation of execution images.
+
+They do not own canonical storage, transport, or general runtime resource management.
+
+The current CP-BP v1 pipeline is evidence to preserve, not a universal fixed representation.
+
+### 12. CP-Math becomes core execution
+
+CP-Math is moving into Cellerator core as:
+
+- operation contracts;
+- structure and value binding;
+- physical projection management;
+- kernel and backend registry;
+- planner and autotuner;
+- prepared operation lifecycle;
+- epilogue composition;
+- graph and order optimization;
+- execution and profiling hooks.
+
+Do not move the current files mechanically and freeze their v1 ABI. Migrate their useful pieces into the target ownership model.
+
+### 13. CellShard owns persistence and distribution
+
+CellShard owns:
+
+- canonical and sharded storage;
+- durable containers;
+- execution-envelope publication;
+- fetch, cache, transport, and staging;
+- generation and compatibility validation;
+- storage-oriented partition artifacts.
+
+Cellerator owns:
+
+- biological structure semantics;
+- geometry compilation;
+- projection meaning;
+- kernel selection;
+- execution order;
+- numerical execution.
+
+CellShard may store and transport opaque Cellerator execution images. It must not rediscover or redefine their biological execution semantics.
+
+### 14. Frameworks are adapters
+
+CelleraTorch and future framework integrations expose Cellerator-owned data and operations.
+
+Framework adapters must not become the canonical allocator, planner, structure owner, or implementation of Cellerator-native operators. Hidden conversion through Torch in a repeated hot path is forbidden.
+
+### 15. Steady-state execution is allocation-free and synchronization-explicit
+
+Hot paths must not contain:
+
+- repeated `cudaMalloc` or `cudaFree`;
+- descriptor reconstruction;
+- host-visible per-tile decisions;
+- implicit device-wide synchronization;
+- per-cell kernel launches;
+- pointer forests;
+- repeated structure hashing;
+- hidden device-host round trips.
+
+Use caller-owned or session-owned memory, explicit streams, persistent descriptors, sectioned pointer-free images, and batched work queues.
+
+## Existing Work To Preserve
+
+Preserve unless measurements or correctness require a versioned replacement:
+
+- CP-BP sampled support and exact scoring pipeline;
+- frozen packing-plan identities and canonical recovery maps;
+- bounded local row ordering;
+- compact zero-free mask grammar;
+- direct native tile consumption;
+- exact host references and reconstruction tests;
+- statistical held-out, null, bootstrap, and stability validation;
+- pointer-free aligned persistence and relocation;
+- the CP-BP V100 measurement corpus as historical calibration evidence;
+- Baseplane allocation-free packed sequence primitives;
+- existing CSR, SELL, Blocked-ELL, cuSPARSE, CUB, NCCL, and dense paths as candidate backends and baselines;
+- explicit low-level visibility of layout, residency, launch, and transfer costs.
+
+Preservation does not mean retaining current ownership or public names forever. Prefer adapters and versioned migration over wholesale rewrites.
+
+## Superseded Historical Assumptions
+
+The following statements are obsolete as repository-wide rules:
+
+- Blocked-ELL is the universal native Cellerator layout.
+- CellShard owns Cellerator layout derivation.
+- Cellerator is primarily sparse ML over CellShard matrices.
+- CP-BP is merely a better permutation for BELL or ELLPACK.
+- CPK1 is the final runtime representation.
+- Baseplane is external to Cellerator conceptually.
+- canonical row output is the normal internal postcondition;
+- vendor libraries should be preferred before the planner evaluates the full cost;
+- one sparse batch ABI can represent every biological operand;
+- one matrix-wide format should be selected for a whole structure.
+
+These may remain true for a particular current subsystem. They are not architectural defaults.
+
+## Forbidden Without Measured Justification
+
+Do not introduce any of the following without a written cost model and relevant benchmark:
+
+- a mandatory canonical-order output in an internal operator;
+- a hidden sparse-format conversion;
+- a dense materialization between a sparse biological producer and its only consumer;
+- a second copy of immutable structure owned by a workflow layer;
+- a physical format selected globally when tile- or region-level plurality is possible;
+- a biological hierarchy duplicated into separate value arrays;
+- per-run plan preparation for changing pointers or streams;
+- a host-side decision inside repeated tile execution;
+- a Baseplane event buffer when a downstream kernel can consume the predicate directly;
+- a new universal container in place of several measured projections;
+- a compatibility abstraction that blocks the fastest reasonable hardware path;
+- an architecture-specific property in the stable semantic ABI when runtime dispatch would suffice.
+
+## Performance Claims
+
+Every performance claim must identify:
+
+- exact hardware and topology;
+- compiler, CUDA, driver, and relevant library versions;
+- build mode and architecture;
+- data shape and structural distribution;
+- dtype and accumulation policy;
+- warmup and repeat counts;
+- whether setup, transfer, conversion, synchronization, and output transformation are included;
+- expected reuse;
+- relevant baselines;
+- numerical tolerance and correctness result;
+- benchmark-mutex use.
+
+A microkernel win is not an end-to-end win.
+
+At minimum report the applicable subset of:
+
+- latency and throughput;
+- achieved DRAM bandwidth;
+- bytes per useful biological interaction;
+- nanoseconds per useful biological interaction;
+- useful interactions per DRAM byte;
+- launch count;
+- host time;
+- warp execution efficiency;
+- branch efficiency;
+- register and shared-memory use;
+- L1 and L2 behavior;
+- preparation and projection cost;
+- packing amortization;
+- persistent metadata size;
+- memory expansion;
+- communication bytes;
+- forward and backward time.
+
+Benchmark against the strongest relevant path. An intentionally weak baseline is not evidence.
+
+Benchmark and profiler jobs must use the repository benchmark mutex and any active GPU resource reservation mechanism.
+
+## Hardware Policy
+
+The current local performance baseline is Volta `sm_70` on Tesla V100.
+
+Stable semantic contracts must remain portable across NVIDIA generations. Physical projections and kernels may specialize for:
+
+- Volta;
+- Ampere;
+- Hopper;
+- Blackwell;
+- later accelerators.
+
+Runtime dispatch owns architecture selection.
+
+Do not use Ampere- or Hopper-only instructions in the portable ABI. Do not weaken the V100 path merely to make one kernel source look uniform.
+
+For current CUDA work, state the dominant expected limiter:
+
+- HBM traffic;
+- L2 or shared-memory reuse;
+- register pressure;
+- occupancy;
+- launch overhead;
+- PCIe or NVLink;
+- atomics;
+- synchronization;
+- host preparation.
+
+## Code Ownership
+
+### Shared ABI
+
+Stable, trivially copyable, pointer-light or pointer-free contracts belong under `include/Cellerator/`.
+
+The shared ABI should contain domain, order, geometry, partition, structure, value-generation, operand-view, and execution contracts. It must remain small enough for Baseplane and adapters to depend on without importing the complete runtime.
+
+### Core execution
+
+Operation contracts, planners, projections, prepared operations, runtime sessions, kernel dispatch, and common epilogues belong under `include/Cellerator/compute/` and `src/compute/` until the final core layout is settled.
+
+Do not create another independent runtime context when the existing Cellerator session can own the resource.
+
+### CellPack
+
+CellPack currently lives under `components/CellPack/`. New work must follow `components/CellPack/AGENTS.md`.
+
+Long term, its compiler-facing semantic contracts may move into canonical Cellerator include and source trees. Do not use the current component location as evidence that CellPack is conceptually outside Cellerator.
+
+### Baseplane
+
+Baseplane remains a separate repository and build target. Integration code belongs on the Cellerator side unless it is a general sequence primitive.
+
+### CellShard
+
+Storage, persistence, delivery, and distributed data movement belong in CellShard. Cellerator may define the opaque image and compatibility requirements that CellShard transports.
+
+### CelleraTorch
+
+Torch-facing views, custom-op registration, and framework wrappers belong in `components/CelleraTorch/`. Reusable math remains in native Cellerator.
+
+### Workflows, models, preprocessing, and trajectory code
+
+These layers may orchestrate native operations. They must not duplicate reusable math, memory management, planning, or structure semantics.
+
+When a workflow needs a new numerical primitive, implement the primitive in the owning core layer first.
+
+## C++ and CUDA Style
+
+- Use C++17 and CUDA 17 unless the build policy changes.
+- Use four-space indentation.
+- Use `snake_case` for files, functions, variables, and POD structures.
+- Keep ownership, residency, stream, capacity, identity, and lifetime explicit.
+- Prefer trivially copyable structs at ABI and persistence boundaries.
+- Prefer structure-of-arrays for columnar or warp-coalesced access.
+- Prefer explicit contiguous buffers to allocator-heavy container graphs in hot paths.
+- Keep private device helpers near their kernels.
+- Split files by behavior rather than by an entire workflow.
+- Keep hot implementation details visible enough to profile.
+- Do not compress code at the cost of obscuring ownership or bounds.
+- Do not use `std::vector` as the default public surface for repeated GPU-facing work.
+- Do not use raw ownership where RAII can preserve the same performance and pointer stability.
+
+See `style_hint.md` for local file-shape guidance.
+
+## Build and Test
+
+Configure:
+
+```bash
+cmake -S . -B build
+cmake --build build -j 4
 ```
 
-For substantial repo work, consult root `todos.md` first. Detailed workstream ledgers under `todos/` are optional and may not exist.
+For a core build without CelleraTorch:
 
-For custom gradients, the first intended handwritten gradient-calculator target is the quantized path. Treat that backend as the leading candidate for explicit backward logic before introducing broader custom-gradient machinery elsewhere.
+```bash
+cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+cmake --build build -j 4
+```
 
-## Build, Test, and Development Commands
-Configure with `cmake -S . -B build` and build with `cmake --build build -j 4`. CMake resolves CellShard in this order: `CELLERATOR_CELLSHARD_SOURCE_DIR`, sibling `../CellShard`, then `find_package(CellShard CONFIG REQUIRED)`. Useful native Cellerator targets include `quantizedMatrixTest`, `trajectoryCompileTest`, `trajectoryRuntimeTest`, `exactSearchRuntimeTest`, `sparseOpsRuntimeTest`, and `developmentalTimeCompileTest`. CelleraTorch targets include `celleraTorchBindingsCompileTest`, `celleraTorchDenseReduceCompileTest`, `celleraTorchQuantizePrimitiveTest`, and `celleraTorchModelCustomOpsTest`. Run built tests directly because `ctest` is not configured, for example `./build/exactSearchRuntimeTest`, `./build/sparseOpsRuntimeTest`, or `./build/celleraTorchQuantizePrimitiveTest`. If CelleraTorch dependencies are unavailable, configure with `cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF`; use `Torch_DIR` or `LIBTORCH_PATH` only when you intentionally need to override the component default.
+Cellerator currently requires CUDA and resolves sibling CellShard and Baseplane source trees before installed packages.
 
-## Coding Style & Naming Conventions
-Follow the existing C++17/CUDA17 style: 4-space indentation, opening braces on the same line, and standard-library names qualified with `std::` when they are used. Prefer `snake_case` for functions, variables, structs, and CLI flags; use short type aliases only when they improve readability. Match current file suffixes: `.cu` for CUDA translation units, `.cuh` for CUDA headers, `.cc`/`.hh` for C++ sources and headers. Keep file/storage orchestration and ingest outside Cellerator; keep preprocessing, sparse layout primitives, math, forward-neighbor orchestration, and model logic in Cellerator.
+Run focused binaries directly. The repository currently does not use `ctest` as its primary test runner.
 
-The old preprocessing project names have been retired. If future work encounters `MosaiCell`, `Mosaicell`, `mosaicell`, `mosaiCell`, or `CellShardPreprocess`, change it automatically to Cellerator preprocessing names unless the text is explicitly historical. For C++ caller aliases, prefer `cpre`.
+Before changing a core contract:
 
-Bias new code toward HPC-first implementation choices. Performance on Volta `sm_70` takes priority over genericity, portability, or abstraction count in performance-sensitive code. Do not keep a standard-library abstraction in a hot path just because it is idiomatic C++ if a lower-level representation is measurably or obviously better for throughput, copy behavior, launch behavior, memory traffic, or layout control.
+1. add or update an independent reference test;
+2. add adversarial identity, order, capacity, and stale-generation tests;
+3. run affected host and CUDA tests;
+4. run Compute Sanitizer for new device formats or pointer rebinding;
+5. benchmark only after correctness passes;
+6. record exact commands and environment.
 
-This repository is not trying to abstract low-level runtime building blocks away. Kernels, layouts, residency boundaries, scratch buffers, and launch structure are supposed to remain visible enough to optimize directly. If a “cleaner” abstraction hides the real cost model or blocks the best Volta path, it is the wrong fit for this codebase.
+## Documentation Rules
 
-The repository-wide migration plan for removing vector-heavy hot-path code lives in `pointer_migration_plan.md` at the repo root. Read that file before changing any of the current heavy-violation subsystems or introducing a new GPU-facing buffer surface.
+The authoritative documentation spine is:
 
-`std::vector` is not the default container for GPU-facing or copy-sensitive code, and it is not an acceptable steady-state container in hot paths. Prefer explicit contiguous buffers, pointer-plus-size interfaces, fixed-capacity or preallocated storage, trivially copyable structs, and layout choices that make host-device transfers and kernel access patterns obvious. Use raw pointers, `std::unique_ptr<T[]>`, aligned allocations, or library-owned buffers when they reduce hidden reallocations, iterator-heavy code, ownership ambiguity, or extra copies. Keep `std::vector`, `std::string`, `std::function`, stream-heavy I/O, and similar abstractions out of kernels, transfer boundaries, repeated batch assembly, merge scratch, and tight preprocessing loops unless they are clearly off the hot path or have been shown not to matter.
+- `README.md`
+- `scope.md`
+- `docs/architecture.qmd`
+- `docs/current_implementation.qmd`
+- `docs/biological_execution_model.qmd`
+- `docs/cellpack_cp_bp.qmd`
+- `docs/core_execution_cp_math.qmd`
+- `docs/baseplane_integration.qmd`
+- `docs/storage_distribution_and_interop.qmd`
+- `docs/performance_validation.qmd`
+- `docs/migration_roadmap.qmd`
 
-Do not introduce new `std::vector`-based public APIs for hot subsystems. When touching an existing vector-heavy hot path, bias the change toward the pointer-first end state described in `pointer_migration_plan.md` rather than preserving the current container surface.
+When behavior or architecture changes, update the relevant document in the same change.
 
-Prefer structure-of-arrays over array-of-structures when access is columnar or warp-coalescing benefits. Preallocate aggressively, fuse passes when that removes HBM traffic, avoid allocator churn inside repeated workflows, and keep data resident on device whenever feasible. If a simpler but slower abstraction is retained, document the reason or the measurement that justified it.
+Closed TODO files are historical execution records. They must not be cited as the current architecture without an explicit historical qualifier.
 
-When several local variables share the same type and form one obvious working set, prefer compressed declarations on one statement instead of one-per-line boilerplate so readers do not need to scan extra vertical context just to recover the type; split them back out only when initialization, ownership, comments, or future type drift make that clearer.
+Do not create a second architecture summary in a local README. Local READMEs should explain only the purpose and constraints of that directory and link back to the authoritative spine.
 
-For native `src/models/`, keep framework-linked wrappers out of Cellerator. New native model workflows should keep learned parameters and execution buffers visible enough for direct CUDA optimization and future `parameters.hh` descriptor exposure.
+## Review Checklist
 
-## Testing Guidelines
-Add tests under `tests/` beside the nearest feature area and name them after the unit or workflow being checked, for example `series_ingest_compile_test.cu`. Cover both compile-only integration points and small runtime checks when behavior can be exercised locally. For model work, prefer compile coverage for the umbrella header and a focused runtime test for loss, inference, or retrieval behavior when the path can run locally. For GPU-facing changes, build the affected target and run the corresponding binary; include the exact command in your PR notes.
+Before accepting a core change, answer:
 
-Benchmark and profiler runs must be serialized across workers. Treat the repository-wide benchmark mutex as mandatory so concurrent agents do not skew GPU measurements. When adding or changing a benchmark binary under `bench/`, wire it through `bench/benchmark_mutex.hh` and do not bypass that lock in normal benchmark workflows.
+- What biological regularity is exploited?
+- What concrete hardware cost is reduced?
+- Which domains and orders are consumed and produced?
+- Does the change preserve execution order across downstream consumers?
+- Is immutable structure separate from mutable values?
+- Is this semantic geometry or a physical projection?
+- Which alternative projections or backends were considered?
+- Are conversion, preparation, epilogue, and synchronization included in the cost?
+- Does the hot path allocate, synchronize, hash, or rebuild descriptors?
+- Can the result be captured in a CUDA Graph?
+- Does training require a transpose or backward projection?
+- Does Baseplane integration materialize an avoidable intermediate?
+- Does CellShard remain storage and transport only?
+- Is the performance claim compared with the strongest relevant baseline?
+- Does the change make future multi-GPU partitioning harder?
+- Is a versioned compatibility path required?
 
-Model-facing and compute-adjacent targets currently map to:
-- `developmentalTimeCompileTest` for `src/models/developmental_time/`
-- `exactSearchRuntimeTest` for `src/compute/neighbors/exact_search/`
-- `sparseOpsRuntimeTest` for `src/compute/sparse/ops/`
-- `celleraTorchBindingsCompileTest` for `components/CelleraTorch/` tensor export
-- `celleraTorchDenseReduceCompileTest` for the CelleraTorch dense-reduce prototype
-- `celleraTorchQuantizePrimitiveTest` for CelleraTorch quantizer wrappers
-- `celleraTorchModelCustomOpsTest` for CelleraTorch custom-op wrappers
+If those questions cannot be answered, the change is not ready to define a new core contract.
 
-## Model Design And Skills
-When the task is deciding what model family, objective, latent structure, decoder, or loss should exist in `src/models/`, use `$v100-model-design` first. That includes new developmental-time models, latent reduction variants, multimodal or temporal extensions, and decisions about whether the work should stay in libtorch or begin in Python PyTorch with a later C++ path. Stay in that skill until the model choice, scaling posture, and any custom-op boundary are stable.
+## Commit and Pull Request Notes
 
-When the task moves from model choice to implementation constraints on the 4x V100 host, use `$cuda` as the default path. That includes `sm_70` build assumptions, CUDA 12.x compatibility, memory fit, host-device staging, NCCL or DDP topology, quantized kernels, profiler-driven tuning, and any custom Torch CUDA extension boundary. Follow the skill's controller and resource contracts instead of treating CUDA work as generic GPU programming, and optimize for the real bottleneck.
+Keep commits narrow and descriptive.
 
-For repository-specific performance context, read `optimization.md` at the repo root before making or defending changes in hot paths. It documents the current subsystem-level bottlenecks, likely fixed-call overheads, V100-oriented optimization priorities, and the repo's bias toward explicit low-level building blocks over abstraction-heavy surfaces.
+Pull requests that touch core execution should state:
 
-Sparse layout policy is operation- and evidence-specific. Treat row-masked
-CP-BP tiles, feature-major projections, dense fragments, CSR, SELL, BSR,
-Blocked-ELL, vendor formats, and architecture-specific layouts as candidates
-over one semantic geometry. Preserve a selected execution order across
-compatible operations; canonicalize only through an explicit transform. The
-legacy `CELLERATOR_DEFAULT_SPARSE_LAYOUT` configure value is a compatibility
-fallback for older unspecified surfaces, not authority for the planner or
-execution image.
-
-For migration work aimed at removing `std::vector` and abstraction from hot code, also read `pointer_migration_plan.md` at the repo root. It defines the subsystem ordering, target representations, and exit criteria for the pointer-first rewrite.
-
-For manuscript planning, model framing, or conceptual discussion about regulatory dynamics, `docs/notes.txt` contains background notes from an unfinished separate project that may still be useful as reference context. Treat `docs/notes.txt` as optional background material rather than current manuscript source or repository ground truth unless the user explicitly asks to build from it.
-
-If work around `docs/`, notes, or manuscript-like material turns into writing, figure generation, or citation support, use `$quarto-manuscript` rather than splitting those tasks across separate Quarto skills.
-
-When code changes materially alter runtime, storage, ingest, pack, or other pipeline behavior, update the corresponding documentation in `docs/` and any primary README surface that describes that behavior as part of the same change. Do not leave behavior documentation stale after the implementation lands.
-
-If new model work appears to need framework custom ops, place that adapter under `components/CelleraTorch/` and keep the op scope minimal. Prefer library-backed framework, cuBLAS, cuSPARSE, or CUTLASS paths before adding handwritten CUDA.
-
-For CUDA/C++ implementation work outside `src/models/`, default to `$cuda` whenever kernel shape, memory fit, communication topology, HtoD staging, sparse layout, or profiler interpretation is material to the answer. Recommendations should explicitly say whether they are library-backed or custom-kernel, whether they assume `sm_70`, and what the dominant limiter is: PCIe, HBM traffic, occupancy, register pressure, launch overhead, or cross-GPU communication.
-
-Do not preserve a higher-level abstraction purely for compatibility if it blocks the fastest reasonable Volta path. Prefer explicit data layouts, pointer-stable ownership, fused kernels, and pair-local communication patterns when they are the better performance choice.
-
-## Commit & Pull Request Guidelines
-Recent commits use short, lowercase summaries such as `move ingest to smellerator` and `reduce & time models`. Keep commit subjects brief, specific, and scoped to one change. PRs should explain the affected module, list build/test commands run, note any CUDA/HDF5/libtorch assumptions, and include benchmark deltas when touching kernels, ingest throughput, or preprocessing performance.
-
-## Configuration Notes
-CMake defaults to the local HPC SDK CUDA toolchain and `g++-12` host compiler when no override is supplied. Prefer explicit overrides with `CUDACXX` and `CUDAHOSTCXX` if you need a different toolchain.
-
-For CelleraTorch, prefer the source-built installation under `/usr/local` over a Python-packaged or PyTorch-bundled build. That `/usr/local` build is the repository default because it is tuned for this host's V100/NVLink layout. Only point CMake at another dependency root with `Torch_DIR` or `LIBTORCH_PATH` when you are deliberately testing or debugging against a different build.
-
-Model and quantization work should assume the repository is targeting Volta `sm_70` on Tesla V100 16 GB GPUs unless the task says otherwise. Treat PCIe as a bottleneck to be minimized, keep steady-state traffic within the real NVLink pairs (`GPU0 <-> GPU2`, `GPU1 <-> GPU3`) when multi-GPU work is involved, do not assume Ampere-only features, and do not lock in NCCL environment settings without measurement.
-
-When performance-sensitive code is touched, prefer benchmark-backed or profiler-backed decisions over compatibility arguments. Nsight Systems should answer pipeline and overlap questions; Nsight Compute should answer hot-kernel questions. If a code change favors throughput at the cost of portability, generality, or API smoothness, that tradeoff is acceptable in this repository as long as it is deliberate and scoped to the hot path.
+- architectural invariant affected;
+- source and destination domains and orders;
+- structure and value lifetimes;
+- selected or added physical projections;
+- exact tests run;
+- sanitizer results;
+- benchmark commands and deltas;
+- hardware and toolchain assumptions;
+- compatibility or migration strategy.

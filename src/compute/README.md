@@ -1,30 +1,47 @@
-# `compute`
+# `src/compute`
 
-Authoritative home for sparse ML math over CellShard matrices.
+This directory is the current compiled home for reusable Cellerator execution machinery.
 
-Rules:
+It is transitional: older sparse operators, preprocessing kernels, model-adjacent math, and the emerging CP-Math runtime coexist here.
 
-- name code by math contract first: sparse linalg, reductions, transforms,
-  selection, distances, gradients, neighbor scoring
-- use NVIDIA library-backed paths as the default when cuSPARSE, cuBLAS, CUB, or
-  NCCL matches the operation cleanly
-- put measured or layout-specific hot paths under `custom/` folders beside the
-  library path they replace
-- keep CellShard data handling out of this tree; biology-facing preprocessing
-  policy lives under `src/preprocess/`, while reusable preprocessing math lives
-  under `src/compute/preprocess/`
-- keep framework-independent sparse training code under `compute/sparse/ops`;
-  framework-facing wrappers belong above that layer, not inside the runtime core
-- keep reusable forward sparse projection contracts under `compute/sparse/project`
-- keep reusable CUDA library handles and scratch ownership under `compute/runtime`;
-  model code should acquire cuSPARSE/cuBLAS there instead of creating per-call handles
-- document launch, HBM, PCIe, and synchronization costs at host boundaries
+## Target ownership
 
-Primary folders:
+`src/compute/` should converge on:
 
-- `core/`: small shared host/device utilities
-- `runtime/`: pointer-first execution contexts, scratch arenas, and CUDA library caches
-- `layouts/`: lightweight views over CellShard-owned layouts
-- `sparse/`: reusable sparse math contracts and backend families
-- `ml/`: ML-facing sparse math, sparse operators, and model-adjacent operators
-- `neighbors/`: reusable neighbor scoring/search/top-k math plus forward-neighbor caller policy
+- operation implementations;
+- physical projection construction;
+- native and vendor kernel backends;
+- planner and autotuner support;
+- epilogues;
+- graph and order transforms;
+- common sparse, masked, block-sparse, dense-fragment, reduction, and relation operations;
+- training-oriented forward and backward primitives;
+- execution instrumentation.
+
+The public contracts belong under `include/Cellerator/compute/` or another canonical public Cellerator ABI location.
+
+## Rules
+
+- Name code by biological or mathematical contract, not by one storage backend.
+- Treat CSR, SELL, BSR, Blocked-ELL, dense fragments, and CP-BP tiles as physical projections.
+- Do not make a workflow or model own reusable math.
+- Do not create a second runtime context when the core execution session can own the resource.
+- Do not reconstruct Cellerator-native structures into conventional formats inside a hot path.
+- Keep launch bindings separate from reusable prepared state.
+- Keep order and identity explicit.
+- Include conversion, preparation, epilogue, and synchronization in planner cost.
+- Preserve independent reference implementations and strong fallbacks.
+- Use vendor libraries when they win the measured total cost, not by default doctrine.
+- Keep architecture-specific kernels behind portable semantic contracts.
+
+## Current important areas
+
+- `math/`: experimental CP-Math contracts, planner, runtime, projections, backends, referee, and epilogue.
+- `sparse/`: existing reusable sparse operators and projections.
+- `matrix/convert/`: conversion and bucket machinery.
+- `preprocess/`: reusable preprocessing math.
+- `neighbors/`: reusable scoring and search math.
+- `ml/`: model-adjacent native operations.
+- `runtime/`: older execution-context surfaces that must be reconciled with core CP-Math ownership.
+
+Read `docs/core_execution_cp_math.qmd` before adding new runtime or planner abstractions.

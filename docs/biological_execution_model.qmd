@@ -1,0 +1,499 @@
+---
+title: "Biological Execution Model"
+---
+
+## Why tensors are not enough
+
+A tensor describes shape, storage, strides, dtype, and device. That is insufficient for Cellerator.
+
+A dimension of length 20,000 might contain:
+
+- canonical genes;
+- packed genes;
+- a different gene panel;
+- regulatory elements;
+- motif occurrences;
+- latent channels;
+- one partition of a larger domain.
+
+Two arrays can have identical dimensions and incompatible biological meaning.
+
+Cellerator therefore needs a model in which biological identity is explicit and computationally active.
+
+## Domains
+
+A biological domain is an ordered set or coordinate space of entities.
+
+Examples include:
+
+- genomic coordinates;
+- motif occurrences;
+- regulatory elements;
+- genes;
+- transcripts;
+- proteins;
+- cells;
+- developmental states;
+- pathways;
+- regulatory modules;
+- latent dimensions.
+
+```cpp
+enum class domain_kind : std::uint32_t {
+    sequence_coordinate,
+    motif_occurrence,
+    regulatory_element,
+    gene,
+    transcript,
+    protein,
+    cell,
+    developmental_state,
+    module,
+    pathway,
+    latent,
+    user_defined
+};
+
+struct domain_descriptor {
+    domain_id identity;
+    domain_kind kind;
+
+    std::uint64_t logical_size;
+    order_id canonical_order;
+
+    domain_encoding encoding;
+    metadata_handle metadata;
+};
+```
+
+A sequence-coordinate domain may be implicit and contiguous. A gene domain may be an explicit table. A latent domain may be model-defined.
+
+The core should not encode every ontology. It should provide stable identity and enough kind information for validation and dispatch.
+
+## Axis identity
+
+Every biologically meaningful operand axis carries:
+
+```cpp
+struct axis_identity {
+    domain_id domain;
+    order_id order;
+    geometry_id geometry;
+    partition_id partition;
+};
+```
+
+The fields mean:
+
+- `domain`: which entities are present;
+- `order`: their exact permutation;
+- `geometry`: how they are grouped or tiled;
+- `partition`: which subset and ownership view is present.
+
+`geometry` may be null when grouping is irrelevant. `partition` may represent the complete domain.
+
+Persistent identities should be strong hashes or UUID-like values. A loaded execution session may intern them into compact handles.
+
+## Relations
+
+A typed relation connects two or more domains.
+
+```cpp
+struct relation_descriptor {
+    relation_id identity;
+    relation_semantics semantics;
+
+    domain_id source;
+    domain_id destination;
+
+    structure_id structure;
+};
+```
+
+Examples:
+
+```text
+sequence coordinate → motif occurrence
+motif occurrence → regulatory element
+regulatory element → gene
+gene → transcript
+protein → pathway
+cell → expressed gene
+cell → active module
+module → latent channel
+cell → neighboring cell
+```
+
+A relation is not required to be represented as a matrix. A matrix is one mathematical view over a binary relation with values.
+
+## Structures and value planes
+
+A structure defines topology:
+
+- which edges exist;
+- which entities are grouped;
+- which order is used;
+- which physical projections are available.
+
+A value plane supplies numbers or logical state over that structure.
+
+```cpp
+struct relation_structure {
+    structure_id identity;
+    std::uint64_t structure_epoch;
+
+    relation_descriptor relation;
+    projection_catalog projections;
+};
+
+struct value_plane {
+    const relation_structure* structure;
+
+    const void* values;
+    dtype storage_type;
+    dtype logical_type;
+
+    quantization_descriptor quantization;
+
+    std::uint64_t value_generation;
+    value_layout layout;
+};
+```
+
+Examples:
+
+- one enhancer-to-gene structure with cell-specific edge weights;
+- one gene-regulatory structure with learned values;
+- one cell-by-gene support structure with expression values at many time points;
+- one motif-to-element structure with Boolean, count, or affinity planes;
+- one sparse topology with fp16 execution values and fp32 master values.
+
+## Operand plurality
+
+Cellerator should not force every biological object into a dense tensor or conventional sparse matrix.
+
+```cpp
+enum class operand_kind : std::uint32_t {
+    dense_tensor,
+    bit_plane,
+    event_stream,
+    segment_stream,
+    sparse_relation,
+    scalar_parameter
+};
+
+struct biological_operand_view {
+    operand_kind kind;
+    axis_identity axes[max_operand_rank];
+    device_id device;
+
+    union {
+        dense_tensor_view dense;
+        bit_plane_view bits;
+        event_stream_view events;
+        segment_stream_view segments;
+        sparse_relation_view relation;
+        scalar_parameter_view scalar;
+    };
+};
+```
+
+Each representation retains its natural compact form.
+
+A planner may choose to materialize or transform it when the next operation benefits.
+
+## Sequence and level
+
+Sequence and quantitative level are not alien datatypes.
+
+Sequence is usually:
+
+- immutable;
+- coordinate-indexed;
+- compact;
+- Boolean or low-bit;
+- transformed by exact predicates.
+
+Level is usually:
+
+- dynamic;
+- associated with genes, transcripts, proteins, cells, modules, or edges;
+- integer, fixed-point, or floating point;
+- transformed by weighted propagation and state updates.
+
+Both are value planes over domains or relations.
+
+The complete path can remain inside one model:
+
+```text
+sequence coordinate domain
+    ↓ exact predicate
+motif mask or motif occurrence domain
+    ↓ interval or grammar relation
+regulatory element domain
+    ↓ accessibility and TF activity
+active regulatory relation
+    ↓ element-to-gene propagation
+gene domain
+    ↓ transcription and degradation
+transcript level
+    ↓ translation and interaction
+protein and pathway state
+    ↓ cell or tissue model
+phenotype and behavior
+```
+
+The representation changes only when the operation changes its mathematical nature.
+
+## The numerical border
+
+Keep the computation Boolean or integer through:
+
+- nucleotide identity;
+- validity;
+- motif matching;
+- strand;
+- spacing grammar;
+- coordinate ownership;
+- interval membership;
+- support masks;
+- compact counts.
+
+Convert to floating point at the first genuinely quantitative interaction, such as:
+
+- binding affinity;
+- TF activity;
+- chromatin-weighted occupancy;
+- enhancer strength;
+- learned regulatory weight;
+- transcriptional drive;
+- kinetic state.
+
+There is no single global numerical border. The planner may place it differently for different operations.
+
+## Example: static DNA with dynamic cell state
+
+Static sequence work should usually be amortized.
+
+```text
+packed genome
+    ↓ once
+Baseplane motif and grammar program
+    ↓ once
+motif-to-regulatory-element structure
+    ↓ once
+CellPack semantic geometry and projections
+    ↓ repeated
+cell-specific accessibility and TF value planes
+    ↓ repeated
+regulatory propagation and expression update
+```
+
+The immutable sequence program and regulatory topology can serve millions of cell-state evaluations.
+
+## Execution order
+
+An order is a first-class property of every axis.
+
+```cpp
+struct tensor_view {
+    void* data;
+    dtype type;
+    shape shape;
+    stride stride;
+    axis_identity axes[max_rank];
+    std::uint64_t value_generation;
+    device_id device;
+};
+```
+
+### Producer and consumer contracts
+
+A kernel declares:
+
+- accepted source domains;
+- accepted input orders;
+- required geometry;
+- produced order;
+- whether it can fuse an order transform;
+- whether it preserves partition ownership.
+
+```cpp
+struct axis_requirement {
+    domain_constraint domain;
+    order_constraint order;
+    geometry_constraint geometry;
+    partition_constraint partition;
+};
+
+struct kernel_contract {
+    axis_requirement inputs[max_inputs][max_rank];
+    produced_axis outputs[max_outputs][max_rank];
+};
+```
+
+### Graph-wide order optimization
+
+For graph node \(i\) and candidate order \(q_i\), minimize:
+
+\[
+\sum_i C_{\text{kernel}}(i, q_i)
++
+\sum_{(i,j)}
+C_{\text{transform}}(q_i, q_j)
+\]
+
+This prevents a locally fast kernel from winning when it forces expensive gather and scatter operations around itself.
+
+Order transforms may be:
+
+- removed through producer-consumer agreement;
+- fused into a kernel;
+- hoisted to graph entry;
+- delayed to graph exit;
+- cached by source allocation and value generation;
+- represented as metadata when access remains valid without movement.
+
+## Hierarchy
+
+Biological hierarchy is a set of overlapping relations and partitions.
+
+A strict tree is usually wrong.
+
+A gene may belong to several pathways. An enhancer may contact several genes. A regulatory module may overlap another module. A cell may occupy several continuous state coordinates.
+
+Represent hierarchy through:
+
+- membership relations;
+- parent-child relations;
+- nested partitions;
+- overlapping views;
+- optional compiler priors.
+
+Do not duplicate the underlying values for every hierarchy.
+
+## Module-local dense state
+
+The transition from sparse biological input to learned dense state can preserve locality.
+
+Instead of immediately producing:
+
+```text
+[cell][unstructured hidden dimension]
+```
+
+a native first learned layer can produce:
+
+```text
+[cell tile][biological module][local hidden channel]
+```
+
+This permits:
+
+- module-local MLPs;
+- grouped linear operations;
+- conditional module execution;
+- module-specific normalization;
+- local quantization;
+- sparse cross-module communication;
+- later controlled collapse into global latent state.
+
+## Conditional execution
+
+A hierarchy may support exact or approximate skipping.
+
+Exact skipping is safe when:
+
+- a module activity mask is zero;
+- a required regulatory gate is false;
+- a sequence predicate produces no relevant relation;
+- all values in a module are structurally absent.
+
+Approximate skipping requires an explicit error policy and validation.
+
+A route decision selects precompiled work. It must not assemble new modules in the hot path.
+
+## State transitions
+
+Many biological processes are naturally sparse state updates.
+
+A generic regulatory update may be:
+
+\[
+d_{c,g}
+=
+b_g
++
+\sum_e L_{e,g} o_{c,e}
+\]
+
+\[
+RNA_{c,g}^{t+\Delta t}
+=
+RNA_{c,g}^{t}
++
+\Delta t
+\left[
+s_g(d_{c,g})
+-
+\lambda_g RNA_{c,g}^{t}
+\right]
+\]
+
+The same fixed relation structure can be reused across time steps. Only value planes change.
+
+This makes recurrent, trajectory, Jacobian-vector, and graph-propagation operations natural Cellerator primitives.
+
+## Sparse programs
+
+A biological sparse program is a graph of typed operations over domains and relations.
+
+Possible operations include:
+
+- predicate;
+- join;
+- gather or scatter;
+- masked weighted propagation;
+- segmented reduction;
+- module reduction;
+- sparse-dense projection;
+- gating;
+- normalization;
+- nonlinear state update;
+- top-k event selection;
+- neighborhood aggregation;
+- communication;
+- order transform.
+
+The program can be compiled into:
+
+- selected semantic geometries;
+- physical projections;
+- fused kernels;
+- graph replay;
+- communication schedules.
+
+The initial implementation should remain a compact POD-oriented runtime rather than a large dynamic compiler framework. The semantic model should nevertheless guide every ABI added now.
+
+## Identity failure modes
+
+The runtime must reject:
+
+- same shape, different domain;
+- same domain, different order;
+- same order, stale geometry;
+- same structure identity, changed topology;
+- same values pointer, stale value generation;
+- incompatible partition ownership;
+- sequence event streams from the wrong coordinate domain;
+- relations whose source and destination domains do not match the consumer.
+
+Identity checks may be compiled down or interned for hot execution after preparation. They must remain available at boundaries and in validation builds.
+
+## Design outcome
+
+The unified space is not one giant tensor.
+
+It is a connected system of domains, relations, structures, values, and orders whose natural physical representations remain intact until a measured operation benefits from changing them.
+
+That is how sequence and level become parts of one execution model without paying for an artificial universal representation.

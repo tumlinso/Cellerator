@@ -1,508 +1,542 @@
-# AGENTS.md — CellPack
+# CellPack and CP-BP Guidance
 
 ## Mission
 
-CellPack is Cellerator's static semantic sparse-packing subsystem. Its job is to organize biological sparse matrices into compute-efficient, module-packed layouts that reduce memory-access entropy, index traffic, padding, launch fragmentation, and runtime indirection.
+CellPack is Cellerator's biological geometry compiler.
 
-CellPack should transform canonical sparse biological data, typically CSR/COO or CellShard-backed sparse partitions, into static packed computational regions. Those regions may use Blocked-ELL, Sliced-ELL, BCSR, bitmap/tile formats, dense tiles, quantized variants, or residual CSR depending on the local structure.
+It converts measured biological structure into reusable execution geometry and validated physical projections. It exists because biological supports, modules, co-access patterns, row neighborhoods, regulatory programs, and repeated subgraphs contain regularity that generic sparse formats do not know how to exploit.
 
-The goal is not to make runtime kernels reason about biology. The goal is to use data-derived biological structure offline to compile the matrix into a low-entropy memory layout. Runtime kernels should see flat descriptors, contiguous buffers, predictable access patterns, and minimal metadata.
+CellPack is not conceptually outside Cellerator. Its current component boundary is an implementation and build boundary.
 
-The central rule is:
+The current CP-BP v1 pipeline is a completed experimental foundation. New work must preserve its proven contracts while moving toward a broader operation-aware compiler.
 
-> Dynamic selection is allowed. Dynamic assembly is forbidden.
+## Authority
 
-CellPack may eventually support dynamic computation by skipping precompiled blocks when confidence is high enough. It must not dynamically discover, gather, bucket, or assemble modules in the hot path.
+Read before changing CellPack:
 
-## Current Cellerator Relationship
+1. repository `AGENTS.md`;
+2. `scope.md`;
+3. `docs/architecture.qmd`;
+4. `docs/cellpack_cp_bp.qmd`;
+5. `docs/core_execution_cp_math.qmd`;
+6. this file;
+7. the relevant source, test, benchmark, and historical ledger.
 
-Cellerator already contains much of the spirit of this idea, but the current sparse-layout implementation should be treated as scaffolding rather than the final design. Existing Blocked-ELL, quantized Blocked-ELL, conversion, sparse compute, and benchmarking surfaces are useful references, but CellPack should not assume that the current NNZ-bucketing or CSR-to-Blocked-ELL paths are semantically correct.
+Closed CP-BP TODO files describe how v1 was implemented. They are not the target architecture.
 
-CellPack belongs inside Cellerator because it is a compute-layout compiler and runtime execution surface, not canonical storage or ingest. CellShard remains the owner of durable source storage, ingest, `.csh5` / `.cspack` publication, shard ownership, and canonical retrieval. CellPack consumes explicit matrix views and emits compute-oriented packed layouts, metadata, and execution descriptors.
+## Current v1 implementation
 
-CellPack should preserve the Cellerator philosophy:
+CP-BP v1 currently provides:
 
-- keep layout, memory residency, transfer, and launch costs visible;
-- avoid hidden high-level workflow abstractions in hot paths;
-- keep Torch, AnnData, Scanpy, and CellShard interop at explicit boundaries;
-- favor measured low-level operators over convenience layers.
+- deterministic sampled support extraction;
+- sampled sparse materialization;
+- feature-major support bitsets and counts;
+- approximate candidate generation;
+- exact pair and merge-cost scoring;
+- a deterministic constrained host optimizer;
+- a frozen packing plan with canonical feature recovery;
+- application of that plan to full partitions;
+- compact cell-block records;
+- bounded local row ordering;
+- host and CUDA warp-tile construction;
+- a direct feature-weighted row-reduction reference and CUDA kernel;
+- held-out, null, bootstrap, and relearned-stability validation;
+- a replaceable V100 cost model;
+- a pointer-free aligned CPK1 image containing plan maps, row order, and tiles;
+- rebinding and direct execution after CellShard-owned upload.
 
-## Non-Goals
-
-CellPack is not:
-
-- a manual annotation system;
-- a cell-type labeling system;
-- a pathway database;
-- a Scanpy, AnnData, or scvi-tools replacement;
-- a generic sparse matrix library unrelated to biological compute;
-- a dynamic sparse router that assembles modules at runtime;
-- a per-cell attention mechanism that creates scattered gather patterns;
-- a storage owner for canonical biological datasets;
-- a reason to hide format conversion costs from callers.
-
-If an implementation requires runtime feature lookup, runtime module construction, per-cell scattered module gathering, or repeated dynamic bucketing, it is probably outside CellPack's intended design.
-
-## Core Terms
-
-### Feature module
-
-A feature module is a data-derived storage/co-access unit. It may correspond to a gene program, regulatory module, chromatin-accessibility module, peak neighborhood, pathway-like group, co-detection group, or task-specific predictive feature block, but it is not accepted merely because it has a biological name.
-
-A feature module earns first-class storage status only if packing it improves or plausibly improves compute behavior: locality, block density, dense RHS reuse, padding, index traffic, or skippability.
-
-### Row signature
-
-A row signature is a compact description of how a row uses feature modules: module occupancy, density, activation, or related structural statistics. Row signatures are used offline to order rows and form row groups. They must not become a hot-path manual cell-type lookup.
-
-### Packed region
-
-A packed region is a flat executable storage region with one concrete sparse or dense layout. Runtime kernels consume packed regions, not biological trees.
-
-### Conditional region
-
-A conditional region is a packed region that is meaningful enough to store separately and substantial enough to possibly skip for some microbatches. It is precompiled and contiguous. Optional gating may select or skip it, but the region itself is never assembled dynamically.
-
-### Residual region
-
-A residual region holds rare, tiny, irregular, or low-confidence structure that should not pollute the primary hot layout. Residual data may use CSR, Sliced-ELL, or another compact fallback.
-
-### Layout epoch
-
-A layout epoch is a period during which the physical row/feature permutations and packed regions are fixed. Training may collect statistics that inform a future repack, but the layout must not mutate every batch.
-
-### Route mask and route tape
-
-A route mask is an optional bitmask or compact list of precompiled regions selected for a microbatch. A route tape records the exact regions executed during forward so backward can replay only those regions.
-
-## Design Principles
-
-1. **Static packing first.** Do expensive module discovery, row ordering, format selection, and packing outside the hot path.
-
-2. **Runtime gets flat descriptors.** Kernels should consume arrays of packed-region descriptors and contiguous value/index buffers. They should not traverse biological hierarchies.
-
-3. **Modules are co-access units.** A module is a storage and computation decision, not a manual biological label.
-
-4. **No manual cell annotations.** CellPack may infer row structure from the data, but it must not require human cell-type labels. Labels may be used for external evaluation only, not as required layout input.
-
-5. **The row axis is evidence, not identity.** Row structure helps discover feature modules, row signatures, and row ordering. Runtime should not ask what cell type a row is.
-
-6. **Hybrid layout is expected.** Blocked-ELL is important, but no single sparse format should be forced onto every region.
-
-7. **Conditionally meaningful structure should be isolated.** If a module is real but only useful in a subset of rows or tasks, store it separately so it does not inflate the common hot layout.
-
-8. **Dynamic selection may skip static blocks.** Optional gating may choose not to execute precompiled conditional regions. Gating must be coarse, cheap, microbatch-friendly, and recorded for backward.
-
-9. **Dynamic assembly is forbidden.** Do not dynamically gather genes into modules, build sparse blocks, rebucket rows, or repack feature groups during forward/backward.
-
-10. **Memory traffic is the primary enemy.** Favor fewer bytes, fewer index reads, fewer metadata reads, fewer irregular dense RHS loads, and fewer synchronization points over theoretical elegance.
-
-11. **A biological module that slows computation is metadata, not a hot-path format.** Keep it for interpretation if useful, but do not force it into the primary compute layout.
-
-12. **Every optimization needs a baseline.** Compare against raw CSR/cuSPARSE, current Blocked-ELL, NNZ-sorted layouts, feature-permuted layouts, and hybrid packed layouts before claiming a win.
-
-## Intended Architecture
-
-CellPack should be organized as a layout compiler plus a runtime substrate.
+The first direct operation is:
 
 ```text
-canonical sparse input
-    ↓
-feature-module discovery / import
-    ↓
-row-signature construction
-    ↓
-row and feature permutation
-    ↓
-region planning and cost modeling
-    ↓
-hybrid format selection
-    ↓
-static packed layout emission
-    ↓
-flat runtime execution
-    ↓
-optional route-mask execution and backward replay
+y[row] = Σ value[row, feature] × weight[canonical_feature]
 ```
 
-### 1. Input boundary
+It is effectively an `N=1` sparse-dense operation.
 
-CellPack should accept explicit sparse matrix views and metadata through Cellerator/CellShard boundaries. It should not own source ingest or canonical dataset mutation.
+The historical V100 benchmark showed the direct tile path winning strongly at high sharing, winning at medium sharing, and losing to the existing CSR path at low sharing. That result is a regime map, not proof of a universal layout.
 
-Supported initial inputs may include:
+## Non-Negotiable Invariants
 
-- CSR / compressed-by-row views;
-- COO / triplet views;
-- sharded compressed views;
-- future CellShard runtime matrix views;
-- precomputed feature-module assignments for early testing.
+### Preserve canonical biological identity
 
-### 2. Discovery boundary
+Every feature and row must remain recoverable.
 
-Feature-module discovery may eventually use multiple signals:
+Packing may reorder, group, partition, and encode. It may not make canonical identity ambiguous.
 
-- co-detection / binary occupancy;
-- coexpression or covariance on rows, metacells, or local aggregates;
-- matrix factorization usage patterns;
-- graph-community structure;
-- feature-neighborhood structure for peaks or genomic intervals;
-- model usage, gradients, or block-error statistics from a previous layout epoch;
-- optional biological priors as weighted evidence, never as mandatory truth.
+Required identities include:
 
-Early implementations may accept precomputed modules or simple unsupervised module assignments. The interface should leave room for better discovery without entangling discovery with runtime execution.
+- source feature-axis identity;
+- source row-domain identity;
+- structure or plan identity;
+- geometry identity;
+- structure epoch;
+- value generation where values are mutable;
+- partition identity when a view is partial.
 
-### 3. Row-signature boundary
+Never substitute a live pointer for a durable identity.
 
-Rows should be ordered by static signatures derived from module occupancy and structural profile. Within row-signature groups, hardware-oriented refinements such as NNZ sorting are allowed.
+### Semantic geometry and physical projections are different
 
-Initial row ordering may use:
+CellPack must produce a semantic geometry that can outlive one kernel.
 
-- module occupancy bitsets or counts;
-- module density vectors;
-- row NNZ as a secondary key;
-- local similarity over sparse signatures;
-- task-specific row usage statistics when available.
+Semantic geometry may contain:
 
-Do not require manual row annotations.
+- feature order;
+- row order;
+- feature groups;
+- row groups;
+- module boundaries;
+- nested warp, CTA, GPU, and node partitions;
+- cross-partition edges;
+- canonical recovery maps;
+- statistics and priors used by downstream planning.
 
-### 4. Region planner
+Physical projections may include:
 
-The planner should form candidate row-group × feature-module regions and score them by compute value. It should classify regions as primary, shared, conditional, residual, or discarded.
+- the current row-masked warp tiles;
+- feature-major masked tiles;
+- CTA macro-tiles;
+- dense MMA fragments;
+- CSR;
+- SELL-C-sigma;
+- BSR;
+- Blocked-ELL;
+- transpose or backward views;
+- quantized value layouts.
 
-A candidate region should be scored by at least:
+Do not add a physical-layout field to the semantic contract when a projection catalog is sufficient.
 
-- expected nonzero density;
-- expected block/tile density;
-- padding ratio;
-- index bytes per useful value;
-- row-block width variance;
-- dense RHS locality;
-- expected active frequency;
-- residual fallback cost;
-- launch and grouping cost;
-- quantization/compression opportunity;
-- amortized layout-build cost.
+### The current row-masked tile is one projection
 
-Biological coherence may be included as a discovery and stability signal, but it must not override severe compute cost.
+The v1 tile grammar is valuable and must remain supported.
 
-### 5. Format selector
+It is not the universal representation for:
 
-CellPack should support a hybrid format decision per region.
+- medium or large dense RHS width;
+- transpose execution;
+- learned sparse-value gradients;
+- feature-major reductions;
+- sequence-conditioned relations;
+- high-density fragments;
+- low-sharing heavy-tail regions.
 
-Recommended initial categories:
+New work should add projections or versioned tile classes rather than contort one representation into every operation.
 
-| Region property | Preferred layout |
-| --- | --- |
-| regular row-block width, tolerable padding | Blocked-ELL |
-| high tile density | dense tile or BCSR/bitmap tile |
-| variable width but locally grouped rows | Sliced-ELL |
-| rare, tiny, scattered, or low-confidence data | CSR/residual |
-| recurrent low-bit-value-compatible data | quantized Blocked-ELL or quantized tile |
+### Structure and values are separate
 
-The format selector should be conservative. A region that cannot beat a fallback should stay fallback.
+The v1 CPK1 image couples structure and value order closely enough for immutable data execution. The future core must allow:
 
-### 6. Packed storage ABI
+- one geometry with several value planes;
+- changing values without rebuilding geometry;
+- fp16, bf16, fp8, integer, or fp32 planes over one structure;
+- forward and transpose value mappings;
+- static topology with learned weights;
+- many cells or time points sharing one regulatory topology.
 
-Persisted and runtime metadata should use offsets rather than pointer forests. The format must be versioned, self-describing, and explicit about row/feature permutations.
+A serializer may colocate structure and values, but runtime ownership must remain separable.
 
-A future packed descriptor may resemble:
+### Static compilation, cheap execution
+
+Expensive discovery, clustering, graph partitioning, projection construction, and validation belong outside steady-state execution.
+
+Runtime may:
+
+- select among precompiled projections;
+- skip inactive precompiled modules;
+- bind new values;
+- choose a measured kernel;
+- consume a device work queue.
+
+Runtime must not:
+
+- rediscover modules;
+- rebuild feature groups;
+- sort complete structures on the host;
+- repack every minibatch;
+- walk biological object graphs;
+- allocate per tile;
+- canonicalize after every operation.
+
+### No hidden conventional lowering
+
+A native CellPack structure must not secretly reconstruct CSR, COO, BELL, or dense data in the hot path.
+
+A conventional projection is allowed when it is an explicit planner candidate and its construction and execution costs are represented.
+
+### One objective is not enough
+
+The current row-active-block-reference objective is a useful v1 surrogate.
+
+The future optimizer must account for:
+
+- operation family;
+- dense RHS width `N`;
+- dtype and accumulation;
+- row-mask and feature-mask distributions;
+- dense-operand reuse;
+- lane imbalance;
+- descriptor-lane visits;
+- metadata bytes;
+- register and shared-memory pressure;
+- epilogue;
+- input and output ordering;
+- forward and transpose needs;
+- expected reuse;
+- projection build cost;
+- graph capture;
+- communication cuts.
+
+Do not replace the current objective with another elegant surrogate and call it execution cost. Calibrate against measured kernels.
+
+## Compiler Architecture
+
+The target compiler has two stages.
+
+### Stage A: semantic geometry
+
+Inputs may include:
+
+- sparse support;
+- value distributions;
+- operation profile;
+- known biological modules;
+- regulatory relations;
+- temporal or state-conditioned activity;
+- hardware deployment profile;
+- expected reuse;
+- distributed partition requirements.
+
+The compiler produces:
+
+- one or more candidate semantic geometries;
+- feature and row order;
+- module and group membership;
+- nested partitions;
+- canonical identity maps;
+- cross-partition relation summaries;
+- geometry statistics.
+
+### Stage B: physical projection construction
+
+For each selected operation and deployment profile, construct one or more projections:
+
+```text
+semantic geometry
+    ├── row-masked N=1 projection
+    ├── feature-major small-N projection
+    ├── CTA macro-tile projection
+    ├── dense-fragment projection
+    ├── CSR or SELL fallback
+    └── transpose/backward projection
+```
+
+The core planner decides which projection is used. CellPack may precompute likely candidates and persist common projections.
+
+## Optimization Strategy
+
+### Use biological hierarchy as a prior
+
+Known modules, pathways, enhancer-promoter groups, chromatin domains, lineages, or gene families may initialize or softly constrain the optimizer.
+
+They are not mandatory truth.
+
+A biologically named module that increases total execution cost remains interpretation metadata unless another operation benefits enough to justify it.
+
+### Optimize rows and features together
+
+Feature grouping is only useful relative to rows that execute together. Row grouping is only useful relative to the feature blocks those rows activate.
+
+Use an alternating or multilevel approach:
+
+1. initialize feature and row communities;
+2. coarsen the bipartite or hypergraph structure;
+3. partition under hardware capacities;
+4. refine features given row groups;
+5. refine rows given feature groups;
+6. classify physical tiles;
+7. measure or estimate total operation cost;
+8. retain exact rollback and validation.
+
+### Candidate algorithms
+
+Appropriate tools include:
+
+- MinHash and LSH for sparse candidate discovery;
+- weighted bipartite partitioning;
+- hypergraph partitioning;
+- biclustering;
+- constrained community detection;
+- multilevel coarsening;
+- separator-based partitioning;
+- local move, swap, split, and merge refinement;
+- domain-specific priors;
+- exact local cost oracles;
+- measured tile-class lookup models.
+
+No generic clustering algorithm is accepted merely because it groups similar features.
+
+### Nested partitions
+
+Geometry should be able to express:
+
+```text
+node
+  → GPU
+      → biological supermodule
+          → CTA macro-tile
+              → warp tile
+                  → local feature block
+```
+
+Each level must correspond to reuse, scheduling, memory, or communication value.
+
+## Statistics To Produce
+
+Construction should calculate enough information that runtime scheduling is almost free.
+
+Per tile or macro-tile, record or make available:
+
+- row count;
+- feature count;
+- nnz;
+- density;
+- distinct feature blocks;
+- descriptor count;
+- row-mask popcount distribution;
+- feature-mask popcount distribution;
+- lane-work mean, variance, and maximum;
+- unique dense-RHS rows required;
+- estimated dense-RHS reuse;
+- metadata bytes;
+- value bytes;
+- partial-block fraction;
+- dense-fragment candidates;
+- heavy-row indicators;
+- module activity frequency;
+- forward and transpose locality;
+- partition-cut edges;
+- precision and quantization range;
+- likely kernel class.
+
+Only compact scheduling fields belong in the hot tile header. Detailed distributions belong in a planner sidecar or calibration artifact.
+
+## Physical Format Rules
+
+### Pointer-free persistence
+
+Persistent images use:
+
+- versioned headers;
+- explicit section kinds;
+- relative offsets;
+- explicit lengths and capacities;
+- stable identities;
+- alignment;
+- checksums at the transport envelope;
+- validation before rebinding.
+
+A self-describing image is for loading, validation, and planning. Kernels consume compact rebound views rather than parsing a general directory repeatedly.
+
+### Projection directory
+
+The future image should support optional sections:
 
 ```cpp
-struct cellpack_region_desc {
-    std::uint32_t region_id;
-    std::uint32_t parent_id;
-    std::uint32_t flags;
-    std::uint32_t layout_kind;
-
-    std::uint32_t row_begin;
-    std::uint32_t row_count;
-    std::uint32_t feature_begin;
-    std::uint32_t feature_count;
-
-    std::uint32_t block_size;
-    std::uint32_t width_class;
-    std::uint32_t index_offset;
-    std::uint32_t value_offset;
-    std::uint32_t aux_offset;
-
-    std::uint32_t weight_offset;
-    std::uint32_t output_offset;
+enum class projection_kind : std::uint32_t {
+    native_row_masked,
+    native_feature_masked,
+    native_cta_macrotile,
+    dense_fragment,
+    csr,
+    sell,
+    bsr,
+    blocked_ell,
+    transpose_native
 };
 ```
 
-Use concrete Cellerator types when implementing. The shape above is conceptual, not a mandatory ABI.
+Do not persist every possible projection. Persist those with sufficient expected reuse. Build others lazily and cache them.
 
-### 7. Runtime execution
+### Metadata must pay rent
 
-Runtime should execute flat packed regions in a deterministic order or in cost-model grouped order. It should group compatible regions by layout kind, block size, width class, and dense RHS access pattern.
+Persist metadata when it removes repeated runtime work or enables a better kernel.
 
-Runtime must avoid:
+Reject metadata that:
 
-- per-region host synchronization in hot loops;
-- per-call allocation in steady state;
-- pointer chasing through biological trees;
-- runtime module construction;
-- scattered feature gathers inside inner loops;
-- per-cell kernel launches;
-- hidden CSR/COO conversions.
+- duplicates values;
+- is read by every lane but rarely useful;
+- encodes one kernel's schedule into the semantic ABI;
+- can be derived cheaply once during plan preparation;
+- increases transfer enough to erase its scheduling benefit.
 
-### 8. Optional block gating
+## Interaction With Core Execution
 
-Block gating is a future extension, not a requirement for the first format. When implemented, it must follow these rules:
+CellPack does not select a final kernel in isolation.
 
-- gates select or skip precompiled regions;
-- gates operate at row-group or microbatch granularity when possible;
-- gates are cheap relative to the skipped compute;
-- gates produce compact masks or active-region lists;
-- selected regions are grouped before launch;
-- forward records a route tape;
-- backward replays the route tape;
-- optimizer updates for inactive module parameters are lazy or active-set-aware;
-- an always-compute fallback path remains available for correctness and benchmarking.
+It provides:
 
-Do not implement per-cell arbitrary dynamic routing unless benchmarks show that grouping and launch overhead are under control.
+- structure identities;
+- candidate geometries;
+- projection capabilities;
+- construction cost;
+- tile statistics;
+- persistent sections;
+- validation.
 
-## Directory Guidance
+Cellerator core provides:
 
-Prefer a clear in-repo layout such as:
+- operation semantics;
+- actual dense RHS width and dtype;
+- expected reuse;
+- device profile;
+- planner and autotuner;
+- graph-wide order decisions;
+- launch bindings;
+- execution and profiling.
 
-```text
-include/Cellerator/cellpack/
-    format.hh              # public descriptors, enums, flags, versioning
-    plan.hh                # planner-facing host-side contracts
-    pack.hh                # packer entrypoints
-    runtime.cuh            # CUDA-facing region views and runtime contracts
-    gating.hh              # optional route-mask/tape contracts, later
+A hardware cost model inside CellPack is an input to the core planner, not a second independent planner.
 
-src/cellpack/
-    plan/
-    pack/
-    runtime/
-    discovery/
-    tests or test helpers as appropriate
+## Interaction With Baseplane
 
-tests/
-    cellpack_*_test.cc/cu
+Baseplane may provide:
 
-bench/cellpack/
-    cellpack_layout_bench.cu
-    cellpack_spmm_bench.cu
-```
+- sequence bit planes;
+- motif masks;
+- compact events;
+- segments;
+- static sequence-derived relations;
+- sequence-domain priors for grouping;
+- producer capabilities that can be fused into Cellerator kernels.
 
-Use the repository's existing include style: public in-repo callers should include `Cellerator/...` paths rather than reaching into `src/` directly.
+CellPack may compile sequence-derived relations into the same semantic geometry machinery used for expression and regulatory graphs.
 
-## Implementation Rules
+Do not make Baseplane emit CPK1 bytes directly. It may write into a neutral relation builder owned by the shared Cellerator ABI.
 
-- Keep APIs explicit about ownership, device/host residency, stream usage, and scratch buffers.
-- Do not allocate scratch memory repeatedly inside steady-state kernels or hot loops.
-- Do not hide expensive conversions behind convenient constructors.
-- Prefer deterministic layout decisions when inputs and seeds are fixed.
-- Keep persisted formats pointer-free; use offsets and lengths.
-- Keep inverse row/feature maps explicit so correctness tests can reconstruct original order.
-- Treat external priors as optional signals, not required inputs.
-- Avoid dependencies that make core Cellerator heavier unless they are isolated behind optional build flags.
-- Preserve a no-gating execution path.
-- Preserve residual fallback paths.
-- Add measurements before replacing an existing sparse path.
+## Interaction With CellShard
 
-## Correctness Requirements
+CellShard may:
 
-Every CellPack layout must be able to prove equivalence to the source matrix within the selected precision and transform policy.
+- store an opaque Cellerator image;
+- wrap it in a versioned execution envelope;
+- validate dataset, partition, generation, and checksum;
+- fetch and upload the image contiguously;
+- route it to workers.
 
-Required tests should include:
+CellShard must not:
 
-- row permutation and inverse permutation round trip;
-- feature permutation and inverse permutation round trip;
-- region coverage and non-overlap where applicable;
-- source-to-packed-to-source reconstruction on small fixtures;
-- equivalence of SpMM/projection against CSR baseline;
-- residual-region correctness;
-- deterministic packing for fixed inputs;
-- invalid input handling;
-- version/descriptor validation;
-- route-tape backward equivalence when gating is added;
-- no-gating and gated outputs match within expected tolerance when all regions are active.
+- infer feature groups;
+- decide biological geometry;
+- reinterpret projection sections;
+- rebuild tiles;
+- select kernels.
 
 ## Performance Requirements
 
-A CellPack change should report the relevant metrics for any path it claims to improve.
+A CellPack claim must report the relevant subset of:
 
-Important metrics:
+- total build time;
+- projection build time;
+- persisted bytes;
+- metadata bytes;
+- bytes per useful edge;
+- descriptor-lane efficiency;
+- row and feature reuse;
+- kernel time;
+- epilogue and order-transform time;
+- end-to-end operation time;
+- expected reuse and break-even count;
+- forward and backward time;
+- graph-capture compatibility;
+- communication cut and bytes;
+- memory expansion.
 
-- padded bytes;
-- index bytes per useful nonzero;
-- region count;
-- launch count;
-- distribution of `ell_width` / width class;
-- block/tile fill ratio;
-- residual NNZ fraction;
-- H2D/D2H bytes if conversion is included;
-- achieved HBM bandwidth;
-- forward time;
-- backward time when applicable;
-- optimizer time when applicable;
-- layout build time and expected amortization;
-- end-to-end epoch or batch time for model-facing paths.
+Required baselines may include:
 
-Benchmark against at least the closest relevant baselines:
+- canonical CSR and cuSPARSE;
+- the existing Cellerator CSR path;
+- SELL;
+- current Blocked-ELL;
+- current CP-BP row-masked tiles;
+- feature-only ordering;
+- row-only ordering;
+- combined semantic geometry;
+- hybrid projection;
+- dense execution when density warrants it.
 
-```text
-raw CSR/cuSPARSE
-current Blocked-ELL
-NNZ-sorted Blocked-ELL
-feature-permuted Blocked-ELL
-feature + row-signature-permuted Blocked-ELL
-hybrid CellPack regions
-hybrid CellPack + oracle gating, when gating exists
-hybrid CellPack + learned gating, when gating exists
-```
+Use real and adversarial structure traces. Full-width synthetic blocks are not sufficient.
 
-Do not claim a performance improvement from reduced theoretical FLOPs alone. Memory traffic, launch count, and end-to-end wall time decide.
+## Correctness Requirements
+
+Every new geometry or projection must test:
+
+- domain identity;
+- order identity;
+- geometry identity;
+- structure epoch;
+- value generation;
+- canonical feature recovery;
+- canonical row recovery;
+- forward reconstruction;
+- empty rows and tiles;
+- partial feature blocks;
+- partial warp tiles;
+- bit 31 and full masks;
+- duplicate or overlapping relations where legal;
+- invalid capacities and offsets;
+- stale identities;
+- deterministic construction with fixed inputs;
+- reference numerical equivalence;
+- projection-to-projection logical equivalence;
+- forward and transpose consistency when training is supported;
+- archive, rebind, and device execution;
+- Compute Sanitizer for new device views.
+
+## Forbidden Changes
+
+Do not:
+
+- declare one physical format universal;
+- remove CSR or another fallback because a native path won one benchmark;
+- make canonical output mandatory for internal consumers;
+- merge structure and mutable values into an inseparable core ABI;
+- place stream or per-run pointers in a durable plan identity;
+- use manual cell labels as required layout input;
+- move geometry inference into CellShard;
+- treat correlation or biological coherence as the final optimizer objective;
+- add per-cell dynamic routing;
+- build modules during forward;
+- claim Tensor Core benefit from density alone;
+- tune only on regular full-block synthetic data;
+- change v1 persistence without versioning;
+- erase the exact host referee.
+
+## Near-Term Priority
+
+Before accelerating the remaining CUDA packing evaluator, complete the core contracts that determine what the evaluator should optimize:
+
+1. first-class domain and order identity;
+2. structure and value separation;
+3. reusable plan and launch-binding split;
+4. projection catalog;
+5. low-sharing and feature-major native kernels;
+6. real-data benchmark corpus;
+7. end-to-end planner cost.
+
+A faster optimizer for the wrong objective is not the next bottleneck.
 
 ## Review Checklist
 
 Before merging CellPack work, verify:
 
-- Does the hot path consume static descriptors instead of building modules?
-- Are row and feature permutations explicit and invertible?
-- Are conditional modules stored separately without polluting the primary layout?
-- Is manual cell annotation unnecessary?
-- Is there a residual fallback for rare or irregular data?
-- Does the format selector avoid forcing Blocked-ELL on bad regions?
-- Are dynamic decisions limited to selecting/skipping precompiled blocks?
-- Is there a no-gating correctness path?
-- Are scratch allocation, synchronization, and transfer costs visible?
-- Are tests comparing against CSR/source truth?
-- Are benchmarks comparing against the right baselines?
-
-## Roadmap
-
-### M0 — CellPack skeleton and ABI
-
-- Add public format descriptors, enums, and version constants.
-- Add region descriptor validation.
-- Add row/feature permutation structures and inverse-map utilities.
-- Add small fixture tests.
-
-### M1 — Static module-packed baseline
-
-- Accept precomputed feature-module assignments.
-- Build feature permutation from module order.
-- Build row signatures from module occupancy.
-- Emit a flat packed-region plan.
-- Preserve residual CSR fallback.
-
-### M2 — Baseline packing and reconstruction
-
-- Pack CSR/COO into module-contiguous regions.
-- Support at least CSR residual and Blocked-ELL candidate regions.
-- Add round-trip reconstruction tests.
-- Add CSR-baseline SpMM/projection equivalence tests.
-
-### M3 — Cost model and hybrid layout selection
-
-- Add padding/index/width/fill metrics.
-- Choose among Blocked-ELL, Sliced-ELL, dense/tile, and residual where supported.
-- Add layout benchmark binaries.
-
-### M4 — Optional gating experiment
-
-- Add static oracle masks over precompiled conditional regions.
-- Add route tape for backward replay.
-- Benchmark no-gating vs oracle-gating.
-- Only then consider learned gates.
-
-### M5 — Feedback-guided repacking
-
-- Collect region usage, gradients, skip errors, and residual pressure.
-- Support offline layout-epoch repacking.
-- Keep runtime layout immutable within an epoch.
-
-## North Star
-
-CellPack succeeds when biological sparse data becomes easier for hardware to consume:
-
-- fewer scattered loads;
-- fewer index bytes;
-- less padding;
-- better dense RHS locality;
-- fewer tiny launches;
-- explicit residual handling;
-- optional skipped compute only over static blocks;
-- correctness preserved against canonical sparse input.
-
-The final product should feel like a compiler: it studies the data, chooses a physical layout, emits static executable regions, and then gets out of the kernel's way.
-
-## 2026-08-14 — Exact PackingPlan evaluator stage
-
-### Architectural correction
-
-An earlier reconnaissance centered one hypothetical future physical realization (`row_block_offsets`, block ids, masks, and compact values). That is downstream of the current compiler stage and must not define the PackingPlan abstraction.
-
-For evaluation and future inference work, a PackingPlan is two-sided execution geometry over canonical sparse support:
-
-- execution-position-to-canonical and canonical-to-execution feature mappings;
-- feature-block boundaries on the execution feature axis;
-- execution-position-to-canonical and canonical-to-execution row mappings; and
-- row-group boundaries on the execution row axis.
-
-In this subsystem, "module" or "block" means an execution grouping inferred from structural incidence. It is not required to be a biological gene program. Canonical dataset feature and row ids remain the semantic identities; the plan changes execution order only.
-
-### Implemented in this stage
-
-- `include/CellPack/evaluator.hh` defines `csr_support_view`, `prepared_csr_support`, `packing_plan_view`, caller-owned workspace/output buffer views, exact tile/group/row occupancy records, mergeable summaries, and a reference-only `packing_cost_model`.
-- `src/evaluator.cc` validates/prepares canonical CSR support once, validates two-sided plan geometry, maps each structural nonzero to `(row_group, feature_block, execution_row)`, deterministically sorts those records, and emits sparse occupied-tile statistics.
-- `static_plan` now records derived `row_group_offsets` and `feature_block_offsets`; `make_packing_plan_view(const static_plan&)` adapts the existing planner without interpreting module ids biologically.
-- Exact output includes total NNZ; logical, occupied, and empty tiles; per-occupied-tile NNZ, density, participating rows, row participation/reuse, logical slots, and dense padding; per-execution-row active feature-block counts; per-row-group active blocks, NNZ, participating row/block references, dense slots, and padding; and mergeable count/real distributions.
-- `estimate_packing_cost()` consumes completed occupancy. Compact-value versus dense-within-occupied-tile assumptions and metadata/score weights can change without recomputing or redefining the plan. This model is reference policy, not a durable codec ABI.
-
-### Complete validation
-
-- `tests/evaluator_test.cc` covers an identity plan with hand-computed tiles; a nontrivial row and feature permutation with every reported tile count checked; explicit versus implicit identity equivalence; 64 deterministic randomized conservation trials; empty rows/features; one dense row; a ubiquitous feature; diagonal structure; all NNZ in one tile; one NNZ per tile; uneven final groups/blocks; maximum `uint32` group/block widths; canonical row/feature round trips; static-plan adaptation; invalid boundaries; and insufficient buffers.
-- On 2026-08-14, `cellPackFormatTest`, `cellPackPlannerTest`, `cellPackMatrixViewTest`, `cellPackReconstructionTest`, `cellPackEvaluatorTest`, `cellPackLayoutMetricsTest`, `cellPackLayoutSelectorTest`, `cellPackGatingTest`, and `cellPackGatingCudaTest` built and passed on the native V100 checkout.
-
-### Benchmark status
-
-- `cellPackEvaluatorBench` is mutex-serialized and reports source bytes, rows, features, NNZ, row-group width, feature-block width, one-time source preparation, repeated evaluation time, temporary/output bytes, occupied/empty tiles, mean NNZ per occupied tile, and dense-padding implications.
-- Smoke command: `./build/cellPackEvaluatorBench --rows 20000 --features 5000 --nnz-row 32 --row-group-width 128 --feature-block-width 128 --warmup 1 --repeats 3`.
-- Observed on 2026-08-14: 2,640,004 source bytes, 640,000 NNZ, 0.552438 ms one-time source preparation, 22.1785 ms mean reference evaluation, 10,240,000 temporary bytes, 439,216 output bytes, 6,224 occupied of 6,280 logical tiles, and 102.828 mean NNZ per occupied tile.
-- This is a host reference measurement. It is not a final packed-kernel, GPU-speedup, or physical-format performance claim.
-
-### Known limitations and provisional surfaces
-
-- Initial input is canonical compressed-by-row structural support only. Values are deliberately ignored and host COO is not a staging requirement.
-- The exact reference path is CPU-centric, uses `O(nnz)` reusable scratch, and performs an `O(nnz log nnz)` comparison sort per plan. Output is sparse in occupied tiles and never allocates the complete logical tile grid.
-- `prepared_csr_support` is non-owning. Source arrays must stay immutable and alive for repeated evaluations.
-- Existing CellPack M2-M4 coordinate packing, layout labels/estimates, and gating remain provisional. They are not physical-format proof and are not reclassified by this evaluator.
-- The cost model estimates hypothetical bytes and weighted events only. It is intentionally not versioned as a persisted ABI.
-
-### Invariants future work must preserve
-
-- A plan is row and feature execution geometry, not a final sparse codec.
-- `permutation[execution_position] = canonical_id`; inverse mappings must exactly round trip.
-- Structural conservation requires `sum(occupied_tile.nnz) == source.nnz`.
-- Occupancy computation must stay separate from format-specific cost estimation and selection.
-- Plan inference must consume support evidence and must not require biological labels or reinterpret canonical feature ids.
-- Source preparation, per-plan evaluation, and later physical packing remain separately measurable phases.
-
-### Explicitly not implemented
-
-- PackingPlan inference, initialization, refinement, or optimizer search.
-- Physical packed buffers, masks, Blocked-ELL/SELL/BCSR/bitmap commitment, `.cspack`, serialization, or upload.
-- Preprocessing/model semantic changes.
-- CUDA occupancy kernels, warp execution kernels, Tensor Core paths, gating changes, or learned routing.
-- Full-layout GPU execution or real CellShard-scale evaluation sweeps.
-
-### Intended next stage and routing
-
-The next stage should build candidate-plan inference/refinement over `prepared_csr_support` and call this exact evaluator as the correctness oracle. Before broad search, decide whether the next bottleneck is candidate quality or evaluator throughput.
-
-If evaluator throughput is next, preserve the current contracts and add a device-resident implementation with explicit stream and caller-owned scratch. The native route is Tesla V100 `sm_70`; the operation is not Tensor Core eligible. The expected implementation owner is regular CUDA backed by CUB radix sort, run-length encoding, scans, and reduce-by-key over 64-bit tile/row keys. Profile HBM traffic, sort passes, temporary memory, and launch count before introducing fusion or a custom sort. PTX/SASS work is premature until that GPU hot path exists and is isolated.
-
-### 2026-08-14 optimizer-facing audit
-
-The completed evaluator subsequently passed a Step 5 readiness audit without code changes. `packing_plan_view` is the stable semantic oracle input; `static_plan` is only an adapter source and is not yet the durable mutable optimizer artifact. The first optimizer should use support-derived/exact-candidate proxies for many proposals and call the CPU evaluator on high-quality candidates and checkpoints. The measured 22.1785 ms at 640,000 NNZ does not make CUDA acceleration a prerequisite. Reconsider a CUB-backed device evaluator only after measured oracle volume dominates. Detailed complexity, delta-operation feasibility, stable/provisional API surfaces, and the separate CP-BP-04-ready versus CP-BP-05-blocked gates are recorded in `todos/cellpack-bp04-packing-plan-optimizer.md`.
-
-### 2026-08-14 conceptual Step 5 plan
-
-CP-BP-04 v1 is feature-first: deterministic canonical candidate ingestion, variable-width constrained coarsening, bounded feature move/swap refinement, sampled-support active-block-reference proxies, and CPU exact-oracle checkpoints with whole-batch rollback/shrink. Rows remain identity-ordered with explicit fixed-width grouping until inferred feature blocks make row signatures meaningful. Mutable authority is canonical block membership, not `static_plan`; execution maps/boundaries are derived at explicit materialization checkpoints. The frozen result is an immutable semantic plan with feature/block/local maps and feature/row compatibility identity, not a codec or serialized ABI. GPU evaluator acceleration remains deferred but expected: native V100 `sm_70`, device-resident support, CUB radix sort/reduction, explicit stream/scratch, activated only by the thresholds in the CP-BP-04 ledger. No physical packing, kernel, or `.cspack` work belongs in this optimizer stage.
+- Is this semantic geometry or a physical projection?
+- Which operation regimes does it target?
+- Does it preserve canonical identity without forcing canonical execution?
+- Can values change without rebuilding structure?
+- Does the planner see construction and conversion cost?
+- Is runtime discovery eliminated?
+- Is metadata compact and useful in the hot path?
+- Are multiple projection candidates retained where appropriate?
+- Does the change support future transpose and multi-GPU needs?
+- Are real and adversarial structures tested?
+- Is the strongest relevant baseline included?
+- Is the v1 path preserved through a versioned adapter?

@@ -1,0 +1,643 @@
+---
+title: "Performance and Validation"
+---
+
+## Performance is the product
+
+Cellerator succeeds only when biological organization produces a measurable end-to-end advantage.
+
+A representation is not successful because it is compact. A kernel is not successful because its isolated launch is fast. A planner is not successful because its decision is deterministic.
+
+The relevant quantity is complete biological work.
+
+## Evidence levels
+
+### Level 0: hypothesis
+
+A mechanism is plausible from access pattern, hardware behavior, or algorithmic analysis.
+
+No performance claim is allowed.
+
+### Level 1: microbenchmark
+
+One primitive or kernel is measured with resident inputs.
+
+The claim is limited to that primitive and shape.
+
+### Level 2: operation benchmark
+
+Projection construction, dynamic packing, kernel, epilogue, and output order are measured for one operation.
+
+The claim covers that operation and reuse regime.
+
+### Level 3: pipeline benchmark
+
+Several operations execute with realistic order propagation, preparation, and synchronization.
+
+The claim covers the complete pipeline.
+
+### Level 4: application benchmark
+
+A realistic biological or model workload is measured end to end, including data movement and repeated execution.
+
+Only this level supports broad architectural claims.
+
+Every result should state its evidence level.
+
+## Required benchmark context
+
+Record:
+
+- repository commit;
+- hardware model;
+- GPU count and topology;
+- compute capability;
+- driver;
+- CUDA runtime and toolkit;
+- relevant library versions;
+- compiler;
+- build configuration;
+- architecture flags;
+- dtype and accumulation;
+- input dimensions;
+- structural distribution;
+- output width `N`;
+- expected reuse;
+- warmup count;
+- repeat count;
+- synchronization method;
+- included and excluded work;
+- benchmark-mutex use;
+- correctness tolerance;
+- baseline versions.
+
+## Complete cost accounting
+
+For candidate \(k\):
+
+\[
+\begin{aligned}
+T_k =&
+T_{\text{host preparation}}
++
+T_{\text{H2D}}
++
+T_{\text{semantic packing}}
++
+T_{\text{projection}} \\
+&+
+T_{\text{input order}}
++
+T_{\text{persistent preprocessing}}
++
+T_{\text{kernel}} \\
+&+
+T_{\text{epilogue}}
++
+T_{\text{output order}}
++
+T_{\text{communication}}
++
+T_{\text{synchronization}}
++
+T_{\text{D2H}}
+\end{aligned}
+\]
+
+Not every term applies to every benchmark.
+
+For repeated execution, report:
+
+\[
+T_{\text{amortized}}
+=
+\frac{
+T_{\text{one-time construction}}
+}{
+R
+}
++
+T_{\text{per-run}}
+\]
+
+where \(R\) is reuse count.
+
+Report the break-even reuse:
+
+\[
+R^*
+=
+\frac{
+T_{\text{one-time construction}}
+}{
+T_{\text{baseline per run}}
+-
+T_{\text{optimized per run}}
+}
+\]
+
+## Biological performance units
+
+FLOPs are often not the useful denominator.
+
+Report applicable metrics such as:
+
+\[
+\text{ns per useful edge}
+=
+\frac{T}{\text{active biological interactions}}
+\]
+
+\[
+\text{bytes per useful edge}
+=
+\frac{\text{measured DRAM bytes}}
+{\text{active biological interactions}}
+\]
+
+\[
+\text{useful interactions per DRAM byte}
+=
+\frac{\text{active biological interactions}}
+{\text{measured DRAM bytes}}
+\]
+
+\[
+\text{descriptor efficiency}
+=
+\frac{\text{active interactions}}
+{\text{descriptor-lane visits}}
+\]
+
+Additional domain-specific metrics include:
+
+- ns per expressed gene;
+- ns per active regulatory interaction;
+- ns per motif hit consumed;
+- bases read per downstream interaction;
+- event bytes per effective regulatory interaction;
+- active modules per launch;
+- communication bytes per cross-partition edge;
+- packing cost per reuse;
+- useful cells processed per second.
+
+## Hardware metrics
+
+Collect the applicable subset:
+
+- achieved DRAM bandwidth;
+- L1 and L2 hit rate;
+- global load and store transactions;
+- sectors per useful interaction;
+- warp execution efficiency;
+- branch efficiency;
+- issue and stall reasons;
+- registers per thread;
+- local-memory spill;
+- shared-memory bytes;
+- occupancy;
+- eligible warps;
+- atomics;
+- launch count;
+- host enqueue time;
+- stream idle gaps;
+- overlap of transfer, communication, and compute.
+
+Use Nsight Systems for:
+
+- launch trains;
+- host gaps;
+- synchronization;
+- transfer;
+- stream overlap;
+- communication.
+
+Use Nsight Compute for:
+
+- hot-kernel memory traffic;
+- occupancy;
+- stalls;
+- cache behavior;
+- register pressure;
+- warp efficiency.
+
+## Baselines
+
+Use the strongest relevant baseline.
+
+Possible baselines include:
+
+- cuSPARSE CSR;
+- existing Cellerator CSR;
+- SELL-C-sigma;
+- BSR;
+- Blocked-ELL;
+- dense cuBLAS;
+- current CP-BP row-masked tiles;
+- alternate Cellerator projection;
+- canonical-order graph;
+- framework-native path;
+- materialized Baseplane path;
+- fused Baseplane path.
+
+Do not compare only with:
+
+- one launch per row;
+- thousands of tiny copies;
+- an intentionally unoptimized reference;
+- a format known to be mismatched to the shape.
+
+References may be slow. Performance baselines must be competitive.
+
+## Current CP-BP evidence
+
+The CP-BP v1 direct tile benchmark is valid evidence for one operation and a synthetic sharing spectrum.
+
+It showed:
+
+- high-sharing native tiles far ahead of CSR;
+- medium-sharing native tiles ahead of CSR;
+- low-sharing native tiles behind CSR;
+- one launch and zero scratch for both native execution and its comparison path;
+- no retained low-occupancy specialization.
+
+This evidence supports hybrid dispatch.
+
+It does not establish:
+
+- large-`N` behavior;
+- real-data generalization;
+- sparse-to-dense ML performance;
+- backward performance;
+- a universal tile shape.
+
+## Real-data structural corpus
+
+Create a versioned corpus of structural traces.
+
+Required sources should include examples from:
+
+- scRNA-seq;
+- scATAC-seq;
+- paired multiome;
+- enhancer-promoter relations;
+- GRNs;
+- pathway and module membership;
+- cell-neighborhood graphs;
+- developmental trajectories;
+- sequence motif-to-element relations;
+- sparse learned biological networks.
+
+A trace may omit sensitive values while retaining:
+
+- support;
+- row and feature identities or anonymous stable surrogates;
+- group structure;
+- value-distribution summaries;
+- operation profiles.
+
+## Structural distributions to retain
+
+For each trace, record:
+
+- row-nnz distribution;
+- feature-frequency distribution;
+- partial-block occupancy;
+- module overlap;
+- support entropy;
+- row similarity;
+- feature similarity;
+- hub frequency;
+- rare-feature tail;
+- rare-cell-state tail;
+- cross-module edges;
+- temporal stability;
+- value magnitude and dynamic range;
+- mutable versus static topology;
+- expected operation widths;
+- reuse horizon.
+
+Synthetic generators should be fitted to these distributions, not invented only around convenient full blocks.
+
+## Required `N` regimes
+
+Benchmark at least:
+
+```text
+1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+```
+
+Also include non-power-of-two widths used by actual models.
+
+## Adversarial corpus
+
+Cellerator must test cases designed to defeat its preferred layouts.
+
+### Random support
+
+Uniform or near-uniform random sparsity with little reusable structure.
+
+Expected outcome: native geometry should fall back rather than lose badly.
+
+### Global hubs
+
+A few features occur in almost every row.
+
+Test whether:
+
+- hub separation helps;
+- cache reuse improves;
+- metadata or synchronization dominates.
+
+### Rare isolated features
+
+Many features occur in one or a few rows.
+
+Test residual representation and metadata overhead.
+
+### Overlapping modules
+
+Strong biological modules overlap so heavily that clean partitions create many cuts.
+
+Test hierarchy and partition priors.
+
+### Heavy-tailed rows
+
+A small number of rows contain much more work.
+
+Test dedicated heavy-row queues and load balance.
+
+### Partial blocks
+
+Feature blocks contain few active entries.
+
+Test mask metadata versus padding and conventional sparse formats.
+
+### Near-dense fragments
+
+Density is high but just below the measured MMA break-even.
+
+Test whether the planner avoids premature expansion.
+
+### Rapidly changing topology
+
+Structure changes too often to amortize packing.
+
+Test a conventional or minimally prepared fallback.
+
+### Forward-backward asymmetry
+
+A forward geometry is excellent and its transpose is poor.
+
+Test combined training cost.
+
+### One-shot execution
+
+Preparation and autotuning cannot amortize.
+
+Test cheap analytical planning.
+
+### Dense sequence hits
+
+A predicate emits nearly every coordinate.
+
+Test bit-plane and deterministic compaction paths.
+
+### Sparse sequence hits
+
+A predicate emits almost nothing.
+
+Test atomic emit and fusion.
+
+### Ambiguous sequence
+
+Test validity, tail masking, and chunk halos.
+
+### Distributed cut stress
+
+Biological modules have many cross-GPU relations.
+
+Test partition fallback and replication.
+
+## Correctness before performance
+
+Every optimized path must have:
+
+- an independent reference;
+- structural validation;
+- randomized differential tests;
+- adversarial dimensions;
+- stale identity tests;
+- capacity and offset tests;
+- order round trips;
+- projection equivalence;
+- deterministic checks where promised;
+- numerical tolerance defined by precision policy.
+
+For GPU memory formats, run:
+
+- Compute Sanitizer memcheck;
+- racecheck where relevant;
+- initcheck where useful;
+- guard regions around inputs and outputs.
+
+A sanitizer-clean aligned case does not prove an unaligned padded case.
+
+## Numerical validation
+
+Report:
+
+- maximum absolute error;
+- maximum relative error;
+- mean error;
+- distribution of error;
+- task-level biological error where relevant;
+- deterministic or nondeterministic behavior;
+- accumulation order.
+
+Quantization claims should include:
+
+- calibration set;
+- held-out set;
+- scale granularity;
+- outlier policy;
+- saturation;
+- impact on downstream biology or model metrics.
+
+## Planner validation
+
+A planner must be evaluated as a decision system.
+
+Report:
+
+- regret relative to the measured best candidate;
+- candidate enumeration cost;
+- analytical prediction error;
+- autotune overhead;
+- cache hit rate;
+- stale-plan rejection;
+- selection stability;
+- performance across held-out structures;
+- failure behavior in adversarial regimes.
+
+A planner with low prediction error on the same regular synthetic generator is not validated.
+
+## Conversion validation
+
+For every projection or order transform, measure:
+
+- construction time;
+- bytes read and written;
+- temporary memory;
+- synchronization;
+- device residency;
+- break-even reuse;
+- whether it can be persisted;
+- whether it can be fused with producer or consumer.
+
+The fastest kernel may lose after conversion.
+
+## Graph validation
+
+Compare:
+
+```text
+locally fastest kernels with canonicalization
+```
+
+against:
+
+```text
+graph-wide order-preserving plan
+```
+
+Record:
+
+- total launches;
+- total bytes;
+- transform count;
+- graph capture;
+- end-to-end time.
+
+## Baseplane validation
+
+Sequence benchmarks must record:
+
+- sequence length;
+- motif or predicate;
+- mismatch threshold;
+- hit density;
+- validity and ambiguity policy;
+- output mode;
+- output capacity;
+- event order;
+- H2D and D2H;
+- materialized versus fused route;
+- downstream interactions produced.
+
+A fast predicate that creates an expensive unused event stream is not an end-to-end win.
+
+## Multi-GPU validation
+
+Record:
+
+- partition axis;
+- per-GPU work;
+- boundary edges;
+- replicated bytes;
+- communication bytes;
+- topology;
+- collective or peer operations;
+- overlap;
+- imbalance;
+- strong and weak scaling;
+- local and global order transforms.
+
+Compare biological partitioning with simple row ranges.
+
+## Hardware generations
+
+### Volta
+
+Measure:
+
+- manual cooperative staging;
+- warp ballots and shuffles;
+- WMMA fragments;
+- register pressure;
+- launch and HBM behavior.
+
+### Ampere
+
+Evaluate:
+
+- asynchronous shared-memory copies;
+- bf16 and newer Tensor Core modes;
+- structured sparse hardware only where biology and measured cost support it.
+
+### Hopper
+
+Evaluate:
+
+- TMA;
+- warp-group matrix operations;
+- producer-consumer specialization;
+- thread-block clusters where cross-CTA reuse is real.
+
+### Blackwell and later
+
+Add architecture-specific implementations behind existing contracts. Do not change biological identity or semantic geometry merely to expose a new instruction.
+
+## Benchmark mutex
+
+All benchmark and profiler runs on shared hardware must serialize through:
+
+- the repository benchmark mutex;
+- active resource-reservation tooling;
+- any workstream-specific GPU lock.
+
+A result obtained while another worker uses the device is invalid unless contention is itself the experiment.
+
+## Acceptance template
+
+A performance change should answer:
+
+```text
+Workload:
+Biological interaction counted:
+Structure:
+Operation:
+N:
+Dtype and accumulation:
+Hardware:
+Baseline:
+Candidate:
+One-time cost:
+Per-run cost:
+Expected reuse:
+Break-even reuse:
+Bytes:
+Launches:
+Synchronization:
+Correctness:
+Profiler limiter:
+Planner selection:
+Adversarial result:
+```
+
+## Rejection criteria
+
+Reject a proposed optimization when:
+
+- it wins only after excluding a required conversion;
+- it loses at the expected reuse;
+- memory expansion is unacceptable;
+- a stronger existing baseline wins;
+- the planner cannot identify its regime;
+- correctness is weaker;
+- it prevents graph capture without compensating benefit;
+- it hard-codes one GPU generation into the semantic ABI;
+- it adds metadata that costs more than the traffic it removes;
+- it improves FLOPs while increasing time per useful biological interaction.
+
+The performance program should be designed to kill weak ideas early. That is a feature.

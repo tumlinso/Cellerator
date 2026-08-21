@@ -1,36 +1,182 @@
 # Cellerator
 
-Cellerator is a compute and ML library for making large single-cell omics
-matrices practical on GPUs. Its central scope is sparse biological ML over
-CellShard-backed data: it exploits the fact that genes, chromatin peaks, and
-other omics features are highly structured, often forming modules that can be
-processed together. Cellerator searches for and uses those denseifiable
-structures to route work through modified ELLPACK-style sparse layouts such as
-Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
+Cellerator is a performance-first biological execution system for modern accelerators.
 
-That scope is deliberately compute-owned, not storage-owned. Cellerator consumes
-CellShard as an external dependency for sparse matrix/runtime ABI types, runtime
-staging, and dataset publication. Cellerator owns reusable sparse compute,
-layout-aware preprocessing kernels, model math, trajectory math, structure-aware
-layout optimization, and quantized kernels. Storage and ingest live in
-CellShard, while Torch-facing boundaries live in the CelleraTorch component.
+It is built around one premise: cellular data and regulatory systems are not random sparse matrices. They contain repeated supports, modules, hierarchies, conditional programs, shared regulatory structure, local coherence, and reusable sequence logic. Cellerator compiles those regularities into execution order, physical layout, kernel schedules, and communication plans.
 
-This codebase is built for explicit low-level control rather than a high-level workflow API. The durable scope contract is in `scope.md`: Cellerator owns sparse biological ML operators, training primitives, model components, and distributed sparse execution. It does not replace framework libraries, AnnData, Scanpy, or CellShard, and the future compiled `.cellerator` model format is out of scope for now.
+Cellerator is not intended to become a biological wrapper around sparse matrix multiplication. CSR, SELL, BSR, Blocked-ELL, dense fragments, vendor libraries, and custom kernels are tools available to the planner. None is the conceptual center.
 
-Surfaces that are temporarily inside this repo but do not belong in Cellerator long term are tracked in `out_of_scope_inventory.md`.
+## The Computational Model
 
-## What Is Here
+The target Cellerator model consists of:
 
-- `src/compute/`: reusable sparse compute, neighbors, sparse operators, and custom-op building blocks
-- `src/preprocess/`: biology-facing preprocessing policy, runtime API, and workbench orchestration
-- `src/models/`: native model workflows
-- `src/trajectory/`: trajectory scoring and assembly
-- `include/Cellerator/`: Cellerator matrix, runtime, quantized, interop, type, and parameter contracts
-- `components/CelleraTorch/`: explicit CellShard/Cellerator-to-Torch boundary
-- `tests/`: compile and runtime checks
-- `bench/`: benchmark binaries
+- **biological domains**, such as sequence coordinates, motif occurrences, regulatory elements, genes, transcripts, proteins, cells, modules, pathways, developmental states, and latent dimensions;
+- **typed relations** between domains;
+- **immutable structures** that define topology and execution geometry;
+- **mutable value planes** that carry expression, accessibility, activity, learned weights, or state;
+- **first-class order and partition identity**;
+- **semantic geometry** compiled from biological organization;
+- **multiple physical projections** selected for particular operations, devices, precisions, and reuse regimes;
+- **prepared execution plans** whose per-run bindings remain cheap to change.
 
-Expected local source checkout layout:
+Canonical biological order is primarily an external API concern. Internally, compatible operations should remain in packed execution order until a consumer explicitly requires a different order.
+
+## Core Subsystems
+
+### CellPack and CP-BP
+
+CellPack is Cellerator's biological geometry compiler.
+
+The implemented CP-BP v1 pipeline can:
+
+1. sample sparse biological support;
+2. construct feature-support bitsets;
+3. discover candidate feature groupings;
+4. score merge cost exactly;
+5. optimize and freeze a reusable packing plan;
+6. apply it to full partitions;
+7. build compact cell-block records;
+8. infer bounded local row order;
+9. emit warp-oriented tiles;
+10. execute a feature-weighted row reduction directly from those tiles;
+11. validate generalization and stability;
+12. fit a replaceable V100 execution-cost model;
+13. persist a pointer-free plan, order, and tile image.
+
+That work is a strong foundation. Its current row-oriented physical projection and `N=1` consumer are not the final universal format.
+
+### Core execution and CP-Math
+
+CP-Math is being absorbed into Cellerator core.
+
+Its target role is:
+
+- operation contracts;
+- physical projection management;
+- kernel and backend registration;
+- analytical planning and bounded autotuning;
+- prepared-operation lifecycle;
+- workspace and stream integration;
+- fused epilogues;
+- graph-wide order optimization;
+- native and vendor execution;
+- forward, backward, and multi-GPU planning.
+
+The current CP-Math implementation is experimental. It already includes SpMM contracts, feature-order identity, backend capability queries, a structural planner, physical CSR and BELL views, a CPU referee, a runtime context, and tests. Its v1 ownership model is not the final ABI.
+
+### Baseplane
+
+Baseplane is Cellerator's subordinate sequence-computation library.
+
+It remains a separate repository because packed sequence and bit-level predicates require a distinct implementation discipline. It is not a separate conceptual or numerical ecosystem.
+
+The long-term boundary is deliberately thin:
+
+```text
+packed sequence
+    → masks, events, segments, and static relations
+    → regulatory structure and dynamic value planes
+    → expression and cellular state
+    → downstream biological behavior
+```
+
+Sequence and level should become different domains, axes, structures, or views in one biological execution model.
+
+### CellShard
+
+CellShard owns storage and distribution:
+
+- canonical and sharded persistence;
+- execution-envelope publication;
+- fetch, caching, transport, and upload;
+- generation and compatibility checks;
+- delivery to active workers.
+
+Cellerator owns the meaning and execution of packed biological structures. CellShard may persist and transport opaque Cellerator images, but it does not infer their geometry or choose their kernels.
+
+### CelleraTorch
+
+CelleraTorch is the explicit Torch and libtorch adapter. Native structures, parameters, planning, and kernels remain Cellerator-owned.
+
+## Current State
+
+The repository currently contains both the emerging architecture and older sparse-matrix-centered systems.
+
+Implemented:
+
+- CP-BP-01 through CP-BP-13;
+- CPK1 pointer-free persistence;
+- direct native weighted-row reduction;
+- hardware-cost calibration for the v1 packed path and CSR fallback;
+- sparse preprocessing and model primitives;
+- CSR, SELL, Blocked-ELL, quantized, cuSPARSE, CUB, NCCL, and custom CUDA paths;
+- experimental CP-Math contracts and backends;
+- Baseplane integration at the build level.
+
+Still in migration:
+
+- universal domain, order, geometry, partition, structure, and value-generation identity;
+- structure/value separation across all paths;
+- reusable prepared operations with independent launch bindings;
+- graph-wide preservation of execution order;
+- multiple native CP-BP physical projections;
+- empirical end-to-end CP-Math planning;
+- direct Baseplane-to-Cellerator operand and fusion contracts;
+- training-oriented transpose and backward projections.
+
+See [Current implementation](docs/current_implementation.qmd) for the audited status and [Migration roadmap](docs/migration_roadmap.qmd) for the transition.
+
+## Repository Map
+
+```text
+include/Cellerator/
+    public ABI, matrix, runtime, quantized, interop, and compute contracts
+
+src/
+    compiled runtime, compute, preprocessing, models, trajectory, and support
+
+components/CellPack/
+    CP-BP compiler, native tiles, validation, persistence, tests, and benchmarks
+
+components/CelleraTorch/
+    Torch and libtorch adapter
+
+tests/
+    repository-level compile and runtime checks
+
+bench/
+    repository-level benchmarks and benchmark mutex
+
+docs/
+    authoritative architecture, performance, and migration documentation
+```
+
+The current location of CellPack under `components/` is organizational, not conceptual. CellPack is part of Cellerator's core architecture.
+
+## Build
+
+Cellerator requires CUDA.
+
+```bash
+cmake -S . -B build
+cmake --build build -j 4
+```
+
+A core-oriented build without CelleraTorch is:
+
+```bash
+cmake -S . -B build \
+  -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+cmake --build build -j 4
+```
+
+The source build resolves dependencies in this order:
+
+1. an explicitly configured source directory;
+2. a sibling checkout;
+3. an installed CMake package.
+
+The expected sibling layout is:
 
 ```text
 cellstack/
@@ -39,208 +185,36 @@ cellstack/
 └── Cellerator/
 ```
 
-## Source Layout
+The current local default targets Tesla V100 and `sm_70`, while stable semantic contracts must remain portable across NVIDIA generations.
 
-Cellerator is mainly a header-first C++/CUDA codebase. A lot of the reusable surface lives in `.hh` and `.cuh` headers, with `.cc` and `.cu` translation units used for tests, binaries, and heavier implementation boundaries.
+## Tests
 
-Common file roles:
+The repository currently runs focused binaries directly rather than relying on `ctest`.
 
-- `.hh`: C++ headers for public or reusable host-side interfaces
-- `.cuh`: CUDA-aware headers used by device-facing or mixed host/device code
-- `.cc`: C++ source files
-- `.cu`: CUDA source files
-
-Naming is mostly `snake_case` for files, functions, variables, and structs.
-
-The main source areas are:
-
-- `include/Cellerator/`: canonical public headers for in-repo callers
-- `include/Cellerator/matrix/`: Cellerator sparse layout ABI and device views
-- `include/Cellerator/compute/matrix/convert/`: layout conversion, transpose, and bucket planning contracts
-- `include/Cellerator/runtime/`: CellShard-free CUDA buffers, streams, scratch, and library handles
-- `include/Cellerator/quantized/`: quantized format metadata, access, packing, and dispatch helpers
-- `src/compute/`: sparse ML math over CellShard matrices
-- `src/compute/sparse/ops/`: sparse operator contexts, scratch, and kernels
-- `src/compute/neighbors/`: exact-search/scoring math plus forward-neighbor index/query policy
-- `src/models/`: header-first model modules, typically split into `*_dataloader.hh`, `*_model.hh`, `*_train.hh`, and `*_infer.hh`
-- `components/CelleraTorch/`: explicit Torch interop boundary
-
-Public in-repo includes should use `#include <Cellerator/...>` rather than reaching into `src/` directly.
-Cellerator's `real` traits define `f16_t`, `f32_t`, `f64_t`, and, when the
-CUDA toolchain exposes them, `bf16_t`, `fp8_e4m3_t`, and `fp8_e5m2_t`. Existing
-sparse layouts keep `__half` as their default ABI storage type unless a caller
-opts into a specific precision policy.
-
-## Quick Start
-
-Configure and build:
+Examples include:
 
 ```bash
-cmake -S . -B build
-cmake --build build -j 4
-```
-
-Python package basics:
-
-```bash
-python -m pip install .
-python -m pip wheel . --no-deps
-```
-
-The Python package is intentionally an orchestration layer, not a CPU
-preprocessing implementation. `cellerator.pp.preprocess(...)` accepts a
-CellShard `.csh5` path, a `cellshard.Dataset`, or an AnnData object that
-explicitly carries `uns["cellshard_path"]`; the hot path stages CellShard-native
-Blocked-ELL or Sliced-ELL partitions to GPU and delegates QC,
-normalize-total/log1p, and metrics to Cellerator kernels. AnnData and SciPy are
-adapter/egress surfaces only and are not used for hidden matrix transforms.
-
-The returned `PreprocessSession` keeps preprocessing metrics and keep masks as
-the explicit boundary. `session.publish(path)` delegates persistence to
-CellShard's preprocessed dataset finalize path, which publishes filtered
-CellShard data plus preprocessing metadata while storage ownership remains in
-CellShard.
-
-Python preprocessing can optionally run a bounded light autotune pass with
-`cellerator.pp.preprocess(path, autotune=True)`. The first provider samples an
-eligible small CellShard partition, compares the fused preprocessing traversal
-against the separate primitive sequence, and keeps the default fused path when
-the measured difference is within the close-enough threshold or when sampling
-would cost too much for the dataset. C++ mode remains explicit: callers can
-benchmark and choose the plan-aware preprocessing primitives directly, while
-fleet session preprocessing keeps the fused default unless that caller wires its
-own optimizer policy around those primitives.
-
-CMake resolves CellShard in this order:
-
-1. `-DCELLERATOR_CELLSHARD_SOURCE_DIR=/path/to/CellShard`
-2. sibling `../CellShard`
-3. `find_package(CellShard CONFIG REQUIRED)`
-
-CMake resolves Baseplane sequence bit primitives in this order:
-
-1. `-DBASEPLANE_SOURCE_DIR=/path/to/Baseplane`
-2. sibling `../Baseplane`
-3. `find_package(Baseplane CONFIG REQUIRED)`
-
-CUDA mode defaults to `generic`. Use `-DCELLERATOR_CUDA_MODE=native` for the
-host-specific fast path and `-DCELLERATOR_CUDA_MODE=native-extreme` for the
-separate Volta-only/PTX-heavy path.
-
-The generated Cellerator config also records default scalar and policy
-choices for new, unspecified work:
-
-```bash
-cmake -S . -B build \
-  -DCELLERATOR_REAL_STORAGE=f16 \
-  -DCELLERATOR_REAL_COMPUTE=f32 \
-  -DCELLERATOR_REAL_ACCUM=f32 \
-  -DCELLERATOR_DEFAULT_SPARSE_LAYOUT=blocked_ell \
-  -DCELLERATOR_DEFAULT_TRAINING_PRECISION=f32 \
-  -DCELLERATOR_DEFAULT_GRADIENT_CLIPPING=none
-```
-
-Configure also probes the local host by default:
-
-```bash
-cmake -S . -B build \
-  -DCELLERATOR_ENABLE_HARDWARE_PROBE=ON \
-  -DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=ON
-```
-
-The generated config exposes CPU vector facts such as AVX2/AVX-512/F16C/FMA
-and CUDA facts such as visible device count, selected device, compute
-capability, SM architecture, memory, warp size, and tensor-core family support.
-This hardware information is advisory; explicit caller/file metadata still wins
-when loading stored payloads or selecting a precision-specific execution path.
-
-Local and generated fixture payloads belong under `data/`. The scaffold is
-tracked, while large biological data files and generated conversion outputs are
-ignored by default.
-
-These are build defaults, not file-format assumptions. CellShard `.csh5` and
-`.cspack` payloads remain self-describing through codec/layout metadata such as
-`value_code` and `bits`; readers must dispatch or convert from the stored
-precision instead of reinterpreting payloads as the local build default.
-
-CellPack persistence uses the same ownership boundary: Cellerator builds and
-validates a pointer-free plan/order/warp-tile image, while CellShard wraps that
-opaque image in a versioned, checksummed CSPACK execution envelope and owns
-publication, fetch, and contiguous device staging. After loading, Cellerator
-rebinds image offsets to the staged device base and invokes the native tile
-consumer directly; it does not relearn the plan or reconstruct CSR/BELL.
-
-The Cellerator build is accelerator-oriented and requires CUDA at configure time.
-
-CelleraTorch-enabled builds prefer the source-built installation under `/usr/local/share/cmake/Torch`.
-
-If the CelleraTorch dependencies are not available, disable CelleraTorch targets:
-
-```bash
-cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
-cmake --build build -j 4
-```
-
-Only set `Torch_DIR` or `LIBTORCH_PATH` if you are intentionally overriding the CelleraTorch default.
-
-## CelleraTorch Parameter Exposure
-
-CelleraTorch is also the intended Torch-facing view over learned Cellerator
-parameters. Native Cellerator should keep owning allocation, residency, scalar
-type, shape, stride, writability, and learned-parameter versus optimizer-state
-metadata through Torch-free descriptors such as
-`include/Cellerator/parameters.hh`. CelleraTorch should later consume those
-descriptors to build efficient Torch tensor views over native parameter storage,
-preferably without copies.
-
-This matters for allocator and model-layout work. New native model parameters
-should stay pointer-stable, explicitly shaped and strided, and allocation-aware
-enough for CelleraTorch to expose contiguous or intentionally strided Torch
-views. Do not make Torch own the canonical parameter allocation in native
-Cellerator, and do not hide parameter storage behind abstractions that prevent a
-future zero-copy bridge.
-
-## Running Things
-
-`ctest` is not configured. Run the built binaries directly.
-
-Examples:
-
-```bash
-./build/exactSearchRuntimeTest
 ./build/sparseOpsRuntimeTest
-./build/celleraTorchQuantizePrimitiveTest
+./build/exactSearchRuntimeTest
+./build/abiRuntimeTest
 ```
 
-Useful build targets include:
+CellPack provides focused tests and benchmarks through its component CMake targets. Use the repository benchmark mutex for every benchmark or profiler run on shared hardware.
 
-- `quantizedMatrixTest`
-- `trajectoryCompileTest`
-- `trajectoryRuntimeTest`
-- `exactSearchRuntimeTest`
-- `sparseOpsRuntimeTest`
-- `developmentalTimeCompileTest`
-- `celleraTorchBindingsCompileTest`
-- `celleraTorchDenseReduceCompileTest`
-- `celleraTorchQuantizePrimitiveTest`
-- `celleraTorchModelCustomOpsTest`
+## Documentation
 
-## Repository Notes
+Start here:
 
-- Cellerator is performance-oriented and currently tuned around Volta / V100-class assumptions.
-- CUDA mode selection is explicit: `generic` is the default topology-agnostic path, while `native` and `native-extreme` unlock the host-specific V100 ordering only after runtime discovery confirms that topology.
-- Blocked-ELL is the preferred native sparse execution layout for Cellerator hot paths; CSR/compressed remains an explicit fallback or interop representation where a surface still requires it.
-- Cellerator owns substrate and format mechanics directly; `src/compute/` owns math such as sparse projection, matmul, ML reductions, and training operators.
-- Cellerator owns preprocessing, model-facing numerical math over CellShard matrices, and the forward-neighbor caller surface built on that math. Data handling and source ingest stay in CellShard.
-- `docs/` hosts Cellerator architecture and local-only workflow notes; it is not part of the default build or packaging surface.
-- `docs/quantized_transfer_architecture.qmd` records the current Volta-oriented report for quantized sparse transport, decode cost, and tensor-op-oriented follow-up work.
+- [Scope](scope.md)
+- [Architecture](docs/architecture.qmd)
+- [Current implementation](docs/current_implementation.qmd)
+- [Biological execution model](docs/biological_execution_model.qmd)
+- [CellPack and CP-BP](docs/cellpack_cp_bp.qmd)
+- [Core execution and CP-Math](docs/core_execution_cp_math.qmd)
+- [Baseplane integration](docs/baseplane_integration.qmd)
+- [Storage, distribution, and interop](docs/storage_distribution_and_interop.qmd)
+- [Performance and validation](docs/performance_validation.qmd)
+- [Migration roadmap](docs/migration_roadmap.qmd)
+- [Developer reference](docs/developer_reference.qmd)
 
-## Where To Read Next
-
-- `scope.md`: canonical Cellerator ownership and out-of-scope boundary
-- `out_of_scope_inventory.md`: advisory queue for code that should move out or be reclassified
-- `planning_strategy.md`: pickup guide for operator-first sparse biological ML planning
-- `AGENTS.md`: contributor rules, codebase conventions, and repository-specific guidance
-- `optimization.md`: performance notes and bottleneck analysis
-- `pointer_migration_plan.md`: pointer-first migration policy for hot paths
-- `todos.md`: active work ledger when substantial repo work is in progress
+`AGENTS.md` contains the non-negotiable implementation rules for coding agents.

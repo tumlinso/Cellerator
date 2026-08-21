@@ -1,0 +1,466 @@
+---
+title: "Migration Roadmap"
+---
+
+## Purpose
+
+This roadmap moves the current repository toward the architecture defined in
+[Architecture](architecture.qmd) without discarding sound implementation work.
+It is not a demand for a clean-slate rewrite. It is a sequence of compatibility
+layers, contract changes, measured kernel additions, and controlled retirement
+of superseded assumptions.
+
+The migration has one governing rule:
+
+> Stabilize identities and lifetimes before multiplying physical formats,
+> kernels, or public consumers.
+
+The current CP-BP implementation, direct tile consumer, validation machinery,
+and pointer-free persistence path are valuable foundations. The current
+CP-Math contracts are useful experiments. The migration should preserve the
+former and selectively reconstruct the latter.
+
+## Migration principles
+
+1. **Correctness barriers precede performance work.** A fast path with ambiguous
+   padding, identity, validity, capacity, or lifetime semantics is not a
+   candidate for optimization.
+2. **Logical structure precedes physical projection.** Code should be migrated
+   toward immutable relations and semantic geometry before new vendor formats
+   are made durable.
+3. **Compatibility adapters are preferred to flag-day rewrites.** Existing
+   CPK1 payloads and row-masked kernels should be wrapped as versioned
+   projections of the new model.
+4. **New APIs must point toward the target architecture.** Compatibility may
+   preserve old callers temporarily, but no new subsystem should bind itself to
+   the old `PreparedExecution`, matrix-only request model, or global
+   Blocked-ELL assumption.
+5. **Every phase has an exit test.** A migration phase is complete only when its
+   invariants are executable in tests.
+
+## Phase 0: correctness containment
+
+Complete these items before extending the affected paths.
+
+### CP-Math and vendor projections
+
+- Reject Blocked-ELL candidates whenever padded dense operands or outputs are
+  not explicitly owned and capacity-checked.
+- Add non-divisible logical dimensions, guard regions, and sanitizer coverage.
+- Make unsupported numerical tuples fail at request validation rather than in
+  backend preparation.
+- Prohibit new consumers of the current `PreparedExecution` lifetime model.
+
+### Baseplane
+
+- Make sequence validity explicit and mandatory.
+- Prevent invalid or ambiguous bases from silently becoming canonical A.
+- Bind tail validity to every packed sequence view.
+- Normalize motif plans so count, mask, and emit paths consume one immutable
+  interpretation.
+- Make chunk ownership, halos, and coordinate rebasing explicit.
+
+### Exit criteria
+
+- Adversarial padding and sequence-validity tests pass.
+- No backend can read or write beyond declared capacities.
+- Unsupported contracts fail before launch.
+- No new public surface depends on the contained interfaces.
+
+## Phase 1: biological identity and lifetime model
+
+Introduce the core concepts without changing the established CP-BP kernel.
+
+Required types include:
+
+```cpp
+struct AxisIdentity {
+    DomainId domain;
+    OrderId order;
+    GeometryId geometry;
+    PartitionId partition;
+};
+
+struct RelationStructure {
+    StructureId identity;
+    std::uint64_t structure_epoch;
+    DomainId source_domain;
+    DomainId destination_domain;
+    ProjectionCatalog projections;
+};
+
+struct ValuePlane {
+    const RelationStructure* structure;
+    void* values;
+    NumericStorageDescriptor numeric;
+    QuantizationDescriptor quantization;
+    std::uint64_t value_generation;
+};
+```
+
+Create adapters from:
+
+- current Cellerator tensors and sparse views;
+- the frozen CP-BP packing plan;
+- CPK1 payloads;
+- existing CSR, Sliced-ELL, and Blocked-ELL views;
+- Baseplane packed sequence, mask, event, and segment views.
+
+At this phase, the identities may initially be interned runtime handles backed
+by stable hashes. The important requirement is that dimensions alone no longer
+establish compatibility.
+
+### Exit criteria
+
+- Tests reject equal-shaped operands with incompatible domains or orders.
+- A current CPK1 payload can be viewed as one immutable relation structure plus
+  one value plane.
+- The existing row-reduction kernel runs through the adapter without numerical
+  change.
+- Value generation can change without changing structure identity.
+
+## Phase 2: unified execution session
+
+Replace duplicate stream, handle, and workspace ownership with one core runtime
+surface.
+
+```cpp
+class CelleratorSession {
+public:
+    DeviceFleet devices;
+    StreamPool streams;
+    LibraryHandlePool libraries;
+    PersistentAllocator persistent;
+    StreamOrderedAllocator transient;
+    ProjectionCache projections;
+    PlanCache plans;
+    OrderTransformCache order_transforms;
+};
+```
+
+Separate memory by lifetime:
+
+| Lifetime | Owner | Examples |
+| --- | --- | --- |
+| Structure epoch | structure | tiles, indices, hierarchy, relation topology |
+| Prepared plan | plan | vendor preprocessing, graph-stable buffers |
+| Launch | execution session | reduction scratch, temporary packing |
+
+Streams belong to launch bindings or an execution session. A prepared plan must
+not own the only stream on which it can execute.
+
+### Exit criteria
+
+- Repeated execution performs no allocation, descriptor creation, device query,
+  or structural hashing.
+- Two streams can invoke the same immutable structure through independent
+  bindings.
+- CUDA Graph capture has a documented supported path.
+- Existing runtime helpers either delegate to the session or are marked for
+  retirement.
+
+## Phase 3: prepared plans and launch bindings
+
+Replace the current prepared-execution ownership boundary.
+
+```cpp
+struct PreparedOperation {
+    RunFunction run;
+    KernelId kernel;
+    BackendId backend;
+    StructureHandle structure;
+    ProjectionHandle projection;
+    PersistentKernelState persistent;
+    WorkspaceRequirement transient_workspace;
+    OutputOrderContract output_order;
+};
+
+struct LaunchBindings {
+    ValuePlane values;
+    BiologicalOperandView inputs[kMaxInputs];
+    BiologicalOperandView outputs[kMaxOutputs];
+    ScalarParameters scalars;
+    StreamContext stream;
+};
+```
+
+Preparation freezes structure, projection, algorithm, preprocessing, and
+persistent resources. Launch bindings provide current pointers, generations,
+scalars, and streams.
+
+### Exit criteria
+
+- Dense RHS, output, bias, state values, and stream may change without
+  re-preparation.
+- A stale structure epoch fails before launch.
+- Value-generation changes trigger only the transformations that actually
+  depend on values.
+- Prepared plans are graph-capture compatible where their kernels are.
+
+## Phase 4: execution image version 2
+
+Generalize CPK1 into a sectioned execution image while retaining a CPK1 reader.
+
+The image should contain:
+
+```text
+header
+domain table
+order and partition table
+relation table
+projection directory
+zero or more physical projection sections
+hierarchy and boundary indices
+planner summaries
+checksums and compatibility metadata
+```
+
+Structure and values must be separable even when a persistence envelope stores
+them together.
+
+Do not persist every possible projection. Persist a projection when its
+construction cost, reuse, or delivery requirements justify the bytes.
+
+### Exit criteria
+
+- Current CPK1 archives load through a compatibility adapter.
+- A structure image can bind multiple value planes.
+- A loaded image can execute directly after pointer rebinding.
+- Projection sections can be added through schema versioning without changing
+  domain identity.
+
+## Phase 5: instrumentation and benchmark corpus
+
+Before redesigning CP-BP's objective, collect evidence from real and adversarial
+structures.
+
+Add instrumentation for:
+
+- bytes moved per useful biological interaction;
+- descriptor-lane visits;
+- order-transform time;
+- projection-build time;
+- host preparation time;
+- launch count;
+- achieved bandwidth;
+- cache behavior;
+- register and shared-memory pressure;
+- forward and transpose costs;
+- value mutability and reuse.
+
+Build the corpus described in
+[Performance and Validation](performance_validation.qmd).
+
+### Exit criteria
+
+- Every core candidate can be measured end to end.
+- Current CP-BP high, medium, and low-sharing fixtures remain as controlled
+  tests rather than the only evidence.
+- Planner features are extracted from real structures.
+- Benchmark artifacts record hardware, build, commands, shapes, repetitions,
+  and correctness tolerances.
+
+## Phase 6: physical projection plurality
+
+Implement projections in an evidence-producing order.
+
+1. Register the current row-masked tiles as a named \(N=1\) projection.
+2. Add a low-sharing row or subwarp fallback.
+3. Add a feature-major small-\(N\) projection.
+4. Add CTA macro-tiles for medium \(N\).
+5. Integrate CSR or SELL tails under the same contracts.
+6. Add dense fragment classification and MMA execution where measured.
+7. Add a transpose-oriented projection for backward and propagation in the
+   reverse direction.
+
+The objective is not to maximize format count. Each projection must own a
+distinct measured regime.
+
+### Exit criteria
+
+- At least one real corpus case selects each retained projection.
+- The planner avoids native tiles in a regime where a conventional fallback
+  wins.
+- No projection requires canonicalization merely to feed the next internal
+  operator.
+- Forward and transpose structures share logical edge identity.
+
+## Phase 7: planner and autotuner
+
+Implement the planner described in
+[Core Execution and CP-Math](core_execution_cp_math.qmd).
+
+The planner should:
+
+1. reject invalid candidates;
+2. form an analytical shortlist;
+3. include all projection, packing, epilogue, synchronization, order, and
+   communication costs;
+4. benchmark a bounded number of candidates;
+5. persist measurements by problem, structure, device-performance class,
+   policy, and build identity;
+6. optimize connected operations rather than only isolated kernels.
+
+### Exit criteria
+
+- Selection is based on predicted and measured total cost.
+- Expected reuse changes the winner when preparation cost matters.
+- A locally faster kernel can be rejected when its order conversions make the
+  graph slower.
+- Cache invalidation is explicit and tested.
+
+## Phase 8: CP-BP objective version 2
+
+Retain the current optimizer as a baseline and initializer. Replace its final
+decision objective with workload-weighted total cost.
+
+Add, in order:
+
+- joint row and feature refinement;
+- CTA-level macro-tile terms;
+- operation, \(N\), dtype, precision, and epilogue profiles;
+- value and module activity statistics;
+- forward and transpose terms;
+- nested GPU and node partition cuts;
+- optional biological priors as soft constraints.
+
+The deferred CUDA packing evaluator may be implemented after these contracts
+are stable. Accelerating the old oracle before redefining its target is not a
+priority.
+
+### Exit criteria
+
+- The new optimizer is compared against the current exact surrogate.
+- A plan can intentionally choose slightly larger storage for lower execution
+  time.
+- Repeated plan learning is stable under held-out and bootstrap validation.
+- Known biological modules help only when their measured computational effect
+  justifies their influence.
+
+## Phase 9: native sparse-to-dense and training path
+
+Implement one decisive vertical demonstration:
+
+```text
+CP-BP biological tile
+    → module-local learned projection
+    → fused bias, activation, and normalization
+    → module-major dense state
+```
+
+Then add:
+
+- transpose and backward kernels;
+- mutable learned value planes;
+- lower-precision execution copies and fp32 master values where appropriate;
+- fused optimizer updates in execution order;
+- module-conditional execution when measured.
+
+### Exit criteria
+
+- The native path beats a fair CSR plus generic SpMM plus separate epilogue
+  baseline end to end in its declared regime.
+- Forward and backward use the same logical structure.
+- Training steps do not rebuild topology.
+- Dense state remains module-associated until a consumer requires global
+  mixing.
+
+## Phase 10: Baseplane integration
+
+Create a shared `Cellerator::abi` target and migrate Baseplane's public device
+views to it.
+
+Implement in this order:
+
+1. validity-aware sequence domain;
+2. prepared predicate programs;
+3. common bit-plane, event, and segment operands;
+4. direct relation-builder output;
+5. materialized motif-to-regulatory structure;
+6. one fused sequence-predicate-to-regulatory-state kernel;
+7. planner choice between fusion and materialization.
+
+### Exit criteria
+
+- No host boundary exists in the sequence-to-regulatory demonstration.
+- Static sequence structure is reused across multiple dynamic cell states.
+- Baseplane results carry the same domain and order identities as Cellerator
+  operands.
+- The planner can compare materialized and fused paths using complete costs.
+
+## Phase 11: hierarchy and scale-out readiness
+
+Add runtime hierarchy only where it pays rent:
+
+- active-module skipping;
+- hierarchical reductions;
+- prefetch and staging;
+- module-specific precision;
+- GPU partitioning;
+- boundary communication.
+
+Add nested partition identity and boundary-edge sections before implementing a
+large distributed runtime.
+
+### Exit criteria
+
+- Hierarchical indices reference shared values rather than duplicating them.
+- Communication occurs in execution order.
+- A partition cost can account for active cross-device edges.
+- Single-GPU execution remains uncomplicated.
+
+## Preserve, rewrite, and retire
+
+| Surface | Action |
+| --- | --- |
+| CP-BP sampling and support extraction | Preserve |
+| Candidate discovery and exact merge scoring | Preserve as compiler machinery |
+| Frozen semantic plan and bounded row order | Preserve and generalize |
+| Compact row records and warp tiles | Preserve as one projection |
+| Direct \(N=1\) consumer | Preserve and classify |
+| Statistical validation and referee work | Preserve |
+| Pointer-free CPK1 principle | Preserve and generalize |
+| Current CP-Math request ideas | Reuse selectively |
+| Current `PreparedExecution` ownership | Rewrite |
+| Current `DeviceMathContext` ownership | Fold into unified session |
+| Matrix-only operation registry | Replace with biological operands and typed relations |
+| Global Blocked-ELL-first policy | Retire |
+| Automatic internal canonical output | Retire |
+| CellShard-owned execution semantics | Retire |
+| Baseplane as an unrelated external primitive library | Retire |
+| Historical CP-BP ledgers as architecture guidance | Archive |
+
+## Compatibility policy
+
+Compatibility is justified when it enables migration without adding hidden work.
+
+Allowed compatibility:
+
+- loading CPK1 through an adapter;
+- accepting CSR, Sliced-ELL, and Blocked-ELL as projections;
+- exposing canonical-order API boundaries;
+- maintaining old test baselines;
+- wrapping old model paths during measured replacement.
+
+Forbidden compatibility:
+
+- silently converting every input to a legacy format;
+- preserving a hot-path abstraction solely because callers exist;
+- copying values into canonical order after every operation;
+- allowing old scope documents to remain authoritative;
+- adding new features to migration-held interfaces.
+
+## Definition of migration completion
+
+The architectural migration is complete when:
+
+- Cellerator's public core expresses domains, relations, order, structure, and
+  value generations;
+- CP-BP compiles semantic geometry rather than one universal format;
+- CP-Math core plans among native and vendor projections using measured total
+  cost;
+- connected operations remain in execution order;
+- Baseplane operands participate directly in Cellerator programs;
+- CellShard persists and delivers opaque execution artifacts without defining
+  their semantics;
+- fair real-data benchmarks identify both Cellerator wins and fallback regimes.

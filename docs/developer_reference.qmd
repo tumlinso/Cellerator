@@ -2,62 +2,289 @@
 title: "Developer Reference"
 ---
 
-## Build
+## Read first
+
+Before changing architecture or hot-path code, read:
+
+1. `AGENTS.md`
+2. `scope.md`
+3. [Architecture](architecture.qmd)
+4. the relevant subsystem page
+5. [Performance and Validation](performance_validation.qmd)
+6. [Migration Roadmap](migration_roadmap.qmd)
+
+Closed files under `todos/` are implementation history, not architecture
+authority.
+
+## Repository map
+
+```text
+include/Cellerator/
+    public Cellerator contracts and device views
+
+src/runtime/
+    current CUDA runtime substrate
+
+src/compute/
+    reusable numerical and biological execution code
+
+components/CellPack/
+    current CP-BP geometry compiler, tile projections, validation, and
+    direct packed consumer
+
+components/CelleraTorch/
+    Torch and libtorch integration boundary
+
+src/preprocess/
+    biology-facing preprocessing policy and orchestration
+
+src/models/
+    native and legacy model implementations
+
+src/trajectory/
+    trajectory-specific operations
+
+tests/
+    native compile and runtime validation
+
+bench/
+    serialized performance experiments
+
+docs/
+    authoritative architecture and developer documentation
+```
+
+This layout describes the current repository. The migration may promote
+neutral CellPack structures and CP-Math execution contracts into first-class
+Cellerator core locations. Path placement alone does not determine conceptual
+ownership.
+
+## Expected sibling checkout
+
+```text
+cellstack/
+├── Baseplane/
+├── CellShard/
+└── Cellerator/
+```
+
+CMake may also resolve installed packages or explicitly supplied source
+directories.
+
+## Configure and build
+
+Default build:
 
 ```bash
 cmake -S . -B build
 cmake --build build -j 4
 ```
 
-If CelleraTorch dependencies are unavailable:
+Disable the optional Torch component when its dependencies are unavailable:
 
 ```bash
-cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
+cmake -S . -B build \
+    -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
 cmake --build build -j 4
 ```
 
-## Focused Test Targets
-
-Useful pipeline-adjacent targets include:
-
-- `exactSearchRuntimeTest`
-- `sparseOpsRuntimeTest`
-- `quantizedMatrixTest`
-- `trajectoryCompileTest`
-- `trajectoryRuntimeTest`
-- `developmentalTimeCompileTest`
-- `developmentalTimeRuntimeTest`
-- `developmentalTimeTrajectoryRuntimeTest`
-- `celleraTorchBindingsCompileTest`
-- `celleraTorchDenseReduceCompileTest`
-- `celleraTorchQuantizePrimitiveTest`
-- `celleraTorchModelCustomOpsTest`
-
-Run the built binaries directly because `ctest` is not configured.
-
-Examples:
+Use explicit sibling source locations when necessary:
 
 ```bash
-./build/exactSearchRuntimeTest
-./build/sparseOpsRuntimeTest
-./build/celleraTorchQuantizePrimitiveTest
+cmake -S . -B build \
+    -DCELLERATOR_CELLSHARD_SOURCE_DIR=/path/to/CellShard \
+    -DBASEPLANE_SOURCE_DIR=/path/to/Baseplane
 ```
 
-## Repo Map
+The repository currently requires CUDA for its normal build.
 
-- `src/compute/`: reusable sparse compute, sparse operators, neighbors
-- `src/models/`: model workflows, including native CUDA developmental-time paths
-- `src/trajectory/`: trajectory scoring and assembly
-- `include/Cellerator/quantized/`: Volta-oriented quantized sparse format and packing helpers
-- `components/CelleraTorch/`: explicit Torch export boundary
-- `tests/`: compile and runtime checks
-- `bench/`: benchmark binaries
+## Important configuration options
 
-## Additional References
+Current options include:
 
-- `README.md`
-- `AGENTS.md`
-- `scope.md`
-- `out_of_scope_inventory.md`
-- `optimization.md`
-- `todos.md`
+```text
+CELLERATOR_CUDA_MODE
+CELLERATOR_REAL_STORAGE
+CELLERATOR_REAL_COMPUTE
+CELLERATOR_REAL_ACCUM
+CELLERATOR_DEFAULT_SPARSE_LAYOUT
+CELLERATOR_DEFAULT_TRAINING_PRECISION
+CELLERATOR_ENABLE_TORCH_MODELS
+CELLERATOR_ENABLE_HARDWARE_PROBE
+CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES
+```
+
+`CELLERATOR_DEFAULT_SPARSE_LAYOUT=blocked_ell` is a current build default, not
+the target architectural rule. New core code must not interpret it as a demand
+that every structure use Blocked-ELL.
+
+The current native baseline is Volta `sm_70`. Portable contracts should remain
+valid across NVIDIA generations. Kernel schedules may specialize by runtime
+dispatch.
+
+## Discovering targets
+
+The target set evolves. Prefer querying the configured build:
+
+```bash
+cmake --build build --target help
+```
+
+Frequently useful current tests include:
+
+```text
+abiRuntimeTest
+sparseOpsRuntimeTest
+exactSearchRuntimeTest
+quantizedMatrixTest
+developmentalTimeRuntimeTest
+developmentalTimeTrajectoryRuntimeTest
+stateReduceRuntimeTest
+celleratorPreprocessRuntimeTest
+```
+
+Current CP-BP-focused targets include variants of:
+
+```text
+cellPackPlannerTest
+cellPackOptimizerTest
+cellPackApplyPlanTest
+cellPackWarpTilesTest
+cellPackFeatureWeightedRowReductionTest
+cellPackPersistentPackingPayloadTest
+```
+
+Use the target names reported by the configured build when repository names
+change.
+
+## Running tests
+
+The current repository does not consistently register all binaries with CTest.
+Build and run focused binaries directly:
+
+```bash
+cmake --build build --target sparseOpsRuntimeTest -j 4
+./build/sparseOpsRuntimeTest
+```
+
+A change to a core invariant should have:
+
+- a focused contract test;
+- an adversarial runtime test;
+- a regression test for an existing path;
+- sanitizer coverage when device memory, indexing, or synchronization changes;
+- numerical comparison against an independent reference.
+
+## CUDA sanitizers
+
+Use a focused binary and representative small fixtures:
+
+```bash
+compute-sanitizer --tool memcheck ./build/<target>
+compute-sanitizer --tool racecheck ./build/<target>
+```
+
+Do not substitute sanitizer success for numerical validation or benchmark
+evidence.
+
+## Benchmarks
+
+All benchmark and profiler runs must use the repository benchmark mutex.
+Do not compare measurements collected concurrently by different workers.
+
+A benchmark record must include:
+
+```text
+commit or source identity
+compiler and CUDA toolkit
+driver and GPU
+build mode and architecture
+command
+input structure and value distribution
+warmups and repetitions
+median and tail statistic
+correctness tolerance
+included and excluded preparation
+persistent and transient bytes
+launch count
+```
+
+Use Nsight Systems for launch trains, overlap, host involvement, and
+synchronization. Use Nsight Compute for a proven hot kernel's memory traffic,
+warp efficiency, occupancy, register pressure, and cache behavior.
+
+## Documentation build
+
+Render the Quarto documentation with:
+
+```bash
+quarto render docs
+```
+
+The source files are authoritative even when a rendered site or PDF is not
+checked in.
+
+When a code change modifies an invariant, ownership boundary, execution
+lifetime, projection, planner behavior, or supported current state, update the
+corresponding documentation in the same change.
+
+## Public include policy
+
+Public callers should include:
+
+```cpp
+#include <Cellerator/...>
+```
+
+Do not expose a new public header that reaches into `src/`. Existing violations
+are migration work, not precedent.
+
+Framework-independent math, structures, kernels, and planning must remain
+outside Torch-linked code. CelleraTorch wraps stable native contracts.
+
+## Naming and file form
+
+The repository uses C++17 and CUDA 17 conventions:
+
+- four-space indentation;
+- braces on the same line;
+- `snake_case` for functions, variables, structs, and files;
+- `.hh` for C++ headers;
+- `.cuh` for CUDA-aware headers;
+- `.cc` and `.cu` for compiled implementation.
+
+Keep POD device views trivially copyable where practical. Use offsets rather
+than pointer forests in persistent images.
+
+## Core review checklist
+
+Before merging a core change, answer:
+
+1. Which biological domains and orders does it consume and produce?
+2. Does it preserve immutable structure and bind mutable values separately?
+3. Does it add a new physical projection or change semantic geometry?
+4. Why can the operation not remain in the producer's current order?
+5. Are preparation, packing, conversion, epilogue, and synchronization costs
+   included?
+6. Does steady-state execution allocate, hash, construct descriptors, or query
+   hardware?
+7. Is the custom kernel compared with the strongest relevant native or vendor
+   baseline?
+8. Has the regime where the new path loses been identified?
+9. Does the change preserve Baseplane and future multi-GPU interoperability?
+10. Does the documentation still describe the actual current state?
+
+## Source authority
+
+The hierarchy of authority is:
+
+1. tested source behavior;
+2. `AGENTS.md` architectural invariants;
+3. `scope.md`;
+4. the architecture pages in `docs/`;
+5. active, explicitly approved migration work;
+6. closed TODO ledgers and historical reports.
+
+When source and documentation disagree, do not silently choose the more
+convenient interpretation. Correct the implementation or update the current
+state section while preserving the target invariants.

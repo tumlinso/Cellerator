@@ -1,0 +1,385 @@
+---
+title: "Storage, Distribution, and Interop"
+---
+
+## Principle
+
+Cellerator owns biological execution semantics.
+
+Adjacent systems move, persist, expose, or adapt Cellerator artifacts without redefining those semantics.
+
+```text
+Baseplane
+    sequence-specialized computation
+
+Cellerator
+    domains, structures, geometry, planning, kernels, state
+
+CellShard
+    persistence, sharding, transport, staging, publication
+
+CelleraTorch
+    framework adaptation
+```
+
+## CellShard boundary
+
+CellShard owns data handling when biological computation is too large or too distributed to treat as one local object.
+
+Its responsibilities include:
+
+- canonical dataset persistence;
+- source ingest;
+- dataset and partition identity;
+- sharded storage;
+- execution-envelope publication;
+- checksums and versioning;
+- active generation selection;
+- cache and fetch;
+- host and device staging;
+- delivery to active workers;
+- distributed storage-oriented partition artifacts;
+- cold metadata retrieval;
+- archive maintenance.
+
+Cellerator owns:
+
+- biological domains and relations;
+- semantic geometry;
+- row and feature order;
+- module and hierarchy semantics;
+- projection meaning;
+- operation semantics;
+- planner and autotuner;
+- kernels;
+- execution order;
+- numerical state.
+
+## Current persistence seam
+
+The current CP-BP persistence path uses:
+
+- a Cellerator-owned CPK1 image;
+- a CellShard-owned execution envelope;
+- explicit dataset, partition, generation, feature-axis, and payload compatibility;
+- contiguous upload;
+- Cellerator-side rebinding;
+- direct native execution.
+
+This ownership seam is sound.
+
+The inner image should evolve into a sectioned execution image. The outer CellShard envelope may remain generic and opaque.
+
+## Canonical storage versus execution images
+
+Canonical storage and execution images serve different purposes.
+
+### Canonical storage
+
+Optimized for:
+
+- durability;
+- complete identity;
+- interoperability;
+- reconstruction;
+- append or generation management;
+- architecture independence.
+
+### Execution image
+
+Optimized for:
+
+- direct accelerator ingest;
+- stable order;
+- physical projection;
+- compact metadata;
+- pointer rebinding;
+- repeated execution;
+- architecture or workload specialization.
+
+An execution image is derived and replaceable. It is not the only source of biological truth.
+
+## Persistence contract
+
+A CellShard execution envelope should validate:
+
+- envelope schema;
+- payload kind and schema;
+- dataset identity;
+- partition identity;
+- generation;
+- source domain identities;
+- dimensions;
+- byte bounds;
+- checksum;
+- target compatibility metadata.
+
+Cellerator validates:
+
+- execution-image sections;
+- domain and order identity;
+- geometry;
+- structure epoch;
+- canonical recovery maps;
+- projection consistency;
+- index bounds;
+- masks;
+- value layout;
+- kernel compatibility.
+
+CellShard must not parse or reinterpret projection-specific tile semantics.
+
+## Storage of structure and values
+
+Structure and values have different change frequencies.
+
+CellShard should be able to persist:
+
+- structure image once;
+- one or more value planes;
+- value-generation metadata;
+- optional alternate precision planes;
+- optional projection-specific reordered values;
+- deltas or checkpoints when appropriate.
+
+It should not require rebuilding or duplicating the structure for every value generation.
+
+## Projection persistence policy
+
+Persist a physical projection when:
+
+- construction is expensive;
+- reuse is high;
+- its target device class is known;
+- storage expansion is acceptable;
+- it remains valid for the structure epoch.
+
+Build lazily when:
+
+- use is uncertain;
+- deployment device is unknown;
+- construction is cheap;
+- the operation is rare.
+
+Discard or rebuild when:
+
+- structure changes;
+- kernel ABI changes;
+- device performance class changes materially;
+- persistent memory cost exceeds amortized benefit.
+
+## Distribution
+
+CellShard may deliver:
+
+- a complete structure image;
+- one partition;
+- one projection section;
+- one value plane;
+- boundary-edge data;
+- sequence chunks and halos;
+- communication schedules;
+- prepared runtime artifacts that Cellerator validates.
+
+The transport unit need not equal the biological partition or the kernel tile.
+
+Keep these concepts separate:
+
+```text
+biological partition
+    execution partition
+        storage extent
+            transport unit
+```
+
+## Multi-GPU partitioning
+
+Cellerator chooses computation-aware partitions. CellShard stores and routes them.
+
+Possible Cellerator partition axes include:
+
+- cell or batch;
+- feature or gene;
+- biological module;
+- regulatory program;
+- sequence coordinate;
+- hybrid nested partition.
+
+CellPack may optimize a cut term. CellShard persists the resulting ownership and boundary sections.
+
+## Communication in execution order
+
+A distributed prepared program should communicate data in the order required by the destination consumer.
+
+```text
+local execution-order values
+    ↓ pack boundary values
+peer, NCCL, or network transfer
+    ↓
+destination execution-order input
+```
+
+Canonical order should not be inserted merely because transport is occurring.
+
+## Replication versus communication
+
+Small, frequently used structures or modules may be replicated.
+
+Large, infrequently crossed relations may be partitioned.
+
+The planner should compare:
+
+\[
+C_{\text{replicate}}
+=
+C_{\text{extra memory}}
++
+C_{\text{update replication}}
+\]
+
+against:
+
+\[
+C_{\text{communicate}}
+=
+f_{\text{use}}
+\cdot
+C_{\text{transfer}}
++
+C_{\text{sync}}
+\]
+
+CellShard executes the chosen delivery plan. Cellerator decides it.
+
+## Sequence distribution
+
+Baseplane sequence domains may be sharded by coordinate with halos.
+
+CellShard may store and deliver:
+
+- packed sequence chunks;
+- validity;
+- coordinate identity;
+- owned range;
+- halo;
+- prepared sequence artifacts;
+- static sequence-derived relations.
+
+Cellerator and Baseplane define event ownership and cross-boundary semantics.
+
+## CelleraTorch
+
+CelleraTorch is an explicit adapter.
+
+It may create:
+
+- zero-copy Torch views when memory, dtype, shape, stride, order, and lifetime permit;
+- custom operators that invoke prepared Cellerator operations;
+- framework modules that own only framework-facing configuration;
+- deliberate conversion when Torch requires a different representation.
+
+It must not:
+
+- make Torch own canonical Cellerator parameter allocation by default;
+- hide per-step sparse conversion;
+- rebuild structure in every forward;
+- discard biological domain and order identity;
+- define a competing planner;
+- duplicate native kernels.
+
+## Parameter exposure
+
+Native parameters should remain:
+
+- pointer-stable;
+- explicitly shaped and strided;
+- associated with domain and order identity;
+- associated with structure and value generation;
+- writable or read-only by contract;
+- distinguishable from optimizer state.
+
+CelleraTorch may expose views over that storage.
+
+When a zero-copy view is impossible, conversion cost must be explicit and benchmarked at the intended reuse.
+
+## Python and workflow adapters
+
+High-level APIs may orchestrate:
+
+- dataset selection;
+- preparation;
+- execution;
+- result publication;
+- metrics.
+
+They must not perform hidden CPU transforms over matrices that the native core should process.
+
+A Python convenience layer does not change ownership:
+
+- Cellerator owns numerical semantics;
+- CellShard owns persistence;
+- Baseplane owns sequence primitives;
+- CelleraTorch owns Torch adaptation.
+
+## Interop identity
+
+Every adapter must preserve or translate:
+
+- domain identity;
+- order;
+- partition;
+- structure epoch;
+- value generation;
+- dtype;
+- shape and stride;
+- device;
+- ownership and lifetime.
+
+An adapter that returns only pointer and dimensions is incomplete for biological data.
+
+## Prohibited boundary patterns
+
+Do not use:
+
+```text
+Baseplane → host table → Cellerator
+Cellerator → canonical CSR → CellShard → same-GPU Cellerator
+Cellerator → Torch sparse conversion → native Cellerator
+execution order → canonical order → transport → execution order
+```
+
+unless the complete measured path proves that the boundary wins.
+
+## Future compiled programs
+
+A future compiled Cellerator program may package:
+
+- domain and relation identity;
+- semantic geometry;
+- projection requirements;
+- prepared-plan metadata;
+- kernel build compatibility;
+- graph and communication schedule.
+
+Such a format must not drive current ABI design prematurely.
+
+The immediate priority is a stable structure, value, order, and projection model.
+
+## Boundary checklist
+
+Before adding cross-repository code, verify:
+
+- Which repository owns the semantics?
+- Which repository owns the bytes?
+- Which repository chooses the layout?
+- Which repository chooses the kernel?
+- Is identity preserved?
+- Is a copy necessary?
+- Can the producer emit the consumer's order?
+- Can the result remain device-resident?
+- Is the artifact canonical or derived?
+- Does a generation or structure epoch invalidate it?
+- Is the conversion included in the planner?
+- Will the boundary work for multi-GPU execution?
+
+The correct boundary is the one that moves the fewest bytes while leaving ownership unambiguous.

@@ -1,55 +1,121 @@
-# Cellerator Programming Style Hint
+# Cellerator Implementation Style
 
-This guide is authoritative for implementation style inside `Cellerator/`.
-It complements `AGENTS.md`, `scope.md`, and `optimization.md`; ownership rules
-in those files still decide where behavior belongs.
+This file defines local implementation style. Architecture and ownership are governed by `AGENTS.md`, `scope.md`, and `docs/architecture.qmd`.
 
-## File Shape
+## Organize by behavior
 
-- Organize implementation files by behavior, not by a whole workflow surface.
-- Keep preprocessing compute files split around workspace setup, fleet/reduction,
-  QC metric dispatch, normalization, feature statistics, fused sparse workflows,
-  and session/workflow orchestration.
-- Keep workflow and session files context-light. They may load data, stage
-  partitions, copy results, report status, and call compute primitives, but they
-  must not own reusable CUDA math.
-- If a workflow needs GPU reductions, dense adds, metric packets, sparse
-  transforms, normalization/stat operators, fleet collectives, or scratch
-  mechanics, add the primitive in the owning compute/runtime layer first and
-  call it from the workflow.
-- Files over roughly 600 lines need an explicit reason to stay together.
-- Files over roughly 1000 lines should be split unless generated code,
-  third-party constraints, or a tightly coupled external ABI requires otherwise.
+Split implementation around independently testable behavior:
 
-## CUDA Helpers
+- structure construction;
+- value binding;
+- projection construction;
+- planning;
+- persistent preprocessing;
+- launch binding;
+- kernel execution;
+- epilogue;
+- validation;
+- instrumentation.
 
-- Private inline device helpers belong in narrowly named `.cuh` files close to
-  the kernels that use them.
-- Add a short warning comment in those helper headers: prefer the inline helper
-  instead of copy-pasting the expression or microkernel.
-- Use inline device functions for reusable per-element, per-entry, per-row, or
-  warp-local math that does not own a launch boundary.
-- Use standalone kernels for launch boundaries, memory traversal ownership,
-  scratch ownership, cross-row reductions, layout-specific fused passes, and
-  operations whose occupancy or memory traffic must be inspected directly.
+Do not place all stages of a workflow in one translation unit merely because one public function invokes them.
 
-## Performance Bias
+Files above roughly 600 lines deserve review. Files above roughly 1000 lines should normally be split unless a generated source, external ABI, or tightly coupled kernel family makes separation more costly.
 
-- Prefer explicit layout-aware primitives over convenience layers in hot paths.
-- Bias Volta/V100 paths toward fusion when it removes sparse HBM traversals,
-  launch trains, or host-visible staging without creating register spill or
-  forced synchronization.
-- Keep separate primitive calls available when tests, partial workflows, or
-  correctness comparisons need them.
-- Keep contiguous metric packets contiguous when they feed NCCL or peer-copy
-  reductions.
+## Keep cost ownership visible
 
-## Known Monolith Follow-Ups
+A function that allocates, synchronizes, converts, reorders, hashes, constructs descriptors, launches kernels, or transfers memory should make that behavior visible in its name, contract, or call site.
 
-The preprocessing split is the first cleanup target. Apply the same rule next
-to these files or families:
+Avoid constructors or convenience wrappers that perform expensive hidden work.
 
-- `src/compute/neighbors/forward_neighbors/forward_neighbors.cu`
-- `src/compute/neighbors/forward_neighbors/cuvs_sharded_knn.cu`
-- state-reduce and developmental-time model CUDA files
-- `include/Cellerator/dist/distributed.cuh`
+## CUDA helpers and kernels
+
+Use private inline device helpers for reusable lane-local, warp-local, or element-local operations that do not own traversal or launch policy.
+
+Use standalone kernels for:
+
+- traversal ownership;
+- memory-staging policy;
+- cross-row or cross-feature reductions;
+- tile classification;
+- projection construction;
+- fused operations whose register, shared-memory, or occupancy behavior must be measured.
+
+Keep architecture-specific implementations behind stable contracts. Do not force one source-level schedule across Volta, Ampere, Hopper, and Blackwell.
+
+## Data representation
+
+Prefer:
+
+- structure-of-arrays for columnar access;
+- contiguous, aligned sections;
+- narrow local indices where validated;
+- pointer-free persistent images;
+- caller- or session-owned buffers;
+- explicit capacity and identity;
+- compile-time or prepared dispatch in hot paths.
+
+Avoid:
+
+- pointer forests;
+- repeated `std::vector` growth in copy-sensitive paths;
+- per-entry heap allocation;
+- hidden container conversions;
+- unversioned serialized C++ object graphs.
+
+RAII is preferred when it preserves pointer stability and explicit cost. Raw ownership is not a performance feature.
+
+## Hot-path rules
+
+Steady-state execution should normally contain no:
+
+- allocation;
+- descriptor creation;
+- structure hashing;
+- host synchronization;
+- per-tile host dispatch;
+- canonicalization without a consumer requirement;
+- format conversion not represented in the plan.
+
+Fuse passes when fusion removes material traffic or launches and does not create a larger loss through spills, occupancy collapse, or duplicated work.
+
+Keep an unfused reference path when it materially improves testing, diagnosis, or planner comparison.
+
+## Naming
+
+Use `snake_case` for files, functions, variables, POD structures, and CLI flags.
+
+Name contracts by their semantics rather than the first backend that implements them.
+
+Examples:
+
+- `relation_structure`, not `csr_matrix_contract`;
+- `feature_major_projection`, not `custom_spmm_v2`;
+- `launch_bindings`, not `runtime_request`;
+- `value_generation`, not `cache_version`.
+
+Backend-specific names belong in backend-specific files.
+
+## Comments
+
+Comments should explain:
+
+- identity and lifetime;
+- ordering;
+- ownership;
+- bounds;
+- numerical semantics;
+- why a representation or synchronization boundary exists;
+- measured reasons for a non-obvious optimization.
+
+Do not use comments to declare an implementation "fast" without a benchmark reference.
+
+## Local READMEs
+
+Directory READMEs explain only:
+
+- what the directory owns;
+- which central contracts it implements;
+- which files are transitional;
+- where tests and benchmarks live.
+
+They must link to the authoritative architecture documents rather than restating a competing architecture.

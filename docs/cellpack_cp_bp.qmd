@@ -1,0 +1,513 @@
+---
+title: "CellPack and CP-BP"
+---
+
+## Purpose
+
+CellPack compiles biological structure into execution geometry.
+
+CP-BP is the current data-inferred block-packing implementation inside CellPack. It demonstrates that feature co-occurrence and bounded row coherence can be converted into compact, directly executable GPU tiles.
+
+The current implementation should be preserved as the v1 baseline. Its objective, physical orientation, and operation coverage should not be mistaken for the final compiler.
+
+## Current pipeline
+
+```{mermaid}
+flowchart LR
+    A[Sample rows] --> B[Support bitsets]
+    B --> C[Candidate discovery]
+    C --> D[Exact merge-cost scoring]
+    D --> E[Constrained optimizer]
+    E --> F[Frozen packing plan]
+    F --> G[Apply to full data]
+    G --> H[Cell-block records]
+    H --> I[Bounded row ordering]
+    I --> J[Warp tiles]
+    J --> K[Direct native consumer]
+    J --> L[Persistent CPK1 image]
+```
+
+### Sampling and support
+
+The compiler samples structural support rather than relying on value magnitude for its first v1 objective.
+
+The fundamental binary observation is:
+
+\[
+A_{r,f} =
+\begin{cases}
+1 & X_{r,f} \neq 0 \\
+0 & \text{otherwise}
+\end{cases}
+\]
+
+Feature-major support bitsets make exact intersection, union, and overlap calculations efficient.
+
+### Candidate discovery
+
+Approximate similarity narrows the search space.
+
+Candidate generation may use sketches or locality-sensitive hashing, but approximate similarity never decides the final merge. It proposes candidates for exact evaluation.
+
+### Exact scoring
+
+The v1 conceptual merge gain is:
+
+\[
+\operatorname{gain}(A,B)
+=
+\operatorname{cost}(A)
++
+\operatorname{cost}(B)
+-
+\operatorname{cost}(A \cup B)
+\]
+
+The current default cost is tied to row-to-active-feature-block references.
+
+This is a useful storage and scalar-execution surrogate. It is not the final end-to-end kernel objective.
+
+### Optimization
+
+The current host optimizer performs constrained deterministic moves with exact-oracle rollback.
+
+This is valuable because it provides:
+
+- reproducibility;
+- exact local acceptance;
+- durable packing-plan identity;
+- a testable baseline;
+- a clean seam for a replaceable cost policy.
+
+### Frozen plan
+
+The frozen plan records enough information to recover canonical feature identity:
+
+- feature permutation;
+- inverse feature permutation;
+- feature-to-block map;
+- feature-to-local map;
+- block widths and offsets;
+- plan identity;
+- cost-policy identity;
+- feature-axis identity.
+
+That principle must survive.
+
+### Applied plan and row order
+
+The full partition is transformed into plan-relative feature blocks.
+
+Rows are then reordered within bounded windows using active-block signatures. This exposes local sharing without allowing arbitrary global movement.
+
+Bounded local ordering should remain a compiler tool, although its objective should become operation-aware.
+
+### Cell-block records and warp tiles
+
+Compact records encode active blocks and local masks without explicit zeros.
+
+The current warp tile is row-oriented:
+
+- up to 32 rows;
+- block descriptors;
+- participating-row masks;
+- per-row local feature masks;
+- compact values in rank order;
+- dictionaries that recover canonical feature identity.
+
+This is well matched to a lane-per-row scalar accumulation.
+
+### Native execution
+
+The direct v1 consumer proves that a CellPack image can be executed without reconstructing CSR or BELL.
+
+That is the essential success criterion.
+
+### Persistence
+
+The current pointer-free CPK1 image contains:
+
+- frozen plan maps;
+- local row order;
+- warp tiles;
+- identities;
+- offsets and lengths.
+
+CellShard wraps the image in an opaque execution envelope and stages it contiguously. Cellerator validates and rebinds it.
+
+## What CP-BP v1 proves
+
+CP-BP v1 proves that:
+
+1. biological co-occurrence can produce hardware-relevant geometry;
+2. exact canonical identity can survive aggressive reordering;
+3. a compact mask grammar can avoid explicit zeros;
+4. construction can be separated from steady-state execution;
+5. direct native consumption can beat CSR in structured regimes;
+6. the same native path can lose in low-sharing regimes;
+7. a planner therefore needs runtime plurality.
+
+## What CP-BP v1 does not prove
+
+It does not prove that:
+
+- 32-row warp tiles are universal;
+- row-major value order is best for `N > 1`;
+- the v1 cost predicts training or sparse-to-dense ML;
+- one semantic order serves every persistent workload;
+- the current hardware model generalizes to real biological distributions;
+- canonical output should follow every operation;
+- CPK1 should be the only execution image;
+- a matrix-wide format is optimal;
+- Blocked-ELL or any vendor format is unnecessary.
+
+## The target compiler
+
+The target compiler produces semantic geometry first and physical projections second.
+
+```text
+observed biological structure
+    + operation profile
+    + biological priors
+    + deployment profile
+    + reuse profile
+        ↓
+candidate semantic geometries
+        ↓
+joint row, feature, module, and partition refinement
+        ↓
+validated semantic geometry
+        ↓
+physical projection candidates
+        ↓
+core planner and autotuner
+```
+
+## Semantic geometry
+
+A semantic geometry contains:
+
+```cpp
+struct semantic_geometry {
+    geometry_id identity;
+
+    domain_id row_domain;
+    domain_id feature_domain;
+
+    order_id row_order;
+    order_id feature_order;
+
+    partition_id partition;
+    hierarchy_handle hierarchy;
+
+    canonical_recovery_maps recovery;
+    geometry_statistics statistics;
+};
+```
+
+It defines which biological entities execute together.
+
+It does not require one physical layout.
+
+## Multiple geometries
+
+One geometry should be preferred when it serves the workload profile well.
+
+A second semantic geometry is justified when:
+
+- operation families are persistent and structurally incompatible;
+- the cost of alternate ordered value planes is amortized;
+- graph-wide conversion cost remains lower than forcing one compromise;
+- training forward and backward benefit from substantially different partitioning.
+
+Multiple geometries should be the exception, not prohibited.
+
+## Physical projections
+
+### Row-masked warp tile
+
+Best candidate for:
+
+- `N=1`;
+- very small `N`;
+- high block sharing;
+- scalar regulatory reductions;
+- memory-bound feature-weighted sums.
+
+### Feature-major masked tile
+
+Organize each active feature with a participating-row mask and compact values.
+
+Best candidate when:
+
+- one dense RHS row can be reused by several cells;
+- `N` is larger than a scalar;
+- feature-local propagation dominates;
+- transpose-friendly access is valuable.
+
+```text
+tile
+  feature id
+  participating-row mask
+  compact values by row lane
+  next feature
+```
+
+### CTA macro-tile
+
+Combine several neighboring row tiles.
+
+Store:
+
+- a deduplicated feature-block table;
+- per-warp participation;
+- feature-major records;
+- compact values;
+- optional dense fragments.
+
+A CTA can stage a dense RHS slab once and share it across several warps.
+
+### Dense fragments
+
+Locally dense \(16 \times 16\) or similar regions may be expanded into MMA fragments.
+
+The compiler records candidate fragments. The planner compares:
+
+\[
+T_{\text{masked}}
+\quad\text{against}\quad
+T_{\text{materialize}} + T_{\text{MMA}}
+\]
+
+Dense execution is selected only when the complete cost wins.
+
+### Conventional fallbacks
+
+CSR, SELL, BSR, and Blocked-ELL remain important.
+
+They are especially useful for:
+
+- low-sharing irregular regions;
+- highly variable row lengths;
+- vendor-supported shapes;
+- broad `N`;
+- one-shot operations;
+- interoperability;
+- reference and validation.
+
+## Hybrid images
+
+One structure may contain several region classes:
+
+```text
+high-sharing row-masked regions
+feature-major regions
+dense fragments
+SELL or CSR residual
+heavy-row queue
+```
+
+The projection constructor groups regions into class queues.
+
+The runtime launches by queue or uses a persistent device work distributor. It does not perform a large host decision tree per tile.
+
+## Operation-aware objective
+
+The future compiler objective is:
+
+\[
+\begin{aligned}
+J(G) =&\;
+C_{\text{build}}(G)
++
+C_{\text{persistent memory}}(G) \\
+&+
+\sum_o f_o
+\left[
+C_{\text{input order},o}
++
+C_{\text{projection},o}
++
+C_{\text{kernel},o}
++
+C_{\text{epilogue},o}
++
+C_{\text{output order},o}
+\right] \\
+&+
+C_{\text{communication}}(G)
+\end{aligned}
+\]
+
+where \(G\) is geometry and \(f_o\) is expected operation frequency.
+
+The exact function may be a measured model rather than a closed analytical expression.
+
+## Joint row and feature optimization
+
+The biological structure is bipartite:
+
+\[
+G = (R,F,E)
+\]
+
+Feature blocks are good relative to rows that execute together. Row groups are good relative to the features they share.
+
+A practical multilevel optimizer should:
+
+1. initialize from support sketches and optional biological priors;
+2. coarsen the bipartite or hypergraph;
+3. construct capacity-constrained row and feature partitions;
+4. refine feature groups given row groups;
+5. refine row groups given feature groups;
+6. construct nested CTA and GPU partitions;
+7. classify physical regions;
+8. evaluate measured or calibrated cost;
+9. perform exact local rollback.
+
+## Biological priors
+
+Priors may include:
+
+- pathways;
+- regulatory programs;
+- chromatin domains;
+- enhancer-promoter groups;
+- gene families;
+- developmental lineages;
+- known module membership;
+- sequence-coordinate locality;
+- previous model usage and gradients.
+
+Priors are soft evidence.
+
+A prior may improve stability, interpretability, and reuse. It may not override a severe measured execution loss.
+
+## Statistics for near-zero-cost scheduling
+
+A compact runtime tile header should contain only fields required by a kernel or queue.
+
+Detailed compiler statistics may include:
+
+- nnz;
+- density;
+- descriptor count;
+- active rows;
+- row-mask population;
+- feature-mask population;
+- lane-work variance;
+- maximum row work;
+- unique dense RHS rows;
+- expected RHS reuse;
+- metadata and value bytes;
+- partial-block fraction;
+- dense-fragment eligibility;
+- heavy-row flags;
+- active-module frequency;
+- quantization range;
+- forward and transpose locality;
+- cross-partition edge count.
+
+These statistics support planning without repeated structure scans.
+
+## Hierarchical geometry
+
+The same compiler may expose nested partitions:
+
+```text
+GPU partition
+    biological supermodule
+        CTA macro-tile
+            warp tile
+                local feature block
+```
+
+Nested partitions can reduce:
+
+- global memory traffic;
+- shared-memory duplication;
+- launch fragmentation;
+- inter-GPU communication.
+
+Hierarchy should survive into the runtime image only when it changes execution.
+
+## Persistence v2
+
+The next execution image should have a projection directory.
+
+```cpp
+struct projection_directory_entry {
+    projection_kind kind;
+    std::uint32_t schema_version;
+
+    structure_id structure;
+    geometry_id geometry;
+    projection_id projection;
+
+    std::uint64_t offset;
+    std::uint64_t bytes;
+};
+```
+
+Structure and values should be independently bindable.
+
+CPK1 remains readable through a v1 adapter identified as a row-masked projection.
+
+## Training requirements
+
+Training requires more than the forward tile.
+
+The compiler must support:
+
+- forward projection;
+- transpose projection;
+- logical edge identity;
+- mapping between projection-local value orders;
+- mutable value generation;
+- gradient accumulation;
+- optional fp32 master values;
+- lower-precision execution values;
+- optimizer update in execution order.
+
+Dynamic topology changes create explicit structure epochs.
+
+## Distributed geometry
+
+The semantic geometry should permit nested ownership:
+
+- row or cell partition;
+- feature or module partition;
+- sequence coordinate partition;
+- hybrid partitions;
+- replicated small modules;
+- boundary-edge sections.
+
+A distributed objective includes weighted cut cost:
+
+\[
+J_{\text{cut}}
+=
+\sum_{e \in \text{cut}}
+f_e
+\cdot
+\operatorname{bytes}(e)
+\cdot
+\operatorname{topology cost}(e)
+\]
+
+The full distributed runtime can be deferred. The geometry ABI must not make it impossible.
+
+## Acceptance criteria for a new CP-BP generation
+
+A new generation is accepted only when:
+
+- canonical identity remains exact;
+- old images remain readable or a migration tool exists;
+- the new objective is evaluated on real and adversarial structures;
+- projection construction and amortization are measured;
+- the planner selects it correctly;
+- low-sharing and one-shot fallbacks remain strong;
+- forward and backward implications are recorded;
+- end-to-end biological work improves.
+
+The goal is not a more intricate packer. The goal is less time per useful biological interaction.

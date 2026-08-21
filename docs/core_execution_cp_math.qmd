@@ -1,0 +1,772 @@
+---
+title: "Core Execution and CP-Math"
+---
+
+## Role
+
+CP-Math should become Cellerator core execution.
+
+It should not be a thin backend registry around SpMM. It should plan and execute biological operations over domain-aware structures and value planes.
+
+Its responsibilities are:
+
+- operation semantics;
+- physical projection management;
+- kernel and backend capability;
+- analytical cost modeling;
+- bounded empirical autotuning;
+- prepared-operation lifetime;
+- launch binding;
+- workspace and stream integration;
+- epilogue fusion;
+- execution-order propagation;
+- graph capture;
+- training and transpose planning;
+- distributed scheduling;
+- instrumentation and plan persistence.
+
+## Current v1 implementation
+
+The current code already contains useful foundations:
+
+- backend-neutral `spmm_request`;
+- separate `spmm_bindings`;
+- feature-order and sparse-structure identity;
+- storage, compute, and accumulation fields;
+- determinism, workspace, reuse, and epilogue policy;
+- pointer-free `execution_plan`;
+- backend capability queries;
+- backend registry;
+- structural candidate planner;
+- device capabilities and fingerprint;
+- `DeviceMathContext`;
+- reusable workspace;
+- physical CSR and BELL views;
+- native tile adaptation;
+- generic epilogue;
+- CPU referee;
+- focused tests.
+
+Those pieces should be migrated, not discarded.
+
+The current `PreparedExecution` ownership must not become the final core ABI. It copies the request and bindings, owns a device context and stream, and requires preparation to establish per-run state.
+
+## Core object model
+
+### Operation problem
+
+A problem describes mathematics and logical identity.
+
+```cpp
+struct operation_problem {
+    operation_kind operation;
+
+    structure_handle structure;
+    operation_shape shape;
+    numeric_policy numeric;
+    epilogue_descriptor epilogue;
+
+    determinism_policy determinism;
+};
+```
+
+It contains no live input or output pointers.
+
+### Launch bindings
+
+Bindings describe one execution.
+
+```cpp
+struct launch_bindings {
+    value_plane sparse_values;
+
+    biological_operand_view inputs[max_inputs];
+    biological_operand_view outputs[max_outputs];
+
+    scalar_parameter scalars[max_scalars];
+
+    stream_context stream;
+    transient_workspace_view workspace;
+};
+```
+
+### Prepared operation
+
+A prepared operation is reusable.
+
+```cpp
+using run_function = status (*)(
+    const prepared_kernel_state&,
+    const launch_bindings&,
+    execution_session&);
+
+struct prepared_operation {
+    run_function run;
+
+    backend_id backend;
+    kernel_id kernel;
+
+    structure_handle structure;
+    projection_handle projection;
+
+    persistent_kernel_state persistent;
+    workspace_requirement transient_workspace;
+
+    produced_order_contract output_order;
+    plan_measurement_identity measurement;
+};
+```
+
+Changing a dense input, output, bias, scalar, stream, or value generation should normally require only new bindings.
+
+### Prepared program
+
+A prepared program composes operations:
+
+```cpp
+struct prepared_program {
+    span<prepared_operation> operations;
+    span<order_transform_step> transforms;
+    span<communication_step> communication;
+
+    optional_graph_executable graph;
+};
+```
+
+## Runtime ownership
+
+One `CelleratorSession` owns device resources.
+
+```cpp
+class cellerator_session {
+public:
+    device_fleet devices;
+    stream_pool streams;
+    library_handle_pool handles;
+
+    persistent_allocator persistent;
+    stream_ordered_allocator transient;
+
+    projection_cache projections;
+    plan_cache plans;
+    order_transform_cache transforms;
+};
+```
+
+### Memory lifetimes
+
+| Class | Lifetime | Examples |
+|---|---|---|
+| Structure-persistent | Structure epoch | indices, masks, tile headers, hierarchy |
+| Plan-persistent | Prepared operation | vendor preprocessing, graph-stable buffers |
+| Launch-transient | One execution | reduction scratch, temporary crop, short pack |
+
+Do not implement these as one globally mutable scratch allocation.
+
+### Stream ownership
+
+Streams belong to execution sessions or launch bindings.
+
+A prepared operation may store stream-compatible descriptors. It does not own the only stream on which it can execute.
+
+This permits:
+
+- concurrent batches;
+- overlapping communication;
+- graph capture;
+- pipeline execution;
+- independent profiling;
+- multi-GPU schedules.
+
+### Library handles
+
+cuBLAS, cuSPARSE, and other handles should be pooled or rebound by session and stream.
+
+Repeated descriptor construction is allowed only in preparation, not steady-state execution.
+
+## Operation contracts
+
+The operation registry should grow from SpMM into biological primitives.
+
+Initial core operation kinds should include:
+
+- sparse or relation-weighted projection;
+- row, feature, and module reduction;
+- segmented reduction;
+- graph or regulatory propagation;
+- sparse gather and scatter;
+- sequence-conditioned propagation;
+- sparse-to-dense module projection;
+- normalization and fused epilogue;
+- sparse recurrent state update;
+- top-k event or neighbor selection;
+- Jacobian-vector and vector-Jacobian products;
+- order transform;
+- communication.
+
+An operation describes semantics. Backends describe implementations.
+
+## Numerical policy
+
+Storage, multiplication, accumulation, scalar, bias, and output type are distinct.
+
+```cpp
+struct numeric_policy {
+    dtype structure_value_storage;
+    dtype dense_storage;
+    dtype output_storage;
+
+    dtype multiplication_type;
+    dtype accumulation_type;
+    dtype scalar_type;
+    dtype bias_type;
+
+    rounding_mode rounding;
+    saturation_mode saturation;
+};
+```
+
+Legal tuples are explicit.
+
+Examples:
+
+```text
+f16 × f16 → f32 accumulation → f16 output
+bf16 × bf16 → f32 accumulation → bf16 output
+int8 × int8 → int32 accumulation → f16 output
+fp8 × fp8 → f32 accumulation → bf16 output
+```
+
+A backend advertises supported tuples. Validation rejects incoherent combinations before planning.
+
+## Planner architecture
+
+The planner selects the fastest correct strategy.
+
+### Planning timescales
+
+#### During CellPack construction
+
+Compute:
+
+- semantic geometries;
+- tile statistics;
+- candidate dense fragments;
+- partition summaries;
+- projection capabilities;
+- construction-cost estimates.
+
+#### Once per device performance class
+
+Calibrate primitive behavior:
+
+- launch overhead;
+- memory access patterns;
+- mask decoding;
+- dense RHS broadcast;
+- shared-memory staging;
+- MMA throughput;
+- segmented reduction;
+- atomics;
+- projection conversion;
+- communication topology.
+
+A performance class groups devices with equivalent execution behavior. A physical UUID is not always the correct cache key.
+
+#### Once per structure and operation signature
+
+Enumerate legal candidates and estimate total cost.
+
+#### Lazily on first use
+
+Measure a bounded shortlist with representative bindings.
+
+#### Periodically
+
+Retune only when:
+
+- kernel build identity changes;
+- CUDA, driver, or library behavior changes;
+- device performance class changes;
+- workload shapes drift;
+- reuse assumptions change materially.
+
+### Candidate cost
+
+For candidate \(k\):
+
+\[
+\begin{aligned}
+C_k =&
+\frac{
+C_{\text{projection},k}
++
+C_{\text{prepare},k}
++
+C_{\text{static pack},k}
+}{R} \\
+&+
+C_{\text{dynamic pack},k}
++
+C_{\text{kernel},k}
++
+C_{\text{epilogue},k}
++
+C_{\text{order},k}
++
+C_{\text{sync},k}
++
+C_{\text{communication},k}
+\end{aligned}
+\]
+
+where \(R\) is expected reuse.
+
+Constraints include:
+
+- correctness;
+- numerical error;
+- determinism;
+- persistent memory;
+- transient memory;
+- graph capture;
+- latency or throughput objective.
+
+### Planner keys
+
+Use separate keys.
+
+```cpp
+struct problem_key {
+    operation_kind operation;
+    operation_shape shape;
+    numeric_policy numeric;
+    epilogue_signature epilogue;
+};
+
+struct structure_key {
+    structure_id structure;
+    geometry_id geometry;
+    projection_capabilities capabilities;
+};
+
+struct device_key {
+    device_performance_class performance_class;
+    runtime_build_id runtime;
+    library_build_id libraries;
+};
+
+struct policy_key {
+    reuse_class reuse;
+    determinism_policy determinism;
+    memory_budget_class memory;
+    optimization_objective objective;
+};
+```
+
+Pointers and current value generations are bindings, not plan keys.
+
+A plan must still validate that the bound structure and value generation are compatible.
+
+### Planning algorithm
+
+```cpp
+prepared_operation prepare(
+    const operation_problem& problem,
+    const prepare_policy& policy,
+    cellerator_session& session) {
+
+    auto candidates = enumerate_candidates(problem, session);
+
+    reject_semantically_invalid(candidates);
+    reject_numerically_invalid(candidates);
+    reject_device_incompatible(candidates);
+    reject_memory_incompatible(candidates);
+
+    for (auto& candidate : candidates)
+        candidate.predicted_cost =
+            analytical_cost(candidate, policy, session);
+
+    auto shortlist = select_top_k(candidates, policy.autotune_width);
+
+    materialize_required_projections(shortlist, session);
+    benchmark_complete_candidates(shortlist, policy, session);
+
+    auto winner = choose_robust_winner(shortlist, policy);
+    persist_measurement(winner, session);
+
+    return instantiate(winner, session);
+}
+```
+
+Benchmarking uses private outputs and the same epilogue, packing, and ordering required in production.
+
+### Measurement persistence
+
+Store:
+
+- median;
+- dispersion or tail;
+- sample count;
+- device performance class;
+- kernel build identity;
+- library version;
+- structure statistics;
+- complete cost components;
+- numerical result;
+- validity horizon.
+
+Do not persist a winner without the evidence needed to invalidate it later.
+
+## Physical projection management
+
+A structure owns a projection catalog.
+
+```cpp
+struct projection_catalog {
+    span<projection_descriptor> available;
+    projection_builder_registry builders;
+};
+```
+
+A projection may be:
+
+- persisted;
+- lazily built;
+- cached;
+- invalidated by a structure epoch;
+- refreshed by a value generation when values are reordered.
+
+Projection construction should be GPU-resident when a full-data transformation is required and the device path is faster.
+
+## Kernel families
+
+## `N = 1`
+
+### High-sharing row-masked
+
+Use the existing lane-per-row traversal when:
+
+- descriptor masks are dense;
+- rows share blocks;
+- lane work is balanced;
+- metadata per value is low.
+
+### Low-sharing fallback
+
+Use:
+
+- compact row-to-record adjacency;
+- one subwarp or warp per heavy row;
+- row work queues;
+- CSR or SELL fallback.
+
+Do not make all 32 lanes walk descriptors that serve only one or two lanes.
+
+## Small `N`
+
+For \(N \in \{2,4,8\}\):
+
+- retain a short register vector per row;
+- pack dense RHS into execution feature order when reuse justifies it;
+- broadcast feature vectors across participating rows;
+- fuse bias and activation where profitable.
+
+## Medium `N`
+
+For roughly \(N=16\) to \(64\):
+
+- assign several row tiles to one CTA;
+- deduplicate active feature blocks;
+- stage dense RHS slabs;
+- share them across warps;
+- accumulate row-by-channel register tiles;
+- fuse epilogue;
+- emit module-major dense state when appropriate.
+
+On Volta, use cooperative loads and manual double buffering.
+
+On Ampere and later, specialized kernels may use asynchronous global-to-shared transfers.
+
+On Hopper and later, specialized implementations may use TMA, warp-group matrix operations, and producer-consumer warp roles.
+
+## Dense fragments
+
+Locally dense fragments may use MMA or WMMA.
+
+The planner includes:
+
+- expansion cost;
+- zero-fill cost;
+- reuse;
+- output channel width;
+- precision error;
+- surrounding sparse work.
+
+Tensor Core use is opportunistic, not a format mandate.
+
+## Heavy tails
+
+Long rows, hub genes, and irregular regions may require:
+
+- dedicated multiwarp row kernels;
+- separate work queues;
+- segmented algorithms;
+- conventional sparse fallbacks.
+
+The compiler should identify them rather than forcing them through the common tile.
+
+## Epilogue fusion
+
+Candidate fused epilogues include:
+
+- bias;
+- activation;
+- residual;
+- gating;
+- normalization;
+- quantization;
+- order-aware output placement.
+
+Do not compile an unlimited combinatorial epilogue matrix. Maintain a small measured set and a generic fallback.
+
+The planner must include the cost of a separate epilogue when fusion is unavailable.
+
+## Sparse-to-dense learned projection
+
+A central native kernel should consume biological tiles directly into module-local dense state.
+
+```text
+packed biological tile
++ execution-ordered learned weights
++ optional state gate
+    ↓
+module-local accumulation
++ bias
++ activation
++ normalization
+    ↓
+[cell tile][module][hidden channel]
+```
+
+This should be benchmarked against:
+
+```text
+native input
+    → CSR conversion
+    → generic SpMM
+    → separate epilogue
+    → output reorder
+```
+
+The complete path decides the winner.
+
+## Training
+
+Training requires explicit forward and transpose projections.
+
+For:
+
+\[
+Y = A X
+\]
+
+the runtime may need:
+
+\[
+\nabla_X = A^\top \nabla_Y
+\]
+
+and:
+
+\[
+\nabla_A = \nabla_Y X^\top
+\]
+
+The structure should support:
+
+- forward projection;
+- transpose projection;
+- logical edge identity;
+- projection-local value mapping;
+- fp32 master values;
+- lower-precision execution values;
+- gradient accumulation;
+- optimizer update in execution order;
+- value-generation refresh.
+
+Do not rely on atomics over a forward-only row projection as the permanent backward design.
+
+## CUDA Graphs
+
+Graph replay is appropriate when:
+
+- topology is fixed;
+- addresses are stable;
+- operation sequence repeats;
+- launch overhead matters;
+- communication schedule is stable.
+
+Prepared programs should expose graph-capture compatibility and required stable buffers.
+
+Do not place hidden allocation or stream ownership inside a prepared operation that prevents capture.
+
+## Persistent kernels and work queues
+
+Persistent CTAs may help when:
+
+- there are many tiny tile classes;
+- active modules vary strongly;
+- work is heavy-tailed;
+- a device-side queue avoids launch trains.
+
+They may hurt when:
+
+- occupancy is monopolized;
+- other streams need resources;
+- work is regular enough for ordinary kernels;
+- queue traffic exceeds launch savings.
+
+The planner selects them by measured workload.
+
+## Baseplane producer capabilities
+
+Baseplane may register producer implementations such as:
+
+- sequence predicate to bit plane;
+- sequence predicate to event stream;
+- direct sequence predicate plus regulatory accumulation;
+- interval join;
+- compact sequence-derived relation construction.
+
+The planner compares materialized and fused routes.
+
+Baseplane does not need to expose its internal C++ classes to the planner. It exposes stable capabilities and device views.
+
+## Vendor backends
+
+Vendor libraries are first-class candidates.
+
+Use cuSPARSE, cuBLAS, CUB, NCCL, CUTLASS-like paths, or future libraries when:
+
+- semantics match;
+- projection cost is acceptable;
+- descriptor preparation is amortized;
+- padding is safe;
+- complete execution wins.
+
+Do not prefer or reject vendor libraries by ideology.
+
+## BELL safety rule
+
+A BELL backend must either:
+
+1. prove that logical and padded M and K are equal; or
+2. own padded dense input and output buffers, zero fill, pack, crop, and their cost.
+
+It must never pass a logical-sized buffer to an operation whose descriptor legally accesses padded dimensions.
+
+Add adversarial tests for dimensions not divisible by every supported block size.
+
+## Multi-GPU
+
+The core planner may choose:
+
+- cell or batch partitioning;
+- module or feature partitioning;
+- sequence-coordinate partitioning;
+- hybrid partitioning;
+- replication of small shared modules.
+
+A prepared distributed program includes:
+
+- local projections;
+- boundary-edge sections;
+- communication buffers in execution order;
+- NCCL or peer steps;
+- overlap schedule;
+- output ownership.
+
+Do not canonicalize before communication unless the remote consumer requires canonical order.
+
+## Precision
+
+Precision is selected by biological error and performance.
+
+Possible classes include:
+
+- bit and Boolean;
+- 2, 4, or 8-bit categorical or quantized;
+- int8;
+- fp8;
+- fp16;
+- bf16;
+- fp32;
+- fp64 where necessary.
+
+Different tiles or modules may use different precision classes, but the number of runtime classes should remain small enough to batch effectively.
+
+Quantization parameters may be per:
+
+- value plane;
+- module;
+- feature block;
+- tile class.
+
+The planner includes dequantization, scale access, and output error.
+
+## CP-Math migration
+
+### Preserve
+
+- request validation concepts;
+- feature-order identity;
+- structure identity;
+- pointer-free execution plan;
+- backend capability;
+- device fingerprint;
+- referee;
+- physical projection experiments;
+- tests.
+
+### Replace
+
+- `PreparedExecution` as the public reusable execution object;
+- per-prepared-operation device context ownership;
+- single-allocation workspace semantics;
+- structural-only planner selection;
+- SpMM-only operation model;
+- bindings frozen through preparation;
+- incomplete mixed-precision contract.
+
+### Integrate
+
+- existing sparse runtimes;
+- CellPack native consumers;
+- CSR, SELL, Blocked-ELL, quantized, and vendor paths;
+- Baseplane producer capabilities;
+- distributed session ownership;
+- graph and order planning.
+
+## Success criterion
+
+CP-Math is complete when a caller can provide:
+
+- biological structures;
+- changing value planes;
+- an operation or program;
+- a device and policy;
+
+and receive the fastest validated execution strategy without manually deciding:
+
+- format;
+- feature order;
+- row order;
+- backend;
+- padding;
+- fusion;
+- workspace;
+- graph capture;
+- communication.
+
+The planner should make that decision with less overhead than the execution it improves.

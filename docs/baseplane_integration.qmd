@@ -1,0 +1,596 @@
+---
+title: "Baseplane Integration"
+---
+
+## Architectural assumption
+
+Baseplane is a subordinate library within the Cellerator conceptual and computational umbrella.
+
+It is separate because sequence computation has distinct engineering needs:
+
+- compact nucleotide encodings;
+- validity and ambiguity;
+- coordinate chunks and halos;
+- bitwise predicates;
+- reverse complements;
+- motif and grammar scanning;
+- CPU SIMD and CUDA bit kernels;
+- sparse event or segment output.
+
+That separation must not produce a high-friction boundary between sequence and quantitative state.
+
+The intended system treats sequence, regulatory structure, expression level, and cellular behavior as connected domains and value planes.
+
+## Ownership
+
+### Baseplane owns
+
+- packed nucleotide representations;
+- validity-aware sequence views;
+- reverse complement and strand logic;
+- exact and bounded sequence predicates;
+- motif and grammar programs;
+- plane streams;
+- bitmask generation;
+- compact count, event, and segment output;
+- sequence-local CPU, SIMD, and CUDA implementations;
+- primitive-level performance contracts.
+
+### Cellerator owns
+
+- shared domain and order identity;
+- cross-domain relations;
+- sequence-to-regulatory joins;
+- semantic execution geometry;
+- physical projection construction;
+- materialize-versus-fuse planning;
+- quantitative state;
+- regulatory propagation;
+- training and learned weights;
+- graph-wide execution and order;
+- multi-GPU planning;
+- persistence-image semantics.
+
+### CellShard owns
+
+- durable storage and transport of sequence or Cellerator artifacts when required;
+- shard delivery;
+- generation and compatibility;
+- device staging.
+
+## Dependency direction
+
+Create a small shared ABI target:
+
+```text
+Cellerator::abi
+    ↑           ↑
+Baseplane   Cellerator core
+                 ↑
+       sequence integration kernels
+```
+
+`Cellerator::abi` should contain only stable, low-dependency contracts:
+
+- identifiers;
+- POD device views;
+- status and validation codes;
+- stream and device tokens;
+- operand kinds;
+- structure-builder sinks.
+
+Baseplane should not depend on the complete Cellerator planner or runtime.
+
+Cellerator may depend on Baseplane for sequence-capable builds.
+
+## Current Baseplane strengths
+
+The current Baseplane implementation already has the right low-level posture:
+
+- two-bit sequence packing;
+- packed 64-bit words;
+- warp-native 32-base plane words;
+- exact shifted-window scanning;
+- count and compact emit;
+- resident plane streams;
+- base, GC, and CpG masks;
+- caller-owned output;
+- explicit CUDA streams;
+- CPU, SIMD, and CUDA paths;
+- no hidden allocation in hot APIs.
+
+These should be preserved.
+
+## Contracts to fix before freezing integration
+
+## Validity and ambiguity
+
+An unknown or invalid base must never silently become A.
+
+A stable sequence view must carry validity:
+
+```cpp
+struct packed_sequence_view {
+    axis_identity coordinate_axis;
+
+    const std::uint64_t* low_plane;
+    const std::uint64_t* high_plane;
+    const std::uint64_t* validity_plane;
+
+    std::uint64_t global_base_begin;
+    std::uint32_t local_base_count;
+    std::uint32_t word_count;
+
+    std::uint32_t owned_begin;
+    std::uint32_t owned_end;
+
+    std::uint16_t left_halo;
+    std::uint16_t right_halo;
+};
+```
+
+Possible ambiguity policies include:
+
+- invalid and never match;
+- allowed-base masks;
+- caller-certified canonical sequence;
+- explicit IUPAC expansion.
+
+The policy is part of the prepared predicate identity.
+
+## Tail validity
+
+Packed padding bits must not appear as A.
+
+`local_base_count` and final-word validity are part of the view. Every predicate must mask its tail.
+
+## Coordinate contract
+
+Use bounded local coordinates plus a 64-bit base.
+
+```cpp
+struct sequence_domain {
+    domain_id genome;
+    std::uint32_t contig;
+    std::uint32_t chunk;
+
+    std::uint64_t global_base_begin;
+
+    std::uint32_t local_base_count;
+    std::uint32_t owned_begin;
+    std::uint32_t owned_end;
+
+    std::uint16_t halo_left;
+    std::uint16_t halo_right;
+};
+```
+
+Events use 32-bit local positions. The domain supplies global rebasing.
+
+This avoids 64-bit position traffic in every event while supporting large genomes and distributed chunks.
+
+## Prepared sequence programs
+
+Public aggregate motif descriptors are too easy to construct inconsistently.
+
+Use normalized immutable plans:
+
+```cpp
+struct prepared_motif_plan {
+    plan_id identity;
+
+    std::uint64_t low_bits;
+    std::uint64_t high_bits;
+    std::uint64_t validity_mask;
+
+    std::uint64_t reverse_low_bits;
+    std::uint64_t reverse_high_bits;
+
+    std::uint32_t motif_length;
+    std::uint16_t mismatch_limit;
+    std::uint16_t rule_id;
+
+    strand_policy strand;
+    ambiguity_policy ambiguity;
+
+    std::uint16_t required_halo;
+    std::uint16_t flags;
+};
+```
+
+The preparation step validates:
+
+- motif length;
+- active fields;
+- mismatch bounds;
+- reverse complement;
+- palindrome deduplication;
+- strand semantics;
+- ambiguity;
+- required halo;
+- compatible output modes.
+
+Count, mask, and emit consume the same plan.
+
+## Output kinds
+
+Baseplane should expose the representation natural to the result.
+
+### Count
+
+Use when only the total is needed.
+
+### Bit plane
+
+Use for dense Boolean predicates:
+
+- base identity;
+- GC;
+- CpG starts;
+- common motif class;
+- accessibility gate over sequence coordinates.
+
+One bit represents one coordinate or one logical window.
+
+### Event stream
+
+Use for sparse occurrences.
+
+```cpp
+struct sequence_event_stream_view {
+    sequence_domain domain;
+    std::uint64_t event_count;
+
+    const std::uint32_t* local_position;
+    const std::uint16_t* rule_id;
+    const std::uint8_t* score_or_mismatches;
+    const std::uint8_t* strand;
+
+    event_order order;
+};
+```
+
+Structure-of-arrays permits Cellerator consumers to read only required fields.
+
+### Segment stream
+
+Use for runs or regions.
+
+```cpp
+struct sequence_segment_stream_view {
+    sequence_domain domain;
+    std::uint64_t segment_count;
+
+    const std::uint32_t* begin;
+    const std::uint32_t* end;
+    const std::uint32_t* class_id;
+    const std::uint32_t* payload_offset;
+};
+```
+
+### Direct reduction
+
+When the consumer needs only counts or weighted sums per interval, Baseplane should support a segmented output sink rather than materializing every event.
+
+## Event emission regimes
+
+One global atomic append per event is not universal.
+
+### Sparse unordered
+
+Use direct or warp-aggregated atomic reservation.
+
+### Moderate density
+
+Use block-local compaction and one block reservation.
+
+### Dense or stable order
+
+Use:
+
+```text
+count per block
+    → prefix scan
+    → deterministic emit
+```
+
+Every result reports:
+
+- total matches;
+- records stored;
+- records dropped;
+- output capacity;
+- ordering mode.
+
+## Common operand view
+
+Cellerator should consume Baseplane results through the shared operand vocabulary.
+
+```cpp
+biological_operand_view operand;
+
+operand.kind = operand_kind::bit_plane;
+// or event_stream, segment_stream, sparse_relation
+```
+
+No conversion to a dense byte tensor is required.
+
+## Relation builder
+
+Baseplane may write sequence-derived relationships into a neutral Cellerator builder.
+
+```cpp
+struct relation_builder_sink {
+    domain_id source;
+    domain_id destination;
+
+    device_span<std::uint32_t> source_ids;
+    device_span<std::uint32_t> destination_ids;
+    device_span<std::uint16_t> rule_ids;
+    device_span<std::uint8_t> attributes;
+
+    device_counter count;
+};
+```
+
+Possible outputs include:
+
+- motif occurrence to regulatory element;
+- sequence interval to chromatin domain;
+- motif grammar to enhancer;
+- variant to affected motif;
+- sequence feature to gene promoter.
+
+CellPack then compiles the resulting relation.
+
+Baseplane should not know the bytes of a CP-BP physical projection.
+
+## Interval joins
+
+A sequence event must be mapped into regulatory domains without a host table round trip.
+
+For sorted events and intervals, use:
+
+- merge path;
+- two-level genomic bins;
+- bounded interval indices;
+- cooperative search.
+
+For unordered event emission, the planner may choose:
+
+- stable Baseplane emission;
+- device bucket by genomic bin;
+- a consumer that tolerates unordered events.
+
+The decision depends on reuse and event density.
+
+## Materialize or fuse
+
+The planner compares two routes.
+
+### Materialized
+
+\[
+C_{\text{materialized}}
+=
+C_{\text{predicate}}
++
+C_{\text{emit}}
++
+C_{\text{relation build}}
++
+R C_{\text{consume}}
+\]
+
+### Fused
+
+\[
+C_{\text{fused}}
+=
+R
+\left(
+C_{\text{predicate in consumer}}
++
+C_{\text{consumer}}
+\right)
+\]
+
+Materialization usually wins when:
+
+- sequence is static;
+- results are reused across many cells or time points;
+- several downstream operations consume them;
+- the materialized relation is compact;
+- predicate evaluation is expensive.
+
+Fusion usually wins when:
+
+- the result is used once;
+- only a small requested subset matters;
+- event materialization would be large;
+- the predicate can be evaluated while relevant sequence words are already resident;
+- downstream accumulation can occur immediately.
+
+## Fusion mechanisms
+
+Use three levels.
+
+### Precompiled fused primitives
+
+For common paths:
+
+- motif mask plus accessibility gate;
+- motif event plus interval join;
+- motif event plus regulatory accumulation;
+- variant predicate plus local target update.
+
+### Bounded sequence-program image
+
+A small immutable device program may encode a limited set of prepared predicates and outputs.
+
+The interpreter must remain bounded and specialized. It should not become a general virtual machine in every hot kernel.
+
+### Optional JIT specialization
+
+Highly reused unusual sequence programs may justify JIT or device-link-time specialization.
+
+JIT is an optimization layer, not the stable persistence ABI.
+
+## Example fused kernel
+
+```text
+warp loads packed sequence words
+    ↓
+computes motif match masks
+    ↓
+applies validity, strand, and optional chromatin mask
+    ↓
+enumerates active hits with ballot and bit scans
+    ↓
+maps positions to regulatory elements
+    ↓
+groups equal target identities with match operations
+    ↓
+multiplies by TF or learned state
+    ↓
+accumulates directly into element or gene state
+```
+
+Useful GPU mechanisms include:
+
+- warp ballots for match masks;
+- `__ffs` or bit iteration;
+- `__match_any_sync` for equal targets;
+- warp-aggregated atomics;
+- shared genomic-bin indices;
+- segmented reductions;
+- compact device queues.
+
+The biological regularity is the reuse of sequence predicates and target relations.
+
+## Static sequence as a structural program
+
+For repeated cellular computation, compile sequence once.
+
+```text
+immutable DNA
+    ↓ Baseplane
+motif and grammar structure
+    ↓ Cellerator relation builder
+motif-to-element or motif-to-gene relation
+    ↓ CellPack
+semantic geometry and projections
+    ↓ repeated Cellerator execution
+dynamic accessibility, TF activity, expression, and learned values
+```
+
+This is the preferred route for fixed genomes.
+
+## Sequence-conditioned numerical operations
+
+Baseplane outputs can act directly as:
+
+- masks over Cellerator tiles;
+- gates over module execution;
+- sparse relation structure;
+- event sources;
+- segment membership;
+- quantization or precision selectors;
+- conditional work-queue producers.
+
+A bit plane and a floating-point value plane may participate in one fused kernel without converting the bit plane to floats.
+
+## Sequence-domain identity
+
+A sequence operand must identify:
+
+- genome or assembly;
+- contig;
+- coordinate convention;
+- chunk;
+- global base;
+- owned range;
+- halo;
+- order;
+- validity policy;
+- sequence generation when mutable.
+
+A regulatory relation must bind the exact source sequence domain and destination regulatory domain.
+
+Same coordinate length is not enough.
+
+## Multi-GPU sequence partitioning
+
+Partition sequence by contig or bounded coordinate chunk.
+
+The compiler records:
+
+- owned interval;
+- left and right halo;
+- cross-boundary motif requirements;
+- event ownership;
+- target relation partition;
+- replication or communication.
+
+A hit belongs to exactly one owner even when its motif window touches a halo.
+
+The static relation may later be repartitioned by regulatory module or target gene for repeated state execution.
+
+## Persistence
+
+Baseplane persistence should remain representation-specific and compact.
+
+Cellerator execution images may reference:
+
+- sequence domain identities;
+- prepared sequence-program identities;
+- persisted mask or event sections;
+- sequence-derived relation sections.
+
+CellShard may store and deliver these sections as opaque payloads.
+
+Do not require Baseplane to adopt CPK1 or a future Cellerator physical tile format.
+
+## Planner capabilities
+
+Baseplane exposes capabilities such as:
+
+```text
+predicate → count
+predicate → bit plane
+predicate → event stream
+predicate → segment stream
+predicate + interval join → relation
+predicate + relation + value plane → numerical accumulation
+```
+
+Each capability reports:
+
+- supported sequence representation;
+- validity policy;
+- output order;
+- workspace;
+- deterministic behavior;
+- expected output-density regime;
+- architecture support;
+- materialization bytes;
+- persistent preparation.
+
+Cellerator's planner chooses among them with downstream cost included.
+
+## Integration acceptance criteria
+
+The Baseplane-to-Cellerator boundary is ready when:
+
+- invalid and tail bases cannot create false matches;
+- coordinate and halo identity is explicit;
+- sequence plans are immutable and normalized;
+- masks, events, segments, and relations use shared domain identity;
+- at least one materialized sequence-to-regulatory path remains device-resident;
+- at least one fused path avoids an intermediate;
+- the planner can compare those paths;
+- static sequence structure can be reused across dynamic state evaluations;
+- no dense one-hot or byte-per-base representation appears in the normal hot path;
+- sequence and state operations can share a prepared Cellerator program.
+
+The result should feel like one execution system with two specialized vocabularies, not two libraries exchanging exported tables.

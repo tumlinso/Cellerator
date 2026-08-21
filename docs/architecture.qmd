@@ -2,65 +2,380 @@
 title: "Architecture"
 ---
 
-## System Split
+## Verdict
 
-The first principle is that Cellerator is a compute/ML library, not a storage
-container or high-level workflow shell. It makes CellShard-backed single-cell
-omics matrices GPU-accessible by finding denseifiable biological structure in
-genes, chromatin peaks, feature modules, pathways, and graph neighborhoods, then
-routing those structures through modified ELLPACK-style sparse layouts such as
-Blocked-ELL, Sliced-ELL, and quantized Blocked-ELL.
+Cellerator should be designed as a compiler and runtime for biological sparse programs.
 
-The repo is organized around an explicit boundary:
+It should not be centered on:
 
-- `CellShard` owns canonical sparse storage, `.csh5` metadata, shard and pack generation, and runtime staging.
-- `CellShard` also owns source ingest when built with `CELLSHARD_BUILD_INGEST=ON`.
-- `CellShard` owns data handling: storage, ingest, layout publication, retrieval, compaction/finalization, and runtime staging.
-- `Cellerator` owns preprocessing policy, preprocessing runtime API, native preprocessing workbench, math over CellShard matrices, reusable sparse compute, trajectory assembly, model code, quantized kernels, and Torch interop.
+- a matrix class;
+- Blocked-ELL;
+- a file format;
+- SpMM;
+- Torch;
+- CellShard;
+- one GPU generation.
 
-The canonical product boundary is maintained in `../scope.md`, and current drift or temporary compatibility surfaces are tracked in `../out_of_scope_inventory.md`. This is intentionally not a high-level workflow framework, an AnnData replacement, or a Torch replacement. The codebase keeps layouts, residency boundaries, and launch structure visible enough to optimize directly on V100-class hardware.
+Matrices and sparse formats remain important mathematical and physical views. They are not the universal semantic object.
 
-## Main Pipeline Surfaces
+## Architectural layers
 
-### `include/Cellerator/`
+```{mermaid}
+flowchart TB
+    A[Biological domains and typed relations]
+    B[Immutable structures and mutable value planes]
+    C[CellPack / CP-BP semantic geometry compiler]
+    D[Projection catalog]
+    E[Core planner and autotuner]
+    F[Prepared operations and execution programs]
+    G[Native, vendor, sequence-fused, and distributed kernels]
+    H[Expression, regulatory, latent, and downstream state]
 
-Owns the canonical public include surface for in-repo callers. Tests and benches
-should include `Cellerator/...` instead of
-reaching into `src/` directly.
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+```
 
-### `src/compute/`
+### Biological ABI
 
-Owns reusable low-level computation inside Cellerator: neighbor search, sparse operator building blocks, preprocessing math over CellShard matrices, and other hot-path kernels. Biology-facing scRNA preprocessing calls this layer through `Cellerator::compute_preprocess`.
+The shared ABI defines:
 
-### `src/preprocess/`
+- domains;
+- axis identity;
+- order identity;
+- geometry identity;
+- partition identity;
+- relation identity;
+- structure epoch;
+- value generation;
+- dense, bit-plane, event, segment, and sparse-relation operand views;
+- stream and device binding contracts.
 
-Owns the biology-facing preprocessing API and workbench. Its native contract uses `cellerator::preprocess` C++ identifiers and the short caller alias `cpre`, treats Blocked-ELL and Sliced-ELL as first-class preprocessing layouts, keeps compressed / CSR as fallback, and defines QC feature groups, raw-count policy, preprocessing state, and workflow orchestration.
+This ABI must remain small enough for Baseplane and adapters to consume without importing the full core runtime.
 
-### `src/trajectory/`
+### Structure and value layer
 
-Owns trajectory-specific scoring, pruning, and assembly. Reusable graph or neighbor primitives stay lower in `src/compute/`.
+A logical relation separates topology from numbers.
 
-### `src/models/`
+```cpp
+struct relation_structure {
+    structure_id identity;
+    std::uint64_t structure_epoch;
 
-Owns header-first libtorch workflows. Model wrappers and training orchestration live here, while reusable compute stays in `src/compute/`.
+    domain_id source_domain;
+    domain_id destination_domain;
 
-### `include/Cellerator/quantized/`
+    order_id source_order;
+    order_id destination_order;
 
-Owns the Volta-oriented quantized format metadata, access, packing, and dispatch helpers. Sparse matmul and model-facing quantized math stay in `src/compute/`.
+    projection_catalog projections;
+};
 
-### `src/torch/`
+struct value_plane {
+    const relation_structure* structure;
 
-Owns the explicit conversion boundary from Cellerator and `CellShard` structures into Torch tensors. It is intentionally expensive and should not be used as a hot-path runtime layer.
+    void* values;
+    dtype storage_type;
+    dtype logical_type;
 
-## Sparse And Runtime Posture
+    quantization_descriptor quantization;
+    std::uint64_t value_generation;
+};
+```
 
-- Blocked-ELL is the preferred sparse persistence and execution layout.
-- CSR and other compressed forms remain available only where a subsystem still needs them.
-- The repository is tuned for Volta `sm_70` assumptions, not for broad accelerator portability by default.
-- Performance-sensitive code is expected to keep data-layout and transfer costs explicit.
+Examples:
 
-## Documentation Boundary
+- fixed enhancer-to-gene topology with changing accessibility or regulatory weights;
+- fixed GRN topology shared across cells;
+- fixed sparse neural topology with changing learned values;
+- fixed sequence-derived motif relation reused across state evaluations;
+- one structure with fp16, bf16, int8, and fp32 value planes.
 
-The Quarto book in `docs/` is the active explanation surface for the pipeline. Local experiment or manuscript leftovers may still exist under `docs/`, but they are background material rather than the primary documentation source.
+### CellPack and CP-BP compiler
 
-`docs/pipeline/` remains local-only operational glue unless a separate implementation pass promotes a piece into the correct runtime owner. It should not become a hidden product dependency.
+The compiler observes biological regularity and produces semantic execution geometry.
+
+It owns:
+
+- sampling;
+- support extraction;
+- candidate generation;
+- exact or calibrated cost;
+- row and feature ordering;
+- module and partition construction;
+- geometry validation;
+- scheduling statistics;
+- execution-image construction.
+
+It does not own canonical storage, network transport, or final kernel selection.
+
+### Projection catalog
+
+A semantic structure may have several physical projections:
+
+```text
+row-masked warp tiles
+feature-major masked tiles
+CTA macro-tiles
+dense MMA fragments
+CSR
+SELL-C-sigma
+BSR
+Blocked-ELL
+transpose or backward views
+quantized value layouts
+```
+
+A projection is selected for an operation, device, precision, and reuse regime.
+
+### Core planner and autotuner
+
+The core planner:
+
+1. validates semantics and identities;
+2. enumerates legal projections and kernels;
+3. rejects incompatible candidates;
+4. estimates complete cost;
+5. benchmarks a bounded shortlist where necessary;
+6. caches measured results;
+7. chooses graph-wide orders and conversions;
+8. produces reusable prepared operations or programs.
+
+### Prepared execution
+
+A prepared operation binds long-lived state:
+
+- structure;
+- projection;
+- kernel;
+- backend descriptors;
+- persistent preprocessing;
+- workspace requirements;
+- graph-capture metadata.
+
+A launch binding supplies short-lived state:
+
+- current value plane;
+- dense input;
+- output;
+- bias;
+- scalar coefficients;
+- stream;
+- transient workspace.
+
+Changing a pointer or stream must not require structure planning again.
+
+### Execution program
+
+Several prepared operations may be composed into a graph with:
+
+- execution-order propagation;
+- fused producer-consumer boundaries;
+- explicit order transformations;
+- communication steps;
+- graph replay;
+- persistent work queues.
+
+The graph optimizer chooses a globally useful order rather than the fastest isolated kernel when local selection would create costly permutations.
+
+## Canonical order
+
+Canonical order is important for:
+
+- persistence;
+- interoperability;
+- user-facing output;
+- exact identity;
+- debugging;
+- reference validation.
+
+It is not the normal internal order.
+
+An internal operation should return canonical order only when:
+
+- an external consumer requires it;
+- the next operation is demonstrably faster after canonicalization;
+- canonical order is itself the selected execution order;
+- correctness or communication requires it.
+
+Every other canonicalization is a candidate performance defect.
+
+## Semantic geometry
+
+Semantic geometry is relatively stable organization:
+
+- which entities are grouped;
+- how entities are ordered;
+- how groups nest;
+- which partitions own them;
+- which cross-group edges exist;
+- how canonical identity is recovered.
+
+It may be workload- and deployment-aware. It is not required to be device-neutral.
+
+Two byte layouts with the same order and groups are physical projections of one geometry. Two different feature permutations or GPU partitions are different geometries.
+
+## Physical projections
+
+A physical projection is a concrete ingestion contract for a kernel.
+
+It specifies:
+
+- memory sections;
+- index widths;
+- mask encoding;
+- value order;
+- alignment;
+- tile shape;
+- orientation;
+- padding;
+- local scheduling summaries;
+- forward or transpose direction;
+- precision and quantization.
+
+Physical projections are disposable and replaceable. Semantic identities survive their replacement.
+
+## Hierarchy
+
+Biological hierarchy should be represented as overlapping relations and nested execution partitions, not as duplicated value trees.
+
+Possible views include:
+
+```text
+cell
+  → regulatory program
+      → module
+          → regulatory element group
+              → gene
+                  → transcript
+```
+
+Real biology is not a strict tree. Modules, pathways, enhancers, and genes overlap. Several hierarchy indices may refer to one underlying value plane.
+
+Hierarchy remains in the runtime image only when it enables:
+
+- module skipping;
+- local reductions;
+- cache reuse;
+- shared-memory staging;
+- kernel specialization;
+- quantization;
+- prefetching;
+- communication partitioning;
+- level-of-detail execution.
+
+Otherwise it stays compiler or interpretation metadata.
+
+## Execution image
+
+The successful CPK1 principle should evolve into a sectioned execution image.
+
+```text
+ExecutionImageHeader
+Domain table
+Order and partition table
+Relation and structure table
+Projection directory
+Optional physical projection sections
+Forward and transpose value maps
+Hierarchy and boundary-edge indices
+Compact scheduling summaries
+```
+
+The image uses:
+
+- explicit versions;
+- relative offsets;
+- lengths and capacities;
+- stable identities;
+- alignment;
+- independent section validation.
+
+CellShard may wrap and transport the image as opaque bytes. Cellerator owns its semantics and rebinding.
+
+## Core ownership
+
+### Cellerator
+
+Owns:
+
+- biological execution semantics;
+- shared ABI;
+- structure and values;
+- geometry and projections;
+- planner and kernels;
+- numerical state;
+- graph and order optimization.
+
+### Baseplane
+
+Owns sequence-specialized representations and primitives within the Cellerator umbrella.
+
+### CellShard
+
+Owns persistence, delivery, staging, generation, and distributed data movement.
+
+### CelleraTorch
+
+Owns framework adaptation.
+
+## Architecture-specific execution
+
+Stable contracts must support several NVIDIA generations.
+
+Portable across generations:
+
+- biological identities;
+- relation semantics;
+- structure and value lifetime;
+- semantic geometry;
+- projection kinds;
+- planner keys;
+- execution-image sections.
+
+Generation-specific:
+
+- tile dimensions;
+- shared-memory staging;
+- asynchronous copies;
+- MMA shape;
+- warp specialization;
+- persistent CTA policy;
+- cache operators;
+- launch parameters.
+
+Runtime dispatch selects the implementation.
+
+## Design constraints
+
+A new core design is acceptable only when:
+
+- identities remain exact;
+- structure and values remain separable;
+- conversion cost is visible;
+- multiple projections remain possible;
+- the hot path is allocation-free;
+- graph capture is not accidentally prohibited;
+- training and transpose needs are considered;
+- Baseplane can participate without a foreign tensor boundary;
+- CellShard remains storage and transport only;
+- performance can be falsified by a stronger baseline.
+
+## Non-goals
+
+The architecture does not require:
+
+- one universal kernel;
+- one universal format;
+- one universal semantic geometry;
+- a large dynamic C++ object hierarchy;
+- a general compiler frontend before the core ABI works;
+- biological labels in hot kernels;
+- Tensor Cores in every path;
+- custom kernels when vendor libraries are faster.
+
+A somewhat untidy hybrid is preferable to a beautiful system that moves more bytes.
