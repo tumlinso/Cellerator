@@ -1,4 +1,6 @@
-/* CP-MATH-07: cuSPARSE Blocked-ELL on sm_70. Descriptors, scratch slices, and
+/* Experimental CP-MATH-07 cuSPARSE Blocked-ELL evidence on sm_70. Its
+ * DeviceMathContext and PreparedExecution are implementation details, not a
+ * stable external or Baseplane ABI. Descriptors, scratch slices, and
  * CP-MATH-04 value-order normalization are prepared once. BELL8 uses 16-row
  * vendor descriptors; column-major chunks stage tightly pitched outputs.
  * Run submits vendor SpMM, device copies, and the generic epilogue only.
@@ -23,7 +25,9 @@ using cusparse_bell_detail::destroy_state;
 using cusparse_bell_detail::fail;
 using cusparse_bell_detail::normalized_value_bytes;
 using cusparse_bell_detail::prepared_state;
-using cusparse_bell_detail::same_candidate;
+using cusparse_bell_detail::same_bindings;
+using cusparse_bell_detail::same_materialization;
+using cusparse_bell_detail::same_operation_request;
 using cusparse_bell_detail::scalar_f32;
 
 backend_status CusparseBellBackend::prepare(
@@ -39,7 +43,7 @@ backend_status CusparseBellBackend::prepare(
 
     const auto *bound = static_cast<const physical_bell_view *>(
         prepared->request.bindings.sparse_matrix);
-    if (bound == nullptr || !same_candidate(view_, *bound)
+    if (bound == nullptr || !same_materialization(view_, *bound)
         || prepared->request.bindings.sparse_matrix_identity
             != view_.candidate_identity
         || prepared->request.bindings.dense_rhs == nullptr
@@ -56,6 +60,8 @@ backend_status CusparseBellBackend::prepare(
             "BELL prepared descriptor state allocation failed");
     }
     prepared->backend_state = state;
+    state->operation = prepared->request.operation;
+    state->bindings = prepared->request.bindings;
 
     const u32 chunk_rows = bound->block_size == 8u ? 16u
         : bound->padded_row_count;
@@ -303,6 +309,32 @@ backend_status CusparseBellBackend::run(PreparedExecution *prepared) noexcept {
             "BELL run requires matching prepared descriptor state");
     }
     auto *state = static_cast<prepared_state *>(prepared->backend_state);
+    const request_validation_result validation =
+        validate_math_request(prepared->request);
+    if (!validation) {
+        return fail(backend_status_code::invalid_argument,
+            "prepared BELL request metadata or bindings are no longer valid",
+            capability_code::invalid_request,
+            validation.code);
+    }
+    if (!same_operation_request(
+            state->operation, prepared->request.operation)
+        || !same_bindings(state->bindings, prepared->request.bindings)) {
+        return fail(backend_status_code::backend_mismatch,
+            "prepared BELL request metadata or bindings changed",
+            capability_code::supported,
+            request_validation_code::invalid_identity);
+    }
+    const auto *bound = static_cast<const physical_bell_view *>(
+        prepared->request.bindings.sparse_matrix);
+    if (bound == nullptr || !same_materialization(view_, *bound)
+        || prepared->request.bindings.sparse_matrix_identity
+            != view_.candidate_identity) {
+        return fail(backend_status_code::backend_mismatch,
+            "BELL materialization changed after prepare",
+            capability_code::supported,
+            request_validation_code::invalid_identity);
+    }
     for (std::size_t index = 0u; index < state->chunk_count; ++index) {
         const cusparseStatus_t status = cusparseSpMM(
             state->handle,

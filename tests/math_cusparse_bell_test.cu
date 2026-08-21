@@ -5,7 +5,9 @@
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
 
+#include <array>
 #include <cmath>
+#include <cstring>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -35,14 +37,139 @@ void cuda_require(cudaError_t error, const char *message) {
     }
 }
 
-cm::feature_order_identity packed_order() {
+cm::feature_order_identity packed_order(
+    cm::u32 feature_count = columns,
+    cm::u64 packing_geometry = geometry_identity) {
     cm::feature_order_identity result;
     result.kind = cm::feature_order_kind::packed;
-    result.feature_count = columns;
+    result.feature_count = feature_count;
     result.feature_axis_identity_version = 1u;
     result.feature_axis_identity = 0x4645415455524537ull;
-    result.packing_geometry_identity = geometry_identity;
+    result.packing_geometry_identity = packing_geometry;
     return result;
+}
+
+void test_padded_candidate_rejection() {
+    struct padded_case {
+        cm::u32 block_size;
+        cm::u32 logical_rows;
+        cm::u32 logical_features;
+        cm::u32 padded_rows;
+        cm::u32 padded_features;
+    };
+    constexpr std::array<padded_case, 3u> cases{{
+        {8u, 9u, 13u, 16u, 16u},
+        {16u, 17u, 31u, 32u, 32u},
+        {32u, 33u, 65u, 64u, 96u}
+    }};
+    constexpr cm::u32 guard_elements = 16u;
+    constexpr cm::u32 test_columns = 3u;
+    const cm::DeviceCapabilities device = cm::query_device_capabilities(-1);
+
+    for (const padded_case &test : cases) {
+        const std::size_t dense_elements = guard_elements
+            + static_cast<std::size_t>(test.logical_features) * test_columns
+            + guard_elements;
+        const std::size_t output_elements = guard_elements
+            + static_cast<std::size_t>(test.logical_rows) * test_columns
+            + guard_elements;
+        const __half dense_canary = __float2half(-37.0f);
+        const float output_canary = -73.0f;
+        std::vector<__half> host_dense(dense_elements, dense_canary);
+        std::vector<float> host_output(output_elements, output_canary);
+        __half *device_dense_base = nullptr;
+        float *device_output_base = nullptr;
+        cuda_require(cudaMalloc(&device_dense_base,
+            dense_elements * sizeof(*device_dense_base)),
+            "allocate padded-rejection dense guards");
+        cuda_require(cudaMalloc(&device_output_base,
+            output_elements * sizeof(*device_output_base)),
+            "allocate padded-rejection output guards");
+        cuda_require(cudaMemcpy(device_dense_base, host_dense.data(),
+            dense_elements * sizeof(*device_dense_base), cudaMemcpyHostToDevice),
+            "initialize padded-rejection dense guards");
+        cuda_require(cudaMemcpy(device_output_base, host_output.data(),
+            output_elements * sizeof(*device_output_base), cudaMemcpyHostToDevice),
+            "initialize padded-rejection output guards");
+
+        cm::physical_bell_view view;
+        view.block_size = test.block_size;
+        view.row_count = test.logical_rows;
+        view.feature_count = test.logical_features;
+        view.padded_row_count = test.padded_rows;
+        view.padded_feature_count = test.padded_features;
+        view.ell_columns = test.block_size;
+        view.value_size_bytes = sizeof(__half);
+        view.feature_block_geometry_identity = geometry_identity + test.block_size;
+        view.ordering_identity = 0x5041444445444f52ull + test.block_size;
+        view.row_domain_identity = 0x504144444544524full + test.block_size;
+        view.candidate_identity = 0x5041444445440000ull + test.block_size;
+        view.column_indices = reinterpret_cast<const std::int32_t *>(
+            device_output_base);
+        view.values = device_dense_base;
+
+        cm::math_request request;
+        request.operation.m = test.logical_rows;
+        request.operation.k = test.logical_features;
+        request.operation.n = test_columns;
+        request.operation.sparse_nnz = 1u;
+        request.operation.sparse_structure.identity_version = 1u;
+        request.operation.sparse_structure.value = view.candidate_identity;
+        request.operation.dense_rhs_leading_dimension = test_columns;
+        request.operation.output_leading_dimension = test_columns;
+        request.operation.sparse_storage_type_code = cr::value_f16;
+        request.operation.dense_storage_type_code = cr::value_f16;
+        request.operation.output_storage_type_code = cr::value_f32;
+        request.operation.compute_type_code = cr::value_f32;
+        request.operation.accumulation_type_code = cr::value_f32;
+        request.operation.alpha = cm::make_scalar(1.0f);
+        request.operation.beta = cm::make_scalar(0.0f);
+        request.operation.sparse_feature_order = packed_order(
+            test.logical_features, view.feature_block_geometry_identity);
+        request.operation.dense_feature_order =
+            request.operation.sparse_feature_order;
+        request.bindings.sparse_matrix = &view;
+        request.bindings.dense_rhs = device_dense_base + guard_elements;
+        request.bindings.output = device_output_base + guard_elements;
+        request.bindings.sparse_matrix_identity = view.candidate_identity;
+        request.bindings.dense_rhs_identity = 0x50414444454e5345ull;
+        request.bindings.output_identity = 0x5041444f55545055ull;
+
+        cm::CusparseBellBackend backend(view);
+        const cm::backend_capability capability =
+            backend.query(request.operation, device);
+        require(capability.code == cm::capability_code::unsupported_layout,
+            "padded BELL capability was not rejected");
+        cm::PreparedExecution prepared;
+        const cm::backend_status status =
+            cm::prepare_execution(&prepared, &backend, request);
+        require(status.code == cm::backend_status_code::capability_rejected
+                && status.capability == cm::capability_code::unsupported_layout
+                && !prepared.prepared && prepared.backend_state == nullptr
+                && !prepared.device.initialized,
+            "padded BELL reached preparation state");
+
+        std::vector<__half> observed_dense(dense_elements);
+        std::vector<float> observed_output(output_elements);
+        cuda_require(cudaMemcpy(observed_dense.data(), device_dense_base,
+            dense_elements * sizeof(*device_dense_base), cudaMemcpyDeviceToHost),
+            "read padded-rejection dense guards");
+        cuda_require(cudaMemcpy(observed_output.data(), device_output_base,
+            output_elements * sizeof(*device_output_base), cudaMemcpyDeviceToHost),
+            "read padded-rejection output guards");
+        for (const __half value : observed_dense) {
+            require(__half2float(value) == __half2float(dense_canary),
+                "padded BELL rejection changed dense guard storage");
+        }
+        for (const float value : observed_output) {
+            require(value == output_canary,
+                "padded BELL rejection changed output guard storage");
+        }
+        cuda_require(cudaFree(device_output_base),
+            "free padded-rejection output guards");
+        cuda_require(cudaFree(device_dense_base),
+            "free padded-rejection dense guards");
+    }
 }
 
 cm::math_request request_for(
@@ -206,6 +333,44 @@ cm::u64 test_candidate(
     require(mismatch_count == 0u,
         "BELL result disagrees with f32 accumulation reference");
 
+    const cm::u64 completed_runs = prepared.run_count;
+    const cm::u64 original_structure =
+        prepared.request.operation.sparse_structure.value;
+    prepared.request.operation.sparse_structure.value += 1u;
+    cm::backend_status stale = cm::run_prepared_execution(&prepared);
+    require(stale.code == cm::backend_status_code::backend_mismatch
+            && prepared.run_count == completed_runs,
+        "stale sparse structure identity reached BELL launch");
+    prepared.request.operation.sparse_structure.value = original_structure;
+
+    const cm::u64 original_axis =
+        prepared.request.operation.sparse_feature_order.feature_axis_identity;
+    prepared.request.operation.sparse_feature_order.feature_axis_identity += 1u;
+    prepared.request.operation.dense_feature_order.feature_axis_identity += 1u;
+    stale = cm::run_prepared_execution(&prepared);
+    require(stale.code == cm::backend_status_code::backend_mismatch
+            && prepared.run_count == completed_runs,
+        "stale execution order reached BELL launch");
+    prepared.request.operation.sparse_feature_order.feature_axis_identity =
+        original_axis;
+    prepared.request.operation.dense_feature_order.feature_axis_identity =
+        original_axis;
+
+    const void *const original_dense = prepared.request.bindings.dense_rhs;
+    prepared.request.bindings.dense_rhs = device_values;
+    stale = cm::run_prepared_execution(&prepared);
+    require(stale.code == cm::backend_status_code::backend_mismatch
+            && prepared.run_count == completed_runs,
+        "changed dense binding reached BELL launch");
+    prepared.request.bindings.dense_rhs = original_dense;
+
+    view.feature_block_geometry_identity += 1u;
+    stale = cm::run_prepared_execution(&prepared);
+    require(stale.code == cm::backend_status_code::backend_mismatch
+            && prepared.run_count == completed_runs,
+        "mutated BELL geometry reached vendor launch");
+    view.feature_block_geometry_identity -= 1u;
+
     request.operation.determinism = cm::determinism_requirement::deterministic;
     const cm::backend_capability deterministic =
         backend.query(request.operation, device);
@@ -222,6 +387,21 @@ cm::u64 test_candidate(
     const cm::backend_capability unfair = backend.query(request.operation, device);
     require(unfair.code == cm::capability_code::unsupported_type,
         "unfair BELL dtype comparison was not rejected structurally");
+    request.operation.dense_storage_type_code = cr::value_f16;
+    request.operation.sparse_storage_type_code = cr::value_bf16;
+    require(backend.query(request.operation, device).code
+            == cm::capability_code::unsupported_type,
+        "unsupported BELL sparse storage type was advertised");
+    request.operation.sparse_storage_type_code = cr::value_f16;
+    request.operation.output_storage_type_code = cr::value_f16;
+    require(backend.query(request.operation, device).code
+            == cm::capability_code::unsupported_type,
+        "unsupported BELL output storage type was advertised");
+    request.operation.output_storage_type_code = cr::value_f32;
+    request.operation.accumulation_type_code = cr::value_f16;
+    require(backend.query(request.operation, device).code
+            == cm::capability_code::unsupported_type,
+        "unsupported BELL accumulation type was advertised");
 
     const cm::u64 identity = backend.identity();
     cm::reset_prepared_execution(&prepared);
@@ -234,7 +414,12 @@ cm::u64 test_candidate(
 
 } // namespace
 
-int main() {
+int main(int argc, char **argv) {
+    test_padded_candidate_rejection();
+    if (argc == 2 && std::strcmp(argv[1], "--padded-rejection-only") == 0) {
+        std::cout << "cpMathCusparseBellTest padded rejection passed\n";
+        return 0;
+    }
     const cm::u64 bell8 = test_candidate(8u);
     const cm::u64 bell16 = test_candidate(16u);
     const cm::u64 bell32 = test_candidate(32u);

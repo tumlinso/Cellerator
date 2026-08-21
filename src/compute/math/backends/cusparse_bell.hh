@@ -30,6 +30,8 @@ struct prepared_state {
         u32 rows = 0u;
     } *chunks = nullptr;
     std::size_t chunk_count = 0u;
+    spmm_request operation{};
+    spmm_bindings bindings{};
     float alpha = 0.0f;
     float beta = 0.0f;
 };
@@ -69,6 +71,77 @@ inline bool same_candidate(
         && lhs.ordering_identity == rhs.ordering_identity
         && lhs.row_domain_identity == rhs.row_domain_identity
         && lhs.candidate_identity == rhs.candidate_identity;
+}
+
+inline bool same_materialization(
+    const physical_bell_view &lhs,
+    const physical_bell_view &rhs) noexcept {
+    return same_candidate(lhs, rhs)
+        && lhs.padded_feature_block_offsets
+            == rhs.padded_feature_block_offsets
+        && lhs.column_indices == rhs.column_indices
+        && lhs.values == rhs.values;
+}
+
+inline bool same_scalar_value(
+    const scalar_value &lhs,
+    const scalar_value &rhs) noexcept {
+    return lhs.type_code == rhs.type_code && lhs.reserved == rhs.reserved
+        && lhs.bits == rhs.bits;
+}
+
+inline bool same_operation_request(
+    const spmm_request &lhs,
+    const spmm_request &rhs) noexcept {
+    return lhs.schema_version == rhs.schema_version
+        && lhs.operation == rhs.operation
+        && lhs.m == rhs.m && lhs.k == rhs.k && lhs.n == rhs.n
+        && lhs.sparse_nnz == rhs.sparse_nnz
+        && lhs.sparse_structure.schema_version
+            == rhs.sparse_structure.schema_version
+        && lhs.sparse_structure.identity_version
+            == rhs.sparse_structure.identity_version
+        && lhs.sparse_structure.value == rhs.sparse_structure.value
+        && lhs.transpose_sparse == rhs.transpose_sparse
+        && lhs.transpose_dense == rhs.transpose_dense
+        && lhs.dense_rhs_layout == rhs.dense_rhs_layout
+        && lhs.output_layout == rhs.output_layout
+        && lhs.dense_rhs_leading_dimension
+            == rhs.dense_rhs_leading_dimension
+        && lhs.output_leading_dimension == rhs.output_leading_dimension
+        && lhs.sparse_storage_type_code == rhs.sparse_storage_type_code
+        && lhs.dense_storage_type_code == rhs.dense_storage_type_code
+        && lhs.output_storage_type_code == rhs.output_storage_type_code
+        && lhs.compute_type_code == rhs.compute_type_code
+        && lhs.accumulation_type_code == rhs.accumulation_type_code
+        && same_scalar_value(lhs.alpha, rhs.alpha)
+        && same_scalar_value(lhs.beta, rhs.beta)
+        && lhs.determinism == rhs.determinism
+        && lhs.workspace.kind == rhs.workspace.kind
+        && lhs.workspace.reserved == rhs.workspace.reserved
+        && lhs.workspace.byte_limit == rhs.workspace.byte_limit
+        && lhs.reuse.kind == rhs.reuse.kind
+        && lhs.reuse.reserved == rhs.reuse.reserved
+        && lhs.reuse.expected_run_count == rhs.reuse.expected_run_count
+        && lhs.epilogue.kind == rhs.epilogue.kind
+        && lhs.epilogue.bias_type_code == rhs.epilogue.bias_type_code
+        && lhs.epilogue.bias_element_count == rhs.epilogue.bias_element_count
+        && same_feature_order(
+            lhs.sparse_feature_order, rhs.sparse_feature_order)
+        && same_feature_order(
+            lhs.dense_feature_order, rhs.dense_feature_order);
+}
+
+inline bool same_bindings(
+    const spmm_bindings &lhs,
+    const spmm_bindings &rhs) noexcept {
+    return lhs.sparse_matrix == rhs.sparse_matrix
+        && lhs.dense_rhs == rhs.dense_rhs
+        && lhs.output == rhs.output
+        && lhs.bias == rhs.bias
+        && lhs.sparse_matrix_identity == rhs.sparse_matrix_identity
+        && lhs.dense_rhs_identity == rhs.dense_rhs_identity
+        && lhs.output_identity == rhs.output_identity;
 }
 
 inline bool scalar_f32(const scalar_value &value, float *out) noexcept {
@@ -141,10 +214,11 @@ inline u64 candidate_backend_identity(
 
 } // namespace cusparse_bell_detail
 
-// One instance represents one materialized BELL8/16/32 candidate. The view and
-// its device buffers are borrowed and must outlive every prepared execution.
-// Dense RHS and output bindings include the view's padded feature/row domains;
-// the logical dimensions in spmm_request remain row_count/feature_count.
+// Experimental CP-Math v1 backend for one materialized BELL8/16/32 candidate.
+// The view and its device buffers are borrowed and must outlive every prepared
+// execution. Because v1 dense bindings declare logical dimensions but no
+// allocation capacities, padded feature or row domains are rejected before
+// descriptor creation.
 class CusparseBellBackend final : public SpMMBackend {
 public:
     explicit CusparseBellBackend(const physical_bell_view &view) noexcept;
@@ -211,6 +285,11 @@ inline backend_capability CusparseBellBackend::query(
         || view_.column_indices == nullptr || view_.values == nullptr) {
         return cusparse_bell_detail::reject(capability_code::unsupported_layout,
             "backend requires one legal materialized BELL8/16/32 f16 view");
+    }
+    if (view_.padded_row_count != view_.row_count
+        || view_.padded_feature_count != view_.feature_count) {
+        return cusparse_bell_detail::reject(capability_code::unsupported_layout,
+            "v1 BELL bindings do not declare padded dense storage capacities");
     }
     if (request.sparse_storage_type_code != static_cast<u32>(real::value_f16)
         || request.dense_storage_type_code != static_cast<u32>(real::value_f16)
