@@ -1456,6 +1456,24 @@ set_target_properties(cellPackExecutionImageV2Test PROPERTIES
     CXX_STANDARD_REQUIRED YES
 )
 
+# The device proof is intentionally a separately scheduled executable. It
+# performs one opaque CellShard upload and consumes a CPE2-prebound projection
+# directly on the caller stream; resource-aware CUDA gates launch it.
+add_executable(cellPackExecutionImageV2DeviceTest
+    components/CellPack/tests/persistence/execution_image_v2_device_test.cu
+)
+target_link_libraries(cellPackExecutionImageV2DeviceTest PRIVATE
+    CellPack::execution_image_v2
+    CellShard::inspect
+    CUDA::cudart
+)
+set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 # CE-ARCH-71: operation-core activation of the preserved CP-BP v1 row-masked
 # N=1 direct consumer. This adapter adds no kernel or persistence format.
 add_library(cellerator_row_masked_n1_candidate STATIC

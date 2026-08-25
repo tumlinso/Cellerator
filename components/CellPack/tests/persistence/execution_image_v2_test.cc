@@ -106,9 +106,132 @@ px::execution_projection_source projection(std::uint64_t identity,
     return result;
 }
 
+struct cpk1_fixture {
+    std::vector<unsigned char> image;
+    cp::persistent_packing_payload_view view{};
+    cp::persistent_packing_payload_compatibility compatibility{};
+};
+
+cpk1_fixture make_cpk1_fixture() {
+    const cp::u32 permutation[]{0u};
+    const cp::u32 block_offsets[]{0u, 1u};
+    const cp::u32 feature_block[]{0u};
+    const cp::u32 feature_local[]{0u};
+    const cp::u32 row_groups[]{0u, 1u};
+    cp::frozen_packing_plan_build_view plan_source{};
+    plan_source.row_count = 1u;
+    plan_source.feature_count = 1u;
+    plan_source.feature_permutation = permutation;
+    plan_source.inverse_feature_permutation = permutation;
+    plan_source.feature_block_count = 1u;
+    plan_source.feature_block_offsets = block_offsets;
+    plan_source.feature_to_block = feature_block;
+    plan_source.feature_to_local = feature_local;
+    plan_source.row_group_count = 1u;
+    plan_source.row_group_offsets = row_groups;
+    plan_source.maximum_feature_block_width = 1u;
+    plan_source.row_group_width = 1u;
+    plan_source.identity.feature_axis_fingerprint = 0x55u;
+    plan_source.identity.feature_axis_fingerprint_version = 1u;
+    plan_source.identity.row_domain_kind =
+        cp::packing_row_domain_kind::full_dataset_identity;
+    plan_source.identity.row_domain_identity = 0x66u;
+    plan_source.identity.evaluation_source_identity = 0x77u;
+    plan_source.cost_policy_identity = 0x88u;
+    cp::frozen_packing_plan plan;
+    require_status(cp::freeze_packing_plan(plan_source, &plan),
+        "freeze minimal CPK1 plan");
+
+    const cp::u32 row_record_offsets[]{0u, 1u};
+    const cp::u32 record_blocks[]{0u};
+    const cp::u32 record_masks[]{1u};
+    const cp::u32 record_value_offsets[]{0u, 1u};
+    const std::uint16_t record_values[]{0x3c00u};
+    cp::cell_block_record_view records{};
+    records.record_schema_version = cp::cell_block_record_schema_version;
+    records.semantic_plan_schema_version =
+        cp::packing_plan_semantic_schema_version;
+    records.geometry_identity_version =
+        cp::feature_block_geometry_identity_version;
+    records.feature_block_geometry_identity =
+        plan.feature_block_geometry_identity();
+    records.full_row_count = 1u;
+    records.row_count = 1u;
+    records.feature_count = 1u;
+    records.feature_block_count = 1u;
+    records.nnz_count = 1u;
+    records.record_count = 1u;
+    records.value_size_bytes = sizeof(record_values[0]);
+    records.feature_axis_fingerprint = 0x55u;
+    records.feature_axis_fingerprint_version = 1u;
+    records.row_domain_identity = 0x66u;
+    records.row_record_offsets = row_record_offsets;
+    records.record_block_ids = record_blocks;
+    records.record_gene_masks = record_masks;
+    records.record_value_offsets = record_value_offsets;
+    records.values = record_values;
+    require_status(cp::validate_cell_block_record_view_host(plan, records),
+        "validate minimal CPK1 records");
+
+    cp::u64 primary[1]{};
+    cp::u32 secondary[1]{}, active[1]{}, nnz[1]{}, row_permutation[1]{},
+        inverse_row_permutation[1]{};
+    cp::local_cell_order_buffers order_buffers{1u, primary, secondary, active,
+        nnz, row_permutation, inverse_row_permutation};
+    cp::local_cell_order_config order_config{};
+    order_config.kind = cp::local_cell_order_kind::original;
+    order_config.window_size = 1u;
+    order_config.group_width = 1u;
+    cp::local_cell_order_view order{};
+    require_status(cp::build_local_cell_order_host(records, order_config,
+        order_buffers, &order), "build minimal CPK1 order");
+
+    cp::warp_tile_requirements tile_required{};
+    require_status(cp::query_warp_tile_requirements_host(plan, records, order,
+        &tile_required), "query minimal CPK1 tiles");
+    std::vector<cp::u32> tile_offsets(tile_required.tile_block_offset_count);
+    std::vector<cp::u32> tile_blocks(tile_required.tile_block_count);
+    std::vector<cp::u32> tile_masks(tile_required.tile_block_count);
+    std::vector<cp::u32> entry_offsets(
+        tile_required.block_row_entry_offset_count);
+    std::vector<cp::u32> gene_masks(tile_required.row_block_entry_count);
+    std::vector<cp::u32> value_offsets(
+        tile_required.row_block_value_offset_count);
+    std::vector<unsigned char> values(tile_required.value_bytes);
+    cp::warp_tile_buffers tile_buffers{tile_offsets.size(), tile_blocks.size(),
+        entry_offsets.size(), gene_masks.size(), value_offsets.size(),
+        values.size(), tile_offsets.data(), tile_blocks.data(),
+        tile_masks.data(), entry_offsets.data(), gene_masks.data(),
+        value_offsets.data(), values.data()};
+    cp::warp_tile_view tiles{};
+    require_status(cp::build_warp_tiles_host(plan, records, order, tile_buffers,
+        &tiles), "build minimal CPK1 tiles");
+
+    cp::persistent_packing_payload_requirements required{};
+    require_status(cp::query_persistent_packing_payload_requirements_host(plan,
+        records, order, tiles, &required), "query minimal CPK1 image");
+    cpk1_fixture result{};
+    result.image.resize(required.image_bytes);
+    require_status(cp::build_persistent_packing_payload_host(plan, records,
+        order, tiles, {result.image.size(), result.image.data()}, &result.view),
+        "build minimal CPK1 image");
+    result.compatibility.global_row_begin = result.view.tiles.global_row_begin;
+    result.compatibility.row_count = result.view.tiles.row_count;
+    result.compatibility.feature_count = result.view.tiles.feature_count;
+    result.compatibility.feature_axis_fingerprint =
+        result.view.tiles.feature_axis_fingerprint;
+    result.compatibility.feature_axis_fingerprint_version =
+        result.view.tiles.feature_axis_fingerprint_version;
+    result.compatibility.row_domain_identity =
+        result.view.tiles.row_domain_identity;
+    result.compatibility.payload_identity = result.view.payload_identity;
+    return result;
+}
+
 } // namespace
 
 int main() {
+    const cpk1_fixture cpk1 = make_cpk1_fixture();
     const std::array<std::uint64_t, 2> domains{11u, 12u};
     const std::array<std::uint32_t, 4> order{2u, 0u, 3u, 1u};
     const std::array<std::uint64_t, 3> relation{21u, 22u, 23u};
@@ -256,6 +379,38 @@ int main() {
         structure_only_sections.size(), &structure_projection, 1u, 0u);
     require_status(px::query_execution_image_v2_requirements_host(
         structure_only_request, &required), "allow structure without initial values");
+
+    const std::array<px::execution_section_source, 5> cpk1_sections{
+        sections[0], sections[1], sections[2], sections[3],
+        section(px::execution_section_kind::cpk1_v1_compatibility, 11u,
+            cpk1.image.data(), cpk1.image.size())};
+    auto cpk1_projection = projection(103u,
+        px::execution_projection_kind::native_row_masked,
+        px::projection_forward_capable, 4u, px::invalid_directory_index,
+        px::invalid_directory_index, px::invalid_directory_index,
+        px::invalid_directory_index);
+    const auto cpk1_request = request(cpk1_sections.data(), cpk1_sections.size(),
+        &cpk1_projection, 1u, 0u);
+    require_status(px::query_execution_image_v2_requirements_host(cpk1_request,
+        &required), "query CPE2 with CPK1 compatibility section");
+    std::vector<unsigned char> cpk1_image(required.image_bytes);
+    px::execution_image_v2_view cpk1_image_view{};
+    require_status(px::build_execution_image_v2_host(cpk1_request,
+        {cpk1_image.data(), cpk1_image.size()}, &cpk1_image_view),
+        "build CPE2 with CPK1 compatibility section");
+    cp::persistent_packing_payload_view loaded_cpk1{};
+    require_status(px::load_cpk1_v1_compatibility_host(cpk1_image_view, 0u,
+        cpk1.compatibility, &loaded_cpk1),
+        "load frozen CPK1 through CPE2 compatibility adapter");
+    require(loaded_cpk1.payload_identity == cpk1.view.payload_identity
+        && loaded_cpk1.tiles.row_count == cpk1.view.tiles.row_count
+        && loaded_cpk1.tiles.tile_identity == cpk1.view.tiles.tile_identity,
+        "CPE2 CPK1 adapter changed semantic or projection identity");
+    auto stale_cpk1 = cpk1.compatibility;
+    stale_cpk1.payload_identity ^= 1u;
+    require(!static_cast<bool>(px::load_cpk1_v1_compatibility_host(
+        cpk1_image_view, 0u, stale_cpk1, &loaded_cpk1)),
+        "CPE2 CPK1 adapter accepted stale payload identity");
 
     std::cout << "cellPackExecutionImageV2Test passed image_bytes="
               << image.size() << " directory_bytes=" << built.header.section_count
