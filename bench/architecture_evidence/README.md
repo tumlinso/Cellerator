@@ -84,10 +84,48 @@ python3 bench/architecture_evidence/trace_tool.py extract-h5ad \
   --output data/local/architecture_evidence/pbmc3k-support.mtx
 ```
 
+## CE-ARCH-76 small-N candidate evidence
+
+`ce_arch_76_v100.jsonl` is the first activated representative result in this
+package. It compares the native row-masked, CSR fallback, and feature-major
+small-N candidates at N=1,2,4,8,16 over identical 65,536-row, 32,768-feature,
+32-nnz/row structures with high, medium, and low feature sharing. Every record
+uses the same value generation, row-major dense input, overwrite output effect,
+execution-row-major output, f16 sparse values, and f32 multiply/accumulation.
+
+The row-masked and CSR candidates are rank-1 contracts. Their reported
+end-to-end steady-state time therefore includes the common row-major-to-column
+pack, N native launches, and column-to-row-major output interleave. The
+feature-major candidate accepts the common KxN/MxN contract directly. Persistent
+projection construction, value packing, and backend preparation are reported
+separately and are not repeated inside the 11 timed samples. The checked-in
+`ce_arch_76_v100_spec.json` reproduces the mutex-protected controller campaign.
+
+The evidence was captured from clean commit `df9d168` on a Tesla V100-SXM2-16GB
+(sm_70), CUDA runtime 12.9, driver API 13.0. Controller evidence id
+`46fd716e-5f4e-4d53-950e-05a74f96da7c` records the clean source fingerprint,
+binary digest, correctness command, quiescence proof, and resource samples.
+Maximum median absolute deviation was 1.32%.
+
+Steady-state winners were:
+
+| feature sharing | N=1 | N=2 | N=4 | N=8 | N=16 |
+|---|---|---|---|---|---|
+| high | row-masked | feature-major | feature-major | feature-major | feature-major |
+| medium | row-masked | row-masked | row-masked | feature-major | feature-major |
+| low | CSR | CSR | CSR | feature-major | feature-major |
+
+At the declared eight-use reuse horizon, row-masked won every measured cell
+because it reuses CPK1 directly while CSR and feature-major construction costs
+were not yet amortized. This is a preparation-horizon result, not evidence that
+the feature-major steady-state regime is absent. Objective V2 must retain both
+effects and defer uncertain or novel keys to empirical measurement.
+
 ## Future measured execution
 
-No current executable implements this contract, so no new controller watch is
-valid yet. After the named checkpoints and targets in `watch_plan.json` exist,
+Apart from the bounded CE-ARCH-76 activation above, the broader evidence
+families remain unarmed. After their named checkpoints and targets in
+`watch_plan.json` exist,
 the CUDA controller must create a clean immutable snapshot, run independent
 correctness first, acquire the declared benchmark or profiler and GPU leases,
 check memory headroom, and then invoke the future end-to-end benchmark. Deep
