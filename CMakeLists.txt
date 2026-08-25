@@ -1544,6 +1544,22 @@ target_link_libraries(cellerator_feature_major_projection PUBLIC
 )
 target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_17)
 
+add_library(cellerator_transpose_projection STATIC
+    src/compute/math/physical_transpose.cc
+)
+add_library(Cellerator::transpose_projection ALIAS
+    cellerator_transpose_projection)
+target_include_directories(cellerator_transpose_projection PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_transpose_projection PUBLIC
+    Cellerator::feature_major_projection
+    Cellerator::biological_abi
+)
+target_compile_features(cellerator_transpose_projection PUBLIC cxx_std_17)
+
 add_library(cellerator_feature_major_small_n_candidate STATIC
     src/compute/math/operation_core/feature_major_small_n_candidate.cu
 )
@@ -1560,6 +1576,28 @@ target_link_libraries(cellerator_feature_major_small_n_candidate PUBLIC
     CUDA::cudart
 )
 set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_library(cellerator_transpose_backward_candidate STATIC
+    src/compute/math/operation_core/transpose_backward_candidate.cu
+)
+add_library(Cellerator::transpose_backward_candidate ALIAS
+    cellerator_transpose_backward_candidate)
+target_include_directories(cellerator_transpose_backward_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_transpose_backward_candidate PUBLIC
+    Cellerator::operation_core
+    Cellerator::transpose_projection
+    CUDA::cudart
+)
+set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
@@ -1649,6 +1687,9 @@ add_executable(celleratorCsrFallbackCandidateTest
 add_executable(celleratorFeatureMajorSmallNCandidateTest
     tests/math_core/feature_major_small_n_candidate_test.cu
 )
+add_executable(celleratorTransposeBackwardCandidateTest
+    tests/math_core/transpose_backward_candidate_test.cu
+)
 add_executable(celleratorCeArch76CandidateBench
     bench/math/feature_major_candidate_compare_bench.cu
 )
@@ -1684,6 +1725,18 @@ target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorFeatureMajorSmallNCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorTransposeBackwardCandidateTest PRIVATE
+    Cellerator::transpose_backward_candidate
+    Cellerator::feature_major_small_n_candidate
+    CellPack::execution_image_v2
+    cellerator_math_v1_evidence
+)
+set_target_properties(celleratorTransposeBackwardCandidateTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
