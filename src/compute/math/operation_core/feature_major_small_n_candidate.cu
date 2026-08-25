@@ -1,11 +1,15 @@
 /*
-CE-ARCH-75 correctness activation, 2026-08-25:
+CE-ARCH-75/84 correctness and V100 retention evidence, 2026-08-25:
 No maintained CUDA sparse library consumes the FMP1 masked feature-major ABI,
-so direct native execution requires this bounded one-warp kernel. CE-ARCH-75
-adds correctness evidence on the repository V100 for irregular/partial tiles
-at N=1 and N=16 against the independent SpMM referee. It makes no performance
-selection claim; CE-ARCH-76 owns the row-masked/feature-major/CSR comparison,
-exact commands, measurements, and retention decision for N=1..16.
+so direct native execution uses bounded warp and CTA schedules. The command
+`cuda_controller.py run --spec bench/architecture_evidence/ce_arch_84_v100_spec.json`
+compared row-masked, CSR, and the 128-thread CTA schedule on a Tesla V100-SXM2
+(sm_70), 65,536x32,768 structures, 2,097,152 f16 values, f32 RHS/output, and
+N=17,32,64. CTA steady-state won every N=32/64 regime and high-sharing N=17;
+CSR won low-sharing N=17 and row-masked won medium-sharing N=17. Maximum timing
+MAD was 0.62%; all outputs passed the independent SpMM referee at 1e-5 absolute
+and relative tolerance. Persistent construction is reported separately and
+keeps row-masked preferred at the declared eight-use horizon.
 */
 
 #include <Cellerator/compute/math/operation_core/feature_major_small_n_candidate.hh>
@@ -129,7 +133,71 @@ __global__ void feature_major_small_n_kernel(
     }
 }
 
-operation_status run_feature_major_small_n(
+// Four warps cooperate on one FMP1 row tile. Threads with the same lane own
+// one row and split the N columns by warp. Each dense feature element is
+// fetched once into shared memory before all participating rows consume it.
+__global__ void feature_major_cta_medium_n_kernel(
+    feature_major_projection_view projection,
+    const __half *values,
+    const float *dense_rhs,
+    std::uint32_t dense_width,
+    float *output) {
+    constexpr std::uint32_t warp_count = 4u;
+    constexpr std::uint32_t columns_per_thread =
+        feature_major_cta_medium_n_maximum / warp_count;
+    const std::uint32_t thread = threadIdx.x;
+    const std::uint32_t lane = thread & 31u;
+    const std::uint32_t column_group = thread >> 5u;
+    const std::uint32_t tile = blockIdx.x;
+    if (thread >= 128u || tile >= projection.header.tile_count) return;
+
+    float accumulators[columns_per_thread]{};
+    __shared__ float dense_feature[feature_major_cta_medium_n_maximum];
+    const std::uint32_t record_begin = projection.tile_feature_offsets[tile];
+    const std::uint32_t record_end = projection.tile_feature_offsets[tile + 1u];
+    for (std::uint32_t record = record_begin;
+         record < record_end; ++record) {
+        const std::uint32_t feature = projection.execution_feature_ids[record];
+        for (std::uint32_t column = thread; column < dense_width;
+             column += blockDim.x)
+            dense_feature[column] = dense_rhs[
+                static_cast<std::size_t>(feature) * dense_width + column];
+        __syncthreads();
+        const std::uint32_t row_mask =
+            projection.participating_row_masks[record];
+        if ((row_mask & (1u << lane)) != 0u) {
+            const std::uint32_t lower_rows = lane == 0u
+                ? 0u : row_mask & ((1u << lane) - 1u);
+            const std::uint32_t value =
+                projection.feature_value_offsets[record]
+                + static_cast<std::uint32_t>(__popc(lower_rows));
+            const float sparse = __half2float(values[value]);
+            #pragma unroll
+            for (std::uint32_t local = 0u;
+                 local < columns_per_thread; ++local) {
+                const std::uint32_t column =
+                    column_group + local * warp_count;
+                if (column < dense_width)
+                    accumulators[local] += sparse * dense_feature[column];
+            }
+        }
+        __syncthreads();
+    }
+    const std::uint32_t row = tile * projection.header.tile_row_width + lane;
+    if (lane < projection.header.tile_row_width
+        && row < projection.header.row_count) {
+        #pragma unroll
+        for (std::uint32_t local = 0u;
+             local < columns_per_thread; ++local) {
+            const std::uint32_t column = column_group + local * warp_count;
+            if (column < dense_width)
+                output[static_cast<std::size_t>(row) * dense_width + column]
+                    = accumulators[local];
+        }
+    }
+}
+
+operation_status run_feature_major(
     const prepared_operation &prepared,
     const execution::launch_bindings &launch) noexcept {
     if (prepared.persistent.data == nullptr
@@ -141,6 +209,8 @@ operation_status run_feature_major_small_n(
     const auto &state = *static_cast<
         const feature_major_small_n_prepared_state *>(prepared.persistent.data);
     if (state.schema_version != feature_major_small_n_candidate_schema_version
+        || (state.regime != feature_major_execution_regime::small_n_warp
+            && state.regime != feature_major_execution_regime::medium_n_cta)
         || launch.input_count != 1u || launch.output_count != 1u
         || launch.value_count != 1u || launch.values == nullptr
         || launch.inputs[0].kind != execution::operand_kind::dense_tensor
@@ -187,11 +257,19 @@ operation_status run_feature_major_small_n(
         return fail(operation_status_code::invalid_launch_bindings,
             "feature-major small-N order, shape, value, or residency is incompatible");
     }
-    feature_major_small_n_kernel<<<projection.header.tile_count, 32u, 0u,
-        static_cast<cudaStream_t>(launch.stream.stream)>>>(projection,
-        static_cast<const __half *>(values.values),
-        static_cast<const float *>(rhs.data), state.dense_width,
-        static_cast<float *>(output.data));
+    if (state.regime == feature_major_execution_regime::small_n_warp) {
+        feature_major_small_n_kernel<<<projection.header.tile_count, 32u, 0u,
+            static_cast<cudaStream_t>(launch.stream.stream)>>>(projection,
+            static_cast<const __half *>(values.values),
+            static_cast<const float *>(rhs.data), state.dense_width,
+            static_cast<float *>(output.data));
+    } else {
+        feature_major_cta_medium_n_kernel<<<projection.header.tile_count,
+            128u, 0u, static_cast<cudaStream_t>(launch.stream.stream)>>>(
+            projection, static_cast<const __half *>(values.values),
+            static_cast<const float *>(rhs.data), state.dense_width,
+            static_cast<float *>(output.data));
+    }
     if (cudaPeekAtLastError() != cudaSuccess) {
         return fail(operation_status_code::execution_failed,
             "feature-major small-N kernel launch failed");
@@ -215,18 +293,33 @@ operation_status prepare_impl(
     }
     auto *state = static_cast<feature_major_small_n_prepared_state *>(
         const_cast<void *>(prepared->persistent.data));
+    const bool small_candidate = same_stable_id(
+        candidate.identity, feature_major_small_n_candidate_id);
+    const bool medium_candidate = same_stable_id(
+        candidate.identity, feature_major_cta_medium_n_candidate_id);
+    const auto expected_regime = small_candidate
+        ? feature_major_execution_regime::small_n_warp
+        : feature_major_execution_regime::medium_n_cta;
+    const std::uint32_t minimum_n = small_candidate
+        ? feature_major_small_n_minimum
+        : feature_major_cta_medium_n_minimum;
+    const std::uint32_t maximum_n = small_candidate
+        ? feature_major_small_n_maximum
+        : feature_major_cta_medium_n_maximum;
     const auto &view = state->projection;
     const auto &header = view.header;
     const bool work_overflows = state->dense_width != 0u
         && header.nnz_count > std::numeric_limits<std::uint64_t>::max()
             / state->dense_width;
-    if (state->schema_version != feature_major_small_n_candidate_schema_version
+    if ((!small_candidate && !medium_candidate)
+        || state->schema_version != feature_major_small_n_candidate_schema_version
+        || state->regime != expected_regime
         || !valid_device_projection(view, state->device_ordinal)
         || !execution::valid_axis_identity(state->feature_axis)
         || !execution::valid_axis_identity(state->row_axis)
         || !execution::valid_axis_identity(state->dense_column_axis)
-        || state->dense_width < feature_major_small_n_minimum
-        || state->dense_width > feature_major_small_n_maximum
+        || state->dense_width < minimum_n
+        || state->dense_width > maximum_n
         || structures.count != 1u || problem.input_count != 1u
         || problem.output_count != 1u || work_overflows
         || problem.logical_work_items
@@ -242,7 +335,7 @@ operation_status prepare_impl(
         || projection.schema_version != feature_major_projection_schema_version
         || projection.variant != feature_major_projection_variant) {
         return fail(operation_status_code::unsupported_problem,
-            "feature-major small-N preparation metadata or N is incompatible");
+            "feature-major preparation metadata or N regime is incompatible");
     }
 
     state->input_contract = {};
@@ -286,7 +379,7 @@ operation_status prepare_impl(
     prepared->binding_contract.structure_count = 1u;
     prepared->binding_contract.output_effect_count = 1u;
     prepared->binding_contract.workspace = {0u, 1u, 0u};
-    prepared->run = run_feature_major_small_n;
+    prepared->run = run_feature_major;
     return validate_prepared_operation(*prepared);
 }
 
@@ -308,9 +401,33 @@ operation_candidate feature_major_small_n_candidate() noexcept {
     return candidate;
 }
 
+operation_candidate feature_major_cta_medium_n_candidate() noexcept {
+    operation_candidate candidate{};
+    candidate.identity = feature_major_cta_medium_n_candidate_id;
+    candidate.name = "cpbp-feature-major-cta-medium-n-f16-f32";
+    candidate.operation = operation_kind::sparse_dense_multiply;
+    // The CTA schedule directly consumes FMP1. A distinct candidate id names
+    // the schedule; the projection kind remains truthful to the physical bytes.
+    candidate.projection = projection_kind::native_feature_major;
+    candidate.backend = backend_kind::native_direct;
+    candidate.capability_flags = candidate_deterministic
+        | candidate_graph_capture | candidate_persistent_preprocessing;
+    candidate.persistent_bytes = sizeof(feature_major_small_n_prepared_state);
+    candidate.transient_bytes = 0u;
+    candidate.supports_numeric = supports_numeric;
+    candidate.prepare = prepare_impl;
+    return candidate;
+}
+
 operation_status register_feature_major_small_n_candidate(
     candidate_registry *registry) noexcept {
     return register_candidate(registry, feature_major_small_n_candidate());
+}
+
+operation_status register_feature_major_cta_medium_n_candidate(
+    candidate_registry *registry) noexcept {
+    return register_candidate(registry,
+        feature_major_cta_medium_n_candidate());
 }
 
 operation_status prepare_feature_major_small_n_operation(
@@ -341,6 +458,40 @@ operation_status prepare_feature_major_small_n_operation(
     *prepared = {};
     prepared->persistent = {state, sizeof(*state)};
     const operation_candidate candidate = feature_major_small_n_candidate();
+    return prepare_candidate(candidate, problem, structures, projection,
+        numeric, policy, prepared);
+}
+
+operation_status prepare_feature_major_cta_medium_n_operation(
+    const operation_problem &problem,
+    const structure_set_key &structures,
+    const projection_key &projection,
+    const numeric_policy &numeric,
+    const prepare_policy &policy,
+    const feature_major_projection_view &device_projection,
+    std::int32_t device_ordinal,
+    std::uint32_t dense_width,
+    execution::axis_identity feature_axis,
+    execution::axis_identity row_axis,
+    execution::axis_identity dense_column_axis,
+    feature_major_small_n_prepared_state *state,
+    prepared_operation *prepared) noexcept {
+    if (state == nullptr || prepared == nullptr) {
+        return fail(operation_status_code::invalid_argument,
+            "feature-major CTA medium-N preparation output is null");
+    }
+    *state = {};
+    state->regime = feature_major_execution_regime::medium_n_cta;
+    state->device_ordinal = device_ordinal;
+    state->dense_width = dense_width;
+    state->projection = device_projection;
+    state->feature_axis = feature_axis;
+    state->row_axis = row_axis;
+    state->dense_column_axis = dense_column_axis;
+    *prepared = {};
+    prepared->persistent = {state, sizeof(*state)};
+    const operation_candidate candidate =
+        feature_major_cta_medium_n_candidate();
     return prepare_candidate(candidate, problem, structures, projection,
         numeric, policy, prepared);
 }

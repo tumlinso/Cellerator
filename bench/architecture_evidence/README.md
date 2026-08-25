@@ -159,6 +159,27 @@ inject candidate identity, or replace held-out empirical acceptance. The model
 is data rather than a frozen planner law, and future candidate families can
 populate the same mechanism counts or replace the fit after new evidence.
 
+## CE-ARCH-84 forward plurality evidence
+
+`ce_arch_84_v100.jsonl` extends the equivalent CE-ARCH-76 comparison to
+N=17,32,64. The retained CTA schedule consumes FMP1 directly: one 128-thread
+block owns a 32-row tile, four warps split dense columns for each row, and each
+feature's dense RHS vector is staged once in shared memory. It has a distinct
+candidate identity and exact 17..64 capability range, but truthfully retains
+the native-feature-major projection kind because it neither constructs another
+payload nor converts FMP1 in the launch path.
+
+On the same 65,536-row V100 fixtures, CTA steady-state execution won all three
+sharing regimes at N=32 and N=64 plus high sharing at N=17. Row-masked remained
+faster for medium-sharing N=17, and CSR remained faster for low-sharing N=17.
+Those losing cases are deliberate fallback/low-sharing decisions, not prompts
+for another format. At the declared eight-use horizon row-masked still won all
+cells because FMP1 construction and value packing had not amortized. Maximum
+median absolute deviation was 0.62%, and the independent referee plus the
+partial-mask/empty-row boundary test passed at N=17 and N=64. Controller
+evidence id `e1703b9d-1675-404b-a721-6ec20c771679` records the mutex-protected
+campaign and exact binary/source identities.
+
 ## Future measured execution
 
 Apart from the bounded CE-ARCH-76 activation above, the broader evidence

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/CellStack/Cellerator",
+  "campaign_id": "ce-arch-84-v100",
+  "recipe": "baseline",
+  "paths": [
+    "bench/math/feature_major_candidate_compare_bench.cu",
+    "include/Cellerator/compute/math/operation_core/feature_major_small_n_candidate.hh",
+    "src/compute/math/operation_core/feature_major_small_n_candidate.cu",
+    "tests/math_core/feature_major_small_n_candidate_test.cu"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  },
+  "correctness_argv": [
+    "./build-ce-arch/celleratorFeatureMajorSmallNCandidateTest"
+  ],
+  "correctness_timeout": 900,
+  "argv": [
+    "./build-ce-arch/celleratorCeArch76CandidateBench",
+    "--ce-arch-84",
+    "--output",
+    "bench/architecture_evidence/ce_arch_84_v100.jsonl"
+  ],
+  "timeout": 1800,
+  "practical_regression_percent": 2.0
+}

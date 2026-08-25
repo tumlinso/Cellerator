@@ -377,7 +377,9 @@ void test_registry_and_planner(
         "CSR coexistence registration");
     require(core::register_feature_major_small_n_candidate(&registry),
         "feature-major registration");
-    require(registry.size == 3u
+    require(core::register_feature_major_cta_medium_n_candidate(&registry),
+        "feature-major CTA registration");
+    require(registry.size == 4u
         && registry.candidates[0].projection
             == core::projection_kind::native_row_masked
         && registry.candidates[1].projection == core::projection_kind::csr
@@ -389,6 +391,14 @@ void test_registry_and_planner(
         && (registry.candidates[2].capability_flags
             & core::candidate_graph_capture) != 0u,
         "truthful feature-major capability and candidate coexistence");
+    require(registry.candidates[3].projection
+            == core::projection_kind::native_feature_major
+        && registry.candidates[3].operation
+            == core::operation_kind::sparse_dense_multiply
+        && registry.candidates[3].transient_bytes == 0u
+        && !core::same_stable_id(registry.candidates[2].identity,
+            registry.candidates[3].identity),
+        "CTA schedule has a distinct candidate identity over FMP1");
 
     planner::planner_candidate candidate{};
     candidate.identity = registry.candidates[2].identity;
@@ -522,13 +532,21 @@ void run_supported_boundary(std::uint32_t dense_width,
     if (dense_width == cm::feature_major_small_n_minimum)
         test_registry_and_planner(problem, structures, projection_key);
 
+    const bool medium_n = dense_width
+        >= core::feature_major_cta_medium_n_minimum;
     core::feature_major_small_n_prepared_state state{};
     core::prepared_operation prepared{};
     const core::prepare_policy policy{true, true, true, true, 8u, 0u, 0u};
-    require(core::prepare_feature_major_small_n_operation(problem, structures,
-        projection_key, numeric(), policy, device_view, device, dense_width,
-        feature_axis, row_axis, dense_axis, &state, &prepared),
-        "prepare feature-major small-N operation");
+    const core::operation_status prepare_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(problem, structures,
+            projection_key, numeric(), policy, device_view, device, dense_width,
+            feature_axis, row_axis, dense_axis, &state, &prepared)
+        : core::prepare_feature_major_small_n_operation(problem, structures,
+            projection_key, numeric(), policy, device_view, device, dense_width,
+            feature_axis, row_axis, dense_axis, &state, &prepared);
+    require(prepare_status, medium_n
+        ? "prepare feature-major CTA medium-N operation"
+        : "prepare feature-major small-N operation");
     require(prepared.binding_contract.workspace.minimum_bytes == 0u
         && prepared.binding_contract.output_order_count == 2u
         && prepared.binding_contract.output_orders[0].transition
@@ -646,27 +664,45 @@ void run_supported_boundary(std::uint32_t dense_width,
     core::prepared_operation rejected{};
     core::projection_key mismatched_projection = projection_key;
     mismatched_projection.persistent.low += 1u;
-    require(core::prepare_feature_major_small_n_operation(problem, structures,
-        mismatched_projection, numeric(), policy, device_view, device,
-        dense_width, feature_axis, row_axis, dense_axis,
-        &rejected_state, &rejected).code
+    const core::operation_status mismatched_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(problem, structures,
+            mismatched_projection, numeric(), policy, device_view, device,
+            dense_width, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected)
+        : core::prepare_feature_major_small_n_operation(problem, structures,
+            mismatched_projection, numeric(), policy, device_view, device,
+            dense_width, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected);
+    require(mismatched_status.code
             == core::operation_status_code::unsupported_problem,
         "mismatched feature-major ProjectionId rejection");
     core::operation_problem unsupported_problem = problem;
-    unsupported_problem.logical_work_items = 8u * 17u;
-    require(core::prepare_feature_major_small_n_operation(unsupported_problem,
-        structures, projection_key, numeric(), policy, device_view, device,
-        17u, feature_axis, row_axis, dense_axis,
-        &rejected_state, &rejected).code
-            == core::operation_status_code::unsupported_problem,
-        "N above feature-major boundary rejection");
-    unsupported_problem.logical_work_items = 1u;
-    require(core::prepare_feature_major_small_n_operation(unsupported_problem,
-        structures, projection_key, numeric(), policy, device_view, device,
-        0u, feature_axis, row_axis, dense_axis,
-        &rejected_state, &rejected).code
-            == core::operation_status_code::unsupported_problem,
-        "N below feature-major boundary rejection");
+    const std::uint32_t below = medium_n ? 16u : 0u;
+    const std::uint32_t above = medium_n ? 65u : 17u;
+    unsupported_problem.logical_work_items = below == 0u ? 1u : 8u * below;
+    const core::operation_status below_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(unsupported_problem,
+            structures, projection_key, numeric(), policy, device_view, device,
+            below, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected)
+        : core::prepare_feature_major_small_n_operation(unsupported_problem,
+            structures, projection_key, numeric(), policy, device_view, device,
+            below, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected);
+    require(below_status.code == core::operation_status_code::unsupported_problem,
+        "N below feature-major regime rejection");
+    unsupported_problem.logical_work_items = 8u * above;
+    const core::operation_status above_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(unsupported_problem,
+            structures, projection_key, numeric(), policy, device_view, device,
+            above, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected)
+        : core::prepare_feature_major_small_n_operation(unsupported_problem,
+            structures, projection_key, numeric(), policy, device_view, device,
+            above, feature_axis, row_axis, dense_axis,
+            &rejected_state, &rejected);
+    require(above_status.code == core::operation_status_code::unsupported_problem,
+        "N above feature-major regime rejection");
     require_cuda(cudaStreamDestroy(stream), "destroy stream");
 }
 
@@ -682,6 +718,10 @@ int main() {
     run_supported_boundary(cm::feature_major_small_n_minimum,
         source, projection, device);
     run_supported_boundary(cm::feature_major_small_n_maximum,
+        source, projection, device);
+    run_supported_boundary(core::feature_major_cta_medium_n_minimum,
+        source, projection, device);
+    run_supported_boundary(core::feature_major_cta_medium_n_maximum,
         source, projection, device);
     return 0;
 }

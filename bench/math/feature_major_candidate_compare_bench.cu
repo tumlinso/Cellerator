@@ -55,7 +55,8 @@ constexpr std::uint32_t full_repeats = 11u;
 constexpr std::uint32_t quick_warmups = 1u;
 constexpr std::uint32_t quick_repeats = 3u;
 constexpr std::uint64_t expected_reuse = 8u;
-constexpr std::uint32_t dense_widths[] = {1u, 2u, 4u, 8u, 16u};
+constexpr std::uint32_t small_dense_widths[] = {1u, 2u, 4u, 8u, 16u};
+constexpr std::uint32_t medium_dense_widths[] = {17u, 32u, 64u};
 
 [[noreturn]] void fail(const char *message) {
     std::fprintf(stderr, "celleratorCeArch76CandidateBench: %s\n", message);
@@ -613,6 +614,7 @@ std::uint64_t row_metadata_bytes(const host_case &source) {
 }
 
 struct evidence_record {
+    const char *schema = nullptr;
     const char *candidate = nullptr;
     const char *regime = nullptr;
     cp::u32 rows = 0u;
@@ -641,7 +643,7 @@ void emit_record(std::FILE *output, const evidence_record &record,
     const double metadata_per_nnz = record.nnz == 0u ? 0.0
         : static_cast<double>(record.metadata_bytes) / record.nnz;
     std::fprintf(output,
-        "{\"schema\":\"CE-ARCH-76-EVIDENCE/1\",\"candidate\":\"%s\","
+        "{\"schema\":\"%s\",\"candidate\":\"%s\","
         "\"regime\":\"%s\",\"rows\":%u,\"features\":%u,\"nnz\":%u,"
         "\"sharing_groups\":%u,\"n\":%u,\"warmups\":%u,\"repeats\":%u,"
         "\"device\":\"%s\",\"sm\":%d,\"cuda_driver\":%d,"
@@ -656,7 +658,7 @@ void emit_record(std::FILE *output, const evidence_record &record,
         "\"mad_percent\":%.9g,\"amortized_total_ms\":%.9g,"
         "\"metadata_bytes\":%llu,\"value_bytes\":%llu,"
         "\"output_bytes\":%llu,\"metadata_bytes_per_nnz\":%.9g}\n",
-        record.candidate, record.regime, record.rows, record.features,
+        record.schema, record.candidate, record.regime, record.rows, record.features,
         record.nnz, record.sharing_groups, record.columns, record.warmups,
         record.repeats, device_name, sm, driver, runtime,
         static_cast<unsigned long long>(expected_reuse), record.query_ms,
@@ -792,10 +794,18 @@ void benchmark_case(const host_case &source,
     end = clock_type::now();
     const double csr_prepare_ms = milliseconds(begin, end);
     begin = clock_type::now();
-    require(core::prepare_feature_major_small_n_operation(matrix_problem,
-        structures, feature_key, matrix_numeric(), prepare_policy, feature_view,
-        device, columns, feature_axis, row_axis, dense_axis,
-        &feature_state, &feature_prepared), "prepare feature candidate");
+    const bool medium_n = columns
+        >= core::feature_major_cta_medium_n_minimum;
+    const core::operation_status feature_prepare_status = medium_n
+        ? core::prepare_feature_major_cta_medium_n_operation(matrix_problem,
+            structures, feature_key, matrix_numeric(), prepare_policy,
+            feature_view, device, columns, feature_axis, row_axis, dense_axis,
+            &feature_state, &feature_prepared)
+        : core::prepare_feature_major_small_n_operation(matrix_problem,
+            structures, feature_key, matrix_numeric(), prepare_policy,
+            feature_view, device, columns, feature_axis, row_axis, dense_axis,
+            &feature_state, &feature_prepared);
+    require(feature_prepare_status, "prepare feature candidate");
     end = clock_type::now();
     const double feature_prepare_ms = milliseconds(begin, end);
 
@@ -931,17 +941,20 @@ void benchmark_case(const host_case &source,
         * columns * sizeof(float);
     const std::uint64_t csr_metadata = (host_views.csr_rows.size()
         + host_views.csr_features.size()) * sizeof(cp::u32);
+    const char *const schema = medium_n
+        ? "CE-ARCH-84-EVIDENCE/1" : "CE-ARCH-76-EVIDENCE/1";
     const evidence_record records[3] = {
-        {"row_masked", source.name, source.rows, source.features,
+        {schema, "row_masked", source.name, source.rows, source.features,
             source.payload.tiles.nnz_count, source.sharing_groups, columns,
             warmups, repeats, row_metadata_bytes(source), value_bytes,
             output_bytes, 0.0, 0.0, 0.0, row_prepare_ms, row_timing},
-        {"csr", source.name, source.rows, source.features,
+        {schema, "csr", source.name, source.rows, source.features,
             source.payload.tiles.nnz_count, source.sharing_groups, columns,
             warmups, repeats, csr_metadata, value_bytes, output_bytes,
             host_views.csr_query_ms, host_views.csr_build_ms, 0.0,
             csr_prepare_ms, csr_timing},
-        {"feature_major", source.name, source.rows, source.features,
+        {schema, medium_n ? "feature_major_cta" : "feature_major",
+            source.name, source.rows, source.features,
             source.payload.tiles.nnz_count, source.sharing_groups, columns,
             warmups, repeats, host_views.feature_payload.size(), value_bytes,
             output_bytes, host_views.feature_query_ms,
@@ -957,6 +970,7 @@ void benchmark_case(const host_case &source,
 
 struct options {
     bool quick = false;
+    bool ce_arch_84 = false;
     const char *output_path = nullptr;
 };
 
@@ -964,9 +978,11 @@ options parse_options(int argc, char **argv) {
     options result;
     for (int index = 1; index < argc; ++index) {
         if (std::strcmp(argv[index], "--quick") == 0) result.quick = true;
+        else if (std::strcmp(argv[index], "--ce-arch-84") == 0)
+            result.ce_arch_84 = true;
         else if (std::strcmp(argv[index], "--output") == 0
             && index + 1 < argc) result.output_path = argv[++index];
-        else fail("usage: [--quick] [--output path]");
+        else fail("usage: [--quick] [--ce-arch-84] [--output path]");
     }
     return result;
 }
@@ -1015,10 +1031,17 @@ int main(int argc, char **argv) {
         const execution::projection_handle feature_handle{79u, regime.sharing};
         const host_projections projections = build_projections(source,
             structure_id, structure_handle, epoch, feature_id, feature_handle);
-        for (std::uint32_t columns : dense_widths)
-            benchmark_case(source, projections, columns, warmups, repeats,
-                device, stream, artifact, properties.name,
-                properties.major * 10 + properties.minor, driver, runtime);
+        if (option.ce_arch_84) {
+            for (std::uint32_t columns : medium_dense_widths)
+                benchmark_case(source, projections, columns, warmups, repeats,
+                    device, stream, artifact, properties.name,
+                    properties.major * 10 + properties.minor, driver, runtime);
+        } else {
+            for (std::uint32_t columns : small_dense_widths)
+                benchmark_case(source, projections, columns, warmups, repeats,
+                    device, stream, artifact, properties.name,
+                    properties.major * 10 + properties.minor, driver, runtime);
+        }
     }
     if (artifact != nullptr && std::fclose(artifact) != 0)
         fail("close evidence output");
