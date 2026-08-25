@@ -15,7 +15,8 @@ enum class identity_kind : std::uint8_t {
     geometry = 3u,
     partition = 4u,
     structure = 5u,
-    projection = 6u
+    projection = 6u,
+    partition_hierarchy = 7u
 };
 
 enum class identity_registry_status : std::uint8_t {
@@ -81,6 +82,9 @@ template<> struct identity_kind_trait<geometry_tag> {
 };
 template<> struct identity_kind_trait<partition_tag> {
     static constexpr identity_kind value = identity_kind::partition;
+};
+template<> struct identity_kind_trait<partition_hierarchy_tag> {
+    static constexpr identity_kind value = identity_kind::partition_hierarchy;
 };
 template<> struct identity_kind_trait<structure_tag> {
     static constexpr identity_kind value = identity_kind::structure;

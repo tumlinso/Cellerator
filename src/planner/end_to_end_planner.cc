@@ -554,6 +554,7 @@ bool same_connected_planning_keys(
     const connected_planning_keys &rhs) noexcept {
     if (!operation_core::same_stable_id(
             lhs.graph_identity, rhs.graph_identity)
+        || !execution::same_identity(lhs.hierarchy, rhs.hierarchy)
         || lhs.stage_count != rhs.stage_count
         || lhs.stage_count == 0u
         || lhs.stage_count > maximum_connected_operations)
@@ -577,6 +578,7 @@ planner_status plan_connected_operations(
     };
     if (request.schema_version != connected_planner_schema_version
         || !stable_present(request.graph_identity)
+        || !execution::valid_identity(request.hierarchy)
         || request.stages == nullptr || request.stage_count < 2u
         || request.stage_count > maximum_connected_operations
         || request.transitions == nullptr || request.transition_count == 0u
@@ -597,6 +599,7 @@ planner_status plan_connected_operations(
 
     connected_planning_keys durable_keys{};
     durable_keys.graph_identity = request.graph_identity;
+    durable_keys.hierarchy = request.hierarchy;
     durable_keys.stage_count = request.stage_count;
     for (std::uint32_t stage = 0u; stage < request.stage_count; ++stage) {
         const connected_operation_stage &node = request.stages[stage];

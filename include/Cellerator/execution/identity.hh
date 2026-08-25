@@ -65,6 +65,7 @@ struct domain_tag;
 struct order_tag;
 struct geometry_tag;
 struct partition_tag;
+struct partition_hierarchy_tag;
 struct structure_tag;
 struct projection_tag;
 
@@ -72,6 +73,7 @@ using domain_id = persistent_identity<domain_tag>;
 using order_id = persistent_identity<order_tag>;
 using geometry_id = persistent_identity<geometry_tag>;
 using partition_id = persistent_identity<partition_tag>;
+using partition_hierarchy_id = persistent_identity<partition_hierarchy_tag>;
 using structure_id = persistent_identity<structure_tag>;
 using projection_id = persistent_identity<projection_tag>;
 
@@ -79,6 +81,7 @@ using domain_handle = identity_handle<domain_tag>;
 using order_handle = identity_handle<order_tag>;
 using geometry_handle = identity_handle<geometry_tag>;
 using partition_handle = identity_handle<partition_tag>;
+using partition_hierarchy_handle = identity_handle<partition_hierarchy_tag>;
 using structure_handle = identity_handle<structure_tag>;
 using projection_handle = identity_handle<projection_tag>;
 

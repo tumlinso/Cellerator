@@ -121,6 +121,7 @@ struct fixture {
             true, true, 0u, {1001u, 86u},
             boundary_cost(100.0, 60.0, 40.0, 20.0)};
         request.graph_identity = {860u, 861u};
+        request.hierarchy = {862u, 863u};
         request.stages = stages;
         request.stage_count = 2u;
         request.transitions = transitions;

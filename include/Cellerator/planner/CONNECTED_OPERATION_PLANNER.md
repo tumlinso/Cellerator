@@ -1,4 +1,4 @@
-# Connected-operation planner v1
+# Connected-operation planner v2
 
 CE-ARCH-86 adds a bounded linear-chain planner above the existing
 single-operation planner. It does not replace operation candidates, Objective
@@ -25,3 +25,9 @@ they store graph identity, every stage's structure epochs, biological geometry
 and order identities, device/build/policy keys, candidate identities, and
 projection identities. Evidence revision, spread, and confidence are validated
 before replay; a stale or unavailable winner falls back to current planning.
+
+CE-ARCH-90 adds the persistent partition-hierarchy identity to the durable
+connected key. The identity covers nested partition membership, ancestry, and
+placement; changing any of those facts invalidates cached whole-path evidence.
+Boundary communication and order work remain ordinary measured phase costs,
+so the planner does not encode a preferred topology or transfer mechanism.

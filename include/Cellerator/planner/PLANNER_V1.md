@@ -28,6 +28,10 @@ Candidate selection has seven bounded stages:
    persistent projection to a legal candidate and uses the candidate's current
    runtime handle.
 
+Connected-plan keys additionally name the persistent partition hierarchy.
+Nested membership, ancestry, or placement changes therefore invalidate a
+cached connected path without conflating hierarchy with biological geometry.
+
 Confidence depends on sample count, measurement spread, and separation from the
 runner-up within the declared tolerance. If every empirical measurement is
 failed or contaminated, conservative policy may select the best legal

@@ -1629,6 +1629,7 @@ set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
 
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
+    src/distributed/hierarchy.cc
     components/CellPack/src/optimization/objective_v2.cc
     src/planner/objective_v2_calibration.cc
 )
@@ -1675,6 +1676,9 @@ add_executable(celleratorConnectedOperationPlannerTest
 add_executable(celleratorObjectiveV2CalibrationTest
     tests/planner/objective_v2_calibration_test.cc
 )
+add_executable(celleratorHierarchyPartitionBoundaryTest
+    tests/distributed/hierarchy_partition_boundary_test.cc
+)
 
 add_executable(celleratorCandidateMeasurementTest
     tests/planner/candidate_measurement_test.cu
@@ -1697,6 +1701,9 @@ target_link_libraries(celleratorConnectedOperationPlannerTest PRIVATE
 target_link_libraries(celleratorObjectiveV2CalibrationTest PRIVATE
     Cellerator::planner
 )
+target_link_libraries(celleratorHierarchyPartitionBoundaryTest PRIVATE
+    Cellerator::planner
+)
 set_target_properties(celleratorPlannerV1Test PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
@@ -1706,6 +1713,10 @@ set_target_properties(celleratorConnectedOperationPlannerTest PROPERTIES
     CXX_STANDARD_REQUIRED YES
 )
 set_target_properties(celleratorObjectiveV2CalibrationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+set_target_properties(celleratorHierarchyPartitionBoundaryTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )

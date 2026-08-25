@@ -13,7 +13,7 @@ namespace operation_core = compute::math::core;
 inline constexpr std::uint32_t planner_schema_version = 2u;
 inline constexpr std::uint32_t objective_v2_schema_version = 2u;
 inline constexpr std::uint32_t maximum_planner_candidates = 32u;
-inline constexpr std::uint32_t connected_planner_schema_version = 1u;
+inline constexpr std::uint32_t connected_planner_schema_version = 2u;
 inline constexpr std::uint32_t maximum_connected_operations = 8u;
 inline constexpr std::uint32_t maximum_connected_stage_candidates = 8u;
 inline constexpr std::uint32_t maximum_connected_transitions = 128u;
@@ -342,6 +342,7 @@ struct connected_plan_path {
 
 struct connected_planning_keys {
     operation_core::stable_id graph_identity{};
+    execution::partition_hierarchy_id hierarchy{};
     std::uint32_t stage_count = 0u;
     std::uint32_t reserved = 0u;
     planning_keys stages[maximum_connected_operations]{};
@@ -390,6 +391,7 @@ struct connected_plan_cache_hooks {
 struct connected_planner_request {
     std::uint32_t schema_version = connected_planner_schema_version;
     operation_core::stable_id graph_identity{};
+    execution::partition_hierarchy_id hierarchy{};
     const connected_operation_stage *stages = nullptr;
     std::uint32_t stage_count = 0u;
     std::uint32_t reserved = 0u;

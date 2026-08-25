@@ -12,7 +12,8 @@ bool valid_kind(identity_kind kind) noexcept {
     return kind == identity_kind::domain || kind == identity_kind::order
         || kind == identity_kind::geometry || kind == identity_kind::partition
         || kind == identity_kind::structure
-        || kind == identity_kind::projection;
+        || kind == identity_kind::projection
+        || kind == identity_kind::partition_hierarchy;
 }
 
 } // namespace
