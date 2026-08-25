@@ -157,6 +157,23 @@ cellpack::alternating_refinement_config config() {
     return result;
 }
 
+void add_workload_profile(cellpack::packing_validation_metrics *metrics,
+    u64 forward_mean, u64 transpose_mean, u64 active_interactions,
+    u64 partition_cut_edges, u64 bootstrap_median, u64 bootstrap_mad) {
+    metrics->available |= cellpack::packing_validation_metric_workload_profile;
+    metrics->workload_profile_identity = 0x877001u;
+    metrics->workload_evidence_revision = 0x877002u;
+    metrics->forward_repeat_count = 4u;
+    metrics->transpose_repeat_count = 4u;
+    metrics->forward_elapsed_nanoseconds = forward_mean * 4u;
+    metrics->transpose_elapsed_nanoseconds = transpose_mean * 4u;
+    metrics->active_interactions = active_interactions;
+    metrics->partition_cut_edges = partition_cut_edges;
+    metrics->bootstrap_sample_count = 32u;
+    metrics->bootstrap_median_total_nanoseconds = bootstrap_median;
+    metrics->bootstrap_mad_nanoseconds = bootstrap_mad;
+}
+
 void test_acceptance_rollback_and_reproducibility() {
     cellpack::frozen_packing_plan baseline_plan = make_plan(
         {{0u}, {1u}, {2u}, {3u}, {4u}, {5u}}, 0x1001u);
@@ -269,10 +286,89 @@ void test_tolerance_caps_empty_and_identity_rejection() {
         "storage-weighted objective accepted unavailable storage metrics");
 }
 
+void test_workload_profiles_held_out_and_bootstrap_stability() {
+    cellpack::frozen_packing_plan baseline_plan = make_plan(
+        {{0u}, {1u}, {2u}, {3u}, {4u}, {5u}}, 0x8701u);
+    cellpack::frozen_packing_plan unstable_plan = make_plan(
+        {{0u, 1u}, {2u}, {3u}, {4u}, {5u}}, 0x8702u);
+    cellpack::frozen_packing_plan stable_plan = make_plan(
+        {{0u, 1u}, {2u, 3u}, {4u}, {5u}}, 0x8703u);
+    auto baseline = observation(&baseline_plan,
+        cellpack::alternating_refinement_phase::baseline,
+        0u, 0x8710u, 0u, 120u, 800u);
+    add_workload_profile(&baseline.training,
+        950u, 580u, 2900u, 280u, 900u, 20u);
+    add_workload_profile(&baseline.held_out,
+        1000u, 600u, 1000u, 100u, 940u, 20u);
+    const u64 baseline_id =
+        cellpack::alternating_refinement_plan_identity(baseline_plan);
+    auto unstable = observation(&unstable_plan,
+        cellpack::alternating_refinement_phase::gene_blocks,
+        1u, 0x8711u, baseline_id, 100u, 600u);
+    add_workload_profile(&unstable.training,
+        650u, 400u, 2500u, 200u, 600u, 5u);
+    // Attractive mean but unstable on held-out bootstrap draws.
+    add_workload_profile(&unstable.held_out,
+        800u, 500u, 900u, 80u, 742u, 300u);
+    auto stable = observation(&stable_plan,
+        cellpack::alternating_refinement_phase::cell_order_and_tiles,
+        2u, 0x8712u, baseline_id, 105u, 650u);
+    add_workload_profile(&stable.training,
+        820u, 500u, 2700u, 230u, 750u, 8u);
+    add_workload_profile(&stable.held_out,
+        850u, 520u, 950u, 90u, 790u, 10u);
+    cellpack::alternating_refinement_observation candidates[]{unstable, stable};
+
+    auto settings = config();
+    settings.workload_profile_identity = 0x877001u;
+    settings.workload_evidence_revision = 0x877002u;
+    settings.minimum_bootstrap_samples = 32u;
+    settings.weights = cellpack::alternating_refinement_objective_weights{};
+    settings.weights.encoded_bytes = 0.0;
+    settings.weights.runtime_mean_nanoseconds = 0.0;
+    settings.weights.preprocessing_mean_nanoseconds = 0.125;
+    settings.weights.forward_mean_nanoseconds = 0.75;
+    settings.weights.transpose_mean_nanoseconds = 0.25;
+    settings.weights.active_interaction_nanoseconds = 0.01;
+    settings.weights.partition_cut_edge_nanoseconds = 0.1;
+    settings.weights.bootstrap_mad_nanoseconds = 1.0;
+    double exact_surrogate = 0.0;
+    require_status(cellpack::evaluate_alternating_refinement_objective(
+        baseline.held_out, settings.weights, &exact_surrogate),
+        "evaluate workload exact surrogate");
+    const double expected = 0.125 * 40.0 + 0.75 * 1000.0
+        + 0.25 * 600.0 + 0.01 * 1000.0 + 0.1 * 100.0 + 20.0;
+    require(std::fabs(exact_surrogate - expected) < 1.0e-9,
+        "workload exact surrogate accounting mismatch");
+
+    cellpack::alternating_refinement_event events[2]{};
+    cellpack::alternating_refinement_result result{};
+    require_status(cellpack::run_alternating_refinement(baseline,
+        candidates, 2u, settings, {2u, events}, &result),
+        "run workload-profile refinement");
+    require(events[0].outcome
+            == cellpack::alternating_refinement_outcome::rejected_no_improvement
+        && events[1].outcome
+            == cellpack::alternating_refinement_outcome::accepted
+        && result.best_plan == &stable_plan,
+        "held-out/bootstrap stability did not control workload refinement");
+
+    candidates[1].held_out.workload_evidence_revision ^= 1u;
+    require(!cellpack::run_alternating_refinement(baseline,
+        candidates, 2u, settings, {2u, events}, &result),
+        "stale workload evidence was accepted");
+    candidates[1].held_out.workload_evidence_revision ^= 1u;
+    candidates[1].held_out.bootstrap_sample_count = 8u;
+    require(!cellpack::run_alternating_refinement(baseline,
+        candidates, 2u, settings, {2u, events}, &result),
+        "under-sampled bootstrap evidence was accepted");
+}
+
 } // namespace
 
 int main() {
     test_acceptance_rollback_and_reproducibility();
     test_tolerance_caps_empty_and_identity_rejection();
+    test_workload_profiles_held_out_and_bootstrap_stability();
     return 0;
 }

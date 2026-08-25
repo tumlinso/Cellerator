@@ -224,7 +224,45 @@ void test_refinement_guidance_uses_measured_total_cost_units() {
         && weights.metadata_bytes == 0.0
         && weights.active_block_references == 0.0
         && weights.runtime_mean_nanoseconds == 1.0
-        && weights.preprocessing_mean_nanoseconds == 0.125);
+        && weights.preprocessing_mean_nanoseconds == 0.125
+        && weights.forward_mean_nanoseconds == 0.0
+        && weights.transpose_mean_nanoseconds == 0.0);
+}
+
+void test_workload_refinement_guidance_is_evidence_bound() {
+    const auto model = planner::ce_arch_76_v100_objective_v2_calibration();
+    planner::objective_v2_refinement_workload workload{};
+    workload.expected_reuse = 8u;
+    workload.workload_profile_identity = 0x877001u;
+    workload.workload_evidence_revision = 0x877002u;
+    workload.minimum_bootstrap_samples = 32u;
+    workload.forward_weight = 0.75;
+    workload.transpose_weight = 0.25;
+    workload.active_interaction_scale = 1.0;
+    workload.measured_partition_cut_edge_ns = 0.05;
+    workload.bootstrap_mad_weight = 1.0;
+    planner::objective_v2_refinement_guidance guidance{};
+    assert(planner::make_objective_v2_refinement_guidance(
+        model, workload, &guidance));
+    assert(guidance.model_identity == model.model_identity
+        && guidance.calibration_evidence_revision == model.evidence_revision
+        && guidance.weights.preprocessing_mean_nanoseconds == 0.125
+        && guidance.weights.forward_mean_nanoseconds == 0.75
+        && guidance.weights.transpose_mean_nanoseconds == 0.25
+        && guidance.weights.active_interaction_nanoseconds
+            == model.coefficients.useful_interaction_ns
+        && guidance.weights.partition_cut_edge_nanoseconds == 0.05
+        && guidance.weights.bootstrap_mad_nanoseconds == 1.0);
+    cellpack::alternating_refinement_config config{};
+    assert(planner::apply_objective_v2_refinement_guidance(
+        guidance, &config));
+    assert(config.workload_profile_identity == workload.workload_profile_identity
+        && config.workload_evidence_revision
+            == workload.workload_evidence_revision
+        && config.minimum_bootstrap_samples == 32u);
+    workload.workload_evidence_revision = 0u;
+    assert(!planner::make_objective_v2_refinement_guidance(
+        model, workload, &guidance));
 }
 
 } // namespace
@@ -233,5 +271,6 @@ int main() {
     test_measured_regime_predictions();
     test_determinism_identity_invalidation_and_fallback();
     test_refinement_guidance_uses_measured_total_cost_units();
+    test_workload_refinement_guidance_is_evidence_bound();
     return 0;
 }

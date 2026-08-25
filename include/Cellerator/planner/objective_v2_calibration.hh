@@ -10,6 +10,7 @@
 namespace cellerator::planner {
 
 inline constexpr std::uint32_t objective_v2_calibration_schema_version = 1u;
+inline constexpr std::uint32_t objective_v2_refinement_guidance_schema_version = 1u;
 
 enum class objective_v2_prediction_state : std::uint8_t {
     calibrated = 1u,
@@ -124,9 +125,50 @@ planner_status make_objective_v2_refinement_weights(
     std::uint64_t expected_reuse,
     cellpack::alternating_refinement_objective_weights *out) noexcept;
 
+struct objective_v2_refinement_workload {
+    std::uint64_t expected_reuse = 1u;
+    std::uint64_t workload_profile_identity = 0u;
+    std::uint64_t workload_evidence_revision = 0u;
+    std::uint32_t minimum_bootstrap_samples = 0u;
+    std::uint32_t reserved = 0u;
+    double forward_weight = 0.0;
+    double transpose_weight = 0.0;
+    double active_interaction_scale = 0.0;
+    double measured_partition_cut_edge_ns = 0.0;
+    double bootstrap_mad_weight = 0.0;
+};
+
+struct objective_v2_refinement_guidance {
+    std::uint32_t schema_version =
+        objective_v2_refinement_guidance_schema_version;
+    std::uint32_t reserved = 0u;
+    std::uint64_t model_identity = 0u;
+    std::uint64_t calibration_evidence_revision = 0u;
+    std::uint64_t workload_profile_identity = 0u;
+    std::uint64_t workload_evidence_revision = 0u;
+    std::uint32_t minimum_bootstrap_samples = 0u;
+    std::uint32_t reserved_count = 0u;
+    cellpack::alternating_refinement_objective_weights weights{};
+};
+
+// Builds measured workload guidance. Forward/transpose totals and bootstrap
+// spread come from validation packets. Activity uses the CE-ARCH-76 measured
+// useful-interaction coefficient. Partition-cut cost is accepted only as an
+// explicit caller-measured coefficient with its own evidence identity.
+planner_status make_objective_v2_refinement_guidance(
+    const objective_v2_calibration &calibration,
+    const objective_v2_refinement_workload &workload,
+    objective_v2_refinement_guidance *out) noexcept;
+
+planner_status apply_objective_v2_refinement_guidance(
+    const objective_v2_refinement_guidance &guidance,
+    cellpack::alternating_refinement_config *config) noexcept;
+
 static_assert(std::is_trivially_copyable<objective_v2_coefficients>::value,
     "objective v2 coefficients must remain replaceable data");
 static_assert(std::is_trivially_copyable<objective_v2_prediction>::value,
     "objective v2 predictions must remain diagnostic-record friendly");
+static_assert(std::is_trivially_copyable<objective_v2_refinement_guidance>::value,
+    "objective v2 refinement guidance must remain pointer-free evidence data");
 
 } // namespace cellerator::planner

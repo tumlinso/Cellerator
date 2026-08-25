@@ -57,7 +57,12 @@ validation_result validate_weights(
         || !valid_weight(weights.tile_block_union_references)
         || !valid_weight(weights.padding_slots)
         || !valid_weight(weights.runtime_mean_nanoseconds)
-        || !valid_weight(weights.preprocessing_mean_nanoseconds)) {
+        || !valid_weight(weights.preprocessing_mean_nanoseconds)
+        || !valid_weight(weights.forward_mean_nanoseconds)
+        || !valid_weight(weights.transpose_mean_nanoseconds)
+        || !valid_weight(weights.active_interaction_nanoseconds)
+        || !valid_weight(weights.partition_cut_edge_nanoseconds)
+        || !valid_weight(weights.bootstrap_mad_nanoseconds)) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "alternating-refinement objective weights must be finite and nonnegative");
     }
@@ -66,7 +71,12 @@ validation_result validate_weights(
         && weights.tile_block_union_references == 0.0
         && weights.padding_slots == 0.0
         && weights.runtime_mean_nanoseconds == 0.0
-        && weights.preprocessing_mean_nanoseconds == 0.0) {
+        && weights.preprocessing_mean_nanoseconds == 0.0
+        && weights.forward_mean_nanoseconds == 0.0
+        && weights.transpose_mean_nanoseconds == 0.0
+        && weights.active_interaction_nanoseconds == 0.0
+        && weights.partition_cut_edge_nanoseconds == 0.0
+        && weights.bootstrap_mad_nanoseconds == 0.0) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "alternating-refinement objective has no active term");
     }
@@ -87,6 +97,19 @@ validation_result validate_config(const alternating_refinement_config &config) {
         || config.row_domain_identity == 0u || config.split_identity == 0u) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "alternating-refinement identities must be explicit");
+    }
+    const bool profile_weighted =
+        config.weights.forward_mean_nanoseconds != 0.0
+        || config.weights.transpose_mean_nanoseconds != 0.0
+        || config.weights.active_interaction_nanoseconds != 0.0
+        || config.weights.partition_cut_edge_nanoseconds != 0.0
+        || config.weights.bootstrap_mad_nanoseconds != 0.0;
+    if (profile_weighted && (config.workload_profile_identity == 0u
+            || config.workload_evidence_revision == 0u
+            || config.minimum_bootstrap_samples == 0u)) {
+        return validation_error(validation_code::invalid_plan_geometry,
+            invalid_id,
+            "workload-weighted refinement needs profile, evidence, and bootstrap identities");
     }
     if (!std::isfinite(config.absolute_improvement_tolerance)
         || !std::isfinite(config.relative_improvement_tolerance)
@@ -125,9 +148,32 @@ validation_result validate_metric_binding(
             || metrics.feature_count != baseline->feature_count
             || metrics.nnz_count != baseline->nnz_count
             || metrics.runtime_input_nnz != baseline->runtime_input_nnz
-            || metrics.runtime_repeat_count != baseline->runtime_repeat_count)) {
+            || metrics.runtime_repeat_count != baseline->runtime_repeat_count
+            || metrics.forward_repeat_count != baseline->forward_repeat_count
+            || metrics.transpose_repeat_count != baseline->transpose_repeat_count
+            || metrics.bootstrap_sample_count
+                != baseline->bootstrap_sample_count)) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "alternating-refinement candidate changed an objective denominator");
+    }
+    const bool profile_weighted =
+        config.weights.forward_mean_nanoseconds != 0.0
+        || config.weights.transpose_mean_nanoseconds != 0.0
+        || config.weights.active_interaction_nanoseconds != 0.0
+        || config.weights.partition_cut_edge_nanoseconds != 0.0
+        || config.weights.bootstrap_mad_nanoseconds != 0.0;
+    if (profile_weighted
+        && ((metrics.available
+                & packing_validation_metric_workload_profile) == 0u
+            || metrics.workload_profile_identity
+                != config.workload_profile_identity
+            || metrics.workload_evidence_revision
+                != config.workload_evidence_revision
+            || metrics.bootstrap_sample_count
+                < config.minimum_bootstrap_samples)) {
+        return validation_error(validation_code::invalid_matrix_view,
+            invalid_id,
+            "workload profile is unavailable, stale, or under-sampled");
     }
     return validation_ok();
 }
@@ -202,11 +248,14 @@ u64 controller_identity(
     hash_u64(&hash, config.feature_axis_identity_version);
     hash_u64(&hash, config.row_domain_identity);
     hash_u64(&hash, config.split_identity);
+    hash_u64(&hash, config.workload_profile_identity);
+    hash_u64(&hash, config.workload_evidence_revision);
     hash_u64(&hash, config.seed);
     hash_u64(&hash, config.maximum_iterations);
     hash_u64(&hash, config.maximum_evaluations);
     hash_u64(&hash, config.maximum_consecutive_rejections);
     hash_u64(&hash, config.maximum_preprocessing_nanoseconds);
+    hash_u64(&hash, config.minimum_bootstrap_samples);
     hash_double(&hash, config.absolute_improvement_tolerance);
     hash_double(&hash, config.relative_improvement_tolerance);
     hash_double(&hash, config.weights.encoded_bytes);
@@ -216,6 +265,11 @@ u64 controller_identity(
     hash_double(&hash, config.weights.padding_slots);
     hash_double(&hash, config.weights.runtime_mean_nanoseconds);
     hash_double(&hash, config.weights.preprocessing_mean_nanoseconds);
+    hash_double(&hash, config.weights.forward_mean_nanoseconds);
+    hash_double(&hash, config.weights.transpose_mean_nanoseconds);
+    hash_double(&hash, config.weights.active_interaction_nanoseconds);
+    hash_double(&hash, config.weights.partition_cut_edge_nanoseconds);
+    hash_double(&hash, config.weights.bootstrap_mad_nanoseconds);
     hash_u64(&hash, result.best_plan_identity);
     hash_u64(&hash, result.event_count);
     for (u32 index = 0u; index < result.event_count; ++index) {
@@ -306,19 +360,42 @@ validation_result evaluate_alternating_refinement_objective(
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "preprocessing-weighted refinement requires measured preprocessing repeats");
     }
+    const bool profile_weighted = weights.forward_mean_nanoseconds != 0.0
+        || weights.transpose_mean_nanoseconds != 0.0
+        || weights.active_interaction_nanoseconds != 0.0
+        || weights.partition_cut_edge_nanoseconds != 0.0
+        || weights.bootstrap_mad_nanoseconds != 0.0;
+    if (profile_weighted
+        && (metrics.available
+            & packing_validation_metric_workload_profile) == 0u) {
+        return validation_error(validation_code::invalid_matrix_view,
+            invalid_id,
+            "workload-weighted refinement requires measured workload profiles");
+    }
     const double runtime_mean = metrics.runtime_repeat_count == 0u ? 0.0
         : static_cast<double>(metrics.runtime_elapsed_nanoseconds)
             / metrics.runtime_repeat_count;
     const double preprocessing_mean = metrics.preprocessing_repeat_count == 0u ? 0.0
         : static_cast<double>(metrics.preprocessing_elapsed_nanoseconds)
             / metrics.preprocessing_repeat_count;
+    const double forward_mean = metrics.forward_repeat_count == 0u ? 0.0
+        : static_cast<double>(metrics.forward_elapsed_nanoseconds)
+            / metrics.forward_repeat_count;
+    const double transpose_mean = metrics.transpose_repeat_count == 0u ? 0.0
+        : static_cast<double>(metrics.transpose_elapsed_nanoseconds)
+            / metrics.transpose_repeat_count;
     const double result = weights.encoded_bytes * metrics.encoded_bytes
         + weights.metadata_bytes * metrics.metadata_bytes
         + weights.active_block_references * metrics.active_block_references
         + weights.tile_block_union_references * metrics.tile_block_union_references
         + weights.padding_slots * metrics.padding_slots
         + weights.runtime_mean_nanoseconds * runtime_mean
-        + weights.preprocessing_mean_nanoseconds * preprocessing_mean;
+        + weights.preprocessing_mean_nanoseconds * preprocessing_mean
+        + weights.forward_mean_nanoseconds * forward_mean
+        + weights.transpose_mean_nanoseconds * transpose_mean
+        + weights.active_interaction_nanoseconds * metrics.active_interactions
+        + weights.partition_cut_edge_nanoseconds * metrics.partition_cut_edges
+        + weights.bootstrap_mad_nanoseconds * metrics.bootstrap_mad_nanoseconds;
     if (!std::isfinite(result)) {
         return validation_error(validation_code::integer_overflow, invalid_id,
             "alternating-refinement objective is not finite");

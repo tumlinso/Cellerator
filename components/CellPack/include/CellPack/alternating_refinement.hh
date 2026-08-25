@@ -6,7 +6,7 @@
 
 namespace cellpack {
 
-inline constexpr u32 alternating_refinement_schema_version = 1u;
+inline constexpr u32 alternating_refinement_schema_version = 2u;
 
 enum class alternating_refinement_phase : u32 {
     baseline = 0u,
@@ -28,8 +28,9 @@ enum class alternating_refinement_stop_reason : u32 {
     preprocessing_cap = 5u
 };
 
-// V1 combines measured representation/runtime terms only. Hardware prediction
-// remains CP-BP-12 scope and must enter through a later schema version.
+// V2 retains the measured representation/runtime terms and adds an optional
+// evidence-bound workload profile. It does not persist hardware predictions
+// or candidate identity in the packing plan.
 struct alternating_refinement_objective_weights {
     double encoded_bytes = 1.0;
     double metadata_bytes = 0.0;
@@ -38,6 +39,11 @@ struct alternating_refinement_objective_weights {
     double padding_slots = 0.0;
     double runtime_mean_nanoseconds = 0.0;
     double preprocessing_mean_nanoseconds = 0.0;
+    double forward_mean_nanoseconds = 0.0;
+    double transpose_mean_nanoseconds = 0.0;
+    double active_interaction_nanoseconds = 0.0;
+    double partition_cut_edge_nanoseconds = 0.0;
+    double bootstrap_mad_nanoseconds = 0.0;
 };
 
 struct alternating_refinement_config {
@@ -51,7 +57,11 @@ struct alternating_refinement_config {
     u32 feature_axis_identity_version = 0u;
     u64 row_domain_identity = 0u;
     u64 split_identity = 0u;
+    u64 workload_profile_identity = 0u;
+    u64 workload_evidence_revision = 0u;
     u64 seed = 0u;
+    u32 minimum_bootstrap_samples = 0u;
+    u32 reserved = 0u;
     double absolute_improvement_tolerance = 0.0;
     double relative_improvement_tolerance = 0.0;
     alternating_refinement_objective_weights weights{};

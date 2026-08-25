@@ -181,7 +181,8 @@ validation_result validate_packing_validation_metrics(
     constexpr u32 known_metrics = packing_validation_metric_storage
         | packing_validation_metric_records | packing_validation_metric_tiles
         | packing_validation_metric_preprocessing | packing_validation_metric_runtime
-        | packing_validation_metric_correctness;
+        | packing_validation_metric_correctness
+        | packing_validation_metric_workload_profile;
     if ((metrics.available & ~known_metrics) != 0u) {
         return validation_error(validation_code::unsupported_version,
             metrics.available, "packing-validation metrics contain unknown availability flags");
@@ -222,6 +223,21 @@ validation_result validate_packing_validation_metrics(
             || metrics.correctness_mismatches > metrics.correctness_items)) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "correctness metrics lack a valid comparison denominator");
+    }
+    if ((metrics.available & packing_validation_metric_workload_profile) != 0u
+        && (metrics.workload_profile_identity == 0u
+            || metrics.workload_evidence_revision == 0u
+            || metrics.forward_elapsed_nanoseconds == 0u
+            || metrics.transpose_elapsed_nanoseconds == 0u
+            || metrics.forward_repeat_count == 0u
+            || metrics.transpose_repeat_count == 0u
+            || metrics.bootstrap_median_total_nanoseconds == 0u
+            || metrics.bootstrap_sample_count == 0u
+            || metrics.bootstrap_mad_nanoseconds
+                > metrics.bootstrap_median_total_nanoseconds)) {
+        return validation_error(validation_code::invalid_plan_geometry,
+            invalid_id,
+            "workload profile lacks identities, repeats, or bootstrap evidence");
     }
     return validation_ok();
 }

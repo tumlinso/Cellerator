@@ -257,4 +257,71 @@ planner_status make_objective_v2_refinement_weights(
     return {};
 }
 
+planner_status make_objective_v2_refinement_guidance(
+    const objective_v2_calibration &calibration,
+    const objective_v2_refinement_workload &workload,
+    objective_v2_refinement_guidance *out) noexcept {
+    const double values[]{workload.forward_weight,
+        workload.transpose_weight, workload.active_interaction_scale,
+        workload.measured_partition_cut_edge_ns,
+        workload.bootstrap_mad_weight};
+    if (out == nullptr || !valid_calibration(calibration)
+        || workload.expected_reuse == 0u
+        || workload.workload_profile_identity == 0u
+        || workload.workload_evidence_revision == 0u
+        || workload.minimum_bootstrap_samples == 0u
+        || (workload.forward_weight == 0.0
+            && workload.transpose_weight == 0.0))
+        return {planner_status_code::invalid_argument,
+            "objective v2 workload guidance requires measured profile identities"};
+    for (double value : values)
+        if (!finite_nonnegative(value))
+            return {planner_status_code::invalid_argument,
+                "objective v2 workload guidance weights must be nonnegative"};
+    objective_v2_refinement_guidance result{};
+    result.model_identity = calibration.model_identity;
+    result.calibration_evidence_revision = calibration.evidence_revision;
+    result.workload_profile_identity = workload.workload_profile_identity;
+    result.workload_evidence_revision = workload.workload_evidence_revision;
+    result.minimum_bootstrap_samples = workload.minimum_bootstrap_samples;
+    result.weights = {};
+    result.weights.encoded_bytes = 0.0;
+    result.weights.runtime_mean_nanoseconds = 0.0;
+    result.weights.preprocessing_mean_nanoseconds =
+        1.0 / static_cast<double>(workload.expected_reuse);
+    result.weights.forward_mean_nanoseconds = workload.forward_weight;
+    result.weights.transpose_mean_nanoseconds = workload.transpose_weight;
+    result.weights.active_interaction_nanoseconds =
+        calibration.coefficients.useful_interaction_ns
+        * workload.active_interaction_scale;
+    result.weights.partition_cut_edge_nanoseconds =
+        workload.measured_partition_cut_edge_ns;
+    result.weights.bootstrap_mad_nanoseconds =
+        workload.bootstrap_mad_weight;
+    *out = result;
+    return {};
+}
+
+planner_status apply_objective_v2_refinement_guidance(
+    const objective_v2_refinement_guidance &guidance,
+    cellpack::alternating_refinement_config *config) noexcept {
+    if (config == nullptr
+        || guidance.schema_version
+            != objective_v2_refinement_guidance_schema_version
+        || guidance.model_identity == 0u
+        || guidance.calibration_evidence_revision == 0u
+        || guidance.workload_profile_identity == 0u
+        || guidance.workload_evidence_revision == 0u
+        || guidance.minimum_bootstrap_samples == 0u
+        || config->schema_version
+            != cellpack::alternating_refinement_schema_version)
+        return {planner_status_code::invalid_argument,
+            "objective v2 refinement guidance is stale or malformed"};
+    config->workload_profile_identity = guidance.workload_profile_identity;
+    config->workload_evidence_revision = guidance.workload_evidence_revision;
+    config->minimum_bootstrap_samples = guidance.minimum_bootstrap_samples;
+    config->weights = guidance.weights;
+    return {};
+}
+
 } // namespace cellerator::planner

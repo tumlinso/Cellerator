@@ -19,7 +19,8 @@ enum packing_validation_metric_flags : u32 {
     packing_validation_metric_tiles = 1u << 2u,
     packing_validation_metric_preprocessing = 1u << 3u,
     packing_validation_metric_runtime = 1u << 4u,
-    packing_validation_metric_correctness = 1u << 5u
+    packing_validation_metric_correctness = 1u << 5u,
+    packing_validation_metric_workload_profile = 1u << 6u
 };
 
 // Raw numerators and denominators are authoritative. Derived rates are never
@@ -48,8 +49,22 @@ struct packing_validation_metrics {
     u64 runtime_elapsed_nanoseconds = 0u;
     u64 correctness_items = 0u;
     u64 correctness_mismatches = 0u;
+    // CE-ARCH-87 measured workload profile. These are raw evidence counts and
+    // totals; weighting remains an optimizer policy outside the packet.
+    u64 workload_profile_identity = 0u;
+    u64 workload_evidence_revision = 0u;
+    u64 forward_elapsed_nanoseconds = 0u;
+    u64 transpose_elapsed_nanoseconds = 0u;
+    u64 active_interactions = 0u;
+    u64 partition_cut_edges = 0u;
+    u64 bootstrap_median_total_nanoseconds = 0u;
+    u64 bootstrap_mad_nanoseconds = 0u;
     u32 preprocessing_repeat_count = 0u;
     u32 runtime_repeat_count = 0u;
+    u32 forward_repeat_count = 0u;
+    u32 transpose_repeat_count = 0u;
+    u32 bootstrap_sample_count = 0u;
+    u32 reserved = 0u;
 };
 
 struct packing_validation_metric_rates {
