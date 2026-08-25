@@ -74,6 +74,22 @@ Its v1 contract provides:
 
 The last property is correct for the v1 API but should not become the future internal default.
 
+### Operation-core activation
+
+CE-ARCH-71 registers that preserved direct path as the
+`cpbp-cpk1-row-masked-n1` operation-core candidate. The adapter is deliberately
+narrow: it accepts only configured-precision, single-vector weighted relation
+reduction over a prevalidated and device-rebound CPK1 row-masked projection.
+Prepared state aliases immutable CPK1 geometry and canonical-row recovery
+metadata. Relation values, feature weights, output storage, value generation,
+stream, and zero-byte transient workspace remain launch bindings.
+
+The candidate is deterministic and graph-capture compatible. It allocates,
+copies, reconstructs, and synchronizes nothing, and calls the existing CP-BP
+CUDA consumer directly. Its canonical row output preserves the v1 compatibility
+contract; it is not a declaration that row-masked execution or canonical output
+is the universal planner default.
+
 ### Historical V100 evidence
 
 The recorded benchmark used:

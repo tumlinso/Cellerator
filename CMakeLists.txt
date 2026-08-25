@@ -1456,6 +1456,30 @@ set_target_properties(cellPackExecutionImageV2Test PROPERTIES
     CXX_STANDARD_REQUIRED YES
 )
 
+# CE-ARCH-71: operation-core activation of the preserved CP-BP v1 row-masked
+# N=1 direct consumer. This adapter adds no kernel or persistence format.
+add_library(cellerator_row_masked_n1_candidate STATIC
+    src/compute/math/operation_core/row_masked_n1_candidate.cu
+)
+add_library(Cellerator::row_masked_n1_candidate ALIAS
+    cellerator_row_masked_n1_candidate)
+target_include_directories(cellerator_row_masked_n1_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_row_masked_n1_candidate PUBLIC
+    Cellerator::operation_core
+    CellPack::feature_weighted_row_reduction_cuda
+    CellPack::persistent_packing_payload
+)
+set_target_properties(cellerator_row_masked_n1_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     components/CellPack/src/optimization/objective_v2.cc
@@ -1479,6 +1503,20 @@ target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
 set_target_properties(celleratorPlannerV1Test PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorRowMaskedN1CandidateTest
+    tests/math_core/row_masked_n1_candidate_test.cu
+)
+target_link_libraries(celleratorRowMaskedN1CandidateTest PRIVATE
+    Cellerator::row_masked_n1_candidate
+    Cellerator::planner
+)
+set_target_properties(celleratorRowMaskedN1CandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 
 # The surviving CP-Math v1 pieces are validation and compatibility evidence,
