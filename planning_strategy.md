@@ -81,8 +81,10 @@ evidence when an adapter is involved.
 Separate host preparation, semantic packing, projection construction, H2D,
 dynamic packing, kernel, epilogue, order transform, synchronization,
 communication, D2H, persistent bytes, and transient workspace. Distinguish
-one-shot, bounded reuse, and persistent reuse. Use the CUDA background
-controller for serialized benchmarks and deep profiles.
+one-shot, bounded reuse, and persistent reuse. Coordinate serialized benchmarks
+and deep profiles through the normal `coding-workflow` task route. Use the
+direct CUDA controller only for fallback/debugging when that route is unavailable
+or internally inconsistent.
 
 ### 6. Promote only measured winners
 

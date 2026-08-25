@@ -63,10 +63,12 @@ Use this file as the canonical index for substantial multi-step work.
   `BARRIER_E_INTEGRATED`, `CP10_READY`, and `BARRIER_F_INTEGRATED` are
   published. CP-BP-09/10/11/12/13 are closed.
 
-## Suggested Skills
-- `todo-orchestrator`: maintain the resumable migration ledger while implementing the supplied plan.
-- `bio-experiments`: preserve scRNA raw-count, QC, normalization, and double-processing semantics.
-- `cuda`: keep the implementation aligned with native V100 sparse bio-data layout and hot-path constraints.
+## Workflow Routing
+- Use the `coding-workflow` MCP interface for substantial implementation.
+- Use direct todo-orchestrator and CUDA interfaces only for fallback/debugging,
+  recovery, or work on those skills themselves.
+- Preserve scRNA raw-count, QC, normalization, and double-processing semantics
+  when biological experiment guidance applies.
 
 ## Useful Reference Files
 - `AGENTS.md`: repository structure, testing, Blocked-ELL, and Volta policy.
