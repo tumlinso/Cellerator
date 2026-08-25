@@ -1619,6 +1619,9 @@ add_executable(celleratorCsrFallbackCandidateTest
 add_executable(celleratorFeatureMajorSmallNCandidateTest
     tests/math_core/feature_major_small_n_candidate_test.cu
 )
+add_executable(celleratorCeArch76CandidateBench
+    bench/math/feature_major_candidate_compare_bench.cu
+)
 add_executable(celleratorValueGenerationReuseTest
     tests/math_core/value_generation_reuse_test.cu
 )
@@ -1651,6 +1654,18 @@ target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorFeatureMajorSmallNCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorCeArch76CandidateBench PRIVATE
+    Cellerator::feature_major_small_n_candidate
+    Cellerator::row_masked_n1_candidate
+    Cellerator::csr_fallback_candidate
+    cellerator_math_v1_evidence
+)
+set_target_properties(celleratorCeArch76CandidateBench PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
