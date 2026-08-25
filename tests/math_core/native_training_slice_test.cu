@@ -1,3 +1,14 @@
+/*
+CE-ARCH-88 CUDA evidence (2026-08-25, evidence
+48e8a08d-cb5b-4469-855e-79fda8ca941d): on Tesla V100-SXM2-16GB sm_70 for
+rows=5, features=5, nnz=8, N=16, the native complete training step measured
+19.584 us median versus 28.352 us for the persistent generic CSR baseline
+(1.45x; 31 samples x 64 steps, five warmups). Both kernel families are checked
+against the same CPU referee at 1e-3 learned-value and 2e-5 dense/gradient
+tolerance. Reproduce through cuda_controller.py with
+/tmp/ce_arch_88_cuda_spec.json; preparation is persistent and excluded equally.
+*/
+
 #include <Cellerator/compute/math/native_training_slice.hh>
 
 #include <cuda_fp16.h>

@@ -1,10 +1,15 @@
 /*
-CE-ARCH-88 native training slice evidence is produced by
-celleratorNativeTrainingSliceTest on V100 sm_70. It compares the complete
-FMP1/CTP1 forward, fused bias-ReLU-RMS normalization, native backward, sparse
-value/bias SGD update, and generation transition against a topology-equivalent
-generic CSR forward/transpose plus separate epilogues. The evidence file names
-the shape, preparation, median/MAD, numerical tolerance, device, and build.
+CE-ARCH-88 CUDA evidence (2026-08-25, evidence
+48e8a08d-cb5b-4469-855e-79fda8ca941d): Tesla V100-SXM2-16GB sm_70,
+rows=5, features=5, nnz=8, N=16, f16 sparse values and f32 dense/accumulation.
+The complete FMP1/CTP1 fused training step measured 19.584 us median versus
+28.352 us for persistent generic CSR SpMM/transpose with separate epilogues
+(1.45x; 31 samples x 64 steps, five warmups). Both paths match the independent
+CPU referee at 1e-3 learned-value and 2e-5 dense/gradient tolerance. Command:
+python /home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py run
+--spec /tmp/ce_arch_88_cuda_spec.json --json. Projection preparation is reused
+and excluded equally; every repeated step includes all forward, epilogue,
+backward, sparse/bias update, and value-generation work.
 */
 
 #include <Cellerator/compute/math/native_training_slice.hh>
