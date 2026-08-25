@@ -404,7 +404,16 @@ planner_status plan_end_to_end(
         && request.problem.logical_work_items
             >= request.policy.minimum_tuning_work_items
         && (!one_shot || request.policy.tune_one_shot);
+    const bool analytical_requires_measurement =
+        (request.candidates[order[0]].flags
+            & planner_candidate_empirical_required) != 0u;
     if (!tune) {
+        if (analytical_requires_measurement) {
+            out->status = {planner_status_code::no_correct_measurement,
+                "uncertain objective v2 estimate requires empirical measurement"};
+            out->reason = "calibrated analytical ranking was not used as final authority";
+            return out->status;
+        }
         const std::uint32_t selected_index = order[0];
         out->winner = request.candidates[selected_index].identity;
         out->selected = &request.candidates[selected_index];
@@ -462,7 +471,8 @@ planner_status plan_end_to_end(
         measured_order[measured_count++] = index;
     }
     if (measured_count == 0u) {
-        if (request.policy.allow_analytical_fallback_after_measurement_failure) {
+        if (request.policy.allow_analytical_fallback_after_measurement_failure
+            && !analytical_requires_measurement) {
             const std::uint32_t selected_index = order[0];
             out->winner = request.candidates[selected_index].identity;
             out->selected = &request.candidates[selected_index];

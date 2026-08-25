@@ -115,7 +115,8 @@ enum candidate_policy_flag : std::uint32_t {
     planner_candidate_correct = 1u << 0u,
     planner_candidate_deterministic = 1u << 1u,
     planner_candidate_graph_capture = 1u << 2u,
-    planner_candidate_conventional = 1u << 3u
+    planner_candidate_conventional = 1u << 3u,
+    planner_candidate_empirical_required = 1u << 4u
 };
 
 struct planner_candidate {

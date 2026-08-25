@@ -1,0 +1,61 @@
+{
+  "schema": "CE-ARCH-77-OBJECTIVE-V2/1",
+  "model_identity": "0x4345373656314e4e",
+  "evidence_revision": "0x08202bda",
+  "source": {
+    "path": "bench/architecture_evidence/ce_arch_76_v100.jsonl",
+    "sha256": "deb122f0c8c1579bec435afd3d48ea9d093a35f914a7c920863f49ed4f19f747",
+    "sample_count": 45,
+    "fit_target": "median_total_ms",
+    "fit_method": "nonnegative_least_squares"
+  },
+  "domain": {
+    "device_vendor": 4318,
+    "architecture_major": 7,
+    "architecture_minor": 0,
+    "performance_class": "0x5631303053584d32",
+    "cuda_runtime": 12090,
+    "kernel_build": "0xdf9d168203125667",
+    "cuda_driver_api": 13000,
+    "trained_rows": 65536,
+    "trained_features": 32768,
+    "trained_edges": 2097152,
+    "supported_n": [1, 2, 4, 8, 16]
+  },
+  "features": [
+    {"name": "intercept", "unit": "one"},
+    {"name": "useful_interactions", "unit": "edge_columns"},
+    {"name": "masked_row_lane_slots", "unit": "lane_slots"},
+    {"name": "linear_edge_visits", "unit": "edge_visits"},
+    {"name": "masked_feature_lane_slots", "unit": "lane_slots"},
+    {"name": "dense_rhs_vector_elements", "unit": "elements"},
+    {"name": "feature_value_loads", "unit": "values"},
+    {"name": "launch_count", "unit": "launches"}
+  ],
+  "coefficients_ns_per_unit": {
+    "intercept": 13333.33176944439,
+    "useful_interactions": 0.0014295764809420951,
+    "masked_row_lane_slots": 0.0013570532524714409,
+    "linear_edge_visits": 0.03178201444844455,
+    "masked_feature_lane_slots": 0.006832512665012897,
+    "dense_rhs_vector_elements": 0.0048355396139240165,
+    "feature_value_loads": 0.00036790767729590431,
+    "launch_count": 10867.939465551794,
+    "dynamic_input_pack_bytes": 0.011718750419616699,
+    "output_order_bytes": 0.003417968797683716
+  },
+  "fit_quality": {
+    "rmse_ns": 37391.08957066465,
+    "median_relative_error_percent": 4.804931058684,
+    "maximum_relative_error_percent": 35.924268908424,
+    "maximum_training_mad_percent": 1.3157804,
+    "empirical_measurement_required_at_2_percent": true
+  },
+  "interpretation": {
+    "candidate_identity_is_a_feature": false,
+    "persistent_preparation_is_added_then_amortized_by_declared_reuse": true,
+    "metadata_and_value_bytes_remain_capacity_predictors": true,
+    "novel_structure_device_build_or_n_requires_measurement": true,
+    "future_candidate_families_may_supply_the_same_mechanism_counts": true
+  }
+}

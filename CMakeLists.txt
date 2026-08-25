@@ -1551,6 +1551,7 @@ set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     components/CellPack/src/optimization/objective_v2.cc
+    src/planner/objective_v2_calibration.cc
 )
 add_library(Cellerator::planner ALIAS cellerator_planner)
 target_include_directories(cellerator_planner PUBLIC
@@ -1561,6 +1562,7 @@ target_include_directories(cellerator_planner PUBLIC
 target_link_libraries(cellerator_planner PUBLIC
     Cellerator::operation_core
     CellPack::semantic_geometry
+    CellPack::alternating_refinement
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)
 
@@ -1588,6 +1590,9 @@ set_target_properties(cellerator_candidate_measurement PROPERTIES
 add_executable(celleratorPlannerV1Test
     tests/planner/end_to_end_planner_test.cc
 )
+add_executable(celleratorObjectiveV2CalibrationTest
+    tests/planner/objective_v2_calibration_test.cc
+)
 
 add_executable(celleratorCandidateMeasurementTest
     tests/planner/candidate_measurement_test.cu
@@ -1604,7 +1609,14 @@ set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
+target_link_libraries(celleratorObjectiveV2CalibrationTest PRIVATE
+    Cellerator::planner
+)
 set_target_properties(celleratorPlannerV1Test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+set_target_properties(celleratorObjectiveV2CalibrationTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )

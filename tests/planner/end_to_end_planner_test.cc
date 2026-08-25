@@ -295,6 +295,27 @@ void test_persistent_structure_keys_and_measurement_fallback() {
         == planner::planner_status_code::no_correct_measurement);
 }
 
+void test_uncertain_calibration_keeps_empirical_authority() {
+    fixture value = candidates_fixture();
+    for (planner::planner_candidate &candidate : value.candidates)
+        candidate.flags |= planner::planner_candidate_empirical_required;
+    planner::planner_request plan_request = request(value);
+    planner::planner_result result{};
+    assert(!planner::plan_end_to_end(plan_request, &result));
+    assert(result.status.code
+        == planner::planner_status_code::no_correct_measurement);
+
+    measurement_fixture measurements{};
+    plan_request.measurement = {&measurements, measure};
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.source == planner::selection_source::empirical);
+
+    measurements.contaminate_all = true;
+    assert(!planner::plan_end_to_end(plan_request, &result));
+    assert(result.status.code
+        == planner::planner_status_code::no_correct_measurement);
+}
+
 void test_objective_v2() {
     planner::objective_v2_statistics statistics{};
     statistics.useful_edges = 1000u;
@@ -336,6 +357,7 @@ int main() {
     test_bounded_and_one_shot_tuning();
     test_policy_rejection();
     test_persistent_structure_keys_and_measurement_fallback();
+    test_uncertain_calibration_keeps_empirical_authority();
     test_objective_v2();
     return 0;
 }

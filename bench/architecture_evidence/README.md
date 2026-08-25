@@ -121,6 +121,32 @@ were not yet amortized. This is a preparation-horizon result, not evidence that
 the feature-major steady-state regime is absent. Objective V2 must retain both
 effects and defer uncertain or novel keys to empirical measurement.
 
+## CE-ARCH-77 Objective V2 calibration
+
+`ce_arch_77_objective_v2_v100.json` records the replaceable nonnegative fit
+consumed by `objective_v2_calibration.hh`. The fit uses no candidate id or name.
+Its predictors are useful interactions, masked row lane slots, linear edge
+visits, masked feature lane slots, dense-RHS vector elements, compact feature
+value loads, and launch count. Dynamic input packing and output-order bytes have
+separate measured phase coefficients. Projection construction, backend prepare,
+and value packing stay explicit measured estimates and are amortized through the
+existing planner reuse keys.
+
+The current 45-sample fit has 4.80% median relative error and 35.92% worst-case
+relative error. Those errors are too large for a 2% final decision, so the model
+ranks the analytical shortlist but explicitly requires empirical measurement.
+N outside 1,2,4,8,16, shapes outside the measured structural support, and stale
+V100/build identities are not extrapolated. Applied predictions revalidate the
+complete structure/geometry/device/build/policy key. Thus structure epochs and
+all other existing planning invalidators remain authoritative.
+
+For CP-BP alternating refinement, the calibration supplies weights over its
+existing held-out measured runtime and preprocessing terms: runtime has unit
+weight and preparation has `1 / expected_reuse` weight. It does not alter CPK1,
+inject candidate identity, or replace held-out empirical acceptance. The model
+is data rather than a frozen planner law, and future candidate families can
+populate the same mechanism counts or replace the fit after new evidence.
+
 ## Future measured execution
 
 Apart from the bounded CE-ARCH-76 activation above, the broader evidence
