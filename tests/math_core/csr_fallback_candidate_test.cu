@@ -178,13 +178,20 @@ int main() {
     device_array<std::uint32_t> feature_ids{3u};
     device_array<__half> projection_values{3u};
     device_array<__half> launch_values{3u};
+    device_array<__half> launch_values_b{3u};
+    device_array<__half> relocated_values{3u};
     device_array<float> weights{3u};
     device_array<float> output{2u};
+    device_array<float> output_b{2u};
     upload(row_offsets, std::vector<std::uint32_t>{0u, 2u, 3u});
     upload(feature_ids, std::vector<std::uint32_t>{0u, 2u, 1u});
     upload(projection_values, std::vector<__half>{
         __float2half(9.0f), __float2half(9.0f), __float2half(9.0f)});
     upload(launch_values, std::vector<__half>{
+        __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
+    upload(launch_values_b, std::vector<__half>{
+        __float2half(4.0f), __float2half(5.0f), __float2half(6.0f)});
+    upload(relocated_values, std::vector<__half>{
         __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
     upload(weights, std::vector<float>{2.0f, 5.0f, 7.0f});
 
@@ -224,6 +231,10 @@ int main() {
     require(core::prepare_csr_fallback_operation(problem, structures,
         projection, numeric(), policy, csr, device, feature_axis, row_axis,
         &state, &prepared), "CSR candidate preparation");
+    const void *const prepared_state_address = prepared.persistent.data;
+    const void *const prepared_row_offsets = state.projection.row_offsets;
+    const void *const prepared_feature_ids =
+        state.projection.execution_feature_ids;
     require(state.projection.row_offsets == row_offsets.data
         && state.projection.execution_feature_ids == feature_ids.data
         && state.projection.values == projection_values.data
@@ -285,6 +296,43 @@ int main() {
         && std::fabs(result[1] - 15.0f) < 1.0e-5f,
         "launch-bound values and numerical parity");
 
+    execution::value_plane plane_b = plane;
+    plane_b.values = launch_values_b.data;
+    plane_b.generation = {3u};
+    execution::value_binding binding_b{&plane_b, {3u}};
+    output_operand.storage.dense.data = output_b.data;
+    launch.values = &binding_b;
+    require(core::run_prepared_operation(prepared, launch),
+        "second value generation over prepared CSR structure");
+    require_cuda(cudaStreamSynchronize(stream),
+        "synchronize second CSR generation");
+    require_cuda(cudaMemcpy(result.data(), output_b.data,
+        result.size() * sizeof(float), cudaMemcpyDeviceToHost),
+        "download second CSR generation");
+    require(std::fabs(result[0] - 43.0f) < 1.0e-5f
+        && std::fabs(result[1] - 30.0f) < 1.0e-5f,
+        "second CSR generation numerical parity");
+    require(prepared.persistent.data == prepared_state_address
+        && state.projection.row_offsets == prepared_row_offsets
+        && state.projection.execution_feature_ids == prepared_feature_ids,
+        "value generation rebuilt CSR prepared geometry");
+
+    execution::value_plane relocated_plane = plane;
+    relocated_plane.values = relocated_values.data;
+    execution::value_binding relocated_binding{&relocated_plane, {2u}};
+    output_operand.storage.dense.data = output.data;
+    launch.values = &relocated_binding;
+    require(core::run_prepared_operation(prepared, launch),
+        "pointer-relocated CSR value plane");
+    require_cuda(cudaStreamSynchronize(stream),
+        "synchronize relocated CSR generation");
+    require_cuda(cudaMemcpy(result.data(), output.data,
+        result.size() * sizeof(float), cudaMemcpyDeviceToHost),
+        "download relocated CSR generation");
+    require(std::fabs(result[0] - 16.0f) < 1.0e-5f
+        && std::fabs(result[1] - 15.0f) < 1.0e-5f,
+        "CSR pointer relocation changed semantic value identity");
+
     core::csr_fallback_prepared_state rejected_state{};
     core::prepared_operation rejected{};
     core::projection_key wrong_projection = projection;
@@ -315,10 +363,17 @@ int main() {
         feature_axis, row_axis, &rejected_state, &rejected).code
             == core::operation_status_code::capability_rejected,
         "preconstructed projection policy rejection");
-    value_binding.expected_generation.value = 3u;
+    launch.values = &binding_b;
+    binding_b.expected_generation.value = 4u;
     require(core::run_prepared_operation(prepared, launch).binding
             == execution::binding_validation_code::stale_value,
         "stale value generation rejection");
+    binding_b.expected_generation = plane_b.generation;
+    relation.epoch.value += 1u;
+    require(core::run_prepared_operation(prepared, launch).code
+            == core::operation_status_code::stale_structure,
+        "structure epoch invalidates prepared CSR operation");
+    relation.epoch = structures.structures[0].epoch;
     require_cuda(cudaStreamDestroy(stream), "destroy stream");
     return 0;
 }

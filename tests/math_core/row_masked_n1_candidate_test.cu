@@ -98,8 +98,11 @@ struct fixture {
     device_array<cp::u32> gene_masks{2u};
     device_array<cp::u32> value_offsets{3u};
     device_array<cellerator::real::storage_t> values{3u};
+    device_array<cellerator::real::storage_t> values_b{3u};
+    device_array<cellerator::real::storage_t> relocated_values{3u};
     device_array<cellerator::real::compute_t> weights{3u};
     device_array<cellerator::real::accum_t> output{2u};
+    device_array<cellerator::real::accum_t> output_b{2u};
     cp::persistent_packing_payload_view payload{};
 
     fixture() {
@@ -113,6 +116,10 @@ struct fixture {
         upload(gene_masks, std::vector<cp::u32>{0x5u, 0x2u});
         upload(value_offsets, std::vector<cp::u32>{0u, 2u, 3u});
         upload(values, std::vector<cellerator::real::storage_t>{
+            __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
+        upload(values_b, std::vector<cellerator::real::storage_t>{
+            __float2half(4.0f), __float2half(5.0f), __float2half(6.0f)});
+        upload(relocated_values, std::vector<cellerator::real::storage_t>{
             __float2half(1.0f), __float2half(2.0f), __float2half(3.0f)});
         upload(weights, std::vector<cellerator::real::compute_t>{
             2.0f, 5.0f, 7.0f});
@@ -268,6 +275,10 @@ int main() {
     require(core::prepare_row_masked_n1_operation(problem, structures,
         projection, numeric(), policy, data.payload, feature_axis, row_axis,
         &state, &prepared), "candidate preparation");
+    const void *const prepared_state_address = prepared.persistent.data;
+    const void *const prepared_tile_offsets = state.projection.tiles.tile_block_offsets;
+    const void *const prepared_value_offsets =
+        state.projection.tiles.row_block_value_offsets;
     require(prepared.binding_contract.workspace.minimum_bytes == 0u
         && prepared.binding_contract.output_effects[0].update
             == execution::output_update_kind::overwrite
@@ -330,6 +341,44 @@ int main() {
         && std::fabs(result[1] - 16.0f) < 1.0e-5f,
         "canonical numerical parity");
 
+    execution::value_plane plane_b = plane;
+    plane_b.values = data.values_b.data;
+    plane_b.generation = {2u};
+    execution::value_binding binding_b{&plane_b, {2u}};
+    output.storage.dense.data = data.output_b.data;
+    launch.values = &binding_b;
+    require(core::run_prepared_operation(prepared, launch),
+        "second value generation over prepared row-masked structure");
+    require_cuda(cudaStreamSynchronize(stream),
+        "synchronize second generation");
+    require_cuda(cudaMemcpy(result.data(), data.output_b.data,
+        result.size() * sizeof(float), cudaMemcpyDeviceToHost),
+        "download second generation");
+    require(std::fabs(result[0] - 30.0f) < 1.0e-5f
+        && std::fabs(result[1] - 43.0f) < 1.0e-5f,
+        "second generation numerical parity");
+    require(prepared.persistent.data == prepared_state_address
+        && state.projection.tiles.tile_block_offsets == prepared_tile_offsets
+        && state.projection.tiles.row_block_value_offsets
+            == prepared_value_offsets,
+        "value generation rebuilt row-masked prepared geometry");
+
+    execution::value_plane relocated_plane = plane;
+    relocated_plane.values = data.relocated_values.data;
+    execution::value_binding relocated_binding{&relocated_plane, {1u}};
+    output.storage.dense.data = data.output.data;
+    launch.values = &relocated_binding;
+    require(core::run_prepared_operation(prepared, launch),
+        "pointer-relocated value plane");
+    require_cuda(cudaStreamSynchronize(stream),
+        "synchronize relocated generation");
+    require_cuda(cudaMemcpy(result.data(), data.output.data,
+        result.size() * sizeof(float), cudaMemcpyDeviceToHost),
+        "download relocated generation");
+    require(std::fabs(result[0] - 15.0f) < 1.0e-5f
+        && std::fabs(result[1] - 16.0f) < 1.0e-5f,
+        "pointer relocation changed semantic value identity");
+
     core::numeric_policy rejected_numeric = numeric();
     rejected_numeric.dense_storage = execution::numeric_type::f64;
     core::row_masked_n1_prepared_state rejected_state{};
@@ -353,10 +402,17 @@ int main() {
         feature_axis, row_axis, &rejected_state, &rejected).code
             == core::operation_status_code::capability_rejected,
         "persistent preparation policy rejection");
-    value_binding.expected_generation.value = 2u;
+    launch.values = &binding_b;
+    binding_b.expected_generation.value = 3u;
     require(core::run_prepared_operation(prepared, launch).binding
             == execution::binding_validation_code::stale_value,
         "stale value generation rejection");
+    binding_b.expected_generation = plane_b.generation;
+    relation.epoch.value += 1u;
+    require(core::run_prepared_operation(prepared, launch).code
+            == core::operation_status_code::stale_structure,
+        "structure epoch invalidates prepared row-masked operation");
+    relation.epoch = structures.structures[0].epoch;
     require_cuda(cudaStreamDestroy(stream), "destroy stream");
     return 0;
 }

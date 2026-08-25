@@ -1575,6 +1575,18 @@ add_executable(celleratorRowMaskedN1CandidateTest
 add_executable(celleratorCsrFallbackCandidateTest
     tests/math_core/csr_fallback_candidate_test.cu
 )
+add_executable(celleratorValueGenerationReuseTest
+    tests/math_core/value_generation_reuse_test.cu
+)
+target_link_libraries(celleratorValueGenerationReuseTest PRIVATE
+    CUDA::cudart
+)
+set_target_properties(celleratorValueGenerationReuseTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
 target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
     Cellerator::csr_fallback_candidate
     Cellerator::row_masked_n1_candidate

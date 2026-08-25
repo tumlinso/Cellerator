@@ -96,6 +96,15 @@ operation-core contract. Preparation requires an already constructed,
 device-resident CSR projection in packed feature order and aliases only its row
 offsets and feature indices. Mutable relation values, dense input, output,
 value generation, caller stream, and zero-byte workspace remain launch-bound.
+
+The activated row-masked and CSR paths now have direct regression coverage for
+multiple mutable value generations over one immutable relation structure and
+one prepared structural execution. The proof keeps structure epoch, projection
+geometry, and prepared state stable while changing value-plane generation and
+allocation address; stale generations and real structure-epoch mismatches are
+rejected before dispatch. Projection-kind mismatches remain explicit
+preparation failures rather than triggering conversion or reconstruction.
+
 The adapter launches the existing validated CSR kernel definition directly; it
 does not construct CSR, allocate, copy, canonicalize, or synchronize in the hot
 path. Projection construction and transfer remain explicit planner costs. The
