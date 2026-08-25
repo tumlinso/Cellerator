@@ -1446,6 +1446,21 @@ target_link_libraries(cellpack_execution_image_v2 PUBLIC
 )
 target_compile_features(cellpack_execution_image_v2 PUBLIC cxx_std_17)
 
+add_library(cellerator_opaque_execution_artifact STATIC
+    src/execution/opaque_artifact.cc
+)
+add_library(Cellerator::opaque_execution_artifact ALIAS
+    cellerator_opaque_execution_artifact)
+target_include_directories(cellerator_opaque_execution_artifact PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_opaque_execution_artifact PUBLIC
+    CellPack::execution_image_v2
+    CellShard::headers
+)
+target_compile_features(cellerator_opaque_execution_artifact PUBLIC cxx_std_17)
+
 add_executable(cellPackExecutionImageV2Test
     components/CellPack/tests/persistence/execution_image_v2_test.cc
 )
@@ -1469,6 +1484,21 @@ target_link_libraries(cellPackExecutionImageV2DeviceTest PRIVATE
     CUDA::cudart
 )
 set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorOpaqueExecutionArtifactTest
+    tests/persistence/opaque_execution_artifact_test.cu
+)
+target_link_libraries(celleratorOpaqueExecutionArtifactTest PRIVATE
+    Cellerator::opaque_execution_artifact
+    CellShard::inspect
+    CUDA::cudart
+)
+set_target_properties(celleratorOpaqueExecutionArtifactTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
