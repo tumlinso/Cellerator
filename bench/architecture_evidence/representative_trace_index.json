@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "purpose": "Checksum-pinned real-structure inputs and planner-ready features for CE-ARCH-83. Values remain excluded.",
+  "required_directions": ["forward", "transpose"],
+  "required_observability": [
+    "descriptor_lane_visits",
+    "useful_interactions",
+    "metadata_bytes",
+    "value_bytes",
+    "dense_rhs_bytes",
+    "order_transform_bytes",
+    "launch_count",
+    "registers_per_thread",
+    "shared_memory_per_block"
+  ],
+  "traces": [
+    {
+      "id": "pbmc3k-raw-local-support-r512-s7",
+      "path": "real_traces/pbmc3k-support-512.json",
+      "file_sha256": "e8ddfb1e439a32cb0843386b8d2e4c376aedba2ed19e3bd7b9aed72d98d45acd",
+      "payload_sha256": "d882d95f0b119fe919b0cbc69e57fb60d752f00533dd05a3938f2fb8818aa921",
+      "source_id": "pbmc3k-raw-local",
+      "source_sha256": "89a96f1beaa2dd83a687666d3f19a4513ac27a2a2d12581fcd77afed7ea653a1",
+      "planner_features": {
+        "row_count": 512,
+        "feature_count": 32738,
+        "nnz": 433808,
+        "occupied_feature_count": 13454,
+        "maximum_feature_frequency": 512,
+        "row_degree_min": 279,
+        "row_degree_max": 3422,
+        "row_degree_mean": 847.28125,
+        "block_width_32_occupied_row_blocks": 267624,
+        "block_width_32_scalar_occupancy": 0.050655023465757926
+      }
+    },
+    {
+      "id": "gse147520-local-x-support-r256-s7",
+      "path": "real_traces/gse147520-support-256.json",
+      "file_sha256": "4f00eb8d42e59afde91120dc214af458e37d93405de3cb9650094acaf1d33aac",
+      "payload_sha256": "65357ea2128c8b2fda9ae990c19dd5e1c397ea418bec409482232bd97a5ef87a",
+      "source_id": "gse147520-local-x",
+      "source_sha256": "c6e2b5a4056b559b844f5f0c286b590a7f81edde1e0c1c1a2296d02e82284d7a",
+      "planner_features": {
+        "row_count": 256,
+        "feature_count": 26587,
+        "nnz": 423731,
+        "occupied_feature_count": 17091,
+        "maximum_feature_frequency": 256,
+        "row_degree_min": 219,
+        "row_degree_max": 4354,
+        "row_degree_mean": 1655.19921875,
+        "block_width_32_occupied_row_blocks": 168934,
+        "block_width_32_scalar_occupancy": 0.07838323694460558
+      }
+    }
+  ]
+}

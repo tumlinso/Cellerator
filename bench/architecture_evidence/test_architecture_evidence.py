@@ -90,6 +90,18 @@ class PackageValidationTest(unittest.TestCase):
         self.assertEqual(result["status"], "valid")
         self.assertFalse(result["performance_run"])
         self.assertGreaterEqual(len(result["smoke_trace_ids"]), 3)
+        self.assertEqual(len(result["representative_trace_ids"]), 2)
+
+    def test_real_trace_features_are_checksum_pinned(self) -> None:
+        sources = trace_tool.load_json(validate_evidence.MANIFESTS / "sources.json")
+        trace_ids = validate_evidence.validate_representative_traces(sources)
+        self.assertEqual(
+            trace_ids,
+            [
+                "gse147520-local-x-support-r256-s7",
+                "pbmc3k-raw-local-support-r512-s7",
+            ],
+        )
 
     def test_source_manifest_checksums_are_well_formed(self) -> None:
         sources = trace_tool.load_json(validate_evidence.MANIFESTS / "sources.json")

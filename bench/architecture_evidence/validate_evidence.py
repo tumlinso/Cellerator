@@ -106,6 +106,18 @@ REQUIRED_METRICS = {
     "graph_capture_compatible",
 }
 REQUIRED_TIERS = {"smoke", "representative", "throughput", "adversarial", "deep_profile"}
+REQUIRED_DIRECTIONS = {"forward", "transpose"}
+REQUIRED_OBSERVABILITY = {
+    "descriptor_lane_visits",
+    "useful_interactions",
+    "metadata_bytes",
+    "value_bytes",
+    "dense_rhs_bytes",
+    "order_transform_bytes",
+    "launch_count",
+    "registers_per_thread",
+    "shared_memory_per_block",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -212,6 +224,56 @@ def validate_smoke_traces(workload_ids: set[str]) -> list[str]:
     return trace_ids
 
 
+def validate_representative_traces(sources: dict[str, Any]) -> list[str]:
+    index = load_json(PACKAGE / "representative_trace_index.json")
+    require(index.get("schema_version") == 1, "representative trace index schema differs")
+    require(set(index.get("required_directions", [])) == REQUIRED_DIRECTIONS,
+            "forward/transpose observability is incomplete")
+    require(set(index.get("required_observability", [])) == REQUIRED_OBSERVABILITY,
+            "runtime and hardware-pressure observability is incomplete")
+    source_hashes = {item["id"]: item["sha256"] for item in sources["sources"]}
+    trace_ids = unique_ids(index["traces"], "representative trace")
+    require(len(trace_ids) >= 2, "two real representative traces are required")
+    for item in index["traces"]:
+        path = PACKAGE / item["path"]
+        require(path.is_file(), f"representative trace missing: {path}")
+        require(sha256_file(path) == item["file_sha256"],
+                f"representative trace file checksum changed: {item['id']}")
+        trace = load_json(path)
+        validate_compact_trace(trace)
+        require(trace["trace_id"] == item["id"],
+                f"representative trace identity changed: {item['id']}")
+        require(trace["value_semantics"] == "structure_only",
+                f"representative trace carries quantitative values: {item['id']}")
+        require(trace["payload_sha256"] == item["payload_sha256"],
+                f"representative trace payload changed: {item['id']}")
+        provenance = trace["provenance"]
+        require(provenance["source_id"] == item["source_id"],
+                f"representative trace source changed: {item['id']}")
+        require(source_hashes[item["source_id"]] == item["source_sha256"]
+                == provenance["source_sha256"],
+                f"representative source checksum changed: {item['id']}")
+        stats = trace["statistics"]
+        features = item["planner_features"]
+        observed = {
+            "row_count": trace["row_count"],
+            "feature_count": trace["column_count"],
+            "nnz": stats["nnz"],
+            "occupied_feature_count": stats["occupied_feature_count"],
+            "maximum_feature_frequency": stats["maximum_feature_frequency"],
+            "row_degree_min": stats["row_degree_min"],
+            "row_degree_max": stats["row_degree_max"],
+            "row_degree_mean": stats["row_degree_mean"],
+            "block_width_32_occupied_row_blocks":
+                stats["block_width_summaries"]["32"]["occupied_row_blocks"],
+            "block_width_32_scalar_occupancy":
+                stats["block_width_summaries"]["32"]["scalar_occupancy"],
+        }
+        require(features == observed,
+                f"planner-ready features are stale: {item['id']}")
+    return sorted(trace_ids)
+
+
 def validate_package(verify_local_sources: bool = False) -> dict[str, Any]:
     sources = load_json(MANIFESTS / "sources.json")
     workloads = load_json(MANIFESTS / "workloads.json")
@@ -221,12 +283,14 @@ def validate_package(verify_local_sources: bool = False) -> dict[str, Any]:
     validate_resources(load_json(PACKAGE / "resource_contracts.json"))
     validate_watch_plan(load_json(PACKAGE / "watch_plan.json"))
     trace_ids = validate_smoke_traces(workload_ids)
+    representative_trace_ids = validate_representative_traces(sources)
     return {
         "status": "valid",
         "verified_local_sources": verify_local_sources,
         "source_count": len(source_ids),
         "workload_count": len(workload_ids),
         "smoke_trace_ids": trace_ids,
+        "representative_trace_ids": representative_trace_ids,
         "performance_run": False,
     }
 
@@ -248,7 +312,9 @@ def main() -> int:
             print(
                 "valid CE-ARCH-30 evidence package: "
                 f"{result['source_count']} sources, {result['workload_count']} workloads, "
-                f"{len(result['smoke_trace_ids'])} smoke traces; no performance run"
+                f"{len(result['smoke_trace_ids'])} smoke traces, "
+                f"{len(result['representative_trace_ids'])} real representative traces; "
+                "no performance run"
             )
         return 0
     except (KeyError, OSError, TypeError, ValueError) as error:

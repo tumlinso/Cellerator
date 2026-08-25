@@ -44,6 +44,18 @@ training-split provenance, immutable topology, and mutable values separate.
   families unarmed until real targets and checkpoints exist.
 - `validate_evidence.py` and `test_architecture_evidence.py` are CPU-only
   package checks. They do not build or execute Cellerator kernels.
+- `real_traces/` contains two checksum-pinned, structure-only support extracts
+  from the locally verified PBMC3K and GSE147520 sources. The companion
+  `representative_trace_index.json` freezes their source identity, extraction
+  provenance, exact payload, planner-ready occupancy features, and the required
+  forward/transpose plus runtime-pressure observability for later candidates.
+
+The committed real traces deliberately contain no expression values or inferred
+labels. PBMC3K contributes 512 selected rows, 32,738 features, and 433,808
+support edges; GSE147520 contributes 256 selected rows, 26,587 features, and
+423,731 support edges. Their very different row-degree and 32-feature-block
+occupancy distributions prevent the older high/medium/low-sharing synthetic
+fixtures from being the only planner feature evidence.
 
 Large generated `.mtx` files remain local under `Cellerator/data/` and are
 already ignored. Compact committed traces are capped at one million edges. A
