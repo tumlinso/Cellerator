@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/CellStack/Cellerator",
+  "campaign_id": "ce-arch-78-predicate-cache",
+  "recipe": "baseline",
+  "paths": [
+    "include/Cellerator/compute/sequence/baseplane_integration.cuh",
+    "src/compute/sequence/baseplane_integration.cu",
+    "tests/sequence/baseplane_integration_test.cu"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  },
+  "argv": [
+    "./build/celleratorBaseplaneSequenceIntegrationTest"
+  ],
+  "timeout": 300,
+  "quiescence": {
+    "minimum_idle_seconds": 1
+  }
+}

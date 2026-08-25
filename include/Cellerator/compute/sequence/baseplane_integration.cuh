@@ -11,7 +11,7 @@ namespace cellerator::compute::sequence {
 
 namespace operation_core = cellerator::compute::math::core;
 
-inline constexpr std::uint16_t baseplane_integration_schema_version = 1u;
+inline constexpr std::uint16_t baseplane_integration_schema_version = 2u;
 inline constexpr std::uint32_t required_baseplane_sequence_predicate_abi = 1u;
 static_assert(baseplane::seq::sequence_predicate_abi_version
         == required_baseplane_sequence_predicate_abi,
@@ -26,6 +26,41 @@ enum class sequence_strategy : std::uint8_t {
     automatic = 0u,
     materialize_mask = 1u,
     fuse_predicate = 2u
+};
+
+// Performance evidence is reusable only for the exact predicate, coordinate
+// order, regulatory projection, device performance class, and runtime build
+// that produced it. Sequence value generation is deliberately absent: it is a
+// launch/cache identity, not a performance-model dimension.
+struct sequence_measurement_key {
+    std::uint64_t predicate_semantic_hash = 0u;
+    execution::order_id coordinate_order{};
+    execution::projection_id regulatory_projection{};
+    execution::device_performance_class device{};
+    std::uint64_t runtime_build_identity = 0u;
+    std::uint32_t local_base_count = 0u;
+    std::uint16_t predicate_id = 0u;
+    std::uint16_t output_flags = 0u;
+};
+
+struct sequence_strategy_evidence {
+    sequence_measurement_key key{};
+    double fused_per_use_ns = 0.0;
+    double first_materialized_use_ns = 0.0;
+    double cached_materialized_use_ns = 0.0;
+    double fused_spread_percent = 0.0;
+    double materialized_spread_percent = 0.0;
+    std::uint32_t sample_count = 0u;
+    std::uint32_t reserved = 0u;
+};
+
+struct sequence_strategy_decision {
+    sequence_strategy strategy = sequence_strategy::automatic;
+    bool empirical_measurement_required = true;
+    std::uint8_t reserved[6]{};
+    double fused_total_ns = 0.0;
+    double materialized_total_ns = 0.0;
+    const char *reason = nullptr;
 };
 
 // Sorted, non-overlapping local coordinate intervals form one typed physical
@@ -57,6 +92,11 @@ struct sequence_prepare_policy {
     bool allow_materialization = true;
     bool allow_fusion = true;
     std::uint8_t reserved[2]{};
+    const sequence_strategy_evidence *evidence = nullptr;
+    execution::device_performance_class device{};
+    std::uint64_t runtime_build_identity = 0u;
+    double practical_tolerance_percent = 2.0;
+    double maximum_spread_percent = 10.0;
 };
 
 struct sequence_prepare_request {
@@ -64,6 +104,7 @@ struct sequence_prepare_request {
     const baseplane::seq::prepared_predicate_plan *baseplane_plan = nullptr;
     execution::structure_id persistent_coordinate_structure{};
     execution::structure_id persistent_regulatory_structure{};
+    execution::order_id persistent_coordinate_order{};
     execution::projection_id persistent_projection{};
     execution::projection_handle projection{};
     execution::relation_structure coordinate_to_regulatory{};
@@ -84,12 +125,44 @@ struct prepared_sequence_state {
     baseplane::seq::motif32_exact motif{};
     std::uint16_t predicate_id = 0u;
     std::uint16_t output_flags = 0u;
+    execution::structure_id persistent_coordinate_structure{};
+    execution::order_id persistent_coordinate_order{};
     execution::sequence_domain source_domain{};
     regulatory_projection_view regulatory{};
     execution::operand_axis_contract input_contracts[1]{};
     execution::operand_axis_contract output_contracts[2]{};
     execution::output_axis_contract output_orders[2]{};
     execution::output_effect_contract output_effects[2]{};
+};
+
+// A cache entry is mutable session state, never part of prepared_sequence_state.
+// The key determines semantic reuse. words and ready_event are physical resource
+// bindings supplied by the caller before first use; changing either requires a
+// fresh entry. Callers serialize mutation of an entry.
+struct predicate_materialization_key {
+    execution::value_generation sequence_generation{};
+    std::uint64_t predicate_semantic_hash = 0u;
+    execution::structure_id coordinate_structure{};
+    execution::order_id coordinate_order{};
+    std::uint16_t predicate_id = 0u;
+    std::uint16_t output_flags = 0u;
+    std::uint32_t reserved = 0u;
+};
+
+struct predicate_mask_cache_entry {
+    predicate_materialization_key key{};
+    std::uint32_t *words = nullptr;
+    void *ready_event = nullptr;
+    std::uint32_t word_capacity = 0u;
+    execution::device_location location{};
+    bool occupied = false;
+    std::uint8_t reserved[7]{};
+};
+
+struct predicate_cache_run_result {
+    bool cache_hit = false;
+    std::uint8_t reserved[3]{};
+    std::uint32_t launches_enqueued = 0u;
 };
 
 struct sequence_execution_accounting {
@@ -122,6 +195,10 @@ bool validate_regulatory_projection_host(
 sequence_strategy select_sequence_strategy(
     const sequence_prepare_policy &policy) noexcept;
 
+sequence_strategy_decision select_sequence_strategy(
+    const sequence_measurement_key &key,
+    const sequence_prepare_policy &policy) noexcept;
+
 operation_core::operation_status prepare_sequence_regulatory_operation(
     const sequence_prepare_request &request,
     const sequence_prepare_policy &policy,
@@ -131,6 +208,13 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
 operation_core::operation_status run_sequence_regulatory_operation(
     const operation_core::prepared_operation &prepared,
     const execution::launch_bindings &launch) noexcept;
+
+operation_core::operation_status run_sequence_regulatory_operation_cached(
+    const operation_core::prepared_operation &prepared,
+    const execution::launch_bindings &launch,
+    execution::value_generation sequence_generation,
+    predicate_mask_cache_entry *cache,
+    predicate_cache_run_result *result) noexcept;
 
 sequence_execution_accounting sequence_accounting(
     const prepared_sequence_state &state,
@@ -144,5 +228,9 @@ static_assert(std::is_trivially_copyable<regulatory_projection_view>::value,
     "regulatory projection must remain device-copyable");
 static_assert(std::is_trivially_copyable<prepared_sequence_state>::value,
     "prepared sequence state must remain directly bindable");
+static_assert(std::is_trivially_copyable<predicate_materialization_key>::value,
+    "predicate cache keys must remain pointer-free values");
+static_assert(std::is_trivially_copyable<sequence_strategy_evidence>::value,
+    "sequence strategy evidence must remain replaceable data");
 
 } // namespace cellerator::compute::sequence

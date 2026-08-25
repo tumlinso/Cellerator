@@ -5,6 +5,7 @@
 
 #include <cuda_runtime.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -191,6 +192,51 @@ void compare_output(
         require(std::fabs(actual[index] - expected[index]) < 1e-6f, path);
 }
 
+struct timing_summary {
+    double median_ns = 0.0;
+    double spread_percent = 0.0;
+};
+
+template<typename Enqueue>
+timing_summary measure_candidate(
+    cudaStream_t stream,
+    Enqueue enqueue,
+    const char *label) {
+    constexpr std::uint32_t warmups = 4u;
+    constexpr std::uint32_t samples = 9u;
+    constexpr std::uint32_t uses_per_sample = 100u;
+    for (std::uint32_t index = 0u;
+         index < warmups * uses_per_sample; ++index)
+        require(enqueue(index), label);
+    cuda_require(cudaStreamSynchronize(stream), "finish benchmark warmup");
+    cudaEvent_t begin = nullptr, end = nullptr;
+    cuda_require(cudaEventCreate(&begin), "cudaEventCreate begin");
+    cuda_require(cudaEventCreate(&end), "cudaEventCreate end");
+    std::array<double, samples> elapsed{};
+    for (std::uint32_t index = 0u; index < samples; ++index) {
+        cuda_require(cudaEventRecord(begin, stream), "record benchmark begin");
+        for (std::uint32_t use = 0u; use < uses_per_sample; ++use)
+            require(enqueue((warmups + index) * uses_per_sample + use), label);
+        cuda_require(cudaEventRecord(end, stream), "record benchmark end");
+        cuda_require(cudaEventSynchronize(end), "finish benchmark sample");
+        float milliseconds = 0.0f;
+        cuda_require(cudaEventElapsedTime(&milliseconds, begin, end),
+            "measure benchmark sample");
+        elapsed[index] = static_cast<double>(milliseconds) * 1.0e6
+            / static_cast<double>(uses_per_sample);
+    }
+    cuda_require(cudaEventDestroy(end), "cudaEventDestroy end");
+    cuda_require(cudaEventDestroy(begin), "cudaEventDestroy begin");
+    std::sort(elapsed.begin(), elapsed.end());
+    const double median = elapsed[samples / 2u];
+    std::array<double, samples> deviation{};
+    for (std::uint32_t index = 0u; index < samples; ++index)
+        deviation[index] = std::fabs(elapsed[index] - median);
+    std::sort(deviation.begin(), deviation.end());
+    return {median, median == 0.0 ? 0.0
+        : deviation[samples / 2u] * 100.0 / median};
+}
+
 } // namespace
 
 int main() {
@@ -202,6 +248,9 @@ int main() {
         cuda_require(cudaGetDevice(&device), "cudaGetDevice");
         cudaStream_t stream = nullptr;
         cuda_require(cudaStreamCreate(&stream), "cudaStreamCreate");
+        cudaEvent_t cache_ready = nullptr;
+        cuda_require(cudaEventCreateWithFlags(
+            &cache_ready, cudaEventDisableTiming), "cudaEventCreate cache_ready");
 
         constexpr std::uint32_t base_count = 70u;
         constexpr std::uint32_t word_count = 3u;
@@ -315,6 +364,7 @@ int main() {
         request.baseplane_plan = &baseplane_plan;
         request.persistent_coordinate_structure = {71u, 72u};
         request.persistent_regulatory_structure = {75u, 76u};
+        request.persistent_coordinate_order = {77u, 78u};
         request.persistent_projection = {73u, 74u};
         request.projection = {63u, 1u};
         request.coordinate_to_regulatory = relations[0];
@@ -341,10 +391,33 @@ int main() {
                 && contribution[2] == 1.5f,
             "scalar fixture does not cover expected regulatory mapping");
 
+        const ce::device_performance_class measurement_device{
+            1u, 7u, 0u, 0x5a17u};
+        const cs::sequence_measurement_key measurement_key{
+            baseplane_plan.semantic_hash, request.persistent_coordinate_order,
+            request.persistent_projection, measurement_device, 0xce780001u,
+            base_count, program.outputs[0].predicate_id,
+            program.outputs[0].flags};
+        cs::sequence_strategy_evidence evidence{
+            measurement_key, 1000.0, 1800.0, 100.0, 1.0, 1.0, 7u, 0u};
+        cs::sequence_prepare_policy fused_policy{};
+        fused_policy.expected_predicate_reuse = 1u;
+        fused_policy.evidence = &evidence;
+        fused_policy.device = measurement_device;
+        fused_policy.runtime_build_identity = 0xce780001u;
+        cs::sequence_prepare_policy materialized_policy = fused_policy;
+        materialized_policy.expected_predicate_reuse = 4u;
+
+        cs::prepared_sequence_state rejected_state{};
+        co::prepared_operation rejected{};
+        require(!cs::prepare_sequence_regulatory_operation(
+                request, {}, &rejected_state, &rejected),
+            "automatic selection accepted missing empirical evidence");
+
         cs::prepared_sequence_state fused_state{};
         co::prepared_operation fused{};
         require(static_cast<bool>(cs::prepare_sequence_regulatory_operation(
-                request, {cs::sequence_strategy::automatic, 1u, true, true, {}},
+                request, fused_policy,
                 &fused_state, &fused)),
             "fused operation did not prepare");
         require(fused_state.strategy == cs::sequence_strategy::fuse_predicate,
@@ -355,8 +428,6 @@ int main() {
                 && fused.binding_contract.output_effects[0]
                     .requires_initialized_destination,
             "gene-state accumulation effect was not declared");
-        cs::prepared_sequence_state rejected_state{};
-        co::prepared_operation rejected{};
         cs::sequence_prepare_request wrong_coordinate_relation = request;
         wrong_coordinate_relation.coordinate_to_regulatory.destination_axis =
             axis(46u, 47u, 148u, 49u);
@@ -412,7 +483,7 @@ int main() {
         cs::prepared_sequence_state materialized_state{};
         co::prepared_operation materialized{};
         require(static_cast<bool>(cs::prepare_sequence_regulatory_operation(
-                request, {cs::sequence_strategy::automatic, 2u, true, true, {}},
+                request, materialized_policy,
                 &materialized_state, &materialized)),
             "materialized operation did not prepare");
         require(materialized_state.strategy
@@ -422,7 +493,7 @@ int main() {
                 && materialized.binding_contract.output_effects[0].update
                     == ce::output_update_kind::accumulate
                 && materialized.binding_contract.output_effects[1].update
-                    == ce::output_update_kind::overwrite,
+                    == ce::output_update_kind::partial_write,
             "materialized output effects are incomplete");
         ce::biological_operand_view materialized_outputs[2]{};
         materialized_outputs[0].kind = ce::operand_kind::dense_tensor;
@@ -439,6 +510,9 @@ int main() {
         materialized_outputs[1].storage.dense.axes[0] = predicate_mask_axis;
         materialized_outputs[1].storage.dense.shape[0] = word_count;
         materialized_outputs[1].storage.dense.stride[0] = 1;
+        cuda_require(cudaMemsetAsync(
+            device_mask.get(), 0, word_count * sizeof(std::uint32_t), stream),
+            "initialize materialized cache output");
         cuda_require(cudaMemsetAsync(device_output.get(), 0, 3u * sizeof(float), stream),
             "zero materialized output");
         ce::launch_bindings materialized_launch = launch_bindings(
@@ -461,6 +535,96 @@ int main() {
         require(mask_result[0] == ((1u << 5u) | (1u << 30u))
                 && mask_result[1] == 0u && mask_result[2] == 0u,
             "validity, halo, boundary, or tail mask semantics failed");
+
+        cs::predicate_mask_cache_entry cache{};
+        cache.words = device_mask.get();
+        cache.ready_event = cache_ready;
+        cache.word_capacity = word_count;
+        cache.location = {ce::residency_kind::device, {}, device, 0u};
+        cs::predicate_cache_run_result cache_result{};
+        cuda_require(cudaMemsetAsync(
+            device_output.get(), 0, 3u * sizeof(float), stream),
+            "zero first cached output");
+        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+                materialized, materialized_launch, {11u}, &cache,
+                &cache_result))
+                && !cache_result.cache_hit
+                && cache_result.launches_enqueued == 2u,
+            "first cached execution did not materialize once");
+        std::array<float, 3> first_cached_result{};
+        cuda_require(cudaMemcpyAsync(first_cached_result.data(),
+            device_output.get(), sizeof(first_cached_result),
+            cudaMemcpyDeviceToHost, stream), "copy first cached output");
+        cuda_require(cudaStreamSynchronize(stream), "finish first cached use");
+        compare_output(first_cached_result, contribution,
+            "first cached execution failed referee parity");
+
+        cuda_require(cudaMemsetAsync(
+            device_output.get(), 0, 3u * sizeof(float), stream),
+            "zero reused cached output");
+        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+                materialized, materialized_launch, {11u}, &cache,
+                &cache_result))
+                && cache_result.cache_hit
+                && cache_result.launches_enqueued == 1u,
+            "same generation/predicate/order did not reuse the mask");
+        std::array<float, 3> reused_cached_result{};
+        cuda_require(cudaMemcpyAsync(reused_cached_result.data(),
+            device_output.get(), sizeof(reused_cached_result),
+            cudaMemcpyDeviceToHost, stream), "copy reused cached output");
+        cuda_require(cudaStreamSynchronize(stream), "finish reused cached use");
+        compare_output(reused_cached_result, contribution,
+            "reused cached execution failed referee parity");
+
+        cuda_require(cudaMemsetAsync(
+            device_output.get(), 0, 3u * sizeof(float), stream),
+            "zero next-generation output");
+        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+                materialized, materialized_launch, {12u}, &cache,
+                &cache_result))
+                && !cache_result.cache_hit
+                && cache_result.launches_enqueued == 2u,
+            "new sequence generation reused a stale mask");
+        cuda_require(cudaStreamSynchronize(stream), "finish new generation use");
+
+        cs::sequence_prepare_request reordered_request = request;
+        reordered_request.persistent_coordinate_order = {79u, 80u};
+        cs::prepared_sequence_state reordered_state{};
+        co::prepared_operation reordered{};
+        cs::sequence_prepare_policy forced_materialization{};
+        forced_materialization.requested =
+            cs::sequence_strategy::materialize_mask;
+        require(static_cast<bool>(cs::prepare_sequence_regulatory_operation(
+                reordered_request, forced_materialization,
+                &reordered_state, &reordered)),
+            "alternate persistent coordinate order did not prepare");
+        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+                reordered, materialized_launch, {12u}, &cache,
+                &cache_result))
+                && !cache_result.cache_hit
+                && ce::same_identity(cache.key.coordinate_order,
+                    reordered_request.persistent_coordinate_order),
+            "coordinate-order change reused a stale mask");
+        cuda_require(cudaStreamSynchronize(stream), "finish reordered use");
+
+        device_buffer<std::uint32_t> replacement_mask(word_count);
+        ce::biological_operand_view rebound_outputs[2]{
+            materialized_outputs[0], materialized_outputs[1]};
+        rebound_outputs[1].storage.dense.data = replacement_mask.get();
+        ce::launch_bindings rebound_launch = launch_bindings(
+            relations, &input, rebound_outputs, 2u,
+            &value_binding, stream, device);
+        require(!cs::run_sequence_regulatory_operation_cached(
+                reordered, rebound_launch, {12u}, &cache, &cache_result),
+            "occupied cache silently rebound by pointer identity");
+
+        cs::sequence_strategy_evidence stale_evidence = evidence;
+        stale_evidence.key.coordinate_order = {99u, 100u};
+        cs::sequence_prepare_policy stale_policy = fused_policy;
+        stale_policy.evidence = &stale_evidence;
+        require(!cs::prepare_sequence_regulatory_operation(
+                request, stale_policy, &rejected_state, &rejected),
+            "stale measurement identity selected a strategy");
 
         const cs::sequence_execution_accounting fused_bytes =
             cs::sequence_accounting(fused_state, base_count);
@@ -506,6 +670,88 @@ int main() {
                 reverse_request, {}, &rejected_state, &rejected),
             "unsupported reverse-strand primitive was silently accepted");
 
+        const timing_summary fused_timing = measure_candidate(stream,
+            [&](std::uint32_t) {
+                return static_cast<bool>(
+                    co::run_prepared_operation(fused, fused_launch));
+            }, "fused benchmark launch failed");
+        const timing_summary first_materialized_timing = measure_candidate(stream,
+            [&](std::uint32_t sample) {
+                cache.occupied = false;
+                return static_cast<bool>(
+                    cs::run_sequence_regulatory_operation_cached(
+                        materialized, materialized_launch,
+                        {1000u + sample}, &cache, &cache_result));
+            }, "first materialized benchmark launch failed");
+        cache.occupied = false;
+        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+                materialized, materialized_launch, {2000u}, &cache,
+                &cache_result)),
+            "cached benchmark preparation failed");
+        cuda_require(cudaStreamSynchronize(stream),
+            "finish cached benchmark preparation");
+        const timing_summary cached_timing = measure_candidate(stream,
+            [&](std::uint32_t) {
+                return static_cast<bool>(
+                    cs::run_sequence_regulatory_operation_cached(
+                        materialized, materialized_launch, {2000u}, &cache,
+                        &cache_result));
+            }, "cached materialized benchmark launch failed");
+
+        cudaDeviceProp properties{};
+        cuda_require(cudaGetDeviceProperties(&properties, device),
+            "cudaGetDeviceProperties");
+        const ce::device_performance_class actual_device{
+            0x10deu, static_cast<std::uint16_t>(properties.major),
+            static_cast<std::uint16_t>(properties.minor), 0xce780002u};
+        const cs::sequence_measurement_key actual_key{
+            baseplane_plan.semantic_hash, request.persistent_coordinate_order,
+            request.persistent_projection, actual_device, 0xce780002u,
+            base_count, program.outputs[0].predicate_id,
+            program.outputs[0].flags};
+        const cs::sequence_strategy_evidence actual_evidence{
+            actual_key, fused_timing.median_ns,
+            first_materialized_timing.median_ns, cached_timing.median_ns,
+            fused_timing.spread_percent,
+            std::max(first_materialized_timing.spread_percent,
+                cached_timing.spread_percent),
+            9u, 0u};
+        std::uint32_t first_materialized_reuse = 0u;
+        for (std::uint32_t reuse = 1u; reuse <= 64u; ++reuse) {
+            cs::sequence_prepare_policy measured_policy{};
+            measured_policy.expected_predicate_reuse = reuse;
+            measured_policy.evidence = &actual_evidence;
+            measured_policy.device = actual_device;
+            measured_policy.runtime_build_identity = 0xce780002u;
+            measured_policy.maximum_spread_percent = 100.0;
+            const cs::sequence_strategy_decision measured_decision =
+                cs::select_sequence_strategy(actual_key, measured_policy);
+            require(!measured_decision.empirical_measurement_required,
+                "fresh measured evidence was rejected");
+            if (first_materialized_reuse == 0u
+                && measured_decision.strategy
+                    == cs::sequence_strategy::materialize_mask)
+                first_materialized_reuse = reuse;
+        }
+
+        std::cout << "ce_arch_78_evidence"
+                  << " device=" << properties.name
+                  << " cc=" << properties.major << '.' << properties.minor
+                  << " bases=" << base_count
+                  << " samples=9 warmups=4 uses_per_sample=100"
+                  << " fused_ns=" << fused_timing.median_ns
+                  << " fused_spread_pct=" << fused_timing.spread_percent
+                  << " first_materialized_ns="
+                  << first_materialized_timing.median_ns
+                  << " first_materialized_spread_pct="
+                  << first_materialized_timing.spread_percent
+                  << " cached_ns=" << cached_timing.median_ns
+                  << " cached_spread_pct="
+                  << cached_timing.spread_percent
+                  << " first_materialized_reuse="
+                  << first_materialized_reuse << '\n';
+
+        cuda_require(cudaEventDestroy(cache_ready), "cudaEventDestroy cache_ready");
         cuda_require(cudaStreamDestroy(stream), "cudaStreamDestroy");
         std::cout << "celleratorBaseplaneSequenceIntegrationTest passed"
                   << " predicate_hash=" << baseplane_plan.semantic_hash
