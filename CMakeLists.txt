@@ -1456,6 +1456,57 @@ set_target_properties(cellPackExecutionImageV2Test PROPERTIES
     CXX_STANDARD_REQUIRED YES
 )
 
+# CE-ARCH-71: operation-core activation of the preserved CP-BP v1 row-masked
+# N=1 direct consumer. This adapter adds no kernel or persistence format.
+add_library(cellerator_row_masked_n1_candidate STATIC
+    src/compute/math/operation_core/row_masked_n1_candidate.cu
+)
+add_library(Cellerator::row_masked_n1_candidate ALIAS
+    cellerator_row_masked_n1_candidate)
+target_include_directories(cellerator_row_masked_n1_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_row_masked_n1_candidate PUBLIC
+    Cellerator::operation_core
+    CellPack::feature_weighted_row_reduction_cuda
+    CellPack::persistent_packing_payload
+)
+set_target_properties(cellerator_row_masked_n1_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+# CE-ARCH-72: operation-core activation of the existing conventional CSR N=1
+# execution path. Projection construction remains explicit and caller-owned.
+add_library(cellerator_csr_fallback_candidate STATIC
+    src/compute/math/operation_core/csr_fallback_candidate.cu
+)
+add_library(Cellerator::csr_fallback_candidate ALIAS
+    cellerator_csr_fallback_candidate)
+target_include_directories(cellerator_csr_fallback_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_csr_fallback_candidate PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(cellerator_csr_fallback_candidate PUBLIC
+    Cellerator::operation_core
+    CellPack::apply_plan
+    CellPack::persistent_packing_payload
+    CUDA::cudart
+)
+set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     components/CellPack/src/optimization/objective_v2.cc
@@ -1472,13 +1523,90 @@ target_link_libraries(cellerator_planner PUBLIC
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)
 
+add_library(cellerator_candidate_measurement STATIC
+    src/planner/candidate_measurement.cu
+)
+add_library(Cellerator::candidate_measurement ALIAS
+    cellerator_candidate_measurement)
+target_include_directories(cellerator_candidate_measurement PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_candidate_measurement PUBLIC
+    Cellerator::planner
+    Cellerator::operation_core
+    CUDA::cudart
+)
+set_target_properties(cellerator_candidate_measurement PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_executable(celleratorPlannerV1Test
     tests/planner/end_to_end_planner_test.cc
+)
+
+add_executable(celleratorCandidateMeasurementTest
+    tests/planner/candidate_measurement_test.cu
+)
+target_link_libraries(celleratorCandidateMeasurementTest PRIVATE
+    Cellerator::candidate_measurement
+    Cellerator::row_masked_n1_candidate
+    Cellerator::csr_fallback_candidate
+)
+set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
 set_target_properties(celleratorPlannerV1Test PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorRowMaskedN1CandidateTest
+    tests/math_core/row_masked_n1_candidate_test.cu
+)
+
+add_executable(celleratorCsrFallbackCandidateTest
+    tests/math_core/csr_fallback_candidate_test.cu
+)
+add_executable(celleratorValueGenerationReuseTest
+    tests/math_core/value_generation_reuse_test.cu
+)
+target_link_libraries(celleratorValueGenerationReuseTest PRIVATE
+    CUDA::cudart
+)
+set_target_properties(celleratorValueGenerationReuseTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
+    Cellerator::csr_fallback_candidate
+    Cellerator::row_masked_n1_candidate
+    Cellerator::planner
+)
+set_target_properties(celleratorCsrFallbackCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorRowMaskedN1CandidateTest PRIVATE
+    Cellerator::row_masked_n1_candidate
+    Cellerator::planner
+)
+set_target_properties(celleratorRowMaskedN1CandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 
 # The surviving CP-Math v1 pieces are validation and compatibility evidence,

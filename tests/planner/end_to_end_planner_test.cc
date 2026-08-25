@@ -34,6 +34,7 @@ planner::phase_costs phases(double pack, double projection, double prepare,
     value.semantic_packing_ns = pack;
     value.projection_construction_ns = projection;
     value.backend_prepare_ns = prepare;
+    value.static_value_pack_ns = 80.0;
     value.h2d_ns = 20.0;
     value.dynamic_input_pack_ns = 5.0;
     value.kernel_ns = kernel;
@@ -99,7 +100,7 @@ planner::planning_keys keys(std::uint64_t reuse = 8u) {
         {6u, 7u}, {8u, 9u}, {10u, 11u}};
     value.device = {1u, 7u, 0u, 700u};
     value.build = {100u, 200u, 300u, 400u};
-    value.policy = {reuse, reuse, 1u, 1u, 1u, 1u};
+    value.policy = {reuse, reuse, reuse, 1u, 1u, 1u, 1u};
     return value;
 }
 
@@ -172,8 +173,8 @@ bool store(void *context, const planner::plan_cache_entry &entry) noexcept {
 void test_cost_accounting() {
     planner::total_cost cost{};
     const planner::phase_costs value = phases(800.0, 400.0, 200.0, 50.0, 25.0);
-    assert(planner::compute_total_cost(value, 8u, 4u, &cost));
-    const double expected = 10.0 + 100.0 + 100.0 + 50.0
+    assert(planner::compute_total_cost(value, 8u, 4u, 2u, &cost));
+    const double expected = 10.0 + 100.0 + 100.0 + 50.0 + 40.0
         + 20.0 + 5.0 + 50.0 + 3.0 + 25.0 + 2.0 + 0.0 + 1.0;
     assert(std::fabs(cost.amortized_total_ns - expected) < 1e-9);
 }
@@ -215,6 +216,13 @@ void test_measured_conventional_winner_and_cache() {
     assert(result.cache == planner::cache_state::stale);
     assert(result.source == planner::selection_source::analytical);
 
+    plan_request = request(value);
+    cache.entry.keys = plan_request.keys;
+    ++plan_request.keys.policy.value_reuse;
+    plan_request.measurement = {};
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.cache == planner::cache_state::stale);
+
     cache.entry = {};
     cache.found = false;
     cache.store_succeeds = false;
@@ -255,6 +263,13 @@ void test_policy_rejection() {
     assert(planner::plan_end_to_end(plan_request, &result));
     assert(result.diagnostics[0].rejection
         == planner::candidate_rejection::nondeterministic);
+
+    value = candidates_fixture();
+    value.operations[0].capability_flags &= ~core::candidate_graph_capture;
+    plan_request = request(value);
+    assert(planner::plan_end_to_end(plan_request, &result));
+    assert(result.diagnostics[0].rejection
+        == planner::candidate_rejection::malformed);
 }
 
 void test_persistent_structure_keys_and_measurement_fallback() {

@@ -10,7 +10,7 @@ namespace cellerator::planner {
 
 namespace operation_core = compute::math::core;
 
-inline constexpr std::uint32_t planner_schema_version = 1u;
+inline constexpr std::uint32_t planner_schema_version = 2u;
 inline constexpr std::uint32_t objective_v2_schema_version = 2u;
 inline constexpr std::uint32_t maximum_planner_candidates = 32u;
 
@@ -64,6 +64,7 @@ struct persistent_projection_key {
 struct policy_reuse_key {
     std::uint64_t structure_reuse = 1u;
     std::uint64_t projection_reuse = 1u;
+    std::uint64_t value_reuse = 1u;
     std::uint32_t numeric_policy = 0u;
     std::uint32_t determinism_policy = 0u;
     std::uint32_t output_order_policy = 0u;
@@ -86,6 +87,7 @@ struct phase_costs {
     double semantic_packing_ns = 0.0;
     double projection_construction_ns = 0.0;
     double backend_prepare_ns = 0.0;
+    double static_value_pack_ns = 0.0;
     double h2d_ns = 0.0;
     double dynamic_input_pack_ns = 0.0;
     double kernel_ns = 0.0;
@@ -105,6 +107,7 @@ struct total_cost {
     phase_costs phases{};
     std::uint64_t structure_reuse = 1u;
     std::uint64_t projection_reuse = 1u;
+    std::uint64_t value_reuse = 1u;
     double amortized_total_ns = 0.0;
 };
 
@@ -285,6 +288,7 @@ planner_status compute_total_cost(
     const phase_costs &phases,
     std::uint64_t structure_reuse,
     std::uint64_t projection_reuse,
+    std::uint64_t value_reuse,
     total_cost *out) noexcept;
 planner_status plan_end_to_end(
     const planner_request &request,

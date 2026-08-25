@@ -74,6 +74,58 @@ Its v1 contract provides:
 
 The last property is correct for the v1 API but should not become the future internal default.
 
+### Operation-core activation
+
+CE-ARCH-71 registers that preserved direct path as the
+`cpbp-cpk1-row-masked-n1` operation-core candidate. The adapter is deliberately
+narrow: it accepts only configured-precision, single-vector weighted relation
+reduction over a prevalidated and device-rebound CPK1 row-masked projection.
+Prepared state aliases immutable CPK1 geometry and canonical-row recovery
+metadata. Relation values, feature weights, output storage, value generation,
+stream, and zero-byte transient workspace remain launch bindings.
+
+The candidate is deterministic and graph-capture compatible. It allocates,
+copies, reconstructs, and synchronizes nothing, and calls the existing CP-BP
+CUDA consumer directly. Its canonical row output preserves the v1 compatibility
+contract; it is not a declaration that row-masked execution or canonical output
+is the universal planner default.
+
+CE-ARCH-72 registers the existing f16-value/f32-vector CSR path as the
+`cellerator-csr-fallback-n1-f16-f32` conventional candidate under the same
+operation-core contract. Preparation requires an already constructed,
+device-resident CSR projection in packed feature order and aliases only its row
+offsets and feature indices. Mutable relation values, dense input, output,
+value generation, caller stream, and zero-byte workspace remain launch-bound.
+
+The activated row-masked and CSR paths now have direct regression coverage for
+multiple mutable value generations over one immutable relation structure and
+one prepared structural execution. The proof keeps structure epoch, projection
+geometry, and prepared state stable while changing value-plane generation and
+allocation address; stale generations and real structure-epoch mismatches are
+rejected before dispatch. Projection-kind mismatches remain explicit
+preparation failures rather than triggering conversion or reconstruction.
+
+The adapter launches the existing validated CSR kernel definition directly; it
+does not construct CSR, allocate, copy, canonicalize, or synchronize in the hot
+path. Projection construction and transfer remain explicit planner costs. The
+candidate is deterministic but does not claim graph-capture support, and its
+presence does not make CSR canonical or create another runtime.
+
+CE-ARCH-73 connects real prepared candidates to the planner's empirical hook.
+Each shortlisted candidate supplies a disposable output and a complete launch
+binding on the caller/session stream. An untimed pipeline plus a neutral referee
+establishes correctness before bounded warmup and sampling. CUDA events record
+dynamic input packing, prepared execution, epilogue, output-order work, and
+communication without device-wide synchronization or synchronization between
+phases. Persistent semantic packing, projection construction, backend
+preparation, static value packing, transfers, required synchronization, and
+memory costs are recorded separately and amortized by their actual reuse keys.
+The robust result is a median with median-absolute-deviation spread; planner
+cache reuse still requires matching device-performance, runtime/build,
+structure, geometry, projection, policy, and evidence-revision identities.
+Autotuning never writes the caller-visible output, and unsupported or incorrect
+candidates are rejected before their timings can affect selection.
+
 ### Historical V100 evidence
 
 The recorded benchmark used:
