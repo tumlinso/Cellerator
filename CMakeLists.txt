@@ -1585,6 +1585,28 @@ set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
 add_library(cellerator_transpose_backward_candidate STATIC
     src/compute/math/operation_core/transpose_backward_candidate.cu
 )
+
+add_library(cellerator_native_training_slice STATIC
+    src/compute/math/native_training_slice.cu
+)
+add_library(Cellerator::native_training_slice ALIAS
+    cellerator_native_training_slice)
+target_include_directories(cellerator_native_training_slice PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_native_training_slice PUBLIC
+    Cellerator::feature_major_projection
+    Cellerator::transpose_projection
+    CUDA::cudart
+)
+set_target_properties(cellerator_native_training_slice PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
 add_library(Cellerator::transpose_backward_candidate ALIAS
     cellerator_transpose_backward_candidate)
 target_include_directories(cellerator_transpose_backward_candidate PUBLIC
@@ -1700,6 +1722,9 @@ add_executable(celleratorFeatureMajorSmallNCandidateTest
 add_executable(celleratorTransposeBackwardCandidateTest
     tests/math_core/transpose_backward_candidate_test.cu
 )
+add_executable(celleratorNativeTrainingSliceTest
+    tests/math_core/native_training_slice_test.cu
+)
 add_executable(celleratorCeArch76CandidateBench
     bench/math/feature_major_candidate_compare_bench.cu
 )
@@ -1747,6 +1772,18 @@ target_link_libraries(celleratorTransposeBackwardCandidateTest PRIVATE
     cellerator_math_v1_evidence
 )
 set_target_properties(celleratorTransposeBackwardCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorNativeTrainingSliceTest PRIVATE
+    Cellerator::native_training_slice
+    Cellerator::feature_major_projection
+    Cellerator::transpose_projection
+    CUDA::cudart
+)
+set_target_properties(celleratorNativeTrainingSliceTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
