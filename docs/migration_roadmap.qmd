@@ -197,6 +197,31 @@ scalars, and streams.
   depend on values.
 - Prepared plans are graph-capture compatible where their kernels are.
 
+## Live migration status
+
+The completed CE-ARCH-40 through CE-ARCH-79 tasks are bounded implementation
+evidence, not completion of this roadmap. CE-ARCH-80 is the continuation epic
+for the remaining exit criteria. The following matrix is the authoritative
+pickup map; a phase is complete only when every exit criterion in that phase is
+demonstrated by canonical source and focused tests.
+
+| Phase | Status | Evidence already present | Remaining owner |
+| --- | --- | --- | --- |
+| 4: Execution Image v2 | partial | CPE2 section and projection directories, stable identities, CPK1 compatibility sections, relocation/prebinding, and host/device tests exist. | CE-ARCH-82 closes the unified compatibility, multi-value-plane, schema-extension, and direct prepared-execution path. |
+| 5: Instrumentation and corpus | partial | CE-ARCH-73/76 record phase costs, correctness, robust timing, reuse, and V100/build identity for a controlled small-N corpus. | CE-ARCH-83 adds representative real/adversarial structures and the missing pressure and forward/transpose observations. |
+| 6: Projection plurality | partial | Row-masked, feature-major small-N, and CSR candidates execute under one operation/planner contract. | CE-ARCH-84 adds measured low-sharing/tail and CTA-scale forward regimes; CE-ARCH-85 adds a transpose/backward projection sharing logical edge identity. |
+| 7: Planner and autotuner | partial | Candidate filtering, total phase costs, bounded empirical measurement, durable keys, and stale-evidence rejection exist for individual operations. | CE-ARCH-86 plans connected operations and makes order/conversion cost capable of changing the winner. |
+| 8: Objective V2 | partial | CE-ARCH-77 fitted a replaceable candidate-cost model and exposes measured-cost refinement weights with deterministic fallback. | CE-ARCH-87 completes evidence-backed CP-BP refinement, held-out/bootstrap stability, forward/transpose profiles, and justified activity/partition terms. |
+| 9: Native training path | missing | Compatibility contracts reserve transpose/backward and mutable value-plane evolution; legacy model/backward code remains reference evidence. | CE-ARCH-88 owns the native forward/backward training vertical slice and fair end-to-end CSR comparison. |
+| 10: Baseplane integration | partial | A shared predicate ABI, validity-aware operands, fused execution, cached materialization, and reuse crossover evidence exist. | CE-ARCH-89 closes shared identity, direct relation-builder, no-host-boundary, repeated-state, and complete-cost fused/materialized planning criteria. |
+| 11: Hierarchy and scale-out | missing | Identity and image schemas reserve partition, hierarchy, boundary, and communication concepts. | CE-ARCH-90 implements shared-value hierarchy indices, nested partitions, active-module skipping, and execution-order boundary costs. |
+| CellShard completion boundary | externally blocked | CE-ARCH-79 established the opaque persistent-identity and image boundary and completed CS-FOUND-01 through CS-FOUND-03. | The independent CS-FOUND-04 through CS-FOUND-15 program must publish its interfaces before CE-ARCH-91 integrates delivery. |
+| Migration completion audit | missing | Earlier synthetic and smoke evidence remains valid within its declared scope. | CE-ARCH-92 owns fair real-data regimes, fallback evidence, documentation reconciliation, and the final audit. |
+
+`partial` does not authorize declaring the corresponding phase complete. A
+reserved enum, schema slot, compatibility matrix, synthetic fixture, or future
+extension point is not implementation of the missing runtime behavior.
+
 ## Phase 4: execution image version 2
 
 Generalize CPK1 into a sectioned execution image while retaining a CPK1 reader.

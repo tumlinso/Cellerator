@@ -211,7 +211,11 @@ CP-BP-13 adds:
 
 CellShard wraps the opaque image in a versioned execution envelope and owns publication, compatibility checks, fetch, and contiguous upload.
 
-The current image tightly reflects the v1 operation and projection. It should be adapted into a sectioned execution image rather than declared final.
+CPK1 tightly reflects the v1 operation and projection. CPE2 now provides the
+sectioned execution-image container, projection directory, relocation, and
+device prebinding around it and newer projections. Phase 4 remains partial
+until CE-ARCH-82 proves one unified CPK1-compatible, multi-value-plane,
+schema-extensible path through direct prepared execution.
 
 ## CP-Math v1
 
@@ -357,15 +361,18 @@ Baseplane currently provides:
 - CPU, SIMD, and CUDA paths;
 - allocation-free hot APIs with caller-owned output.
 
-Current architectural limitations relevant to Cellerator include:
+Remaining architectural limitations relevant to Cellerator include:
 
 - validity and ambiguous-base policy must be mandatory and explicit;
 - tail validity must travel with plane streams;
 - local and global coordinate widths need a stable chunk contract;
 - motif plans must be normalized and immutable;
 - output ordering and overflow semantics need stronger contracts;
-- shared Cellerator domain and relation identity is not yet present;
-- the planner cannot yet choose materialized versus fused sequence execution.
+- the shared predicate ABI and operand identities do not yet constitute the
+  complete direct relation-builder contract required by Phase 10;
+- CE-ARCH-78 records a fused-versus-reused-materialization crossover, but the
+  complete-cost choice is not yet integrated across the full relation-builder
+  and repeated-state program.
 
 ## Documentation state before replacement
 
@@ -383,6 +390,36 @@ Several root documents also referenced missing files such as `pointer_migration_
 The replacement documentation removes those assumptions from the active guidance.
 
 ## Current open work
+
+### CE-ARCH continuation status
+
+CE-ARCH-40 through CE-ARCH-79 completed useful bounded deliverables, but they
+did not complete the architectural migration. In particular, CE-ARCH-40 proved
+a frozen v1 Baseplane seam, CE-ARCH-50 proved additive forward-compatibility
+contracts rather than implementing those future paths, and CE-ARCH-60 retired
+harmful legacy runtime assumptions. Later CE-ARCH-70 through CE-ARCH-79 hardened
+the foundation and activated the first measured candidates; they did not close
+roadmap Phases 4 through 11.
+
+The live continuation is CE-ARCH-80:
+
+- CE-ARCH-81: truthful roadmap and executable status matrix;
+- CE-ARCH-82: unified Execution Image v2 compatibility/runtime closure;
+- CE-ARCH-83: representative instrumentation and benchmark corpus;
+- CE-ARCH-84: missing low-sharing/tail and CTA-scale forward regimes;
+- CE-ARCH-85: transpose projection and native backward;
+- CE-ARCH-86: connected-operation planning;
+- CE-ARCH-87: full Objective V2 CP-BP refinement integration;
+- CE-ARCH-88: native sparse-to-dense training vertical slice;
+- CE-ARCH-89: complete Baseplane relation/fusion integration;
+- CE-ARCH-90: hierarchy and scale-out readiness;
+- CE-ARCH-91: opaque CellShard artifact delivery after CS-FOUND publishes its
+  remaining interfaces;
+- CE-ARCH-92: real-data and migration-completion audit.
+
+The phase-by-phase evidence and remaining-owner matrix in
+`migration_roadmap.qmd` is authoritative for pickup. No reserved ABI field or
+compatibility proof should be described as the corresponding runtime feature.
 
 The remaining planned CUDA packing-plan evaluator is legitimate but not the highest architectural priority.
 

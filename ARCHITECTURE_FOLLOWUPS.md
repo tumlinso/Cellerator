@@ -19,5 +19,6 @@ storage-owned shard metadata and narrow neutral bindings such as explicit device
 IDs, streams, and shard assignments. Preserve CellShard's storage ownership and
 do not duplicate Cellerator compute or collective policy inside CellShard.
 
-This is a deferred architectural follow-up, not part of CE-ARCH-71 through
-CE-ARCH-74.
+This is owned by the CE-ARCH-90 hierarchy/scale-out boundary work and the
+CE-ARCH-91 opaque CellShard artifact integration. It was not completed by the
+bounded CE-ARCH-40 through CE-ARCH-79 recovery and activation tasks.
