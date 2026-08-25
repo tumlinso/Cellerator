@@ -1507,6 +1507,47 @@ set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-ARCH-75: a second projection of the frozen CP-BP semantic structure.
+# Construction and value packing are explicit host preparation; prepared
+# execution consumes the native feature-major payload directly for N=1..16.
+add_library(cellerator_feature_major_projection STATIC
+    src/compute/math/physical_feature_major.cc
+)
+add_library(Cellerator::feature_major_projection ALIAS
+    cellerator_feature_major_projection)
+target_include_directories(cellerator_feature_major_projection PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_feature_major_projection PUBLIC
+    CellPack::persistent_packing_payload
+    Cellerator::biological_abi
+)
+target_compile_features(cellerator_feature_major_projection PUBLIC cxx_std_17)
+
+add_library(cellerator_feature_major_small_n_candidate STATIC
+    src/compute/math/operation_core/feature_major_small_n_candidate.cu
+)
+add_library(Cellerator::feature_major_small_n_candidate ALIAS
+    cellerator_feature_major_small_n_candidate)
+target_include_directories(cellerator_feature_major_small_n_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_feature_major_small_n_candidate PUBLIC
+    Cellerator::operation_core
+    Cellerator::feature_major_projection
+    CUDA::cudart
+)
+set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     components/CellPack/src/optimization/objective_v2.cc
@@ -1575,6 +1616,9 @@ add_executable(celleratorRowMaskedN1CandidateTest
 add_executable(celleratorCsrFallbackCandidateTest
     tests/math_core/csr_fallback_candidate_test.cu
 )
+add_executable(celleratorFeatureMajorSmallNCandidateTest
+    tests/math_core/feature_major_small_n_candidate_test.cu
+)
 add_executable(celleratorValueGenerationReuseTest
     tests/math_core/value_generation_reuse_test.cu
 )
@@ -1593,6 +1637,20 @@ target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
     Cellerator::planner
 )
 set_target_properties(celleratorCsrFallbackCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorFeatureMajorSmallNCandidateTest PRIVATE
+    Cellerator::feature_major_small_n_candidate
+    Cellerator::row_masked_n1_candidate
+    Cellerator::csr_fallback_candidate
+    Cellerator::planner
+    CellPack::execution_image_v2
+    cellerator_math_v1_evidence
+)
+set_target_properties(celleratorFeatureMajorSmallNCandidateTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17

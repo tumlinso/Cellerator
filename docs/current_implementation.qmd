@@ -126,6 +126,29 @@ structure, geometry, projection, policy, and evidence-revision identities.
 Autotuning never writes the caller-visible output, and unsupported or incorrect
 candidates are rejected before their timings can affect selection.
 
+CE-ARCH-75 adds `FMP1`, the first feature-major small-`N` physical projection
+of the same frozen CP-BP structure. Projection construction transposes the
+existing 32-row/32-feature mask grammar into per-tile packed-feature records,
+participating-row masks, compact value offsets, and an exact source-value
+position map. The pointer-free payload carries the persistent structure epoch,
+`ProjectionId`, geometry identity, and execution-order identity and can be
+stored as an ordinary CPE2 `native_feature_major` projection section. Mutable
+generations are packed explicitly into FMP1-local order outside prepared
+execution; neither geometry nor prepared state changes when a generation or
+allocation address changes.
+
+The registered `cpbp-feature-major-small-n-f16-f32` candidate accepts only
+row-major packed f32 dense RHS/output with f16 relation values, f32 multiply and
+accumulation, and `1 <= N <= 16`. One warp owns a row group, loads each
+feature's `N`-wide dense vector once, and applies it to the masked participating
+rows. Both output axes remain in their declared execution order, output is an
+overwrite, and transient workspace is zero. Construction, value packing,
+allocation, conversion, canonicalization, and synchronization are absent from
+the run path. Correctness coverage includes partial tiles, irregular occupancy,
+an empty row, both `N` boundaries, two value generations, identity/staleness
+rejection, CPE2 prebinding, and the independent SpMM referee. Comparative
+selection evidence remains owned by CE-ARCH-76.
+
 ### Historical V100 evidence
 
 The recorded benchmark used:
