@@ -186,8 +186,11 @@ int main() {
     cudaStream_t stream = nullptr;
     require_cuda(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking),
         "create caller stream");
+    int device_id = -1;
+    require_cuda(cudaGetDevice(&device_id), "query leased CUDA device");
     cs::execution_payload_device device{};
-    require_cuda(cs::upload_execution_payload_async(host, 0, stream, &device),
+    require_cuda(cs::upload_execution_payload_async(
+        host, device_id, stream, &device),
         "one-copy caller-stream upload");
     std::size_t free_before = 0u, total_before = 0u;
     require_cuda(cudaMemGetInfo(&free_before, &total_before),
