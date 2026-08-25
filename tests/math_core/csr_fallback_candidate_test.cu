@@ -128,6 +128,8 @@ void test_registry_and_planner_coexistence(
     candidates[0].projection = {{101u, 1u}, {201u, 1u},
         core::projection_kind::native_row_masked, 1u, 1u};
     candidates[0].analytical.kernel_ns = 20.0;
+    candidates[0].analytical.persistent_bytes =
+        registry.candidates[0].persistent_bytes;
     candidates[0].flags = planner::planner_candidate_correct
         | planner::planner_candidate_deterministic
         | planner::planner_candidate_graph_capture;
@@ -137,6 +139,8 @@ void test_registry_and_planner_coexistence(
     candidates[1].projection = csr_projection;
     candidates[1].analytical.projection_construction_ns = 5.0;
     candidates[1].analytical.kernel_ns = 10.0;
+    candidates[1].analytical.persistent_bytes =
+        registry.candidates[1].persistent_bytes;
     candidates[1].flags = planner::planner_candidate_correct
         | planner::planner_candidate_deterministic
         | planner::planner_candidate_conventional;
@@ -150,7 +154,7 @@ void test_registry_and_planner_coexistence(
         {4u, 1u}, {5u, 1u}, {6u, 1u}};
     request.keys.device = {1u, 7u, 0u, 700u};
     request.keys.build = {1u, 2u, 3u, 4u};
-    request.keys.policy = {8u, 8u, 1u, 1u, 1u, 0u};
+    request.keys.policy = {8u, 8u, 8u, 1u, 1u, 1u, 0u};
     request.candidates = candidates;
     request.candidate_count = 2u;
     request.policy.shortlist_size = 2u;

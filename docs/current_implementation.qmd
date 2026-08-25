@@ -102,6 +102,21 @@ path. Projection construction and transfer remain explicit planner costs. The
 candidate is deterministic but does not claim graph-capture support, and its
 presence does not make CSR canonical or create another runtime.
 
+CE-ARCH-73 connects real prepared candidates to the planner's empirical hook.
+Each shortlisted candidate supplies a disposable output and a complete launch
+binding on the caller/session stream. An untimed pipeline plus a neutral referee
+establishes correctness before bounded warmup and sampling. CUDA events record
+dynamic input packing, prepared execution, epilogue, output-order work, and
+communication without device-wide synchronization or synchronization between
+phases. Persistent semantic packing, projection construction, backend
+preparation, static value packing, transfers, required synchronization, and
+memory costs are recorded separately and amortized by their actual reuse keys.
+The robust result is a median with median-absolute-deviation spread; planner
+cache reuse still requires matching device-performance, runtime/build,
+structure, geometry, projection, policy, and evidence-revision identities.
+Autotuning never writes the caller-visible output, and unsupported or incorrect
+candidates are rejected before their timings can affect selection.
+
 ### Historical V100 evidence
 
 The recorded benchmark used:

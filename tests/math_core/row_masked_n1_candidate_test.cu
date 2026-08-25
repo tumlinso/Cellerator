@@ -229,7 +229,7 @@ void test_registration_and_planner_enumeration(
         {4u, 1u}, {5u, 1u}, {6u, 1u}};
     request.keys.device = {1u, 7u, 0u, 700u};
     request.keys.build = {1u, 2u, 3u, 4u};
-    request.keys.policy = {8u, 8u, 1u, 1u, 1u, 1u};
+    request.keys.policy = {8u, 8u, 8u, 1u, 1u, 1u, 1u};
     request.candidates = &candidate;
     request.candidate_count = 1u;
     request.policy.shortlist_size = 1u;

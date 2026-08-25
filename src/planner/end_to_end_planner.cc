@@ -15,6 +15,7 @@ bool valid_phases(const phase_costs &phases) noexcept {
         && finite_nonnegative(phases.semantic_packing_ns)
         && finite_nonnegative(phases.projection_construction_ns)
         && finite_nonnegative(phases.backend_prepare_ns)
+        && finite_nonnegative(phases.static_value_pack_ns)
         && finite_nonnegative(phases.h2d_ns)
         && finite_nonnegative(phases.dynamic_input_pack_ns)
         && finite_nonnegative(phases.kernel_ns)
@@ -92,6 +93,16 @@ candidate_rejection reject_candidate(
         || !execution::valid_handle(candidate.projection.runtime)
         || candidate.projection.schema_version == 0u
         || candidate.projection.kind != candidate.operation->projection
+        || ((candidate.flags & planner_candidate_deterministic) != 0u
+            && (candidate.operation->capability_flags
+                & operation_core::candidate_deterministic) == 0u)
+        || ((candidate.flags & planner_candidate_graph_capture) != 0u
+            && (candidate.operation->capability_flags
+                & operation_core::candidate_graph_capture) == 0u)
+        || candidate.analytical.persistent_bytes
+            < candidate.operation->persistent_bytes
+        || candidate.analytical.transient_bytes
+            < candidate.operation->transient_bytes
         || !valid_phases(candidate.analytical))
         return candidate_rejection::malformed;
     if ((candidate.flags & planner_candidate_correct) == 0u)
@@ -185,8 +196,10 @@ planner_status compute_total_cost(
     const phase_costs &phases,
     std::uint64_t structure_reuse,
     std::uint64_t projection_reuse,
+    std::uint64_t value_reuse,
     total_cost *out) noexcept {
-    if (out == nullptr || structure_reuse == 0u || projection_reuse == 0u)
+    if (out == nullptr || structure_reuse == 0u || projection_reuse == 0u
+        || value_reuse == 0u)
         return {planner_status_code::invalid_argument,
             "cost accounting requires output and nonzero reuse"};
     *out = total_cost{};
@@ -195,10 +208,12 @@ planner_status compute_total_cost(
             "phase costs must be finite and nonnegative"};
     const double structure = static_cast<double>(structure_reuse);
     const double projection = static_cast<double>(projection_reuse);
+    const double values = static_cast<double>(value_reuse);
     const double total = phases.host_preparation_ns
         + phases.semantic_packing_ns / structure
         + phases.projection_construction_ns / projection
         + phases.backend_prepare_ns / projection
+        + phases.static_value_pack_ns / values
         + phases.h2d_ns + phases.dynamic_input_pack_ns + phases.kernel_ns
         + phases.epilogue_ns + phases.order_transform_ns
         + phases.synchronization_ns + phases.communication_ns + phases.d2h_ns;
@@ -208,6 +223,7 @@ planner_status compute_total_cost(
     out->phases = phases;
     out->structure_reuse = structure_reuse;
     out->projection_reuse = projection_reuse;
+    out->value_reuse = value_reuse;
     out->amortized_total_ns = total;
     return {};
 }
@@ -229,6 +245,7 @@ bool same_planning_keys(
         && lhs.build.library == rhs.build.library
         && lhs.policy.structure_reuse == rhs.policy.structure_reuse
         && lhs.policy.projection_reuse == rhs.policy.projection_reuse
+        && lhs.policy.value_reuse == rhs.policy.value_reuse
         && lhs.policy.numeric_policy == rhs.policy.numeric_policy
         && lhs.policy.determinism_policy == rhs.policy.determinism_policy
         && lhs.policy.output_order_policy == rhs.policy.output_order_policy
@@ -296,6 +313,7 @@ planner_status plan_end_to_end(
         || request.current_evidence_revision == 0u
         || request.keys.policy.structure_reuse == 0u
         || request.keys.policy.projection_reuse == 0u
+        || request.keys.policy.value_reuse == 0u
         || request.policy.shortlist_size == 0u
         || request.policy.shortlist_size > maximum_planner_candidates
         || !finite_nonnegative(request.policy.practical_tolerance_percent)
@@ -319,6 +337,7 @@ planner_status plan_end_to_end(
             request.candidates[index].analytical,
             request.keys.policy.structure_reuse,
             request.keys.policy.projection_reuse,
+            request.keys.policy.value_reuse,
             &diagnostic.analytical);
         if (!cost) {
             diagnostic.rejection = candidate_rejection::malformed;
@@ -378,7 +397,8 @@ planner_status plan_end_to_end(
     }
 
     const bool one_shot = request.keys.policy.structure_reuse == 1u
-        && request.keys.policy.projection_reuse == 1u;
+        && request.keys.policy.projection_reuse == 1u
+        && request.keys.policy.value_reuse == 1u;
     const bool tune = request.measurement.measure != nullptr
         && request.policy.maximum_measurements != 0u
         && request.problem.logical_work_items
@@ -432,6 +452,7 @@ planner_status plan_end_to_end(
             measured.phases,
             request.keys.policy.structure_reuse,
             request.keys.policy.projection_reuse,
+            request.keys.policy.value_reuse,
             &out->diagnostics[index].empirical);
         if (!cost) {
             out->diagnostics[index].rejection =

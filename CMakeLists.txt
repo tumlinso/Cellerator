@@ -1523,8 +1523,44 @@ target_link_libraries(cellerator_planner PUBLIC
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)
 
+add_library(cellerator_candidate_measurement STATIC
+    src/planner/candidate_measurement.cu
+)
+add_library(Cellerator::candidate_measurement ALIAS
+    cellerator_candidate_measurement)
+target_include_directories(cellerator_candidate_measurement PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_candidate_measurement PUBLIC
+    Cellerator::planner
+    Cellerator::operation_core
+    CUDA::cudart
+)
+set_target_properties(cellerator_candidate_measurement PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_executable(celleratorPlannerV1Test
     tests/planner/end_to_end_planner_test.cc
+)
+
+add_executable(celleratorCandidateMeasurementTest
+    tests/planner/candidate_measurement_test.cu
+)
+target_link_libraries(celleratorCandidateMeasurementTest PRIVATE
+    Cellerator::candidate_measurement
+    Cellerator::row_masked_n1_candidate
+    Cellerator::csr_fallback_candidate
+)
+set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
 set_target_properties(celleratorPlannerV1Test PROPERTIES
