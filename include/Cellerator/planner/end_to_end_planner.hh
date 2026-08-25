@@ -13,6 +13,10 @@ namespace operation_core = compute::math::core;
 inline constexpr std::uint32_t planner_schema_version = 2u;
 inline constexpr std::uint32_t objective_v2_schema_version = 2u;
 inline constexpr std::uint32_t maximum_planner_candidates = 32u;
+inline constexpr std::uint32_t connected_planner_schema_version = 1u;
+inline constexpr std::uint32_t maximum_connected_operations = 8u;
+inline constexpr std::uint32_t maximum_connected_stage_candidates = 8u;
+inline constexpr std::uint32_t maximum_connected_transitions = 128u;
 
 struct mathematical_problem_key {
     operation_core::stable_id identity{};
@@ -304,6 +308,138 @@ bool same_persistent_projection_key(
     const persistent_projection_key &persistent,
     const operation_core::projection_key &live) noexcept;
 
+// Bounded connected-operation planner. It deliberately models a linear chain:
+// later DAG/general-graph work may replace this interface without changing the
+// single-operation planner or candidate contracts.
+struct connected_operation_stage {
+    operation_core::operation_problem problem{};
+    planning_keys keys{};
+    planner_policy policy{};
+    const planner_candidate *candidates = nullptr;
+    std::uint32_t candidate_count = 0u;
+    std::uint32_t reserved = 0u;
+};
+
+struct connected_transition_cost {
+    std::uint32_t boundary = 0u;
+    operation_core::stable_id producer{};
+    operation_core::stable_id consumer{};
+    execution::order_transition_kind order =
+        execution::order_transition_kind::preserve;
+    bool format_conversion = false;
+    bool legal = true;
+    std::uint16_t reserved = 0u;
+    operation_core::stable_id conversion{};
+    phase_costs phases{};
+};
+
+struct connected_plan_path {
+    std::uint32_t stage_count = 0u;
+    std::uint32_t reserved = 0u;
+    operation_core::stable_id candidates[maximum_connected_operations]{};
+    persistent_projection_key projections[maximum_connected_operations]{};
+};
+
+struct connected_planning_keys {
+    operation_core::stable_id graph_identity{};
+    std::uint32_t stage_count = 0u;
+    std::uint32_t reserved = 0u;
+    planning_keys stages[maximum_connected_operations]{};
+};
+
+struct measured_connected_plan {
+    bool correct = false;
+    bool contaminated = false;
+    std::uint16_t reserved = 0u;
+    std::uint32_t sample_count = 0u;
+    double amortized_total_ns = 0.0;
+    double spread_percent = 0.0;
+};
+
+using connected_measurement_function = bool (*)(
+    void *context,
+    const connected_plan_path &path,
+    measured_connected_plan *measurement) noexcept;
+
+struct connected_measurement_hook {
+    void *context = nullptr;
+    connected_measurement_function measure = nullptr;
+};
+
+struct connected_plan_cache_entry {
+    connected_planning_keys keys{};
+    connected_plan_path winner{};
+    empirical_evidence evidence{};
+    bool occupied = false;
+};
+
+using connected_cache_lookup_function = bool (*)(
+    void *context,
+    const connected_planning_keys &keys,
+    connected_plan_cache_entry *entry) noexcept;
+using connected_cache_store_function = bool (*)(
+    void *context,
+    const connected_plan_cache_entry &entry) noexcept;
+
+struct connected_plan_cache_hooks {
+    void *context = nullptr;
+    connected_cache_lookup_function lookup = nullptr;
+    connected_cache_store_function store = nullptr;
+};
+
+struct connected_planner_request {
+    std::uint32_t schema_version = connected_planner_schema_version;
+    operation_core::stable_id graph_identity{};
+    const connected_operation_stage *stages = nullptr;
+    std::uint32_t stage_count = 0u;
+    std::uint32_t reserved = 0u;
+    const connected_transition_cost *transitions = nullptr;
+    std::uint32_t transition_count = 0u;
+    std::uint32_t shortlist_size = 3u;
+    std::uint32_t maximum_measurements = 3u;
+    double practical_tolerance_percent = 2.0;
+    double maximum_spread_percent = 10.0;
+    double minimum_cache_confidence = 0.8;
+    bool force_empirical = false;
+    bool allow_analytical_fallback_after_measurement_failure = true;
+    std::uint8_t reserved_flags[6]{};
+    connected_measurement_hook measurement{};
+    connected_plan_cache_hooks cache{};
+    std::uint64_t current_evidence_revision = 0u;
+};
+
+struct connected_stage_selection {
+    const planner_candidate *candidate = nullptr;
+    total_cost analytical{};
+};
+
+struct connected_planner_result {
+    std::uint32_t schema_version = connected_planner_schema_version;
+    planner_status status{};
+    connected_plan_path winner{};
+    connected_stage_selection stages[maximum_connected_operations]{};
+    selection_source source = selection_source::analytical;
+    cache_state cache = cache_state::not_configured;
+    bool cache_store_failed = false;
+    bool empirical_required = false;
+    std::uint16_t reserved = 0u;
+    std::uint32_t legal_path_count = 0u;
+    std::uint32_t shortlist_count = 0u;
+    std::uint32_t measurement_count = 0u;
+    double analytical_total_ns = 0.0;
+    double empirical_total_ns = 0.0;
+    double confidence = 0.0;
+    const char *reason = nullptr;
+};
+
+bool same_connected_planning_keys(
+    const connected_planning_keys &lhs,
+    const connected_planning_keys &rhs) noexcept;
+
+planner_status plan_connected_operations(
+    const connected_planner_request &request,
+    connected_planner_result *out) noexcept;
+
 // Versioned CP-BP objective v2. This is operation-aware planner input and does
 // not alter packing_exact_objective_kind or any CPK1 v1 bytes.
 struct objective_v2_statistics {
@@ -374,5 +510,9 @@ static_assert(std::is_trivially_copyable<phase_costs>::value,
     "phase costs must remain evidence-record friendly");
 static_assert(std::is_trivially_copyable<objective_v2_result>::value,
     "objective v2 results must remain evidence-record friendly");
+static_assert(std::is_trivially_copyable<connected_plan_path>::value,
+    "connected plan paths must remain pointer-free cache records");
+static_assert(std::is_trivially_copyable<connected_planning_keys>::value,
+    "connected planning keys must remain pointer-free cache records");
 
 } // namespace cellerator::planner

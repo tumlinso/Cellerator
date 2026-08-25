@@ -1646,6 +1646,9 @@ set_target_properties(cellerator_candidate_measurement PROPERTIES
 add_executable(celleratorPlannerV1Test
     tests/planner/end_to_end_planner_test.cc
 )
+add_executable(celleratorConnectedOperationPlannerTest
+    tests/planner/connected_operation_planner_test.cc
+)
 add_executable(celleratorObjectiveV2CalibrationTest
     tests/planner/objective_v2_calibration_test.cc
 )
@@ -1665,10 +1668,17 @@ set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
+target_link_libraries(celleratorConnectedOperationPlannerTest PRIVATE
+    Cellerator::planner
+)
 target_link_libraries(celleratorObjectiveV2CalibrationTest PRIVATE
     Cellerator::planner
 )
 set_target_properties(celleratorPlannerV1Test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+)
+set_target_properties(celleratorConnectedOperationPlannerTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )

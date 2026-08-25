@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace cellerator::planner {
 namespace {
@@ -542,6 +543,442 @@ planner_status plan_end_to_end(
                 out->confidence,
                 request.policy.practical_tolerance_percent},
             true};
+        if (!request.cache.store(request.cache.context, entry))
+            out->cache_store_failed = true;
+    }
+    return {};
+}
+
+bool same_connected_planning_keys(
+    const connected_planning_keys &lhs,
+    const connected_planning_keys &rhs) noexcept {
+    if (!operation_core::same_stable_id(
+            lhs.graph_identity, rhs.graph_identity)
+        || lhs.stage_count != rhs.stage_count
+        || lhs.stage_count == 0u
+        || lhs.stage_count > maximum_connected_operations)
+        return false;
+    for (std::uint32_t stage = 0u; stage < lhs.stage_count; ++stage)
+        if (!same_planning_keys(lhs.stages[stage], rhs.stages[stage]))
+            return false;
+    return true;
+}
+
+planner_status plan_connected_operations(
+    const connected_planner_request &request,
+    connected_planner_result *out) noexcept {
+    if (out == nullptr)
+        return {planner_status_code::invalid_argument,
+            "connected planner output is null"};
+    *out = connected_planner_result{};
+    out->reason = "connected planning did not complete";
+    const auto stable_present = [](operation_core::stable_id id) noexcept {
+        return id.low != 0u || id.high != 0u;
+    };
+    if (request.schema_version != connected_planner_schema_version
+        || !stable_present(request.graph_identity)
+        || request.stages == nullptr || request.stage_count < 2u
+        || request.stage_count > maximum_connected_operations
+        || request.transitions == nullptr || request.transition_count == 0u
+        || request.transition_count > maximum_connected_transitions
+        || request.shortlist_size == 0u
+        || request.shortlist_size > maximum_connected_stage_candidates
+        || request.maximum_measurements > request.shortlist_size
+        || request.current_evidence_revision == 0u
+        || !finite_nonnegative(request.practical_tolerance_percent)
+        || !finite_nonnegative(request.maximum_spread_percent)
+        || !std::isfinite(request.minimum_cache_confidence)
+        || request.minimum_cache_confidence < 0.0
+        || request.minimum_cache_confidence > 1.0) {
+        out->status = {planner_status_code::invalid_argument,
+            "connected planner request is invalid"};
+        return out->status;
+    }
+
+    connected_planning_keys durable_keys{};
+    durable_keys.graph_identity = request.graph_identity;
+    durable_keys.stage_count = request.stage_count;
+    for (std::uint32_t stage = 0u; stage < request.stage_count; ++stage) {
+        const connected_operation_stage &node = request.stages[stage];
+        if (node.candidates == nullptr || node.candidate_count == 0u
+            || node.candidate_count > maximum_connected_stage_candidates
+            || node.problem.input_count == 0u || node.problem.output_count == 0u
+            || node.problem.logical_work_items == 0u
+            || !operation_core::same_stable_id(
+                node.problem.operation, node.keys.problem.identity)
+            || !valid_structure_set(node.keys.structures)
+            || !execution::valid_identity(node.keys.geometry.source_domain)
+            || !execution::valid_identity(node.keys.geometry.destination_domain)
+            || !execution::valid_identity(node.keys.geometry.geometry)
+            || !execution::valid_identity(node.keys.geometry.source_order)
+            || !execution::valid_identity(node.keys.geometry.destination_order)
+            || !execution::valid_identity(node.keys.geometry.partition)
+            || node.keys.device.vendor == 0u
+            || node.keys.device.performance_class == 0u
+            || node.keys.build.runtime == 0u
+            || node.keys.build.kernel_build == 0u
+            || node.keys.build.driver == 0u
+            || node.keys.build.library == 0u
+            || node.keys.policy.structure_reuse == 0u
+            || node.keys.policy.projection_reuse == 0u
+            || node.keys.policy.value_reuse == 0u) {
+            out->status = {planner_status_code::invalid_argument,
+                "connected operation stage is invalid"};
+            return out->status;
+        }
+        durable_keys.stages[stage] = node.keys;
+    }
+    for (std::uint32_t index = 0u; index < request.transition_count; ++index) {
+        const connected_transition_cost &transition = request.transitions[index];
+        const bool conversion_present = stable_present(transition.conversion);
+        if (transition.boundary >= request.stage_count - 1u
+            || !stable_present(transition.producer)
+            || !stable_present(transition.consumer)
+            || (transition.order != execution::order_transition_kind::preserve
+                && transition.order
+                    != execution::order_transition_kind::transform
+                && transition.order
+                    != execution::order_transition_kind::canonicalize)
+            || ((transition.format_conversion
+                    || transition.order
+                        != execution::order_transition_kind::preserve)
+                != conversion_present)
+            || !valid_phases(transition.phases)) {
+            out->status = {planner_status_code::invalid_argument,
+                "connected transition contract is invalid"};
+            return out->status;
+        }
+        for (std::uint32_t prior = 0u; prior < index; ++prior)
+            if (request.transitions[prior].boundary == transition.boundary
+                && operation_core::same_stable_id(
+                    request.transitions[prior].producer,
+                    transition.producer)
+                && operation_core::same_stable_id(
+                    request.transitions[prior].consumer,
+                    transition.consumer)) {
+                out->status = {planner_status_code::invalid_argument,
+                    "connected transition pair is duplicated"};
+                return out->status;
+            }
+    }
+
+    struct path_state {
+        bool reachable = false;
+        bool empirical_required = false;
+        std::uint16_t reserved = 0u;
+        std::uint64_t path_count = 0u;
+        double total_ns = 0.0;
+        std::uint32_t candidate_indices[maximum_connected_operations]{};
+        total_cost stage_costs[maximum_connected_operations]{};
+    };
+    path_state previous[maximum_connected_stage_candidates]{};
+    path_state current[maximum_connected_stage_candidates]{};
+
+    const auto candidate_cost = [&](std::uint32_t stage,
+                                    std::uint32_t index,
+                                    total_cost *cost) noexcept {
+        const connected_operation_stage &node = request.stages[stage];
+        const planner_candidate &candidate = node.candidates[index];
+        if (reject_candidate(candidate, node.policy, node.problem)
+                != candidate_rejection::none)
+            return false;
+        return static_cast<bool>(compute_total_cost(candidate.analytical,
+            node.keys.policy.structure_reuse,
+            node.keys.policy.projection_reuse,
+            node.keys.policy.value_reuse, cost));
+    };
+    const auto find_transition = [&](std::uint32_t boundary,
+                                     operation_core::stable_id producer,
+                                     operation_core::stable_id consumer,
+                                     total_cost *cost) noexcept {
+        for (std::uint32_t index = 0u; index < request.transition_count; ++index) {
+            const connected_transition_cost &transition =
+                request.transitions[index];
+            if (transition.boundary != boundary
+                || !operation_core::same_stable_id(
+                    transition.producer, producer)
+                || !operation_core::same_stable_id(
+                    transition.consumer, consumer)) continue;
+            if (!transition.legal) return false;
+            const planning_keys &keys = request.stages[boundary + 1u].keys;
+            return static_cast<bool>(compute_total_cost(transition.phases,
+                keys.policy.structure_reuse, keys.policy.projection_reuse,
+                keys.policy.value_reuse, cost));
+        }
+        return false;
+    };
+    const auto path_less = [&](const path_state &lhs,
+                               const path_state &rhs,
+                               std::uint32_t stage_count) noexcept {
+        if (lhs.total_ns != rhs.total_ns) return lhs.total_ns < rhs.total_ns;
+        for (std::uint32_t stage = 0u; stage < stage_count; ++stage) {
+            const auto left = request.stages[stage].candidates[
+                lhs.candidate_indices[stage]].identity;
+            const auto right = request.stages[stage].candidates[
+                rhs.candidate_indices[stage]].identity;
+            if (!operation_core::same_stable_id(left, right))
+                return less_identity(left, right);
+        }
+        return false;
+    };
+
+    for (std::uint32_t candidate = 0u;
+         candidate < request.stages[0].candidate_count; ++candidate) {
+        total_cost cost{};
+        if (!candidate_cost(0u, candidate, &cost)) continue;
+        previous[candidate].reachable = true;
+        previous[candidate].path_count = 1u;
+        previous[candidate].total_ns = cost.amortized_total_ns;
+        previous[candidate].candidate_indices[0] = candidate;
+        previous[candidate].stage_costs[0] = cost;
+        previous[candidate].empirical_required =
+            (request.stages[0].candidates[candidate].flags
+                & planner_candidate_empirical_required) != 0u;
+    }
+    for (std::uint32_t stage = 1u; stage < request.stage_count; ++stage) {
+        for (auto &state : current) state = {};
+        for (std::uint32_t candidate = 0u;
+             candidate < request.stages[stage].candidate_count; ++candidate) {
+            total_cost isolated{};
+            if (!candidate_cost(stage, candidate, &isolated)) continue;
+            for (std::uint32_t producer = 0u;
+                 producer < request.stages[stage - 1u].candidate_count;
+                 ++producer) {
+                if (!previous[producer].reachable) continue;
+                total_cost transition{};
+                if (!find_transition(stage - 1u,
+                        request.stages[stage - 1u].candidates[producer].identity,
+                        request.stages[stage].candidates[candidate].identity,
+                        &transition)) continue;
+                current[candidate].path_count += previous[producer].path_count;
+                path_state proposal = previous[producer];
+                proposal.reachable = true;
+                proposal.path_count = current[candidate].path_count;
+                proposal.candidate_indices[stage] = candidate;
+                proposal.stage_costs[stage] = isolated;
+                proposal.total_ns += isolated.amortized_total_ns
+                    + transition.amortized_total_ns;
+                proposal.empirical_required = proposal.empirical_required
+                    || (request.stages[stage].candidates[candidate].flags
+                        & planner_candidate_empirical_required) != 0u;
+                if (!current[candidate].reachable
+                    || path_less(proposal, current[candidate], stage + 1u))
+                    current[candidate] = proposal;
+            }
+        }
+        for (std::uint32_t index = 0u;
+             index < maximum_connected_stage_candidates; ++index)
+            previous[index] = current[index];
+    }
+
+    std::uint32_t final_order[maximum_connected_stage_candidates]{};
+    std::uint32_t final_count = 0u;
+    std::uint64_t legal_path_count = 0u;
+    for (std::uint32_t candidate = 0u;
+         candidate < request.stages[request.stage_count - 1u].candidate_count;
+         ++candidate)
+        if (previous[candidate].reachable) {
+            final_order[final_count++] = candidate;
+            legal_path_count += previous[candidate].path_count;
+        }
+    out->legal_path_count = legal_path_count
+            > std::numeric_limits<std::uint32_t>::max()
+        ? std::numeric_limits<std::uint32_t>::max()
+        : static_cast<std::uint32_t>(legal_path_count);
+    if (final_count == 0u) {
+        out->status = {planner_status_code::no_legal_candidate,
+            "no connected candidate path satisfies contracts"};
+        out->reason = "all connected paths were rejected";
+        return out->status;
+    }
+    std::sort(final_order, final_order + final_count,
+        [&](std::uint32_t lhs, std::uint32_t rhs) noexcept {
+            return path_less(previous[lhs], previous[rhs], request.stage_count);
+        });
+    out->shortlist_count = std::min(
+        final_count, request.shortlist_size);
+
+    const auto fill_path = [&](const path_state &state,
+                               connected_plan_path *path) noexcept {
+        *path = connected_plan_path{};
+        path->stage_count = request.stage_count;
+        for (std::uint32_t stage = 0u; stage < request.stage_count; ++stage) {
+            const planner_candidate &candidate = request.stages[stage].candidates[
+                state.candidate_indices[stage]];
+            path->candidates[stage] = candidate.identity;
+            path->projections[stage] = {candidate.projection.persistent,
+                candidate.projection.kind, candidate.projection.schema_version,
+                candidate.projection.variant};
+        }
+    };
+    const auto same_path = [&](const connected_plan_path &lhs,
+                               const connected_plan_path &rhs) noexcept {
+        if (lhs.stage_count != rhs.stage_count) return false;
+        for (std::uint32_t stage = 0u; stage < lhs.stage_count; ++stage)
+            if (!operation_core::same_stable_id(
+                    lhs.candidates[stage], rhs.candidates[stage])
+                || !execution::same_identity(lhs.projections[stage].identity,
+                    rhs.projections[stage].identity)
+                || lhs.projections[stage].kind != rhs.projections[stage].kind
+                || lhs.projections[stage].schema_version
+                    != rhs.projections[stage].schema_version
+                || lhs.projections[stage].variant
+                    != rhs.projections[stage].variant)
+                return false;
+        return true;
+    };
+    const auto select_state = [&](const path_state &state,
+                                  selection_source source,
+                                  double empirical_ns) noexcept {
+        fill_path(state, &out->winner);
+        for (std::uint32_t stage = 0u; stage < request.stage_count; ++stage) {
+            out->stages[stage].candidate = &request.stages[stage].candidates[
+                state.candidate_indices[stage]];
+            out->stages[stage].analytical = state.stage_costs[stage];
+        }
+        out->source = source;
+        out->analytical_total_ns = state.total_ns;
+        out->empirical_total_ns = empirical_ns;
+        out->empirical_required = request.force_empirical
+            || state.empirical_required;
+    };
+
+    if (request.cache.lookup != nullptr) {
+        connected_plan_cache_entry cached{};
+        if (!request.cache.lookup(request.cache.context,
+                durable_keys, &cached)) {
+            out->cache = cache_state::miss;
+        } else if (!cached.occupied
+            || !same_connected_planning_keys(cached.keys, durable_keys)
+            || cached.evidence.evidence_revision
+                != request.current_evidence_revision
+            || cached.evidence.sample_count == 0u
+            || !finite_nonnegative(cached.evidence.median_total_ns)
+            || !finite_nonnegative(cached.evidence.spread_percent)
+            || cached.evidence.spread_percent
+                > request.maximum_spread_percent
+            || cached.evidence.practical_tolerance_percent
+                != request.practical_tolerance_percent
+            || !std::isfinite(cached.evidence.confidence)
+            || cached.evidence.confidence
+                < request.minimum_cache_confidence) {
+            out->cache = cache_state::stale;
+        } else {
+            for (std::uint32_t rank = 0u;
+                 rank < final_count; ++rank) {
+                connected_plan_path path{};
+                fill_path(previous[final_order[rank]], &path);
+                if (!same_path(path, cached.winner)) continue;
+                out->cache = cache_state::hit;
+                select_state(previous[final_order[rank]],
+                    selection_source::cache,
+                    cached.evidence.median_total_ns);
+                out->confidence = cached.evidence.confidence;
+                out->reason = "fresh measured connected path remains legal";
+                out->status = {};
+                return {};
+            }
+            out->cache = cache_state::winner_unavailable;
+        }
+    }
+
+    const path_state &analytical = previous[final_order[0]];
+    const bool measurement_required = request.force_empirical
+        || analytical.empirical_required;
+    if (request.measurement.measure == nullptr
+        || request.maximum_measurements == 0u) {
+        if (measurement_required) {
+            out->status = {planner_status_code::no_correct_measurement,
+                "connected path requires empirical measurement"};
+            out->reason = "uncertain connected objective was not final authority";
+            return out->status;
+        }
+        select_state(analytical, selection_source::analytical, 0.0);
+        out->reason = "bounded connected analytical path selected";
+        out->status = {};
+        return {};
+    }
+
+    struct measured_path {
+        std::uint32_t final_candidate = 0u;
+        std::uint32_t sample_count = 0u;
+        double total_ns = 0.0;
+        double spread_percent = 0.0;
+    } measured[maximum_connected_stage_candidates]{};
+    std::uint32_t measured_count = 0u;
+    const std::uint32_t budget = std::min(
+        out->shortlist_count, request.maximum_measurements);
+    for (std::uint32_t rank = 0u; rank < budget; ++rank) {
+        connected_plan_path path{};
+        fill_path(previous[final_order[rank]], &path);
+        measured_connected_plan evidence{};
+        ++out->measurement_count;
+        if (!request.measurement.measure(request.measurement.context,
+                path, &evidence)
+            || !evidence.correct || evidence.contaminated
+            || evidence.sample_count == 0u
+            || !finite_nonnegative(evidence.amortized_total_ns)
+            || !finite_nonnegative(evidence.spread_percent)
+            || evidence.spread_percent > request.maximum_spread_percent)
+            continue;
+        measured[measured_count++] = {final_order[rank],
+            evidence.sample_count, evidence.amortized_total_ns,
+            evidence.spread_percent};
+    }
+    if (measured_count == 0u) {
+        if (request.allow_analytical_fallback_after_measurement_failure
+            && !measurement_required) {
+            select_state(analytical, selection_source::analytical, 0.0);
+            out->reason = "connected measurements failed; analytical path was not persisted";
+            out->status = {};
+            return {};
+        }
+        out->status = {planner_status_code::no_correct_measurement,
+            "bounded connected tuning produced no clean measurement"};
+        out->reason = "no measured connected path was safe to persist";
+        return out->status;
+    }
+    std::sort(measured, measured + measured_count,
+        [&](const measured_path &lhs, const measured_path &rhs) noexcept {
+            if (lhs.total_ns != rhs.total_ns) return lhs.total_ns < rhs.total_ns;
+            return path_less(previous[lhs.final_candidate],
+                previous[rhs.final_candidate], request.stage_count);
+        });
+    std::uint32_t selected = 0u;
+    for (std::uint32_t rank = 1u; rank < measured_count; ++rank) {
+        if (!within_tolerance(measured[0].total_ns, measured[rank].total_ns,
+                request.practical_tolerance_percent)) break;
+        if (path_less(previous[measured[rank].final_candidate],
+                previous[measured[selected].final_candidate],
+                request.stage_count)) selected = rank;
+    }
+    const measured_path &winner = measured[selected];
+    select_state(previous[winner.final_candidate],
+        selection_source::empirical, winner.total_ns);
+    const double sample_factor = std::min(
+        1.0, static_cast<double>(winner.sample_count) / 5.0);
+    const double spread_factor = std::max(0.0,
+        1.0 - winner.spread_percent
+            / std::max(1.0, request.maximum_spread_percent));
+    double separation_factor = 0.5;
+    if (measured_count > 1u) {
+        const measured_path &runner = measured[selected == 0u ? 1u : 0u];
+        const double scale = std::max(
+            std::fabs(winner.total_ns), std::fabs(runner.total_ns));
+        const double separation = scale == 0.0 ? 0.0
+            : std::fabs(runner.total_ns - winner.total_ns) * 100.0 / scale;
+        separation_factor = std::min(1.0, separation
+            / std::max(1.0, request.practical_tolerance_percent));
+    }
+    out->confidence = 0.5 * sample_factor + 0.3 * spread_factor
+        + 0.2 * separation_factor;
+    out->reason = "measured connected path won total end-to-end cost";
+    out->status = {};
+    if (request.cache.store != nullptr) {
+        const connected_plan_cache_entry entry{durable_keys, out->winner,
+            {request.current_evidence_revision, winner.sample_count, 0u,
+                winner.total_ns, winner.spread_percent, out->confidence,
+                request.practical_tolerance_percent}, true};
         if (!request.cache.store(request.cache.context, entry))
             out->cache_store_failed = true;
     }
