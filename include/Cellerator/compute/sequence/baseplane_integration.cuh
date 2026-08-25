@@ -11,7 +11,7 @@ namespace cellerator::compute::sequence {
 
 namespace operation_core = cellerator::compute::math::core;
 
-inline constexpr std::uint16_t baseplane_integration_schema_version = 2u;
+inline constexpr std::uint16_t baseplane_integration_schema_version = 3u;
 inline constexpr std::uint32_t required_baseplane_sequence_predicate_abi = 1u;
 static_assert(baseplane::seq::sequence_predicate_abi_version
         == required_baseplane_sequence_predicate_abi,
@@ -25,7 +25,8 @@ static_assert(BASEPLANE_SEQUENCE_PREDICATE_ABI_VERSION
 enum class sequence_strategy : std::uint8_t {
     automatic = 0u,
     materialize_mask = 1u,
-    fuse_predicate = 2u
+    fuse_predicate = 2u,
+    materialize_relation = 3u
 };
 
 // Performance evidence is reusable only for the exact predicate, coordinate
@@ -89,6 +90,9 @@ struct regulatory_projection_view {
 struct sequence_prepare_policy {
     sequence_strategy requested = sequence_strategy::automatic;
     std::uint32_t expected_predicate_reuse = 1u;
+    // When nonzero, this is the complete-cost reuse horizon for one static
+    // sequence topology across dynamic regulatory value generations.
+    std::uint32_t expected_cell_state_count = 0u;
     bool allow_materialization = true;
     bool allow_fusion = true;
     std::uint8_t reserved[2]{};
@@ -112,6 +116,7 @@ struct sequence_prepare_request {
     execution::sequence_domain source_domain{};
     execution::axis_identity regulatory_axis{};
     execution::axis_identity predicate_mask_axis{};
+    execution::axis_identity regulatory_relation_axis{};
     regulatory_projection_view regulatory{};
 };
 
@@ -128,6 +133,7 @@ struct prepared_sequence_state {
     execution::structure_id persistent_coordinate_structure{};
     execution::order_id persistent_coordinate_order{};
     execution::sequence_domain source_domain{};
+    execution::axis_identity regulatory_relation_axis{};
     regulatory_projection_view regulatory{};
     execution::operand_axis_contract input_contracts[1]{};
     execution::operand_axis_contract output_contracts[2]{};
@@ -165,10 +171,34 @@ struct predicate_cache_run_result {
     std::uint32_t launches_enqueued = 0u;
 };
 
+// Direct device-resident output of the Baseplane predicate-to-regulatory
+// relation builder. One u32 per local coordinate stores a regulatory-element
+// local id or UINT32_MAX. The semantic key, never the pointer, governs reuse.
+struct regulatory_relation_materialization_key {
+    execution::value_generation sequence_generation{};
+    std::uint64_t predicate_semantic_hash = 0u;
+    execution::structure_id coordinate_structure{};
+    execution::order_id coordinate_order{};
+    execution::projection_id regulatory_projection{};
+    std::uint16_t predicate_id = 0u;
+    std::uint16_t output_flags = 0u;
+};
+
+struct regulatory_relation_cache_entry {
+    regulatory_relation_materialization_key key{};
+    std::uint32_t *elements = nullptr;
+    void *ready_event = nullptr;
+    std::uint32_t element_capacity = 0u;
+    execution::device_location location{};
+    bool occupied = false;
+    std::uint8_t reserved[7]{};
+};
+
 struct sequence_execution_accounting {
     std::uint64_t packed_sequence_bytes = 0u;
     std::uint64_t plane_and_validity_bytes = 0u;
     std::uint64_t materialized_mask_bytes = 0u;
+    std::uint64_t materialized_relation_bytes = 0u;
     std::uint64_t immutable_relation_bytes = 0u;
     std::uint64_t mutable_value_bytes = 0u;
     std::uint64_t output_bytes = 0u;
@@ -216,6 +246,13 @@ operation_core::operation_status run_sequence_regulatory_operation_cached(
     predicate_mask_cache_entry *cache,
     predicate_cache_run_result *result) noexcept;
 
+operation_core::operation_status run_sequence_regulatory_relation_cached(
+    const operation_core::prepared_operation &prepared,
+    const execution::launch_bindings &launch,
+    execution::value_generation sequence_generation,
+    regulatory_relation_cache_entry *cache,
+    predicate_cache_run_result *result) noexcept;
+
 sequence_execution_accounting sequence_accounting(
     const prepared_sequence_state &state,
     std::uint32_t base_count) noexcept;
@@ -230,6 +267,11 @@ static_assert(std::is_trivially_copyable<prepared_sequence_state>::value,
     "prepared sequence state must remain directly bindable");
 static_assert(std::is_trivially_copyable<predicate_materialization_key>::value,
     "predicate cache keys must remain pointer-free values");
+static_assert(std::is_trivially_copyable<
+        regulatory_relation_materialization_key>::value,
+    "regulatory relation cache keys must remain pointer-free values");
+static_assert(std::is_trivially_copyable<regulatory_relation_cache_entry>::value,
+    "regulatory relation cache entries must remain caller-owned POD state");
 static_assert(std::is_trivially_copyable<sequence_strategy_evidence>::value,
     "sequence strategy evidence must remain replaceable data");
 

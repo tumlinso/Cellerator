@@ -1,4 +1,4 @@
-# Cellerator and Baseplane sequence integration v1
+# Cellerator and Baseplane sequence integration v3
 
 This interface consumes frozen Baseplane sequence-predicate v1 and the
 Cellerator biological ABI. Baseplane remains the owner of packed sequence,
@@ -15,17 +15,23 @@ hash, motif, coordinate-to-regulatory relation, regulatory-to-gene relation,
 both structure epochs, and output contracts. Input/output/value pointers, value
 generation, stream, and transient workspace remain launch bindings.
 
-Two strategies share one operation contract:
+Three strategies share one operation contract:
 
 - `materialize_mask` writes a caller-owned one-bit predicate mask, then joins
   sorted non-overlapping regulatory intervals and accumulates weighted
   element-to-gene edges. The mask can be retained by compatible consumers.
 - `fuse_predicate` evaluates validity and the motif while joining and
   accumulating, avoiding predicate-mask traffic.
+- `materialize_relation` writes a device-resident regulatory-element local id
+  (or an invalid sentinel) for every local coordinate. This is the direct
+  relation-builder output: it carries coordinate domain/order in its output
+  axis and removes the interval join from later dynamic cell-state uses.
 
-Automatic selection uses fusion for one-shot execution and materialization
-when predicate reuse is declared. This is an explicit bounded policy, not the
-future empirical planner. Both paths operate on device-resident Baseplane
+Automatic selection requires comparable evidence and uses the complete reuse
+horizon: fused cost is charged for every cell state, while direct relation
+materialization charges its first build/consume cost once and its cached
+consumer cost for later states. Missing, stale, noisy, or build/device-mismatched
+evidence requests empirical measurement instead of guessing. All paths operate on device-resident Baseplane
 planes, explicit validity, typed biological axes, and caller-owned streams.
 They allocate nothing, synchronize nothing, perform no host round trip, create
 no dense motif tensor, and build no CSR intermediate. Floating point begins at
@@ -44,9 +50,17 @@ of zero must never become biological A evidence. Predicate semantic hashes are
 validated at preparation and stale hashes fail.
 
 Gene-state output declares `accumulate` because the fused consumer adds into
-caller-initialized numerical state. A materialized predicate mask declares
-`overwrite`; neither strategy silently zeroes gene state. Materialization
-versus fusion remains a planner decision.
+caller-initialized numerical state. Materialized sequence outputs declare
+`overwrite`; no strategy silently zeroes gene state. Materialization versus
+fusion remains a planner decision, and the legacy mask remains available for
+consumers that need a predicate bit plane.
+
+The direct relation cache is mutable session state, never prepared state. A new
+regulatory value generation can reuse the same static sequence relation; a new
+sequence generation, coordinate order, coordinate structure, or regulatory
+projection cannot. Its readiness event permits same-device stream reuse without
+a host synchronization boundary. Pointer rebinding requires a fresh cache
+entry, but pointer identity never determines semantic reuse.
 
 The current interval projection is sorted and non-overlapping. Overlapping
 regulatory targets, allowed motifs, predicate DAGs, stable event composition,

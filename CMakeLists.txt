@@ -1036,6 +1036,7 @@ set_target_properties(celleratorBiologicalAbiCudaCompileTest PROPERTIES
 # predicate contracts. Baseplane remains independently buildable and owns no
 # Cellerator runtime or numerical policy.
 add_library(cellerator_sequence_integration STATIC
+    src/compute/sequence/baseplane_strategy.cc
     src/compute/sequence/baseplane_integration.cu
 )
 add_library(Cellerator::sequence_integration ALIAS

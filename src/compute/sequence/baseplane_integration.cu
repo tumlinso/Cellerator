@@ -1,14 +1,16 @@
 /*
-CE-ARCH-78 custom sequence-path evidence (2026-08-25, V100 sm_70):
-`python /home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py run
---spec bench/architecture_evidence/ce_arch_78_v100_spec.json --json` compared
-the fused exact-predicate accumulation with first-use and cached materialization
-on the same 70-base validity-aware fixture. Nine medians of 100 uses after four
-warmups measured 3.645 us fused, 13.148 us first materialized, and 3.154 us
-cached (MAD 0%, 0%, 0.325%). With the declared 2% practical tolerance, cached
-materialization first wins at reuse 24. Exact referee tolerance was 1e-6. This
-supports a measured, replaceable choice; it does not make either kernel a
-universal default. Evidence: bench/architecture_evidence/ce_arch_78_v100.json.
+CE-ARCH-89 custom sequence-path evidence (2026-08-25, V100 sm_70, evidence
+c9162454-63ad-462f-bc61-c65141d44a2e): cuda_controller.py run --spec
+/tmp/ce_arch_89_cuda_spec.json --json compared complete fused execution with
+first-use and cached direct coordinate-to-regulatory relation materialization
+on the same 70-base validity-aware input and dynamic regulatory value plane.
+Nine samples of 100 states after four warmups measured 3.645 us fused, 5.386 us
+first materialized, and 2.775 us cached (spread 0.281%, 0.190%, 0.738%). With
+the declared 2% tolerance, relation materialization first wins at four cell
+states. Both paths match the scalar referee at 1e-6. Preparation is persistent;
+timings include all per-state builder/consumer work and exclude only reusable
+static preparation. The legacy mask candidate remains available under its
+CE-ARCH-78 evidence; neither candidate is a universal default.
 */
 #include <Cellerator/compute/sequence/baseplane_integration.cuh>
 
@@ -17,7 +19,6 @@ universal default. Evidence: bench/architecture_evidence/ce_arch_78_v100.json.
 
 #include <cuda_runtime.h>
 
-#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <limits>
@@ -29,6 +30,8 @@ constexpr operation_core::stable_id sequence_operation_id{
     0x7365712d72656731ULL, 0x62617365706c616eULL};
 constexpr operation_core::stable_id materialized_kernel_id{
     0x6d61736b2d726567ULL, 0x7365712d76310001ULL};
+constexpr operation_core::stable_id relation_materialized_kernel_id{
+    0x72656c2d72656731ULL, 0x7365712d76330001ULL};
 constexpr operation_core::stable_id fused_kernel_id{
     0x667573652d726567ULL, 0x7365712d76310001ULL};
 
@@ -46,29 +49,6 @@ bool same_location(
         && left.address_space == right.address_space;
 }
 
-bool same_device_class(
-    const execution::device_performance_class &left,
-    const execution::device_performance_class &right) noexcept {
-    return left.vendor == right.vendor
-        && left.architecture_major == right.architecture_major
-        && left.architecture_minor == right.architecture_minor
-        && left.build_identity == right.build_identity;
-}
-
-bool same_measurement_key(
-    const sequence_measurement_key &left,
-    const sequence_measurement_key &right) noexcept {
-    return left.predicate_semantic_hash == right.predicate_semantic_hash
-        && execution::same_identity(left.coordinate_order, right.coordinate_order)
-        && execution::same_identity(
-            left.regulatory_projection, right.regulatory_projection)
-        && same_device_class(left.device, right.device)
-        && left.runtime_build_identity == right.runtime_build_identity
-        && left.local_base_count == right.local_base_count
-        && left.predicate_id == right.predicate_id
-        && left.output_flags == right.output_flags;
-}
-
 bool same_cache_key(
     const predicate_materialization_key &left,
     const predicate_materialization_key &right) noexcept {
@@ -77,6 +57,20 @@ bool same_cache_key(
         && execution::same_identity(
             left.coordinate_structure, right.coordinate_structure)
         && execution::same_identity(left.coordinate_order, right.coordinate_order)
+        && left.predicate_id == right.predicate_id
+        && left.output_flags == right.output_flags;
+}
+
+bool same_relation_cache_key(
+    const regulatory_relation_materialization_key &left,
+    const regulatory_relation_materialization_key &right) noexcept {
+    return left.sequence_generation.value == right.sequence_generation.value
+        && left.predicate_semantic_hash == right.predicate_semantic_hash
+        && execution::same_identity(
+            left.coordinate_structure, right.coordinate_structure)
+        && execution::same_identity(left.coordinate_order, right.coordinate_order)
+        && execution::same_identity(
+            left.regulatory_projection, right.regulatory_projection)
         && left.predicate_id == right.predicate_id
         && left.output_flags == right.output_flags;
 }
@@ -244,6 +238,33 @@ __global__ void accumulate_materialized_mask_kernel(
         accumulate_element(projection, element, weights, gene_state);
 }
 
+__global__ void materialize_regulatory_relation_kernel(
+    execution::bit_plane_view input,
+    execution::sequence_domain domain,
+    baseplane::seq::motif32_exact motif,
+    regulatory_projection_view projection,
+    std::uint16_t predicate_id,
+    std::uint32_t *elements) {
+    const std::uint32_t anchor = blockIdx.x * blockDim.x + threadIdx.x;
+    if (anchor >= input.base_count) return;
+    elements[anchor] = predicate_matches(input, domain, anchor, motif)
+        ? find_regulatory_element(projection, anchor, predicate_id)
+        : 0xffffffffu;
+}
+
+__global__ void accumulate_materialized_relation_kernel(
+    const std::uint32_t *elements,
+    std::uint32_t base_count,
+    regulatory_projection_view projection,
+    const float *weights,
+    float *gene_state) {
+    const std::uint32_t anchor = blockIdx.x * blockDim.x + threadIdx.x;
+    if (anchor >= base_count) return;
+    const std::uint32_t element = elements[anchor];
+    if (element != 0xffffffffu)
+        accumulate_element(projection, element, weights, gene_state);
+}
+
 __global__ void fused_predicate_accumulate_kernel(
     execution::bit_plane_view input,
     execution::sequence_domain domain,
@@ -266,7 +287,7 @@ struct validated_sequence_launch {
     execution::bit_plane_view input{};
     execution::dense_tensor_view output{};
     const execution::value_plane *values = nullptr;
-    std::uint32_t *mask = nullptr;
+    std::uint32_t *materialized = nullptr;
 };
 
 operation_core::operation_status validate_sequence_launch(
@@ -309,22 +330,32 @@ operation_core::operation_status validate_sequence_launch(
         return fail(operation_core::operation_status_code::invalid_launch_bindings,
             "sequence launch residency, shape, or values are incompatible");
 
-    std::uint32_t *mask = nullptr;
-    if (state.strategy == sequence_strategy::materialize_mask) {
+    std::uint32_t *materialized = nullptr;
+    if (state.strategy == sequence_strategy::materialize_mask
+        || state.strategy == sequence_strategy::materialize_relation) {
         if (launch.output_count != 2u
             || launch.outputs[1].kind != execution::operand_kind::dense_tensor)
             return fail(operation_core::operation_status_code::invalid_launch_bindings,
-                "materialized strategy requires a caller-owned mask output");
+                "materialized strategy requires a caller-owned relation output");
         const execution::dense_tensor_view mask_output =
             launch.outputs[1].storage.dense;
+        const std::uint32_t expected_count = state.strategy
+                == sequence_strategy::materialize_mask
+            ? input.word_count : input.base_count;
+        const execution::axis_identity expected_axis = state.strategy
+                == sequence_strategy::materialize_mask
+            ? state.output_contracts[1].axes[0]
+            : state.regulatory_relation_axis;
         if (mask_output.value_type != execution::numeric_type::u32
             || mask_output.rank != 1u
-            || mask_output.shape[0] != input.word_count
+            || mask_output.shape[0] != expected_count
             || mask_output.stride[0] != 1
+            || !execution::same_axis_identity(
+                mask_output.axes[0], expected_axis)
             || !same_location(mask_output.location, input.location))
             return fail(operation_core::operation_status_code::invalid_launch_bindings,
-                "materialized predicate mask output is incompatible");
-        mask = static_cast<std::uint32_t *>(mask_output.data);
+                "materialized sequence relation output is incompatible");
+        materialized = static_cast<std::uint32_t *>(mask_output.data);
     } else if (state.strategy == sequence_strategy::fuse_predicate) {
         if (launch.output_count != 1u)
             return fail(operation_core::operation_status_code::invalid_launch_bindings,
@@ -333,7 +364,7 @@ operation_core::operation_status validate_sequence_launch(
         return fail(operation_core::operation_status_code::execution_failed,
             "prepared sequence strategy is invalid");
     }
-    *validated = {&state, input, output, &values, mask};
+    *validated = {&state, input, output, &values, materialized};
     return {};
 }
 
@@ -341,14 +372,27 @@ operation_core::operation_status enqueue_materialization(
     const validated_sequence_launch &launch,
     cudaStream_t stream) noexcept {
     constexpr std::uint32_t block_size = 128u;
-    const std::uint32_t blocks =
-        (launch.input.word_count + block_size - 1u) / block_size;
-    materialize_predicate_mask_kernel<<<blocks, block_size, 0, stream>>>(
-        launch.input, launch.state->source_domain, launch.state->motif,
-        launch.mask);
+    if (launch.state->strategy == sequence_strategy::materialize_mask) {
+        const std::uint32_t blocks =
+            (launch.input.word_count + block_size - 1u) / block_size;
+        materialize_predicate_mask_kernel<<<blocks, block_size, 0, stream>>>(
+            launch.input, launch.state->source_domain, launch.state->motif,
+            launch.materialized);
+    } else if (launch.state->strategy
+            == sequence_strategy::materialize_relation) {
+        const std::uint32_t blocks =
+            (launch.input.base_count + block_size - 1u) / block_size;
+        materialize_regulatory_relation_kernel<<<blocks, block_size, 0, stream>>>(
+            launch.input, launch.state->source_domain, launch.state->motif,
+            launch.state->regulatory, launch.state->predicate_id,
+            launch.materialized);
+    } else {
+        return fail(operation_core::operation_status_code::capability_rejected,
+            "sequence materialization strategy is unavailable");
+    }
     return cudaPeekAtLastError() == cudaSuccess ? operation_core::operation_status{}
         : fail(operation_core::operation_status_code::execution_failed,
-            "predicate-mask launch failed");
+            "sequence relation materialization launch failed");
 }
 
 operation_core::operation_status enqueue_materialized_accumulation(
@@ -357,11 +401,23 @@ operation_core::operation_status enqueue_materialized_accumulation(
     constexpr std::uint32_t block_size = 128u;
     const std::uint32_t blocks =
         (launch.input.base_count + block_size - 1u) / block_size;
-    accumulate_materialized_mask_kernel<<<blocks, block_size, 0, stream>>>(
-        launch.mask, launch.input.base_count, launch.state->regulatory,
-        launch.state->predicate_id,
-        static_cast<const float *>(launch.values->values),
-        static_cast<float *>(launch.output.data));
+    if (launch.state->strategy == sequence_strategy::materialize_mask) {
+        accumulate_materialized_mask_kernel<<<blocks, block_size, 0, stream>>>(
+            launch.materialized, launch.input.base_count,
+            launch.state->regulatory, launch.state->predicate_id,
+            static_cast<const float *>(launch.values->values),
+            static_cast<float *>(launch.output.data));
+    } else if (launch.state->strategy
+            == sequence_strategy::materialize_relation) {
+        accumulate_materialized_relation_kernel<<<blocks, block_size, 0, stream>>>(
+            launch.materialized, launch.input.base_count,
+            launch.state->regulatory,
+            static_cast<const float *>(launch.values->values),
+            static_cast<float *>(launch.output.data));
+    } else {
+        return fail(operation_core::operation_status_code::capability_rejected,
+            "sequence materialized consumer is unavailable");
+    }
     return cudaPeekAtLastError() == cudaSuccess ? operation_core::operation_status{}
         : fail(operation_core::operation_status_code::execution_failed,
             "cached predicate accumulation launch failed");
@@ -452,100 +508,6 @@ bool validate_regulatory_projection_host(
     return true;
 }
 
-sequence_strategy select_sequence_strategy(
-    const sequence_prepare_policy &policy) noexcept {
-    if (policy.requested == sequence_strategy::materialize_mask)
-        return policy.allow_materialization
-            ? sequence_strategy::materialize_mask : sequence_strategy::automatic;
-    if (policy.requested == sequence_strategy::fuse_predicate)
-        return policy.allow_fusion
-            ? sequence_strategy::fuse_predicate : sequence_strategy::automatic;
-    if (policy.allow_fusion != policy.allow_materialization)
-        return policy.allow_fusion ? sequence_strategy::fuse_predicate
-            : sequence_strategy::materialize_mask;
-    return sequence_strategy::automatic;
-}
-
-sequence_strategy_decision select_sequence_strategy(
-    const sequence_measurement_key &key,
-    const sequence_prepare_policy &policy) noexcept {
-    sequence_strategy_decision decision{};
-    if (policy.requested == sequence_strategy::materialize_mask) {
-        decision.strategy = policy.allow_materialization
-            ? sequence_strategy::materialize_mask : sequence_strategy::automatic;
-        decision.empirical_measurement_required = false;
-        decision.reason = policy.allow_materialization
-            ? "materialization explicitly requested"
-            : "requested materialization is unavailable";
-        return decision;
-    }
-    if (policy.requested == sequence_strategy::fuse_predicate) {
-        decision.strategy = policy.allow_fusion
-            ? sequence_strategy::fuse_predicate : sequence_strategy::automatic;
-        decision.empirical_measurement_required = false;
-        decision.reason = policy.allow_fusion
-            ? "fusion explicitly requested" : "requested fusion is unavailable";
-        return decision;
-    }
-    if (!policy.allow_materialization && !policy.allow_fusion) {
-        decision.reason = "materialization and fusion are both unavailable";
-        return decision;
-    }
-    if (!policy.allow_materialization || !policy.allow_fusion) {
-        decision.strategy = policy.allow_materialization
-            ? sequence_strategy::materialize_mask
-            : sequence_strategy::fuse_predicate;
-        decision.empirical_measurement_required = false;
-        decision.reason = "only one capable sequence strategy remains";
-        return decision;
-    }
-
-    const sequence_strategy_evidence *evidence = policy.evidence;
-    const bool valid_policy = std::isfinite(policy.practical_tolerance_percent)
-        && policy.practical_tolerance_percent >= 0.0
-        && policy.practical_tolerance_percent < 100.0
-        && std::isfinite(policy.maximum_spread_percent)
-        && policy.maximum_spread_percent >= 0.0;
-    const bool valid_evidence = evidence != nullptr && valid_policy
-        && same_measurement_key(evidence->key, key)
-        && evidence->sample_count >= 3u
-        && std::isfinite(evidence->fused_per_use_ns)
-        && std::isfinite(evidence->first_materialized_use_ns)
-        && std::isfinite(evidence->cached_materialized_use_ns)
-        && std::isfinite(evidence->fused_spread_percent)
-        && std::isfinite(evidence->materialized_spread_percent)
-        && evidence->fused_per_use_ns > 0.0
-        && evidence->first_materialized_use_ns > 0.0
-        && evidence->cached_materialized_use_ns > 0.0
-        && evidence->fused_spread_percent >= 0.0
-        && evidence->materialized_spread_percent >= 0.0
-        && evidence->fused_spread_percent <= policy.maximum_spread_percent
-        && evidence->materialized_spread_percent
-            <= policy.maximum_spread_percent;
-    if (!valid_evidence) {
-        decision.reason = "current comparable measurement is required";
-        return decision;
-    }
-
-    const double reuse = static_cast<double>(
-        policy.expected_predicate_reuse == 0u
-            ? 1u : policy.expected_predicate_reuse);
-    decision.fused_total_ns = evidence->fused_per_use_ns * reuse;
-    decision.materialized_total_ns = evidence->first_materialized_use_ns
-        + evidence->cached_materialized_use_ns * (reuse - 1.0);
-    const double required_ratio =
-        1.0 - policy.practical_tolerance_percent / 100.0;
-    decision.strategy = decision.materialized_total_ns
-            < decision.fused_total_ns * required_ratio
-        ? sequence_strategy::materialize_mask
-        : sequence_strategy::fuse_predicate;
-    decision.empirical_measurement_required = false;
-    decision.reason = decision.strategy == sequence_strategy::materialize_mask
-        ? "measured amortized materialization cost is lower"
-        : "fusion wins or is within practical tolerance";
-    return decision;
-}
-
 operation_core::operation_status prepare_sequence_regulatory_operation(
     const sequence_prepare_request &request,
     const sequence_prepare_policy &policy,
@@ -593,6 +555,7 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
             request.regulatory_to_gene.source_axis,
             request.regulatory_axis)
         || !execution::valid_axis_identity(request.predicate_mask_axis)
+        || !execution::valid_axis_identity(request.regulatory_relation_axis)
         || !execution::same_handle(
             request.coordinate_to_regulatory.source_axis.domain,
             request.predicate_mask_axis.domain)
@@ -602,6 +565,15 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         || !execution::same_handle(
             request.coordinate_to_regulatory.source_axis.partition,
             request.predicate_mask_axis.partition)
+        || !execution::same_handle(
+            request.coordinate_to_regulatory.source_axis.domain,
+            request.regulatory_relation_axis.domain)
+        || !execution::same_handle(
+            request.coordinate_to_regulatory.source_axis.order,
+            request.regulatory_relation_axis.order)
+        || !execution::same_handle(
+            request.coordinate_to_regulatory.source_axis.partition,
+            request.regulatory_relation_axis.partition)
         || request.source_domain.local_base_count == 0u
         || request.regulatory.interval_count
             != request.coordinate_to_regulatory.logical_edge_count
@@ -641,6 +613,7 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         request.persistent_coordinate_structure;
     state->persistent_coordinate_order = request.persistent_coordinate_order;
     state->source_domain = request.source_domain;
+    state->regulatory_relation_axis = request.regulatory_relation_axis;
     state->regulatory = request.regulatory;
     state->input_contracts[0].kind = execution::operand_kind::bit_plane;
     state->input_contracts[0].rank = 1u;
@@ -658,18 +631,22 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         execution::output_update_kind::accumulate, true, false, 0u,
         execution::invalid_scalar_binding_id,
         execution::invalid_scalar_binding_id};
-    const std::uint32_t output_count =
-        strategy == sequence_strategy::materialize_mask ? 2u : 1u;
+    const bool materialized = strategy == sequence_strategy::materialize_mask
+        || strategy == sequence_strategy::materialize_relation;
+    const std::uint32_t output_count = materialized ? 2u : 1u;
     if (output_count == 2u) {
         state->output_contracts[1].kind = execution::operand_kind::dense_tensor;
         state->output_contracts[1].rank = 1u;
-        state->output_contracts[1].axes[0] = request.predicate_mask_axis;
+        const execution::axis_identity materialized_axis = strategy
+                == sequence_strategy::materialize_mask
+            ? request.predicate_mask_axis : request.regulatory_relation_axis;
+        state->output_contracts[1].axes[0] = materialized_axis;
         state->output_orders[1] = execution::output_axis_contract{
-            request.predicate_mask_axis, request.predicate_mask_axis,
+            materialized_axis, materialized_axis,
             execution::order_transition_kind::preserve, 0u, 1u,
             0u, 1u, {}, {}};
         state->output_effects[1] = execution::output_effect_contract{
-            execution::output_update_kind::partial_write, true, false, 0u,
+            execution::output_update_kind::overwrite, false, false, 0u,
             execution::invalid_scalar_binding_id,
             execution::invalid_scalar_binding_id};
     }
@@ -703,7 +680,9 @@ operation_core::operation_status prepare_sequence_regulatory_operation(
         operation_core::saturation_policy::none,
         operation_core::quantization_granularity::none, {}};
     prepared->kernel = strategy == sequence_strategy::materialize_mask
-        ? materialized_kernel_id : fused_kernel_id;
+        ? materialized_kernel_id
+        : strategy == sequence_strategy::materialize_relation
+            ? relation_materialized_kernel_id : fused_kernel_id;
     prepared->backend = operation_core::backend_kind::native_direct;
     prepared->capability_flags = operation_core::candidate_graph_capture;
     prepared->persistent = {state, sizeof(*state)};
@@ -739,7 +718,9 @@ operation_core::operation_status run_sequence_regulatory_operation(
     const std::uint32_t anchor_blocks =
         (validated.input.base_count + block_size - 1u) / block_size;
 
-    if (validated.state->strategy == sequence_strategy::materialize_mask) {
+    if (validated.state->strategy == sequence_strategy::materialize_mask
+        || validated.state->strategy
+            == sequence_strategy::materialize_relation) {
         const operation_core::operation_status materialized =
             enqueue_materialization(validated, stream);
         if (!materialized) return materialized;
@@ -790,7 +771,7 @@ operation_core::operation_status run_sequence_regulatory_operation_cached(
             "predicate cache execution requires materialized strategy");
     if (cache->words == nullptr || cache->ready_event == nullptr
         || cache->word_capacity < validated.input.word_count
-        || cache->words != validated.mask
+        || cache->words != validated.materialized
         || !same_location(cache->location, validated.input.location))
         return fail(operation_core::operation_status_code::invalid_launch_bindings,
             "predicate cache storage or completion event is incompatible");
@@ -822,6 +803,69 @@ operation_core::operation_status run_sequence_regulatory_operation_cached(
     return enqueue_materialized_accumulation(validated, stream);
 }
 
+operation_core::operation_status run_sequence_regulatory_relation_cached(
+    const operation_core::prepared_operation &prepared,
+    const execution::launch_bindings &launch,
+    execution::value_generation sequence_generation,
+    regulatory_relation_cache_entry *cache,
+    predicate_cache_run_result *result) noexcept {
+    if (cache == nullptr || result == nullptr || sequence_generation.value == 0u)
+        return fail(operation_core::operation_status_code::invalid_argument,
+            "cached relation execution requires generation, cache, and result");
+    *result = {};
+    const operation_core::operation_status prepared_status =
+        operation_core::validate_prepared_operation(prepared);
+    if (!prepared_status) return prepared_status;
+    const execution::binding_validation_code binding =
+        execution::validate_launch_bindings(prepared.binding_contract, launch);
+    if (binding != execution::binding_validation_code::ok)
+        return {binding == execution::binding_validation_code::stale_structure
+                    ? operation_core::operation_status_code::stale_structure
+                    : operation_core::operation_status_code::invalid_launch_bindings,
+            binding, "launch bindings do not satisfy prepared contract"};
+    validated_sequence_launch validated{};
+    const operation_core::operation_status valid =
+        validate_sequence_launch(prepared, launch, &validated);
+    if (!valid) return valid;
+    if (validated.state->strategy
+            != sequence_strategy::materialize_relation)
+        return fail(operation_core::operation_status_code::capability_rejected,
+            "direct relation cache requires materialize_relation strategy");
+    if (cache->elements == nullptr || cache->ready_event == nullptr
+        || cache->element_capacity < validated.input.base_count
+        || cache->elements != validated.materialized
+        || !same_location(cache->location, validated.input.location))
+        return fail(operation_core::operation_status_code::invalid_launch_bindings,
+            "direct relation cache storage or completion event is incompatible");
+
+    const regulatory_relation_materialization_key key{
+        sequence_generation, validated.state->predicate_semantic_hash,
+        validated.state->persistent_coordinate_structure,
+        validated.state->persistent_coordinate_order,
+        prepared.projection.persistent,
+        validated.state->predicate_id, validated.state->output_flags};
+    auto stream = static_cast<cudaStream_t>(launch.stream.stream);
+    const cudaEvent_t ready = static_cast<cudaEvent_t>(cache->ready_event);
+    if (cache->occupied && same_relation_cache_key(cache->key, key)) {
+        if (cudaStreamWaitEvent(stream, ready, 0u) != cudaSuccess)
+            return fail(operation_core::operation_status_code::execution_failed,
+                "waiting for cached regulatory relation failed");
+        result->cache_hit = true;
+        result->launches_enqueued = 1u;
+    } else {
+        const operation_core::operation_status materialized =
+            enqueue_materialization(validated, stream);
+        if (!materialized) return materialized;
+        if (cudaEventRecord(ready, stream) != cudaSuccess)
+            return fail(operation_core::operation_status_code::execution_failed,
+                "recording cached regulatory relation readiness failed");
+        cache->key = key;
+        cache->occupied = true;
+        result->launches_enqueued = 2u;
+    }
+    return enqueue_materialized_accumulation(validated, stream);
+}
+
 sequence_execution_accounting sequence_accounting(
     const prepared_sequence_state &state,
     std::uint32_t base_count) noexcept {
@@ -832,6 +876,10 @@ sequence_execution_accounting sequence_accounting(
     result.materialized_mask_bytes =
         state.strategy == sequence_strategy::materialize_mask
             ? words * sizeof(std::uint32_t) : 0u;
+    result.materialized_relation_bytes =
+        state.strategy == sequence_strategy::materialize_relation
+            ? static_cast<std::uint64_t>(base_count) * sizeof(std::uint32_t)
+            : 0u;
     result.immutable_relation_bytes =
         static_cast<std::uint64_t>(state.regulatory.interval_count)
             * sizeof(regulatory_interval)
@@ -844,6 +892,7 @@ sequence_execution_accounting sequence_accounting(
     result.output_bytes =
         static_cast<std::uint64_t>(state.regulatory.gene_count) * sizeof(float);
     result.launch_count = state.strategy == sequence_strategy::materialize_mask
+            || state.strategy == sequence_strategy::materialize_relation
         ? 2u : 1u;
     return result;
 }

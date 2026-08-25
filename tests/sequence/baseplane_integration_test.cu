@@ -1,3 +1,13 @@
+/*
+CE-ARCH-89 CUDA evidence (2026-08-25, V100 sm_70, evidence
+c9162454-63ad-462f-bc61-c65141d44a2e): for 70 validity-aware bases, the complete
+fused path measured 3.645 us/state, direct relation first use 5.386 us, and
+cached relation consumption 2.775 us. Nine samples x 100 states after four
+warmups place the 2%-tolerance crossover at four dynamic cell states. Command:
+cuda_controller.py run --spec /tmp/ce_arch_89_cuda_spec.json --json. Both paths
+match the scalar referee at 1e-6 and include all per-state launches.
+*/
+
 #include <Cellerator/compute/sequence/baseplane_integration.cuh>
 
 #include <Baseplane/seq/dna2_scan.cuh>
@@ -284,6 +294,8 @@ int main() {
         const ce::axis_identity coordinate_axis = axis(41u, 42u, 43u, 44u);
         const ce::axis_identity regulatory_axis = axis(46u, 47u, 48u, 49u);
         const ce::axis_identity predicate_mask_axis = axis(41u, 42u, 45u, 44u);
+        const ce::axis_identity regulatory_relation_axis =
+            axis(41u, 42u, 50u, 44u);
         const ce::axis_identity gene_axis = axis(51u, 52u, 53u, 54u);
         const std::array<cs::regulatory_interval, 3> intervals{{
             {4u, 20u, 0u, 7u, 0u},
@@ -308,7 +320,8 @@ int main() {
         device_buffer<std::uint64_t> device_packed(word_count);
         device_buffer<std::uint32_t> device_low(word_count),
             device_high(word_count), device_validity(word_count),
-            device_mask(word_count), device_offsets(offsets.size()),
+            device_mask(word_count), device_relation(base_count),
+            device_offsets(offsets.size()),
             device_genes(genes.size());
         device_buffer<cs::regulatory_interval> device_intervals(intervals.size());
         device_buffer<float> device_weights(weights.size()), device_output(3u);
@@ -335,8 +348,6 @@ int main() {
                 stream, {device_packed.get(), base_count, word_count},
                 {device_low.get(), device_high.get(), word_count})),
             "Baseplane device plane conversion failed");
-        cuda_require(cudaStreamSynchronize(stream), "finish input preparation");
-
         ce::biological_operand_view input{};
         require(cs::adapt_baseplane_planes(
                 {{device_low.get(), device_high.get(), word_count},
@@ -372,6 +383,7 @@ int main() {
         request.source_domain = source_domain;
         request.regulatory_axis = regulatory_axis;
         request.predicate_mask_axis = predicate_mask_axis;
+        request.regulatory_relation_axis = regulatory_relation_axis;
         request.regulatory = device_projection;
         ce::value_plane value_plane{
             relations[1].identity, relations[1].epoch, device_weights.get(),
@@ -382,7 +394,7 @@ int main() {
              ce::numeric_type::invalid, 0u, nullptr, nullptr, 0u},
             ce::value_layout_kind::logical_edge_order, {}, {1u}, 3u,
             3u * sizeof(float)};
-        const ce::value_binding value_binding{&value_plane, {1u}};
+        ce::value_binding value_binding{&value_plane, {1u}};
 
         const std::array<float, 3> contribution = scalar_reference(
             packed, validity, chunk, program.exact_motifs[0],
@@ -406,7 +418,7 @@ int main() {
         fused_policy.device = measurement_device;
         fused_policy.runtime_build_identity = 0xce780001u;
         cs::sequence_prepare_policy materialized_policy = fused_policy;
-        materialized_policy.expected_predicate_reuse = 4u;
+        materialized_policy.expected_cell_state_count = 4u;
 
         cs::prepared_sequence_state rejected_state{};
         co::prepared_operation rejected{};
@@ -487,14 +499,25 @@ int main() {
                 &materialized_state, &materialized)),
             "materialized operation did not prepare");
         require(materialized_state.strategy
-                == cs::sequence_strategy::materialize_mask,
-            "reuse policy did not select materialization");
+                == cs::sequence_strategy::materialize_relation,
+            "reuse policy did not select direct relation materialization");
         require(materialized.binding_contract.output_effect_count == 2u
                 && materialized.binding_contract.output_effects[0].update
                     == ce::output_update_kind::accumulate
                 && materialized.binding_contract.output_effects[1].update
-                    == ce::output_update_kind::partial_write,
+                    == ce::output_update_kind::overwrite
+                && !materialized.binding_contract.output_effects[1]
+                    .requires_initialized_destination,
             "materialized output effects are incomplete");
+        require(ce::same_handle(
+                    materialized.binding_contract.output_orders[1]
+                        .output_axis.domain,
+                    coordinate_axis.domain)
+                && ce::same_handle(
+                    materialized.binding_contract.output_orders[1]
+                        .output_axis.order,
+                    coordinate_axis.order),
+            "direct relation output lost Baseplane coordinate identity");
         ce::biological_operand_view materialized_outputs[2]{};
         materialized_outputs[0].kind = ce::operand_kind::dense_tensor;
         materialized_outputs[0].storage.dense = gene_output(
@@ -502,17 +525,14 @@ int main() {
             {ce::residency_kind::device, {}, device, 0u});
         materialized_outputs[1].kind = ce::operand_kind::dense_tensor;
         materialized_outputs[1].storage.dense = ce::dense_tensor_view{};
-        materialized_outputs[1].storage.dense.data = device_mask.get();
+        materialized_outputs[1].storage.dense.data = device_relation.get();
         materialized_outputs[1].storage.dense.location =
             {ce::residency_kind::device, {}, device, 0u};
         materialized_outputs[1].storage.dense.value_type = ce::numeric_type::u32;
         materialized_outputs[1].storage.dense.rank = 1u;
-        materialized_outputs[1].storage.dense.axes[0] = predicate_mask_axis;
-        materialized_outputs[1].storage.dense.shape[0] = word_count;
+        materialized_outputs[1].storage.dense.axes[0] = regulatory_relation_axis;
+        materialized_outputs[1].storage.dense.shape[0] = base_count;
         materialized_outputs[1].storage.dense.stride[0] = 1;
-        cuda_require(cudaMemsetAsync(
-            device_mask.get(), 0, word_count * sizeof(std::uint32_t), stream),
-            "initialize materialized cache output");
         cuda_require(cudaMemsetAsync(device_output.get(), 0, 3u * sizeof(float), stream),
             "zero materialized output");
         ce::launch_bindings materialized_launch = launch_bindings(
@@ -522,30 +542,33 @@ int main() {
                 co::run_prepared_operation(materialized, materialized_launch)),
             "materialized operation launch rejected");
         std::array<float, 3> materialized_result{};
-        std::array<std::uint32_t, word_count> mask_result{};
+        std::array<std::uint32_t, base_count> relation_result{};
         cuda_require(cudaMemcpyAsync(materialized_result.data(), device_output.get(),
             sizeof(materialized_result), cudaMemcpyDeviceToHost, stream),
             "copy materialized output");
-        cuda_require(cudaMemcpyAsync(mask_result.data(), device_mask.get(),
-            sizeof(mask_result), cudaMemcpyDeviceToHost, stream),
-            "copy predicate mask");
+        cuda_require(cudaMemcpyAsync(relation_result.data(), device_relation.get(),
+            sizeof(relation_result), cudaMemcpyDeviceToHost, stream),
+            "copy direct regulatory relation");
         cuda_require(cudaStreamSynchronize(stream), "finish materialized path");
         compare_output(materialized_result, contribution,
             "materialized scalar parity failed");
-        require(mask_result[0] == ((1u << 5u) | (1u << 30u))
-                && mask_result[1] == 0u && mask_result[2] == 0u,
-            "validity, halo, boundary, or tail mask semantics failed");
+        for (std::uint32_t anchor = 0u; anchor < base_count; ++anchor) {
+            const std::uint32_t expected_element = anchor == 5u ? 0u
+                : anchor == 30u ? 1u : 0xffffffffu;
+            require(relation_result[anchor] == expected_element,
+                "direct relation identity, validity, halo, or tail mismatch");
+        }
 
-        cs::predicate_mask_cache_entry cache{};
-        cache.words = device_mask.get();
+        cs::regulatory_relation_cache_entry cache{};
+        cache.elements = device_relation.get();
         cache.ready_event = cache_ready;
-        cache.word_capacity = word_count;
+        cache.element_capacity = base_count;
         cache.location = {ce::residency_kind::device, {}, device, 0u};
         cs::predicate_cache_run_result cache_result{};
         cuda_require(cudaMemsetAsync(
             device_output.get(), 0, 3u * sizeof(float), stream),
             "zero first cached output");
-        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
                 materialized, materialized_launch, {11u}, &cache,
                 &cache_result))
                 && !cache_result.cache_hit
@@ -562,12 +585,12 @@ int main() {
         cuda_require(cudaMemsetAsync(
             device_output.get(), 0, 3u * sizeof(float), stream),
             "zero reused cached output");
-        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
                 materialized, materialized_launch, {11u}, &cache,
                 &cache_result))
                 && cache_result.cache_hit
                 && cache_result.launches_enqueued == 1u,
-            "same generation/predicate/order did not reuse the mask");
+            "same generation/order/projection did not reuse the relation");
         std::array<float, 3> reused_cached_result{};
         cuda_require(cudaMemcpyAsync(reused_cached_result.data(),
             device_output.get(), sizeof(reused_cached_result),
@@ -576,16 +599,67 @@ int main() {
         compare_output(reused_cached_result, contribution,
             "reused cached execution failed referee parity");
 
-        cuda_require(cudaMemsetAsync(
-            device_output.get(), 0, 3u * sizeof(float), stream),
-            "zero next-generation output");
-        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+        const std::array<float, 3> second_weights{{3.0f, 4.0f, 1.0f}};
+        const std::array<float, 3> second_contribution{{4.0f, 1.0f, 3.0f}};
+        cuda_require(cudaMemcpyAsync(device_weights.get(), second_weights.data(),
+            sizeof(second_weights), cudaMemcpyHostToDevice, stream),
+            "upload second dynamic cell state");
+        value_plane.generation = {2u};
+        value_binding.expected_generation = {2u};
+        std::size_t free_before_state = 0u, total_before_state = 0u;
+        cuda_require(cudaMemGetInfo(&free_before_state, &total_before_state),
+            "memory before reused cell state");
+        cuda_require(cudaMemsetAsync(device_output.get(), 0,
+            3u * sizeof(float), stream), "zero second cell-state output");
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
+                materialized, materialized_launch, {11u}, &cache,
+                &cache_result))
+                && cache_result.cache_hit
+                && cache_result.launches_enqueued == 1u,
+            "new regulatory values rebuilt static sequence relation");
+        std::array<float, 3> second_state_result{};
+        cuda_require(cudaMemcpyAsync(second_state_result.data(),
+            device_output.get(), sizeof(second_state_result),
+            cudaMemcpyDeviceToHost, stream), "copy second cell-state output");
+        cuda_require(cudaStreamSynchronize(stream), "finish second cell state");
+        std::size_t free_after_state = 0u, total_after_state = 0u;
+        cuda_require(cudaMemGetInfo(&free_after_state, &total_after_state),
+            "memory after reused cell state");
+        compare_output(second_state_result, second_contribution,
+            "reused sequence relation failed second cell-state parity");
+        require(free_before_state == free_after_state
+                && total_before_state == total_after_state,
+            "reused cell-state execution allocated steady-state storage");
+
+        cuda_require(cudaMemsetAsync(device_output.get(), 0,
+            3u * sizeof(float), stream), "zero next-sequence output");
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
                 materialized, materialized_launch, {12u}, &cache,
                 &cache_result))
                 && !cache_result.cache_hit
                 && cache_result.launches_enqueued == 2u,
-            "new sequence generation reused a stale mask");
-        cuda_require(cudaStreamSynchronize(stream), "finish new generation use");
+            "new sequence generation reused a stale relation");
+        cuda_require(cudaStreamSynchronize(stream), "finish new sequence use");
+
+        cs::sequence_prepare_request reprojected_request = request;
+        reprojected_request.persistent_projection = {173u, 174u};
+        cs::sequence_prepare_policy forced_relation{};
+        forced_relation.requested = cs::sequence_strategy::materialize_relation;
+        cs::prepared_sequence_state reprojected_state{};
+        co::prepared_operation reprojected{};
+        require(static_cast<bool>(cs::prepare_sequence_regulatory_operation(
+                reprojected_request, forced_relation,
+                &reprojected_state, &reprojected)),
+            "alternate regulatory projection did not prepare");
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
+                reprojected, materialized_launch, {12u}, &cache,
+                &cache_result))
+                && !cache_result.cache_hit
+                && ce::same_identity(cache.key.regulatory_projection,
+                    reprojected_request.persistent_projection),
+            "regulatory projection change reused a stale direct relation");
+        cuda_require(cudaStreamSynchronize(stream),
+            "finish reprojected relation use");
 
         cs::sequence_prepare_request reordered_request = request;
         reordered_request.persistent_coordinate_order = {79u, 80u};
@@ -593,28 +667,28 @@ int main() {
         co::prepared_operation reordered{};
         cs::sequence_prepare_policy forced_materialization{};
         forced_materialization.requested =
-            cs::sequence_strategy::materialize_mask;
+            cs::sequence_strategy::materialize_relation;
         require(static_cast<bool>(cs::prepare_sequence_regulatory_operation(
                 reordered_request, forced_materialization,
                 &reordered_state, &reordered)),
             "alternate persistent coordinate order did not prepare");
-        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
                 reordered, materialized_launch, {12u}, &cache,
                 &cache_result))
                 && !cache_result.cache_hit
                 && ce::same_identity(cache.key.coordinate_order,
                     reordered_request.persistent_coordinate_order),
-            "coordinate-order change reused a stale mask");
+            "coordinate-order change reused a stale relation");
         cuda_require(cudaStreamSynchronize(stream), "finish reordered use");
 
-        device_buffer<std::uint32_t> replacement_mask(word_count);
+        device_buffer<std::uint32_t> replacement_relation(base_count);
         ce::biological_operand_view rebound_outputs[2]{
             materialized_outputs[0], materialized_outputs[1]};
-        rebound_outputs[1].storage.dense.data = replacement_mask.get();
+        rebound_outputs[1].storage.dense.data = replacement_relation.get();
         ce::launch_bindings rebound_launch = launch_bindings(
             relations, &input, rebound_outputs, 2u,
             &value_binding, stream, device);
-        require(!cs::run_sequence_regulatory_operation_cached(
+        require(!cs::run_sequence_regulatory_relation_cached(
                 reordered, rebound_launch, {12u}, &cache, &cache_result),
             "occupied cache silently rebound by pointer identity");
 
@@ -633,8 +707,9 @@ int main() {
         require(fused_bytes.launch_count == 1u
                 && fused_bytes.materialized_mask_bytes == 0u
                 && materialized_bytes.launch_count == 2u
-                && materialized_bytes.materialized_mask_bytes
-                    == word_count * sizeof(std::uint32_t),
+                && materialized_bytes.materialized_mask_bytes == 0u
+                && materialized_bytes.materialized_relation_bytes
+                    == base_count * sizeof(std::uint32_t),
             "strategy accounting is incomplete");
 
         ce::biological_operand_view stale_input = input;
@@ -679,12 +754,12 @@ int main() {
             [&](std::uint32_t sample) {
                 cache.occupied = false;
                 return static_cast<bool>(
-                    cs::run_sequence_regulatory_operation_cached(
+                    cs::run_sequence_regulatory_relation_cached(
                         materialized, materialized_launch,
                         {1000u + sample}, &cache, &cache_result));
             }, "first materialized benchmark launch failed");
         cache.occupied = false;
-        require(static_cast<bool>(cs::run_sequence_regulatory_operation_cached(
+        require(static_cast<bool>(cs::run_sequence_regulatory_relation_cached(
                 materialized, materialized_launch, {2000u}, &cache,
                 &cache_result)),
             "cached benchmark preparation failed");
@@ -693,7 +768,7 @@ int main() {
         const timing_summary cached_timing = measure_candidate(stream,
             [&](std::uint32_t) {
                 return static_cast<bool>(
-                    cs::run_sequence_regulatory_operation_cached(
+                    cs::run_sequence_regulatory_relation_cached(
                         materialized, materialized_launch, {2000u}, &cache,
                         &cache_result));
             }, "cached materialized benchmark launch failed");
@@ -716,10 +791,10 @@ int main() {
             std::max(first_materialized_timing.spread_percent,
                 cached_timing.spread_percent),
             9u, 0u};
-        std::uint32_t first_materialized_reuse = 0u;
+        std::uint32_t first_materialized_state_count = 0u;
         for (std::uint32_t reuse = 1u; reuse <= 64u; ++reuse) {
             cs::sequence_prepare_policy measured_policy{};
-            measured_policy.expected_predicate_reuse = reuse;
+            measured_policy.expected_cell_state_count = reuse;
             measured_policy.evidence = &actual_evidence;
             measured_policy.device = actual_device;
             measured_policy.runtime_build_identity = 0xce780002u;
@@ -728,13 +803,13 @@ int main() {
                 cs::select_sequence_strategy(actual_key, measured_policy);
             require(!measured_decision.empirical_measurement_required,
                 "fresh measured evidence was rejected");
-            if (first_materialized_reuse == 0u
+            if (first_materialized_state_count == 0u
                 && measured_decision.strategy
-                    == cs::sequence_strategy::materialize_mask)
-                first_materialized_reuse = reuse;
+                    == cs::sequence_strategy::materialize_relation)
+                first_materialized_state_count = reuse;
         }
 
-        std::cout << "ce_arch_78_evidence"
+        std::cout << "ce_arch_89_evidence"
                   << " device=" << properties.name
                   << " cc=" << properties.major << '.' << properties.minor
                   << " bases=" << base_count
@@ -748,8 +823,8 @@ int main() {
                   << " cached_ns=" << cached_timing.median_ns
                   << " cached_spread_pct="
                   << cached_timing.spread_percent
-                  << " first_materialized_reuse="
-                  << first_materialized_reuse << '\n';
+                  << " first_materialized_state_count="
+                  << first_materialized_state_count << '\n';
 
         cuda_require(cudaEventDestroy(cache_ready), "cudaEventDestroy cache_ready");
         cuda_require(cudaStreamDestroy(stream), "cudaStreamDestroy");
