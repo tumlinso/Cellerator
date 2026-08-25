@@ -499,6 +499,44 @@ def command_extract(args: argparse.Namespace) -> None:
     )
 
 
+def command_derive_block(args: argparse.Namespace) -> None:
+    if args.block_width <= 0:
+        raise ValueError("feature block width must be positive")
+    source = load_json(args.source_trace)
+    validate_compact_trace(source)
+    offsets = source["row_offsets"]
+    indices = source["column_indices"]
+    block_counts: dict[int, int] = {}
+    for feature in indices:
+        block = int(feature) // args.block_width
+        block_counts[block] = block_counts.get(block, 0) + 1
+    if not block_counts:
+        raise ValueError("source trace has no occupied feature block")
+    selected = min(block_counts, key=lambda block: (-block_counts[block], block))
+    rows = [
+        [feature for feature in indices[offsets[row]:offsets[row + 1]]
+         if feature // args.block_width == selected]
+        for row in range(int(source["row_count"]))
+    ]
+    provenance = {
+        "kind": "real_support_derived_feature_block",
+        "source_trace_id": source["trace_id"],
+        "source_trace_sha256": file_sha256(args.source_trace),
+        "source_payload_sha256": source["payload_sha256"],
+        "selection": "maximum_observed_edges_then_lowest_block",
+        "feature_block_width": args.block_width,
+        "selected_feature_block": selected,
+        "values_ignored": True,
+    }
+    write_json(args.output, compact_trace(
+        args.trace_id,
+        rows,
+        int(source["column_count"]),
+        {"row_axis": source["row_axis"], "column_axis": source["column_axis"]},
+        provenance,
+    ))
+
+
 def command_validate(args: argparse.Namespace) -> None:
     trace = load_json(args.trace)
     validate_compact_trace(trace)
@@ -522,6 +560,14 @@ def parser() -> argparse.ArgumentParser:
     extract.add_argument("--output", type=Path, required=True)
     extract.add_argument("--format", choices=("compact-json", "matrix-market"), default="compact-json")
     extract.set_defaults(function=command_extract)
+    derive = subparsers.add_parser(
+        "derive-block", help="derive the most occupied native feature block"
+    )
+    derive.add_argument("--source-trace", type=Path, required=True)
+    derive.add_argument("--trace-id", required=True)
+    derive.add_argument("--block-width", type=int, default=16)
+    derive.add_argument("--output", type=Path, required=True)
+    derive.set_defaults(function=command_derive_block)
     validate = subparsers.add_parser("validate", help="validate a compact support trace")
     validate.add_argument("--trace", type=Path, required=True)
     validate.set_defaults(function=command_validate)

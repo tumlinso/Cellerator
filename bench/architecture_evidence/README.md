@@ -180,10 +180,47 @@ partial-mask/empty-row boundary test passed at N=17 and N=64. Controller
 evidence id `e1703b9d-1675-404b-a721-6ec20c771679` records the mutex-protected
 campaign and exact binary/source identities.
 
+## CE-ARCH-92 real and adversarial regime evidence
+
+`ce_arch_92_v100.jsonl` records 36 correct candidate measurements from a
+serialized Tesla V100-SXM2-16GB campaign. The inputs are the checksum-pinned
+GSE147520 and PBMC3K support traces, the most occupied native 16-feature block
+derived deterministically from GSE147520, and the adversarial partial-block
+trace. Each trace is measured at N=1,16,32 with three warmups and eleven
+repeats. The campaign runner isolates every `(trace, N)` cell in its own process
+while the controller holds one benchmark mutex and device lease, preventing
+cross-width harness state from affecting comparison. Candidate construction,
+value packing, backend preparation, dynamic input packing, kernel, output-order
+work, and the eight-use amortized total remain separately visible.
+
+| trace | N=1 | N=16 | N=32 |
+|---|---|---|---|
+| GSE147520 full support | CSR | feature-major | feature-major CTA |
+| PBMC3K full support | CSR | feature-major | feature-major CTA |
+| GSE147520 high-sharing block | row-masked | feature-major | feature-major CTA |
+| adversarial partial blocks | CSR | feature-major | feature-major CTA |
+
+Every winner clears the runner-up by more than the declared 2% practical
+threshold; the narrowest margin is 10.43% and maximum timing MAD is 2.05%.
+Every record uses overwrite output semantics, packed-row-major RHS,
+execution-row-major output, f16 relation values, f32 multiply/accumulation, and
+the independent referee's `1e-5 + 1e-5 * |reference|` tolerance. Controller
+evidence id `490d2ba1-99ce-4d3e-ba1c-65db915a42d1` records quiescence,
+device/toolchain identity, binary digest, and source fingerprint. Reproduce the
+GPU run with `ce_arch_92_v100_spec.json`, then annotate and validate it with
+`finalize_ce_arch_92_evidence.py`. The derived high-sharing trace is reproduced
+by `trace_tool.py derive-block` and is byte-tested against the committed file.
+
+The evidence justifies retaining all three forward organizations: row-masked
+for a preparation-sensitive high-sharing N=1 real regime, conventional CSR for
+full real and adversarial N=1 fallbacks, and feature-major warp/CTA execution
+when dense-RHS reuse dominates at N=16/32. It is not a universal ordering and
+does not measure future candidate families.
+
 ## Future measured execution
 
-Apart from the bounded CE-ARCH-76 activation above, the broader evidence
-families remain unarmed. After their named checkpoints and targets in
+Candidate families beyond the bounded CE-ARCH-76, CE-ARCH-84, and CE-ARCH-92
+activations remain unarmed. After their named checkpoints and targets in
 `watch_plan.json` exist,
 the CUDA controller must create a clean immutable snapshot, run independent
 correctness first, acquire the declared benchmark or profiler and GPU leases,

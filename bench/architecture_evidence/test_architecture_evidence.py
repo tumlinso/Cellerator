@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -107,6 +108,55 @@ class PackageValidationTest(unittest.TestCase):
         sources = trace_tool.load_json(validate_evidence.MANIFESTS / "sources.json")
         for source in sources["sources"]:
             self.assertEqual(len(source["sha256"]), hashlib.sha256().digest_size * 2)
+
+
+class CeArch92EvidenceTest(unittest.TestCase):
+    def test_real_regime_campaign_is_complete_and_reproducible(self) -> None:
+        directory = validate_evidence.ROOT / "bench" / "architecture_evidence"
+        raw = directory / "ce_arch_92_v100.raw.jsonl"
+        evidence = directory / "ce_arch_92_v100.jsonl"
+        summary_path = directory / "ce_arch_92_v100_summary.json"
+        summary = json.loads(summary_path.read_text())
+        records = [json.loads(line) for line in evidence.read_text().splitlines()]
+        self.assertEqual(summary["schema"], "CE-ARCH-92-SUMMARY/1")
+        self.assertEqual(summary["record_count"], 36)
+        self.assertEqual(len(records), 36)
+        self.assertLessEqual(summary["maximum_mad_percent"], 5.0)
+        self.assertTrue(all(record["schema"] == "CE-ARCH-92-EVIDENCE/1"
+                            for record in records))
+        self.assertTrue(all(record["correct"] for record in records))
+        winners = {item["winner"] for item in summary["winners"]}
+        self.assertIn("row_masked", winners)
+        self.assertIn("csr", winners)
+        self.assertIn("feature_major", winners)
+        self.assertIn("feature_major_cta", winners)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            rebuilt = Path(temporary) / "evidence.jsonl"
+            rebuilt_summary = Path(temporary) / "summary.json"
+            subprocess.run([
+                "python3", str(directory / "finalize_ce_arch_92_evidence.py"),
+                "--raw", str(raw), "--output", str(rebuilt),
+                "--summary", str(rebuilt_summary),
+                "--controller-evidence-id", summary["controller_evidence_id"],
+            ], cwd=validate_evidence.ROOT, check=True)
+            self.assertEqual(rebuilt.read_bytes(), evidence.read_bytes())
+            self.assertEqual(rebuilt_summary.read_bytes(), summary_path.read_bytes())
+
+    def test_real_high_sharing_slice_is_deterministic(self) -> None:
+        directory = validate_evidence.ROOT / "bench" / "architecture_evidence"
+        source = directory / "real_traces" / "gse147520-support-256.json"
+        committed = directory / "real_traces" / "gse147520-high-sharing-block-256.json"
+        with tempfile.TemporaryDirectory() as temporary:
+            rebuilt = Path(temporary) / "derived.json"
+            subprocess.run([
+                "python3", str(directory / "trace_tool.py"), "derive-block",
+                "--source-trace", str(source),
+                "--trace-id", "gse147520-high-sharing-block-r256",
+                "--block-width", "16", "--output", str(rebuilt),
+            ], cwd=validate_evidence.ROOT, check=True)
+            self.assertEqual(rebuilt.read_bytes(), committed.read_bytes())
+        trace_tool.validate_compact_trace(json.loads(committed.read_text()))
 
 
 if __name__ == "__main__":

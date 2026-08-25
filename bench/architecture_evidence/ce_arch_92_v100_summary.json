@@ -1,0 +1,119 @@
+{
+  "controller_evidence_id": "490d2ba1-99ce-4d3e-ba1c-65db915a42d1",
+  "maximum_mad_percent": 2.04081708,
+  "migration_exit_evidence": {
+    "all_candidates_correct": true,
+    "all_cells_clear_at_two_percent": true,
+    "csr_fallback_regime": true,
+    "native_cellerator_win": true,
+    "row_masked_real_regime": true
+  },
+  "raw_sha256": "e4bd0b696503e93d964d74fa333d2600e8f828af0eea0119c57e829b1607376d",
+  "record_count": 36,
+  "schema": "CE-ARCH-92-SUMMARY/1",
+  "timing_basis": "amortized_total_ms_at_expected_reuse_8",
+  "trace_count": 4,
+  "widths": [
+    1,
+    16,
+    32
+  ],
+  "winners": [
+    {
+      "amortized_total_ms": 0.0161222502,
+      "clear": true,
+      "n": 1,
+      "runner_up_margin_percent": 41.712539605668674,
+      "trace_id": "adversarial-tiny-partial-blocks",
+      "winner": "csr"
+    },
+    {
+      "amortized_total_ms": 0.0283333747,
+      "clear": true,
+      "n": 16,
+      "runner_up_margin_percent": 80.64428943580802,
+      "trace_id": "adversarial-tiny-partial-blocks",
+      "winner": "feature_major"
+    },
+    {
+      "amortized_total_ms": 0.0352995003,
+      "clear": true,
+      "n": 32,
+      "runner_up_margin_percent": 158.00471657101616,
+      "trace_id": "adversarial-tiny-partial-blocks",
+      "winner": "feature_major_cta"
+    },
+    {
+      "amortized_total_ms": 0.016700875,
+      "clear": true,
+      "n": 1,
+      "runner_up_margin_percent": 19.883686333799865,
+      "trace_id": "gse147520-high-sharing-block-r256",
+      "winner": "row_masked"
+    },
+    {
+      "amortized_total_ms": 0.0234072507,
+      "clear": true,
+      "n": 16,
+      "runner_up_margin_percent": 238.28835182254016,
+      "trace_id": "gse147520-high-sharing-block-r256",
+      "winner": "feature_major"
+    },
+    {
+      "amortized_total_ms": 0.0256603745,
+      "clear": true,
+      "n": 32,
+      "runner_up_margin_percent": 509.25993889917703,
+      "trace_id": "gse147520-high-sharing-block-r256",
+      "winner": "feature_major_cta"
+    },
+    {
+      "amortized_total_ms": 2.6497089,
+      "clear": true,
+      "n": 1,
+      "runner_up_margin_percent": 160.27852870932352,
+      "trace_id": "gse147520-local-x-support-r256-s7",
+      "winner": "csr"
+    },
+    {
+      "amortized_total_ms": 7.64709238,
+      "clear": true,
+      "n": 16,
+      "runner_up_margin_percent": 45.47053242215442,
+      "trace_id": "gse147520-local-x-support-r256-s7",
+      "winner": "feature_major"
+    },
+    {
+      "amortized_total_ms": 9.16266071,
+      "clear": true,
+      "n": 32,
+      "runner_up_margin_percent": 118.51058479278774,
+      "trace_id": "gse147520-local-x-support-r256-s7",
+      "winner": "feature_major_cta"
+    },
+    {
+      "amortized_total_ms": 3.02212824,
+      "clear": true,
+      "n": 1,
+      "runner_up_margin_percent": 121.27040909422165,
+      "trace_id": "pbmc3k-raw-local-support-r512-s7",
+      "winner": "csr"
+    },
+    {
+      "amortized_total_ms": 7.63501751,
+      "clear": true,
+      "n": 16,
+      "runner_up_margin_percent": 10.426777528110742,
+      "trace_id": "pbmc3k-raw-local-support-r512-s7",
+      "winner": "feature_major"
+    },
+    {
+      "amortized_total_ms": 8.37225917,
+      "clear": true,
+      "n": 32,
+      "runner_up_margin_percent": 68.93531617703135,
+      "trace_id": "pbmc3k-raw-local-support-r512-s7",
+      "winner": "feature_major_cta"
+    }
+  ]
+}
