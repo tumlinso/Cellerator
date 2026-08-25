@@ -1480,6 +1480,33 @@ set_target_properties(cellerator_row_masked_n1_candidate PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-ARCH-72: operation-core activation of the existing conventional CSR N=1
+# execution path. Projection construction remains explicit and caller-owned.
+add_library(cellerator_csr_fallback_candidate STATIC
+    src/compute/math/operation_core/csr_fallback_candidate.cu
+)
+add_library(Cellerator::csr_fallback_candidate ALIAS
+    cellerator_csr_fallback_candidate)
+target_include_directories(cellerator_csr_fallback_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_csr_fallback_candidate PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(cellerator_csr_fallback_candidate PUBLIC
+    Cellerator::operation_core
+    CellPack::apply_plan
+    CellPack::persistent_packing_payload
+    CUDA::cudart
+)
+set_target_properties(cellerator_csr_fallback_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     components/CellPack/src/optimization/objective_v2.cc
@@ -1507,6 +1534,21 @@ set_target_properties(celleratorPlannerV1Test PROPERTIES
 
 add_executable(celleratorRowMaskedN1CandidateTest
     tests/math_core/row_masked_n1_candidate_test.cu
+)
+
+add_executable(celleratorCsrFallbackCandidateTest
+    tests/math_core/csr_fallback_candidate_test.cu
+)
+target_link_libraries(celleratorCsrFallbackCandidateTest PRIVATE
+    Cellerator::csr_fallback_candidate
+    Cellerator::row_masked_n1_candidate
+    Cellerator::planner
+)
+set_target_properties(celleratorCsrFallbackCandidateTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorRowMaskedN1CandidateTest PRIVATE
     Cellerator::row_masked_n1_candidate

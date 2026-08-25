@@ -90,6 +90,18 @@ CUDA consumer directly. Its canonical row output preserves the v1 compatibility
 contract; it is not a declaration that row-masked execution or canonical output
 is the universal planner default.
 
+CE-ARCH-72 registers the existing f16-value/f32-vector CSR path as the
+`cellerator-csr-fallback-n1-f16-f32` conventional candidate under the same
+operation-core contract. Preparation requires an already constructed,
+device-resident CSR projection in packed feature order and aliases only its row
+offsets and feature indices. Mutable relation values, dense input, output,
+value generation, caller stream, and zero-byte workspace remain launch-bound.
+The adapter launches the existing validated CSR kernel definition directly; it
+does not construct CSR, allocate, copy, canonicalize, or synchronize in the hot
+path. Projection construction and transfer remain explicit planner costs. The
+candidate is deterministic but does not claim graph-capture support, and its
+presence does not make CSR canonical or create another runtime.
+
 ### Historical V100 evidence
 
 The recorded benchmark used:
