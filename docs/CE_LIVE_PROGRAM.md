@@ -367,6 +367,33 @@ CE-LIVE-20 + CE-LIVE-21 → CE-LIVE-23
 20 + 21 + 22 + 23 + 24 + 25 + 26 → CE-LIVE-29
 ```
 
+The two serialized implementation forks completed as:
+
+```text
+Fork A: CE-LIVE-20 → CE-LIVE-22 → CE-LIVE-23
+Fork B: CE-LIVE-21 → CE-LIVE-24 → CE-LIVE-26 → CE-LIVE-25
+Cross-fork: CE-LIVE-21 → CE-LIVE-23
+```
+
+CE-LIVE-29 is the single-owner implementation rendezvous. Its root build seam
+publishes `Cellerator::executable_core` as an aggregate of non-owning CPE2 typed
+activation, the immutable host candidate catalog, the strong session-backed
+cuSPARSE candidates, the typed preparation factory, and the bounded native
+training slice. The native training target now links the existing runtime
+readiness implementation; event/stream state remains launch-time state.
+
+Task-owned fixture and planner-input libraries remain validation/benchmark
+adapters rather than production storage or a second planner. Focused targets
+cover every Wave B leaf, and
+`celleratorExecutableCoreIntegrationTest` verifies that the catalog plus the
+two conventional cuSPARSE candidates share one registry, typed activation and
+preparation link together, the quantitative relation produces factored planner
+keys, and readiness stays outside persistent parameter identity.
+
+This fan-in freezes only the minimum executable-core build interfaces. It does
+not create the executable program API, select a Tensor Core implementation, or
+start the quantitative vertical slice; those remain CE-LIVE-30 and later work.
+
 ### Executable bridge
 
 ```text

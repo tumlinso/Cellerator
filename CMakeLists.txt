@@ -1650,6 +1650,7 @@ target_include_directories(cellerator_native_training_slice PUBLIC
 target_link_libraries(cellerator_native_training_slice PUBLIC
     Cellerator::feature_major_projection
     Cellerator::transpose_projection
+    Cellerator::runtime
     CUDA::cudart
 )
 set_target_properties(cellerator_native_training_slice PROPERTIES
@@ -1677,6 +1678,94 @@ set_target_properties(cellerator_transpose_backward_candidate PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-LIVE-29: Wave B executable-core fan-in. Leaf tasks own behavior; this
+# rendezvous owns their shared native target and test wiring.
+add_library(cellerator_projection_activation STATIC
+    src/execution/projection_activation.cc
+)
+add_library(Cellerator::projection_activation ALIAS
+    cellerator_projection_activation)
+target_include_directories(cellerator_projection_activation PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_projection_activation PUBLIC
+    CellPack::execution_image_v2
+    Cellerator::feature_major_projection
+    Cellerator::transpose_projection
+    Cellerator::csr_fallback_candidate
+)
+target_compile_features(cellerator_projection_activation PUBLIC cxx_std_17)
+
+add_library(cellerator_builtin_candidate_catalog STATIC
+    src/compute/math/operation_core/builtin_catalog.cc
+)
+add_library(Cellerator::builtin_candidate_catalog ALIAS
+    cellerator_builtin_candidate_catalog)
+target_include_directories(cellerator_builtin_candidate_catalog PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_builtin_candidate_catalog PUBLIC
+    Cellerator::row_masked_n1_candidate
+    Cellerator::csr_fallback_candidate
+    Cellerator::feature_major_small_n_candidate
+    Cellerator::transpose_backward_candidate
+)
+target_compile_features(cellerator_builtin_candidate_catalog PUBLIC cxx_std_17)
+
+add_library(cellerator_cusparse_csr_candidate STATIC
+    src/compute/math/operation_core/cusparse_csr_candidate.cu
+)
+add_library(Cellerator::cusparse_csr_candidate ALIAS
+    cellerator_cusparse_csr_candidate)
+target_include_directories(cellerator_cusparse_csr_candidate PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_cusparse_csr_candidate PUBLIC
+    Cellerator::operation_core
+    Cellerator::runtime
+    CellPack::apply_plan
+    CUDA::cudart
+    CUDA::cusparse
+)
+set_target_properties(cellerator_cusparse_csr_candidate PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_library(cellerator_preparation_factory STATIC
+    src/compute/math/operation_core/preparation_factory.cc
+)
+add_library(Cellerator::preparation_factory ALIAS
+    cellerator_preparation_factory)
+target_include_directories(cellerator_preparation_factory PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_preparation_factory PUBLIC
+    Cellerator::builtin_candidate_catalog
+    Cellerator::runtime
+)
+target_compile_features(cellerator_preparation_factory PUBLIC cxx_std_17)
+
+add_library(cellerator_executable_core INTERFACE)
+add_library(Cellerator::executable_core ALIAS cellerator_executable_core)
+target_link_libraries(cellerator_executable_core INTERFACE
+    Cellerator::projection_activation
+    Cellerator::builtin_candidate_catalog
+    Cellerator::cusparse_csr_candidate
+    Cellerator::preparation_factory
+    Cellerator::native_training_slice
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     src/distributed/hierarchy.cc
@@ -1695,6 +1784,30 @@ target_link_libraries(cellerator_planner PUBLIC
     CellPack::alternating_refinement
 )
 target_compile_features(cellerator_planner PUBLIC cxx_std_17)
+
+add_library(cellerator_live_planner_inputs STATIC
+    bench/ce_live/planner/live_planner_inputs.cc
+)
+target_include_directories(cellerator_live_planner_inputs PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(cellerator_live_planner_inputs PUBLIC
+    Cellerator::planner
+)
+target_compile_features(cellerator_live_planner_inputs PUBLIC cxx_std_17)
+
+add_library(cellerator_live_runtime_fixture STATIC
+    bench/ce_live/runtime_fixture/quantitative_fixture.cc
+)
+target_include_directories(cellerator_live_runtime_fixture PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(cellerator_live_runtime_fixture PUBLIC
+    Cellerator::identity_registry
+)
+target_compile_features(cellerator_live_runtime_fixture PUBLIC cxx_std_17)
 
 add_library(cellerator_candidate_measurement STATIC
     src/planner/candidate_measurement.cu
@@ -1733,6 +1846,27 @@ add_executable(celleratorHierarchyPartitionBoundaryTest
 add_executable(celleratorCandidateMeasurementTest
     tests/planner/candidate_measurement_test.cu
 )
+add_executable(celleratorProjectionActivationTest
+    tests/execution/projection_activation_test.cu
+)
+add_executable(celleratorBuiltinCatalogTest
+    tests/math_core/builtin_catalog_test.cc
+)
+add_executable(celleratorCusparseCsrCandidateTest
+    tests/math_core/cusparse_csr_candidate_test.cu
+)
+add_executable(celleratorPreparationFactoryTest
+    tests/math_core/preparation_factory_test.cu
+)
+add_executable(celleratorQuantitativeRelationTest
+    tests/live/quantitative_relation_test.cu
+)
+add_executable(celleratorLivePlannerFeaturesTest
+    tests/planner/ce_live_planner_features_test.cc
+)
+add_executable(celleratorExecutableCoreIntegrationTest
+    tests/live/integration/executable_core_integration_test.cc
+)
 target_link_libraries(celleratorCandidateMeasurementTest PRIVATE
     Cellerator::candidate_measurement
     Cellerator::row_masked_n1_candidate
@@ -1743,6 +1877,53 @@ set_target_properties(celleratorCandidateMeasurementTest PROPERTIES
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES
+)
+target_link_libraries(celleratorProjectionActivationTest PRIVATE
+    Cellerator::projection_activation
+    CUDA::cudart
+)
+target_link_libraries(celleratorBuiltinCatalogTest PRIVATE
+    Cellerator::builtin_candidate_catalog
+)
+target_link_libraries(celleratorCusparseCsrCandidateTest PRIVATE
+    Cellerator::cusparse_csr_candidate
+)
+target_link_libraries(celleratorPreparationFactoryTest PRIVATE
+    Cellerator::preparation_factory
+    Cellerator::projection_activation
+    CUDA::cudart
+)
+target_link_libraries(celleratorQuantitativeRelationTest PRIVATE
+    cellerator_live_runtime_fixture
+    CUDA::cudart
+)
+target_link_libraries(celleratorLivePlannerFeaturesTest PRIVATE
+    cellerator_live_planner_inputs
+)
+target_link_libraries(celleratorExecutableCoreIntegrationTest PRIVATE
+    Cellerator::executable_core
+    Cellerator::planner
+    cellerator_live_planner_inputs
+    cellerator_live_runtime_fixture
+)
+set_target_properties(
+    celleratorProjectionActivationTest
+    celleratorCusparseCsrCandidateTest
+    celleratorPreparationFactoryTest
+    celleratorQuantitativeRelationTest
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+)
+set_target_properties(
+    celleratorBuiltinCatalogTest
+    celleratorLivePlannerFeaturesTest
+    celleratorExecutableCoreIntegrationTest
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
 )
 target_link_libraries(celleratorPlannerV1Test PRIVATE Cellerator::planner)
 target_link_libraries(celleratorConnectedOperationPlannerTest PRIVATE

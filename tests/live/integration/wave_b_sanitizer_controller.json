@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-29-wave-b-sanitizer",
+  "recipe": "baseline",
+  "paths": [
+    "CMakeLists.txt",
+    "include/Cellerator/execution/projection_activation.hh",
+    "include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh",
+    "include/Cellerator/compute/math/operation_core/preparation_factory.hh",
+    "include/Cellerator/compute/math/native_training_slice.hh",
+    "tests/live/integration"
+  ],
+  "argv": [
+    "bash",
+    "tests/live/integration/run_wave_b_sanitizer.sh"
+  ],
+  "timeout": 600,
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 1
+  }
+}

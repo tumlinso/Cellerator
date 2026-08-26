@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-29-wave-b-correctness",
+  "recipe": "baseline",
+  "paths": [
+    "CMakeLists.txt",
+    "include/Cellerator/execution/projection_activation.hh",
+    "include/Cellerator/compute/math/operation_core/builtin_catalog.hh",
+    "include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh",
+    "include/Cellerator/compute/math/operation_core/preparation_factory.hh",
+    "include/Cellerator/compute/math/native_training_slice.hh",
+    "bench/ce_live/runtime_fixture",
+    "bench/ce_live/planner",
+    "tests/live/integration"
+  ],
+  "argv": [
+    "bash",
+    "tests/live/integration/run_wave_b_suite.sh"
+  ],
+  "timeout": 300,
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
