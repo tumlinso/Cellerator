@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-24-quantitative-relation-correctness",
+  "recipe": "baseline",
+  "paths": [
+    "bench/ce_live/runtime_fixture/quantitative_fixture.hh",
+    "bench/ce_live/runtime_fixture/quantitative_fixture.cc",
+    "tests/live/quantitative_relation_test.cu"
+  ],
+  "argv": [
+    "bash",
+    "bench/ce_live/runtime_fixture/run_quantitative_relation_test.sh"
+  ],
+  "timeout": 300,
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
