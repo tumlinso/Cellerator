@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `1830`
+Project revision: `1853`
 
 ## Workstreams
 - `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -460,7 +460,7 @@ Project revision: `1830`
 - `CE-LIVE-25` | kind: task | status: done | parent: CE-LIVE-00 | objective: Use readiness in the native training slice, preserve topology across updates, expose native parameter descriptors, return explicit next-generation readiness, and prove same-stream and cross-stream correctness without premature publication.
 - `CE-LIVE-26` | kind: task | status: done | parent: CE-LIVE-00 | objective: Derive planner-ready structural and quantitative statistics from the fixture, construct exact persistent planning keys and reuse horizons, expose complete candidate phase inputs, and test invalidation without replacing empirical final selection.
 - `CE-LIVE-29` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Wire and validate typed activation, catalog, conventional fallback, preparation factory, quantitative adapter, readiness, training integration, and planner inputs. Freeze the minimum executable-core interfaces and open the vertical-slice frontier.
-- `CE-LIVE-30` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.
+- `CE-LIVE-30` | kind: task | status: done | parent: CE-LIVE-00 | objective: Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.
 - `CE-LIVE-31` | kind: validation_task | status: planned | parent: CE-LIVE-00 | objective: Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.
 - `CE-LIVE-32` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Implement at most one sm_70 dense-fragment or WMMA candidate under the bounded contract, integrate it as an ordinary planner candidate, and either promote on a complete-cost real-fixture win or leave unregistered with reproducible negative evidence.
 - `CE-LIVE-33` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Wrap the validated FMP1 and CTP1 N=16 training slice as an explicit prepared executable path with forward, epilogue, backward, sparse and bias updates, parameter descriptors, readiness transitions, and a fair persistent CSR/cuSPARSE baseline without rebuilding topology.

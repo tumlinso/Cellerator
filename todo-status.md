@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1830`
+Project revision: `1853`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -79,7 +79,7 @@ Project revision: `1830`
 - `CE-LIVE-25` | status: done | execution: closed | next: Use readiness in the native training slice, preserve topology across updates, expose native parameter descriptors, return explicit next-generation readiness, and prove same-stream and cross-stream correctness without premature publication.
 - `CE-LIVE-26` | status: done | execution: closed | next: Derive planner-ready structural and quantitative statistics from the fixture, construct exact persistent planning keys and reuse horizons, expose complete candidate phase inputs, and test invalidation without replacing empirical final selection.
 - `CE-LIVE-29` | status: done | execution: closed | next: Wire and validate typed activation, catalog, conventional fallback, preparation factory, quantitative adapter, readiness, training integration, and planner inputs. Freeze the minimum executable-core interfaces and open the vertical-slice frontier.
-- `CE-LIVE-30` | status: planned | execution: ready | next: Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.
+- `CE-LIVE-30` | status: done | execution: closed | next: Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.
 - `CE-LIVE-31` | status: planned | execution: ready | next: Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.
 - `CE-LIVE-32` | status: planned | execution: ready | next: Implement at most one sm_70 dense-fragment or WMMA candidate under the bounded contract, integrate it as an ordinary planner candidate, and either promote on a complete-cost real-fixture win or leave unregistered with reproducible negative evidence.
 - `CE-LIVE-33` | status: planned | execution: ready | next: Wrap the validated FMP1 and CTP1 N=16 training slice as an explicit prepared executable path with forward, epilogue, backward, sparse and bias updates, parameter descriptors, readiness transitions, and a fair persistent CSR/cuSPARSE baseline without rebuilding topology.
