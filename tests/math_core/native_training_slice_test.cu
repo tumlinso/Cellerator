@@ -26,9 +26,15 @@ tolerance. Reproduce through cuda_controller.py with
 #include <string>
 #include <vector>
 
+// CE-LIVE-29 owns the root transitive Cellerator::runtime link seam. Compile
+// the already-validated readiness implementation into this leaf test until
+// that fan-in adds the shared target wiring.
+#include "../../src/runtime/value_readiness.cu"
+
 namespace cm = cellerator::compute::math;
 namespace execution = cellerator::execution;
 namespace cp = cellpack;
+namespace runtime = cellerator::runtime;
 
 namespace {
 
@@ -393,6 +399,7 @@ struct device_fixture {
 
 cm::native_training_launch make_launch(device_fixture &device,
     execution::value_plane *plane, cudaStream_t stream,
+    runtime::value_readiness_record *readiness,
     std::uint64_t next_generation, float learning_rate) {
     const auto feature_axis = axis(10u);
     const auto module_axis = axis(20u);
@@ -403,6 +410,7 @@ cm::native_training_launch make_launch(device_fixture &device,
     launch.learned_values = plane;
     launch.expected_generation = plane->generation;
     launch.next_generation = {next_generation};
+    launch.next_value_readiness = readiness;
     launch.input = dense_matrix(device.input.data, feature_axis,
         dense_axis, 5u, device.device);
     launch.output = dense_matrix(device.output.data, module_axis,
@@ -453,11 +461,66 @@ void run_correctness(const fixture &f, int device_ordinal) {
     cudaStream_t stream = nullptr;
     require_cuda(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking),
         "create stream");
-    auto launch = make_launch(device, &plane, stream, 2u, learning_rate);
-    require(cm::run_native_training_step(prepared, launch),
+    runtime::value_readiness_record readiness;
+    require(runtime::initialize_value_readiness(&readiness, device_ordinal)
+            == runtime::value_readiness_status::success,
+        "initialize native training readiness");
+    require(!readiness.published(),
+        "value generation was published before producer work");
+    auto premature = make_launch(
+        device, &plane, stream, &readiness, 3u, learning_rate);
+    require(cm::run_native_training_step(prepared, premature).code
+            == cm::native_training_status_code::stale_generation
+            && !readiness.published() && plane.generation.value == 1u,
+        "failed enqueue validation published a generation");
+    auto launch = make_launch(
+        device, &plane, stream, &readiness, 2u, learning_rate);
+    cm::native_training_parameter_descriptors descriptors{};
+    require(cm::describe_native_training_parameters(
+        prepared, launch, &descriptors), "describe native parameters");
+    require(descriptors.count == 2u
+            && descriptors.parameters[0].kind
+                == cellerator::native_parameter_kind::relation_values
+            && descriptors.parameters[0].storage.data == plane.values
+            && descriptors.parameters[0].storage.shape[0] == 8
+            && descriptors.parameters[0].axis_count == 2u
+            && descriptors.parameters[1].kind
+                == cellerator::native_parameter_kind::dense_bias
+            && descriptors.parameters[1].storage.data == device.bias.data
+            && descriptors.parameters[1].storage.shape[0] == 16,
+        "native parameter descriptors are incomplete");
+    const cm::native_training_status first_result =
+        cm::run_native_training_step(prepared, launch);
+    require(first_result,
         "run native training step");
-    require(plane.generation.value == 2u,
-        "learned value generation did not advance");
+    require(plane.generation.value == 2u && readiness.published()
+            && readiness.structure_epoch() == f.epoch.value
+            && readiness.generation() == 2u
+            && first_result.published_generation.value == 2u
+            && first_result.readiness == &readiness,
+        "learned value generation readiness did not publish explicitly");
+    require(runtime::wait_for_value_generation(readiness, f.epoch.value, 2u,
+                stream, device_ordinal)
+            == runtime::value_readiness_status::success,
+        "same-stream training generation was not visible");
+    cudaStream_t consumer_stream = nullptr;
+    require_cuda(cudaStreamCreateWithFlags(
+        &consumer_stream, cudaStreamNonBlocking), "create consumer stream");
+    require(runtime::wait_for_value_generation(readiness, f.epoch.value, 2u,
+                consumer_stream, device_ordinal)
+            == runtime::value_readiness_status::success,
+        "cross-stream training generation wait failed");
+    int *visibility_marker = nullptr;
+    require_cuda(cudaMalloc(reinterpret_cast<void **>(&visibility_marker),
+        sizeof(int)), "allocate visibility marker");
+    require_cuda(cudaMemsetAsync(
+        visibility_marker, 0x5a, sizeof(int), consumer_stream),
+        "enqueue readiness visibility marker");
+    require_cuda(cudaStreamSynchronize(consumer_stream),
+        "synchronize readiness consumer");
+    require_cuda(cudaFree(visibility_marker), "release visibility marker");
+    require_cuda(cudaStreamDestroy(consumer_stream),
+        "destroy consumer stream");
     require_cuda(cudaStreamSynchronize(stream), "synchronize training step");
     compare(download(device.output, expected.output.size()),
         expected.output, 2.0e-5, "forward output mismatch");
@@ -491,22 +554,25 @@ void run_correctness(const fixture &f, int device_ordinal) {
     require(cm::run_native_training_step(prepared, stale).code
             == cm::native_training_status_code::stale_generation,
         "stale learned generation was accepted");
-    auto mismatch = make_launch(device, &plane, stream, 4u, learning_rate);
+    auto mismatch = make_launch(
+        device, &plane, stream, &readiness, 4u, learning_rate);
     require(cm::run_native_training_step(prepared, mismatch).code
             == cm::native_training_status_code::stale_generation,
         "non-consecutive learned generation was accepted");
-    auto wrong_structure = make_launch(device, &plane, stream, 3u,
+    auto wrong_structure = make_launch(device, &plane, stream, &readiness, 3u,
         learning_rate);
     wrong_structure.structure.identity = {999u, 1u};
     require(cm::run_native_training_step(prepared, wrong_structure).code
             == cm::native_training_status_code::incompatible_identity,
         "mismatched training structure identity was accepted");
-    auto insufficient = make_launch(device, &plane, stream, 3u, learning_rate);
+    auto insufficient = make_launch(
+        device, &plane, stream, &readiness, 3u, learning_rate);
     insufficient.workspace.bytes -= sizeof(float);
     require(cm::run_native_training_step(prepared, insufficient).code
             == cm::native_training_status_code::insufficient_workspace,
         "insufficient training workspace was accepted");
-    auto second = make_launch(device, &plane, stream, 3u, 1.0e-6f);
+    auto second = make_launch(
+        device, &plane, stream, &readiness, 3u, 1.0e-6f);
     std::size_t free_before = 0u, total_before = 0u;
     require_cuda(cudaMemGetInfo(&free_before, &total_before),
         "memory before steady training");
@@ -521,6 +587,10 @@ void run_correctness(const fixture &f, int device_ordinal) {
         && prepared.forward.payload_base == device.forward_payload.data
         && prepared.transpose.payload_base == device.transpose_payload.data,
         "steady training allocated or rebuilt topology");
+    require(readiness.generation() == 3u
+            && runtime::clear_value_readiness(&readiness)
+                == runtime::value_readiness_status::success,
+        "clear native training readiness");
     require_cuda(cudaStreamDestroy(stream), "destroy stream");
 }
 
@@ -721,11 +791,12 @@ double median(std::vector<double> values) {
 }
 
 std::pair<double, double> benchmark_native(cm::native_training_prepared_state &prepared,
-    device_fixture &device, execution::value_plane &plane, cudaStream_t stream) {
+    device_fixture &device, execution::value_plane &plane, cudaStream_t stream,
+    runtime::value_readiness_record *readiness) {
     constexpr std::uint32_t warmups = 5u, samples = 31u, steps = 64u;
     auto batch = [&]() {
         for (std::uint32_t step = 0u; step < steps; ++step) {
-            auto launch = make_launch(device, &plane, stream,
+            auto launch = make_launch(device, &plane, stream, readiness,
                 plane.generation.value + 1u, 1.0e-7f);
             require(cm::run_native_training_step(prepared, launch),
                 "benchmark native training");
@@ -817,7 +888,12 @@ void run_benchmark(const fixture &f, int device_ordinal,
     cudaStream_t stream = nullptr;
     require_cuda(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking),
         "create benchmark stream");
-    const auto native_timing = benchmark_native(prepared, native, plane, stream);
+    runtime::value_readiness_record readiness;
+    require(runtime::initialize_value_readiness(&readiness, device_ordinal)
+            == runtime::value_readiness_status::success,
+        "initialize benchmark readiness");
+    const auto native_timing = benchmark_native(
+        prepared, native, plane, stream, &readiness);
     const auto csr_timing = benchmark_csr(csr, stream);
     require(native_timing.first < csr_timing.first,
         "native training did not beat generic CSR in declared small-module regime");
@@ -840,6 +916,9 @@ void run_benchmark(const fixture &f, int device_ordinal,
            << ",\"correctness_tolerance\":0.001"
            << ",\"candidate\":\"FMP1_CTP1_fused_training\""
            << ",\"baseline\":\"CSR_generic_spmm_separate_epilogues\"}\n";
+    require(runtime::clear_value_readiness(&readiness)
+            == runtime::value_readiness_status::success,
+        "clear benchmark readiness");
     require_cuda(cudaStreamDestroy(stream), "destroy benchmark stream");
 }
 

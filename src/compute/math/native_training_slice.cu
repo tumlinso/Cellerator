@@ -27,6 +27,12 @@ namespace {
 native_training_status fail(native_training_status_code code,
     const char *message) noexcept { return {code, message}; }
 
+parameter_memory_space parameter_space(
+    execution::residency_kind residency) noexcept {
+    return residency == execution::residency_kind::host
+        ? parameter_memory_space::host : parameter_memory_space::device;
+}
+
 bool same_location(execution::device_location lhs,
     execution::device_location rhs) noexcept {
     return lhs.residency == rhs.residency
@@ -269,7 +275,8 @@ native_training_status run_native_training_step(
     if (prepared.schema_version != native_training_slice_schema_version
         || prepared.dense_width != native_training_dense_width
         || prepared.device_ordinal < 0 || launch.learned_values == nullptr
-        || launch.bias == nullptr || launch.stream.device_ordinal
+        || launch.next_value_readiness == nullptr || launch.bias == nullptr
+        || launch.stream.device_ordinal
             != prepared.device_ordinal
         || launch.learning_rate <= 0.0f
         || !std::isfinite(launch.learning_rate)
@@ -360,10 +367,74 @@ native_training_status run_native_training_step(
     native_training_bias_update_kernel<<<1u, native_training_dense_width,
         0u, stream>>>(header.row_count, workspace.preactivation_gradient,
         launch.learning_rate, workspace.bias_gradient, launch.bias);
-    if (cudaPeekAtLastError() != cudaSuccess)
+    const cudaError_t producer_status = cudaPeekAtLastError();
+    const runtime::value_readiness_status readiness_status =
+        runtime::publish_value_generation(launch.next_value_readiness,
+            launch.structure.epoch.value, launch.next_generation.value,
+            stream, producer_status);
+    if (producer_status != cudaSuccess)
         return fail(native_training_status_code::cuda_failure,
             "native training kernel launch failed");
+    if (readiness_status != runtime::value_readiness_status::success)
+        return fail(native_training_status_code::readiness_failure,
+            "native training generation readiness publication failed");
     launch.learned_values->generation = launch.next_generation;
+    return {native_training_status_code::ok, "ok", launch.next_generation,
+        launch.next_value_readiness};
+}
+
+native_training_status describe_native_training_parameters(
+    const native_training_prepared_state &prepared,
+    const native_training_launch &launch,
+    native_training_parameter_descriptors *output) noexcept {
+    if (output == nullptr || launch.learned_values == nullptr
+        || launch.bias == nullptr
+        || prepared.schema_version != native_training_slice_schema_version
+        || prepared.device_ordinal < 0)
+        return fail(native_training_status_code::invalid_argument,
+            "native training parameter description arguments are invalid");
+    *output = native_training_parameter_descriptors{};
+    native_parameter_descriptor &values = output->parameters[0];
+    values.storage.name = "native_relation_values";
+    values.storage.scalar_type = parameter_scalar_type::f16;
+    values.storage.memory_space = parameter_space(
+        launch.learned_values->location.residency);
+    values.storage.device_ordinal =
+        launch.learned_values->location.device_ordinal;
+    values.storage.data = launch.learned_values->values;
+    values.storage.rank = 1u;
+    values.storage.shape[0] = static_cast<std::int64_t>(
+        launch.learned_values->element_count);
+    values.storage.stride[0] = 1;
+    values.storage.writable = true;
+    values.storage.role = parameter_role::learned;
+    values.kind = native_parameter_kind::relation_values;
+    values.structure = launch.learned_values->structure;
+    values.structure_epoch = launch.learned_values->structure_epoch_value;
+    values.generation = launch.learned_values->generation;
+    values.axes[0] = prepared.feature_axis;
+    values.axes[1] = prepared.module_axis;
+    values.axis_count = 2u;
+
+    native_parameter_descriptor &bias = output->parameters[1];
+    bias.storage.name = "native_dense_bias";
+    bias.storage.scalar_type = parameter_scalar_type::f32;
+    bias.storage.memory_space = parameter_space(
+        launch.bias_location.residency);
+    bias.storage.device_ordinal = launch.bias_location.device_ordinal;
+    bias.storage.data = launch.bias;
+    bias.storage.rank = 1u;
+    bias.storage.shape[0] = native_training_dense_width;
+    bias.storage.stride[0] = 1;
+    bias.storage.writable = true;
+    bias.storage.role = parameter_role::learned;
+    bias.kind = native_parameter_kind::dense_bias;
+    bias.structure = launch.structure.identity;
+    bias.structure_epoch = launch.structure.epoch;
+    bias.generation = launch.learned_values->generation;
+    bias.axes[0] = prepared.dense_axis;
+    bias.axis_count = 1u;
+    output->count = 2u;
     return {};
 }
 

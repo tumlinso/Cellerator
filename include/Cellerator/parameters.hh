@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Cellerator/execution/lifetimes.hh>
+
 #include <cstddef>
 #include <cstdint>
 
@@ -44,6 +46,29 @@ struct parameter_descriptor {
 struct parameter_view {
     const parameter_descriptor *parameters = nullptr;
     std::size_t count = 0;
+};
+
+enum class native_parameter_kind : std::uint8_t {
+    relation_values = 1u,
+    dense_bias = 2u
+};
+
+// Native descriptors add semantic identity to the storage-facing descriptor.
+// Readiness remains runtime state and is intentionally not embedded here.
+struct native_parameter_descriptor {
+    parameter_descriptor storage{};
+    native_parameter_kind kind = native_parameter_kind::relation_values;
+    execution::structure_handle structure{};
+    execution::structure_epoch structure_epoch{};
+    execution::value_generation generation{};
+    execution::axis_identity axes[2]{};
+    std::uint8_t axis_count = 0u;
+    std::uint8_t reserved[7]{};
+};
+
+struct native_parameter_view {
+    const native_parameter_descriptor *parameters = nullptr;
+    std::size_t count = 0u;
 };
 
 } // namespace cellerator
