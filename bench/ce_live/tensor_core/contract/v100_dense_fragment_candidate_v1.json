@@ -1,0 +1,91 @@
+{
+  "artifact": "ce-live-v100-dense-fragment-candidate-contract",
+  "version": 1,
+  "status": "design-only-unimplemented-unregistered",
+  "architecture": {
+    "cuda_arch": "sm_70",
+    "device_class": "Tesla V100",
+    "instruction_lane": "WMMA m16n16k16",
+    "unsupported_assumptions": ["TF32", "BF16 tensor-core fast path", "2:4 sparse acceleration", "cp.async"]
+  },
+  "semantic_contract": {
+    "operation": "sparse_dense_multiply",
+    "logical_relation": "feature-source-to-row-destination",
+    "projection_kind": "dense_fragment",
+    "structure_identity_shared_with_other_projections": true,
+    "values_separate_from_structure": true
+  },
+  "numeric_policy": {
+    "relation_input": "f16",
+    "dense_input": "f16",
+    "multiply": "f16",
+    "accumulation": "f32",
+    "output": "f32",
+    "rounding": "nearest_even",
+    "saturation": "none",
+    "quantization": "none"
+  },
+  "fragment": {
+    "destination_rows_m": 16,
+    "dense_columns_n": 16,
+    "source_features_k": 16,
+    "missing_edge_fill": 0,
+    "base_alignment_bytes": 32,
+    "relation_leading_dimension_half_elements": 16,
+    "dense_leading_dimension_half_elements_multiple": 16,
+    "accumulator_leading_dimension_float_elements_multiple": 16
+  },
+  "density_buckets": [
+    {"name": "empty", "equal": 0.0},
+    {"name": "low", "minimum_exclusive": 0.0, "maximum_exclusive": 0.25},
+    {"name": "medium", "minimum": 0.25, "maximum_exclusive": 0.5},
+    {"name": "high", "minimum": 0.5, "maximum_exclusive": 0.75},
+    {"name": "near_dense", "minimum": 0.75, "maximum": 1.0}
+  ],
+  "qualification": {
+    "current_cellpack_shortlist_only": "capacity >= 16 and occupancy >= 0.5",
+    "activation_threshold": "empirically learned per device/build/evidence revision",
+    "required_comparison": "amortized end-to-end total against row-masked, feature-major warp/CTA, CSR, and a dense library baseline",
+    "global_default": false
+  },
+  "maps": {
+    "forward": ["logical_edge_to_fragment_slot", "fragment_slot_to_logical_edge_or_invalid"],
+    "transpose": ["logical_edge_to_transpose_schedule_position", "transpose_schedule_position_to_logical_edge"],
+    "value_rule": "one logical value generation; projection-local FP16 packing is generation-scoped runtime work, not structural preparation"
+  },
+  "tails": {
+    "full_fragment_rule": "WMMA owns only complete 16x16x16 work",
+    "dense_column_padding": "legal only when padded work and pack/output costs are measured",
+    "residual_rule": "rows, features, or columns outside qualified fragments use an explicit row-masked, feature-major, CSR, or scalar residual candidate",
+    "hidden_fallback_forbidden": true
+  },
+  "planner_costs": [
+    "density_classification",
+    "fragment_projection_construction",
+    "logical_edge_maps",
+    "persistent_metadata",
+    "generation_value_pack",
+    "f32_to_f16_dense_input_pack",
+    "H2D_and_D2H",
+    "WMMA_kernel",
+    "residual_kernel",
+    "epilogue",
+    "output_order_transform",
+    "synchronization",
+    "communication",
+    "persistent_and_transient_memory",
+    "padding_flops",
+    "expected_structure_projection_and_value_reuse"
+  ],
+  "reject_if": [
+    "device is not sm_70",
+    "numeric tuple or alignment is unsupported",
+    "structure identity epoch axes or logical edge maps disagree",
+    "value generation is not ready on the launch stream",
+    "fragment or tail capacities overflow",
+    "no explicit residual path exists",
+    "classification lacks fresh empirical break-even evidence",
+    "correctness sanitizer or canary validation fails",
+    "complete amortized cost does not beat the best legal baseline outside practical tolerance"
+  ]
+}
