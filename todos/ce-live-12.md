@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-12: Quantitative biological fixture, provenance, and referee contract
 
-Task revision: `1470`; current project revision is in `todo-status.md`.
+Task revision: `1503`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

@@ -58,14 +58,14 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1471`
+Project revision: `1503`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
 - `CE-LIVE-01` | status: done | execution: closed | next: Validate and apply the full plan, claim this task, publish the program document and generated projections, audit/reconcile/export, commit, finish, and verify the seven-task frontier.
 - `CE-LIVE-10` | status: planned | execution: ready | next: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
-- `CE-LIVE-11` | status: planned | execution: ready | next: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.
-- `CE-LIVE-12` | status: planned | execution: ready | next: Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
+- `CE-LIVE-11` | status: in_progress | execution: claimed | next: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.
+- `CE-LIVE-12` | status: done | execution: closed | next: Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
 - `CE-LIVE-13` | status: planned | execution: ready | next: Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.
 - `CE-LIVE-14` | status: planned | execution: ready | next: Design and implement the runtime-side generation-readiness token or record with same-stream fast paths, cross-stream waits, failed-enqueue safety, and no event or stream ownership in the persistent biological ABI.
 - `CE-LIVE-15` | status: planned | execution: ready | next: Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.
