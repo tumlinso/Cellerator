@@ -120,3 +120,27 @@ _None._
 - A separate cost model produces different estimates from the same occupancy without reevaluation.
 - The focused benchmark builds, runs under the mutex, and reports the requested fields without claiming final-kernel performance.
 - Documentation records completed, provisional, deferred, and next-stage work precisely.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# cellpack-packing-plan-evaluator: Historical CPU packing-plan evaluator
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve completed evaluator/referee evidence.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

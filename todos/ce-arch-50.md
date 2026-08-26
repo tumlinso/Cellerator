@@ -278,3 +278,33 @@ exist.
 
 Handoff artifact: this matrix. CE-ARCH-60 may use it to audit final ABI and
 documentation consistency. No implementation task is created by this review.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# CE-ARCH-50: Forward-compatibility contracts without premature implementation
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Prove the foundations do not trap Cellerator in forward-only, single-GPU, fp32, Volta-only execution.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+Complete: forward-compatibility matrix validates additive paths for transpose/backward, sparse gradients, numerical evolution, graph capture, persistent scheduling, nested partitions, multi-device planning, and later architecture classes without hot-record bloat or premature implementation.
+
+## Ownership
+- `exclusive`: `Cellerator/todos/ce-arch-50.md`
+- `forbidden`: `CellShard`
+- `read`: `Cellerator/components/CellPack`
+- `read`: `Cellerator/include/Cellerator/compute/math`
+- `read`: `Cellerator/include/Cellerator/execution`
+
+## Dependencies
+- `task`: `CE-ARCH-11`
+- `task`: `CE-ARCH-21`
+- `task`: `CE-ARCH-22`
+<!-- todo-orchestrator:v2-managed:end -->

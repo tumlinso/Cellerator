@@ -92,3 +92,27 @@ _None for this workstream._
 - Reverse complement works for lengths 1 through 32 without garbage leakage.
 - Simple motif scan kernels agree with CPU reference.
 - `docs/SEQUENCE_BITS.md` explains the two-representation design and non-goals.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# sequence-bits-dna2: Historical Cellerator DNA2 sequence work
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve historical exact-sequence evidence now owned by Baseplane.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

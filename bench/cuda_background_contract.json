@@ -14,8 +14,8 @@
       },
       "benchmark": {
         "build_target": "geneCandidateDiscoveryBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp02", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "geneCandidateDiscoveryBench", "--test-command", "{snapshot}/build-background/cpbp02/geneCandidateDiscoveryBench"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp02/geneCandidateDiscoveryBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp02", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "geneCandidateDiscoveryBench", "--test-command", "{snapshot}/build-background/cpbp02/geneCandidateDiscoveryBench"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp02/geneCandidateDiscoveryBench"],
         "metric": "metric",
         "direction": "minimize",
         "practical_regression_percent": 5.0,
@@ -41,8 +41,8 @@
       },
       "benchmark": {
         "build_target": "cellPackMergeCostBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp03", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackMergeCostBench", "--test-command", "{snapshot}/build-background/cpbp03/cellPackMergeCostBench"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp03/cellPackMergeCostBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp03", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackMergeCostBench", "--test-command", "{snapshot}/build-background/cpbp03/cellPackMergeCostBench"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp03/cellPackMergeCostBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 1024,
         "workload_tiers": [{"id": "representative", "dataset": "clustered candidate/support synthetic", "cells": 65536, "genes": 30000}],
@@ -62,8 +62,8 @@
       },
       "benchmark": {
         "build_target": "cellPackOptimizerBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp04", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackOptimizerBench", "--test-command", "{snapshot}/build-background/cpbp04/cellPackOptimizerBench", "--rows", "4096", "--features", "1000", "--nnz-row", "8", "--sampled-rows", "1024", "--max-block-width", "8", "--row-group-width", "128", "--candidate-degree", "2", "--oracle-batch", "4"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "total_ms:\\s*([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp04/cellPackOptimizerBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp04", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackOptimizerBench", "--test-command", "{snapshot}/build-background/cpbp04/cellPackOptimizerBench", "--rows", "4096", "--features", "1000", "--nnz-row", "8", "--sampled-rows", "1024", "--max-block-width", "8", "--row-group-width", "128", "--candidate-degree", "2", "--oracle-batch", "4"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "total_ms:\\s*([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp04/cellPackOptimizerBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 8.0,
         "warmups": 0, "repetitions": 3, "gpus": 0, "cpu_heavy": true, "background_cpu_threads": 1,
         "workload_tiers": [
@@ -86,8 +86,8 @@
       },
       "benchmark": {
         "build_target": "cellPackApplyPlanBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp05", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackApplyPlanBench", "--test-command", "{snapshot}/build-background/cpbp05/cellPackApplyPlanBench", "--rows", "4096", "--features", "5000", "--nnz-row", "16", "--warmup", "1", "--repeats", "2"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "cuda_mean_ms:\\s*([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp05/cellPackApplyPlanBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp05", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackApplyPlanBench", "--test-command", "{snapshot}/build-background/cpbp05/cellPackApplyPlanBench", "--rows", "4096", "--features", "5000", "--nnz-row", "16", "--warmup", "1", "--repeats", "2"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "cuda_mean_ms:\\s*([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp05/cellPackApplyPlanBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 768,
         "workload_tiers": [
@@ -111,8 +111,8 @@
       },
       "benchmark": {
         "build_target": "cellPackCellBlockRecordsBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp06", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackCellBlockRecordsBench", "--test-command", "{snapshot}/build-background/cpbp06/cellPackCellBlockRecordsBench"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp06/cellPackCellBlockRecordsBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp06", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackCellBlockRecordsBench", "--test-command", "{snapshot}/build-background/cpbp06/cellPackCellBlockRecordsBench"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp06/cellPackCellBlockRecordsBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 768,
         "workload_tiers": [{"id": "representative", "rows": 65536, "features": 30000, "values_per_row": 32, "block_width": 16}],
@@ -132,8 +132,8 @@
       },
       "benchmark": {
         "build_target": "cellPackLocalCellOrderingBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp07", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackLocalCellOrderingBench", "--test-command", "{snapshot}/build-background/cpbp07/cellPackLocalCellOrderingBench", "--rows", "4096", "--window", "256", "--group", "32", "--clusters", "8", "--blocks-row", "8", "--feature-blocks", "512", "--warmup", "1", "--repeats", "2"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "cuda_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp07/cellPackLocalCellOrderingBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp07", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackLocalCellOrderingBench", "--test-command", "{snapshot}/build-background/cpbp07/cellPackLocalCellOrderingBench", "--rows", "4096", "--window", "256", "--group", "32", "--clusters", "8", "--blocks-row", "8", "--feature-blocks", "512", "--warmup", "1", "--repeats", "2"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "cuda_median_ms=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp07/cellPackLocalCellOrderingBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 512,
         "workload_tiers": [
@@ -157,8 +157,8 @@
       },
       "benchmark": {
         "build_target": "cellPackWarpTilesBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp08", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackWarpTilesBench", "--test-command", "{snapshot}/build-background/cpbp08/cellPackWarpTilesBench"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_gnnz_s=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp08/cellPackWarpTilesBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp08", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackWarpTilesBench", "--test-command", "{snapshot}/build-background/cpbp08/cellPackWarpTilesBench"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "gpu_gnnz_s=([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp08/cellPackWarpTilesBench"],
         "metric": "metric", "direction": "maximize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 768,
         "workload_tiers": [{"id": "representative", "rows": 65536, "features": 30000, "values_per_row": 32, "tile_width": 32}],
@@ -178,8 +178,8 @@
       },
       "benchmark": {
         "build_target": "cellPackFeatureWeightedRowReductionBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp09", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cellPackFeatureWeightedRowReductionBench", "--test-command", "{snapshot}/build-background/cpbp09/cellPackFeatureWeightedRowReductionBench"],
-        "argv": ["/usr/bin/python3", "/home/tumlinson/CellStack/Cellerator/bench/cuda_contract_adapter.py", "--metric-pattern", "regime=medium_occupancy.*?packed_ms min/median/mean=[^/\\n]+/([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp09/cellPackFeatureWeightedRowReductionBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpbp09", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cellPackFeatureWeightedRowReductionBench", "--test-command", "{snapshot}/build-background/cpbp09/cellPackFeatureWeightedRowReductionBench"],
+        "argv": ["/usr/bin/python3", "{snapshot}/bench/cuda_contract_adapter.py", "--metric-pattern", "regime=medium_occupancy.*?packed_ms min/median/mean=[^/\\n]+/([0-9.eE+-]+)", "--", "{snapshot}/build-background/cpbp09/cellPackFeatureWeightedRowReductionBench"],
         "metric": "metric", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 512,
         "workload_tiers": [
@@ -203,7 +203,7 @@
       },
       "benchmark": {
         "build_target": "cpMathPackedDenseOperandBench",
-        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpmath03", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellStack/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/CellStack/Baseplane", "--build-target", "cpMathPackedDenseOperandBench", "--test-command", "{snapshot}/build-background/cpmath03/cpMathPackedDenseOperandBench"],
+        "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "{snapshot}/build-background/cpmath03", "--build-generator", "Unix Makefiles", "--build-options", "-DCMAKE_BUILD_TYPE=Release", "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF", "-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane", "--build-target", "cpMathPackedDenseOperandBench", "--test-command", "{snapshot}/build-background/cpmath03/cpMathPackedDenseOperandBench"],
         "argv": ["{snapshot}/build-background/cpmath03/cpMathPackedDenseOperandBench"],
         "metric": "median_ms", "direction": "minimize", "practical_regression_percent": 5.0,
         "warmups": 1, "repetitions": 3, "gpus": 1, "architecture": "volta", "gpu_memory_headroom_mib": 512,

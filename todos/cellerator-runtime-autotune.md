@@ -48,3 +48,27 @@ _None; implementation complete._
 - Default Python and C++ preprocessing behavior remains unchanged when autotune is disabled.
 - Session metrics report whether autotune ran and which plan was selected.
 - Focused build/test commands are recorded.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# cellerator-runtime-autotune: Historical bounded runtime autotune
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve completed calibration and explicit-metric evidence without promoting its callback chooser to core planner.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

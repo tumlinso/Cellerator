@@ -1,6 +1,8 @@
-Cellerator-local test data scaffold for local and CI-adjacent fixtures shared
-across the umbrella workspace. Deprecated CellStack wrapper checkouts should not
-keep a separate root-level `data/` tree; local fixture payloads live here.
+Cellerator-local test data scaffold for local and CI-adjacent fixtures. Large
+local payload bytes should live outside Git repositories, for example under
+`~/data/Cellerator/`, with ignored local symlinks at the paths below when
+existing scripts need repository-relative compatibility. The former CellStack
+wrapper is not required and should not own a separate data tree.
 
 Layout:
 

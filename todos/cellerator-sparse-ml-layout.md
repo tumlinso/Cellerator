@@ -74,3 +74,27 @@ Cellerator.
 ## Next Actions
 
 _None recorded yet._
+
+<!-- todo-orchestrator:v2-managed:start -->
+# cellerator-sparse-ml-layout: Historical sparse-ML source layout refactor
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve completed source-layout history.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

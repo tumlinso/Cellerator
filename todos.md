@@ -435,3 +435,105 @@ Use this file as the canonical index for substantial multi-step work.
 ## Historical Summary
 - Recent completed work included Blocked-ELL persistence, real-data sparse replay benchmarking, quantize sparse operator kernels, workbench browse-cache updates, semantic the biology semantics package cleanup, and the initial pointer-first neighbor workspace refactor.
 - Detailed historical workstream notes are preserved in git history rather than as active repo ledgers.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# Todo Orchestrator v2 Projection
+
+Project revision: `1422`
+
+## Workstreams
+- `CE-ARCH-01` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Establish the actual repository, ABI, build, benchmark, task, and ownership state before implementation.
+- `CE-ARCH-93` | kind: integration_task | status: done | parent: - | objective: Preserve CP-MATH provenance while making every CP-MATH task, checkpoint, gate, and dependency semantically historical and ineligible for current planning or attention.
+- `CE-ARCH-02` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Contain unsafe experimental paths before architectural expansion, without performance redesign or new kernels.
+- `CE-ARCH-10` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Create the minimal Cellerator-owned identity and heterogeneous operand model shared by dense state, sparse relations, and Baseplane sequence structures.
+- `CE-ARCH-11` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Make execution order and data lifetime explicit across Cellerator operations.
+- `CE-ARCH-12` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Consolidate runtime ownership so CP-Math and biological operations use one explicit Cellerator execution substrate.
+- `CE-ARCH-20` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Preserve validated CP-BP v1 behind new identity/lifetime contracts while separating semantic geometry from physical projection.
+- `CE-ARCH-30` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Build a reproducible corpus and measurement program capable of disproving the preferred Cellerator architecture.
+- `CE-ARCH-21` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Evolve CPK1 pointer-free persistence into an execution IR holding one semantic geometry and multiple physical projections.
+- `CE-ARCH-22` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Transform useful CP-Math experiments into Cellerator core operation, projection, planning, and execution contracts.
+- `CE-ARCH-31` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Select the fastest correct end-to-end strategy and feed measured costs into versioned semantic-geometry optimization.
+- `CE-ARCH-40` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Make Baseplane sequence structures native Cellerator operands without a host, dense-matrix, or generic-SpMM boundary.
+- `CE-ARCH-50` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Prove the foundations do not trap Cellerator in forward-only, single-GPU, fp32, Volta-only execution.
+- `CE-ARCH-60` | kind: integration_task | status: done | parent: CE-ARCH-00 | objective: Complete migration from experimental CP-Math and direct CP-BP v1 coupling into the validated biological execution architecture.
+- `CE-ARCH-70` | kind: epic | status: done | parent: CE-ARCH-00 | objective: Correct the existing Cellerator execution architecture's foundational ABI, lifetime, identity, planning-key, and device-prebinding defects without expanding its feature or projection scope.
+- `CE-ARCH-70A` | kind: integration_task | status: done | parent: CE-ARCH-70 | objective: Integrate the existing local predicate-plan work, expose and require one explicit sequence predicate ABI version, make validity authoritative, and fail incompatible sibling checkouts early.
+- `CE-ARCH-80` | kind: epic | status: done | parent: - | objective: Finish the implementation and evidence required by roadmap Phases 4 through 11 and the definition of migration completion, without erasing the bounded results of CE-ARCH-40 through CE-ARCH-79.
+- `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
+- `CE-ARCH-70B` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Replace monolithic persistent scratch ownership with fixed-capacity independent stable CUDA allocations while preserving the pre-reserved transient arena and allocation-free sealed launch binding.
+- `CE-ARCH-82` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 4 so CPK1 compatibility, sectioned semantic structure, schema-extensible projections, multiple value planes, opaque relocation, and direct prepared execution are one tested path.
+- `CE-ARCH-70C` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Make prepared operations and planner candidates explicitly depend on a deterministic bounded set of immutable relation structures and validate each value plane against its own relation and epoch.
+- `CE-ARCH-83` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 5 with real and adversarial structures, full end-to-end phase accounting, forward/transpose observability, reproducible artifact identity, and planner-ready structural features.
+- `CE-ARCH-70D` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Add one compact validated output-effect contract per output and declare the sequence gene-state output as accumulation and predicate-mask output as overwrite.
+- `CE-ARCH-84` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete the forward half of Phase 6 with measured low-sharing/tail handling and CTA-scale medium-N execution while preserving row-masked, feature-major, and CSR behavior.
+- `CE-ARCH-70E` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Implement host-side persistent identity interning and generation-safe resolution, remove runtime handles from durable planner evidence, and make cached projection selection resolve to current runtime candidates.
+- `CE-ARCH-85` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete the reverse half of Phase 6 by sharing logical edge identity and mutable values between forward and transpose projections and executing a native backward/propagation operation without topology reconstruction.
+- `CE-ARCH-70F` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Construct hot projection views from host-validated offsets plus an arbitrary destination image base and prove a CUDA kernel consumes the device-relative payload after one opaque upload.
+- `CE-ARCH-86` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 7 by selecting across connected operations with explicit order, conversion, preparation, communication, and reuse costs while retaining bounded empirical autotuning and durable invalidation.
+- `CE-ARCH-70G` | kind: validation_task | status: done | parent: CE-ARCH-70 | objective: Reconcile executable invariants, focused host/CUDA/sanitizer evidence, frozen interfaces, paired repository commits, deliberate deferrals, and the exact unchanged downstream path.
+- `CE-ARCH-87` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 8 by feeding measured workload-weighted total cost into CP-BP alternating refinement with held-out stability, forward/transpose profiles, activity, and partition-cut terms justified by current evidence.
+- `CE-ARCH-88` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 9 with a module-local learned projection, fused bias/activation/normalization, module-major dense state, native backward, mutable learned values, and topology-stable training step that beats a fair CSR baseline in its declared regime.
+- `CE-ARCH-89` | kind: integration_task | status: done | parent: CE-ARCH-80 | objective: Complete Phase 10 with common domain/order identities, direct relation-builder output, materialized and fused sequence-to-regulatory execution, no host boundary, and complete-cost planner selection across reused cell states.
+- `CE-ARCH-90` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 11 with shared-value hierarchy indices, nested partition identity, active-module skipping, execution-order communication planning, and cross-device boundary cost while keeping single-GPU execution simple.
+- `CE-ARCH-61` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Version the retirement of obsolete CP-Math runtime interfaces and refresh operation-core documentation identity without restoring deleted implementation.
+- `CE-ARCH-71` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing CP-BP v1 native row-masked N=1 kernel as a real operation-core and planner candidate without changing its projection or kernel semantics.
+- `CE-ARCH-91` | kind: integration_task | status: done | parent: CE-ARCH-80 | objective: Consume the completed CellShard foundation to persist, validate, place, upload, and directly execute opaque Cellerator images without CellShard interpreting execution semantics or Cellerator owning storage transport.
+- `CE-ARCH-72` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing legal CSR implementation as the first conventional operation-core/planner fallback.
+- `CE-ARCH-92` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Run the final fair real-data and adversarial evidence campaign, identify both Cellerator wins and fallback regimes, verify every migration exit criterion, and leave documentation and ledgers truthful.
+- `CE-ARCH-73` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Measure projection preparation, input ordering, prepared execution, candidate-private output, referee, all total-cost phases, and winner preparation for real registered candidates.
+- `CE-ARCH-74` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Bind at least two different value generations to one immutable CP-BP structure and projection and prove correct reuse and stale-generation rejection.
+- `CE-ARCH-75` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Implement the second physical execution projection, feature-major small-N, without replacing row-masked CPK1.
+- `CE-ARCH-76` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Compare row-masked, feature-major, and CSR end-to-end for N equals 1, 2, 4, 8, and 16 with complete cost accounting.
+- `CE-ARCH-77` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Calibrate Objective V2 from measured candidate costs and only then feed it into CP-BP alternating refinement.
+- `CE-ARCH-78` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Materialize a predicate once, cache it by sequence generation, predicate identity, and coordinate order, reuse it, and compare total cost against fused execution.
+- `CE-ARCH-79` | kind: integration_task | status: done | parent: CE-ARCH-00 | objective: Start the separate CellShard foundation program against stable persistent identity and opaque Execution Image v2 contracts without interpreting Cellerator tile grammar.
+- `CP-BP-00` | kind: epic | status: done | parent: CE-ARCH-00 | objective: Preserve the completed CP-BP v1 coordinator as validated historical evidence.
+- `CP-BP-01` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve sampled support bitsets as completed v1 evidence.
+- `CP-BP-02` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve MinHash/LSH candidate discovery as completed v1 evidence.
+- `CP-BP-03` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve exact row-active-block merge scoring and referee as completed v1 evidence.
+- `CP-BP-04` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve optimizer, rollback oracle, and frozen plan ABI as completed v1 evidence.
+- `CP-BP-05` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve exact full-partition plan application and reconstruction.
+- `CP-BP-06` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve compact record ABI and CUDA/reference evidence.
+- `CP-BP-07` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve bounded local row order and inverse maps.
+- `CP-BP-08` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve pointer-free warp-tile construction and validation.
+- `CP-BP-09` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve N=1 weighted-row-reduction kernel, referees, and fallback evidence.
+- `CP-BP-10` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve accepted v1 refinement and rollback evidence.
+- `CP-BP-11` | kind: validation_task | status: done | parent: CP-BP-00 | objective: Preserve independent statistical/bootstrap validation evidence.
+- `CP-BP-12` | kind: workstream | status: done | parent: CP-BP-00 | objective: Preserve measured V100 cost-model evidence and explicit fallback.
+- `CP-BP-13` | kind: integration_task | status: done | parent: CP-BP-00 | objective: Preserve pointer-free CPK1 and direct CellShard archive-to-device loading.
+- `baseplane-dna2-benchmark` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve historical benchmark evidence.
+- `baseplane-dna2-explicit-widths` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve explicit-width evidence now owned by Baseplane.
+- `cellerator-hierarchy-reset` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve cleanup/inventory history without treating it as biological hierarchy architecture.
+- `cellerator-runtime-autotune` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve completed calibration and explicit-metric evidence without promoting its callback chooser to core planner.
+- `cellerator-sparse-ml-layout` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve completed source-layout history.
+- `cellpack-packing-plan-cuda-evaluator` | kind: workstream | status: superseded | parent: CE-ARCH-00 | objective: Record the old current-objective CUDA evaluator as superseded by operation-aware planner/objective v2.
+- `cellpack-packing-plan-evaluator` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve completed evaluator/referee evidence.
+- `sequence-bits-dna2` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve historical exact-sequence evidence now owned by Baseplane.
+- `CE-ARCH-00` | kind: epic | status: done | parent: - | objective: Coordinate migration from completed CP-BP v1 plus experimental CP-Math into a domain-aware biological execution core while preserving validated behavior and the CellShard storage boundary.
+- `CP-MATH-00` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-00 biological execution recovery.
+- `CP-MATH-00A` | kind: integration_task | status: superseded | parent: - | objective: Reconcile the empty live v2 project and audited CP-BP source at historical baseline 8848f62254605025ac6e96f4cc6a8efbcc803d43; freeze the four consumed CP-BP interfaces without performance work or source changes.
+- `CP-MATH-01` | kind: workstream | status: superseded | parent: - | objective: Implement backend-neutral SpMM MathRequest/OperationSignature, alpha/beta, transpose, dtype/compute, determinism, workspace, reuse, epilogue, stable identity and pointer-free ExecutionPlan metadata separation with zero/trivial semantics.
+- `CP-MATH-02` | kind: workstream | status: superseded | parent: - | objective: Integrate the independent device/runtime foundation with structured capability rejection, SpMMBackend/prepared ownership, and generic unfused epilogue while preserving no-allocation repeated run semantics.
+- `CP-MATH-02A` | kind: task | status: superseded | parent: - | objective: Independently implement cached DeviceMathContext, DeviceCapabilities, DeviceFingerprint, and reusable workspace ownership over the existing runtime context/handle/scratch substrate without defining operation-dependent backend policy.
+- `CP-MATH-03` | kind: workstream | status: superseded | parent: - | objective: Adapt apply_frozen_plan output to execution-feature CSR, implement order-identity-safe reusable W_packed conversion, prove X_packed W_packed equals canonical math, and design lazy CSR reconstruction from CPK1 without changing CPK1.
+- `CP-MATH-04` | kind: workstream | status: superseded | parent: - | objective: Lower unchanged variable-width semantic blocks and local row order into legal BELL8/16/32 candidates, record occupancy/utilization/expansion/storage, reject absurd candidates, and validate via independent decode.
+- `CP-MATH-05` | kind: workstream | status: superseded | parent: - | objective: Expose the existing frozen plan/order/warp tiles/CPK1 to math with derived union masks, packed offsets, density/reuse/workload sidecars and an exact decoder; copy no compact values and invent no row permutation.
+- `CP-MATH-06` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-02 containment and CE-ARCH-22 core recovery.
+- `CP-MATH-07` | kind: workstream | status: superseded | parent: - | objective: Consume each legal BELL8/16/32 view as a separate prepared cuSPARSE candidate with equivalent dtypes/compute semantics and no handwritten BELL kernel.
+- `CP-MATH-08` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-30 and CE-ARCH-22.
+- `CP-MATH-08A` | kind: validation_task | status: superseded | parent: - | objective: Establish neutral logical reference, numerical metrics, determinism checks, CUDA-event timing with median/spread, memory/expansion accounting, and reusable benchmark reporting before backend fan-out.
+- `CP-MATH-09` | kind: workstream | status: superseded | parent: - | objective: Implement trivial interception, legal candidate enumeration, structured hard filtering, epilogue composition, cheap structural pruning, cache lookup hook, and authoritative selection without emitting unimplemented candidates.
+- `CP-MATH-10` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-20, CE-ARCH-22, and CE-ARCH-31.
+- `CP-MATH-11` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-12 and CE-ARCH-31.
+- `CP-MATH-12` | kind: task | status: superseded | parent: - | objective: Superseded and parked behind CE-ARCH-22/30/31 foundations.
+- `CP-MATH-12D` | kind: task | status: superseded | parent: - | objective: Superseded and parked behind CE-ARCH-22/30/31 foundations.
+- `CP-MATH-13` | kind: task | status: superseded | parent: - | objective: Superseded by projection plurality and measured registry work in CE-ARCH-22/31.
+- `CP-MATH-14` | kind: task | status: superseded | parent: - | objective: Superseded and parked behind CE-ARCH-30/31/50 evidence gates.
+- `CP-MATH-15` | kind: task | status: superseded | parent: - | objective: Superseded by explicit NumericPolicy in CE-ARCH-22 and compatibility review CE-ARCH-50.
+- `CP-MATH-16` | kind: task | status: superseded | parent: - | objective: Superseded and deferred by CE-ARCH-12/22/50.
+- `CP-MATH-17` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-60 after replacements validate.
+- `CP-MATH-HARD-DATA` | kind: task | status: superseded | parent: - | objective: Superseded by tiered CE-ARCH-30 corpus with explicit data permission and cost controls.
+- `CP-MATH-OPT-NOT-PROMOTED` | kind: task | status: superseded | parent: - | objective: Superseded; historical non-promotion evidence remains terminal.
+- `CP-MATH-OPT-PROMOTED` | kind: task | status: superseded | parent: - | objective: Superseded by evidence-gated CE-ARCH-31 candidate promotion.
+- `CP-MATH-REAL-DATA` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-30 falsification corpus.
+<!-- todo-orchestrator:v2-managed:end -->

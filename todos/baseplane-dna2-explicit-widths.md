@@ -66,3 +66,27 @@ _None recorded yet._
 - No active Baseplane code uses ambiguous dna2_word or dna2_planes names.
 - baseplaneDna2Test passes.
 - baseplaneDna2CudaTest passes when CUDA is enabled.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# baseplane-dna2-explicit-widths: Historical explicit-width DNA2 work
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve explicit-width evidence now owned by Baseplane.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

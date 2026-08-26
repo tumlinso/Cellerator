@@ -58,3 +58,27 @@ Add a future device-resident exact evaluator for repeated optimizer checkpoints.
 - Caller stream/scratch ownership and synchronization are explicit; steady-state evaluation performs no hidden allocation or per-call source upload.
 - V100 16 GB record and CUB temporary-storage limits are measured and documented.
 - Mutex benchmark evidence justifies dispatch while the CPU reference remains available.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# cellpack-packing-plan-cuda-evaluator: Legacy CUDA packing-plan evaluator
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Record the old current-objective CUDA evaluator as superseded by operation-aware planner/objective v2.
+
+## State
+- Lifecycle: `superseded`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `superseded`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

@@ -71,3 +71,27 @@ _None recorded yet._
 ## Done Criteria
 - Benchmark output covers packed word64, planes32, inline-plane64, CPU primitive conversion/mask paths, single GPU, and all GPUs where available.
 - Results include exact commands and native hardware/toolchain context.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# baseplane-dna2-benchmark: Historical Baseplane DNA2 benchmark
+
+Task revision: `780`; current project revision is in `todo-status.md`.
+
+## Objective
+Preserve historical benchmark evidence.
+
+## State
+- Lifecycle: `done`
+- Execution: `closed`
+- Parallel policy: `serial`
+- Result: `validated`
+
+## Next Action
+_None._
+
+## Ownership
+_No structured ownership._
+
+## Dependencies
+_None._
+<!-- todo-orchestrator:v2-managed:end -->

@@ -176,14 +176,20 @@ The source build resolves dependencies in this order:
 2. a sibling checkout;
 3. an installed CMake package.
 
-The expected sibling layout is:
+The expected sibling layout can live under any parent directory; the former
+CellStack wrapper is not required. For example:
 
 ```text
-cellstack/
+~/src/
 ├── Baseplane/
 ├── CellShard/
 └── Cellerator/
 ```
+
+Related repositories: [Baseplane](https://github.com/tumlinso/Baseplane) owns
+sequence computation, and [CellShard](https://github.com/tumlinso/CellShard)
+owns storage, persistence, and delivery. Cellerator consumes them as sibling
+source checkouts or installed CMake packages; neither dependency is vendored.
 
 The current local default targets Tesla V100 and `sm_70`, while stable semantic contracts must remain portable across NVIDIA generations.
 

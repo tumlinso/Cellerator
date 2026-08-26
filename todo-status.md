@@ -54,3 +54,105 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - Cleanup mode is explicit only.
 - Safe to call `todo-cleanup`: no, active workstreams: cellpack-packing-plan-cuda-evaluator.
 - Partial cleanup is available via `todo-cleanup --partial`; include `stale` in `--scope` only when explicitly intended.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# Todo Status v2 Projection
+
+Project revision: `1422`
+
+## Workstreams
+- `CE-ARCH-01` | status: done | execution: closed | next: Inventory is complete at CellStack b8aabdc, Cellerator 72f3012, Baseplane 768065b, CellShard bbe5917. Use this task and generated projection as the recovery handoff.
+- `CE-ARCH-93` | status: done | execution: closed | next: Audit and migrate authoritative CP-MATH state, validate generic terminal filtering in project-state synthesis, and preserve historical performance evidence.
+- `CE-ARCH-02` | status: done | execution: closed | next: After explicit implementation authorization, reject unsupported padded BELL and stale bindings and label non-integrated CP-Math paths experimental; do not design a new kernel or ABI.
+- `CE-ARCH-10` | status: done | execution: closed | next: Design and adversarially review the minimal ABI; freeze only after CPU-only Baseplane and CUDA/POD compatibility evidence.
+- `CE-ARCH-11` | status: done | execution: closed | next: Define RelationStructure, ValuePlane, LaunchBindings, output-order contracts, transform caching, and versioned CPK1 successor semantics without mutating v1.
+- `CE-ARCH-12` | status: done | execution: closed | next: Extend existing Cellerator::runtime into one session substrate; migrate rather than wrap it with a second context.
+- `CE-ARCH-20` | status: done | execution: closed | next: Implement read-only adapters for frozen plan/order/records/tiles/CPK1/direct kernel and define semantic geometry/statistics without changing v1 bytes or objective.
+- `CE-ARCH-30` | status: done | execution: closed | next: After explicit authorization, design manifests, deterministic generators, compact traces, tiers, resource contracts, and benchmark watches; do not run them in planning or create watches for nonexistent kernels.
+- `CE-ARCH-21` | status: done | execution: closed | next: Design a new Cellerator payload schema with section/projection directories and CPK1 loader, inside unchanged CPEXEC01 unless an external decision proves otherwise.
+- `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
+- `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.
+- `CE-ARCH-40` | status: done | execution: closed | next: Complete. The frozen v1 seam imports Baseplane predicate/event contracts, exposes validity-aware sequence operands, and validates fused and caller-materialized predicate-to-regulatory-to-gene execution on V100 sm_70.
+- `CE-ARCH-50` | status: done | execution: closed | next: Complete: forward-compatibility matrix validates additive paths for transpose/backward, sparse gradients, numerical evolution, graph capture, persistent scheduling, nested partitions, multi-device planning, and later architecture classes without hot-record bloat or premature implementation.
+- `CE-ARCH-60` | status: done | execution: closed | next: Complete. Supported targets are consolidated, harmful CP-Math runtime assumptions are retired, compatibility evidence is preserved, and all final host/GPU/audit gates pass.
+- `CE-ARCH-70` | status: done | execution: closed | next: Complete. Start CE-ARCH-71 to register the preserved CP-BP row-masked N=1 kernel as a real operation-core/planner candidate; do not reopen these frozen foundations.
+- `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
+- `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
+- `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
+- `CE-ARCH-70B` | status: done | execution: closed | next: Implement independent recorded persistent allocations, accounting and exhaustion checks, pointer alignment validation, focused CUDA correctness, and Compute Sanitizer if available; do not redesign transient workspace.
+- `CE-ARCH-82` | status: done | execution: closed | next: Audit the existing CPE2 implementation against every Phase 4 exit criterion, implement only missing runtime/compatibility pieces, and add direct-execution regression coverage.
+- `CE-ARCH-70C` | status: done | execution: closed | next: Introduce fixed-size structure requirements and structure-set keys, validate duplicates/missing/stale relations and relation-specific values, then represent coordinate-to-regulatory and regulatory-to-gene as two honest relations in the Baseplane proof.
+- `CE-ARCH-83` | status: done | execution: closed | next: Extend the CE-ARCH-73/76 evidence machinery to the declared real/adversarial corpus and missing forward/transpose and hardware-pressure fields without launching broad tuning.
+- `CE-ARCH-70D` | status: done | execution: closed | next: Add and validate overwrite, accumulate, affine-accumulate, and partial-write contracts; prove nonzero gene-state initialization yields initial plus contribution without hidden zeroing.
+- `CE-ARCH-84` | status: done | execution: closed | next: Use CE-ARCH-83 evidence to implement the narrowest truthful low-sharing/tail and CTA medium-N candidates; retain or reject each only by declared correctness and end-to-end evidence.
+- `CE-ARCH-70E` | status: done | execution: closed | next: Implement the small host registry, deterministic persistent structure-set planning keys, current-handle cache winner resolution, cache-store diagnostics, bounded confidence improvement, and policy fallback when all empirical measurements fail.
+- `CE-ARCH-85` | status: done | execution: closed | next: Implement a versioned transpose projection/value map and operation candidate, prove forward/backward edge identity and multi-generation reuse, then collect bounded CUDA parity evidence.
+- `CE-ARCH-70F` | status: done | execution: closed | next: Add one relocation-aware host prebind path without directory duplication or CUDA calls, reject wrong destination sizes, and upgrade the device test to read payload through the prebound device pointer in a tiny kernel.
+- `CE-ARCH-86` | status: done | execution: closed | next: Generalize the CE-ARCH-73 single-operation planner to a bounded connected-operation plan and prove that order/conversion costs can change the winner.
+- `CE-ARCH-70G` | status: done | execution: closed | next: Run the staged validation matrix through cpp-context-compiler and the CUDA controller, freeze the six corrected interfaces, commit the owning repositories separately, record exact evidence and deferrals, and leave CE-ARCH-71 as the first downstream task.
+- `CE-ARCH-87` | status: done | execution: closed | next: Connect the CE-ARCH-77 calibrated predictor to CP-BP refinement, add only measured features, and validate against exact-surrogate, held-out, and bootstrap baselines.
+- `CE-ARCH-88` | status: done | execution: closed | next: Build one decisive forward/backward training slice over the frozen logical structure and measure it end to end against CSR plus generic SpMM and separate epilogues.
+- `CE-ARCH-89` | status: done | execution: closed | next: Audit CE-ARCH-40/78 against every Phase 10 exit criterion and implement the missing relation-builder, shared-identity, fused/materialized planner, and repeated-state proof.
+- `CE-ARCH-90` | status: done | execution: closed | next: Implement the minimum nested partition and boundary-edge IR first, then add only hierarchy/runtime mechanisms justified by focused cost and correctness evidence.
+- `CE-ARCH-61` | status: done | execution: closed | next: Complete: legacy CP-Math backend/runtime interfaces are versioned as retired evidence and the operation-core documentation identity is refreshed.
+- `CE-ARCH-71` | status: done | execution: closed | next: Register a truthful N=1 candidate adapter over the preserved CPK1/native-tile/direct-kernel path, add focused capability, binding, order, effect, and parity tests, then run the declared host and CUDA gates.
+- `CE-ARCH-91` | status: done | execution: closed | next: Wait only on the authoritative CS-FOUND interfaces, then add the narrow cross-repository opaque artifact vertical slice with one-copy caller-stream upload and direct CPE2 execution.
+- `CE-ARCH-72` | status: done | execution: closed | next: Expose the existing validated CSR path as a legal fallback candidate with complete binding and output contracts.
+- `CE-ARCH-92` | status: done | execution: closed | next: Run only the declared serialized campaign, reconcile every exit criterion against evidence, and complete CE-ARCH-80 only if the migration definition is genuinely satisfied.
+- `CE-ARCH-73` | status: done | execution: closed | next: Implement the bounded real CUDA measurement harness for the registered CP-BP and CSR candidates with candidate-private outputs and a neutral referee.
+- `CE-ARCH-74` | status: done | execution: closed | next: Exercise one immutable CP-BP structure/projection with two valid value generations and adversarial stale-generation, structure-epoch, projection, and pointer-relocation checks.
+- `CE-ARCH-75` | status: done | execution: closed | next: Design and implement feature-major small-N as a second projection under the frozen semantic geometry and operation contracts.
+- `CE-ARCH-76` | status: done | execution: closed | next: Run serialized V100 end-to-end benchmarks across N=1,2,4,8,16 with referee validation and complete phase and memory accounting.
+- `CE-ARCH-77` | status: done | execution: closed | next: Fit and validate Objective V2 against measured total candidate costs before changing CP-BP refinement guidance.
+- `CE-ARCH-78` | status: done | execution: closed | next: Add bounded predicate-mask materialization caching and measured fused-versus-reused selection without moving sequence semantics into Cellerator.
+- `CE-ARCH-79` | status: done | execution: closed | next: Complete for its bounded objective; the independent CellShard foundation and final opaque-artifact integration remain open under CE-ARCH-91.
+- `CP-BP-00` | status: done | execution: closed | next: Preserve the completed CP-BP v1 coordinator as validated historical evidence.
+- `CP-BP-01` | status: done | execution: closed | next: Preserve sampled support bitsets as completed v1 evidence.
+- `CP-BP-02` | status: done | execution: closed | next: Preserve MinHash/LSH candidate discovery as completed v1 evidence.
+- `CP-BP-03` | status: done | execution: closed | next: Preserve exact row-active-block merge scoring and referee as completed v1 evidence.
+- `CP-BP-04` | status: done | execution: closed | next: Preserve optimizer, rollback oracle, and frozen plan ABI as completed v1 evidence.
+- `CP-BP-05` | status: done | execution: closed | next: Preserve exact full-partition plan application and reconstruction.
+- `CP-BP-06` | status: done | execution: closed | next: Preserve compact record ABI and CUDA/reference evidence.
+- `CP-BP-07` | status: done | execution: closed | next: Preserve bounded local row order and inverse maps.
+- `CP-BP-08` | status: done | execution: closed | next: Preserve pointer-free warp-tile construction and validation.
+- `CP-BP-09` | status: done | execution: closed | next: Preserve N=1 weighted-row-reduction kernel, referees, and fallback evidence.
+- `CP-BP-10` | status: done | execution: closed | next: Preserve accepted v1 refinement and rollback evidence.
+- `CP-BP-11` | status: done | execution: closed | next: Preserve independent statistical/bootstrap validation evidence.
+- `CP-BP-12` | status: done | execution: closed | next: Preserve measured V100 cost-model evidence and explicit fallback.
+- `CP-BP-13` | status: done | execution: closed | next: Preserve pointer-free CPK1 and direct CellShard archive-to-device loading.
+- `baseplane-dna2-benchmark` | status: done | execution: closed | next: Preserve historical benchmark evidence.
+- `baseplane-dna2-explicit-widths` | status: done | execution: closed | next: Preserve explicit-width evidence now owned by Baseplane.
+- `cellerator-hierarchy-reset` | status: done | execution: closed | next: Preserve cleanup/inventory history without treating it as biological hierarchy architecture.
+- `cellerator-runtime-autotune` | status: done | execution: closed | next: Preserve completed calibration and explicit-metric evidence without promoting its callback chooser to core planner.
+- `cellerator-sparse-ml-layout` | status: done | execution: closed | next: Preserve completed source-layout history.
+- `cellpack-packing-plan-cuda-evaluator` | status: superseded | execution: closed | next: Record the old current-objective CUDA evaluator as superseded by operation-aware planner/objective v2.
+- `cellpack-packing-plan-evaluator` | status: done | execution: closed | next: Preserve completed evaluator/referee evidence.
+- `sequence-bits-dna2` | status: done | execution: closed | next: Preserve historical exact-sequence evidence now owned by Baseplane.
+- `CE-ARCH-00` | status: done | execution: closed | next: Complete as the bounded recovery epic. CE-ARCH-80 owns the remaining roadmap implementation and migration exit criteria.
+- `CP-MATH-00` | status: superseded | execution: closed | next: Superseded by CE-ARCH-00 biological execution recovery.
+- `CP-MATH-00A` | status: superseded | execution: closed | next: Reconcile the empty live v2 project and audited CP-BP source at historical baseline 8848f62254605025ac6e96f4cc6a8efbcc803d43; freeze the four consumed CP-BP interfaces without performance work or source changes.
+- `CP-MATH-01` | status: superseded | execution: closed | next: Implement backend-neutral SpMM MathRequest/OperationSignature, alpha/beta, transpose, dtype/compute, determinism, workspace, reuse, epilogue, stable identity and pointer-free ExecutionPlan metadata separation with zero/trivial semantics.
+- `CP-MATH-02` | status: superseded | execution: closed | next: Integrate the independent device/runtime foundation with structured capability rejection, SpMMBackend/prepared ownership, and generic unfused epilogue while preserving no-allocation repeated run semantics.
+- `CP-MATH-02A` | status: superseded | execution: closed | next: Independently implement cached DeviceMathContext, DeviceCapabilities, DeviceFingerprint, and reusable workspace ownership over the existing runtime context/handle/scratch substrate without defining operation-dependent backend policy.
+- `CP-MATH-03` | status: superseded | execution: closed | next: Adapt apply_frozen_plan output to execution-feature CSR, implement order-identity-safe reusable W_packed conversion, prove X_packed W_packed equals canonical math, and design lazy CSR reconstruction from CPK1 without changing CPK1.
+- `CP-MATH-04` | status: superseded | execution: closed | next: Lower unchanged variable-width semantic blocks and local row order into legal BELL8/16/32 candidates, record occupancy/utilization/expansion/storage, reject absurd candidates, and validate via independent decode.
+- `CP-MATH-05` | status: superseded | execution: closed | next: Expose the existing frozen plan/order/warp tiles/CPK1 to math with derived union masks, packed offsets, density/reuse/workload sidecars and an exact decoder; copy no compact values and invent no row permutation.
+- `CP-MATH-06` | status: superseded | execution: closed | next: Superseded by CE-ARCH-02 containment and CE-ARCH-22 core recovery.
+- `CP-MATH-07` | status: superseded | execution: closed | next: Consume each legal BELL8/16/32 view as a separate prepared cuSPARSE candidate with equivalent dtypes/compute semantics and no handwritten BELL kernel.
+- `CP-MATH-08` | status: superseded | execution: closed | next: Superseded by CE-ARCH-30 and CE-ARCH-22.
+- `CP-MATH-08A` | status: superseded | execution: closed | next: Establish neutral logical reference, numerical metrics, determinism checks, CUDA-event timing with median/spread, memory/expansion accounting, and reusable benchmark reporting before backend fan-out.
+- `CP-MATH-09` | status: superseded | execution: closed | next: Implement trivial interception, legal candidate enumeration, structured hard filtering, epilogue composition, cheap structural pruning, cache lookup hook, and authoritative selection without emitting unimplemented candidates.
+- `CP-MATH-10` | status: superseded | execution: closed | next: Superseded by CE-ARCH-20, CE-ARCH-22, and CE-ARCH-31.
+- `CP-MATH-11` | status: superseded | execution: closed | next: Superseded by CE-ARCH-12 and CE-ARCH-31.
+- `CP-MATH-12` | status: superseded | execution: closed | next: Superseded and parked behind CE-ARCH-22/30/31 foundations.
+- `CP-MATH-12D` | status: superseded | execution: closed | next: Superseded and parked behind CE-ARCH-22/30/31 foundations.
+- `CP-MATH-13` | status: superseded | execution: closed | next: Superseded by projection plurality and measured registry work in CE-ARCH-22/31.
+- `CP-MATH-14` | status: superseded | execution: closed | next: Superseded and parked behind CE-ARCH-30/31/50 evidence gates.
+- `CP-MATH-15` | status: superseded | execution: closed | next: Superseded by explicit NumericPolicy in CE-ARCH-22 and compatibility review CE-ARCH-50.
+- `CP-MATH-16` | status: superseded | execution: closed | next: Superseded and deferred by CE-ARCH-12/22/50.
+- `CP-MATH-17` | status: superseded | execution: closed | next: Superseded by CE-ARCH-60 after replacements validate.
+- `CP-MATH-HARD-DATA` | status: superseded | execution: closed | next: Superseded by tiered CE-ARCH-30 corpus with explicit data permission and cost controls.
+- `CP-MATH-OPT-NOT-PROMOTED` | status: superseded | execution: closed | next: Superseded; historical non-promotion evidence remains terminal.
+- `CP-MATH-OPT-PROMOTED` | status: superseded | execution: closed | next: Superseded by evidence-gated CE-ARCH-31 candidate promotion.
+- `CP-MATH-REAL-DATA` | status: superseded | execution: closed | next: Superseded by CE-ARCH-30 falsification corpus.
+<!-- todo-orchestrator:v2-managed:end -->
