@@ -1,10 +1,15 @@
 # Cellerator Planning Strategy
 
-Last updated: 2026-08-21
+Last updated: 2026-08-26
 
 The biological execution architecture recovery is complete. New work starts
 from the frozen identity, lifetime, runtime, projection, planner, and Baseplane
 contracts rather than reopening CP-BP v1 or reviving experimental CP-Math.
+
+CE-LIVE is activation over those foundations: it freezes the remaining seams,
+wires real built-in candidates, and proves one checksum-pinned quantitative
+path. It does not create a replacement architecture or grant new ownership to
+the retained CP-Math v1 surface.
 
 ## Planning Principle
 
@@ -44,6 +49,19 @@ New work consumes these existing seams:
 8. CellShard continues to wrap opaque Cellerator bytes in CPEXEC01.
 9. Execution Image v2 is validated cold on host and prebound hot from validated
    offsets plus the current host or device image base.
+
+## Build Authority
+
+Native Cellerator without CelleraTorch is the default configure. Torch discovery
+is permitted only when the compatibility adapter is explicitly enabled with
+`-DCELLERATOR_ENABLE_TORCH_MODELS=ON`. The compatibility build does not make
+Torch the allocator, planner, runtime, parameter owner, or implementation of
+native operations.
+
+`CELLERATOR_DEFAULT_SPARSE_LAYOUT` remains a legacy compatibility fallback for
+older unspecified surfaces. It is not an operation-core preference. New work
+must register explicit projection candidates and let complete measured cost
+select among native, CSR, SELL, BSR, valid Blocked-ELL, or dense execution.
 
 ## Activation Workflow
 

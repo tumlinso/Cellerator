@@ -49,7 +49,9 @@ find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
 find_package(PkgConfig QUIET)
 
-option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch component targets" ON)
+# Native Cellerator is the default build. CelleraTorch remains an explicit
+# compatibility adapter and is the only path that may discover Torch.
+option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch compatibility component targets" OFF)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)

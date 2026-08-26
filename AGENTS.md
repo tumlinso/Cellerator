@@ -73,21 +73,20 @@ Implemented and valuable:
 
 - CP-BP sampling, support extraction, candidate discovery, exact merge scoring, constrained optimization, frozen packing plans, full-data application, compact cell-block records, bounded local row ordering, warp tiles, statistical validation, a replaceable V100 cost model, and pointer-free persistence;
 - direct CP-BP execution for feature-weighted row reduction without reconstruction to CSR or BELL;
-- CPK1 pointer-free plan, order, and tile images, wrapped for persistence and staging through CellShard;
+- CPK1 compatibility plus the CPE2 pointer-free execution image, typed projection directory, relocation, validation, and direct prepared dispatch;
+- the CE-ARCH biological ABI, execution-order and lifetime contracts, sole execution session, operation core, connected-operation planner, measured projection plurality, transpose/backward path, Baseplane seam, and opaque CellShard delivery boundary;
+- a checksum-pinned quantitative PBMC3K computational fixture and runtime-only asynchronous value-generation readiness contract under CE-LIVE;
 - CSR, SELL, Blocked-ELL, quantized sparse, preprocessing, model, trajectory, distributed, and framework-adapter code that remains useful as implementation evidence and fallback machinery;
-- an experimental CP-Math surface under `include/Cellerator/compute/math/` and `src/compute/math/`;
+- a retained experimental CP-Math v1 surface under `include/Cellerator/compute/math/` and `src/compute/math/`, used only as compatibility evidence and migration input;
 - Baseplane packed sequence, bit-plane, motif-scan, count, mask, and compact-event primitives.
 
 Not yet the end-state core:
 
-- CP-Math is not yet a unified Cellerator execution library;
-- its current planner performs structural pruning rather than measured end-to-end selection;
-- its prepared execution lifetime still captures per-run bindings and stream-owned runtime state;
-- the current CP-BP native tile orientation is proven primarily for the `N=1` weighted-row-reduction regime;
-- execution order, domain identity, partition identity, geometry identity, and value generation are not yet universal operand properties;
-- sparse structure and mutable values are not yet separated everywhere;
-- CPK1 is a successful v1 execution image, not the universal future runtime IR;
-- Baseplane does not yet share the complete Cellerator domain and relation ABI.
+- the retained CP-Math v1 request, `PreparedExecution`, `DeviceMathContext`, and structural planner are not the operation-core authority and must not receive new ownership;
+- CE-LIVE has not yet completed built-in candidate activation, full fan-in wiring, or the checksum-pinned quantitative end-to-end execution path;
+- legacy sparse, model, preprocessing, and adapter paths do not all consume the universal biological ABI or separate structure and mutable values yet;
+- CPK1 remains a successful compatibility image rather than the universal runtime IR;
+- Tensor Core, distributed, and CelleraTorch activation remain separately gated and must not be inferred from the completed CE-ARCH foundation.
 
 Do not write documentation or code that presents these unfinished transitions as complete.
 
@@ -507,11 +506,13 @@ cmake -S . -B build
 cmake --build build -j 4
 ```
 
-For a core build without CelleraTorch:
+This default build is native Cellerator and does not discover Torch.
+
+The retained framework compatibility build is explicit:
 
 ```bash
-cmake -S . -B build -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
-cmake --build build -j 4
+cmake -S . -B build-compat -DCELLERATOR_ENABLE_TORCH_MODELS=ON
+cmake --build build-compat -j 4
 ```
 
 Cellerator currently requires CUDA and resolves sibling CellShard and Baseplane source trees before installed packages.

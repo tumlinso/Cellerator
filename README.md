@@ -47,9 +47,12 @@ That work is a strong foundation. Its current row-oriented physical projection a
 
 ### Core execution and CP-Math
 
-CP-Math is being absorbed into Cellerator core.
+CE-ARCH established the Cellerator-owned operation core. It now provides the
+biological ABI, execution image, operation and candidate contracts, reusable
+prepared dispatch, one execution session, measured projection selection,
+connected-operation planning, and explicit launch bindings.
 
-Its target role is:
+The core owns:
 
 - operation contracts;
 - physical projection management;
@@ -62,7 +65,10 @@ Its target role is:
 - native and vendor execution;
 - forward, backward, and multi-GPU planning.
 
-The current CP-Math implementation is experimental. It already includes SpMM contracts, feature-order identity, backend capability queries, a structural planner, physical CSR and BELL views, a CPU referee, a runtime context, and tests. Its v1 ownership model is not the final ABI.
+The older CP-Math v1 surface remains available as compatibility evidence. Its
+SpMM request, structural planner, physical CSR/BELL experiments,
+`PreparedExecution`, and `DeviceMathContext` do not define the current core and
+must not become a second operation framework.
 
 ### Baseplane
 
@@ -100,7 +106,9 @@ CelleraTorch is the explicit Torch and libtorch adapter. Native structures, para
 
 ## Current State
 
-The repository currently contains both the emerging architecture and older sparse-matrix-centered systems.
+The CE-ARCH foundation is complete, while CE-LIVE is activating one
+quantitative end-to-end path over it. Older sparse-matrix-centered systems
+remain as explicit candidates, baselines, and compatibility surfaces.
 
 Implemented:
 
@@ -108,21 +116,28 @@ Implemented:
 - CPK1 pointer-free persistence;
 - direct native weighted-row reduction;
 - hardware-cost calibration for the v1 packed path and CSR fallback;
+- the biological ABI, execution session, CPE2 image, operation core, connected
+  planner, measured row-masked/feature-major/CSR plurality, and
+  transpose/backward contracts;
+- direct Baseplane relation/fusion integration and opaque CellShard
+  CPEXEC01-to-CPE2 delivery;
+- the CE-LIVE checksum-pinned quantitative fixture and asynchronous value
+  readiness foundation;
 - sparse preprocessing and model primitives;
 - CSR, SELL, Blocked-ELL, quantized, cuSPARSE, CUB, NCCL, and custom CUDA paths;
-- experimental CP-Math contracts and backends;
-- Baseplane integration at the build level.
+- retained experimental CP-Math v1 compatibility contracts and backends.
 
-Still in migration:
+Still in CE-LIVE activation:
 
-- universal domain, order, geometry, partition, structure, and value-generation identity;
-- structure/value separation across all paths;
-- reusable prepared operations with independent launch bindings;
-- graph-wide preservation of execution order;
-- multiple native CP-BP physical projections;
-- empirical end-to-end CP-Math planning;
-- direct Baseplane-to-Cellerator operand and fusion contracts;
-- training-oriented transpose and backward projections.
+- final relation-orientation enforcement and built-in candidate inventory;
+- fan-in build wiring for the new foundation tests;
+- the planner-backed quantitative PBMC3K vertical slice;
+- bounded optional Tensor Core evaluation;
+- later distributed and CelleraTorch entry activation.
+
+These remaining tasks activate and validate the existing architecture. They do
+not reopen CP-BP v1, make Blocked-ELL universal, or promote legacy CP-Math v1 to
+core ownership.
 
 See [Current implementation](docs/current_implementation.qmd) for the audited status and [Migration roadmap](docs/migration_roadmap.qmd) for the transition.
 
@@ -155,19 +170,20 @@ The current location of CellPack under `components/` is organizational, not conc
 
 ## Build
 
-Cellerator requires CUDA.
+Cellerator requires CUDA. The default configure builds native Cellerator and
+does not discover Torch:
 
 ```bash
 cmake -S . -B build
 cmake --build build -j 4
 ```
 
-A core-oriented build without CelleraTorch is:
+The retained CelleraTorch compatibility build is explicit:
 
 ```bash
-cmake -S . -B build \
-  -DCELLERATOR_ENABLE_TORCH_MODELS=OFF
-cmake --build build -j 4
+cmake -S . -B build-compat \
+  -DCELLERATOR_ENABLE_TORCH_MODELS=ON
+cmake --build build-compat -j 4
 ```
 
 The source build resolves dependencies in this order:

@@ -4,20 +4,23 @@ title: "Current Implementation"
 
 ## Snapshot
 
-This page records the repository state audited at Cellerator `main` commit:
+This page records the post-CE-ARCH repository state through the CE-LIVE-14
+foundation close at commit:
 
 ```text
-72f3012adf63bbd8308fea620c9d8d8841136b51
+f926c7d85ec6a9ccf26a8a527090df8f21ef0ae4
 ```
 
 Audit date:
 
 ```text
-2026-08-21
+2026-08-26
 ```
 
-The original audit remains useful historical context. The CE-ARCH completion
-update below records the implemented target core as of 2026-08-25.
+The original 2026-08-21 audit remains useful historical context. The CE-ARCH
+completion update records the implemented foundation as of 2026-08-25; this
+refresh distinguishes that completed foundation from the current CE-LIVE
+activation program.
 
 ## Repository-wide state
 
@@ -29,6 +32,31 @@ The current repository contains three architectural generations at once:
    system, alongside retained CP-Math v1 adapters.
 
 The documentation before this replacement described the first generation as the durable architecture, especially through Blocked-ELL-first and CellShard-backed sparse-ML language. That description is superseded.
+
+### CE-LIVE activation state
+
+CE-LIVE does not replace the completed CE-ARCH architecture. It activates one
+planner-backed quantitative path over it. Fork B has added a checksum-pinned
+PBMC3K computational fixture and a runtime-only CUDA event readiness contract
+that keeps streams and events out of persistent identity. Relation orientation,
+built-in candidate inventory, Tensor Core feasibility, and the single-owner
+fan-in remain separately gated.
+
+The retained CP-Math v1 surface is not the operation-core authority. Its
+request, structural planner, prepared lifetime, and private runtime remain
+migration-held compatibility evidence. New operations use the CE-ARCH
+operation core and sole execution session.
+
+### Default build boundary
+
+The default CMake configure builds native Cellerator without entering the
+CelleraTorch subdirectory or discovering Torch. The compatibility adapter is
+available only through `-DCELLERATOR_ENABLE_TORCH_MODELS=ON`. This changes no
+source ownership and deletes no legacy implementation.
+
+`CELLERATOR_DEFAULT_SPARSE_LAYOUT` names only the fallback used by older
+unspecified sparse surfaces. It is not a universal layout decision and does not
+bypass operation-core candidate enumeration or complete-cost planning.
 
 ## CP-BP v1
 
@@ -270,9 +298,12 @@ The tree contains:
 - a CPU referee;
 - contract, planner, runtime, lowering, execution, and epilogue tests.
 
-### Build integration
+### Compatibility build integration
 
-The root build currently exposes the packed-dense-operand benchmark explicitly. CP-Math is not yet assembled into one authoritative core library target and is not yet the execution owner for the repository's existing sparse systems.
+The root build still exposes the packed-dense-operand benchmark for retained
+evidence. CP-Math v1 is intentionally not assembled into a second authoritative
+core library target and is not the execution owner for the repository's sparse
+systems.
 
 ### Legacy adapter gaps
 
