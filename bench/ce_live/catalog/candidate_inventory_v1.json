@@ -1,0 +1,116 @@
+{
+  "artifact": "ce-live-candidate-inventory",
+  "version": 1,
+  "status": "audit-only-not-runtime-abi",
+  "logical_relation": "feature-source-to-row-destination",
+  "candidates": [
+    {
+      "symbol": "row_masked_n1_candidate",
+      "name": "cpbp-cpk1-row-masked-n1",
+      "operation": "weighted_relation_reduce",
+      "projection": "native_row_masked",
+      "payload": "CPK1 schema 1",
+      "dense_width": "1",
+      "numeric": "configured real storage/compute/accumulation; scalar u32; no bias, saturation, or quantization",
+      "capabilities": ["deterministic", "graph_capture", "persistent_preprocessing"],
+      "persistent_state": "sizeof(row_masked_n1_prepared_state)",
+      "transient_bytes": 0,
+      "output_order": "preserve supplied row axis; overwrite",
+      "typed_prepare": "prepare_row_masked_n1_operation",
+      "activation": "implemented-unregistered-by-default",
+      "evidence": "focused direct CPK1 correctness; no catalog-level performance promotion"
+    },
+    {
+      "symbol": "csr_fallback_candidate",
+      "name": "cellerator-csr-fallback-n1-f16-f32",
+      "operation": "weighted_relation_reduce",
+      "projection": "csr",
+      "payload": "execution_csr_view schema 1",
+      "dense_width": "1",
+      "numeric": "f16 sparse, f32 dense/output/multiply/accumulation, scalar u32; no bias, saturation, or quantization",
+      "capabilities": ["deterministic", "persistent_preprocessing"],
+      "persistent_state": "sizeof(csr_fallback_prepared_state)",
+      "transient_bytes": 0,
+      "output_order": "preserve supplied row axis; overwrite",
+      "typed_prepare": "prepare_csr_fallback_operation",
+      "activation": "implemented-unregistered-by-default",
+      "evidence": "correctness fallback; projection construction and transfer must be costed; not cuSPARSE"
+    },
+    {
+      "symbol": "feature_major_small_n_candidate",
+      "name": "cpbp-feature-major-small-n-f16-f32",
+      "operation": "sparse_dense_multiply",
+      "projection": "native_feature_major",
+      "payload": "FMP1 schema 1 variant 1",
+      "dense_width": "1..16",
+      "numeric": "f16 sparse, f32 dense/output/multiply/accumulation/scalar; no bias, saturation, or quantization",
+      "capabilities": ["deterministic", "graph_capture", "persistent_preprocessing"],
+      "persistent_state": "sizeof(feature_major_small_n_prepared_state)",
+      "transient_bytes": 0,
+      "output_order": "preserve supplied row and dense-column axes; overwrite",
+      "typed_prepare": "prepare_feature_major_small_n_operation",
+      "activation": "implemented-unregistered-by-default",
+      "evidence": "correctness retained; no universal small-N winner claim"
+    },
+    {
+      "symbol": "feature_major_cta_medium_n_candidate",
+      "name": "cpbp-feature-major-cta-medium-n-f16-f32",
+      "operation": "sparse_dense_multiply",
+      "projection": "native_feature_major",
+      "payload": "FMP1 schema 1 variant 1",
+      "dense_width": "17..64",
+      "numeric": "f16 sparse, f32 dense/output/multiply/accumulation/scalar; no bias, saturation, or quantization",
+      "capabilities": ["deterministic", "graph_capture", "persistent_preprocessing"],
+      "persistent_state": "sizeof(feature_major_small_n_prepared_state)",
+      "transient_bytes": 0,
+      "output_order": "preserve supplied row and dense-column axes; overwrite",
+      "typed_prepare": "prepare_feature_major_cta_medium_n_operation",
+      "activation": "implemented-unregistered-by-default",
+      "evidence": "V100 N=17/32/64: CTA won all N=32/64 and high-sharing N=17; CSR or row-masked won other N=17 regimes"
+    },
+    {
+      "symbol": "transpose_backward_n1_candidate",
+      "name": "cpbp-transpose-backward-n1-f16-f32",
+      "operation": "sparse_dense_multiply",
+      "projection": "transpose_or_backward",
+      "payload": "CTP1 schema 1 variant 1 over FMP1",
+      "dense_width": "1",
+      "numeric": "f16 sparse, f32 dense/output/multiply/accumulation/scalar; no bias, saturation, or quantization",
+      "capabilities": ["deterministic", "graph_capture", "persistent_preprocessing"],
+      "persistent_state": "sizeof(transpose_backward_prepared_state)",
+      "transient_bytes": 0,
+      "output_order": "preserve supplied feature and dense-column axes; overwrite",
+      "typed_prepare": "prepare_transpose_backward_n1_operation",
+      "activation": "implemented-unregistered-by-default",
+      "evidence": "two mutable value generations match the transpose referee; no performance promotion claim"
+    }
+  ],
+  "non_candidates": [
+    {
+      "surface": "native_training_slice",
+      "state": "implemented composed workflow outside candidate_registry",
+      "projection": "FMP1 plus CTP1",
+      "regime": "N=16 only",
+      "activation_gap": "requires an operation-core candidate or an explicitly separate program-level catalog entry"
+    },
+    {
+      "surface": "sequence_predicate_accumulate",
+      "state": "operation_kind reserved; no operation_candidate in audited math source",
+      "activation_gap": "sequence integration must supply a truthful candidate and typed preparation bridge"
+    },
+    {
+      "surface": "cuSPARSE and retained CP-Math v1 CSR/BELL paths",
+      "state": "compatibility evidence only; no built-in operation-core candidate",
+      "activation_gap": "new vendor candidate must use the sole runtime and cost construction, transfer, descriptors, workspace, and synchronization"
+    }
+  ],
+  "reserved_projection_kinds": [
+    "cta_macrotile",
+    "dense_fragment",
+    "sell",
+    "bsr",
+    "blocked_ell",
+    "vendor_specific",
+    "architecture_specific"
+  ]
+}
