@@ -439,12 +439,12 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `1592`
+Project revision: `1610`
 
 ## Workstreams
 - `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
 - `CE-LIVE-01` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Reconcile the clean post-CE-ARCH repository, apply the complete CE-LIVE plan transactionally, publish the source and contract map, validate the graph, and leave multiple non-overlapping tasks ready.
-- `CE-LIVE-10` | kind: validation_task | status: planned | parent: CE-LIVE-00 | objective: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
+- `CE-LIVE-10` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
 - `CE-LIVE-11` | kind: task | status: done | parent: CE-LIVE-00 | objective: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.
 - `CE-LIVE-12` | kind: task | status: done | parent: CE-LIVE-00 | objective: Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
 - `CE-LIVE-13` | kind: task | status: done | parent: CE-LIVE-00 | objective: Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.

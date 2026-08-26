@@ -58,12 +58,12 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1592`
+Project revision: `1610`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
 - `CE-LIVE-01` | status: done | execution: closed | next: Validate and apply the full plan, claim this task, publish the program document and generated projections, audit/reconcile/export, commit, finish, and verify the seven-task frontier.
-- `CE-LIVE-10` | status: planned | execution: ready | next: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
+- `CE-LIVE-10` | status: done | execution: closed | next: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
 - `CE-LIVE-11` | status: done | execution: closed | next: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.
 - `CE-LIVE-12` | status: done | execution: closed | next: Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
 - `CE-LIVE-13` | status: done | execution: closed | next: Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.
