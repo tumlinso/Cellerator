@@ -128,10 +128,17 @@ int main() {
     require(adapter.geometry.v1_objective_kind
             == cp::packing_exact_objective_kind::row_active_block_references,
         "v1 objective meaning changed");
+    require(ce::same_axis_identity(adapter.structure.source_axis,
+                request.feature_axis)
+            && ce::same_axis_identity(adapter.structure.destination_axis,
+                request.row_axis),
+        "forward relation must be feature source to row destination");
     require(ce::validate_relation_structure(adapter.structure)
                 == ce::lifetime_validation_code::ok
             && ce::validate_value_plane(adapter.structure, adapter.values)
-                == ce::lifetime_validation_code::ok,
+                == ce::lifetime_validation_code::ok
+            && static_cast<bool>(
+                cp::validate_cp_bp_v1_compatibility_adapter_host(adapter)),
         "structure/value separation is invalid");
 
     cp::semantic_geometry_hot_summary hot;
@@ -162,6 +169,15 @@ int main() {
     malformed.inverse_feature_permutation = nullptr;
     require(!cp::build_cp_bp_v1_compatibility_adapter_host(malformed, request, &adapter),
         "missing canonical recovery map was accepted");
+    cp::cp_bp_v1_compatibility_adapter swapped;
+    require(static_cast<bool>(
+                cp::build_cp_bp_v1_compatibility_adapter_host(payload, request, &swapped)),
+        "build adapter for swapped-axis rejection");
+    const auto source_axis = swapped.structure.source_axis;
+    swapped.structure.source_axis = swapped.structure.destination_axis;
+    swapped.structure.destination_axis = source_axis;
+    require(!cp::validate_cp_bp_v1_compatibility_adapter_host(swapped),
+        "swapped row/feature axes were not rejected");
 
     std::cout << "cellPackSemanticGeometryAdapterTest passed"
               << " adapter_bytes=" << sizeof(adapter)

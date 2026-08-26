@@ -114,6 +114,37 @@ semantic_statistics_manifest cp_bp_semantic_statistics_manifest() noexcept {
     return result;
 }
 
+validation_result validate_cp_bp_v1_compatibility_adapter_host(
+    const cp_bp_v1_compatibility_adapter &adapter) noexcept {
+    if (adapter.schema_version != cp_bp_v1_compatibility_adapter_schema_version
+        || adapter.geometry.schema_version
+            != cp_bp_v1_semantic_geometry_schema_version
+        || !valid_payload_metadata(adapter.payload)
+        || !same_axis_identity(adapter.structure.source_axis,
+            adapter.geometry.feature_axis)
+        || !same_axis_identity(adapter.structure.destination_axis,
+            adapter.geometry.row_axis)) {
+        return validation_error(validation_code::invalid_signature, invalid_id,
+            "CP-BP adapter requires feature-source to row-destination orientation");
+    }
+    if (validate_relation_structure(adapter.structure)
+            != lifetime_validation_code::ok
+        || validate_value_plane(adapter.structure, adapter.values)
+            != lifetime_validation_code::ok
+        || adapter.structure.logical_edge_count != adapter.payload.tiles.nnz_count
+        || adapter.values.element_count != adapter.payload.tiles.nnz_count
+        || adapter.values.values != adapter.payload.tiles.values
+        || adapter.direct_tiles.values != adapter.payload.tiles.values
+        || adapter.direct_plan.feature_permutation
+            != adapter.payload.plan.feature_permutation
+        || adapter.direct_order.row_permutation
+            != adapter.payload.order.row_permutation) {
+        return validation_error(validation_code::invalid_signature, invalid_id,
+            "CP-BP adapter lifetime, edge identity, or aliasing contract is invalid");
+    }
+    return validation_ok();
+}
+
 validation_result build_cp_bp_v1_compatibility_adapter_host(
     const persistent_packing_payload_view &payload,
     const cp_bp_v1_adapter_request &request,
@@ -170,8 +201,8 @@ validation_result build_cp_bp_v1_compatibility_adapter_host(
 
     result.structure.identity = request.structure;
     result.structure.epoch = request.structure_epoch_value;
-    result.structure.source_axis = request.row_axis;
-    result.structure.destination_axis = request.feature_axis;
+    result.structure.source_axis = request.feature_axis;
+    result.structure.destination_axis = request.row_axis;
     result.structure.projections = request.projection_catalog;
     result.structure.logical_edge_count = payload.tiles.nnz_count;
     result.values.structure = request.structure;
@@ -191,12 +222,9 @@ validation_result build_cp_bp_v1_compatibility_adapter_host(
     result.direct_plan = payload.plan;
     result.direct_order = payload.order;
     result.direct_tiles = payload.tiles;
-    if (validate_relation_structure(result.structure) != lifetime_validation_code::ok
-        || validate_value_plane(result.structure, result.values)
-            != lifetime_validation_code::ok) {
-        return validation_error(validation_code::invalid_signature, invalid_id,
-            "CP-BP adapter lifetime contract is invalid");
-    }
+    const validation_result validated =
+        validate_cp_bp_v1_compatibility_adapter_host(result);
+    if (!validated) return validated;
     *out = result;
     return validation_ok();
 }
@@ -207,12 +235,9 @@ validation_result evaluate_cp_bp_v1_semantic_statistics_host(
     semantic_geometry_cold_sidecar *cold) noexcept {
     if (hot == nullptr || cold == nullptr) return validation_error(
         validation_code::null_pointer, invalid_id, "semantic statistics output is null");
-    if (adapter.schema_version != cp_bp_v1_compatibility_adapter_schema_version
-        || !valid_payload_metadata(adapter.payload)
-        || adapter.direct_tiles.values != adapter.payload.tiles.values) {
-        return validation_error(validation_code::invalid_matrix_view, invalid_id,
-            "CP-BP adapter is invalid or no longer aliases CPK1");
-    }
+    const validation_result validated =
+        validate_cp_bp_v1_compatibility_adapter_host(adapter);
+    if (!validated) return validated;
     semantic_geometry_hot_summary hot_result;
     semantic_geometry_cold_sidecar cold_result;
     const warp_tile_view &tiles = adapter.direct_tiles;

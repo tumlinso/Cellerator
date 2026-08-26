@@ -132,6 +132,12 @@ validation_result build_cp_bp_v1_compatibility_adapter_host(
     const cp_bp_v1_adapter_request &request,
     cp_bp_v1_compatibility_adapter *out) noexcept;
 
+// CP-BP v1 stores rows and features physically, but its logical relation is
+// always feature source -> row destination. Projection orientation must not
+// redefine that relation or its stable logical edge identity.
+validation_result validate_cp_bp_v1_compatibility_adapter_host(
+    const cp_bp_v1_compatibility_adapter &adapter) noexcept;
+
 validation_result evaluate_cp_bp_v1_semantic_statistics_host(
     const cp_bp_v1_compatibility_adapter &adapter,
     semantic_geometry_hot_summary *hot,
