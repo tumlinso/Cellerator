@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-16: Bounded Tensor Core feasibility and candidate contract
 
-Task revision: `1423`; current project revision is in `todo-status.md`.
+Task revision: `1470`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define one V100-relevant dense-fragment or WMMA candidate lane, including density classification, packing, alignment, tails, numeric policy, forward/backward maps, complete planner costs, and rejection criteria, without modifying common semantic ABIs or registering a kernel.
@@ -24,5 +26,5 @@ _None._
 - `read`: `include/Cellerator/planner`
 
 ## Dependencies
-- `task`: `CE-LIVE-01`
+- `task`: `CE-LIVE-13`
 <!-- todo-orchestrator:v2-managed:end -->

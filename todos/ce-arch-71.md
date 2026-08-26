@@ -1,3 +1,5 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-ARCH-71: Register CP-BP row-masked N=1 as an operation-core candidate
 

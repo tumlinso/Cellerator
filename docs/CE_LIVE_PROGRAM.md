@@ -25,7 +25,7 @@ planner-backed program. The stale “Current Implementation Status” text in
 `AGENTS.md` is deliberately left for CE-LIVE-15.
 
 The authoritative plan is `ce-live-plan.json`, schema version 2, SHA-256
-`c9c9a00371c4a9fe26fc44e90ca02740811cc4fcc95142d040713c02ac1704f4`.
+`054f858f35358fd5edf7e6efef51b9207434a3d1947753050813478b64bac3bc`.
 It contains 32 tasks, 14 error-severity invariants, 9 draft interfaces, 29
 pending checkpoints, and 273 gates.
 
@@ -253,7 +253,11 @@ wiring.
 |---|---|---|
 | CE-LIVE-00 | — | Serial epic root |
 | CE-LIVE-01 | — | Project-exclusive bootstrap |
-| CE-LIVE-10..16 | CE-LIVE-01 | Seven parallel-safe foundation leaves |
+| CE-LIVE-10,11,12 | CE-LIVE-01 | Floating validation plus two fork entries |
+| CE-LIVE-13 | CE-LIVE-11 | Fork A candidate/projection inventory |
+| CE-LIVE-16 | CE-LIVE-13 | Fork A Tensor Core contract |
+| CE-LIVE-14 | CE-LIVE-12 | Fork B value-readiness contract |
+| CE-LIVE-15 | CE-LIVE-14 | Fork B authority/build guidance |
 | CE-LIVE-19 | 10,11,12,13,14,15,16 | Foundation integration fan-in |
 | CE-LIVE-20 | 11,13,19 | CPE2 typed activation |
 | CE-LIVE-21 | 11,13,19 | Built-in catalog |
@@ -280,25 +284,61 @@ wiring.
 
 ### Wave A
 
-After CE-LIVE-01:
+After CE-LIVE-01, Wave A is two long-lived serialized forks plus one floating
+validation task. The forks remain separate until the CE-LIVE-19 rendezvous.
 
 ```text
-CE-LIVE-10  current-head evidence
-CE-LIVE-11  relation orientation
-CE-LIVE-12  quantitative fixture
-CE-LIVE-13  candidate inventory
-CE-LIVE-14  value readiness
-CE-LIVE-15  authority/build defaults
-CE-LIVE-16  Tensor Core contract
+Fork A:
+CE-LIVE-11  Freeze logical relation orientation and edge identity
+    -> CE-LIVE-13  Built-in candidate and projection activation inventory
+    -> CE-LIVE-16  Bounded Tensor Core feasibility and candidate contract
+
+Fork B:
+CE-LIVE-12  Quantitative biological fixture, provenance, and referee contract
+    -> CE-LIVE-14  Value readiness and asynchronous generation contract
+    -> CE-LIVE-15  Refresh architecture authority and quarantine legacy default builds
+
+Floating:
+CE-LIVE-10  Current-head build, correctness, sanitizer, and evidence rebaseline
+
+Rendezvous:
+10 + 11 + 12 + 13 + 14 + 15 + 16 -> CE-LIVE-19
 ```
 
-All seven are safe concurrently.
+Fork A exclusively owns relation-orientation implementation/tests/docs,
+candidate inventory documentation and benchmark artifacts, and Tensor Core
+contract/evidence-design paths. It publishes
+`CELLERATOR_LOGICAL_EDGE_ORIENTATION_V1_READY`, then
+`CE_LIVE_CANDIDATE_INVENTORY_READY`, then
+`CELLERATOR_TENSOR_CORE_CONTRACT_READY`. Fork A may assume finalized forward and
+transpose semantics only after CE-LIVE-11 is terminal, and the Tensor Core
+contract may assume the actual candidate inventory only after CE-LIVE-13 is
+terminal.
+
+Fork B exclusively owns fixture manifests/tools/tests/docs, runtime value
+readiness implementation/tests/docs, and architecture/build guidance. It
+publishes `CELLERATOR_QUANTITATIVE_FIXTURE_V1_READY`, then
+`CELLERATOR_VALUE_READINESS_V1_READY`, then `CE_LIVE_AUTHORITY_REFRESHED`.
+Fork B may assume the quantitative fixture contract only after CE-LIVE-12 is
+terminal, and authority/build guidance may assume the readiness contract only
+after CE-LIVE-14 is terminal.
+
+CE-LIVE-10 remains unassigned floating validation work. Neither fork owns
+CE-LIVE-19, `docs/CE_LIVE_PROGRAM.md`, root integration CMake seams, or shared
+live integration tests. CE-LIVE-19 is integration-exclusive and receives one
+explicit owner only after all seven Wave A tasks are terminal.
 
 ### Foundation fan-in
 
 ```text
-Wave A
-  → CE-LIVE-19
+CE-LIVE-10 ─────┐
+CE-LIVE-11 ─────┤
+CE-LIVE-12 ─────┤
+CE-LIVE-13 ─────┤
+CE-LIVE-14 ─────┤
+CE-LIVE-15 ─────┤
+CE-LIVE-16 ─────┘
+                 → CE-LIVE-19
 ```
 
 ### Wave B

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-44: Torch quantitative biological smoke and performance validation
 
-Task revision: `1423`; current project revision is in `todo-status.md`.
+Task revision: `1470`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.

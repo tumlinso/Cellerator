@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-36: End-to-end biological evidence and planner-regret campaign
 
-Task revision: `1423`; current project revision is in `todo-status.md`.
+Task revision: `1470`; current project revision is in `todo-status.md`.
 
 ## Objective
 Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.

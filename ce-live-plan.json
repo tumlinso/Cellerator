@@ -439,7 +439,7 @@
         {
           "id": "CE_LIVE_BOOTSTRAP_READY",
           "title": "CE-LIVE bootstrap and seven-task frontier ready",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -566,7 +566,8 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
+      "result": "implemented",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1043,7 +1044,7 @@
       "depends_on": [
         {
           "type": "task",
-          "task_id": "CE-LIVE-01",
+          "task_id": "CE-LIVE-11",
           "state": "done"
         }
       ],
@@ -1167,7 +1168,7 @@
       "depends_on": [
         {
           "type": "task",
-          "task_id": "CE-LIVE-01",
+          "task_id": "CE-LIVE-12",
           "state": "done"
         }
       ],
@@ -1326,7 +1327,7 @@
       "depends_on": [
         {
           "type": "task",
-          "task_id": "CE-LIVE-01",
+          "task_id": "CE-LIVE-14",
           "state": "done"
         }
       ],
@@ -1449,7 +1450,7 @@
       "depends_on": [
         {
           "type": "task",
-          "task_id": "CE-LIVE-01",
+          "task_id": "CE-LIVE-13",
           "state": "done"
         }
       ],

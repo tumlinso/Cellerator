@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-20: CPE2 typed projection activation
 
-Task revision: `1423`; current project revision is in `todo-status.md`.
+Task revision: `1470`; current project revision is in `todo-status.md`.
 
 ## Objective
 Resolve validated CPE2 projection entries into typed non-owning device views for CPK1 row-masked, CSR, FMP1, and CTP1 with exact identity, orientation, schema, location, size, and map validation.

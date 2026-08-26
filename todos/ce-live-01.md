@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-01: Bootstrap, source map, and frontier activation
 
-Task revision: `1451`; current project revision is in `todo-status.md`.
+Task revision: `1470`; current project revision is in `todo-status.md`.
 
 ## Objective
 Reconcile the clean post-CE-ARCH repository, apply the complete CE-LIVE plan transactionally, publish the source and contract map, validate the graph, and leave multiple non-overlapping tasks ready.

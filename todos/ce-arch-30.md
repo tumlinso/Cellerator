@@ -1,3 +1,5 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-ARCH-30: Real-data, adversarial, and end-to-end performance evidence
 
