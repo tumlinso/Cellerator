@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T19:55:29Z",
+  "generated_at": "2026-08-26T20:01:55Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 1642,
+  "project_revision": 1644,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -17839,6 +17839,26 @@
         "revision": 1642,
         "seq": 1642,
         "timestamp": "2026-08-26T19:55:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-19",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CE-LIVE-19\"}",
+        "revision": 1643,
+        "seq": 1643,
+        "timestamp": "2026-08-26T20:01:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "project.reconciled",
+        "payload_json": "{}",
+        "revision": 1644,
+        "seq": 1644,
+        "timestamp": "2026-08-26T20:01:55Z"
       }
     ],
     "evidence": [
@@ -26093,11 +26113,11 @@
         "input_fingerprint": "b66464090372e7b5e48298fd93d0fa330920eb0f55b37e76bf5c78ca25895257",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1624,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26106,11 +26126,11 @@
         "input_fingerprint": "cc7061ee0cb3e87c2d20cf51fa8ce9fde14ad5490270555e0f7417b93ff0b613",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1626,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26119,11 +26139,11 @@
         "input_fingerprint": "8cf1dad29aedac0bf0d7451d860626bcf479c1aefbbfb206fb00e30740973a69",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1628,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26132,11 +26152,11 @@
         "input_fingerprint": "d346ec5305ca1bbcf7c9c76c4bbf1e2edddb18506afdbb3444dd907b2f6e3ea0",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1630,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26171,11 +26191,11 @@
         "input_fingerprint": "58010b98cd32c691057a23cf7167e6ab1fead40e6f1462bc0d6c54810e0db5b8",
         "last_run_at": "2026-08-26T19:55:17Z",
         "required": 1,
-        "revision": 1632,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26184,11 +26204,11 @@
         "input_fingerprint": "537b346bba6b9445deacf74ff3d324967716850d1c101b6e6174cc9f134fcedf",
         "last_run_at": "2026-08-26T19:55:18Z",
         "required": 1,
-        "revision": 1634,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26197,11 +26217,11 @@
         "input_fingerprint": "7882e6ffcade7314a7bcd60d1cc06e5d82159243054b3ae18df852f58f6f3ef9",
         "last_run_at": "2026-08-26T19:55:18Z",
         "required": 1,
-        "revision": 1636,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -26210,11 +26230,11 @@
         "input_fingerprint": "bbfe16b10b5f131c756c104351f81abca0501d3315edef9b54aa72cbcaa39892",
         "last_run_at": "2026-08-26T19:55:20Z",
         "required": 1,
-        "revision": 1639,
-        "status": "passed",
+        "revision": 1644,
+        "status": "invalidated",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 1
+        "valid": 0
       },
       {
         "checkpoint_id": null,
