@@ -1,9 +1,12 @@
 # CE-LIVE candidate and projection activation inventory
 
-This is the CE-LIVE-13 audit of the current operation-core candidates and
-projection preparation seams. It is not a runtime catalog implementation, a
-stable ABI, or a replacement operation framework. The machine-readable audit
-is `bench/ce_live/catalog/candidate_inventory_v1.json`.
+CE-LIVE-13 established the audit of the current operation-core candidates and
+projection preparation seams. CE-LIVE-21 now activates that inventory as the
+deterministic, allocation-free host catalog in
+`include/Cellerator/compute/math/operation_core/builtin_catalog.hh`. It is not
+a planner, stable persistence ABI, runtime owner, or replacement operation
+framework. The original machine-readable audit remains
+`bench/ce_live/catalog/candidate_inventory_v1.json`.
 
 All forward candidates consume the CE-LIVE-11 relation orientation: feature or
 gene source to row, cell, or module destination. Transpose/backward retains the
@@ -91,5 +94,29 @@ kinds, schemas, variants, numeric tuples, and absent bridges fail closed.
 
 Candidate activation remains distinct from planner promotion. The planner must
 compare complete measured cost at the requested reuse horizon and retain a
-strong conventional fallback. No stable activation interface is frozen by this
-inventory.
+strong conventional fallback.
+
+## Built-in catalog v1
+
+`built_in_candidate_catalog()` returns five immutable descriptors in the table
+order above. Each descriptor names the existing factory and registration
+function and records the preparation family, numeric family, projection
+schema/variant, bounded dense width, caller-owned state size/alignment, output
+axis/effect, graph flag, and prebound-view requirements. Transpose explicitly
+requires its logical-edge value map and produces the source/feature axis; it
+does not reverse the logical relation.
+
+`validate_built_in_candidate_catalog()` checks the summaries against the actual
+candidate factories and rejects duplicate identities. The fixed-capacity
+`register_built_in_candidate_catalog()` stages all five candidates before
+committing them to the existing `candidate_registry`, so duplicate or capacity
+failure cannot partially activate the set. Neither operation allocates, owns a
+projection, creates runtime state, selects a device, or performs preparation.
+
+Typed preparation remains in the five existing candidate-specific helpers.
+CE-LIVE-23 may consume the preparation-family and requirement metadata to route
+already-activated projections into those helpers. Catalog presence alone is
+never planner promotion and does not hide projection construction, transfer,
+descriptor, workspace, value-pack, or synchronization cost.
+
+Checkpoint: `CELLERATOR_BUILTIN_CANDIDATE_CATALOG_V1_READY`.
