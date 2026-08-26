@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T20:01:55Z",
+  "generated_at": "2026-08-26T20:28:38Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 1644,
+  "project_revision": 1646,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1211,10 +1211,10 @@
       {
         "id": "CE_LIVE_FOUNDATIONS_READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 1470,
+        "reached_at": "2026-08-26T20:20:45Z",
+        "revision": 1645,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-LIVE-19",
         "title": "CE-LIVE foundations ready"
       },
@@ -17859,6 +17859,26 @@
         "revision": 1644,
         "seq": 1644,
         "timestamp": "2026-08-26T20:01:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-19",
+        "entity_type": "task",
+        "event_type": "task.terminal_checkpoints_finalized",
+        "payload_json": "{\"authority\": \"recorded_successful_terminal_completion\", \"checkpoint_id\": \"CE_LIVE_FOUNDATIONS_READY\", \"completion_revision\": 1642, \"reached_checkpoints\": [\"CE_LIVE_FOUNDATIONS_READY\"], \"task_id\": \"CE-LIVE-19\"}",
+        "revision": 1645,
+        "seq": 1645,
+        "timestamp": "2026-08-26T20:20:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "project.reconciled",
+        "payload_json": "{}",
+        "revision": 1646,
+        "seq": 1646,
+        "timestamp": "2026-08-26T20:28:38Z"
       }
     ],
     "evidence": [
@@ -26100,7 +26120,7 @@
         "input_fingerprint": "9294014d279abc5e43efbd76af8876b815227b4973d04431c76867161bcb42f8",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1622,
+        "revision": 1645,
         "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "file_exists",
@@ -26113,11 +26133,11 @@
         "input_fingerprint": "b66464090372e7b5e48298fd93d0fa330920eb0f55b37e76bf5c78ca25895257",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26126,11 +26146,11 @@
         "input_fingerprint": "cc7061ee0cb3e87c2d20cf51fa8ce9fde14ad5490270555e0f7417b93ff0b613",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26139,11 +26159,11 @@
         "input_fingerprint": "8cf1dad29aedac0bf0d7451d860626bcf479c1aefbbfb206fb00e30740973a69",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26152,11 +26172,11 @@
         "input_fingerprint": "d346ec5305ca1bbcf7c9c76c4bbf1e2edddb18506afdbb3444dd907b2f6e3ea0",
         "last_run_at": "2026-08-26T19:55:16Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26191,11 +26211,11 @@
         "input_fingerprint": "58010b98cd32c691057a23cf7167e6ab1fead40e6f1462bc0d6c54810e0db5b8",
         "last_run_at": "2026-08-26T19:55:17Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26204,11 +26224,11 @@
         "input_fingerprint": "537b346bba6b9445deacf74ff3d324967716850d1c101b6e6174cc9f134fcedf",
         "last_run_at": "2026-08-26T19:55:18Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26217,11 +26237,11 @@
         "input_fingerprint": "7882e6ffcade7314a7bcd60d1cc06e5d82159243054b3ae18df852f58f6f3ef9",
         "last_run_at": "2026-08-26T19:55:18Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -26230,11 +26250,11 @@
         "input_fingerprint": "bbfe16b10b5f131c756c104351f81abca0501d3315edef9b54aa72cbcaa39892",
         "last_run_at": "2026-08-26T19:55:20Z",
         "required": 1,
-        "revision": 1644,
-        "status": "invalidated",
+        "revision": 1645,
+        "status": "passed",
         "task_id": "CE-LIVE-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -35733,6 +35753,125 @@
     ],
     "resource_requests": [],
     "task_artifacts": [],
+    "task_completion_gates": [
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "6140a21b-ad18-41dc-b502-449425e053db",
+        "evidence_revision": 1622,
+        "gate_id": "CE-LIVE-19-ARTIFACT",
+        "input_fingerprint": "9294014d279abc5e43efbd76af8876b815227b4973d04431c76867161bcb42f8",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"file_exists\", \"evidence_metadata\": {\"exists\": true, \"input_fingerprint\": \"9294014d279abc5e43efbd76af8876b815227b4973d04431c76867161bcb42f8\", \"inputs\": {\"command_contract\": {\"path\": \"docs/CE_LIVE_PROGRAM.md\"}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"path\": \"docs/CE_LIVE_PROGRAM.md\", \"resources\": [], \"started_revision\": 1621}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6140a21b-ad18-41dc-b502-449425e053db\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "04572a1d-f405-4fa5-a6af-4b6f3e9aa717",
+        "evidence_revision": 1624,
+        "gate_id": "CE-LIVE-19-BUILD",
+        "input_fingerprint": "b66464090372e7b5e48298fd93d0fa330920eb0f55b37e76bf5c78ca25895257",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"cmake\", \"--build\", \"build-dissolution-smoke\", \"--target\", \"celleratorValueGenerationReuseTest\", \"-j\", \"4\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b66464090372e7b5e48298fd93d0fa330920eb0f55b37e76bf5c78ca25895257\", \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"build-dissolution-smoke\", \"--target\", \"celleratorValueGenerationReuseTest\", \"-j\", \"4\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1623}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/04572a1d-f405-4fa5-a6af-4b6f3e9aa717\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "4e5200ed-54b0-4793-a49d-b5f7fc89d74c",
+        "evidence_revision": 1626,
+        "gate_id": "CE-LIVE-19-CORRECTNESS",
+        "input_fingerprint": "cc7061ee0cb3e87c2d20cf51fa8ce9fde14ad5490270555e0f7417b93ff0b613",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"./build-dissolution-smoke/celleratorValueGenerationReuseTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"cc7061ee0cb3e87c2d20cf51fa8ce9fde14ad5490270555e0f7417b93ff0b613\", \"inputs\": {\"command_contract\": {\"argv\": [\"./build-dissolution-smoke/celleratorValueGenerationReuseTest\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1625}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/4e5200ed-54b0-4793-a49d-b5f7fc89d74c\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "1fa34cfb-9d5a-4608-969b-3db498cd99e6",
+        "evidence_revision": 1628,
+        "gate_id": "CE-LIVE-19-DIFF-CHECK",
+        "input_fingerprint": "8cf1dad29aedac0bf0d7451d860626bcf479c1aefbbfb206fb00e30740973a69",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"8cf1dad29aedac0bf0d7451d860626bcf479c1aefbbfb206fb00e30740973a69\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1627}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/1fa34cfb-9d5a-4608-969b-3db498cd99e6\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "04721fa2-dbb7-4d03-9b2e-aedfcb51ae82",
+        "evidence_revision": 1630,
+        "gate_id": "CE-LIVE-19-FRONTIER",
+        "input_fingerprint": "d346ec5305ca1bbcf7c9c76c4bbf1e2edddb18506afdbb3444dd907b2f6e3ea0",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"ready\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d346ec5305ca1bbcf7c9c76c4bbf1e2edddb18506afdbb3444dd907b2f6e3ea0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"ready\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1629}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/04721fa2-dbb7-4d03-9b2e-aedfcb51ae82\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "5376fab2-375b-43b5-b715-601d0300b5d5",
+        "evidence_revision": 1632,
+        "gate_id": "CE-LIVE-19-SCOPE-AUDIT",
+        "input_fingerprint": "58010b98cd32c691057a23cf7167e6ab1fead40e6f1462bc0d6c54810e0db5b8",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"58010b98cd32c691057a23cf7167e6ab1fead40e6f1462bc0d6c54810e0db5b8\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1631}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/5376fab2-375b-43b5-b715-601d0300b5d5\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "95e5e9be-4f2b-43e7-94f7-04ce6eea5eb9",
+        "evidence_revision": 1634,
+        "gate_id": "CE-LIVE-19-TODO-AUDIT",
+        "input_fingerprint": "537b346bba6b9445deacf74ff3d324967716850d1c101b6e6174cc9f134fcedf",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"537b346bba6b9445deacf74ff3d324967716850d1c101b6e6174cc9f134fcedf\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1633}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/95e5e9be-4f2b-43e7-94f7-04ce6eea5eb9\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "29d978be-abda-41e8-83ee-a8fdaa0cd3b3",
+        "evidence_revision": 1636,
+        "gate_id": "CE-LIVE-19-TODO-EXPORT",
+        "input_fingerprint": "7882e6ffcade7314a7bcd60d1cc06e5d82159243054b3ae18df852f58f6f3ef9",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"export\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"7882e6ffcade7314a7bcd60d1cc06e5d82159243054b3ae18df852f58f6f3ef9\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"export\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1635}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/29d978be-abda-41e8-83ee-a8fdaa0cd3b3\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      },
+      {
+        "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
+        "completion_revision": 1642,
+        "evidence_id": "5f82d23a-e221-4d3d-bff5-1d301d69c787",
+        "evidence_revision": 1639,
+        "gate_id": "CE-LIVE-19-TODO-RECONCILE",
+        "input_fingerprint": "bbfe16b10b5f131c756c104351f81abca0501d3315edef9b54aa72cbcaa39892",
+        "provenance_json": "{\"claim_id\": \"43e477f9-0d7f-4024-935a-2b191539e290\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"reconcile\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"bbfe16b10b5f131c756c104351f81abca0501d3315edef9b54aa72cbcaa39892\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"reconcile\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"e36f4126cbcb62554a851a6e5c8cb2c0f5255145033c2e89e26dfdcb1f5e7f44\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-19.md\"], \"files\": [], \"git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\", \"interfaces\": [], \"recorded_git_head\": \"4a9462c9b21f1f1e33df27c370471232105eda34\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1637}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/5f82d23a-e221-4d3d-bff5-1d301d69c787\", \"source\": \"legacy_completion_handoff\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-19",
+        "valid": 1,
+        "validation_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34"
+      }
+    ],
     "task_dependencies": [
       {
         "barrier_id": null,
@@ -39556,6 +39695,9 @@
     "tasks": [
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-00",
         "kind": "epic",
@@ -39578,6 +39720,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-01",
         "kind": "validation_task",
@@ -39600,6 +39745,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-02",
         "kind": "workstream",
@@ -39622,6 +39770,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-10",
         "kind": "workstream",
@@ -39644,6 +39795,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-11",
         "kind": "workstream",
@@ -39666,6 +39820,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-12",
         "kind": "workstream",
@@ -39688,6 +39845,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-20",
         "kind": "workstream",
@@ -39710,6 +39870,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-21",
         "kind": "workstream",
@@ -39732,6 +39895,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-22",
         "kind": "workstream",
@@ -39754,6 +39920,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-30",
         "kind": "validation_task",
@@ -39776,6 +39945,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-31",
         "kind": "workstream",
@@ -39798,6 +39970,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-40",
         "kind": "workstream",
@@ -39820,6 +39995,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-50",
         "kind": "validation_task",
@@ -39842,6 +40020,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CE-ARCH-60",
         "kind": "integration_task",
@@ -39864,6 +40045,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T16:58:50Z",
         "id": "CE-ARCH-61",
         "kind": "validation_task",
@@ -39886,6 +40070,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70",
         "kind": "epic",
@@ -39908,6 +40095,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70A",
         "kind": "integration_task",
@@ -39930,6 +40120,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70B",
         "kind": "workstream",
@@ -39952,6 +40145,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70C",
         "kind": "workstream",
@@ -39974,6 +40170,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70D",
         "kind": "workstream",
@@ -39996,6 +40195,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70E",
         "kind": "workstream",
@@ -40018,6 +40220,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70F",
         "kind": "workstream",
@@ -40040,6 +40245,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-70G",
         "kind": "validation_task",
@@ -40062,6 +40270,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-71",
         "kind": "workstream",
@@ -40084,6 +40295,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-72",
         "kind": "workstream",
@@ -40106,6 +40320,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-73",
         "kind": "workstream",
@@ -40128,6 +40345,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-74",
         "kind": "validation_task",
@@ -40150,6 +40370,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-75",
         "kind": "workstream",
@@ -40172,6 +40395,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-76",
         "kind": "validation_task",
@@ -40194,6 +40420,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-77",
         "kind": "workstream",
@@ -40216,6 +40445,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-78",
         "kind": "workstream",
@@ -40238,6 +40470,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T18:19:59Z",
         "id": "CE-ARCH-79",
         "kind": "integration_task",
@@ -40260,6 +40495,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-80",
         "kind": "epic",
@@ -40282,6 +40520,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-81",
         "kind": "validation_task",
@@ -40304,6 +40545,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-82",
         "kind": "workstream",
@@ -40326,6 +40570,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-83",
         "kind": "workstream",
@@ -40348,6 +40595,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-84",
         "kind": "workstream",
@@ -40370,6 +40620,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-85",
         "kind": "workstream",
@@ -40392,6 +40645,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-86",
         "kind": "workstream",
@@ -40414,6 +40670,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-87",
         "kind": "workstream",
@@ -40436,6 +40695,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-88",
         "kind": "workstream",
@@ -40458,6 +40720,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-89",
         "kind": "integration_task",
@@ -40480,6 +40745,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-90",
         "kind": "workstream",
@@ -40502,6 +40770,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-91",
         "kind": "integration_task",
@@ -40524,6 +40795,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-25T14:23:40Z",
         "id": "CE-ARCH-92",
         "kind": "validation_task",
@@ -40546,6 +40820,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T09:10:18Z",
         "id": "CE-ARCH-93",
         "kind": "integration_task",
@@ -40568,6 +40845,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-00",
         "kind": "epic",
@@ -40590,6 +40870,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-01",
         "kind": "integration_task",
@@ -40612,6 +40895,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-10",
         "kind": "validation_task",
@@ -40634,6 +40920,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-11",
         "kind": "task",
@@ -40656,6 +40945,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-12",
         "kind": "task",
@@ -40678,6 +40970,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-13",
         "kind": "task",
@@ -40700,6 +40995,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-14",
         "kind": "task",
@@ -40722,6 +41020,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-15",
         "kind": "task",
@@ -40744,6 +41045,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-16",
         "kind": "task",
@@ -40766,6 +41070,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-19",
         "kind": "integration_task",
@@ -40788,6 +41095,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-20",
         "kind": "task",
@@ -40810,6 +41120,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-21",
         "kind": "task",
@@ -40832,6 +41145,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-22",
         "kind": "task",
@@ -40854,6 +41170,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-23",
         "kind": "task",
@@ -40876,6 +41195,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-24",
         "kind": "task",
@@ -40898,6 +41220,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-25",
         "kind": "task",
@@ -40920,6 +41245,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-26",
         "kind": "task",
@@ -40942,6 +41270,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-29",
         "kind": "integration_task",
@@ -40964,6 +41295,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-30",
         "kind": "task",
@@ -40986,6 +41320,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-31",
         "kind": "validation_task",
@@ -41008,6 +41345,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-32",
         "kind": "task",
@@ -41030,6 +41370,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-33",
         "kind": "task",
@@ -41052,6 +41395,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-34",
         "kind": "validation_task",
@@ -41074,6 +41420,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-35",
         "kind": "validation_task",
@@ -41096,6 +41445,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-36",
         "kind": "validation_task",
@@ -41118,6 +41470,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-37",
         "kind": "integration_task",
@@ -41140,6 +41495,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-40",
         "kind": "task",
@@ -41162,6 +41520,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-41",
         "kind": "task",
@@ -41184,6 +41545,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-42",
         "kind": "task",
@@ -41206,6 +41570,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-43",
         "kind": "integration_task",
@@ -41228,6 +41595,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-44",
         "kind": "validation_task",
@@ -41250,6 +41620,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-45",
         "kind": "integration_task",
@@ -41272,6 +41645,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-00",
         "kind": "epic",
@@ -41294,6 +41670,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-01",
         "kind": "workstream",
@@ -41316,6 +41695,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-02",
         "kind": "workstream",
@@ -41338,6 +41720,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-03",
         "kind": "workstream",
@@ -41360,6 +41745,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-04",
         "kind": "workstream",
@@ -41382,6 +41770,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-05",
         "kind": "workstream",
@@ -41404,6 +41795,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-06",
         "kind": "workstream",
@@ -41426,6 +41820,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-07",
         "kind": "workstream",
@@ -41448,6 +41845,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-08",
         "kind": "workstream",
@@ -41470,6 +41870,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-09",
         "kind": "workstream",
@@ -41492,6 +41895,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-10",
         "kind": "workstream",
@@ -41514,6 +41920,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-11",
         "kind": "validation_task",
@@ -41536,6 +41945,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-12",
         "kind": "workstream",
@@ -41558,6 +41970,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "CP-BP-13",
         "kind": "integration_task",
@@ -41580,6 +41995,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-00",
         "kind": "task",
@@ -41602,6 +42020,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-00A",
         "kind": "integration_task",
@@ -41624,6 +42045,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-01",
         "kind": "workstream",
@@ -41646,6 +42070,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-02",
         "kind": "workstream",
@@ -41668,6 +42095,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:39:38Z",
         "id": "CP-MATH-02A",
         "kind": "task",
@@ -41690,6 +42120,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-03",
         "kind": "workstream",
@@ -41712,6 +42145,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-04",
         "kind": "workstream",
@@ -41734,6 +42170,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-05",
         "kind": "workstream",
@@ -41756,6 +42195,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-06",
         "kind": "task",
@@ -41778,6 +42220,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-07",
         "kind": "workstream",
@@ -41800,6 +42245,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-08",
         "kind": "task",
@@ -41822,6 +42270,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-08A",
         "kind": "validation_task",
@@ -41844,6 +42295,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-09",
         "kind": "workstream",
@@ -41866,6 +42320,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-10",
         "kind": "task",
@@ -41888,6 +42345,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-11",
         "kind": "task",
@@ -41910,6 +42370,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-12",
         "kind": "task",
@@ -41932,6 +42395,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-12D",
         "kind": "task",
@@ -41954,6 +42420,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-13",
         "kind": "task",
@@ -41976,6 +42445,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-14",
         "kind": "task",
@@ -41998,6 +42470,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-15",
         "kind": "task",
@@ -42020,6 +42495,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-16",
         "kind": "task",
@@ -42042,6 +42520,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-17",
         "kind": "task",
@@ -42064,6 +42545,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T17:22:42Z",
         "id": "CP-MATH-HARD-DATA",
         "kind": "task",
@@ -42086,6 +42570,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-OPT-NOT-PROMOTED",
         "kind": "task",
@@ -42108,6 +42595,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-OPT-PROMOTED",
         "kind": "task",
@@ -42130,6 +42620,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-18T16:35:38Z",
         "id": "CP-MATH-REAL-DATA",
         "kind": "task",
@@ -42152,6 +42645,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "baseplane-dna2-benchmark",
         "kind": "validation_task",
@@ -42174,6 +42670,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "baseplane-dna2-explicit-widths",
         "kind": "validation_task",
@@ -42196,6 +42695,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "cellerator-hierarchy-reset",
         "kind": "validation_task",
@@ -42218,6 +42720,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "cellerator-runtime-autotune",
         "kind": "validation_task",
@@ -42240,6 +42745,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "cellerator-sparse-ml-layout",
         "kind": "validation_task",
@@ -42262,6 +42770,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "cellpack-packing-plan-cuda-evaluator",
         "kind": "workstream",
@@ -42284,6 +42795,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "cellpack-packing-plan-evaluator",
         "kind": "validation_task",
@@ -42306,6 +42820,9 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-21T11:49:46Z",
         "id": "sequence-bits-dna2",
         "kind": "validation_task",
