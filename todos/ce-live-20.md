@@ -1,0 +1,30 @@
+<!-- todo-orchestrator:v2-managed:start -->
+# CE-LIVE-20: CPE2 typed projection activation
+
+Task revision: `1423`; current project revision is in `todo-status.md`.
+
+## Objective
+Resolve validated CPE2 projection entries into typed non-owning device views for CPK1 row-masked, CSR, FMP1, and CTP1 with exact identity, orientation, schema, location, size, and map validation.
+
+## State
+- Lifecycle: `planned`
+- Execution: `ready`
+- Parallel policy: `parallel_safe`
+- Result: `-`
+
+## Next Action
+_None._
+
+## Ownership
+- `exclusive`: `components/CellPack/tests/persistence/execution_image_v2_device_test.cu`
+- `exclusive`: `include/Cellerator/execution/projection_activation.hh`
+- `exclusive`: `src/execution/projection_activation.cc`
+- `exclusive`: `tests/execution/projection_activation_test.cu`
+- `read`: `components/CellPack/include/CellPack/persistence/execution_image_v2.hh`
+- `read`: `include/Cellerator/compute/math`
+
+## Dependencies
+- `task`: `CE-LIVE-11`
+- `task`: `CE-LIVE-13`
+- `task`: `CE-LIVE-19`
+<!-- todo-orchestrator:v2-managed:end -->

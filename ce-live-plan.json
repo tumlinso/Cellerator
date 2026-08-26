@@ -1,0 +1,5434 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "CE-LIVE",
+    "workspace": "cellerator",
+    "repository": "Cellerator",
+    "baseline_commit": "0062596dce9fee4d7c39f34f682ad848a0ca6c68",
+    "baseline_todo_revision": 1422,
+    "program_document": "docs/CE_LIVE_PROGRAM.md"
+  },
+  "invariants": [
+    {
+      "id": "CE-LIVE-IDENTITY",
+      "rule": "Shape never establishes biological compatibility. Domain, exact order, geometry, partition, structure identity and epoch, and value generation remain explicit.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-ORIENTATION",
+      "rule": "Forward CP-BP relations use feature-or-gene source and row-or-cell destination. Transpose/backward shares logical edge identity and uses explicit orientation metadata.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-LIFETIME",
+      "rule": "Changing dense pointers, output pointers, scalars, streams, transient workspace, value allocation address, or value generation does not rebuild immutable topology or require structural preparation unless a declared dependency changes.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-NATIVE",
+      "rule": "No repeated native run path silently reconstructs CSR, BELL, COO, dense tensors, or canonical order. Conventional projections are legal only as explicit planner candidates with visible conversion cost.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-RUNTIME",
+      "rule": "Steady-state execution performs no hidden allocation, device selection, descriptor creation, structural hashing, host round trip, or device-wide synchronization.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-PLANNER",
+      "rule": "Candidate selection uses complete cost, expected reuse, independent correctness, and a strong conventional fallback. Analytical models shortlist; empirical evidence decides uncertain cases.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-FIXTURE",
+      "rule": "The quantitative PBMC3K fixture is for computational correctness and performance only. Missing biological provenance must remain visible and no scientific interpretation may be inferred.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-STORAGE",
+      "rule": "Cellerator does not become an H5AD parser, archive owner, source service, network service, or CellShard replacement. Fixture parsing remains in test and benchmark tooling.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-CPE2",
+      "rule": "CPE2 remains pointer-free persistent execution IR. Typed activation is non-owning. CellShard transports opaque bytes and never selects kernels or interprets Cellerator projection semantics.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-BASEPLANE",
+      "rule": "Baseplane remains a separate sequence-engineering repository. CE-LIVE may consume its frozen interfaces but may not duplicate or relocate its general execution engine.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-TORCH",
+      "rule": "CelleraTorch never becomes the canonical allocator, parameter owner, planner, runtime, or implementation home for reusable Cellerator math.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-TENSOR",
+      "rule": "Tensor Core metadata and kernels remain architecture-specific projection and candidate state and never enter stable biological identity.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-EVIDENCE",
+      "rule": "Correctness and adversarial validation precede timing. Kernel-only timing is not sufficient for promotion.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    },
+    {
+      "id": "CE-LIVE-OWNERSHIP",
+      "rule": "Every source mutation occurs under a claimed task with a matching exclusive scope. Integration files are modified only by designated fan-in tasks.",
+      "severity": "error",
+      "scope": {
+        "program": "CE-LIVE"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "CE-LIVE-D1",
+      "title": "Forward relation direction",
+      "value": "feature-or-gene-source-to-row-or-cell-destination; transpose/backward uses an explicit projection and value-position map over the same logical edges",
+      "allowed": [
+        "feature-or-gene-source-to-row-or-cell-destination; transpose/backward uses an explicit projection and value-position map over the same logical edges"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D2",
+      "title": "Quantitative PBMC3K fixture scope",
+      "value": "checksum-pinned computational correctness and performance fixture only; no scientific interpretation",
+      "allowed": [
+        "checksum-pinned computational correctness and performance fixture only; no scientific interpretation"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D3",
+      "title": "Executable program ownership",
+      "value": "host orchestration over biological ABI, CPE2 activation, operation core, planner, sole execution session, prepared operations, and launch bindings",
+      "allowed": [
+        "host orchestration over biological ABI, CPE2 activation, operation core, planner, sole execution session, prepared operations, and launch bindings"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D4",
+      "title": "Planner scope",
+      "value": "bounded single-operation and bounded linear connected-operation planners only; no general DAG planner",
+      "allowed": [
+        "bounded single-operation and bounded linear connected-operation planners only; no general DAG planner"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D5",
+      "title": "Conventional fallback",
+      "value": "session-integrated cuSPARSE CSR SpMV and SpMM candidate with all phase costs visible",
+      "allowed": [
+        "session-integrated cuSPARSE CSR SpMV and SpMM candidate with all phase costs visible"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D6",
+      "title": "Value readiness",
+      "value": "runtime readiness is separate from mutable numerical generation; explicit same-stream and cross-stream ordering without device-wide synchronization",
+      "allowed": [
+        "runtime readiness is separate from mutable numerical generation; explicit same-stream and cross-stream ordering without device-wide synchronization"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D7",
+      "title": "Tensor Core posture",
+      "value": "at most one sm_70 FP16-input FP32-accumulation candidate; measured promotion or measured non-promotion are both valid",
+      "allowed": [
+        "at most one sm_70 FP16-input FP32-accumulation candidate; measured promotion or measured non-promotion are both valid"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D8",
+      "title": "CelleraTorch ordering",
+      "value": "broad adapter work starts only after CELLERATOR_CELLERATORCH_ENTRY_V1; Cellerator retains ownership",
+      "allowed": [
+        "broad adapter work starts only after CELLERATOR_CELLERATORCH_ENTRY_V1; Cellerator retains ownership"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D9",
+      "title": "CellShard boundary",
+      "value": "first live replay uses existing opaque CPEXEC01 compatibility; CPEXEC02 remains a later external integration",
+      "allowed": [
+        "first live replay uses existing opaque CPEXEC01 compatibility; CPEXEC02 remains a later external integration"
+      ]
+    },
+    {
+      "id": "CE-LIVE-D10",
+      "title": "Baseplane boundary",
+      "value": "consume frozen sequence predicate and event contracts; do not modify Baseplane or repair its independent ledger",
+      "allowed": [
+        "consume frozen sequence predicate and event contracts; do not modify Baseplane or repair its independent ledger"
+      ]
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-live-integration",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "integration fan-in and project-exclusive publication"
+      }
+    },
+    {
+      "name": "cuda-benchmark-mutex",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "serialize comparable benchmark and profiler timing"
+      }
+    }
+  ],
+  "resource_classes": [
+    {
+      "id": "accelerator",
+      "mode": "exclusive",
+      "metadata": {
+        "hardware": "Tesla V100-SXM2-16GB",
+        "architecture": "sm_70",
+        "bootstrap_execution": false
+      },
+      "instances": [
+        {
+          "id": "gpu-0",
+          "capacity": 1,
+          "metadata": {
+            "logical_device": "gpu-0"
+          }
+        },
+        {
+          "id": "gpu-1",
+          "capacity": 1,
+          "metadata": {
+            "logical_device": "gpu-1"
+          }
+        },
+        {
+          "id": "gpu-2",
+          "capacity": 1,
+          "metadata": {
+            "logical_device": "gpu-2"
+          }
+        },
+        {
+          "id": "gpu-3",
+          "capacity": 1,
+          "metadata": {
+            "logical_device": "gpu-3"
+          }
+        }
+      ]
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "cellerator-logical-edge-orientation-v1",
+      "owner_task_id": "CE-LIVE-11",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "docs/CE_LIVE_RELATION_ORIENTATION.md",
+        "include/Cellerator/execution/lifetimes.hh",
+        "components/CellPack/include/CellPack/semantic_geometry.hh"
+      ]
+    },
+    {
+      "id": "cellerator-quantitative-fixture-v1",
+      "owner_task_id": "CE-LIVE-12",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "data/manifests/ce_live",
+        "scripts/ce_live_fixture.py",
+        "docs/CE_LIVE_QUANTITATIVE_FIXTURE.md"
+      ]
+    },
+    {
+      "id": "cellerator-value-readiness-v1",
+      "owner_task_id": "CE-LIVE-14",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/runtime/value_readiness.cuh",
+        "docs/CE_LIVE_VALUE_READINESS.md"
+      ]
+    },
+    {
+      "id": "cellerator-projection-activation-v1",
+      "owner_task_id": "CE-LIVE-20",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/execution/projection_activation.hh"
+      ]
+    },
+    {
+      "id": "cellerator-builtin-candidate-catalog-v1",
+      "owner_task_id": "CE-LIVE-21",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/math/operation_core/builtin_catalog.hh",
+        "docs/CE_LIVE_CANDIDATE_CATALOG.md"
+      ]
+    },
+    {
+      "id": "cellerator-preparation-factory-v1",
+      "owner_task_id": "CE-LIVE-23",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/math/operation_core/preparation_factory.hh"
+      ]
+    },
+    {
+      "id": "cellerator-executable-program-v1",
+      "owner_task_id": "CE-LIVE-30",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/execution/program.hh",
+        "docs/CE_LIVE_EXECUTABLE_PROGRAM.md"
+      ]
+    },
+    {
+      "id": "cellerator-native-training-program-v1",
+      "owner_task_id": "CE-LIVE-33",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/execution/training_program.hh"
+      ]
+    },
+    {
+      "id": "cellerator-cellera-torch-entry-v1",
+      "owner_task_id": "CE-LIVE-37",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/parameters.hh",
+        "include/Cellerator/execution/program.hh",
+        "include/Cellerator/execution/training_program.hh",
+        "include/Cellerator/runtime/value_readiness.cuh",
+        "docs/CE_LIVE_PROGRAM.md"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-LIVE-00",
+      "parent_id": null,
+      "title": "Live biological activation and CelleraTorch entry",
+      "kind": "epic",
+      "priority": 400,
+      "parallel_policy": "serial",
+      "objective": "Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.",
+      "scope": {
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "CE-LIVE-01",
+      "title": "Bootstrap, source map, and frontier activation",
+      "kind": "integration_task",
+      "priority": 399,
+      "parallel_policy": "project_exclusive",
+      "objective": "Reconcile the clean post-CE-ARCH repository, apply the complete CE-LIVE plan transactionally, publish the source and contract map, validate the graph, and leave multiple non-overlapping tasks ready.",
+      "next_action": "Validate and apply the full plan, claim this task, publish the program document and generated projections, audit/reconcile/export, commit, finish, and verify the seven-task frontier.",
+      "notes": "Do not implement any later task while holding CE-LIVE-01.",
+      "scope": {
+        "exclusive_paths": [
+          ".todo-orchestrator",
+          "ce-live-plan.json",
+          "docs/CE_LIVE_PROGRAM.md",
+          "todo-status.md",
+          "todos.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_BOOTSTRAP_READY",
+          "title": "CE-LIVE bootstrap and seven-task frontier ready",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-01-PLAN",
+          "type": "file_exists",
+          "required": true,
+          "path": "ce-live-plan.json",
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-DOCUMENT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_PROGRAM.md",
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-PLAN-VALIDATE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "plan",
+            "validate",
+            "--repo-root",
+            ".",
+          "--json",
+          "--file",
+          "ce-live-plan.json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true,
+          "checkpoint_id": "CE_LIVE_BOOTSTRAP_READY"
+        },
+        {
+          "id": "CE-LIVE-01-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Validate project-control overview/frontier and exact seven-task post-finish frontier."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-10",
+      "title": "Current-head build, correctness, sanitizer, and evidence rebaseline",
+      "kind": "validation_task",
+      "priority": 380,
+      "objective": "Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.",
+      "notes": "No implementation fixes. A discovered failure becomes a bounded child or blocker. Local worker suitable for host inventory; CUDA remains controller-owned.",
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/baseline",
+          "docs/CE_LIVE_BASELINE.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "tags": [
+        "local-worker-suitable",
+        "cuda-heavy"
+      ],
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_CURRENT_HEAD_BASELINED",
+          "title": "Current-head build, correctness, sanitizer, and evidence rebaseline",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-10-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_BASELINE.md"
+        },
+        {
+          "id": "CE-LIVE-10-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorValueGenerationReuseTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-10-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorValueGenerationReuseTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-10-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-10-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-10-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-10 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-10-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-10-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-10-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-11",
+      "title": "Freeze logical relation orientation and edge identity",
+      "kind": "task",
+      "priority": 379,
+      "objective": "Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.",
+      "notes": "Acceptance: adapter-to-candidate integration; row-masked and feature-major share forward identity; transpose shares logical edges and exact value-position map; swapped axes reject; canonical row/feature recovery exact. Source archaeology added the CP-BP semantic-geometry adapter header/source/test because it currently constructs row-to-feature.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/native_tile_view.hh",
+          "src/compute/math/native_tile_view.cc",
+          "tests/math_native_tile_adapter_test.cc",
+          "tests/math_core/row_masked_n1_candidate_test.cu",
+          "tests/math_core/feature_major_small_n_candidate_test.cu",
+          "tests/math_core/transpose_backward_candidate_test.cu",
+          "components/CellPack/include/CellPack/semantic_geometry.hh",
+          "components/CellPack/src/semantic_geometry.cc",
+          "components/CellPack/tests/semantic_geometry_adapter_test.cc",
+          "docs/CE_LIVE_RELATION_ORIENTATION.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution",
+          "components/CellPack",
+          "src/compute/math/operation_core"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LOGICAL_EDGE_ORIENTATION_V1_READY",
+          "title": "Freeze logical relation orientation and edge identity",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-logical-edge-orientation-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-11-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_RELATION_ORIENTATION.md"
+        },
+        {
+          "id": "CE-LIVE-11-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "cellPackSemanticGeometryAdapterTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-11-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/cellPackSemanticGeometryAdapterTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-11-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "components/CellPack/tests/semantic_geometry_adapter_test.cc",
+          "pattern": "swapp|reject|invalid"
+        },
+        {
+          "id": "CE-LIVE-11-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-11-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-11-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-11 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-12",
+      "title": "Quantitative biological fixture, provenance, and referee contract",
+      "kind": "task",
+      "priority": 378,
+      "objective": "Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.",
+      "notes": "Verify checksum; exact H5AD matrix path/layer, dtype, orientation, selected rows, feature-index digest, seed 7 mapping, extracted-value checksum, identities; inspect full value distribution; generation 1 validated cast values; generation 2 deterministic numerical stress only; initially 512 rows; no core H5AD parser or large committed matrix.",
+      "scope": {
+        "exclusive_paths": [
+          "data/manifests/ce_live",
+          "bench/ce_live/fixture",
+          "tests/live/fixture",
+          "scripts/ce_live_fixture.py",
+          "docs/CE_LIVE_QUANTITATIVE_FIXTURE.md"
+        ],
+        "read_paths": [
+          "data/manifests/architecture_evidence",
+          "data/test/reference"
+        ]
+      },
+      "tags": [
+        "local-worker-suitable"
+      ],
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_QUANTITATIVE_FIXTURE_V1_READY",
+          "title": "Quantitative biological fixture, provenance, and referee contract",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-quantitative-fixture-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-12-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_QUANTITATIVE_FIXTURE.md"
+        },
+        {
+          "id": "CE-LIVE-12-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "cpMathRefereeFoundationTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-12-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/cpMathRefereeFoundationTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-12-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-12-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-12-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-12 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-13",
+      "title": "Built-in candidate and projection activation inventory",
+      "kind": "task",
+      "priority": 377,
+      "objective": "Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.",
+      "notes": "Inventory row-masked CPK1 N=1, custom CSR N=1, feature-major warp/CTA, transpose/backward, native training slice, sequence integration, cuSPARSE/legacy paths, dense-fragment/reserved kinds, and every missing preparation bridge. No stable interface frozen.",
+      "scope": {
+        "exclusive_paths": [
+          "docs/CE_LIVE_CANDIDATE_CATALOG.md",
+          "bench/ce_live/catalog"
+        ],
+        "read_paths": [
+          "include/Cellerator/compute/math",
+          "src/compute/math",
+          "include/Cellerator/planner",
+          "components/CellPack/include/CellPack/persistence"
+        ]
+      },
+      "tags": [
+        "local-worker-suitable"
+      ],
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_CANDIDATE_INVENTORY_READY",
+          "title": "Built-in candidate and projection activation inventory",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-13-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_CANDIDATE_CATALOG.md"
+        },
+        {
+          "id": "CE-LIVE-13-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorOperationCoreTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-13-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorOperationCoreTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-13-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-13-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-13-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-13 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-14",
+      "title": "Value readiness and asynchronous generation contract",
+      "kind": "task",
+      "priority": 376,
+      "objective": "Design and implement the runtime-side generation-readiness token or record with same-stream fast paths, cross-stream waits, failed-enqueue safety, and no event or stream ownership in the persistent biological ABI.",
+      "notes": "Acceptance: failed enqueue does not publish; same-stream has no host sync; cross-stream uses explicit event ordering; no cudaDeviceSynchronize; explicit event cleanup; no pointer identity; no CPE2 serialization.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/runtime/value_readiness.cuh",
+          "src/runtime/value_readiness.cu",
+          "tests/runtime/value_readiness_test.cu",
+          "docs/CE_LIVE_VALUE_READINESS.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/runtime/session.cuh",
+          "include/Cellerator/execution/lifetimes.hh",
+          "include/Cellerator/execution/launch_bindings.hh"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_VALUE_READINESS_V1_READY",
+          "title": "Value readiness and asynchronous generation contract",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-value-readiness-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-14-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/runtime/value_readiness.cuh"
+        },
+        {
+          "id": "CE-LIVE-14-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorExecutionSessionTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-14-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorExecutionSessionTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-14-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/runtime/value_readiness_test.cu",
+          "pattern": "fail|stale|generation"
+        },
+        {
+          "id": "CE-LIVE-14-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-14-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-14-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-14 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-14-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-14-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-14-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-15",
+      "title": "Refresh architecture authority and quarantine legacy default builds",
+      "kind": "task",
+      "priority": 375,
+      "objective": "Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.",
+      "notes": "Default configure does not discover Torch; explicit compatibility still enables Torch; delete no legacy code; ownership unchanged.",
+      "scope": {
+        "exclusive_paths": [
+          "AGENTS.md",
+          "README.md",
+          "planning_strategy.md",
+          "docs/current_implementation.qmd",
+          "docs/migration_roadmap.qmd",
+          "CMakeLists.txt"
+        ],
+        "read_paths": [
+          "scope.md",
+          "docs/architecture.qmd"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_AUTHORITY_REFRESHED",
+          "title": "Refresh architecture authority and quarantine legacy default builds",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-15-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/current_implementation.qmd"
+        },
+        {
+          "id": "CE-LIVE-15-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "help",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-15-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorOperationCoreTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-15-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-15-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-15-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-15 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-16",
+      "title": "Bounded Tensor Core feasibility and candidate contract",
+      "kind": "task",
+      "priority": 374,
+      "objective": "Define one V100-relevant dense-fragment or WMMA candidate lane, including density classification, packing, alignment, tails, numeric policy, forward/backward maps, complete planner costs, and rejection criteria, without modifying common semantic ABIs or registering a kernel.",
+      "notes": "Explicit FP16 input and sparse-value policy with FP32 accumulation; visible conversion/packing; sm_70 16-based geometry; measured fragment qualification; legal residual candidate; no mandatory dense-fragment hot-record field; no presumption of a win.",
+      "scope": {
+        "exclusive_paths": [
+          "docs/CE_LIVE_TENSOR_CORE.md",
+          "bench/ce_live/tensor_core/contract"
+        ],
+        "read_paths": [
+          "include/Cellerator/compute/math",
+          "include/Cellerator/planner",
+          "components/CellPack",
+          "bench/architecture_evidence"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-01",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_TENSOR_CORE_CONTRACT_READY",
+          "title": "Bounded Tensor Core feasibility and candidate contract",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-16-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_TENSOR_CORE.md"
+        },
+        {
+          "id": "CE-LIVE-16-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCeArch92RealRegimeBench",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-16-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorObjectiveV2CalibrationTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-16-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-16-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-16-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-16 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-19",
+      "title": "Foundation fan-in, build wiring, and checkpoint audit",
+      "kind": "integration_task",
+      "priority": 360,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Wire the foundation tests, audit orientation, fixture, catalog, readiness, documentation, and Tensor Core contracts together, run focused host/CUDA gates, freeze only validated interfaces, and publish the next parallel frontier.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-10",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-12",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-13",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-14",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-15",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-16",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/CE_LIVE_PROGRAM.md",
+          "tests/live/integration"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "notes": "Use cpp-context-compiler bounded contexts to compile and link independently authored leaves.",
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_FOUNDATIONS_READY",
+          "title": "CE-LIVE foundations ready",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-19-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_PROGRAM.md"
+        },
+        {
+          "id": "CE-LIVE-19-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorValueGenerationReuseTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorValueGenerationReuseTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-FRONTIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "ready",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-19-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Review project-control overview, frontier, agent status, and cross-authority warnings; validate the exact next frontier."
+        },
+        {
+          "id": "CE-LIVE-19-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-19 only through coding-workflow after fan-in, documentation status, and frontier validation."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-20",
+      "title": "CPE2 typed projection activation",
+      "priority": 350,
+      "objective": "Resolve validated CPE2 projection entries into typed non-owning device views for CPK1 row-masked, CSR, FMP1, and CTP1 with exact identity, orientation, schema, location, size, and map validation.",
+      "notes": "Hot activation forbids allocation, copy, checksum scan, image parsing, device selection, synchronization, and value ownership.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/projection_activation.hh",
+          "src/execution/projection_activation.cc",
+          "tests/execution/projection_activation_test.cu",
+          "components/CellPack/tests/persistence/execution_image_v2_device_test.cu"
+        ],
+        "read_paths": [
+          "components/CellPack/include/CellPack/persistence/execution_image_v2.hh",
+          "include/Cellerator/compute/math"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-13",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-19",
+          "state": "done"
+        }
+      ],
+      "tags": [
+        "local-worker-suitable"
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_PROJECTION_ACTIVATION_V1_READY",
+          "title": "CPE2 typed projection activation",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-projection-activation-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-20-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/execution/projection_activation.hh"
+        },
+        {
+          "id": "CE-LIVE-20-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "cellPackExecutionImageV2DeviceTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-20-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/cellPackExecutionImageV2DeviceTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-20-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/execution/projection_activation_test.cu",
+          "pattern": "invalid|mismatch|capacity|stale"
+        },
+        {
+          "id": "CE-LIVE-20-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-20-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-20-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-20 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-20-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-20-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-20-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-21",
+      "title": "Built-in operation candidate catalog",
+      "priority": 349,
+      "objective": "Implement a deterministic host-side catalog over existing operation-core candidates, exposing capability and preparation metadata without changing operation_candidate, owning runtime resources, or introducing virtual dispatch.",
+      "notes": "Use a small fixed catalog or function-pointer table; no global mutable registration singleton.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/operation_core/builtin_catalog.hh",
+          "src/compute/math/operation_core/builtin_catalog.cc",
+          "tests/math_core/builtin_catalog_test.cc",
+          "docs/CE_LIVE_CANDIDATE_CATALOG.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/compute/math/operation_core",
+          "src/compute/math/operation_core"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-13",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-19",
+          "state": "done"
+        }
+      ],
+      "tags": [
+        "local-worker-suitable"
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_BUILTIN_CANDIDATE_CATALOG_V1_READY",
+          "title": "Built-in operation candidate catalog",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-builtin-candidate-catalog-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-21-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/compute/math/operation_core/builtin_catalog.hh"
+        },
+        {
+          "id": "CE-LIVE-21-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorOperationCoreTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-21-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorOperationCoreTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-21-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-21-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-21-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-21 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-22",
+      "title": "Strong conventional CSR fallback and hot-path cleanup",
+      "priority": 348,
+      "objective": "Add a session-integrated cuSPARSE CSR SpMV and SpMM candidate for the live width envelope, remove per-run device selection from the custom CSR path, keep descriptor creation and preprocessing in preparation, and provide a strong fair baseline.",
+      "notes": "N=1 and legal multi-N; f16 sparse with declared dense/output/accumulation types; no padded BELL; no run-time descriptor/device selection/sync; graph claims tested; adversarial dimensions and guards.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh",
+          "src/compute/math/operation_core/cusparse_csr_candidate.cu",
+          "tests/math_core/cusparse_csr_candidate_test.cu",
+          "src/compute/math/operation_core/csr_fallback_candidate.cu"
+        ],
+        "read_paths": [
+          "include/Cellerator/runtime",
+          "include/Cellerator/compute/math/physical_csr.hh"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-10",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-20",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_CONVENTIONAL_CSR_V1_READY",
+          "title": "Strong conventional CSR fallback and hot-path cleanup",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-22-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh"
+        },
+        {
+          "id": "CE-LIVE-22-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCsrFallbackCandidateTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-22-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCsrFallbackCandidateTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-22-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/math_core/cusparse_csr_candidate_test.cu",
+          "pattern": "guard|non.divisible|invalid|capacity"
+        },
+        {
+          "id": "CE-LIVE-22-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-22-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-22-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-22 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-22-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-22-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-22-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-23",
+      "title": "Projection-to-candidate preparation factory",
+      "priority": 347,
+      "objective": "Combine one activated typed projection, biological axes, operation request, session-owned persistent allocation, and catalog entry into a prepared_operation without widening the stable operation-core ABI.",
+      "notes": "Host-only is legal; candidate state initialization explicit; no owning variant of all projection bytes; no second runtime.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/operation_core/preparation_factory.hh",
+          "src/compute/math/operation_core/preparation_factory.cc",
+          "tests/math_core/preparation_factory_test.cu"
+        ],
+        "read_paths": [
+          "include/Cellerator/compute/math/operation_core",
+          "include/Cellerator/runtime"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-20",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-21",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_PREPARATION_FACTORY_V1_READY",
+          "title": "Projection-to-candidate preparation factory",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-preparation-factory-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-23-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/compute/math/operation_core/preparation_factory.hh"
+        },
+        {
+          "id": "CE-LIVE-23-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorOperationCoreTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-23-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorOperationCoreTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-23-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-23-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-23-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-23 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-23-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-23-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-23-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-24",
+      "title": "Native quantitative fixture adapter and independent referee",
+      "priority": 346,
+      "objective": "Bind the quantitative fixture to exact Cellerator identities, build the forward feature-to-cell relation and mutable generations, generate deterministic dense operands, and compare supported outputs against an independent CPU reference.",
+      "notes": "Widths 1, 16, 17, 31, 32, 48, 64. No H5AD parser in public library.",
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/runtime_fixture",
+          "tests/live/quantitative_relation_test.cu",
+          "docs/CE_LIVE_QUANTITATIVE_EXECUTION.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution",
+          "components/CellPack"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-12",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-19",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_QUANTITATIVE_RELATION_READY",
+          "title": "Native quantitative fixture adapter and independent referee",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-24-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_QUANTITATIVE_EXECUTION.md"
+        },
+        {
+          "id": "CE-LIVE-24-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "cpMathRefereeFoundationTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-24-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/cpMathRefereeFoundationTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-24-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-24-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-24-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-24 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-24-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-24-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-24-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-25",
+      "title": "Integrate value readiness with native training and parameters",
+      "priority": 345,
+      "objective": "Use readiness in the native training slice, preserve topology across updates, expose native parameter descriptors, return explicit next-generation readiness, and prove same-stream and cross-stream correctness without premature publication.",
+      "notes": "Preserve current N=16 proof; parameter storage remains Cellerator-owned.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/native_training_slice.hh",
+          "src/compute/math/native_training_slice.cu",
+          "tests/math_core/native_training_slice_test.cu",
+          "include/Cellerator/parameters.hh"
+        ],
+        "read_paths": [
+          "include/Cellerator/runtime/value_readiness.cuh"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-14",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-19",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_NATIVE_TRAINING_READINESS_READY",
+          "title": "Integrate value readiness with native training and parameters",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-25-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/parameters.hh"
+        },
+        {
+          "id": "CE-LIVE-25-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorNativeTrainingSliceTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-25-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorNativeTrainingSliceTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-25-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/math_core/native_training_slice_test.cu",
+          "pattern": "stale|generation|fail"
+        },
+        {
+          "id": "CE-LIVE-25-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-25-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-25-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-25 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-25-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-25-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-25-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-26",
+      "title": "Live planner features, keys, and measurement inputs",
+      "priority": 344,
+      "objective": "Derive planner-ready structural and quantitative statistics from the fixture, construct exact persistent planning keys and reuse horizons, expose complete candidate phase inputs, and test invalidation without replacing empirical final selection.",
+      "notes": "Separate structure, projection, and value reuse horizons; mutable generations never enter persistent plan identity.",
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/planner",
+          "tests/planner/ce_live_planner_features_test.cc",
+          "docs/CE_LIVE_PLANNER_INPUTS.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/planner",
+          "src/planner"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-12",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-13",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-19",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_PLANNER_INPUTS_READY",
+          "title": "Live planner features, keys, and measurement inputs",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-26-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_PLANNER_INPUTS.md"
+        },
+        {
+          "id": "CE-LIVE-26-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorPlannerV1Test",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-26-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorPlannerV1Test"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-26-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/planner/ce_live_planner_features_test.cc",
+          "pattern": "invalid|stale|generation"
+        },
+        {
+          "id": "CE-LIVE-26-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-26-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-26-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-26 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-29",
+      "title": "Implementation fan-in and executable-core readiness audit",
+      "kind": "integration_task",
+      "priority": 330,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Wire and validate typed activation, catalog, conventional fallback, preparation factory, quantitative adapter, readiness, training integration, and planner inputs. Freeze the minimum executable-core interfaces and open the vertical-slice frontier.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-20",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-21",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-22",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-23",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-24",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-25",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-26",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/CE_LIVE_PROGRAM.md",
+          "tests/live/integration"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_EXECUTABLE_CORE_READY",
+          "title": "Cellerator executable core ready",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-29-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_PROGRAM.md"
+        },
+        {
+          "id": "CE-LIVE-29-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCandidateMeasurementTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCandidateMeasurementTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-FRONTIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "ready",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-29-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Review project-control overview, frontier, agent status, and cross-authority warnings; validate the exact next frontier."
+        },
+        {
+          "id": "CE-LIVE-29-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-29 only through coding-workflow after fan-in, documentation status, and frontier validation."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-30",
+      "title": "Planner-backed executable program API",
+      "kind": "task",
+      "priority": 320,
+      "parallel_policy": "serial",
+      "objective": "Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.",
+      "notes": "Reusable prepared state; values and dense operands launch-bound; explicit stream; inspectable identities; output order returned; no hidden upload/persistence; analytical, empirical, and cache selection sources; planner diagnostics available.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-22",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-23",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-24",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-25",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-26",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-29",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program.hh",
+          "src/execution/program.cc",
+          "tests/execution/program_test.cu",
+          "docs/CE_LIVE_EXECUTABLE_PROGRAM.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/compute/math/operation_core",
+          "include/Cellerator/planner",
+          "include/Cellerator/runtime"
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_EXECUTABLE_PROGRAM_V1_READY",
+          "title": "Planner-backed executable program ready",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-executable-program-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-30-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/execution/program.hh"
+        },
+        {
+          "id": "CE-LIVE-30-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCandidateMeasurementTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-30-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCandidateMeasurementTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-30-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/execution/program_test.cu",
+          "pattern": "invalid|stale|mismatch"
+        },
+        {
+          "id": "CE-LIVE-30-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-30-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-30-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-30 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-30-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-30-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-30-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-31",
+      "title": "Quantitative biological forward vertical slice",
+      "kind": "validation_task",
+      "priority": 310,
+      "objective": "Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.",
+      "notes": "Compare every legal candidate; record planner regret; validate numerical values, not support alone.",
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/forward",
+          "tests/live/quantitative_forward_test.cu",
+          "docs/CE_LIVE_FORWARD_RESULTS.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-30",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_FORWARD_V1",
+          "title": "Quantitative biological forward vertical slice",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-31-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_FORWARD_RESULTS.md"
+        },
+        {
+          "id": "CE-LIVE-31-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCeArch92RealRegimeBench",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-31-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-31-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-31-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-31-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-31 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-31-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-31-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-31-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-32",
+      "title": "One V100 Tensor Core candidate, promotion or measured rejection",
+      "kind": "task",
+      "priority": 309,
+      "objective": "Implement at most one sm_70 dense-fragment or WMMA candidate under the bounded contract, integrate it as an ordinary planner candidate, and either promote on a complete-cost real-fixture win or leave unregistered with reproducible negative evidence.",
+      "notes": "Compare feature-major warp/CTA, CSR/cuSPARSE, and dense cuBLAS. Microkernel timing cannot promote. evaluated_not_promoted is successful.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/math/tensor_core",
+          "src/compute/math/tensor_core",
+          "tests/tensor_core",
+          "bench/ce_live/tensor_core/campaign",
+          "include/Cellerator/compute/math/operation_core/builtin_catalog.hh",
+          "src/compute/math/operation_core/builtin_catalog.cc",
+          "docs/CE_LIVE_TENSOR_CORE.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/planner",
+          "components/CellPack"
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "evaluated_not_promoted"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-16",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-20",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-21",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-24",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-30",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_TENSOR_CORE_DECISION_V1",
+          "title": "One V100 Tensor Core candidate, promotion or measured rejection",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-32-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_TENSOR_CORE.md"
+        },
+        {
+          "id": "CE-LIVE-32-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCeArch92RealRegimeBench",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-32-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-32-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-32-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-32-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-32 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-32-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-32-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-32-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-33",
+      "title": "Native training executable integration",
+      "kind": "task",
+      "priority": 308,
+      "objective": "Wrap the validated FMP1 and CTP1 N=16 training slice as an explicit prepared executable path with forward, epilogue, backward, sparse and bias updates, parameter descriptors, readiness transitions, and a fair persistent CSR/cuSPARSE baseline without rebuilding topology.",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/training_program.hh",
+          "src/execution/training_program.cu",
+          "tests/execution/training_program_test.cu",
+          "bench/ce_live/training",
+          "docs/CE_LIVE_TRAINING_RESULTS.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution/program.hh",
+          "include/Cellerator/runtime/value_readiness.cuh"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-25",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-30",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_TRAINING_V1",
+          "title": "Native training executable integration",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-native-training-program-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-33-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "include/Cellerator/execution/training_program.hh"
+        },
+        {
+          "id": "CE-LIVE-33-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorNativeTrainingSliceTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-33-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorNativeTrainingSliceTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-33-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-33-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-33-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-33 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-33-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-33-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-33-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-34",
+      "title": "CPE2 reload and existing opaque CellShard replay",
+      "kind": "validation_task",
+      "priority": 307,
+      "objective": "Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.",
+      "scope": {
+        "exclusive_paths": [
+          "tests/persistence/ce_live_program_replay_test.cu",
+          "bench/ce_live/replay",
+          "docs/CE_LIVE_REPLAY.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution/opaque_artifact.hh",
+          "components/CellPack/include/CellPack/persistence"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-30",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-31",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_REPLAY_V1",
+          "title": "CPE2 reload and existing opaque CellShard replay",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-34-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_REPLAY.md"
+        },
+        {
+          "id": "CE-LIVE-34-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorOpaqueExecutionArtifactTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-34-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorOpaqueExecutionArtifactTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-34-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-34-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-34-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-34 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-34-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-34-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-34-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-35",
+      "title": "Streams, CUDA Graphs, stale identity, and hot-path acceptance",
+      "kind": "validation_task",
+      "priority": 306,
+      "objective": "Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.",
+      "notes": "Use Compute Sanitizer, static scans, and runtime allocation/accounting counters.",
+      "scope": {
+        "exclusive_paths": [
+          "tests/execution/ce_live_concurrency_test.cu",
+          "bench/ce_live/concurrency",
+          "docs/CE_LIVE_CONCURRENCY.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution",
+          "include/Cellerator/runtime"
+        ]
+      },
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-30",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-33",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_CONCURRENCY_V1",
+          "title": "Streams, CUDA Graphs, stale identity, and hot-path acceptance",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-35-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_CONCURRENCY.md"
+        },
+        {
+          "id": "CE-LIVE-35-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorExecutionSessionTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-35-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorExecutionSessionTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-35-NEGATIVE",
+          "type": "pattern",
+          "required": true,
+          "path": "tests/execution/ce_live_concurrency_test.cu",
+          "pattern": "stale|generation|relocat|graph"
+        },
+        {
+          "id": "CE-LIVE-35-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-35-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-35-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-35 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-35-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-35-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-35-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-36",
+      "title": "End-to-end biological evidence and planner-regret campaign",
+      "kind": "validation_task",
+      "priority": 300,
+      "objective": "Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.",
+      "notes": "Use CUDA controller and serialized benchmark resources; absent background evidence does not block; commit ordinary artifacts with exact source and binary identity.",
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/evidence",
+          "docs/CE_LIVE_EVIDENCE.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "parallel_policy": "serial",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-10",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-31",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-33",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-34",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-35",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_EVIDENCE_V1",
+          "title": "End-to-end biological evidence and planner-regret campaign",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-36-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_EVIDENCE.md"
+        },
+        {
+          "id": "CE-LIVE-36-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorCeArch92RealRegimeBench",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-36-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-36-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-36-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-36-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-36 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-36-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-36-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-36-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        },
+        {
+          "id": "CE-LIVE-36-BENCHMARK-MUTEX",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Acquire one accelerator lease and cuda-benchmark-mutex; enforce variance and contamination limits and complete phase accounting."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-37",
+      "title": "Cellerator live activation audit and CelleraTorch entry checkpoint",
+      "kind": "integration_task",
+      "priority": 290,
+      "objective": "Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.",
+      "scope": {
+        "exclusive_paths": [
+          "AGENTS.md",
+          "README.md",
+          "CMakeLists.txt",
+          "docs/CE_LIVE_PROGRAM.md",
+          "docs/current_implementation.qmd",
+          "docs/migration_roadmap.qmd"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "parallel_policy": "project_exclusive",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-36",
+          "state": "done"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_LIVE_BIOLOGICAL_V1",
+          "title": "Cellerator live activation audit and CelleraTorch entry checkpoint",
+          "state": "pending"
+        },
+        {
+          "id": "CELLERATOR_CELLERATORCH_ENTRY_V1",
+          "title": "CelleraTorch native entry ready",
+          "state": "pending",
+          "publishes_interfaces": [
+            {
+              "id": "cellerator-cellera-torch-entry-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-37-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_PROGRAM.md"
+        },
+        {
+          "id": "CE-LIVE-37-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleratorValueGenerationReuseTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleratorValueGenerationReuseTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-FRONTIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "ready",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-37-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Review project-control overview, frontier, agent status, and cross-authority warnings; validate the exact next frontier."
+        },
+        {
+          "id": "CE-LIVE-37-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-37 only through coding-workflow after fan-in, documentation status, and frontier validation."
+        }
+      ],
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-40",
+      "title": "CelleraTorch zero-copy tensor and parameter views",
+      "priority": 280,
+      "objective": "Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.",
+      "notes": "No repeated copied CPU CSR materialization and no transfer of canonical parameter ownership to Torch.",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch/include/CelleraTorch/native_views.hh",
+          "components/CelleraTorch/src/native_views.cc",
+          "components/CelleraTorch/tests/native_views_test.cc",
+          "components/CelleraTorch/docs/native_views.md"
+        ],
+        "read_paths": [
+          "include/Cellerator"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-37",
+          "state": "done"
+        }
+      ],
+      "tags": [
+        "local-worker-suitable"
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-40-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "components/CelleraTorch/include/CelleraTorch/native_views.hh"
+        },
+        {
+          "id": "CE-LIVE-40-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleraTorchBindingsCompileTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-40-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleraTorchBindingsCompileTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-40-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-40-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-40-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-40 only through coding-workflow after required gates and scope audit."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-41",
+      "title": "CelleraTorch forward custom operation wrapper",
+      "priority": 279,
+      "objective": "Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch/include/CelleraTorch/program_ops.hh",
+          "components/CelleraTorch/src/program_ops.cu",
+          "components/CelleraTorch/tests/program_ops_test.cc",
+          "components/CelleraTorch/docs/program_ops.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution/program.hh"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-37",
+          "state": "done"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-41-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "components/CelleraTorch/include/CelleraTorch/program_ops.hh"
+        },
+        {
+          "id": "CE-LIVE-41-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleraTorchModelCustomOpsTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-41-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-41-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-41-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-41-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-41 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-41-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-41-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-41-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-42",
+      "title": "CelleraTorch autograd and readiness adapter",
+      "priority": 278,
+      "objective": "Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch/include/CelleraTorch/autograd_ops.hh",
+          "components/CelleraTorch/src/autograd_ops.cu",
+          "components/CelleraTorch/tests/autograd_ops_test.cc",
+          "components/CelleraTorch/docs/autograd_ops.md"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution/training_program.hh",
+          "include/Cellerator/runtime/value_readiness.cuh"
+        ]
+      },
+      "kind": "task",
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-37",
+          "state": "done"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-42-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "components/CelleraTorch/include/CelleraTorch/autograd_ops.hh"
+        },
+        {
+          "id": "CE-LIVE-42-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleraTorchModelCustomOpsTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-42-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-42-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-42-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-42-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-42 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-42-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-42-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-42-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-43",
+      "title": "CelleraTorch build, package, and test fan-in",
+      "kind": "integration_task",
+      "priority": 270,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-40",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-41",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-42",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch/CMakeLists.txt",
+          "components/CelleraTorch/README.md",
+          "components/CelleraTorch/docs/torch_bindings.md",
+          "CMakeLists.txt"
+        ],
+        "read_paths": [
+          "components/CelleraTorch",
+          "include/Cellerator"
+        ]
+      },
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_CELLERATORCH_ADAPTER_READY",
+          "title": "CelleraTorch adapter ready",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-43-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "components/CelleraTorch/README.md"
+        },
+        {
+          "id": "CE-LIVE-43-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleraTorchModelCustomOpsTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-FRONTIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "ready",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-43-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Review project-control overview, frontier, agent status, and cross-authority warnings; validate the exact next frontier."
+        },
+        {
+          "id": "CE-LIVE-43-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-43 only through coding-workflow after fan-in, documentation status, and frontier validation."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-44",
+      "title": "Torch quantitative biological smoke and performance validation",
+      "kind": "validation_task",
+      "priority": 260,
+      "parallel_policy": "serial",
+      "objective": "Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-31",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-33",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-43",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "bench/ce_live/celleratorch",
+          "components/CelleraTorch/tests/quantitative_smoke_test.cc",
+          "docs/CE_LIVE_CELLERATORCH_RESULTS.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CELLERATOR_CELLERATORCH_LIVE_V1",
+          "title": "CelleraTorch quantitative live validation ready",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-44-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_CELLERATORCH_RESULTS.md"
+        },
+        {
+          "id": "CE-LIVE-44-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "celleraTorchModelCustomOpsTest",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-44-CORRECTNESS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-44-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-44-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-44-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-44 only through coding-workflow after required gates and scope audit."
+        },
+        {
+          "id": "CE-LIVE-44-CUDA-CONTROLLER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "CUDA correctness must run through a committed controller spec with device/toolchain/source identity; correctness precedes timing."
+        },
+        {
+          "id": "CE-LIVE-44-COMPUTE-SANITIZER",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Run Compute Sanitizer for new device pointers, kernels, views, projection activation, or rebinding."
+        },
+        {
+          "id": "CE-LIVE-44-CUDA-EVIDENCE",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Record source, binary, toolchain, device, command, shape, dtype, repeats, tolerance, phase costs, variance, and contamination."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    },
+    {
+      "id": "CE-LIVE-45",
+      "title": "Final CE-LIVE audit, handoff, and next frontier",
+      "kind": "integration_task",
+      "priority": 250,
+      "parallel_policy": "project_exclusive",
+      "objective": "Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-32",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-LIVE-44",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "AGENTS.md",
+          "README.md",
+          "CMakeLists.txt",
+          "docs/CE_LIVE_PROGRAM.md",
+          "docs/CE_LIVE_FINAL_AUDIT.md",
+          "todo-status.md",
+          "todos.md"
+        ],
+        "read_paths": [
+          "include",
+          "src",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "data",
+          "scripts",
+          "CMakeLists.txt",
+          "AGENTS.md",
+          "scope.md",
+          "planning_strategy.md",
+          "ARCHITECTURE_FOLLOWUPS.md"
+        ]
+      },
+      "claim_locks": [
+        "ce-live-integration"
+      ],
+      "checkpoints": [
+        {
+          "id": "CE_LIVE_COMPLETE",
+          "title": "CE-LIVE complete",
+          "state": "pending"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-LIVE-45-ARTIFACT",
+          "type": "file_exists",
+          "required": true,
+          "path": "docs/CE_LIVE_FINAL_AUDIT.md"
+        },
+        {
+          "id": "CE-LIVE-45-BUILD",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "cmake",
+            "--build",
+            "build-dissolution-smoke",
+            "--target",
+            "help",
+            "-j",
+            "4"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-DIFF-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-SCOPE-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "git",
+            "diff",
+            "--name-status",
+            "HEAD"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-TODO-AUDIT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "audit",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-TODO-RECONCILE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "reconcile",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-TODO-EXPORT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "export",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-FRONTIER",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+            "ready",
+            "--repo-root",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "track_git_head": true
+        },
+        {
+          "id": "CE-LIVE-45-PROJECT-CONTROL",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Review project-control overview, frontier, agent status, and cross-authority warnings; validate the exact next frontier."
+        },
+        {
+          "id": "CE-LIVE-45-HANDOFF",
+          "type": "manual",
+          "required": false,
+          "accepted": false,
+          "note": "Finish CE-LIVE-45 only through coding-workflow after fan-in, documentation status, and frontier validation."
+        }
+      ],
+      "parent_id": "CE-LIVE-00",
+      "status": "planned",
+      "invariants": [
+        "CE-LIVE-IDENTITY",
+        "CE-LIVE-ORIENTATION",
+        "CE-LIVE-LIFETIME",
+        "CE-LIVE-NATIVE",
+        "CE-LIVE-RUNTIME",
+        "CE-LIVE-PLANNER",
+        "CE-LIVE-FIXTURE",
+        "CE-LIVE-STORAGE",
+        "CE-LIVE-CPE2",
+        "CE-LIVE-BASEPLANE",
+        "CE-LIVE-TORCH",
+        "CE-LIVE-TENSOR",
+        "CE-LIVE-EVIDENCE",
+        "CE-LIVE-OWNERSHIP"
+      ]
+    }
+  ]
+}
