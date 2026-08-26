@@ -110,9 +110,6 @@ operation_status run_csr_fallback(
         return fail(operation_status_code::invalid_launch_bindings,
             "CSR fallback order, shape, value, or residency is incompatible");
 
-    if (cudaSetDevice(state.device_ordinal) != cudaSuccess)
-        return fail(operation_status_code::execution_failed,
-            "CSR fallback could not select the bound device");
     const int blocks = static_cast<int>((
         static_cast<std::size_t>(state.projection.row_count)
         + csr_row_threads - 1u) / csr_row_threads);
