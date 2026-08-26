@@ -341,6 +341,16 @@ CE-LIVE-16 ─────┘
                  → CE-LIVE-19
 ```
 
+CE-LIVE-19 owns the single Wave A fan-in. Its native integration seam links the
+runtime-only value-readiness implementation into `Cellerator::runtime`, exposes
+the focused `celleratorValueReadinessTest` target, and audits the frozen
+orientation, quantitative fixture, candidate inventory, authority/build, and
+Tensor Core design-only contracts together. The rendezvous publishes
+`CE_LIVE_FOUNDATIONS_READY` only after the native build, focused host/CUDA
+correctness, readiness sanitizer, todo reconciliation, and frontier audit all
+pass. It does not implement the Wave B catalog, projection activation, or
+preparation factory.
+
 ### Wave B
 
 Immediately after CE-LIVE-19:

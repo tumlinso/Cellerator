@@ -217,6 +217,7 @@ target_link_libraries(celleratorIdentityRegistryTest PRIVATE
 
 add_library(cellerator_runtime STATIC
     src/runtime/runtime.cu
+    src/runtime/value_readiness.cu
 )
 add_library(Cellerator::runtime ALIAS cellerator_runtime)
 target_include_directories(cellerator_runtime PUBLIC
@@ -278,6 +279,23 @@ target_link_libraries(celleratorExecutionSessionTest PRIVATE
     CUDA::cusparse
 )
 set_target_properties(celleratorExecutionSessionTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+# CE-LIVE-19: keep the runtime-only value-generation readiness contract in the
+# native build and validate same-stream/cross-stream ordering without making
+# event state part of persistent biological identity.
+add_executable(celleratorValueReadinessTest
+    tests/runtime/value_readiness_test.cu
+)
+target_link_libraries(celleratorValueReadinessTest PRIVATE
+    Cellerator::runtime
+    CUDA::cudart
+)
+set_target_properties(celleratorValueReadinessTest PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CUDA_STANDARD 17
