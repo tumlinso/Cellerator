@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1610`
+Project revision: `1642`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -70,7 +70,7 @@ Project revision: `1610`
 - `CE-LIVE-14` | status: done | execution: closed | next: Design and implement the runtime-side generation-readiness token or record with same-stream fast paths, cross-stream waits, failed-enqueue safety, and no event or stream ownership in the persistent biological ABI.
 - `CE-LIVE-15` | status: done | execution: closed | next: Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.
 - `CE-LIVE-16` | status: done | execution: closed | next: Define one V100-relevant dense-fragment or WMMA candidate lane, including density classification, packing, alignment, tails, numeric policy, forward/backward maps, complete planner costs, and rejection criteria, without modifying common semantic ABIs or registering a kernel.
-- `CE-LIVE-19` | status: planned | execution: ready | next: Wire the foundation tests, audit orientation, fixture, catalog, readiness, documentation, and Tensor Core contracts together, run focused host/CUDA gates, freeze only validated interfaces, and publish the next parallel frontier.
+- `CE-LIVE-19` | status: done | execution: closed | next: Wire the foundation tests, audit orientation, fixture, catalog, readiness, documentation, and Tensor Core contracts together, run focused host/CUDA gates, freeze only validated interfaces, and publish the next parallel frontier.
 - `CE-LIVE-20` | status: planned | execution: ready | next: Resolve validated CPE2 projection entries into typed non-owning device views for CPK1 row-masked, CSR, FMP1, and CTP1 with exact identity, orientation, schema, location, size, and map validation.
 - `CE-LIVE-21` | status: planned | execution: ready | next: Implement a deterministic host-side catalog over existing operation-core candidates, exposing capability and preparation metadata without changing operation_candidate, owning runtime resources, or introducing virtual dispatch.
 - `CE-LIVE-22` | status: planned | execution: ready | next: Add a session-integrated cuSPARSE CSR SpMV and SpMM candidate for the live width envelope, remove per-run device selection from the custom CSR path, keep descriptor creation and preprocessing in preparation, and provide a strong fair baseline.
