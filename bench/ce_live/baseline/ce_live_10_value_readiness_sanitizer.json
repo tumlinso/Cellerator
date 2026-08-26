@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-10-value-readiness-sanitizer",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "include/Cellerator/runtime/value_readiness.cuh",
+    "src/runtime/value_readiness.cu",
+    "tests/runtime/value_readiness_test.cu"
+  ],
+  "correctness_argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+    "-std=c++17",
+    "-arch=sm_70",
+    "-Iinclude",
+    "src/runtime/value_readiness.cu",
+    "tests/runtime/value_readiness_test.cu",
+    "-o",
+    "/tmp/ce-live-10-value-readiness-test"
+  ],
+  "argv": [
+    "/tmp/ce-live-10-value-readiness-test"
+  ],
+  "correctness_timeout": 120,
+  "timeout": 180,
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
