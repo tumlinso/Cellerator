@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-15: Refresh architecture authority and quarantine legacy default builds
 
-Task revision: `1470`; current project revision is in `todo-status.md`.
+Task revision: `1539`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

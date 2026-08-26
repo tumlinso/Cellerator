@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `1525`
+Project revision: `1539`
 
 ## Workstreams
 - `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -449,7 +449,7 @@ Project revision: `1525`
 - `CE-LIVE-12` | kind: task | status: done | parent: CE-LIVE-00 | objective: Create a checksum-pinned PBMC3K computational-correctness fixture contract with exact axis and selection identities, verified stored-value semantics, deterministic extraction, a tiny committed schema smoke fixture, a local representative fixture, and independent numerical referees.
 - `CE-LIVE-13` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.
 - `CE-LIVE-14` | kind: task | status: done | parent: CE-LIVE-00 | objective: Design and implement the runtime-side generation-readiness token or record with same-stream fast paths, cross-stream waits, failed-enqueue safety, and no event or stream ownership in the persistent biological ABI.
-- `CE-LIVE-15` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.
+- `CE-LIVE-15` | kind: task | status: done | parent: CE-LIVE-00 | objective: Update stale implementation guidance to post-CE-ARCH truth, make native Cellerator without Torch the default build, preserve an explicit compatibility build, and prevent revival of retired CP-Math or universal Blocked-ELL assumptions.
 - `CE-LIVE-16` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Define one V100-relevant dense-fragment or WMMA candidate lane, including density classification, packing, alignment, tails, numeric policy, forward/backward maps, complete planner costs, and rejection criteria, without modifying common semantic ABIs or registering a kernel.
 - `CE-LIVE-19` | kind: integration_task | status: planned | parent: CE-LIVE-00 | objective: Wire the foundation tests, audit orientation, fixture, catalog, readiness, documentation, and Tensor Core contracts together, run focused host/CUDA gates, freeze only validated interfaces, and publish the next parallel frontier.
 - `CE-LIVE-20` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Resolve validated CPE2 projection entries into typed non-owning device views for CPK1 row-masked, CSR, FMP1, and CTP1 with exact identity, orientation, schema, location, size, and map validation.
