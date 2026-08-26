@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-10-wave-a-cuda-suite",
+  "recipe": "baseline",
+  "paths": [
+    "components/CellPack/tests/persistence/execution_image_v2_device_test.cu",
+    "tests/runtime/execution_session_test.cu",
+    "tests/math_core/row_masked_n1_candidate_test.cu",
+    "tests/math_core/csr_fallback_candidate_test.cu",
+    "tests/math_core/feature_major_small_n_candidate_test.cu",
+    "tests/math_core/transpose_backward_candidate_test.cu",
+    "tests/math_core/value_generation_reuse_test.cu"
+  ],
+  "argv": [
+    "bash",
+    "bench/ce_live/baseline/run_wave_a_cuda_suite.sh"
+  ],
+  "timeout": 300,
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
