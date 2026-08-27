@@ -1,0 +1,51 @@
+{
+  "schema": "cellerator.ce_live.native_training_evidence.v1",
+  "scope": "bounded N=16 native FMP1/CTP1 training slice",
+  "hardware": {
+    "gpu": "Tesla V100-SXM2-16GB",
+    "architecture": "sm_70"
+  },
+  "workload": {
+    "rows": 5,
+    "features": 5,
+    "nnz": 8,
+    "dense_width": 16,
+    "sparse_storage": "f16",
+    "dense_storage": "f32",
+    "accumulation": "f32"
+  },
+  "method": {
+    "warmups": 5,
+    "samples": 31,
+    "steps_per_sample": 64,
+    "preparation_reused_and_excluded_equally": true,
+    "included": [
+      "forward",
+      "epilogue",
+      "backward",
+      "sparse update",
+      "bias update",
+      "value generation"
+    ]
+  },
+  "native": {
+    "description": "persistent FMP1 forward plus CTP1 backward",
+    "median_microseconds": 19.584
+  },
+  "conventional": {
+    "description": "persistent generic CSR forward and transpose with separate epilogues",
+    "median_microseconds": 28.352
+  },
+  "speedup": 1.45,
+  "correctness": {
+    "reference": "independent CPU referee",
+    "learned_value_tolerance": 0.001,
+    "dense_and_gradient_tolerance": 0.00002,
+    "passed": true
+  },
+  "historical_performance_evidence_id": "48e8a08d-cb5b-4469-855e-79fda8ca941d",
+  "training_program_correctness_evidence_id": "26af70f0-915a-4106-8751-4f049d09b5a7",
+  "training_program_memcheck_evidence_id": "72174abd-821c-4917-afe8-f13b4f557de7",
+  "source": "CE-ARCH-88 retained evidence in src/compute/math/native_training_slice.cu",
+  "qualification": "historical bounded-regime evidence; not a general-N claim"
+}

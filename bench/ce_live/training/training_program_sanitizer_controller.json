@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-33-training-program-sanitizer",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "include/Cellerator/execution/training_program.hh",
+    "src/execution/training_program.cu",
+    "tests/execution/training_program_test.cu"
+  ],
+  "correctness_argv": [
+    "bash",
+    "bench/ce_live/training/run_training_program_test.sh",
+    "--build-only"
+  ],
+  "argv": [
+    "/tmp/cellerator-ce-live-33/training_program_test"
+  ],
+  "correctness_timeout": 180,
+  "timeout": 300,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  },
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
