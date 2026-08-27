@@ -223,11 +223,17 @@ future Tensor Core, distributed, or independent CellShard programs are done.
 ### Post-migration CE-LIVE activation
 
 CE-LIVE consumes this completed foundation; it does not reopen the migration or
-define another core. Its remaining work freezes the live relation orientation,
-activates the actual built-in candidate catalog, integrates the quantitative
-fixture and runtime readiness contracts, and proves one planner-backed path at
-a single-owner rendezvous. Tensor Core, distributed, and CelleraTorch work stay
-behind their later explicit gates.
+define another core. The native live activation now proves the checksum-pinned
+quantitative forward path, bounded N=16 training, pointer-free replay,
+generation readiness, concurrency acceptance, and reproducible Wave C evidence.
+The accepted evidence boundary is recorded in `docs/CE_LIVE_EVIDENCE.md`.
+
+The next frontier is the separately owned CelleraTorch adapter group. Its entry
+contract is limited to non-owning parameter/program/training/readiness views and
+current-stream adaptation; Cellerator retains structure, parameter, planner,
+session, generation, and reusable-kernel ownership. Distributed work remains
+separately gated, and the measured Tensor Core non-promotion creates no default
+Tensor Core path.
 
 The native build is now the default and does not discover Torch. Historical
 framework/model compatibility remains available explicitly with

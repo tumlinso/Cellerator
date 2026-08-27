@@ -4,11 +4,11 @@ title: "Current Implementation"
 
 ## Snapshot
 
-This page records the post-CE-ARCH repository state through the CE-LIVE-14
-foundation close at commit:
+This page records the post-CE-ARCH repository state through the CE-LIVE Wave C
+evidence rendezvous at commit:
 
 ```text
-f926c7d85ec6a9ccf26a8a527090df8f21ef0ae4
+82f300ba46dd15290e522a8857939b437d1ce150
 ```
 
 Audit date:
@@ -35,12 +35,22 @@ The documentation before this replacement described the first generation as the 
 
 ### CE-LIVE activation state
 
-CE-LIVE does not replace the completed CE-ARCH architecture. It activates one
-planner-backed quantitative path over it. Fork B has added a checksum-pinned
-PBMC3K computational fixture and a runtime-only CUDA event readiness contract
-that keeps streams and events out of persistent identity. Relation orientation,
-built-in candidate inventory, Tensor Core feasibility, and the single-owner
-fan-in remain separately gated.
+CE-LIVE does not replace the completed CE-ARCH architecture. It now activates
+one planner-backed quantitative path over it. The checksum-pinned PBMC3K
+computational fixture runs through the executable program for widths 1, 16,
+17, 31, 32, 48, and 64, three reuse horizons, and two mutable generations. The
+bounded N=16 training program, CPE2/CPEXEC01 replay, event-based readiness,
+fixed-transition CUDA Graph capture, and adversarial concurrency acceptance
+are complete. Wave C evidence is recorded in
+`bench/ce_live/evidence/ce_live_evidence_v1.json` and
+`docs/CE_LIVE_EVIDENCE.md`.
+
+The quantitative forward catalog currently offers exactly one legal FMP1 SpMM
+schedule for each tested request. Its reported zero planner regret is therefore
+complete over the legal set, but is not evidence of a universal win over
+cuSPARSE. Training remains a small-module N=16 slice. The PBMC3K fixture is
+computational evidence only. Tensor Core evaluation ended in measured
+non-promotion, and CelleraTorch implementation remains later adapter work.
 
 The retained CP-Math v1 surface is not the operation-core authority. Its
 request, structural planner, prepared lifetime, and private runtime remain

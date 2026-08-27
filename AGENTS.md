@@ -75,7 +75,7 @@ Implemented and valuable:
 - direct CP-BP execution for feature-weighted row reduction without reconstruction to CSR or BELL;
 - CPK1 compatibility plus the CPE2 pointer-free execution image, typed projection directory, relocation, validation, and direct prepared dispatch;
 - the CE-ARCH biological ABI, execution-order and lifetime contracts, sole execution session, operation core, connected-operation planner, measured projection plurality, transpose/backward path, Baseplane seam, and opaque CellShard delivery boundary;
-- a checksum-pinned quantitative PBMC3K computational fixture and runtime-only asynchronous value-generation readiness contract under CE-LIVE;
+- a checksum-pinned quantitative PBMC3K forward path, bounded N=16 training path, CPE2/CPEXEC01 replay, and runtime-only asynchronous value-generation readiness contract under CE-LIVE;
 - CSR, SELL, Blocked-ELL, quantized sparse, preprocessing, model, trajectory, distributed, and framework-adapter code that remains useful as implementation evidence and fallback machinery;
 - a retained experimental CP-Math v1 surface under `include/Cellerator/compute/math/` and `src/compute/math/`, used only as compatibility evidence and migration input;
 - Baseplane packed sequence, bit-plane, motif-scan, count, mask, and compact-event primitives.
@@ -83,10 +83,10 @@ Implemented and valuable:
 Not yet the end-state core:
 
 - the retained CP-Math v1 request, `PreparedExecution`, `DeviceMathContext`, and structural planner are not the operation-core authority and must not receive new ownership;
-- CE-LIVE has not yet completed built-in candidate activation, full fan-in wiring, or the checksum-pinned quantitative end-to-end execution path;
+- CE-LIVE's native activation is complete through the Wave C evidence audit, with explicit limits on forward candidate plurality and general-N training;
 - legacy sparse, model, preprocessing, and adapter paths do not all consume the universal biological ABI or separate structure and mutable values yet;
 - CPK1 remains a successful compatibility image rather than the universal runtime IR;
-- Tensor Core, distributed, and CelleraTorch activation remain separately gated and must not be inferred from the completed CE-ARCH foundation.
+- Tensor Core evaluation ended in measured non-promotion; distributed execution and CelleraTorch adapter implementation remain separately gated.
 
 Do not write documentation or code that presents these unfinished transitions as complete.
 

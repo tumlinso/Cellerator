@@ -446,7 +446,7 @@ All interfaces begin in `draft`; only their owner freezes them after gates.
 
 There is no stable Tensor Core semantic interface.
 
-The pending checkpoints are:
+The CE-LIVE checkpoints are:
 `CE_LIVE_BOOTSTRAP_READY`, `CE_LIVE_CURRENT_HEAD_BASELINED`,
 `CELLERATOR_LOGICAL_EDGE_ORIENTATION_V1_READY`,
 `CELLERATOR_QUANTITATIVE_FIXTURE_V1_READY`,
@@ -559,6 +559,35 @@ Torch stream adaptation, custom operations, autograd wrappers, and framework
 modules. It does not own Cellerator parameters, structures, planners, sessions,
 generations, or reusable kernels. The copied CPU CSR exporter remains an
 explicit debug/compatibility path, never the repeated primary path.
+
+### CE-LIVE-37 activation audit
+
+The native activation audit accepts the following bounded surface for
+`CELLERATOR_LIVE_BIOLOGICAL_V1`:
+
+| Surface | Accepted result | Explicit boundary |
+|---|---|---|
+| Quantitative forward | PBMC3K computational fixture, widths 1, 16, 17, 31, 32, 48, and 64; reuse 1, 8, and 1024; two value generations; independent referee | The built-in catalog exposes one legal FMP1 SpMM schedule per tested request, so zero regret is over the legal set and is not a universal cuSPARSE comparison. |
+| Native training | Five-stage forward/epilogue/explicit-transpose/update pipeline with readiness publication | N=16 small-module slice only; not a general-N training engine. |
+| Persistence | Pointer-free CPE2 reload through existing opaque CellShard CPEXEC01 transport | No CPEXEC02 claim and no CellShard semantic ownership. |
+| Runtime | Caller-stream execution, same/cross-stream readiness, fixed-transition CUDA Graph capture, pointer relocation, stale identity rejection, and sanitizer coverage | No hidden allocation, device selection, device synchronization, or persistent stream/event identity. |
+| Tensor Core | One bounded V100 candidate received a measured non-promotion decision | No registered Tensor Core default and no universal dense-fragment policy. |
+
+The reproducible Wave C evidence is
+`bench/ce_live/evidence/ce_live_evidence_v1.json`; its interpretation and exact
+foreground controller command are recorded in `docs/CE_LIVE_EVIDENCE.md`.
+The fixture supports computational validation only and makes no biological or
+scientific claim.
+
+The frozen `cellerator-cellera-torch-entry-v1` interface consists only of the
+existing native contracts in `include/Cellerator/parameters.hh`,
+`include/Cellerator/execution/program.hh`,
+`include/Cellerator/execution/training_program.hh`, and
+`include/Cellerator/runtime/value_readiness.cuh`, plus this ownership contract.
+Wave D may adapt those contracts using non-owning tensor views and the current
+Torch stream. It may not move parameter, structure, planner, execution-session,
+value-generation, or reusable-kernel ownership into CelleraTorch. No
+CelleraTorch implementation is claimed by this checkpoint.
 
 ## 13. Non-goals
 
