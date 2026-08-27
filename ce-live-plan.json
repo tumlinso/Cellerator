@@ -344,7 +344,7 @@
     {
       "id": "cellerator-cellera-torch-entry-v1",
       "owner_task_id": "CE-LIVE-37",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/parameters.hh",
@@ -4309,12 +4309,12 @@
         {
           "id": "CELLERATOR_LIVE_BIOLOGICAL_V1",
           "title": "Cellerator live activation audit and CelleraTorch entry checkpoint",
-          "state": "pending"
+          "state": "reached"
         },
         {
           "id": "CELLERATOR_CELLERATORCH_ENTRY_V1",
           "title": "CelleraTorch native entry ready",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-cellera-torch-entry-v1",
@@ -4468,7 +4468,7 @@
         "ce-live-integration"
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -4484,7 +4484,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "validated"
     },
     {
       "id": "CE-LIVE-40",

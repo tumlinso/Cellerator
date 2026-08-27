@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-21: Built-in operation candidate catalog
 
-Task revision: `2058`; current project revision is in `todo-status.md`.
+Task revision: `2087`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement a deterministic host-side catalog over existing operation-core candidates, exposing capability and preparation metadata without changing operation_candidate, owning runtime resources, or introducing virtual dispatch.
