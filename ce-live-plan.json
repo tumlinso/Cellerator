@@ -3366,13 +3366,9 @@
           "type": "command",
           "required": true,
           "argv": [
-            "cmake",
-            "--build",
-            "build-dissolution-smoke",
-            "--target",
-            "celleratorCeArch92RealRegimeBench",
-            "-j",
-            "4"
+            "bash",
+            "bench/ce_live/forward/run_quantitative_forward_test.sh",
+            "--build-only"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -3383,7 +3379,10 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+            "bash",
+            "bench/ce_live/forward/run_quantitative_forward_test.sh",
+            "--run-only",
+            "1"
           ],
           "cwd": ".",
           "expected_exit_code": 0,

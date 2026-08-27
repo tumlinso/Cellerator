@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-31-pbmc3k-forward-memcheck",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "bench/ce_live/forward",
+    "tests/live/quantitative_forward_test.cu",
+    "include/Cellerator/execution/program.hh"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  },
+  "build_argv": [
+    ["bash", "bench/ce_live/forward/run_quantitative_forward_test.sh", "--build-only"]
+  ],
+  "argv": [
+    "compute-sanitizer", "--tool", "memcheck", "--error-exitcode", "99",
+    "/tmp/cellerator-ce-live-31/quantitative_forward_test",
+    "/tmp/cellerator-ce-live-31/pbmc3k-r512-s7.bin", "1"
+  ],
+  "timeout": 1800,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  }
+}

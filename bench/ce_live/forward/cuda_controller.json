@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-31-pbmc3k-forward",
+  "recipe": "baseline",
+  "paths": [
+    "bench/ce_live/forward",
+    "tests/live/quantitative_forward_test.cu",
+    "docs/CE_LIVE_FORWARD_RESULTS.md",
+    "include/Cellerator/execution/program.hh",
+    "bench/ce_live/runtime_fixture",
+    "data/manifests/ce_live/pbmc3k_quantitative_v1.json"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  },
+  "build_argv": [
+    ["bash", "bench/ce_live/forward/run_quantitative_forward_test.sh", "--build-only"]
+  ],
+  "correctness_argv": [
+    "bash", "bench/ce_live/forward/run_quantitative_forward_test.sh", "--run-only", "1"
+  ],
+  "correctness_timeout": 900,
+  "argv": [
+    "bash", "bench/ce_live/forward/run_quantitative_forward_test.sh", "--run-only", "5"
+  ],
+  "timeout": 1200,
+  "practical_regression_percent": 2.0,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  }
+}
