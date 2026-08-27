@@ -70,3 +70,46 @@ unready generation, repeated backward, and expired native lifetime.
 
 Both controller runs returned zero with an uncontaminated single-GPU lease.
 No timing or performance claim is made by CE-LIVE-42.
+
+The reproducible leaf build uses the same native libraries as CE-LIVE-33:
+
+```bash
+repo=/home/tumlinson/Cellerator
+out=/tmp/cellerator-ce-live-42
+cuda=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
+mkdir -p "$out"
+
+common=(-ccbin=/usr/bin/g++-12 -std=c++17 -O2
+  -gencode arch=compute_70,code=sm_70 -D_GLIBCXX_USE_CXX11_ABI=1
+  -I"$repo/build-dissolution-smoke/generated" -I"$repo/include"
+  -I"$repo/components/CellPack/include"
+  -I"$repo/components/CelleraTorch/include"
+  -isystem=/usr/local/include
+  -isystem=/usr/local/include/torch/csrc/api/include)
+
+"$cuda/bin/nvcc" "${common[@]}" -c \
+  "$repo/components/CelleraTorch/src/autograd_ops.cu" -o "$out/autograd_ops.o"
+"$cuda/bin/nvcc" "${common[@]}" -c \
+  "$repo/components/CelleraTorch/tests/autograd_ops_test.cc" -o "$out/test.o"
+"$cuda/bin/nvcc" "${common[@]}" -c \
+  "$repo/src/execution/training_program.cu" -o "$out/training_program.o"
+
+/usr/bin/c++ "$out/autograd_ops.o" "$out/test.o" \
+  "$out/training_program.o" -o "$out/autograd_ops_test" \
+  -L"$repo/build-dissolution-smoke" \
+  -L"$repo/build-dissolution-smoke/components/CellPack" -L/usr/local/lib \
+  -L"$cuda/targets/x86_64-linux/lib" \
+  -L"$cuda/../../math_libs/12.9/lib64" \
+  -Wl,-rpath,"/usr/local/lib:$cuda/targets/x86_64-linux/lib:$cuda/../../math_libs/12.9/lib64" \
+  -Wl,--no-as-needed -ltorch_cuda -Wl,--as-needed \
+  -lcellerator_native_training_slice -lcellerator_feature_major_projection \
+  -lcellerator_transpose_projection -lcellpack_persistent_packing_payload \
+  -lcellpack_feature_weighted_row_reduction -lcellpack_warp_tiles \
+  -lcellpack_local_cell_ordering -lcellpack_apply_plan -lcellpack \
+  -lcellerator_runtime -ltorch -ltorch_cpu -lc10 -lc10_cuda \
+  -lcudart -lcublas -lcublasLt -lcusparse -lnvJitLink \
+  -lcudadevrt -lcudart_static -lrt -lpthread -ldl
+```
+
+CE-LIVE-43 replaces this bounded leaf compilation with shared CelleraTorch
+CMake and package registration.
