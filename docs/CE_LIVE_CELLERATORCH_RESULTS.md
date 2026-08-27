@@ -36,18 +36,19 @@ lease. Median values across the 126 paired samples were:
 | native GPU interval | 4003.84 us |
 | CelleraTorch GPU interval | 3998.72 us |
 | GPU interval delta | -5.12 us |
-| native host enqueue | 4947 ns |
-| CelleraTorch host dispatch | 4974 ns |
-| host dispatch tax | 27 ns |
-| zero-copy Torch view metadata construction | 3262 ns |
+| native host enqueue | 5314 ns |
+| CelleraTorch host dispatch | 5243 ns |
+| host dispatch delta | -71 ns |
+| zero-copy Torch view metadata construction | 3470 ns |
 
-The negative GPU delta is timing noise, not a speedup claim: both routes launch
-the identical native candidate. The observable framework costs are the host
-validation/dispatch seam and Torch tensor metadata construction. No tensor
+The negative GPU and host-dispatch deltas are timing noise, not speedup claims:
+both routes launch the identical native candidate and their enqueue costs are
+indistinguishable at this resolution. The clearly observable framework cost is
+Torch tensor metadata construction. No tensor
 payload is copied, no projection or CPE2 image is rebuilt, no planner is
 reconstructed, and no native parameter is duplicated.
 
-Controller evidence `6a90435e-b938-418e-801a-d897bc96db95` passed correctness
+Controller evidence `b7cf7354-ddce-4afb-89ec-0f912a8724a1` passed correctness
 and repeated timing. Machine-readable results are in
 `bench/ce_live/celleratorch/quantitative_results_v1.json`.
 
