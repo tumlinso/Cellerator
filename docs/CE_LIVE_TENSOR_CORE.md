@@ -147,5 +147,92 @@ DRAM behavior, numerical tolerance, sample count, MAD/spread, resource lease,
 hardware/toolchain/build identities, and correctness digest. Use correctness
 before timing and report inconclusive evidence rather than forcing a winner.
 
-Until that campaign succeeds, `dense_fragment` remains a reserved projection
-kind and this candidate remains unimplemented and unregistered.
+At CE-LIVE-16 closure, `dense_fragment` therefore remained a reserved
+projection kind and the candidate remained unimplemented and unregistered.
+
+## CE-LIVE-32 decision
+
+CE-LIVE-32 implemented exactly one bounded experimental candidate,
+`v100-wmma-dense-fragment-f16-f32`, without adding it to the built-in catalog.
+It consumes only complete 16 by 16 relation fragments and dense-column widths
+that are multiples of 16 through 64. Relation and dense inputs are FP16; WMMA
+accumulates into FP32. The candidate reports an accumulate output effect so an
+explicit residual candidate can own every edge outside qualified fragments.
+It is not deterministic because distinct fragments may atomically contribute
+to one destination tile.
+
+The candidate's persistent state is a non-owning architecture-specific device
+view. Fragment values remain launch-bound projection-local data for the current
+value generation. Preparing or running the candidate does not allocate, select
+a device, synchronize the device, rebuild a descriptor, hash structure, or
+capture changing pointers in persistent identity. The only device capability
+query occurs during cold typed preparation.
+
+The cold host plan builder produces exact
+`logical_edge_to_fragment_slot` and inverse maps. Zero-fill slots carry an
+invalid logical-edge sentinel. Edges outside qualified full fragments retain
+invalid forward positions and are counted as explicit residual work. Tests
+cover the exact 50% threshold, a 17-row/source tail, inverse-map parity, two
+value generations over one prepared structure, stale generation and structure
+rejection, incompatible projection identity, unsupported numeric policy, and
+unsupported dense width.
+
+### Measured rejection on the quantitative fixture
+
+The checksum-pinned PBMC3K computational support has 512 destination rows,
+32,738 source features, and 433,808 logical edges. Exact classification of all
+56,161 occupied 16 by 16 tiles found:
+
+- 56,128 low-density tiles;
+- 33 medium-density tiles;
+- no high or near-dense tile;
+- maximum occupancy 106/256, or 41.40625%; and
+- zero tiles at the frozen 50% shortlist threshold.
+
+Thus the legal candidate owns no PBMC3K work. Densifying every complete
+16-by-16 tile instead would materialize 16,760,832 slots, 38.6365 times the
+useful logical-edge count, while still leaving the two-feature tail to a
+residual path. That global densification is already forbidden by the
+CE-LIVE-16 contract, so dense cuBLAS and the candidate microkernel are not
+timed as substitutes for a legal plan. Kernel-only timing could not reverse a
+zero-qualified-fragment decision.
+
+The serialized V100 campaign reruns the strongest current legal candidates on
+the identical checksum-pinned support at N=16, 32, and 64, with three warmups,
+eleven repeats, and one-use and eight-use complete-cost views. The committed
+decision and raw records are:
+
+- `bench/ce_live/tensor_core/campaign/v100_decision_v1.json`;
+- `bench/ce_live/tensor_core/campaign/v100_baselines.raw.jsonl`.
+
+On the uncontaminated Tesla V100-SXM2-16GB run, CSR had the lowest one-shot
+complete cost at N=16 and N=32; feature-major CTA had the lowest one-shot cost
+at N=64. At reuse eight, feature-major won N=16 and feature-major CTA won N=32
+and N=64. Maximum median absolute-deviation percentage was 0.03592%. CUDA
+controller evidence `39cd21c2-ef11-4b1e-a23d-fe49bc838794` records this
+correctness-first campaign. Compute Sanitizer evidence
+`2803c563-faeb-4358-a471-70c69118f4d0` reports a clean candidate/map run.
+
+The decision is a measured rejection, not an inference that Tensor Cores are
+universally unsuitable. A different structure, ordering, or measured density
+distribution may qualify this candidate in a future evidence revision. Until
+then the implementation remains manually registrable for bounded validation,
+is absent from `built_in_candidate_catalog()`, and cannot be selected by the
+normal executable program.
+
+### Reproduction
+
+```bash
+python -m unittest tests/tensor_core/test_v100_dense_fragment_decision.py
+
+python /home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py run \
+  --spec bench/ce_live/tensor_core/campaign/cuda_controller.json --json
+
+python /home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py run \
+  --spec bench/ce_live/tensor_core/campaign/sanitizer_controller.json --json
+```
+
+The controller records the exact source fingerprint, binary commands, CUDA
+toolchain, V100 device identity, lease, timing spread, and contamination state.
+This fixture remains computational evidence only and supports no biological
+interpretation.

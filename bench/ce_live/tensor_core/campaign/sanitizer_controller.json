@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-32-v100-dense-fragment-sanitizer",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "include/Cellerator/compute/math/tensor_core/v100_dense_fragment_candidate.hh",
+    "include/Cellerator/compute/math/tensor_core/v100_dense_fragment_plan.hh",
+    "src/compute/math/tensor_core/v100_dense_fragment_candidate.cu",
+    "src/compute/math/tensor_core/v100_dense_fragment_plan.cc",
+    "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
+    "src/compute/math/operation_core/operation_core.cc"
+  ],
+  "correctness_argv": [
+    "nvcc", "-std=c++17", "-arch=sm_70", "-Iinclude",
+    "-Icomponents/CellPack/include",
+    "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
+    "src/compute/math/tensor_core/v100_dense_fragment_candidate.cu",
+    "src/compute/math/tensor_core/v100_dense_fragment_plan.cc",
+    "src/compute/math/operation_core/operation_core.cc", "-lcudart",
+    "-o", "build-ce-live-32/v100_dense_fragment_candidate_test"
+  ],
+  "argv": [
+    "./build-ce-live-32/v100_dense_fragment_candidate_test"
+  ],
+  "correctness_timeout": 180,
+  "timeout": 300,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  },
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}

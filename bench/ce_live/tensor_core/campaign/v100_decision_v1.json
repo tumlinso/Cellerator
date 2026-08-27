@@ -1,0 +1,82 @@
+{
+  "architecture": "sm_70",
+  "baseline_summary": {
+    "16": {
+      "candidates": [
+        "row_masked",
+        "csr",
+        "feature_major"
+      ],
+      "maximum_mad_percent": 0.0359198136,
+      "one_shot_complete_ms": 26.94027402,
+      "one_shot_winner": "csr",
+      "reuse_8_amortized_ms": 7.40913513,
+      "reuse_8_winner": "feature_major"
+    },
+    "32": {
+      "candidates": [
+        "row_masked",
+        "csr",
+        "feature_major_cta"
+      ],
+      "maximum_mad_percent": 0.0269571353,
+      "one_shot_complete_ms": 32.31559300000001,
+      "one_shot_winner": "csr",
+      "reuse_8_amortized_ms": 8.35670155,
+      "reuse_8_winner": "feature_major_cta"
+    },
+    "64": {
+      "candidates": [
+        "row_masked",
+        "csr",
+        "feature_major_cta"
+      ],
+      "maximum_mad_percent": 0.0254330911,
+      "one_shot_complete_ms": 39.74743189,
+      "one_shot_winner": "feature_major_cta",
+      "reuse_8_amortized_ms": 8.49060489,
+      "reuse_8_winner": "feature_major_cta"
+    }
+  },
+  "candidate": "v100-wmma-dense-fragment-f16-f32",
+  "candidate_kernel_timing_applicability": "not timed on PBMC3K: zero legal qualified fragments",
+  "classification": {
+    "density_buckets": {
+      "empty": 0,
+      "high": 0,
+      "low": 56128,
+      "medium": 33,
+      "near_dense": 0
+    },
+    "feature_tail": 2,
+    "features": 32738,
+    "logical_edges": 433808,
+    "maximum_tile_density": 0.4140625,
+    "maximum_tile_nnz": 106,
+    "occupied_fragment_tiles": 56161,
+    "qualification_threshold_nnz": 128,
+    "qualified_fragment_tiles": 0,
+    "qualified_logical_edges": 0,
+    "row_tail": 0,
+    "rows": 512,
+    "whole_structure_full_fragment_slots": 16760832,
+    "whole_structure_padding_ratio": 38.636521225980154
+  },
+  "decision": "measured_rejection",
+  "dense_library_baseline_applicability": "not timed: whole-structure densification is rejected by the frozen CE-LIVE-16 contract before candidate selection",
+  "fixture": {
+    "computational_only": true,
+    "structure_id": "5ec566e0bd56b468e9025ffe7c75fc54a4cf0eae2bc93107ae570fae188a7ccb",
+    "trace_id": "pbmc3k-raw-local-support-r512-s7"
+  },
+  "generations_validated_by_candidate_test": [
+    1,
+    2
+  ],
+  "logical_relation": "feature-source-to-row-destination",
+  "numeric_policy": "f16 relation and dense input, f32 accumulation/output",
+  "reason": "No PBMC3K 16x16 relation tile reaches the frozen 50% shortlist threshold; the legal candidate owns no work, while global dense materialization would pad the relation by the reported ratio.",
+  "registered_in_builtin_catalog": false,
+  "schema": "CELLERATOR-TENSOR-CORE-DECISION/1",
+  "task": "CE-LIVE-32"
+}

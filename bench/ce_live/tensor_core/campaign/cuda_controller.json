@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-32-v100-dense-fragment-decision",
+  "recipe": "baseline",
+  "paths": [
+    "include/Cellerator/compute/math/tensor_core/v100_dense_fragment_candidate.hh",
+    "include/Cellerator/compute/math/tensor_core/v100_dense_fragment_plan.hh",
+    "src/compute/math/tensor_core/v100_dense_fragment_candidate.cu",
+    "src/compute/math/tensor_core/v100_dense_fragment_plan.cc",
+    "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
+    "tests/tensor_core/test_v100_dense_fragment_decision.py",
+    "bench/ce_live/tensor_core/campaign/run_v100_decision.py",
+    "bench/architecture_evidence/real_regime_bench.cu",
+    "bench/architecture_evidence/run_ce_arch_92_campaign.py",
+    "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
+    "data/manifests/ce_live/pbmc3k_quantitative_v1.json",
+    "src/compute/math/operation_core/operation_core.cc"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  },
+  "build_argv": [
+    [
+      "cmake", "--build", "build-dissolution-smoke", "--target",
+      "celleratorCeArch92RealRegimeBench", "-j", "4"
+    ],
+    [
+      "nvcc", "-std=c++17", "-arch=sm_70", "-Iinclude",
+      "-Icomponents/CellPack/include",
+      "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
+      "src/compute/math/tensor_core/v100_dense_fragment_candidate.cu",
+      "src/compute/math/tensor_core/v100_dense_fragment_plan.cc",
+      "src/compute/math/operation_core/operation_core.cc", "-lcudart",
+      "-o", "build-ce-live-32/v100_dense_fragment_candidate_test"
+    ]
+  ],
+  "correctness_argv": [
+    "./build-ce-live-32/v100_dense_fragment_candidate_test"
+  ],
+  "correctness_timeout": 300,
+  "argv": [
+    "python3", "bench/ce_live/tensor_core/campaign/run_v100_decision.py",
+    "--binary", "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench",
+    "--runner", "bench/architecture_evidence/run_ce_arch_92_campaign.py",
+    "--trace", "bench/architecture_evidence/real_traces/pbmc3k-support-512.json",
+    "--manifest", "data/manifests/ce_live/pbmc3k_quantitative_v1.json",
+    "--output", "bench/ce_live/tensor_core/campaign/v100_decision_v1.json",
+    "--raw-output", "bench/ce_live/tensor_core/campaign/v100_baselines.raw.jsonl",
+    "--width", "16", "--width", "32", "--width", "64",
+    "--warmups", "3", "--repeats", "11"
+  ],
+  "timeout": 1200,
+  "practical_regression_percent": 2.0,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  }
+}
