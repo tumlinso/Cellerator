@@ -56,7 +56,13 @@ python /home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py run \
 The controller builds without a GPU lease, then holds the benchmark mutex,
 requires three idle samples, runs one correctness pass, and performs five
 foreground repeats. It records exact source, toolchain, device, command, and
-contamination identity. The accepted CE-LIVE-36 evidence ID is added here only
-after that committed campaign succeeds.
+contamination identity.
+
+Accepted foreground evidence `6bc52235-4922-4833-978b-d68265b61a5d` used
+commit `98f0b5fd916e8f56e06e66b4ff2df24cf885f05d` on one Tesla V100-SXM2-16GB
+with CUDA 12.9 and driver 580.173.02. The correctness and five-repeat phases
+both returned zero. The benchmark mutex was held, three consecutive idle
+samples were observed, and the controller reported no foreign process or
+contamination.
 
 Checkpoint: `CELLERATOR_LIVE_EVIDENCE_V1`.

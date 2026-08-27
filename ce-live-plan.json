@@ -4163,13 +4163,9 @@
           "type": "command",
           "required": true,
           "argv": [
-            "cmake",
-            "--build",
-            "build-dissolution-smoke",
-            "--target",
-            "celleratorCeArch92RealRegimeBench",
-            "-j",
-            "4"
+            "bash",
+            "bench/ce_live/evidence/run_evidence_campaign.sh",
+            "--build-only"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -4180,7 +4176,8 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+            "python",
+            "bench/ce_live/evidence/validate_ce_live_evidence.py"
           ],
           "cwd": ".",
           "expected_exit_code": 0,

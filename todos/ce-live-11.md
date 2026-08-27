@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-11: Freeze logical relation orientation and edge identity
 
-Task revision: `2039`; current project revision is in `todo-status.md`.
+Task revision: `2043`; current project revision is in `todo-status.md`.
 
 ## Objective
 Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.

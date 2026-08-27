@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-32: One V100 Tensor Core candidate, promotion or measured rejection
 
-Task revision: `2039`; current project revision is in `todo-status.md`.
+Task revision: `2043`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement at most one sm_70 dense-fragment or WMMA candidate under the bounded contract, integrate it as an ordinary planner candidate, and either promote on a complete-cost real-fixture win or leave unregistered with reproducible negative evidence.

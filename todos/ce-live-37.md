@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-37: Cellerator live activation audit and CelleraTorch entry checkpoint
 
-Task revision: `2039`; current project revision is in `todo-status.md`.
+Task revision: `2043`; current project revision is in `todo-status.md`.
 
 ## Objective
 Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.

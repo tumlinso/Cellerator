@@ -30,6 +30,11 @@ def main() -> None:
     widths = [1, 16, 17, 31, 32, 48, 64]
     reuse = [1, 8, 1024]
     require(evidence["schema"] == "CELLERATOR-LIVE-EVIDENCE/1", "schema")
+    require(evidence["campaign"]["controller_evidence_id"]
+            == "6bc52235-4922-4833-978b-d68265b61a5d",
+            "foreground campaign provenance")
+    require(not evidence["campaign"]["contaminated"],
+            "foreground campaign contamination")
     require(len(forward) == len(widths) * len(reuse), "forward record count")
     require(sorted({item["width"] for item in forward}) == widths, "widths")
     require(sorted({item["reuse"] for item in forward}) == reuse, "reuse")
