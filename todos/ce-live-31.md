@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-31: Quantitative biological forward vertical slice
 
-Task revision: `2230`; current project revision is in `todo-status.md`.
+Task revision: `2254`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.

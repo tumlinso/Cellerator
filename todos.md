@@ -439,10 +439,10 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `2230`
+Project revision: `2255`
 
 ## Workstreams
-- `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
+- `CE-LIVE-00` | kind: epic | status: done | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
 - `CE-LIVE-01` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Reconcile the clean post-CE-ARCH repository, apply the complete CE-LIVE plan transactionally, publish the source and contract map, validate the graph, and leave multiple non-overlapping tasks ready.
 - `CE-LIVE-10` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
 - `CE-LIVE-11` | kind: task | status: done | parent: CE-LIVE-00 | objective: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.
@@ -475,7 +475,7 @@ Project revision: `2230`
 - `CE-LIVE-44` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.
 - `CE-ARCH-01` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Establish the actual repository, ABI, build, benchmark, task, and ownership state before implementation.
 - `CE-ARCH-93` | kind: integration_task | status: done | parent: - | objective: Preserve CP-MATH provenance while making every CP-MATH task, checkpoint, gate, and dependency semantically historical and ineligible for current planning or attention.
-- `CE-LIVE-45` | kind: integration_task | status: in_progress | parent: CE-LIVE-00 | objective: Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.
+- `CE-LIVE-45` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.
 - `CE-ARCH-02` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Contain unsafe experimental paths before architectural expansion, without performance redesign or new kernels.
 - `CE-ARCH-10` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Create the minimal Cellerator-owned identity and heterogeneous operand model shared by dense state, sparse relations, and Baseplane sequence structures.
 - `CE-ARCH-11` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Make execution order and data lifetime explicit across Cellerator operations.
