@@ -220,6 +220,18 @@ then the implementation remains manually registrable for bounded validation,
 is absent from `built_in_candidate_catalog()`, and cannot be selected by the
 normal executable program.
 
+Semantic interpretation: this result also leaves two coherent routes open.
+First, substantially better structure-aware packing or ordering may concentrate
+the same logical edges into fewer dense fragments without changing biological
+semantics. Second, biologically legitimate neighbor coalescing may add explicit,
+provenance-backed interactions and thereby produce a genuinely denser logical
+relation. The latter is a model/data change, not a hidden execution
+optimization: it does not make the original computation faster, but it may make
+the resulting denser relation more efficient to represent and execute with
+dense-fragment machinery. Synthetic fill edges or unrecorded densification do
+not qualify as either route. Both alternatives require a new complete-cost and
+independent-correctness evaluation before candidate promotion.
+
 ### Reproduction
 
 ```bash
