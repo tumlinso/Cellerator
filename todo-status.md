@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2226`
+Project revision: `2230`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -90,11 +90,11 @@ Project revision: `2226`
 - `CE-LIVE-40` | status: done | execution: closed | next: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
 - `CE-LIVE-41` | status: done | execution: closed | next: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
 - `CE-LIVE-42` | status: done | execution: closed | next: Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.
-- `CE-LIVE-43` | status: planned | execution: ready | next: Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
+- `CE-LIVE-43` | status: done | execution: closed | next: Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
 - `CE-LIVE-44` | status: done | execution: closed | next: Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.
 - `CE-ARCH-01` | status: done | execution: closed | next: Inventory is complete at CellStack b8aabdc, Cellerator 72f3012, Baseplane 768065b, CellShard bbe5917. Use this task and generated projection as the recovery handoff.
 - `CE-ARCH-93` | status: done | execution: closed | next: Audit and migrate authoritative CP-MATH state, validate generic terminal filtering in project-state synthesis, and preserve historical performance evidence.
-- `CE-LIVE-45` | status: planned | execution: ready | next: Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.
+- `CE-LIVE-45` | status: in_progress | execution: claimed | next: Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.
 - `CE-ARCH-02` | status: done | execution: closed | next: After explicit implementation authorization, reject unsupported padded BELL and stale bindings and label non-integrated CP-Math paths experimental; do not design a new kernel or ABI.
 - `CE-ARCH-10` | status: done | execution: closed | next: Design and adversarially review the minimal ABI; freeze only after CPU-only Baseplane and CUDA/POD compatibility evidence.
 - `CE-ARCH-11` | status: done | execution: closed | next: Define RelationStructure, ValuePlane, LaunchBindings, output-order contracts, transform caching, and versioned CPK1 successor semantics without mutating v1.

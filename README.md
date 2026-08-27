@@ -106,9 +106,10 @@ CelleraTorch is the explicit Torch and libtorch adapter. Native structures, para
 
 ## Current State
 
-The CE-ARCH foundation and native CE-LIVE activation are complete through the
-Wave C evidence audit. Older sparse-matrix-centered systems remain as explicit
-candidates, baselines, and compatibility surfaces.
+The CE-ARCH foundation and CE-LIVE activation are complete through native
+Cellerator execution and the thin CelleraTorch adapter audit. Older
+sparse-matrix-centered systems remain explicit candidates, baselines, and
+compatibility surfaces.
 
 Implemented:
 
@@ -124,15 +125,18 @@ Implemented:
 - the CE-LIVE checksum-pinned quantitative forward path, bounded N=16 training,
   CPE2/CPEXEC01 replay, asynchronous readiness, concurrency acceptance, and
   reproducible Wave C evidence;
+- zero-copy CelleraTorch views, current-stream native forward dispatch, bounded
+  native autograd/readiness integration, and quantitative adapter-overhead
+  evidence;
 - sparse preprocessing and model primitives;
 - CSR, SELL, Blocked-ELL, quantized, cuSPARSE, CUB, NCCL, and custom CUDA paths;
 - retained experimental CP-Math v1 compatibility contracts and backends.
 
-Still gated are the CelleraTorch adapter implementation and validation, later
-distributed work, and broader candidate/training coverage. The current forward
-catalog limitation and bounded evidence claims are documented in
-[CE-LIVE evidence](docs/CE_LIVE_EVIDENCE.md). This work does not reopen CP-BP
-v1, make Blocked-ELL universal, or promote legacy CP-Math v1 to core ownership.
+Still gated are later distributed work and broader candidate/training coverage.
+The current forward catalog limitation, Tensor Core non-promotion, and bounded
+evidence claims are documented in [CE-LIVE final audit](docs/CE_LIVE_FINAL_AUDIT.md).
+This work does not reopen CP-BP v1, make Blocked-ELL universal, or promote
+legacy CP-Math v1 to core ownership.
 
 See [Current implementation](docs/current_implementation.qmd) for the audited status and [Migration roadmap](docs/migration_roadmap.qmd) for the transition.
 

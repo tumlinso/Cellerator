@@ -1,6 +1,6 @@
 # CE-LIVE program
 
-Status: bootstrap activation
+Status: complete through CE-LIVE-45 final audit
 Authority: Cellerator source and architecture spine, with todo-orchestrator schema v2 as execution authority
 Program root: `CE-LIVE-00`
 Bootstrap owner: `CE-LIVE-01`
@@ -24,10 +24,10 @@ real-regime V100 evidence. CE-LIVE activates those pieces into one quantitative
 planner-backed program. The stale “Current Implementation Status” text in
 `AGENTS.md` is deliberately left for CE-LIVE-15.
 
-The authoritative plan is `ce-live-plan.json`, schema version 2, SHA-256
-`054f858f35358fd5edf7e6efef51b9207434a3d1947753050813478b64bac3bc`.
-It contains 32 tasks, 14 error-severity invariants, 9 draft interfaces, 29
-pending checkpoints, and 273 gates.
+The authoritative plan is `ce-live-plan.json`, schema version 2. Its bootstrap
+digest is historical; the tracked plan and generated projections are reconciled
+to the final ledger by CE-LIVE-45. It contains 32 tasks, 14 error-severity
+invariants, 9 interfaces, 29 checkpoints, and 273 gates.
 
 ## 2. Resolved decisions
 
@@ -634,7 +634,7 @@ candidate inventory, projection activation, catalog work, and isolated
 CelleraTorch views. Local workers never own architecture decisions or
 integration fan-ins and remain inactive after bootstrap.
 
-## 15. Bootstrap frontier
+## 15. Historical bootstrap frontier
 
 After CE-LIVE-01 reaches `CE_LIVE_BOOTSTRAP_READY` and closes, the exact
 frontier is:
@@ -650,3 +650,30 @@ frontier is:
 All seven have non-overlapping exclusive scopes and no active claims. No later
 task is ready before its declared dependency set. No CE-LIVE implementation
 task is begun by the bootstrap.
+
+## 16. Final closure state
+
+CE-LIVE-45 closes the program after every implementation and validation leaf,
+the Tensor Core decision, all rendezvous tasks, and the CelleraTorch
+quantitative validation are terminal. `CE_LIVE_COMPLETE` records this bounded
+result.
+
+The final accepted system includes:
+
+- planner-backed quantitative Cellerator forward execution over the pinned
+  PBMC3K computational fixture at widths 1, 16, 17, 31, 32, 48, and 64;
+- immutable-topology reuse across mutable value generations;
+- bounded N=16 native training with explicit transpose identity and readiness;
+- CPE2 reload through opaque CellShard CPEXEC01 compatibility transport;
+- caller-stream, cross-stream readiness, CUDA Graph, stale-identity, and
+  hot-path acceptance;
+- a measured V100 Tensor Core non-promotion decision;
+- lifetime-bound CelleraTorch native views, current-stream forward dispatch,
+  native autograd/readiness adaptation, and quantitative adapter evidence.
+
+The result is intentionally bounded. The quantitative built-in catalog exposes
+one legal FMP1 schedule per tested SpMM request, the native training program is
+N=16 only, the experimental Tensor Core candidate is not registered, CPEXEC02
+remains CellShard work, broader Baseplane execution remains in its repository,
+and distributed/general-DAG execution is later work. Exact evidence and
+limitations are consolidated in `docs/CE_LIVE_FINAL_AUDIT.md`.

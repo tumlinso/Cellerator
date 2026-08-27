@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-45: Final CE-LIVE audit, handoff, and next frontier
 
-Task revision: `2212`; current project revision is in `todo-status.md`.
+Task revision: `2230`; current project revision is in `todo-status.md`.
 
 ## Objective
 Audit Cellerator, the Tensor Core promotion or rejection decision, and CelleraTorch against CE-LIVE. Reconcile and export the ledger, publish exact evidence and limitations, and leave newer CellShard CPEXEC02 and broader Baseplane execution as external follow-ups.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `project_exclusive`
 - Result: `-`
 
