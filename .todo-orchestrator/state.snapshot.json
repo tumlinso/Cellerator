@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T10:11:43Z",
+  "generated_at": "2026-08-27T10:18:10Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 2212,
+  "project_revision": 2226,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -881,10 +881,10 @@
       {
         "id": "CELLERATOR_CELLERATORCH_LIVE_V1",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 2212,
+        "reached_at": "2026-08-27T10:18:10Z",
+        "revision": 2226,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-LIVE-44",
         "title": "CelleraTorch quantitative live validation ready"
       },
@@ -23539,6 +23539,146 @@
         "revision": 2212,
         "seq": 2212,
         "timestamp": "2026-08-27T10:11:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 2213,
+        "seq": 2213,
+        "timestamp": "2026-08-27T10:17:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-ARTIFACT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-LIVE-44-ARTIFACT\"}",
+        "revision": 2214,
+        "seq": 2214,
+        "timestamp": "2026-08-27T10:17:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-ARTIFACT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6e59560a-637d-42b3-8f04-2a0612d7b614\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2215,
+        "seq": 2215,
+        "timestamp": "2026-08-27T10:17:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-BUILD",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-LIVE-44-BUILD\"}",
+        "revision": 2216,
+        "seq": 2216,
+        "timestamp": "2026-08-27T10:17:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-BUILD",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"dbea74ee-7cdb-470b-9843-7654ed2e2174\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2217,
+        "seq": 2217,
+        "timestamp": "2026-08-27T10:17:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-CORRECTNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-LIVE-44-CORRECTNESS\"}",
+        "revision": 2218,
+        "seq": 2218,
+        "timestamp": "2026-08-27T10:17:59Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-CORRECTNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d827e7c3-6288-4d89-905c-e2ffdc297637\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2219,
+        "seq": 2219,
+        "timestamp": "2026-08-27T10:18:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-LIVE-44-DIFF-CHECK\"}",
+        "revision": 2220,
+        "seq": 2220,
+        "timestamp": "2026-08-27T10:18:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"90e373b7-19ef-4960-97f6-5418da589bcf\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2221,
+        "seq": 2221,
+        "timestamp": "2026-08-27T10:18:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-SCOPE-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-LIVE-44-SCOPE-AUDIT\"}",
+        "revision": 2222,
+        "seq": 2222,
+        "timestamp": "2026-08-27T10:18:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44-SCOPE-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"c369c8d4-9bcd-4451-9fd9-ca2741103e70\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2223,
+        "seq": 2223,
+        "timestamp": "2026-08-27T10:18:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 2224,
+        "seq": 2224,
+        "timestamp": "2026-08-27T10:18:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 2225,
+        "seq": 2225,
+        "timestamp": "2026-08-27T10:18:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-44",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2226, \"disposition\": \"validated\", \"reached_checkpoints\": [\"CELLERATOR_CELLERATORCH_LIVE_V1\"]}",
+        "revision": 2226,
+        "seq": 2226,
+        "timestamp": "2026-08-27T10:18:10Z"
       }
     ],
     "evidence": [
@@ -26848,6 +26988,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-27T10:17:58Z",
+        "gate_id": "CE-LIVE-44-ARTIFACT",
+        "id": "6e59560a-637d-42b3-8f04-2a0612d7b614",
+        "kind": "file_exists",
+        "metadata_json": "{\"exists\": true, \"input_fingerprint\": \"04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a\", \"inputs\": {\"command_contract\": {\"path\": \"docs/CE_LIVE_CELLERATORCH_RESULTS.md\"}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"path\": \"docs/CE_LIVE_CELLERATORCH_RESULTS.md\", \"resources\": [], \"started_revision\": 2214}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6e59560a-637d-42b3-8f04-2a0612d7b614",
+        "revision": 2215,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-19T09:29:40Z",
         "gate_id": "CPMATH-08A-BUILD",
         "id": "6ea7227a-b189-4206-92b1-663b865eb140",
@@ -27882,6 +28035,19 @@
         "metadata_json": "{\"found\": true, \"input_fingerprint\": \"fe107e677a9a6d7cb795b0ede93692eb5bb8d36a432e89bda7d06be0802c0e4f\", \"inputs\": {\"command_contract\": {\"path\": \"tests/execution/program_test.cu\", \"pattern\": \"invalid|stale|mismatch\"}, \"diff_fingerprint\": \"dbddc361edd01e753db571f9c19ba19a035b5c4041312931e96b1581800fb463\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-30.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"ce9281ab96105454899484c61441d9d8b06dcf1a\"}, \"locks\": [], \"path\": \"tests/execution/program_test.cu\", \"resources\": [], \"started_revision\": 1846}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/90b9b141-8e63-4ffb-af8f-ddb22a0dca61",
         "revision": 1847,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T10:18:03Z",
+        "gate_id": "CE-LIVE-44-DIFF-CHECK",
+        "id": "90e373b7-19ef-4960-97f6-5418da589bcf",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2220}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/90e373b7-19ef-4960-97f6-5418da589bcf",
+        "revision": 2221,
         "status": "passed"
       },
       {
@@ -29344,6 +29510,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-27T10:18:03Z",
+        "gate_id": "CE-LIVE-44-SCOPE-AUDIT",
+        "id": "c369c8d4-9bcd-4451-9fd9-ca2741103e70",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2222}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/c369c8d4-9bcd-4451-9fd9-ca2741103e70",
+        "revision": 2223,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-19T14:29:51Z",
         "gate_id": "CPMATH-07-TEST",
         "id": "c3ccdddc-425c-4594-9245-6249c307205c",
@@ -29968,6 +30147,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-27T10:18:02Z",
+        "gate_id": "CE-LIVE-44-CORRECTNESS",
+        "id": "d827e7c3-6288-4d89-905c-e2ffdc297637",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"bench/ce_live/celleratorch/run_quantitative_smoke.sh\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6\", \"inputs\": {\"command_contract\": {\"argv\": [\"bench/ce_live/celleratorch/run_quantitative_smoke.sh\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2218}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d827e7c3-6288-4d89-905c-e2ffdc297637",
+        "revision": 2219,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-21T13:30:21Z",
         "gate_id": "CE-ARCH-20-CPK1-TEST",
         "id": "d8b4484f-c437-4e70-ba61-6b9d795231ae",
@@ -30001,6 +30193,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b85835a663593c9bd76d9916eaa9fd858b9c58de5213ec85656dcc8597b5af28\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"9a5a97ab9f51f4423ce99aee69c576ca62d3654402cf963fdb41fc15cbf6f03b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_live/tensor_core/campaign/build_candidate_test.sh\", \"bench/ce_live/tensor_core/campaign/cuda_controller.json\", \"bench/ce_live/tensor_core/campaign/run_v100_decision.py\", \"bench/ce_live/tensor_core/campaign/sanitizer_controller.json\", \"bench/ce_live/tensor_core/campaign/v100_baselines.raw.jsonl\", \"bench/ce_live/tensor_core/campaign/v100_decision_v1.json\", \"ce-live-plan.json\", \"docs/CE_LIVE_TENSOR_CORE.md\", \"include/Cellerator/compute/math/tensor_core/v100_dense_fragment_candidate.hh\", \"include/Cellerator/compute/math/tensor_core/v100_dense_fragment_plan.hh\", \"src/compute/math/tensor_core/v100_dense_fragment_candidate.cu\", \"src/compute/math/tensor_core/v100_dense_fragment_plan.cc\", \"tests/tensor_core/test_v100_dense_fragment_decision.py\", \"tests/tensor_core/v100_dense_fragment_candidate_test.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-00.md\", \"todos/ce-live-01.md\", \"todos/ce-live-10.md\", \"todos/ce-live-11.md\", \"todos/ce-live-12.md\", \"todos/ce-live-13.md\", \"todos/ce-live-14.md\", \"todos/ce-live-15.md\", \"todos/ce-live-16.md\", \"todos/ce-live-19.md\", \"todos/ce-live-20.md\", \"todos/ce-live-21.md\", \"todos/ce-live-22.md\", \"todos/ce-live-23.md\", \"todos/ce-live-24.md\", \"todos/ce-live-25.md\", \"todos/ce-live-26.md\", \"todos/ce-live-29.md\", \"todos/ce-live-30.md\", \"todos/ce-live-31.md\", \"todos/ce-live-32.md\", \"todos/ce-live-33.md\", \"todos/ce-live-34.md\", \"todos/ce-live-35.md\", \"todos/ce-live-36.md\", \"todos/ce-live-37.md\", \"todos/ce-live-40.md\", \"todos/ce-live-41.md\", \"todos/ce-live-42.md\", \"todos/ce-live-43.md\", \"todos/ce-live-44.md\", \"todos/ce-live-45.md\"], \"files\": [], \"git_head\": \"7d23d560c710a584a276a50f947ba737eb773f1f\", \"interfaces\": [], \"recorded_git_head\": \"7d23d560c710a584a276a50f947ba737eb773f1f\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1948}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/daf00eba-f7a7-4737-8918-ee46d7fac33f",
         "revision": 1949,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T10:17:58Z",
+        "gate_id": "CE-LIVE-44-BUILD",
+        "id": "dbea74ee-7cdb-470b-9843-7654ed2e2174",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchQuantitativeSmokeTest\", \"-j\", \"4\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea\", \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchQuantitativeSmokeTest\", \"-j\", \"4\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2216}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/dbea74ee-7cdb-470b-9843-7654ed2e2174",
+        "revision": 2217,
         "status": "passed"
       },
       {
@@ -36431,27 +36636,27 @@
         "checkpoint_id": null,
         "config_json": "{\"path\": \"docs/CE_LIVE_CELLERATORCH_RESULTS.md\"}",
         "id": "CE-LIVE-44-ARTIFACT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a",
+        "last_run_at": "2026-08-27T10:17:58Z",
         "required": 1,
-        "revision": 2212,
-        "status": "pending",
+        "revision": 2215,
+        "status": "passed",
         "task_id": "CE-LIVE-44",
         "type": "file_exists",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchQuantitativeSmokeTest\", \"-j\", \"4\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"track_git_head\": true}",
         "id": "CE-LIVE-44-BUILD",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea",
+        "last_run_at": "2026-08-27T10:17:58Z",
         "required": 1,
-        "revision": 2212,
-        "status": "pending",
+        "revision": 2217,
+        "status": "passed",
         "task_id": "CE-LIVE-44",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -36470,14 +36675,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"bench/ce_live/celleratorch/run_quantitative_smoke.sh\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"track_git_head\": true}",
         "id": "CE-LIVE-44-CORRECTNESS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6",
+        "last_run_at": "2026-08-27T10:18:02Z",
         "required": 1,
-        "revision": 2212,
-        "status": "pending",
+        "revision": 2219,
+        "status": "passed",
         "task_id": "CE-LIVE-44",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -36509,14 +36714,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"track_git_head\": true}",
         "id": "CE-LIVE-44-DIFF-CHECK",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8",
+        "last_run_at": "2026-08-27T10:18:03Z",
         "required": 1,
-        "revision": 2212,
-        "status": "pending",
+        "revision": 2221,
+        "status": "passed",
         "task_id": "CE-LIVE-44",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -36535,14 +36740,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"track_git_head\": true}",
         "id": "CE-LIVE-44-SCOPE-AUDIT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34",
+        "last_run_at": "2026-08-27T10:18:03Z",
         "required": 1,
-        "revision": 2212,
-        "status": "pending",
+        "revision": 2223,
+        "status": "passed",
         "task_id": "CE-LIVE-44",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -38205,6 +38410,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"CPMATH-02A-BUILD\", \"last_run_at\": \"2026-08-18T17:41:51Z\", \"status\": \"failed\", \"valid\": 0}, {\"id\": \"CPMATH-02A-TEST\", \"last_run_at\": null, \"status\": \"pending\", \"valid\": 0}, {\"id\": \"CPMATH-02A-CTX\", \"last_run_at\": \"2026-08-18T17:51:43Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"AGENTS.md      | 12 +++++++-----\\n todo-status.md | 34 ++++++++++++++++++++++++++++++++++\\n todos.md       | 34 ++++++++++++++++++++++++++++++++++\\n 3 files changed, 75 insertions(+), 5 deletions(-)\", \"git_head\": \"4aef0f43b2d11205ad2af810b7306a32728c3e6c\", \"interfaces\": [], \"note\": \"Implemented DeviceMathContext, cached capabilities/fingerprint, reusable workspace pool, and focused test. Direct sm_70 NVCC compile/link and leased V100 run passed; ctxpp lint and CTX gate passed. Required BUILD gate is invalid because cpMathDeviceRuntimeTest has no CMake rule and CMakeLists.txt is outside this claim, leaving TEST gate unrunnable.\", \"resources\": [{\"acquired_at\": \"2026-08-18T17:43:55Z\", \"instance_id\": \"gpu:0\", \"released_at\": \"2026-08-18T17:44:08Z\", \"state\": \"released\"}], \"task_id\": \"CP-MATH-02A\"}",
         "revision": 60,
         "task_id": "CP-MATH-02A"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T10:18:10Z",
+        "id": "904f308e-f78a-49dd-b210-b3fe87ed8c99",
+        "kind": "complete",
+        "note": "Validated native Cellerator versus CelleraTorch on the pinned PBMC3K relation across 7 widths, 3 reuse horizons, 2 value generations, and 3 repeats (126 parity checks); preserved current stream/output/identity and one-time preparation; controlled V100 evidence b7cf7354-ddce-4afb-89ec-0f912a8724a1; exact CUDA 12.9 memcheck under benchmark mutex reported 0 errors.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CELLERATOR_CELLERATORCH_LIVE_V1\", \"reached_at\": \"2026-08-27T10:18:10Z\", \"state\": \"reached\"}], \"completion_commit\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"completion_gates\": [{\"evidence_id\": \"6e59560a-637d-42b3-8f04-2a0612d7b614\", \"evidence_revision\": 2215, \"id\": \"CE-LIVE-44-ARTIFACT\", \"input_fingerprint\": \"04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, {\"evidence_id\": \"dbea74ee-7cdb-470b-9843-7654ed2e2174\", \"evidence_revision\": 2217, \"id\": \"CE-LIVE-44-BUILD\", \"input_fingerprint\": \"e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, {\"evidence_id\": \"d827e7c3-6288-4d89-905c-e2ffdc297637\", \"evidence_revision\": 2219, \"id\": \"CE-LIVE-44-CORRECTNESS\", \"input_fingerprint\": \"1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, {\"evidence_id\": \"90e373b7-19ef-4960-97f6-5418da589bcf\", \"evidence_revision\": 2221, \"id\": \"CE-LIVE-44-DIFF-CHECK\", \"input_fingerprint\": \"d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, {\"evidence_id\": \"c369c8d4-9bcd-4451-9fd9-ca2741103e70\", \"evidence_revision\": 2223, \"id\": \"CE-LIVE-44-SCOPE-AUDIT\", \"input_fingerprint\": \"0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}], \"completion_revision\": 2226, \"finalized_checkpoints\": [\"CELLERATOR_CELLERATORCH_LIVE_V1\"], \"gates\": [{\"id\": \"CE-LIVE-44-ARTIFACT\", \"input_fingerprint\": \"04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a\", \"last_run_at\": \"2026-08-27T10:17:58Z\", \"revision\": 2215, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-44-BUILD\", \"input_fingerprint\": \"e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea\", \"last_run_at\": \"2026-08-27T10:17:58Z\", \"revision\": 2217, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-44-CORRECTNESS\", \"input_fingerprint\": \"1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6\", \"last_run_at\": \"2026-08-27T10:18:02Z\", \"revision\": 2219, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-44-DIFF-CHECK\", \"input_fingerprint\": \"d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8\", \"last_run_at\": \"2026-08-27T10:18:03Z\", \"revision\": 2221, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-44-SCOPE-AUDIT\", \"input_fingerprint\": \"0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34\", \"last_run_at\": \"2026-08-27T10:18:03Z\", \"revision\": 2223, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-44-HANDOFF\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 2212, \"status\": \"pending\", \"valid\": 0}, {\"id\": \"CE-LIVE-44-CUDA-CONTROLLER\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 2212, \"status\": \"pending\", \"valid\": 0}, {\"id\": \"CE-LIVE-44-COMPUTE-SANITIZER\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 2212, \"status\": \"pending\", \"valid\": 0}, {\"id\": \"CE-LIVE-44-CUDA-EVIDENCE\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 2212, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 249 +++++++++++++++++++++++++++++----\\n todo-status.md                         |   2 +-\\n todos.md                               |   2 +-\\n 3 files changed, 224 insertions(+), 29 deletions(-)\", \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"note\": \"Validated native Cellerator versus CelleraTorch on the pinned PBMC3K relation across 7 widths, 3 reuse horizons, 2 value generations, and 3 repeats (126 parity checks); preserved current stream/output/identity and one-time preparation; controlled V100 evidence b7cf7354-ddce-4afb-89ec-0f912a8724a1; exact CUDA 12.9 memcheck under benchmark mutex reported 0 errors.\", \"resources\": [], \"task_id\": \"CE-LIVE-44\"}",
+        "revision": 2226,
+        "task_id": "CE-LIVE-44"
       },
       {
         "claim_id": null,
@@ -45423,6 +45638,71 @@
         "task_id": "CE-LIVE-43",
         "valid": 1,
         "validation_git_head": "c001f652c2ba0f47904c0ce61586c7b8b0db4604"
+      },
+      {
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
+        "evidence_id": "6e59560a-637d-42b3-8f04-2a0612d7b614",
+        "evidence_revision": 2215,
+        "gate_id": "CE-LIVE-44-ARTIFACT",
+        "input_fingerprint": "04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a",
+        "provenance_json": "{\"claim_id\": \"0143d208-a585-4552-b724-c7b3e922a3b4\", \"evidence_content_hash\": null, \"evidence_kind\": \"file_exists\", \"evidence_metadata\": {\"exists\": true, \"input_fingerprint\": \"04568b367a755c474ecb0a4f659b7ceff6efc4509c667f68cdbe12ec4b4c4b0a\", \"inputs\": {\"command_contract\": {\"path\": \"docs/CE_LIVE_CELLERATORCH_RESULTS.md\"}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"path\": \"docs/CE_LIVE_CELLERATORCH_RESULTS.md\", \"resources\": [], \"started_revision\": 2214}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6e59560a-637d-42b3-8f04-2a0612d7b614\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-44",
+        "valid": 1,
+        "validation_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227"
+      },
+      {
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
+        "evidence_id": "dbea74ee-7cdb-470b-9843-7654ed2e2174",
+        "evidence_revision": 2217,
+        "gate_id": "CE-LIVE-44-BUILD",
+        "input_fingerprint": "e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea",
+        "provenance_json": "{\"claim_id\": \"0143d208-a585-4552-b724-c7b3e922a3b4\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchQuantitativeSmokeTest\", \"-j\", \"4\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e5f36eb78b6aca52d6736a1bee1099981b8897b7779ce669441aba2c5ca8cfea\", \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchQuantitativeSmokeTest\", \"-j\", \"4\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2216}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/dbea74ee-7cdb-470b-9843-7654ed2e2174\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-44",
+        "valid": 1,
+        "validation_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227"
+      },
+      {
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
+        "evidence_id": "d827e7c3-6288-4d89-905c-e2ffdc297637",
+        "evidence_revision": 2219,
+        "gate_id": "CE-LIVE-44-CORRECTNESS",
+        "input_fingerprint": "1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6",
+        "provenance_json": "{\"claim_id\": \"0143d208-a585-4552-b724-c7b3e922a3b4\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"bench/ce_live/celleratorch/run_quantitative_smoke.sh\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1daf87b259a3d07ad2fe93244ba445933e35118f11132b717e04eaa57b14f8b6\", \"inputs\": {\"command_contract\": {\"argv\": [\"bench/ce_live/celleratorch/run_quantitative_smoke.sh\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2218}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d827e7c3-6288-4d89-905c-e2ffdc297637\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-44",
+        "valid": 1,
+        "validation_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227"
+      },
+      {
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
+        "evidence_id": "90e373b7-19ef-4960-97f6-5418da589bcf",
+        "evidence_revision": 2221,
+        "gate_id": "CE-LIVE-44-DIFF-CHECK",
+        "input_fingerprint": "d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8",
+        "provenance_json": "{\"claim_id\": \"0143d208-a585-4552-b724-c7b3e922a3b4\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d233e97708b5a1ea5f581e0e01407626389c481baae939c88d6e6f51b20b63f8\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2220}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/90e373b7-19ef-4960-97f6-5418da589bcf\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-44",
+        "valid": 1,
+        "validation_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227"
+      },
+      {
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
+        "evidence_id": "c369c8d4-9bcd-4451-9fd9-ca2741103e70",
+        "evidence_revision": 2223,
+        "gate_id": "CE-LIVE-44-SCOPE-AUDIT",
+        "input_fingerprint": "0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34",
+        "provenance_json": "{\"claim_id\": \"0143d208-a585-4552-b724-c7b3e922a3b4\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0d8ff80737742faa7491acd4e0973d651cc1c73548c8cc28f7dbca4721b1fe34\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--name-status\", \"HEAD\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\", \"interfaces\": [], \"recorded_git_head\": \"18353e01621f5d230b5757fb4da56ecaa10f8227\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2222}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/c369c8d4-9bcd-4451-9fd9-ca2741103e70\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-LIVE-44",
+        "valid": 1,
+        "validation_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227"
       }
     ],
     "task_dependencies": [
@@ -51124,9 +51404,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_git_head": "18353e01621f5d230b5757fb4da56ecaa10f8227",
+        "completion_revision": 2226,
         "created_at": "2026-08-26T13:43:51Z",
         "id": "CE-LIVE-44",
         "kind": "validation_task",
@@ -51138,14 +51418,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-LIVE-00",
         "priority": 260,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 2212,
-        "status": "planned",
+        "revision": 2226,
+        "status": "done",
         "tags_json": "[]",
         "title": "Torch quantitative biological smoke and performance validation",
-        "updated_at": "2026-08-27T10:11:43Z",
-        "version": 32
+        "updated_at": "2026-08-27T10:18:10Z",
+        "version": 33
       },
       {
         "attention_reason": null,
