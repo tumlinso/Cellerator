@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-34-cpe2-replay-correctness",
+  "recipe": "baseline",
+  "paths": [
+    "tests/persistence/ce_live_program_replay_test.cu",
+    "bench/ce_live/replay",
+    "include/Cellerator/execution/opaque_artifact.hh",
+    "include/Cellerator/execution/program.hh"
+  ],
+  "argv": [
+    "bash", "bench/ce_live/replay/run_ce_live_program_replay_test.sh"
+  ],
+  "timeout": 300,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  },
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}

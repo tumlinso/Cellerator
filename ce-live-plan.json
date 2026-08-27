@@ -3834,13 +3834,9 @@
           "type": "command",
           "required": true,
           "argv": [
-            "cmake",
-            "--build",
-            "build-dissolution-smoke",
-            "--target",
-            "celleratorOpaqueExecutionArtifactTest",
-            "-j",
-            "4"
+            "bash",
+            "bench/ce_live/replay/run_ce_live_program_replay_test.sh",
+            "--build-only"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -3851,7 +3847,9 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleratorOpaqueExecutionArtifactTest"
+            "bash",
+            "bench/ce_live/replay/run_ce_live_program_replay_test.sh",
+            "--run-only"
           ],
           "cwd": ".",
           "expected_exit_code": 0,

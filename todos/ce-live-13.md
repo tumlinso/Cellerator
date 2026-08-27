@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-13: Built-in candidate and projection activation inventory
 
-Task revision: `2006`; current project revision is in `todo-status.md`.
+Task revision: `2023`; current project revision is in `todo-status.md`.
 
 ## Objective
 Audit every retained native and conventional candidate, projection schema, numeric tuple, persistent-state requirement, output order, preparation helper, graph capability, and measured regime. Define the minimal host-side activation-catalog contract without implementing it or widening operation_candidate.

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-34-cpe2-replay-sanitizer",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "tests/persistence/ce_live_program_replay_test.cu",
+    "include/Cellerator/execution/opaque_artifact.hh",
+    "include/Cellerator/execution/program.hh"
+  ],
+  "correctness_argv": [
+    "bash", "bench/ce_live/replay/run_ce_live_program_replay_test.sh",
+    "--build-only"
+  ],
+  "argv": [
+    "/tmp/cellerator-ce-live-34/ce_live_program_replay_test"
+  ],
+  "correctness_timeout": 180,
+  "timeout": 300,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  },
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  }
+}
