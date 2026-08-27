@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-36-biological-evidence",
+  "recipe": "baseline",
+  "paths": [
+    "bench/ce_live/evidence",
+    "bench/ce_live/forward",
+    "bench/ce_live/training",
+    "bench/ce_live/replay",
+    "bench/ce_live/concurrency",
+    "docs/CE_LIVE_EVIDENCE.md",
+    "tests/live/quantitative_forward_test.cu",
+    "tests/execution/training_program_test.cu",
+    "tests/persistence/ce_live_program_replay_test.cu",
+    "tests/execution/ce_live_concurrency_test.cu"
+  ],
+  "build_argv": [
+    ["bash", "bench/ce_live/evidence/run_evidence_campaign.sh", "--build-only"]
+  ],
+  "correctness_argv": [
+    "bash", "bench/ce_live/evidence/run_evidence_campaign.sh", "--run-only", "1"
+  ],
+  "correctness_timeout": 900,
+  "argv": [
+    "bash", "bench/ce_live/evidence/run_evidence_campaign.sh", "--run-only", "5"
+  ],
+  "timeout": 1200,
+  "practical_regression_percent": 2.0,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  },
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 4,
+    "isolate_pcie_root": false,
+    "isolate_nvlink_domain": false
+  }
+}

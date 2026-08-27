@@ -1,0 +1,109 @@
+{
+  "schema": "CELLERATOR-LIVE-EVIDENCE/1",
+  "task": "CE-LIVE-36",
+  "source_commit_before_campaign": "bfd8dae2416964b0a6871959280a31598db86cc3",
+  "classification": "bounded biological execution evidence",
+  "hardware": {
+    "gpu": "Tesla V100-SXM2-16GB",
+    "gpu_count": 1,
+    "architecture": "sm_70",
+    "driver": "580.173.02"
+  },
+  "toolchain": {
+    "cuda": "12.9",
+    "host_compiler": "/usr/bin/g++-12",
+    "configuration": "O2 focused C++17/CUDA17 executables"
+  },
+  "fixture": {
+    "identity": "pbmc3k-raw-local-support-r512-s7",
+    "computational_only": true,
+    "logical_relation": "feature/gene source to cell/row destination",
+    "rows": 512,
+    "features": 32738,
+    "logical_edges": 433808,
+    "sparse_value_bytes_per_generation": 867616,
+    "fmp1_feature_records": 111487,
+    "fmp1_projection_bytes": 3073340
+  },
+  "forward": {
+    "evidence_level": 2,
+    "source_records": "bench/ce_live/forward/pbmc3k_forward_v1.jsonl",
+    "controller_evidence_id": "16c72445-6e94-4951-abe4-f57f59705237",
+    "widths": [1, 16, 17, 31, 32, 48, 64],
+    "reuse_horizons": [1, 8, 1024],
+    "value_generations": 2,
+    "records": 21,
+    "maximum_planner_regret_percent": 0,
+    "legal_candidate_qualification": "exactly one legal built-in FMP1 schedule per width",
+    "phase_accounting": {
+      "measured": [
+        "host FMP1 construction",
+        "host static value packing",
+        "CUDA kernel"
+      ],
+      "explicit_modelled": [
+        "host preparation",
+        "backend preparation",
+        "H2D",
+        "D2H"
+      ],
+      "zero_by_contract": [
+        "input canonicalization",
+        "output canonicalization",
+        "communication",
+        "transient workspace"
+      ]
+    },
+    "per_width": [
+      {"width": 1, "candidate": "cpbp-feature-major-small-n-f16-f32", "kernel_min_ns": 2872320, "kernel_max_ns": 2873340, "reuse_1_total_ns": 69898000, "reuse_8_total_ns": 11253000, "reuse_1024_total_ns": 2940770, "dense_input_bytes": 130952, "output_bytes": 2048},
+      {"width": 16, "candidate": "cpbp-feature-major-small-n-f16-f32", "kernel_min_ns": 3140610, "kernel_max_ns": 3456000, "reuse_1_total_ns": 70480600, "reuse_8_total_ns": 11835700, "reuse_1024_total_ns": 3209060, "dense_input_bytes": 2095232, "output_bytes": 32768},
+      {"width": 17, "candidate": "cpbp-feature-major-cta-medium-n-f16-f32", "kernel_min_ns": 3998720, "kernel_max_ns": 4241410, "reuse_1_total_ns": 71266000, "reuse_8_total_ns": 12400900, "reuse_1024_total_ns": 4067170, "dense_input_bytes": 2226184, "output_bytes": 34816},
+      {"width": 31, "candidate": "cpbp-feature-major-cta-medium-n-f16-f32", "kernel_min_ns": 4015100, "kernel_max_ns": 4017150, "reuse_1_total_ns": 71040800, "reuse_8_total_ns": 12397900, "reuse_1024_total_ns": 4083550, "dense_input_bytes": 4059512, "output_bytes": 63488},
+      {"width": 32, "candidate": "cpbp-feature-major-cta-medium-n-f16-f32", "kernel_min_ns": 3901440, "kernel_max_ns": 3902460, "reuse_1_total_ns": 70927100, "reuse_8_total_ns": 12282100, "reuse_1024_total_ns": 3969890, "dense_input_bytes": 4190464, "output_bytes": 65536},
+      {"width": 48, "candidate": "cpbp-feature-major-cta-medium-n-f16-f32", "kernel_min_ns": 4028420, "kernel_max_ns": 4031490, "reuse_1_total_ns": 71056100, "reuse_8_total_ns": 12410100, "reuse_1024_total_ns": 4096870, "dense_input_bytes": 6285696, "output_bytes": 98304},
+      {"width": 64, "candidate": "cpbp-feature-major-cta-medium-n-f16-f32", "kernel_min_ns": 4040700, "kernel_max_ns": 4040700, "reuse_1_total_ns": 71065300, "reuse_8_total_ns": 12421400, "reuse_1024_total_ns": 4109150, "dense_input_bytes": 8380928, "output_bytes": 131072}
+    ]
+  },
+  "training": {
+    "evidence_level": 3,
+    "source": "bench/ce_live/training/native_training_v1_evidence.json",
+    "width": 16,
+    "launches_per_step": 5,
+    "included": [
+      "FMP1 forward",
+      "epilogue",
+      "CTP1 backward",
+      "sparse parameter update",
+      "bias update",
+      "value readiness publication"
+    ],
+    "native_median_microseconds": 19.584,
+    "persistent_conventional_median_microseconds": 28.352,
+    "speedup": 1.45,
+    "correctness": true,
+    "qualification": "bounded N=16 small-module regime only"
+  },
+  "runtime_acceptance": {
+    "source": "bench/ce_live/concurrency/acceptance_evidence.json",
+    "same_stream": true,
+    "cross_stream_event_wait": true,
+    "cuda_graph_fixed_generation_transition": true,
+    "hidden_allocation": false,
+    "hidden_device_selection": false,
+    "hidden_device_synchronization": false,
+    "compute_sanitizer": true
+  },
+  "persistence_replay": {
+    "transport": "existing opaque CellShard CPEXEC01",
+    "cpe2_pointer_free": true,
+    "typed_activation_non_owning": true,
+    "controller_evidence_id": "846d64e9-2e82-4d1f-a22f-96e9d6746b6a",
+    "compute_sanitizer_evidence_id": "347e9723-9eb7-483b-9db0-9466efbbac3d"
+  },
+  "limitations": [
+    "The built-in executable catalog exposes no conventional SpMM candidate for the PBMC3K forward requests, so zero regret is against one legal schedule per width.",
+    "Forward complete totals mix measured construction, packing, and kernel phases with explicit analytical transfer and preparation estimates.",
+    "The N=16 training comparison is a bounded small-module result and is not a general-N training claim.",
+    "The fixture supports computational evidence only and no biological interpretation."
+  ]
+}
