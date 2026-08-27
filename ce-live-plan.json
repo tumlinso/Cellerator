@@ -4528,13 +4528,34 @@
           "type": "command",
           "required": true,
           "argv": [
-            "cmake",
-            "--build",
-            "build-dissolution-smoke",
-            "--target",
-            "celleraTorchBindingsCompileTest",
-            "-j",
-            "4"
+            "g++",
+            "-std=c++17",
+            "-O0",
+            "-g0",
+            "-D_GLIBCXX_USE_CXX11_ABI=1",
+            "-Icomponents/CelleraTorch/include",
+            "-Iinclude",
+            "-isystem",
+            "/usr/local/include",
+            "-isystem",
+            "/usr/local/include/torch/csrc/api/include",
+            "-I/usr/local/cuda/include",
+            "components/CelleraTorch/src/native_views.cc",
+            "components/CelleraTorch/tests/native_views_test.cc",
+            "-L/usr/local/lib",
+            "-L/usr/local/cuda/lib64",
+            "-Wl,-rpath,/usr/local/lib",
+            "-Wl,-rpath,/usr/local/cuda/lib64",
+            "-Wl,--no-as-needed",
+            "-ltorch_cuda",
+            "-lc10_cuda",
+            "-ltorch",
+            "-ltorch_cpu",
+            "-lc10",
+            "-lcudart",
+            "-Wl,--as-needed",
+            "-o",
+            "/tmp/celleraTorchNativeViewsTest"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -4545,7 +4566,9 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleraTorchBindingsCompileTest"
+            "env",
+            "CUDA_VISIBLE_DEVICES=0",
+            "/tmp/celleraTorchNativeViewsTest"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -4587,7 +4610,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -4603,7 +4626,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-41",
