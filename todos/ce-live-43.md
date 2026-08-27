@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-43: CelleraTorch build, package, and test fan-in
 
-Task revision: `2185`; current project revision is in `todo-status.md`.
+Task revision: `2208`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
