@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-23: Projection-to-candidate preparation factory
 
-Task revision: `2254`; current project revision is in `todo-status.md`.
+Task revision: `2256`; current project revision is in `todo-status.md`.
 
 ## Objective
 Combine one activated typed projection, biological axes, operation request, session-owned persistent allocation, and catalog entry into a prepared_operation without widening the stable operation-core ABI.

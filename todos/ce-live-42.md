@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-42: CelleraTorch autograd and readiness adapter
 
-Task revision: `2254`; current project revision is in `todo-status.md`.
+Task revision: `2256`; current project revision is in `todo-status.md`.
 
 ## Objective
 Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.

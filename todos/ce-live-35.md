@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-35: Streams, CUDA Graphs, stale identity, and hot-path acceptance
 
-Task revision: `2254`; current project revision is in `todo-status.md`.
+Task revision: `2256`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.
