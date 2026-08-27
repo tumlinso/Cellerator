@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-26: Live planner features, keys, and measurement inputs
 
-Task revision: `2043`; current project revision is in `todo-status.md`.
+Task revision: `2058`; current project revision is in `todo-status.md`.
 
 ## Objective
 Derive planner-ready structural and quantitative statistics from the fixture, construct exact persistent planning keys and reuse horizons, expose complete candidate phase inputs, and test invalidation without replacing empirical final selection.

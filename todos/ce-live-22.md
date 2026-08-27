@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-22: Strong conventional CSR fallback and hot-path cleanup
 
-Task revision: `2043`; current project revision is in `todo-status.md`.
+Task revision: `2058`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add a session-integrated cuSPARSE CSR SpMV and SpMM candidate for the live width envelope, remove per-run device selection from the custom CSR path, keep descriptor creation and preprocessing in preparation, and provide a strong fair baseline.
