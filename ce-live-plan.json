@@ -265,7 +265,7 @@
     {
       "id": "cellerator-logical-edge-orientation-v1",
       "owner_task_id": "CE-LIVE-11",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "docs/CE_LIVE_RELATION_ORIENTATION.md",
@@ -276,7 +276,7 @@
     {
       "id": "cellerator-quantitative-fixture-v1",
       "owner_task_id": "CE-LIVE-12",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "data/manifests/ce_live",
@@ -287,7 +287,7 @@
     {
       "id": "cellerator-value-readiness-v1",
       "owner_task_id": "CE-LIVE-14",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/runtime/value_readiness.cuh",
@@ -297,7 +297,7 @@
     {
       "id": "cellerator-projection-activation-v1",
       "owner_task_id": "CE-LIVE-20",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/execution/projection_activation.hh"
@@ -306,7 +306,7 @@
     {
       "id": "cellerator-builtin-candidate-catalog-v1",
       "owner_task_id": "CE-LIVE-21",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/compute/math/operation_core/builtin_catalog.hh",
@@ -316,7 +316,7 @@
     {
       "id": "cellerator-preparation-factory-v1",
       "owner_task_id": "CE-LIVE-23",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/compute/math/operation_core/preparation_factory.hh"
@@ -325,7 +325,7 @@
     {
       "id": "cellerator-executable-program-v1",
       "owner_task_id": "CE-LIVE-30",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/execution/program.hh",
@@ -335,7 +335,7 @@
     {
       "id": "cellerator-native-training-program-v1",
       "owner_task_id": "CE-LIVE-33",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "include/Cellerator/execution/training_program.hh"
@@ -468,9 +468,9 @@
             "validate",
             "--repo-root",
             ".",
-          "--json",
-          "--file",
-          "ce-live-plan.json"
+            "--json",
+            "--file",
+            "ce-live-plan.json"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -629,7 +629,7 @@
         {
           "id": "CE_LIVE_CURRENT_HEAD_BASELINED",
           "title": "Current-head build, correctness, sanitizer, and evidence rebaseline",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -724,7 +724,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -740,7 +740,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "validated"
     },
     {
       "id": "CE-LIVE-11",
@@ -780,7 +781,7 @@
         {
           "id": "CELLERATOR_LOGICAL_EDGE_ORIENTATION_V1_READY",
           "title": "Freeze logical relation orientation and edge identity",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-logical-edge-orientation-v1",
@@ -867,7 +868,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -883,7 +884,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-12",
@@ -920,7 +922,7 @@
         {
           "id": "CELLERATOR_QUANTITATIVE_FIXTURE_V1_READY",
           "title": "Quantitative biological fixture, provenance, and referee contract",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-quantitative-fixture-v1",
@@ -1000,7 +1002,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1016,7 +1018,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-13",
@@ -1052,7 +1055,7 @@
         {
           "id": "CE_LIVE_CANDIDATE_INVENTORY_READY",
           "title": "Built-in candidate and projection activation inventory",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -1126,7 +1129,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1142,7 +1145,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-14",
@@ -1176,7 +1180,7 @@
         {
           "id": "CELLERATOR_VALUE_READINESS_V1_READY",
           "title": "Value readiness and asynchronous generation contract",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-value-readiness-v1",
@@ -1284,7 +1288,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1300,7 +1304,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-15",
@@ -1335,7 +1340,7 @@
         {
           "id": "CE_LIVE_AUTHORITY_REFRESHED",
           "title": "Refresh architecture authority and quarantine legacy default builds",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -1409,7 +1414,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1425,7 +1430,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-16",
@@ -1458,7 +1464,7 @@
         {
           "id": "CELLERATOR_TENSOR_CORE_CONTRACT_READY",
           "title": "Bounded Tensor Core feasibility and candidate contract",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -1532,7 +1538,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1548,7 +1554,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-19",
@@ -1624,7 +1631,7 @@
         {
           "id": "CE_LIVE_FOUNDATIONS_READY",
           "title": "CE-LIVE foundations ready",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -1769,7 +1776,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1785,7 +1792,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-20",
@@ -1801,8 +1809,16 @@
           "components/CellPack/tests/persistence/execution_image_v2_device_test.cu"
         ],
         "read_paths": [
+          "components/CellPack/include/CellPack/feature_weighted_row_reduction.hh",
           "components/CellPack/include/CellPack/persistence/execution_image_v2.hh",
-          "include/Cellerator/compute/math"
+          "include/Cellerator/compute/math/operation_core/csr_fallback_candidate.hh",
+          "include/Cellerator/compute/math/operation_core/feature_major_small_n_candidate.hh",
+          "include/Cellerator/compute/math/operation_core/operation_core.hh",
+          "include/Cellerator/compute/math/operation_core/row_masked_n1_candidate.hh",
+          "include/Cellerator/compute/math/operation_core/transpose_backward_candidate.hh",
+          "include/Cellerator/compute/math/physical_csr.hh",
+          "include/Cellerator/compute/math/physical_feature_major.hh",
+          "include/Cellerator/compute/math/physical_transpose.hh"
         ]
       },
       "kind": "task",
@@ -1831,7 +1847,7 @@
         {
           "id": "CELLERATOR_PROJECTION_ACTIVATION_V1_READY",
           "title": "CPE2 typed projection activation",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-projection-activation-v1",
@@ -1939,7 +1955,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -1955,7 +1971,9 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "next_action": "Typed non-owning projection activation completed and validated.",
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-21",
@@ -2001,7 +2019,7 @@
         {
           "id": "CELLERATOR_BUILTIN_CANDIDATE_CATALOG_V1_READY",
           "title": "Built-in operation candidate catalog",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-builtin-candidate-catalog-v1",
@@ -2081,7 +2099,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2097,7 +2115,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-22",
@@ -2140,7 +2159,7 @@
         {
           "id": "CELLERATOR_CONVENTIONAL_CSR_V1_READY",
           "title": "Strong conventional CSR fallback and hot-path cleanup",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -2242,7 +2261,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2258,7 +2277,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-23",
@@ -2295,7 +2315,7 @@
         {
           "id": "CELLERATOR_PREPARATION_FACTORY_V1_READY",
           "title": "Projection-to-candidate preparation factory",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-preparation-factory-v1",
@@ -2396,7 +2416,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2412,7 +2432,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-24",
@@ -2454,7 +2475,7 @@
         {
           "id": "CELLERATOR_QUANTITATIVE_RELATION_READY",
           "title": "Native quantitative fixture adapter and independent referee",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -2549,7 +2570,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2565,7 +2586,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-25",
@@ -2607,7 +2629,7 @@
         {
           "id": "CELLERATOR_NATIVE_TRAINING_READINESS_READY",
           "title": "Integrate value readiness with native training and parameters",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -2709,7 +2731,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2725,7 +2747,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-26",
@@ -2767,7 +2790,7 @@
         {
           "id": "CELLERATOR_LIVE_PLANNER_INPUTS_READY",
           "title": "Live planner features, keys, and measurement inputs",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -2848,7 +2871,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -2864,7 +2887,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-29",
@@ -2939,7 +2963,7 @@
         {
           "id": "CELLERATOR_EXECUTABLE_CORE_READY",
           "title": "Cellerator executable core ready",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -3084,7 +3108,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -3100,7 +3124,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-30",
@@ -3159,7 +3184,7 @@
         {
           "id": "CELLERATOR_EXECUTABLE_PROGRAM_V1_READY",
           "title": "Planner-backed executable program ready",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-executable-program-v1",
@@ -3267,7 +3292,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -3283,7 +3308,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-31",
@@ -3299,19 +3325,18 @@
           "docs/CE_LIVE_FORWARD_RESULTS.md"
         ],
         "read_paths": [
-          "include",
-          "src",
-          "components",
-          "tests",
-          "bench",
-          "docs",
-          "data",
-          "scripts",
-          "CMakeLists.txt",
           "AGENTS.md",
-          "scope.md",
-          "planning_strategy.md",
-          "ARCHITECTURE_FOLLOWUPS.md"
+          "CMakeLists.txt",
+          "bench/ce_live/runtime_fixture",
+          "components/CellPack/include/CellPack/persistence",
+          "data/ce_live",
+          "docs/CE_LIVE_EXECUTABLE_PROGRAM.md",
+          "docs/CE_LIVE_PLANNER_INPUTS.md",
+          "docs/CE_LIVE_QUANTITATIVE_EXECUTION.md",
+          "include/Cellerator/execution/program.hh",
+          "include/Cellerator/execution/projection_activation.hh",
+          "include/Cellerator/runtime/value_readiness.cuh",
+          "tests/live"
         ]
       },
       "parallel_policy": "parallel_safe",
@@ -3430,13 +3455,7 @@
         "CE-LIVE-RUNTIME",
         "CE-LIVE-PLANNER",
         "CE-LIVE-FIXTURE",
-        "CE-LIVE-STORAGE",
-        "CE-LIVE-CPE2",
-        "CE-LIVE-BASEPLANE",
-        "CE-LIVE-TORCH",
-        "CE-LIVE-TENSOR",
-        "CE-LIVE-EVIDENCE",
-        "CE-LIVE-OWNERSHIP"
+        "CE-LIVE-EVIDENCE"
       ]
     },
     {
@@ -3499,7 +3518,7 @@
         {
           "id": "CELLERATOR_TENSOR_CORE_DECISION_V1",
           "title": "One V100 Tensor Core candidate, promotion or measured rejection",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -3514,13 +3533,8 @@
           "type": "command",
           "required": true,
           "argv": [
-            "cmake",
-            "--build",
-            "build-dissolution-smoke",
-            "--target",
-            "celleratorCeArch92RealRegimeBench",
-            "-j",
-            "4"
+            "bash",
+            "bench/ce_live/tensor_core/campaign/build_candidate_test.sh"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -3531,7 +3545,10 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleratorCeArch92RealRegimeBench"
+            "python",
+            "-m",
+            "unittest",
+            "tests/tensor_core/test_v100_dense_fragment_decision.py"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -3594,7 +3611,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -3610,7 +3627,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "evaluated_not_promoted"
     },
     {
       "id": "CE-LIVE-33",
@@ -3648,7 +3666,7 @@
         {
           "id": "CELLERATOR_LIVE_TRAINING_V1",
           "title": "Native training executable integration",
-          "state": "pending",
+          "state": "reached",
           "publishes_interfaces": [
             {
               "id": "cellerator-native-training-program-v1",
@@ -3749,7 +3767,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -3765,7 +3783,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "implemented"
     },
     {
       "id": "CE-LIVE-34",
@@ -3949,7 +3968,7 @@
         {
           "id": "CELLERATOR_LIVE_CONCURRENCY_V1",
           "title": "Streams, CUDA Graphs, stale identity, and hot-path acceptance",
-          "state": "pending"
+          "state": "reached"
         }
       ],
       "gates": [
@@ -4051,7 +4070,7 @@
         }
       ],
       "parent_id": "CE-LIVE-00",
-      "status": "planned",
+      "status": "done",
       "invariants": [
         "CE-LIVE-IDENTITY",
         "CE-LIVE-ORIENTATION",
@@ -4067,7 +4086,8 @@
         "CE-LIVE-TENSOR",
         "CE-LIVE-EVIDENCE",
         "CE-LIVE-OWNERSHIP"
-      ]
+      ],
+      "result": "validated"
     },
     {
       "id": "CE-LIVE-36",
