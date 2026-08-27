@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `2087`
+Project revision: `2160`
 
 ## Workstreams
 - `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -468,8 +468,8 @@ Project revision: `2087`
 - `CE-LIVE-35` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.
 - `CE-LIVE-36` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.
 - `CE-LIVE-37` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.
-- `CE-LIVE-40` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
-- `CE-LIVE-41` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
+- `CE-LIVE-40` | kind: task | status: done | parent: CE-LIVE-00 | objective: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
+- `CE-LIVE-41` | kind: task | status: done | parent: CE-LIVE-00 | objective: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
 - `CE-LIVE-42` | kind: task | status: planned | parent: CE-LIVE-00 | objective: Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.
 - `CE-LIVE-43` | kind: integration_task | status: planned | parent: CE-LIVE-00 | objective: Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
 - `CE-LIVE-44` | kind: validation_task | status: planned | parent: CE-LIVE-00 | objective: Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.

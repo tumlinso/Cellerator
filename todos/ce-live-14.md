@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-14: Value readiness and asynchronous generation contract
 
-Task revision: `2087`; current project revision is in `todo-status.md`.
+Task revision: `2158`; current project revision is in `todo-status.md`.
 
 ## Objective
 Design and implement the runtime-side generation-readiness token or record with same-stream fast paths, cross-stream waits, failed-enqueue safety, and no event or stream ownership in the persistent biological ABI.
