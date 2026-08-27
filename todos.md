@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `2208`
+Project revision: `2212`
 
 ## Workstreams
 - `CE-LIVE-00` | kind: epic | status: planned | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -471,7 +471,7 @@ Project revision: `2208`
 - `CE-LIVE-40` | kind: task | status: done | parent: CE-LIVE-00 | objective: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
 - `CE-LIVE-41` | kind: task | status: done | parent: CE-LIVE-00 | objective: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
 - `CE-LIVE-42` | kind: task | status: done | parent: CE-LIVE-00 | objective: Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.
-- `CE-LIVE-43` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
+- `CE-LIVE-43` | kind: integration_task | status: planned | parent: CE-LIVE-00 | objective: Integrate the three adapter lanes, preserve the old copy-based CSR exporter as an explicit compatibility and debug path, validate package consumers and Torch-off native builds, and publish one coherent adapter surface.
 - `CE-LIVE-44` | kind: validation_task | status: planned | parent: CE-LIVE-00 | objective: Run the same quantitative fixture through native Cellerator and CelleraTorch forward/autograd paths, prove numerical and identity parity, verify current-stream behavior, and measure adapter overhead.
 - `CE-ARCH-01` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Establish the actual repository, ABI, build, benchmark, task, and ownership state before implementation.
 - `CE-ARCH-93` | kind: integration_task | status: done | parent: - | objective: Preserve CP-MATH provenance while making every CP-MATH task, checkpoint, gate, and dependency semantically historical and ineligible for current planning or attention.

@@ -5154,6 +5154,7 @@
       "scope": {
         "exclusive_paths": [
           "bench/ce_live/celleratorch",
+          "components/CelleraTorch/CMakeLists.txt",
           "components/CelleraTorch/tests/quantitative_smoke_test.cc",
           "docs/CE_LIVE_CELLERATORCH_RESULTS.md"
         ],
@@ -5209,7 +5210,7 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-celleratorch/celleraTorchQuantitativeSmokeTest"
+            "bench/ce_live/celleratorch/run_quantitative_smoke.sh"
           ],
           "cwd": ".",
           "expected_exit_code": 0,

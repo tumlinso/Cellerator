@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-34: CPE2 reload and existing opaque CellShard replay
 
-Task revision: `2185`; current project revision is in `todo-status.md`.
+Task revision: `2212`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.

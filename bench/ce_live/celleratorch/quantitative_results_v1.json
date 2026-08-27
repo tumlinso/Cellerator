@@ -1,0 +1,45 @@
+{
+  "schema": "CELLERATOR_CELLERATORCH_LIVE_V1",
+  "fixture": "pbmc3k-r512-s7",
+  "fixture_role": "computational correctness and adapter-overhead evidence only",
+  "shape": {
+    "destination_cells": 512,
+    "source_features": 32738,
+    "logical_edges": 433808
+  },
+  "widths": [1, 16, 17, 31, 32, 48, 64],
+  "reuse_horizons": [1, 8, 1024],
+  "value_generations": 2,
+  "repeats": 3,
+  "native_adapter_parity_checks": 126,
+  "correctness": true,
+  "output_order_parity": true,
+  "structure_and_generation_identity_preserved": true,
+  "current_stream_preserved": true,
+  "preparation_count_per_program": 1,
+  "measurement": {
+    "native_gpu_median_us": 4003.84,
+    "adapter_gpu_median_us": 3998.72,
+    "gpu_delta_us": -5.12,
+    "native_enqueue_median_ns": 4947,
+    "adapter_dispatch_median_ns": 4974,
+    "host_dispatch_tax_ns": 27,
+    "view_adaptation_median_ns": 3262,
+    "interpretation": "GPU delta is timing noise; host dispatch and zero-copy view metadata are the observable adapter costs"
+  },
+  "hardware": {
+    "gpu": "Tesla V100-SXM2-16GB",
+    "compute_capability": "7.0",
+    "driver": "580.173.02",
+    "cuda": "12.9",
+    "architecture": "sm_70",
+    "gpus_used": 1
+  },
+  "controller_evidence": "6a90435e-b938-418e-801a-d897bc96db95",
+  "sanitizer": {
+    "tool": "CUDA 12.9 Compute Sanitizer memcheck",
+    "result": "ERROR SUMMARY: 0 errors",
+    "controller_wrapper_record": "bb4d9a9a-d95c-4b31-833d-bb0cbc47925d",
+    "controller_wrapper_limitation": "host wrapper substituted an unavailable 13.1 shim; conclusive rerun used the exact 12.9 binary under the CUDA benchmark mutex"
+  }
+}

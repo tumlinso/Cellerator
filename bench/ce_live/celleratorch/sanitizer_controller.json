@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "project_root": "/home/tumlinson/Cellerator",
+  "campaign_id": "ce-live-44-celleratorch-quantitative-memcheck",
+  "recipe": "compute-sanitizer",
+  "paths": [
+    "bench/ce_live/celleratorch",
+    "components/CelleraTorch/tests/quantitative_smoke_test.cc",
+    "components/CelleraTorch/src/program_ops.cu"
+  ],
+  "resources": {
+    "gpus": 1,
+    "cpu_threads": 2
+  },
+  "build_argv": [
+    ["cmake", "-S", ".", "-B", "build-celleratorch", "-DCELLERATOR_ENABLE_TORCH_MODELS=ON", "-DCMAKE_CUDA_ARCHITECTURES=70", "-DCMAKE_BUILD_TYPE=Release"],
+    ["cmake", "--build", "build-celleratorch", "--target", "celleraTorchQuantitativeSmokeTest", "-j", "2"],
+    ["mkdir", "-p", "/tmp/cellerator-ce-live-44"],
+    ["python", "bench/ce_live/forward/prepare_pbmc3k_fixture.py", "--fixture", "bench/ce_live/fixture/local/pbmc3k-r512-s7.npz", "--manifest", "data/manifests/ce_live/pbmc3k_quantitative_v1.json", "--output", "/tmp/cellerator-ce-live-44/pbmc3k-r512-s7.bin"]
+  ],
+  "argv": [
+    "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer", "--tool", "memcheck", "--error-exitcode", "99",
+    "./build-celleratorch/celleraTorchQuantitativeSmokeTest",
+    "/tmp/cellerator-ce-live-44/pbmc3k-r512-s7.bin"
+  ],
+  "timeout": 1800,
+  "quiescence": {
+    "timeout_seconds": 30,
+    "consecutive_idle_samples": 3
+  }
+}
