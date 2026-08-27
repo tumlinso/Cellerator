@@ -24,6 +24,10 @@ preprocessing policy, or CellShard data handling.
 Current CelleraTorch surfaces include:
 
 - `CelleraTorch::bindings`
+- `CelleraTorch::native_views`
+- `CelleraTorch::program_ops`
+- `CelleraTorch::autograd_ops`
+- `CelleraTorch::native_adapter`
 - `CelleraTorch::model_ops`
 - `CelleraTorch::quantize`
 - `CelleraTorch::dense_reduce`
@@ -53,3 +57,29 @@ canonical learned-parameter buffers.
 This component is wired through the existing `CELLERATOR_ENABLE_TORCH_MODELS`
 CMake option. Disable that option for a native Cellerator build without
 Torch package discovery.
+
+The preferred CE-LIVE adapter surface is `CelleraTorch::native_adapter`. It
+combines three thin boundaries while leaving all canonical state and numerical
+authority in Cellerator:
+
+- zero-copy, lifetime-bound Torch views over native operands and parameters;
+- forward dispatch into an already prepared native executable program on the
+  current Torch CUDA stream;
+- N=16 autograd integration over the existing native training program and
+  value-readiness contract.
+
+The older `CelleraTorch::bindings` copied CPU CSR exporter remains available as
+an explicit compatibility, debugging, and one-time interoperability path. It
+is not linked or called by the preferred native adapter hot path.
+
+Build the combined adapter explicitly with:
+
+```bash
+cmake -S . -B build-celleratorch \
+  -DCELLERATOR_ENABLE_TORCH_MODELS=ON \
+  -DCMAKE_CUDA_ARCHITECTURES=70
+cmake --build build-celleratorch --target celleraTorchNativeAdapterTests -j 4
+```
+
+The default Torch-off configuration continues to configure and build without
+discovering libtorch.

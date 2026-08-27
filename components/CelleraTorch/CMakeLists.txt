@@ -62,6 +62,69 @@ target_include_directories(cellera_torch_bindings INTERFACE
 target_link_libraries(cellera_torch_bindings INTERFACE CelleraTorch::torch CellShard::runtime)
 target_compile_features(cellera_torch_bindings INTERFACE cxx_std_17)
 
+# CE-LIVE-43: the native adapter surface is split by responsibility.  These
+# targets share Torch build policy but retain Cellerator ownership of storage,
+# planning, execution, parameters, and readiness.
+add_library(cellera_torch_native_views STATIC
+    src/native_views.cc
+)
+add_library(CelleraTorch::native_views ALIAS cellera_torch_native_views)
+target_include_directories(cellera_torch_native_views PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include
+)
+target_link_libraries(cellera_torch_native_views PUBLIC
+    CelleraTorch::torch
+    Cellerator::runtime
+)
+target_compile_features(cellera_torch_native_views PUBLIC cxx_std_17)
+
+add_library(cellera_torch_program_ops STATIC
+    src/program_ops.cu
+)
+add_library(CelleraTorch::program_ops ALIAS cellera_torch_program_ops)
+target_include_directories(cellera_torch_program_ops PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include
+)
+target_link_libraries(cellera_torch_program_ops PUBLIC
+    CelleraTorch::torch
+    Cellerator::executable_program
+)
+set_target_properties(cellera_torch_program_ops PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_library(cellera_torch_autograd_ops STATIC
+    src/autograd_ops.cu
+)
+add_library(CelleraTorch::autograd_ops ALIAS cellera_torch_autograd_ops)
+target_include_directories(cellera_torch_autograd_ops PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include
+)
+target_link_libraries(cellera_torch_autograd_ops PUBLIC
+    CelleraTorch::torch
+    Cellerator::training_program
+)
+set_target_properties(cellera_torch_autograd_ops PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_library(cellera_torch_native_adapter INTERFACE)
+add_library(CelleraTorch::native_adapter ALIAS cellera_torch_native_adapter)
+target_link_libraries(cellera_torch_native_adapter INTERFACE
+    CelleraTorch::native_views
+    CelleraTorch::program_ops
+    CelleraTorch::autograd_ops
+)
+
 add_library(cellera_torch_model_ops STATIC
     src/model_ops/model_ops.cu
 )
@@ -166,3 +229,75 @@ set_target_properties(celleraTorchModelCustomOpsTest PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
 )
 cellerator_enable_perf(celleraTorchModelCustomOpsTest)
+
+add_executable(celleraTorchNativeViewsTest
+    tests/native_views_test.cc
+)
+target_link_libraries(celleraTorchNativeViewsTest PRIVATE
+    CelleraTorch::native_views
+)
+set_target_properties(celleraTorchNativeViewsTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
+
+add_executable(celleraTorchProgramOpsTest
+    tests/program_ops_test.cc
+)
+target_link_libraries(celleraTorchProgramOpsTest PRIVATE
+    CelleraTorch::program_ops
+)
+set_target_properties(celleraTorchProgramOpsTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
+
+add_executable(celleraTorchAutogradOpsTest
+    tests/autograd_ops_test.cc
+)
+target_link_libraries(celleraTorchAutogradOpsTest PRIVATE
+    CelleraTorch::autograd_ops
+)
+set_target_properties(celleraTorchAutogradOpsTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+)
+
+add_custom_target(celleraTorchNativeAdapterTests
+    DEPENDS
+        celleraTorchNativeViewsTest
+        celleraTorchProgramOpsTest
+        celleraTorchAutogradOpsTest
+)
+
+add_custom_target(celleraTorchNativeAdapterCheck
+    COMMAND $<TARGET_FILE:celleraTorchNativeViewsTest>
+    COMMAND $<TARGET_FILE:celleraTorchProgramOpsTest>
+    COMMAND $<TARGET_FILE:celleraTorchAutogradOpsTest>
+    DEPENDS celleraTorchNativeAdapterTests
+    USES_TERMINAL
+)
+
+# CE-LIVE-44 owns the quantitative source and evidence.  The Wave D fan-in
+# owns its shared build seam, which becomes active when that scoped source is
+# present and CMake is regenerated.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/quantitative_smoke_test.cc")
+    add_executable(celleraTorchQuantitativeSmokeTest
+        tests/quantitative_smoke_test.cc
+    )
+    target_link_libraries(celleraTorchQuantitativeSmokeTest PRIVATE
+        CelleraTorch::native_adapter
+    )
+    set_target_properties(celleraTorchQuantitativeSmokeTest PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+        RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}"
+    )
+endif()

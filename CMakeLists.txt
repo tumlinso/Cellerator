@@ -1766,6 +1766,48 @@ target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::native_training_slice
 )
 
+# CE-LIVE-43: publish the CE-LIVE-30 host orchestration layer as a normal
+# native target so framework adapters consume the frozen executable-program
+# contract instead of compiling or reimplementing it privately.
+add_library(cellerator_executable_program STATIC
+    src/execution/program.cc
+)
+add_library(Cellerator::executable_program ALIAS
+    cellerator_executable_program)
+target_include_directories(cellerator_executable_program PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_executable_program PUBLIC
+    Cellerator::executable_core
+    Cellerator::planner
+)
+target_compile_features(cellerator_executable_program PUBLIC cxx_std_17)
+
+add_library(cellerator_training_program STATIC
+    src/execution/training_program.cu
+)
+add_library(Cellerator::training_program ALIAS cellerator_training_program)
+target_include_directories(cellerator_training_program PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/components/CellPack/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_training_program PUBLIC
+    Cellerator::native_training_slice
+    Cellerator::feature_major_projection
+    Cellerator::transpose_projection
+    Cellerator::runtime
+    CUDA::cudart
+)
+set_target_properties(cellerator_training_program PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_library(cellerator_planner STATIC
     src/planner/end_to_end_planner.cc
     src/distributed/hierarchy.cc

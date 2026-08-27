@@ -4975,9 +4975,9 @@
           "argv": [
             "cmake",
             "--build",
-            "build-dissolution-smoke",
+            "build-celleratorch",
             "--target",
-            "celleraTorchModelCustomOpsTest",
+            "celleraTorchNativeAdapterTests",
             "-j",
             "4"
           ],
@@ -4990,7 +4990,13 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+            "cmake",
+            "--build",
+            "build-celleratorch",
+            "--target",
+            "celleraTorchNativeAdapterCheck",
+            "-j",
+            "1"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
@@ -5188,9 +5194,9 @@
           "argv": [
             "cmake",
             "--build",
-            "build-dissolution-smoke",
+            "build-celleratorch",
             "--target",
-            "celleraTorchModelCustomOpsTest",
+            "celleraTorchQuantitativeSmokeTest",
             "-j",
             "4"
           ],
@@ -5203,7 +5209,7 @@
           "type": "command",
           "required": true,
           "argv": [
-            "./build-dissolution-smoke/celleraTorchModelCustomOpsTest"
+            "./build-celleratorch/celleraTorchQuantitativeSmokeTest"
           ],
           "cwd": ".",
           "expected_exit_code": 0,
