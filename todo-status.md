@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2034`
+Project revision: `2039`
 
 ## Workstreams
 - `CE-LIVE-00` | status: planned | execution: inactive | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
@@ -80,10 +80,10 @@ Project revision: `2034`
 - `CE-LIVE-26` | status: done | execution: closed | next: Derive planner-ready structural and quantitative statistics from the fixture, construct exact persistent planning keys and reuse horizons, expose complete candidate phase inputs, and test invalidation without replacing empirical final selection.
 - `CE-LIVE-29` | status: done | execution: closed | next: Wire and validate typed activation, catalog, conventional fallback, preparation factory, quantitative adapter, readiness, training integration, and planner inputs. Freeze the minimum executable-core interfaces and open the vertical-slice frontier.
 - `CE-LIVE-30` | status: done | execution: closed | next: Implement one host-side executable_program that enumerates legal activated candidates, prices complete costs, invokes the planner, reserves session-owned persistent state, prepares the winner, binds changing launch state, exposes output order and workspace requirements, and runs without creating a second runtime.
-- `CE-LIVE-31` | status: planned | execution: ready | next: Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.
+- `CE-LIVE-31` | status: done | execution: closed | next: Run the quantitative PBMC3K fixture through CP-BP compilation, projection construction, complete-cost planning, prepared native or conventional execution, repeated value generations, and canonical recovery at declared widths and reuse horizons.
 - `CE-LIVE-32` | status: done | execution: closed | next: Implement at most one sm_70 dense-fragment or WMMA candidate under the bounded contract, integrate it as an ordinary planner candidate, and either promote on a complete-cost real-fixture win or leave unregistered with reproducible negative evidence.
 - `CE-LIVE-33` | status: done | execution: closed | next: Wrap the validated FMP1 and CTP1 N=16 training slice as an explicit prepared executable path with forward, epilogue, backward, sparse and bias updates, parameter descriptors, readiness transitions, and a fair persistent CSR/cuSPARSE baseline without rebuilding topology.
-- `CE-LIVE-34` | status: planned | execution: claimed | next: Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.
+- `CE-LIVE-34` | status: done | execution: closed | next: Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.
 - `CE-LIVE-35` | status: done | execution: closed | next: Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.
 - `CE-LIVE-36` | status: planned | execution: ready | next: Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.
 - `CE-LIVE-37` | status: planned | execution: ready | next: Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.

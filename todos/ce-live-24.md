@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-LIVE-24: Native quantitative fixture adapter and independent referee
 
-Task revision: `2023`; current project revision is in `todo-status.md`.
+Task revision: `2039`; current project revision is in `todo-status.md`.
 
 ## Objective
 Bind the quantitative fixture to exact Cellerator identities, build the forward feature-to-cell relation and mutable generations, generate deterministic dense operands, and compare supported outputs against an independent CPU reference.
