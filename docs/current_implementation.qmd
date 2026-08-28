@@ -4,32 +4,35 @@ title: "Current Implementation"
 
 ## Snapshot
 
-This page records the post-CE-ARCH repository state through the CE-LIVE Wave C
-evidence rendezvous at commit:
+This page records the validated CE-ARCH/CE-LIVE semantic baseline and the
+completed physical repository consolidation against baseline commit:
 
 ```text
-82f300ba46dd15290e522a8857939b437d1ce150
+e02054fa103551c27f6a41907c49c6d923ce5777
 ```
 
 Audit date:
 
 ```text
-2026-08-26
+2026-08-28
 ```
 
-The original 2026-08-21 audit remains useful historical context. The CE-ARCH
-completion update records the implemented foundation as of 2026-08-25; this
-refresh distinguishes that completed foundation from the current CE-LIVE
-activation program.
+The original 2026-08-21 audit remains useful historical context. CE-ARCH and
+CE-LIVE are complete through native training, replay, concurrency, Tensor Core
+non-promotion, and the CelleraTorch validation audit. The 2026-08-28 remap
+changes physical ownership and build organization without changing those
+semantic contracts.
 
 ## Repository-wide state
 
-The current repository contains three architectural generations at once:
+The repository now gives those generations distinct physical roles:
 
-1. older CSR, Blocked-ELL, SELL, quantized, preprocessing, model, and workflow systems;
-2. the completed CP-BP v1 geometry and direct-execution work;
-3. the CE-ARCH operation core, execution image, planner, and native projection
-   system, alongside retained CP-Math v1 adapters.
+1. current execution, runtime, geometry, compute, planner, preprocessing, and
+   interop implementation under canonical `include/Cellerator/` and `src/`
+   ownership;
+2. retained CP-Math v1 and legacy sparse evidence under `compat/`;
+3. model and trajectory orchestration under `examples/`, the preprocessing
+   workbench under `tools/`, and Torch adaptation under `components/CelleraTorch`.
 
 The documentation before this replacement described the first generation as the durable architecture, especially through Blocked-ELL-first and CellShard-backed sparse-ML language. That description is superseded.
 
@@ -50,7 +53,9 @@ schedule for each tested request. Its reported zero planner regret is therefore
 complete over the legal set, but is not evidence of a universal win over
 cuSPARSE. Training remains a small-module N=16 slice. The PBMC3K fixture is
 computational evidence only. Tensor Core evaluation ended in measured
-non-promotion, and CelleraTorch implementation remains later adapter work.
+non-promotion. CelleraTorch is implemented as a thin optional native adapter;
+its quantitative PBMC3K parity and bounded native autograd/readiness checks are
+complete.
 
 The retained CP-Math v1 surface is not the operation-core authority. Its
 request, structural planner, prepared lifetime, and private runtime remain
@@ -262,11 +267,11 @@ path through direct prepared execution.
 This section describes the retained first-generation adapter surface. Its gaps
 do not describe the CE-ARCH operation core completed below.
 
-CP-Math currently lives under:
+CP-Math v1 evidence now lives under:
 
 ```text
-include/Cellerator/compute/math/
-src/compute/math/
+compat/cp_math_v1/include/Cellerator/compat/cp_math_v1/
+compat/cp_math_v1/src/
 tests/math_*.cc and tests/math_*.cu
 bench/math/
 ```
@@ -310,10 +315,11 @@ The tree contains:
 
 ### Compatibility build integration
 
-The root build still exposes the packed-dense-operand benchmark for retained
-evidence. CP-Math v1 is intentionally not assembled into a second authoritative
-core library target and is not the execution owner for the repository's sparse
-systems.
+The compatibility build exposes explicit evidence targets and the retained
+packed-dense-operand benchmark. Historical include paths are forwarding
+surfaces only; current implementation and current tests use canonical or
+explicit compatibility paths. CP-Math v1 is not the execution owner for the
+repository's sparse systems.
 
 ### Legacy adapter gaps
 

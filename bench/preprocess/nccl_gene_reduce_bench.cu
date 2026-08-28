@@ -1,6 +1,6 @@
 #include "benchmark_mutex.hh"
 
-#include <Cellerator/dist/distributed.cuh>
+#include <Cellerator/runtime/multi_gpu/context.cuh>
 
 #include <cuda_runtime.h>
 

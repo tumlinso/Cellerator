@@ -1,6 +1,6 @@
 #include <Cellerator/compute/neighbors/exact_search.hh>
 
-#include "../src/compute/graph/workspace.cuh"
+#include <Cellerator/compute/operators/graph/workspace.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>

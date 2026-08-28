@@ -1,8 +1,8 @@
-#include <Cellerator/compute/math/operation_core/feature_major_small_n_candidate.hh>
+#include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/execution/opaque_artifact.hh>
 #include <Cellerator/execution/program.hh>
 
-#include <CellPack/persistence/execution_image_v2.hh>
+#include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

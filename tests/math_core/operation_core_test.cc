@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/operation_core/operation_core.hh>
+#include <Cellerator/compute/operation/operation_core.hh>
 
 #include <cassert>
 #include <cstdint>

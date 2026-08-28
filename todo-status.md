@@ -58,10 +58,21 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2256`
+Project revision: `2355`
 
 ## Workstreams
+- `CE-REMAP-00` | status: planned | execution: inactive | next: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
+- `CE-REMAP-01` | status: done | execution: closed | next: Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.
+- `CE-REMAP-02` | status: done | execution: closed | next: Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.
+- `CE-REMAP-03` | status: done | execution: closed | next: Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.
+- `CE-REMAP-04` | status: done | execution: closed | next: Move validated CellPack and related packing/discovery implementation into canonical geometry ownership, preserve namespaces and behavior, and leave compatibility aliases only where real consumers require them.
+- `CE-REMAP-05` | status: done | execution: closed | next: Promote authoritative operation, projection, candidate, operator, and training implementation; quarantine CP-Math v1 and legacy sparse API evidence without rewriting kernels or algorithms.
+- `CE-REMAP-06` | status: done | execution: closed | next: Keep one canonical runtime, move GPU/fleet/collective resources under runtime, move hierarchy and communication policy under planner/distributed, and retire duplicate compute/runtime and standalone distributed facades.
+- `CE-REMAP-07` | status: done | execution: closed | next: Move Cellerator-owned Baseplane and CellShard seams into narrow conventional interop homes; document module and GlassHelix deferral rather than freezing speculation.
+- `CE-REMAP-08` | status: done | execution: closed | next: Merge preprocessing islands, move the workbench to tools, and move model and trajectory orchestration to examples after extracting only genuinely reusable native primitives.
+- `CE-REMAP-09` | status: done | execution: closed | next: Remove empty historical islands, minimize forwarding and target aliases, ensure current code does not depend on compatibility evidence, and make root CMake configuration-oriented.
 - `CE-LIVE-00` | status: done | execution: closed | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
+- `CE-REMAP-10` | status: done | execution: closed | next: Validate the remapped repository from clean configuration, run modern CUDA and CE-LIVE regressions, validate modules and compatibility, inspect dependency boundaries, and publish exact evidence and remaining bounded follow-ups.
 - `CE-LIVE-01` | status: done | execution: closed | next: Validate and apply the full plan, claim this task, publish the program document and generated projections, audit/reconcile/export, commit, finish, and verify the seven-task frontier.
 - `CE-LIVE-10` | status: done | execution: closed | next: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
 - `CE-LIVE-11` | status: done | execution: closed | next: Resolve the feature/row orientation seam so forward relations are feature-or-gene source to row-or-cell destination, transpose projections share the same logical edge identity, and swapped axes fail explicitly.

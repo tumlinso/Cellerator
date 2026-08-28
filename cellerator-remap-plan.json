@@ -1,0 +1,336 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "CE-REMAP",
+    "workspace": "cellerator",
+    "repository": "Cellerator",
+    "baseline_commit": "e02054fa103551c27f6a41907c49c6d923ce5777",
+    "baseline_todo_revision": 2256,
+    "program_document": "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"
+  },
+  "invariants": [
+    {
+      "id": "CE-REMAP-SEMANTICS",
+      "rule": "The remap changes physical ownership and build ownership only. Frozen CE-ARCH and CE-LIVE semantics, identities, numerical behavior, projection plurality, execution lifetimes, and candidate behavior remain unchanged.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-AUTHORITY",
+      "rule": "Modern execution, the sole execution session, the CE-ARCH operation core, planner, CPE2, and native candidates remain authoritative. CP-Math v1 and legacy sparse APIs are compatibility or evidence only.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-GEOMETRY",
+      "rule": "CellPack and CP-BP are Cellerator geometry compilation. Their validated algorithms and ABIs are preserved while their canonical physical home becomes include/Cellerator/geometry and src/geometry.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-BOUNDARIES",
+      "rule": "Baseplane remains sequence engineering, CellShard remains persistence and delivery, GlassHelix remains scientific dynamics, and CelleraTorch remains optional framework adaptation. No speculative GlassHelix contract is frozen.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-HEADERS",
+      "rule": "No public header under include/Cellerator includes a private path under src, and tests do not include implementation translation units.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-EXTENSIONS",
+      "rule": "Canonical current code uses semantic Unix extensions: .c, .h, .cc, .hh, .ccm, .cu, .cuh, with .inl, .tcc, .inc, and .def only for their declared roles.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-MODULES",
+      "rule": "C++20 modules are host-only semantic borders. CUDA translation units neither import modules nor depend on BMI consumption.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-BASELINE",
+      "rule": "Validation reports distinguish pre-existing failures from remap regressions. The baseline default build failure at include/Cellerator/dist/nccl_communicator.cuh local_context visibility is recorded and may be removed only within canonical runtime consolidation without changing semantics.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    },
+    {
+      "id": "CE-REMAP-OWNERSHIP",
+      "rule": "Every repository mutation after bootstrap occurs under a coding-workflow claim with matching exclusive scope; shared CMake and compatibility fan-in changes remain serial or integration-exclusive.",
+      "severity": "error",
+      "scope": { "program": "CE-REMAP" }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "CE-REMAP-D1",
+      "title": "Semantic baseline",
+      "value": "validated CE-ARCH and CE-LIVE architecture at baseline commit; no redesign",
+      "allowed": ["validated CE-ARCH and CE-LIVE architecture at baseline commit; no redesign"]
+    },
+    {
+      "id": "CE-REMAP-D2",
+      "title": "Module boundary",
+      "value": "small host-only source interfaces for stable cross-project vocabulary; never CUDA internals or durable binary ABI",
+      "allowed": ["small host-only source interfaces for stable cross-project vocabulary; never CUDA internals or durable binary ABI"]
+    },
+    {
+      "id": "CE-REMAP-D3",
+      "title": "GlassHelix posture",
+      "value": "defer or keep skeletal until a science-authoritative contract exists",
+      "allowed": ["defer or keep skeletal until a science-authoritative contract exists"]
+    },
+    {
+      "id": "CE-REMAP-D4",
+      "title": "Compatibility posture",
+      "value": "temporary forwarding headers and target aliases are allowed only when visibly compatibility-scoped and tested",
+      "allowed": ["temporary forwarding headers and target aliases are allowed only when visibly compatibility-scoped and tested"]
+    },
+    {
+      "id": "CE-REMAP-D5",
+      "title": "Module infrastructure availability",
+      "value": "deferred after Clang 18 direct import succeeded but CMake 3.28 rejected Unix Makefiles and Ninja plus clang-scan-deps were unavailable",
+      "allowed": ["deferred after Clang 18 direct import succeeded but CMake 3.28 rejected Unix Makefiles and Ninja plus clang-scan-deps were unavailable"]
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-remap-integration",
+      "capacity": 1,
+      "metadata": { "purpose": "serialize shared CMake, compatibility, and repository-wide fan-in" }
+    },
+    {
+      "name": "cuda-benchmark-mutex",
+      "capacity": 1,
+      "metadata": { "purpose": "serialize comparable benchmark, sanitizer, and profiler work" }
+    }
+  ],
+  "resource_classes": [],
+  "tasks": [
+    {
+      "id": "CE-REMAP-00",
+      "parent_id": null,
+      "title": "Canonical physical repository consolidation",
+      "kind": "epic",
+      "priority": 500,
+      "parallel_policy": "serial",
+      "objective": "Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.",
+      "scope": {
+        "read_paths": ["AGENTS.md", "scope.md", "docs", "include", "src", "components", "tests", "bench", "python", "CMakeLists.txt"]
+      },
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-AUTHORITY", "CE-REMAP-GEOMETRY", "CE-REMAP-BOUNDARIES", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS", "CE-REMAP-MODULES", "CE-REMAP-BASELINE", "CE-REMAP-OWNERSHIP"]
+    },
+    {
+      "id": "CE-REMAP-01",
+      "parent_id": "CE-REMAP-00",
+      "title": "Observe, freeze, and publish the remap contract",
+      "kind": "integration_task",
+      "priority": 499,
+      "parallel_policy": "project_exclusive",
+      "objective": "Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.",
+      "scope": {
+        "exclusive_paths": ["cellerator-remap-plan.json", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md", "bench/repository_remap/baseline", ".todo-orchestrator", "todo-status.md", "todos.md"],
+        "read_paths": ["AGENTS.md", "scope.md", "docs", "include", "src", "components", "tests", "bench", "python", "CMakeLists.txt"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-01-PLAN","type":"file_exists","required":true,"path":"cellerator-remap-plan.json"},
+        {"id":"CE-REMAP-01-DOCUMENT","type":"file_exists","required":true,"path":"docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"},
+        {"id":"CE-REMAP-01-VALIDATE","type":"command","required":true,"argv":["python","/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py","plan","validate","--repo-root",".","--json","--file","cellerator-remap-plan.json"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-01-DIFF","type":"command","required":true,"argv":["git","diff","--check"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-BASELINE", "CE-REMAP-OWNERSHIP"]
+    },
+    {
+      "id": "CE-REMAP-02",
+      "parent_id": "CE-REMAP-00",
+      "title": "Canonical skeleton, naming checks, and bounded module probe",
+      "kind": "task",
+      "priority": 480,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-01","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["modules", "compat", "examples", "tools", "cmake", "scripts/check_repository_layout.py", "tests/modules", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include", "src", "components", "tests", "bench", "docs", "python"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-02-CONFIGURE","type":"command","required":true,"argv":["cmake","-S",".","-B","build-remap","-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-02-MODULE","type":"file_exists","required":true,"path":"modules/MODULE_PROBE.md"},
+        {"id":"CE-REMAP-02-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-02-DIFF","type":"command","required":true,"argv":["git","diff","--check"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS", "CE-REMAP-MODULES", "CE-REMAP-OWNERSHIP"]
+    },
+    {
+      "id": "CE-REMAP-03",
+      "parent_id": "CE-REMAP-00",
+      "title": "Foundational state and execution border inventory",
+      "kind": "task",
+      "priority": 470,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-02","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["modules/state.ccm", "modules/execution.ccm", "modules/CMakeLists.txt", "tests/modules", "include/Cellerator/execution", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["src/execution", "src/runtime", "tests/execution", "tests/runtime", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-03-MODULES","type":"file_exists","required":true,"path":"modules/BOUNDARIES.md"},
+        {"id":"CE-REMAP-03-ABI","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","celleratorBiologicalAbiHostTest","celleratorBiologicalAbiCudaCompileTest","celleratorExecutionSessionTest"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-MODULES", "CE-REMAP-BOUNDARIES"]
+    },
+    {
+      "id": "CE-REMAP-04",
+      "parent_id": "CE-REMAP-00",
+      "title": "Consolidate CellPack and CP-BP into geometry",
+      "kind": "task",
+      "priority": 460,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Move validated CellPack and related packing/discovery implementation into canonical geometry ownership, preserve namespaces and behavior, and leave compatibility aliases only where real consumers require them.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-03","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["components/CellPack", "include/CellPack", "include/Cellerator/geometry", "src/geometry", "src/compute/packing", "include/Cellerator/compute/gene_candidate_discovery.hh", "include/Cellerator/compute/gene_support_bitset.hh", "tests/geometry", "bench/geometry", "src/geometry/CMakeLists.txt", "tests/CMakeLists.txt", "bench/CMakeLists.txt", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include", "src", "components/CelleraTorch", "tests", "bench", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-04-GEOMETRY","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","cellPackInferredPackingPipelineTest","cellPackPersistentPackingPayloadTest","cellPackExecutionImageV2Test","cellPackSemanticGeometryAdapterTest","geneCandidateDiscoveryRuntimeTest"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-04-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-GEOMETRY", "CE-REMAP-EXTENSIONS"]
+    },
+    {
+      "id": "CE-REMAP-05",
+      "parent_id": "CE-REMAP-00",
+      "title": "Separate modern compute authority from compatibility evidence",
+      "kind": "task",
+      "priority": 450,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Promote authoritative operation, projection, candidate, operator, and training implementation; quarantine CP-Math v1 and legacy sparse API evidence without rewriting kernels or algorithms.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-04","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["include/Cellerator/compute", "src/compute", "compat/cp_math_v1", "compat/legacy_sparse", "tests/math_core", "tests/live", "tests/persistence", "bench/math", "bench/architecture_evidence", "src/compute/CMakeLists.txt", "compat/CMakeLists.txt", "tests/CMakeLists.txt", "bench/CMakeLists.txt", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include/Cellerator/execution", "include/Cellerator/runtime", "include/Cellerator/planner", "src/execution", "src/runtime", "src/planner", "components/CelleraTorch", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-05-COMPUTE","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","celleratorOperationCoreTest","celleratorPreparationFactoryTest","celleratorFeatureMajorProjectionTest","celleratorNativeTrainingSliceTest","celleratorBuiltinCandidateCatalogTest"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-05-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-AUTHORITY", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS"]
+    },
+    {
+      "id": "CE-REMAP-06",
+      "parent_id": "CE-REMAP-00",
+      "title": "Collapse runtime and distributed ownership",
+      "kind": "task",
+      "priority": 440,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Keep one canonical runtime, move GPU/fleet/collective resources under runtime, move hierarchy and communication policy under planner/distributed, and retire duplicate compute/runtime and standalone distributed facades.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-05","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["include/Cellerator/runtime", "src/runtime", "include/Cellerator/dist", "src/compute/runtime", "include/Cellerator/compute/runtime.hh", "include/Cellerator/distributed", "src/distributed", "include/Cellerator/planner", "src/planner", "tests/runtime", "tests/distributed", "tests/planner", "src/runtime/CMakeLists.txt", "src/planner/CMakeLists.txt", "tests/CMakeLists.txt", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include", "src", "components", "tests", "bench", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-06-RUNTIME","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","celleratorExecutionSessionTest","celleratorValueReadinessTest","celleratorDistributedHierarchyTest","celleratorConnectedOperationPlannerTest"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-06-CELLSHARD","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","cellshard_runtime"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-06-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-AUTHORITY", "CE-REMAP-BASELINE", "CE-REMAP-HEADERS"]
+    },
+    {
+      "id": "CE-REMAP-07",
+      "parent_id": "CE-REMAP-00",
+      "title": "Make Baseplane and CellShard interoperability explicit",
+      "kind": "task",
+      "priority": 430,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Move Cellerator-owned Baseplane and CellShard seams into narrow conventional interop homes; document module and GlassHelix deferral rather than freezing speculation.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-06","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["include/Cellerator/interop", "src/interop", "src/compute/sequence", "include/Cellerator/compute/sequence", "tests/interop", "tests/sequence", "tests/cellshard_access_adapter_compile_test.cc", "src/interop/CMakeLists.txt", "tests/CMakeLists.txt", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include", "src", "components", "tests", "bench", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-07-INTEROP","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","celleratorBaseplaneSequenceIntegrationTest","cellshardAccessAdapterCompileTest","celleratorOpaqueExecutionArtifactTest"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-07-MODULES","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-07-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-BOUNDARIES", "CE-REMAP-MODULES", "CE-REMAP-HEADERS"]
+    },
+    {
+      "id": "CE-REMAP-08",
+      "parent_id": "CE-REMAP-00",
+      "title": "Consolidate preprocessing and demote orchestration",
+      "kind": "task",
+      "priority": 420,
+      "parallel_policy": "integration_exclusive",
+      "objective": "Merge preprocessing islands, move the workbench to tools, and move model and trajectory orchestration to examples after extracting only genuinely reusable native primitives.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-07","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["include/Cellerator/preprocess", "src/preprocess", "include/Cellerator/compute/preprocess", "src/compute/preprocess", "tools/preprocess_workbench", "include/Cellerator/models", "src/models", "include/Cellerator/trajectory", "src/trajectory", "examples/models", "examples/trajectory", "tests/preprocess", "tests/trajectory_compile_test.cu", "tests/trajectory_runtime_test.cu", "bench/preprocess", "src/preprocess/CMakeLists.txt", "examples/CMakeLists.txt", "tools/CMakeLists.txt", "tests/CMakeLists.txt", "bench/CMakeLists.txt", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["include", "src", "components", "tests", "bench", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-08-PREPROCESS","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4","--target","celleratorPreprocessRuntimeTest","celleratorPreprocessQCMetricsEquivalenceTest","trajectoryRuntimeTest"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-08-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-BOUNDARIES", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS"]
+    },
+    {
+      "id": "CE-REMAP-09",
+      "parent_id": "CE-REMAP-00",
+      "title": "Demolish obsolete facades and finish CMake ownership",
+      "kind": "integration_task",
+      "priority": 410,
+      "parallel_policy": "project_exclusive",
+      "objective": "Remove empty historical islands, minimize forwarding and target aliases, ensure current code does not depend on compatibility evidence, and make root CMake configuration-oriented.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-08","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["include", "src", "components", "compat", "modules", "examples", "tools", "tests", "bench", "cmake", "CMakeLists.txt", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"],
+        "read_paths": ["python", "docs"]
+      },
+      "claim_locks": ["ce-remap-integration"],
+      "gates": [
+        {"id":"CE-REMAP-09-CONFIGURE","type":"command","required":true,"argv":["cmake","-S",".","-B","build-remap","-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-09-BUILD","type":"command","required":true,"argv":["cmake","--build","build-remap","-j","4"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-09-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-AUTHORITY", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS", "CE-REMAP-MODULES", "CE-REMAP-OWNERSHIP"]
+    },
+    {
+      "id": "CE-REMAP-10",
+      "parent_id": "CE-REMAP-00",
+      "title": "Final clean-build, CE-LIVE, module, export, and boundary audit",
+      "kind": "validation_task",
+      "priority": 400,
+      "parallel_policy": "project_exclusive",
+      "objective": "Validate the remapped repository from clean configuration, run modern CUDA and CE-LIVE regressions, validate modules and compatibility, inspect dependency boundaries, and publish exact evidence and remaining bounded follow-ups.",
+      "depends_on": [{"type":"task","task_id":"CE-REMAP-09","state":"done"}],
+      "scope": {
+        "exclusive_paths": ["bench/repository_remap/final", "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md", "docs/current_implementation.qmd", "docs/migration_roadmap.qmd"],
+        "read_paths": ["AGENTS.md", "scope.md", "docs", "include", "src", "components", "compat", "modules", "examples", "tools", "tests", "bench", "python", "CMakeLists.txt"]
+      },
+      "claim_locks": ["ce-remap-integration", "cuda-benchmark-mutex"],
+      "gates": [
+        {"id":"CE-REMAP-10-CONFIGURE","type":"command","required":true,"argv":["cmake","-S",".","-B","build-remap-final","-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-10-BUILD","type":"command","required":true,"argv":["cmake","--build","build-remap-final","-j","4"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-10-LAYOUT","type":"command","required":true,"argv":["python","scripts/check_repository_layout.py"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-10-LIVE","type":"command","required":true,"argv":["bash","bench/ce_live/evidence/run_evidence_campaign.sh","all","3"],"cwd":".","expected_exit_code":0,"track_git_head":true},
+        {"id":"CE-REMAP-10-DIFF","type":"command","required":true,"argv":["git","diff","--check"],"cwd":".","expected_exit_code":0,"track_git_head":true}
+      ],
+      "invariants": ["CE-REMAP-SEMANTICS", "CE-REMAP-AUTHORITY", "CE-REMAP-GEOMETRY", "CE-REMAP-BOUNDARIES", "CE-REMAP-HEADERS", "CE-REMAP-EXTENSIONS", "CE-REMAP-MODULES", "CE-REMAP-BASELINE"]
+    }
+  ]
+}

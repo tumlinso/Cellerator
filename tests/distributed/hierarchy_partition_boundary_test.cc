@@ -1,4 +1,4 @@
-#include <Cellerator/distributed/hierarchy.hh>
+#include <Cellerator/planner/distributed/hierarchy.hh>
 
 #include <cassert>
 #include <cmath>

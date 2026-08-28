@@ -1,4 +1,4 @@
-#include <Cellerator/models/state_reduce.hh>
+#include <Cellerator/examples/models/state_reduce/stateReduce.hh>
 
 #include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>

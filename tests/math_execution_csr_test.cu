@@ -1,5 +1,5 @@
-#include <Cellerator/compute/math/packed_dense_operand.hh>
-#include <Cellerator/compute/math/referee.hh>
+#include <Cellerator/compat/cp_math_v1/packed_dense_operand.hh>
+#include <Cellerator/compat/cp_math_v1/referee.hh>
 
 #include <cuda_runtime_api.h>
 

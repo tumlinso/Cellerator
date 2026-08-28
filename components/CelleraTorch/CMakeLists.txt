@@ -293,6 +293,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/quantitative_smoke_test.cc")
     target_link_libraries(celleraTorchQuantitativeSmokeTest PRIVATE
         CelleraTorch::native_adapter
         Cellerator::identity_registry
+        cellerator_live_runtime_fixture
     )
     target_include_directories(celleraTorchQuantitativeSmokeTest PRIVATE
         ${CMAKE_SOURCE_DIR}

@@ -1,7 +1,7 @@
 #include <Cellerator/execution/program.hh>
 
-#include <Cellerator/compute/math/operation_core/csr_fallback_candidate.hh>
-#include <Cellerator/compute/math/operation_core/row_masked_n1_candidate.hh>
+#include <Cellerator/compute/candidate/csr_fallback_candidate.hh>
+#include <Cellerator/compute/candidate/row_masked_n1_candidate.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

@@ -1,12 +1,8 @@
 #define main celleratorch_embedded_quantitative_forward_main
 #define run_executable_program celleratorch_quantitative_run_executable_program
-#include "../../../tests/live/quantitative_forward_test.cu"
+#include "../../../tests/live/quantitative_forward_fixture.cuh"
 #undef run_executable_program
 #undef main
-
-// Keep the quantitative fixture implementation in this scoped validation
-// translation unit; shared library/build ownership remains with CE-LIVE-43.
-#include "../../../bench/ce_live/runtime_fixture/quantitative_fixture.cc"
 
 #include <CelleraTorch/program_ops.hh>
 

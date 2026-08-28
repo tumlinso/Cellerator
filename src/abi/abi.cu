@@ -1,7 +1,7 @@
 #include <Cellerator/abi.h>
 
-#include "../compute/sparse/project/project.hh"
-#include "../compute/sparse/ops/ops.hh"
+#include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/compute/operators/sparse/ops.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>

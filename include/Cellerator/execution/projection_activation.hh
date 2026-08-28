@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Cellerator/compute/math/physical_csr.hh>
-#include <Cellerator/compute/math/physical_feature_major.hh>
-#include <Cellerator/compute/math/physical_transpose.hh>
+#include <Cellerator/compute/projection/physical_csr.hh>
+#include <Cellerator/compute/projection/physical_feature_major.hh>
+#include <Cellerator/compute/projection/physical_transpose.hh>
 #include <Cellerator/execution/identity.hh>
 
-#include <CellPack/persistence/execution_image_v2.hh>
-#include <CellPack/persistent_packing_payload.hh>
+#include <Cellerator/geometry/persistence/execution_image_v2.hh>
+#include <Cellerator/geometry/persistent_packing_payload.hh>
 
 #include <cstdint>
 #include <type_traits>

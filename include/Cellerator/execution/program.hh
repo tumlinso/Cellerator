@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/math/operation_core/preparation_factory.hh>
+#include <Cellerator/compute/operation/preparation_factory.hh>
 #include <Cellerator/execution/projection_activation.hh>
 #include <Cellerator/planner/end_to_end_planner.hh>
 #include <Cellerator/runtime/value_readiness.cuh>

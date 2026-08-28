@@ -1,4 +1,2 @@
 #pragma once
-
-#include <Cellerator/matrix/sparse.cuh>
-#include <Cellerator/runtime/runtime.cuh>
+#include <Cellerator/interop/cellshard/matrix.cuh>

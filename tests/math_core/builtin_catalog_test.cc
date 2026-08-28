@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/operation_core/builtin_catalog.hh>
+#include <Cellerator/compute/operation/builtin_catalog.hh>
 
 #include <cstdlib>
 #include <cstring>

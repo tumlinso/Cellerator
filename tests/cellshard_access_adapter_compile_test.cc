@@ -1,4 +1,4 @@
-#include <Cellerator/interop/cellshard_access.cuh>
+#include <Cellerator/interop/cellshard/access.cuh>
 #include <CellShard/runtime/layout/sharded.cuh>
 
 #include <cassert>

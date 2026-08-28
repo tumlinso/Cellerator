@@ -1,4 +1,4 @@
-#include "exact_search.hh"
+#include <Cellerator/compute/neighbors/exact_search.hh>
 
 #include <cuda_runtime.h>
 

@@ -2,7 +2,7 @@
 
 #include <Cellerator/planner/end_to_end_planner.hh>
 
-#include <CellPack/alternating_refinement.hh>
+#include <Cellerator/geometry/alternating_refinement.hh>
 
 #include <cstdint>
 #include <type_traits>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CellPack/persistence/execution_image_v2.hh>
+#include <Cellerator/geometry/persistence/execution_image_v2.hh>
 #include <CellShard/io/pack/execution_payload.cuh>
 
 #include <cstdint>

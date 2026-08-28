@@ -1,5 +1,5 @@
-#include <Cellerator/compute/math/tensor_core/v100_dense_fragment_candidate.hh>
-#include <Cellerator/compute/math/tensor_core/v100_dense_fragment_plan.hh>
+#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_candidate.hh>
+#include <Cellerator/compute/candidate/tensor_core/v100_dense_fragment_plan.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

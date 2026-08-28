@@ -500,6 +500,11 @@ See `style_hint.md` for local file-shape guidance.
 
 ## Build and Test
 
+Default to `-j 20` or higher for parallel builds on this 80-core host unless a
+real memory, toolchain-stability, benchmark-isolation, or serialized-gate
+constraint requires lower parallelism. Use most available cores when it is
+safe to do so.
+
 Configure:
 
 ```bash

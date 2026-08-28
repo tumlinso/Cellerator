@@ -1,4 +1,4 @@
-#include <Cellerator/models/developmental_time.hh>
+#include <Cellerator/examples/models/developmental_time/developmentalTime.hh>
 
 #include <Cellerator/interop/cellshard_access.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>

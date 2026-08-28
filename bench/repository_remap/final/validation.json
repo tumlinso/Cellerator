@@ -1,0 +1,123 @@
+{
+  "schema": "cellerator.repository-remap.validation.v1",
+  "observed_at": "2026-08-28T08:30:00Z",
+  "baseline": {
+    "commit": "e02054fa103551c27f6a41907c49c6d923ce5777",
+    "repository_was_clean_before_remap": true,
+    "hardware": "Tesla V100-SXM2-16GB",
+    "compute_capability": "sm_70",
+    "cuda_compiler": "NVIDIA nvcc 12.9.86",
+    "cuda_host_compiler": "/usr/bin/g++-12",
+    "host_cxx": "GNU 13.3.0"
+  },
+  "builds": [
+    {
+      "name": "clean_native",
+      "configure": "cmake -S . -B build-remap-final -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "build": "cmake --build build-remap-final -j 4",
+      "result": "passed"
+    },
+    {
+      "name": "clean_cellera_torch_compatibility",
+      "configure": "cmake -S . -B build-remap-compat-final -DCELLERATOR_ENABLE_TORCH_MODELS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "build": "cmake --build build-remap-compat-final -j 4",
+      "result": "passed",
+      "notes": [
+        "Torch CUDA 12.9 was discovered from /usr/local.",
+        "The build emitted existing Torch vector<bool> compiler warnings and missing-NVTX discovery warnings; no target failed."
+      ]
+    }
+  ],
+  "module_validation": {
+    "command": "cmake --build build-remap-final --target celleratorModuleCompilerProbe -j 1",
+    "result": "passed",
+    "scope": "Clang 18 host-only direct precompile/import/link/run proof",
+    "cuda_module_dependency": false,
+    "native_cmake_scanning": "deferred: Unix Makefiles lacks supported CMake module scanning and Ninja/clang-scan-deps are not installed"
+  },
+  "focused_native_tests": {
+    "result": "passed",
+    "binaries": [
+      "celleratorExecutionSessionTest",
+      "celleratorValueReadinessTest",
+      "celleratorProjectionActivationTest",
+      "celleratorBuiltinCatalogTest",
+      "celleratorCusparseCsrCandidateTest",
+      "celleratorPreparationFactoryTest",
+      "celleratorQuantitativeRelationTest",
+      "celleratorLivePlannerFeaturesTest",
+      "celleratorNativeTrainingSliceTest",
+      "celleratorCandidateMeasurementTest",
+      "celleratorExecutableCoreIntegrationTest",
+      "celleratorBaseplaneSequenceIntegrationTest",
+      "cellshardAccessAdapterCompileTest",
+      "sparseOpsRuntimeTest",
+      "cellPackInferredPackingPipelineTest",
+      "cellPackExecutionImageV2DeviceTest",
+      "cellPackRuntimeStatisticalValidationTest"
+    ]
+  },
+  "ce_live_regression": {
+    "result": "passed",
+    "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock",
+    "tests": [
+      "quantitative_forward_test: PBMC3K widths 1,16,17,31,32,48,64; reuse 1,8,1024; two generations",
+      "training_program_test: bounded native N=16 training",
+      "ce_live_program_replay_test: CPE2 and CPEXEC01 replay with typed activation and quantitative CUDA",
+      "ce_live_concurrency_test: adversarial concurrent execution"
+    ],
+    "harness_note": "Validation-only copies substituted build-remap-final and src/geometry for stale build-dissolution-smoke/components/CellPack link paths; repository harness scripts were not changed."
+  },
+  "cellera_torch_regression": {
+    "result": "passed",
+    "tests": [
+      "celleraTorchNativeViewsTest",
+      "celleraTorchProgramOpsTest",
+      "celleraTorchAutogradOpsTest",
+      "celleraTorchQuantizePrimitiveTest",
+      "celleraTorchQuantitativeSmokeTest"
+    ],
+    "quantitative_fixture": "pbmc3k-r512-s7",
+    "parity_checks": 126,
+    "dispatch_tax_us": 0.0
+  },
+  "compute_sanitizer": {
+    "tool": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "version": "2025.2.1.0",
+    "mode": "memcheck",
+    "error_exitcode": 99,
+    "result": "passed",
+    "error_summaries": [0, 0, 0, 0],
+    "binaries": [
+      "quantitative_forward_test",
+      "training_program_test",
+      "ce_live_program_replay_test",
+      "ce_live_concurrency_test"
+    ]
+  },
+  "layout_and_dependency_checks": {
+    "repository_layout_check": "passed with zero allowlisted public/private and implementation-include debts",
+    "canonical_extension_scan": "passed",
+    "cuda_module_import_scan": "passed: no .cu or .cuh imports a module",
+    "empty_directory_scan": "passed",
+    "git_diff_check": "passed",
+    "current_compatibility_dependency": "No current implementation includes compatibility headers. Explicit compatibility referee use remains in evidence and independent candidate tests."
+  },
+  "cross_project_audit": {
+    "source": "project-control program_context independent observations",
+    "observations_are_atomic": false,
+    "contradictions": [],
+    "duplicated_ownership": [],
+    "repositories": {
+      "Baseplane": "7846247277fec303cca9343adea4dd2db3c591bb",
+      "CellShard": "a7fbae5981b4e4325c095f814caf3aa3c0b0fde4",
+      "GlassHelix": "5b9dfeb050448a772db5b4e35dbc14b744588b6e"
+    },
+    "boundary_result": "Baseplane sequence predicate/event contracts remain external; CellShard owns delivery/storage and Cellerator owns optimized sparse bindings; GlassHelix exposes no frozen Cellerator interface, so its module remains deliberately deferred."
+  },
+  "bounded_follow_ups": [
+    "Update the standalone CE-LIVE shell harnesses to discover configured build and geometry library directories instead of naming build-dissolution-smoke/components/CellPack.",
+    "Enable native CMake C++20 module scanning only after a supported generator and clang-scan-deps are installed; then add stable state/execution modules without placing NVCC on the BMI graph.",
+    "A general install/export validation is not applicable yet because native Cellerator has no install/export target beyond optional Python installation."
+  ]
+}

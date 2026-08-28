@@ -8,7 +8,7 @@
 
 #include <Cellerator/compute/gene_candidate_discovery.hh>
 
-#include "src/compute/packing/gene_candidate_hash.cuh"
+#include <Cellerator/geometry/candidate_discovery/gene_candidate_hash.cuh>
 
 #include <cuda_runtime.h>
 

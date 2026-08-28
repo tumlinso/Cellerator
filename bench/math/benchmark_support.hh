@@ -2,7 +2,7 @@
 
 #include "../benchmark_mutex.hh"
 
-#include <Cellerator/compute/math/referee.hh>
+#include <Cellerator/compat/cp_math_v1/referee.hh>
 
 #include <cuda_runtime_api.h>
 

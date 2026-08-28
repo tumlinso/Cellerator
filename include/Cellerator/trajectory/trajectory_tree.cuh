@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../src/trajectory/trajectory_tree.cuh"
+#include <Cellerator/examples/trajectory/trajectory_tree.cuh>

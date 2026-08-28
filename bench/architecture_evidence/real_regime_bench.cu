@@ -16,7 +16,7 @@ identity. Preparation is reported separately and amortized at eight uses.
 */
 
 #define main ce_arch_76_synthetic_main
-#include "../math/feature_major_candidate_compare_bench.cu"
+#include "../math/feature_major_candidate_compare_fixture.cuh"
 #undef main
 
 #include <array>

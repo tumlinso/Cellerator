@@ -1,6 +1,6 @@
 #include "cuvs_sharded_knn.cuh"
 
-#include <Cellerator/dist/distributed.cuh>
+#include <Cellerator/runtime/multi_gpu/context.cuh>
 #include <CellShard/runtime/distributed/distributed.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
 

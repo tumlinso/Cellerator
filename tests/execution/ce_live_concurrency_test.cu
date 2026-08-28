@@ -1,5 +1,5 @@
 #define main ce_live_training_program_contract_test
-#include "training_program_test.cu"
+#include "training_program_test_fixture.cuh"
 #undef main
 
 namespace {

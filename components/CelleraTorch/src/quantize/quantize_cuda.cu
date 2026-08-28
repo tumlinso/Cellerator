@@ -1,7 +1,7 @@
 #include <CelleraTorch/quantize.hh>
 
-#include <Cellerator/compute/runtime.hh>
-#include <Cellerator/compute/sparse/ops.hh>
+#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/compute/operators/sparse/ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>

@@ -1,6 +1,6 @@
-#include <Cellerator/compute/math/operation_core/builtin_catalog.hh>
-#include <Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh>
-#include <Cellerator/compute/math/operation_core/preparation_factory.hh>
+#include <Cellerator/compute/operation/builtin_catalog.hh>
+#include <Cellerator/compute/candidate/cusparse_csr_candidate.hh>
+#include <Cellerator/compute/operation/preparation_factory.hh>
 #include <Cellerator/execution/projection_activation.hh>
 #include <Cellerator/parameters.hh>
 #include <Cellerator/runtime/value_readiness.cuh>

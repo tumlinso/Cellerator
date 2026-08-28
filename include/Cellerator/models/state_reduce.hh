@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../src/models/state_reduce/stateReduce.hh"
+#include <Cellerator/examples/models/state_reduce/stateReduce.hh>

@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh>
+#include <Cellerator/compute/candidate/cusparse_csr_candidate.hh>
 
 #include <cuda_runtime_api.h>
 

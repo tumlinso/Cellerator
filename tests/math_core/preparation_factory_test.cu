@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/operation_core/preparation_factory.hh>
+#include <Cellerator/compute/operation/preparation_factory.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

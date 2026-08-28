@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../../src/compute/sparse/ops/ops.hh"
+#include <Cellerator/compute/operators/sparse/ops.hh>

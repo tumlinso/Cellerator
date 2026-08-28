@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../src/models/developmental_time_trajectory/developmentalTimeTrajectory.hh"
+#include <Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh>

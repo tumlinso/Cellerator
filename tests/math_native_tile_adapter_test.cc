@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/native_tile_view.hh>
+#include <Cellerator/compute/projection/native_tile_view.hh>
 
 #include <cmath>
 #include <cstdint>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/math/native_training_slice.hh>
+#include <Cellerator/compute/training/native_training_slice.hh>
 #include <Cellerator/runtime/session.cuh>
 
 #include <cstdint>

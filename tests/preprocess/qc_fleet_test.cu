@@ -1,6 +1,6 @@
 #include <Cellerator/preprocess/runtime.hh>
 
-#include <Cellerator/compute/runtime.hh>
+#include <Cellerator/runtime/legacy_execution_context.hh>
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 

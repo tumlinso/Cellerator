@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/physical_bell.hh>
+#include <Cellerator/compat/cp_math_v1/physical_bell.hh>
 
 #include <algorithm>
 #include <cmath>

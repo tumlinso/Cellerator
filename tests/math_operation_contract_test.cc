@@ -1,4 +1,4 @@
-#include <Cellerator/compute/math/execution_plan.hh>
+#include <Cellerator/compat/cp_math_v1/execution_plan.hh>
 
 #include <cstdlib>
 #include <iostream>

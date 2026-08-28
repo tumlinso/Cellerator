@@ -1,7 +1,7 @@
-#include <Cellerator/compute/math/operation_core/transpose_backward_candidate.hh>
-#include <Cellerator/compute/math/referee.hh>
+#include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
+#include <Cellerator/compat/cp_math_v1/referee.hh>
 
-#include <CellPack/persistence/execution_image_v2.hh>
+#include <Cellerator/geometry/persistence/execution_image_v2.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>

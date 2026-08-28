@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../../../src/compute/runtime/runtime.hh"
+#include <Cellerator/runtime/legacy_execution_context.hh>

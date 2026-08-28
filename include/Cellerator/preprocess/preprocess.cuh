@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/compute/preprocess/preprocess.cuh>
+#include <Cellerator/preprocess/operations.cuh>
 #include <Cellerator/preprocess/aliases.hh>
 
 namespace cellerator::preprocess {

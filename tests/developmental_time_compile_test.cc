@@ -1,5 +1,5 @@
-#include <Cellerator/models/developmental_time.hh>
-#include <Cellerator/models/developmental_time_trajectory.hh>
+#include <Cellerator/examples/models/developmental_time/developmentalTime.hh>
+#include <Cellerator/examples/models/developmental_time_trajectory/developmentalTimeTrajectory.hh>
 
 int main() {
     namespace dt = ::cellerator::models::developmental_time;

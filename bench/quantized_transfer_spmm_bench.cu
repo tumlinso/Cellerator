@@ -1,6 +1,6 @@
-#include <Cellerator/compute/runtime.hh>
-#include <Cellerator/compute/sparse/ops.hh>
-#include <Cellerator/compute/sparse/project.hh>
+#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/compute/operators/sparse/ops.hh>
+#include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/quantized/api.cuh>
 #include <CellShard/formats/blocked_ell.cuh>
 #include "benchmark_mutex.hh"

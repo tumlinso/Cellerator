@@ -9,7 +9,7 @@ tolerance. Reproduce through cuda_controller.py with
 /tmp/ce_arch_88_cuda_spec.json; preparation is persistent and excluded equally.
 */
 
-#include <Cellerator/compute/math/native_training_slice.hh>
+#include <Cellerator/compute/training/native_training_slice.hh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -25,11 +25,6 @@ tolerance. Reproduce through cuda_controller.py with
 #include <numeric>
 #include <string>
 #include <vector>
-
-// CE-LIVE-29 owns the root transitive Cellerator::runtime link seam. Compile
-// the already-validated readiness implementation into this leaf test until
-// that fan-in adds the shared target wiring.
-#include "../../src/runtime/value_readiness.cu"
 
 namespace cm = cellerator::compute::math;
 namespace execution = cellerator::execution;
