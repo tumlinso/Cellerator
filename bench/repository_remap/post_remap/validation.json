@@ -1,0 +1,79 @@
+{
+  "schema": "cellerator.post-remap.validation.v1",
+  "observed_at": "2026-08-28",
+  "baseline_commit": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+  "hardware": "Tesla V100-SXM2-16GB sm_70",
+  "builds": [
+    {
+      "name": "fresh_native",
+      "directory": "build-post-remap-final",
+      "parallelism": 20,
+      "result": "passed"
+    },
+    {
+      "name": "fresh_cellera_torch_compatibility",
+      "directory": "build-post-remap-compat",
+      "parallelism": 20,
+      "result": "passed",
+      "notes": "Only pre-existing Torch NVTX discovery and compiler warnings were emitted."
+    },
+    {
+      "name": "independent_cellshard_cuda",
+      "directory": "/home/tumlinson/CellShard/build-post-remap-fresh",
+      "parallelism": 20,
+      "result": "passed"
+    }
+  ],
+  "dependency_cycle_proof": {
+    "cellshard_runtime_or_distributed_cellerator_references": 0,
+    "graph": "cellshard_inspect -> cellshard_cellerator_compute_matrix_convert -> CUDA::cudart/CUDA::cusparse",
+    "forbidden_graph_edges": [
+      "CellShard -> Cellerator::runtime",
+      "CellShard -> Cellerator::dist",
+      "CellShard -> Cellerator::compute_matrix_convert"
+    ],
+    "result": "passed"
+  },
+  "runtime_migration": {
+    "canonical_targets": [
+      "Cellerator::runtime",
+      "Cellerator::runtime_fleet",
+      "Cellerator::runtime_multi_gpu"
+    ],
+    "legacy_aliases": [
+      "cellerator_compute_runtime",
+      "cellerator_legacy_execution_context",
+      "Cellerator::legacy_execution_context"
+    ],
+    "remaining_legacy_alias_consumers": 0,
+    "classification": "The aliases remain only as compatibility names for the canonical runtime-fleet target."
+  },
+  "public_cellshard_runtime_includes": {
+    "interop": [
+      "include/Cellerator/interop/cellshard/dataset.hh",
+      "include/Cellerator/interop/cellshard/preprocess_operations.cuh"
+    ],
+    "example_regression": [
+      "include/Cellerator/examples/models/state_reduce/stateReduce.hh",
+      "include/Cellerator/examples/models/developmental_time/dT_dataloader.hh"
+    ],
+    "canonical_compute_or_preprocess_contracts": 0
+  },
+  "tests": {
+    "repository_layout": "passed with empty allowlists",
+    "focused_geometry_runtime_compute_planner_interop_preprocess": "passed",
+    "cellera_torch": "passed",
+    "ce_live_repository_harnesses": "passed unchanged against CELLERATOR_BUILD_DIR",
+    "compute_sanitizer": "five memcheck runs passed with zero errors",
+    "module_compiler_probe": "passed"
+  },
+  "module_status": {
+    "policy": "host-only semantic boundaries; CUDA remains outside the BMI graph",
+    "native_cmake_scanning": "deferred because Ninja and clang-scan-deps are unavailable",
+    "new_modules": []
+  },
+  "compatibility": {
+    "cp_math_v1_evidence": "buildable and linked only by compatibility, evidence, test, and benchmark targets",
+    "current_native_implementation_links_cp_math_v1_evidence": false
+  }
+}

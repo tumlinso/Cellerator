@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cuda_fp16.h>
@@ -9,7 +9,7 @@
 
 namespace cellerator::models::state_reduce {
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace csv = ::cellshard::device;
 
 enum class StateReduceBackend {

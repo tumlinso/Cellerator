@@ -6,14 +6,14 @@ devices=4 cols=32768 floats=98305. Results: separate 0.254327 ms, grouped
 0.188584 ms, contiguous 0.148458 ms. Keep the contiguous metric packet as the
 fast path; peer-copy fallback is correctness/test coverage and warns when used.
 */
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 
 #include <cstdio>
 #include <limits>
 #include <memory>
 #include <stdexcept>
 
-namespace cellerator::compute::runtime {
+namespace cellerator::runtime {
 
 namespace {
 
@@ -294,4 +294,4 @@ void reduce_sum_to_leader_f32(
     }
 }
 
-} // namespace cellerator::compute::runtime
+} // namespace cellerator::runtime

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/preprocess/operations.cuh>
+#include <Cellerator/interop/cellshard/preprocess_operations.cuh>
 
 #include <CellShard/runtime/mask_groups.cuh>
 

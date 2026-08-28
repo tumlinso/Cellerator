@@ -1,8 +1,9 @@
 # `src/compute`
 
-This directory is the current compiled home for reusable Cellerator execution machinery.
-
-It is transitional: older sparse operators, preprocessing kernels, model-adjacent math, and the emerging CP-Math runtime coexist here.
+This directory is the compiled home for Cellerator operations, physical
+projections, execution candidates, reusable operators, and native training.
+Runtime resources, preprocessing, geometry compilation, planning, and
+inter-project adapters have separate canonical owners.
 
 ## Target ownership
 
@@ -11,7 +12,7 @@ It is transitional: older sparse operators, preprocessing kernels, model-adjacen
 - operation implementations;
 - physical projection construction;
 - native and vendor kernel backends;
-- planner and autotuner support;
+- candidate measurement support consumed by the planner;
 - epilogues;
 - graph and order transforms;
 - common sparse, masked, block-sparse, dense-fragment, reduction, and relation operations;
@@ -36,12 +37,17 @@ The public contracts belong under `include/Cellerator/compute/` or another canon
 
 ## Current important areas
 
-- `math/`: experimental CP-Math contracts, planner, runtime, projections, backends, referee, and epilogue.
-- `sparse/`: existing reusable sparse operators and projections.
-- `matrix/convert/`: conversion and bucket machinery.
-- `preprocess/`: reusable preprocessing math.
+- `operation/`: authoritative operation preparation and dispatch.
+- `projection/`: physical representations and activation/conversion.
+- `candidate/`: native, vendor, sparse, and Tensor Core candidates.
+- `operators/`: reusable mathematical and sparse operators.
+- `training/`: native forward/backward training primitives.
+- `matrix/convert/`: matrix conversion and bucket machinery.
 - `neighbors/`: reusable scoring and search math.
-- `ml/`: model-adjacent native operations.
-- `runtime/`: older execution-context surfaces that must be reconciled with core CP-Math ownership.
+
+Historical CP-Math v1 implementation lives under `compat/cp_math_v1/`.
+Forwarding headers under `include/Cellerator/compute/math/` do not confer
+current ownership. Runtime resources belong under `src/runtime/`, planning
+under `src/planner/`, and preprocessing under `src/preprocess/`.
 
 Read `docs/core_execution_cp_math.qmd` before adding new runtime or planner abstractions.

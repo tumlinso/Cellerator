@@ -1,0 +1,202 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "CE-POST-REMAP",
+    "workspace": "cellerator",
+    "repository": "Cellerator",
+    "baseline_commit": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+    "objective": "Finish the bounded dependency, runtime, CMake, documentation, harness, and validation work left after CE-REMAP without changing the validated architecture."
+  },
+  "invariants": [
+    {"id": "CE-POST-SEMANTICS", "rule": "Preserve frozen CE-ARCH and CE-LIVE contracts, numerical behavior, and current canonical physical ownership.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}},
+    {"id": "CE-POST-RUNTIME", "rule": "Cellerator runtime is the sole native runtime authority; compatibility runtime use is explicit and current core does not depend on it accidentally.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}},
+    {"id": "CE-POST-CELLSHARD", "rule": "CellShard owns storage and neutral delivery metadata while Cellerator owns execution resources, collective policy, topology, scheduling, and Cellerator-specific placement.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}},
+    {"id": "CE-POST-CMAKE", "rule": "Root CMake remains configuration-oriented, public targets and aliases remain stable unless proven unused, and CUDA targets do not consume module BMIs.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}},
+    {"id": "CE-POST-DOCS", "rule": "Authority documentation tells the post-remap truth, historical records remain historical, GlassHelix remains unfrozen, and canonical CE-LIVE harnesses require no temporary source edits.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}},
+    {"id": "CE-POST-VALIDATION", "rule": "Validation distinguishes regressions from environment limits, current native targets do not link CP-Math v1 evidence, the reverse CellShard runtime dependency is absent, and both repositories finish committed, pushed, and clean.", "severity": "error", "scope": {"program": "CE-POST-REMAP"}}
+  ],
+  "tasks": [
+    {
+      "id": "CE-POST-REMAP-01",
+      "kind": "workstream",
+      "title": "Eliminate the CellShard cycle and finish runtime and seam cleanup",
+      "objective": "Consume the independently landed CellShard neutral distributed API, remove the Cellerator-to-CellShard-to-Cellerator runtime cycle, classify every legacy runtime consumer, migrate current core consumers that require only bounded adaptation, and keep genuine compatibility users explicitly scoped.",
+      "priority": 400,
+      "parallel_policy": "project_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "cellerator-post-remap-plan.json",
+          "CMakeLists.txt",
+          "include/Cellerator/runtime",
+          "include/Cellerator/interop/cellshard",
+          "include/Cellerator/preprocess",
+          "include/Cellerator/compute",
+          "src/runtime",
+          "src/interop/cellshard",
+          "src/preprocess",
+          "src/compute",
+          "src/abi",
+          "components/CelleraTorch",
+          "examples",
+          "tests",
+          "bench",
+          "ARCHITECTURE_FOLLOWUPS.md",
+          "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "scope.md",
+          "docs",
+          "compat",
+          "modules",
+          "cmake"
+        ]
+      },
+      "invariants": [
+        "CE-POST-SEMANTICS",
+        "CE-POST-RUNTIME",
+        "CE-POST-CELLSHARD"
+      ],
+      "next_action": "Verify the landed CellShard neutral API, classify all runtime and CellShard consumers, then perform only bounded current-core migrations.",
+      "result_policy": {
+        "allowed_dispositions": ["implemented", "validated", "failed"]
+      }
+    },
+    {
+      "id": "CE-POST-REMAP-02",
+      "kind": "workstream",
+      "title": "Localize CMake ownership",
+      "objective": "Move implementation, test, benchmark, example, and tool target definitions to sensible subsystem-local CMake files while preserving target names, aliases, options, and runtime behavior.",
+      "priority": 300,
+      "parallel_policy": "serial",
+      "depends_on": [
+        {"type": "task", "task_id": "CE-POST-REMAP-01", "state": "done"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "src",
+          "tests/CMakeLists.txt",
+          "bench/CMakeLists.txt",
+          "examples/CMakeLists.txt",
+          "tools/CMakeLists.txt",
+          "compat/CMakeLists.txt",
+          "components/CelleraTorch/CMakeLists.txt"
+        ],
+        "read_paths": ["include", "tests", "bench", "examples", "tools", "components", "docs"]
+      },
+      "invariants": [
+        "CE-POST-SEMANTICS",
+        "CE-POST-CMAKE"
+      ],
+      "next_action": "Move target definitions conservatively by source ownership and keep subsystem fan-in explicit.",
+      "result_policy": {
+        "allowed_dispositions": ["implemented", "validated", "failed"]
+      }
+    },
+    {
+      "id": "CE-POST-REMAP-03",
+      "kind": "workstream",
+      "title": "Correct authoritative documentation and repair CE-LIVE harnesses",
+      "objective": "Teach the post-remap repository map in authoritative documentation and make canonical CE-LIVE harnesses accept or discover the configured build and geometry locations without temporary patched copies.",
+      "priority": 290,
+      "parallel_policy": "serial",
+      "depends_on": [
+        {"type": "task", "task_id": "CE-POST-REMAP-01", "state": "done"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "AGENTS.md",
+          "README.md",
+          "components/README.md",
+          "src/compute/README.md",
+          "docs",
+          "ARCHITECTURE_FOLLOWUPS.md",
+          "scripts",
+          "tests/live",
+          "bench/ce_live"
+        ],
+        "read_paths": ["include", "src", "components", "examples", "tools", "compat", "modules", "CMakeLists.txt"]
+      },
+      "invariants": [
+        "CE-POST-SEMANTICS",
+        "CE-POST-DOCS"
+      ],
+      "next_action": "Update stale authority documents and parameterize the canonical CE-LIVE harness paths.",
+      "result_policy": {
+        "allowed_dispositions": ["implemented", "validated", "failed"]
+      }
+    },
+    {
+      "id": "CE-POST-REMAP-04",
+      "kind": "integration_task",
+      "title": "Clean validation and workflow reconciliation",
+      "objective": "Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.",
+      "priority": 200,
+      "parallel_policy": "integration_exclusive",
+      "depends_on": [
+        {"type": "task", "task_id": "CE-POST-REMAP-02", "state": "done"},
+        {"type": "task", "task_id": "CE-POST-REMAP-03", "state": "done"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "bench/repository_remap/post_remap",
+          "docs/current_implementation.qmd",
+          "docs/migration_roadmap.qmd",
+          "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md",
+          "cellerator-post-remap-plan.json",
+          ".todo-orchestrator",
+          "todo-status.md",
+          "todos.md"
+        ],
+        "read_paths": ["AGENTS.md", "CMakeLists.txt", "include", "src", "components", "compat", "examples", "tools", "modules", "tests", "bench", "docs", "scripts", "cmake"]
+      },
+      "invariants": [
+        "CE-POST-SEMANTICS",
+        "CE-POST-RUNTIME",
+        "CE-POST-CELLSHARD",
+        "CE-POST-CMAKE",
+        "CE-POST-DOCS",
+        "CE-POST-VALIDATION"
+      ],
+      "next_action": "Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.",
+      "result_policy": {
+        "allowed_dispositions": ["validated", "failed"]
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-POST-REMAP-RUN",
+      "root_task_id": "CE-POST-REMAP-01",
+      "charter": {
+        "objective": "Complete only the bounded post-remap defects while preserving the canonical physical architecture and frozen execution semantics.",
+        "boundaries": [
+          "No redesign of operation core, planner, execution image, geometry compiler, biological ABI, execution session, projection model, or CE-LIVE behavior.",
+          "No cellpack namespace rename and no speculative GlassHelix contract.",
+          "No CUDA rewrite and no module imports from CUDA translation units.",
+          "CellShard lands its reverse-dependency removal independently before Cellerator consumes it."
+        ],
+        "acceptance_conditions": [
+          "The Cellerator-to-CellShard-to-Cellerator cycle is absent.",
+          "Cellerator runtime is the sole current native runtime authority.",
+          "CMake ownership and authoritative documentation match the repository.",
+          "Canonical CE-LIVE harnesses and complete validation pass without temporary source substitutions."
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-POST-REMAP-MAIN",
+          "role": "implementer",
+          "tasks": [
+            "CE-POST-REMAP-01",
+            "CE-POST-REMAP-02",
+            "CE-POST-REMAP-03",
+            "CE-POST-REMAP-04"
+          ],
+          "workspace": {"mode": "exclusive"}
+        }
+      ]
+    }
+  ]
+}

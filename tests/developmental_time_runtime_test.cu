@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace dt = ::cellerator::models::developmental_time;
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace css = ::cellerator::matrix;
 namespace csv = ::cellshard::device;
 

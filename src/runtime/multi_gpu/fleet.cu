@@ -1,11 +1,11 @@
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 
 #include <cstdlib>
 #include <cstring>
 #include <limits>
 #include <stdexcept>
 
-namespace cellerator::compute::runtime {
+namespace cellerator::runtime {
 
 namespace {
 
@@ -198,4 +198,4 @@ void synchronize_slots(const fleet_context &fleet, const unsigned int *slots, un
     }
 }
 
-} // namespace cellerator::compute::runtime
+} // namespace cellerator::runtime

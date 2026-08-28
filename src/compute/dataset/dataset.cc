@@ -1,4 +1,4 @@
-#include <Cellerator/compute/dataset.hh>
+#include <Cellerator/interop/cellshard/dataset.hh>
 
 #include <CellShard/io/csh5/api.cuh>
 

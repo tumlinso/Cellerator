@@ -1,4 +1,4 @@
-#include <Cellerator/compute/dataset.hh>
+#include <Cellerator/interop/cellshard/dataset.hh>
 
 #include <cuda_fp16.h>
 

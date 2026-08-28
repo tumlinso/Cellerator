@@ -45,12 +45,8 @@ project(Cellerator LANGUAGES CXX CUDA)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Canonical repository ownership. These directories begin as narrow build
-# boundaries and acquire implementation targets only when the corresponding
-# remap phase moves authoritative sources into them.
+# Host-only module proof infrastructure is independent of native CUDA targets.
 add_subdirectory(modules)
-add_subdirectory(examples)
-add_subdirectory(tools)
 
 find_package(CUDAToolkit REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C)
@@ -173,154 +169,12 @@ find_path(NCCL_INCLUDE_DIR
         /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/comm_libs/12.9/nccl/include
 )
 
-add_library(cellerator_runtime_multi_gpu INTERFACE)
-add_library(Cellerator::runtime_multi_gpu ALIAS cellerator_runtime_multi_gpu)
-add_library(cellerator_dist ALIAS cellerator_runtime_multi_gpu)
-add_library(Cellerator::dist ALIAS cellerator_runtime_multi_gpu)
-target_include_directories(cellerator_runtime_multi_gpu INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_compile_features(cellerator_runtime_multi_gpu INTERFACE cxx_std_17)
-target_link_libraries(cellerator_runtime_multi_gpu INTERFACE CUDA::cudart)
-if(NCCL_LIBRARY)
-    target_compile_definitions(cellerator_runtime_multi_gpu INTERFACE CELLERATOR_DIST_HAS_NCCL=1)
-    target_link_libraries(cellerator_runtime_multi_gpu INTERFACE ${NCCL_LIBRARY})
-    if(NCCL_INCLUDE_DIR)
-        target_include_directories(cellerator_runtime_multi_gpu SYSTEM INTERFACE ${NCCL_INCLUDE_DIR})
-    endif()
-else()
-    target_compile_definitions(cellerator_runtime_multi_gpu INTERFACE CELLERATOR_DIST_HAS_NCCL=0)
-endif()
-
-# Minimal CPU/CUDA-compatible biological identity and operand ABI. This target
-# intentionally has no runtime or CUDA-library dependency so Baseplane can
-# consume the contract without joining Cellerator's numerical runtime.
-add_library(cellerator_biological_abi INTERFACE)
-add_library(Cellerator::biological_abi ALIAS cellerator_biological_abi)
-target_include_directories(cellerator_biological_abi INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_compile_features(cellerator_biological_abi INTERFACE cxx_std_17)
-
-add_library(cellerator_identity_registry STATIC
-    src/execution/identity_registry.cc
-)
-add_library(Cellerator::identity_registry ALIAS cellerator_identity_registry)
-target_include_directories(cellerator_identity_registry PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(cellerator_identity_registry PUBLIC
-    Cellerator::biological_abi
-)
-target_compile_features(cellerator_identity_registry PUBLIC cxx_std_17)
-
-add_executable(celleratorIdentityRegistryTest
-    tests/execution_identity/identity_registry_test.cc
-)
-target_link_libraries(celleratorIdentityRegistryTest PRIVATE
-    Cellerator::identity_registry
-)
-
-add_library(cellerator_runtime STATIC
-    src/runtime/runtime.cu
-    src/runtime/value_readiness.cu
-)
-add_library(Cellerator::runtime ALIAS cellerator_runtime)
-target_include_directories(cellerator_runtime PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-    $<INSTALL_INTERFACE:include>
-)
-target_compile_features(cellerator_runtime PUBLIC cxx_std_17)
-target_link_libraries(cellerator_runtime PUBLIC CUDA::cudart)
-target_link_libraries(cellerator_runtime PRIVATE CUDA::cublas CUDA::cusparse)
-set_target_properties(cellerator_runtime PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
-
-# CE-ARCH-22: backend-neutral operation preparation and direct dispatch over
-# the biological execution contracts and the single Cellerator runtime.
-add_library(cellerator_operation_core STATIC
-    src/compute/operation/operation_core.cc
-)
-add_library(Cellerator::operation_core ALIAS cellerator_operation_core)
-target_include_directories(cellerator_operation_core PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-target_compile_features(cellerator_operation_core PUBLIC cxx_std_17)
-target_link_libraries(cellerator_operation_core PUBLIC
-    Cellerator::biological_abi
-    Cellerator::runtime
-)
-set_target_properties(cellerator_operation_core PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-)
-
-add_executable(celleratorOperationCoreTest
-    tests/math_core/operation_core_test.cc
-)
-target_link_libraries(celleratorOperationCoreTest PRIVATE
-    Cellerator::operation_core
-)
-set_target_properties(celleratorOperationCoreTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-)
-
-# CE-ARCH-60: keep the recovered execution substrate and its concurrency
-# contract in the normal build graph. This is the only supported math runtime;
-# the former DeviceMathContext island has been retired.
-add_executable(celleratorExecutionSessionTest
-    tests/runtime/execution_session_test.cu
-)
-target_link_libraries(celleratorExecutionSessionTest PRIVATE
-    Cellerator::runtime
-    CUDA::cudart
-    CUDA::cublas
-    CUDA::cusparse
-)
-set_target_properties(celleratorExecutionSessionTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
-
-# CE-LIVE-19: keep the runtime-only value-generation readiness contract in the
-# native build and validate same-stream/cross-stream ordering without making
-# event state part of persistent biological identity.
-add_executable(celleratorValueReadinessTest
-    tests/runtime/value_readiness_test.cu
-)
-target_link_libraries(celleratorValueReadinessTest PRIVATE
-    Cellerator::runtime
-    CUDA::cudart
-)
-set_target_properties(celleratorValueReadinessTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
-
-add_library(cellerator_compute_matrix_convert STATIC
-    src/compute/matrix/convert/bucket.cu
-    src/compute/matrix/convert/compressed.cu
-)
-add_library(Cellerator::compute_matrix_convert ALIAS cellerator_compute_matrix_convert)
-target_include_directories(cellerator_compute_matrix_convert PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(cellerator_compute_matrix_convert PUBLIC Cellerator::runtime)
-target_link_libraries(cellerator_compute_matrix_convert PRIVATE CUDA::cudart CUDA::cusparse)
-set_target_properties(cellerator_compute_matrix_convert PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-
+# Canonical subsystem target ownership. These files are included here because
+# the runtime and format ABI must exist before the sibling CellShard project
+# is added below.
+include(src/runtime/CMakeLists.txt)
+include(src/execution/CMakeLists.txt)
+include(src/compute/foundation_targets.cmake)
 function(cellerator_add_cellshard_source cellshard_source_dir)
     if(NOT EXISTS "${cellshard_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "CELLERATOR_CELLSHARD_SOURCE_DIR does not point to a CellShard source tree: ${cellshard_source_dir}")
@@ -352,6 +206,8 @@ function(cellerator_add_cellshard_source cellshard_source_dir)
         set(CELLSHARD_CUDA_MODE ${CELLERATOR_CUDA_MODE} CACHE STRING
             "CellShard CUDA optimization mode: generic, native, or native-extreme.")
     endif()
+    set(CELLSHARD_CELLERATOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH
+        "Cellerator source checkout used by CellShard compatibility conversion." FORCE)
     add_subdirectory("${cellshard_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/CellShard" EXCLUDE_FROM_ALL)
 endfunction()
 
@@ -519,12 +375,13 @@ endfunction()
 
 cellerator_enable_perf(cellerator_runtime)
 cellerator_enable_perf(cellerator_compute_matrix_convert)
+cellerator_enable_perf(cellerator_runtime_fleet)
 
 include(src/CMakeLists.txt)
 include(src/geometry/owned_targets.cmake)
-include(src/compute/CMakeLists.txt)
-
 include(src/planner/CMakeLists.txt)
+include(bench/CMakeLists.txt)
+include(tests/CMakeLists.txt)
 
 add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)

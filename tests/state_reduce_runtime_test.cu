@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace sr = ::cellerator::models::state_reduce;
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace cs = ::cellshard;
 namespace css = ::cellerator::matrix;
 namespace csv = ::cellshard::device;

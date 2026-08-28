@@ -1,6 +1,6 @@
 #include <Cellerator/preprocess/runtime.hh>
 
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <CellShard/export/dataset_export.hh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 #include <CellShard/runtime/host/sharded_host.cuh>
@@ -18,7 +18,7 @@
 
 namespace cpre = ::cellerator::preprocess;
 namespace copt = ::cellerator::optimize;
-namespace crt = ::cellerator::compute::runtime;
+namespace crt = ::cellerator::runtime;
 namespace cse = ::cellshard::exporting;
 namespace csd = ::cellshard::device;
 

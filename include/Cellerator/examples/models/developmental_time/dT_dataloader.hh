@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <CellShard/runtime/device/sharded_device.cuh>
 
 #include <cstdint>
 
 namespace cellerator::models::developmental_time {
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace csv = ::cellshard::device;
 
 enum class DevelopmentalTimeLayout {

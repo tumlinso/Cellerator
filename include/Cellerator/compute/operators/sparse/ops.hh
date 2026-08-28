@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/quantized/blocked_ell.cuh>
 
 #include <cuda_runtime.h>
@@ -15,7 +15,7 @@
 
 namespace cellerator::compute::sparse::ops {
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 
 struct feature_affine_quantize_config {
     std::uint32_t bits = 1u;

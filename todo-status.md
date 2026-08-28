@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2355`
+Project revision: `2363`
 
 ## Workstreams
 - `CE-REMAP-00` | status: planned | execution: inactive | next: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
@@ -72,6 +72,7 @@ Project revision: `2355`
 - `CE-REMAP-08` | status: done | execution: closed | next: Merge preprocessing islands, move the workbench to tools, and move model and trajectory orchestration to examples after extracting only genuinely reusable native primitives.
 - `CE-REMAP-09` | status: done | execution: closed | next: Remove empty historical islands, minimize forwarding and target aliases, ensure current code does not depend on compatibility evidence, and make root CMake configuration-oriented.
 - `CE-LIVE-00` | status: done | execution: closed | next: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
+- `CE-POST-REMAP-01` | status: done | execution: closed | next: Verify the landed CellShard neutral API, classify all runtime and CellShard consumers, then perform only bounded current-core migrations.
 - `CE-REMAP-10` | status: done | execution: closed | next: Validate the remapped repository from clean configuration, run modern CUDA and CE-LIVE regressions, validate modules and compatibility, inspect dependency boundaries, and publish exact evidence and remaining bounded follow-ups.
 - `CE-LIVE-01` | status: done | execution: closed | next: Validate and apply the full plan, claim this task, publish the program document and generated projections, audit/reconcile/export, commit, finish, and verify the seven-task frontier.
 - `CE-LIVE-10` | status: done | execution: closed | next: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
@@ -97,7 +98,9 @@ Project revision: `2355`
 - `CE-LIVE-34` | status: done | execution: closed | next: Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.
 - `CE-LIVE-35` | status: done | execution: closed | next: Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.
 - `CE-LIVE-36` | status: done | execution: closed | next: Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.
+- `CE-POST-REMAP-02` | status: done | execution: closed | next: Move target definitions conservatively by source ownership and keep subsystem fan-in explicit.
 - `CE-LIVE-37` | status: done | execution: closed | next: Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.
+- `CE-POST-REMAP-03` | status: done | execution: closed | next: Update stale authority documents and parameterize the canonical CE-LIVE harness paths.
 - `CE-LIVE-40` | status: done | execution: closed | next: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
 - `CE-LIVE-41` | status: done | execution: closed | next: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
 - `CE-LIVE-42` | status: done | execution: closed | next: Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.
@@ -112,6 +115,7 @@ Project revision: `2355`
 - `CE-ARCH-12` | status: done | execution: closed | next: Extend existing Cellerator::runtime into one session substrate; migrate rather than wrap it with a second context.
 - `CE-ARCH-20` | status: done | execution: closed | next: Implement read-only adapters for frozen plan/order/records/tiles/CPK1/direct kernel and define semantic geometry/statistics without changing v1 bytes or objective.
 - `CE-ARCH-30` | status: done | execution: closed | next: After explicit authorization, design manifests, deterministic generators, compact traces, tiers, resource contracts, and benchmark watches; do not run them in planning or create watches for nonexistent kernels.
+- `CE-POST-REMAP-04` | status: in_progress | execution: claimed | next: Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.
 - `CE-ARCH-21` | status: done | execution: closed | next: Design a new Cellerator payload schema with section/projection directories and CPK1 loader, inside unchanged CPEXEC01 unless an external decision proves otherwise.
 - `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
 - `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.

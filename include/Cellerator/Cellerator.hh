@@ -7,7 +7,7 @@
 #include "runtime/runtime.cuh"
 #include "interop/cellshard.cuh"
 #include "compute/runtime.hh"
-#include "compute/dataset.hh"
+#include "interop/cellshard/dataset.hh"
 #include "compute/sampling.hh"
 #include "compute/sampling_materialization.hh"
 #include "compute/gene_support_bitset.hh"

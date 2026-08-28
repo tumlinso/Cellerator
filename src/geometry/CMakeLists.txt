@@ -503,7 +503,7 @@ target_include_directories(cellPackFeatureWeightedRowReductionBench PRIVATE
 target_link_libraries(cellPackFeatureWeightedRowReductionBench PRIVATE
     CellPack::feature_weighted_row_reduction_cuda
     cellerator_compute_sparse_ops
-    cellerator_compute_runtime
+    Cellerator::runtime_fleet
     CUDA::cudart
     CUDA::cusparse
 )
@@ -531,7 +531,7 @@ target_link_libraries(cellPackHardwareCostAutotuneBench PRIVATE
     CellPack::hardware_cost_model
     CellPack::feature_weighted_row_reduction_cuda
     cellerator_compute_sparse_ops
-    cellerator_compute_runtime
+    Cellerator::runtime_fleet
     CUDA::cudart
     CUDA::cusparse
 )

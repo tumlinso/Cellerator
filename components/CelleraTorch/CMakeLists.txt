@@ -154,7 +154,7 @@ target_include_directories(cellera_torch_quantize PUBLIC
 target_link_libraries(cellera_torch_quantize PUBLIC CelleraTorch::torch)
 target_link_libraries(cellera_torch_quantize PRIVATE
     cellerator_compute_sparse_ops
-    cellerator_compute_runtime
+    Cellerator::runtime_fleet
     CUDA::cudart
 )
 set_target_properties(cellera_torch_quantize PROPERTIES

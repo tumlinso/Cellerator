@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-build_root="$repo_root/build-dissolution-smoke"
+build_root=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
 
 "$build_root/celleratorProjectionActivationTest"
 "$build_root/celleratorBuiltinCatalogTest"

@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `2355`
+Project revision: `2363`
 
 ## Workstreams
 - `CE-REMAP-00` | kind: epic | status: planned | parent: - | objective: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
@@ -453,6 +453,7 @@ Project revision: `2355`
 - `CE-REMAP-08` | kind: task | status: done | parent: CE-REMAP-00 | objective: Merge preprocessing islands, move the workbench to tools, and move model and trajectory orchestration to examples after extracting only genuinely reusable native primitives.
 - `CE-REMAP-09` | kind: integration_task | status: done | parent: CE-REMAP-00 | objective: Remove empty historical islands, minimize forwarding and target aliases, ensure current code does not depend on compatibility evidence, and make root CMake configuration-oriented.
 - `CE-LIVE-00` | kind: epic | status: done | parent: - | objective: Turn completed CE-ARCH foundations into one authoritative planner-backed quantitative biological execution path, then activate CelleraTorch as a thin native adapter.
+- `CE-POST-REMAP-01` | kind: workstream | status: done | parent: - | objective: Consume the independently landed CellShard neutral distributed API, remove the Cellerator-to-CellShard-to-Cellerator runtime cycle, classify every legacy runtime consumer, migrate current core consumers that require only bounded adaptation, and keep genuine compatibility users explicitly scoped.
 - `CE-REMAP-10` | kind: validation_task | status: done | parent: CE-REMAP-00 | objective: Validate the remapped repository from clean configuration, run modern CUDA and CE-LIVE regressions, validate modules and compatibility, inspect dependency boundaries, and publish exact evidence and remaining bounded follow-ups.
 - `CE-LIVE-01` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Reconcile the clean post-CE-ARCH repository, apply the complete CE-LIVE plan transactionally, publish the source and contract map, validate the graph, and leave multiple non-overlapping tasks ready.
 - `CE-LIVE-10` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Record the exact current clean-head host/CUDA build and focused test baseline, distinguish real failures from unavailable optional background evidence, and publish reproducible commands without changing implementation.
@@ -478,7 +479,9 @@ Project revision: `2355`
 - `CE-LIVE-34` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Build and reload a CPE2 image containing live projections, carry it through existing opaque CPEXEC01 compatibility delivery, activate typed device views, select and prepare a candidate, and execute quantitatively without moving semantics into CellShard.
 - `CE-LIVE-35` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Prove two-stream reuse, readiness waits, supported CUDA Graph capture, stale identity and generation rejection, pointer relocation, and absence of forbidden hot-path behavior.
 - `CE-LIVE-36` | kind: validation_task | status: done | parent: CE-LIVE-00 | objective: Measure complete preparation-to-consumer costs, memory, bytes, launches, order work, readiness, forward/backward, reuse-one/eight/persistent regimes, and planner regret against every legal candidate.
+- `CE-POST-REMAP-02` | kind: workstream | status: done | parent: - | objective: Move implementation, test, benchmark, example, and tool target definitions to sensible subsystem-local CMake files while preserving target names, aliases, options, and runtime behavior.
 - `CE-LIVE-37` | kind: integration_task | status: done | parent: CE-LIVE-00 | objective: Audit every Cellerator invariant, publish the supported and unsupported operation matrix and commands, reconcile the ledger, reach live biological readiness, and freeze only the minimal native entry contract required by CelleraTorch.
+- `CE-POST-REMAP-03` | kind: workstream | status: done | parent: - | objective: Teach the post-remap repository map in authoritative documentation and make canonical CE-LIVE harnesses accept or discover the configured build and geometry locations without temporary patched copies.
 - `CE-LIVE-40` | kind: task | status: done | parent: CE-LIVE-00 | objective: Expose native Cellerator dense operands, value planes, and parameter descriptors to Torch with explicit lifetime ownership and correct device, shape, and stride metadata.
 - `CE-LIVE-41` | kind: task | status: done | parent: CE-LIVE-00 | objective: Wrap executable_program as a Torch custom operation using the current Torch CUDA stream, preserving Cellerator planning and ownership and performing no hidden repeated conversion.
 - `CE-LIVE-42` | kind: task | status: done | parent: CE-LIVE-00 | objective: Connect Torch autograd to the native training executable, propagate readiness and current-stream dependencies correctly, expose native learned parameters without copying ownership into Torch, and test forward/backward/update parity.
@@ -493,6 +496,7 @@ Project revision: `2355`
 - `CE-ARCH-12` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Consolidate runtime ownership so CP-Math and biological operations use one explicit Cellerator execution substrate.
 - `CE-ARCH-20` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Preserve validated CP-BP v1 behind new identity/lifetime contracts while separating semantic geometry from physical projection.
 - `CE-ARCH-30` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Build a reproducible corpus and measurement program capable of disproving the preferred Cellerator architecture.
+- `CE-POST-REMAP-04` | kind: integration_task | status: in_progress | parent: - | objective: Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.
 - `CE-ARCH-21` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Evolve CPK1 pointer-free persistence into an execution IR holding one semantic geometry and multiple physical projections.
 - `CE-ARCH-22` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Transform useful CP-Math experiments into Cellerator core operation, projection, planning, and execution contracts.
 - `CE-ARCH-31` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Select the fastest correct end-to-end strategy and feed measured costs into versioned semantic-geometry optimization.

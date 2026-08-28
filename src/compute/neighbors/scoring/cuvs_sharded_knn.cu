@@ -645,6 +645,7 @@ int sparse_exact_self_knn(const ShardedCsr *view_const,
 {
     sparse_exact_params params;
     ::cellerator::dist::local_context ctx;
+    ::cellshard::runtime::device_binding_view device_bindings;
     ::cellshard::distributed::shard_map map;
     ShardedCsr *view = const_cast<ShardedCsr *>(view_const);
     host_buffer<int> device_ids;
@@ -668,7 +669,10 @@ int sparse_exact_self_knn(const ShardedCsr *view_const,
     if (ctx.device_count > device_ids.size()) ctx.device_count = (unsigned int) device_ids.size();
     if (ctx.device_count == 0) goto fail;
     for (device = 0; device < (int) ctx.device_count; ++device) ctx.device_ids[device] = device_ids[(std::size_t) device];
-    if (!::cellshard::distributed::assign_shards_by_bytes(&map, view, &ctx)) goto fail;
+    device_bindings.device_ids = ctx.device_ids;
+    device_bindings.streams = ctx.streams;
+    device_bindings.count = ctx.device_count;
+    if (!::cellshard::distributed::assign_shards_by_bytes(&map, view, &device_bindings)) goto fail;
 
     index_cache.resize((std::size_t) view->num_shards);
     for (shard = 0; shard < view->num_shards; ++shard) {

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-build_root="$repo_root/build-dissolution-smoke"
+build_root=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
 sanitizer="/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer"
 
 for test_binary in \

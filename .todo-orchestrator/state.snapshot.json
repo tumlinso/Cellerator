@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T08:31:31Z",
+  "generated_at": "2026-08-28T10:37:38Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 2355,
+  "project_revision": 2363,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -25010,6 +25010,86 @@
         "revision": 2355,
         "seq": 2355,
         "timestamp": "2026-08-28T08:31:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/Cellerator/cellerator-post-remap-plan.json\"}",
+        "revision": 2356,
+        "seq": 2356,
+        "timestamp": "2026-08-28T10:09:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-MAIN",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-POST-REMAP-MAIN\", \"run_id\": \"CE-POST-REMAP-RUN\", \"status\": \"claimed\", \"task_id\": \"CE-POST-REMAP-01\"}",
+        "revision": 2357,
+        "seq": 2357,
+        "timestamp": "2026-08-28T10:18:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2358, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2358,
+        "seq": 2358,
+        "timestamp": "2026-08-28T10:27:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-MAIN",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-POST-REMAP-MAIN\", \"run_id\": \"CE-POST-REMAP-RUN\", \"status\": \"claimed\", \"task_id\": \"CE-POST-REMAP-02\"}",
+        "revision": 2359,
+        "seq": 2359,
+        "timestamp": "2026-08-28T10:27:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2360, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2360,
+        "seq": 2360,
+        "timestamp": "2026-08-28T10:32:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-MAIN",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-POST-REMAP-MAIN\", \"run_id\": \"CE-POST-REMAP-RUN\", \"status\": \"claimed\", \"task_id\": \"CE-POST-REMAP-03\"}",
+        "revision": 2361,
+        "seq": 2361,
+        "timestamp": "2026-08-28T10:32:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-03",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2362, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2362,
+        "seq": 2362,
+        "timestamp": "2026-08-28T10:37:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-POST-REMAP-MAIN",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-POST-REMAP-MAIN\", \"run_id\": \"CE-POST-REMAP-RUN\", \"status\": \"claimed\", \"task_id\": \"CE-POST-REMAP-04\"}",
+        "revision": 2363,
+        "seq": 2363,
+        "timestamp": "2026-08-28T10:37:38Z"
       }
     ],
     "evidence": [
@@ -40200,6 +40280,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-28T10:27:52Z",
+        "id": "03cc07f1-d7af-432f-b27a-18adddd4441a",
+        "kind": "complete",
+        "note": "Removed the CellShard reverse runtime dependency in the sibling repository (commit 2501a2c pushed); adapted Cellerator cuVS shard assignment to CellShard device_binding_view; promoted fleet/reduction implementation from legacy compute runtime into canonical runtime/multi_gpu and changed all native targets/consumers to Cellerator::runtime_fleet; retained old runtime header/target names only as compatibility forwards; moved CellShard-backed dataset and preprocessing public surfaces under interop/cellshard with compatibility forwarding paths. Mechanical reverse-dependency scan is zero. Focused builds and datasetRuntimeTest, cellshardAccessAdapterCompileTest, sparseOpsRuntimeTest, and celleratorPreprocessQCFleetTest passed under the GPU mutex.",
+        "payload_json": "{\"changed_owned_paths\": [\"bench/geometry/feature_weighted_row_reduction_bench.cu\", \"bench/geometry/hardware_cost_autotune_bench.cu\", \"bench/quantized_transfer_spmm_bench.cu\", \"bench/sparse_ops_bench.cu\", \"cellerator-post-remap-plan.json\", \"components/CelleraTorch/CMakeLists.txt\", \"components/CelleraTorch/src/quantize/quantize_cuda.cu\", \"include/Cellerator/compute/candidate/sparse/project.hh\", \"include/Cellerator/compute/dataset.hh\", \"include/Cellerator/compute/operators/sparse/ops.hh\", \"include/Cellerator/interop/cellshard/dataset.hh\", \"include/Cellerator/interop/cellshard/preprocess_operations.cuh\", \"include/Cellerator/preprocess/operations.cuh\", \"include/Cellerator/preprocess/preprocess.cuh\", \"include/Cellerator/runtime/legacy_execution_context.hh\", \"include/Cellerator/runtime/multi_gpu/fleet.cuh\", \"src/abi/abi.cu\", \"src/compute/candidate/sparse/project.cu\", \"src/compute/dataset/dataset.cc\", \"src/compute/neighbors/scoring/cuvs_sharded_knn.cu\", \"src/compute/operators/sparse/kernels/base_sparse.cu\", \"src/interop/cellshard/preprocess_session.cu\", \"src/preprocess/preprocess_internal.cuh\", \"src/runtime/legacy/execution_context.cu\", \"src/runtime/legacy/reduce.cu\", \"src/runtime/multi_gpu/fleet.cu\", \"src/runtime/multi_gpu/reduce.cu\", \"tests/dataset_runtime_test.cc\", \"tests/developmental_time_runtime_test.cu\", \"tests/developmental_time_trajectory_runtime_test.cu\", \"tests/preprocess/qc_fleet_test.cu\", \"tests/sparse_ops_runtime_test.cu\", \"tests/state_reduce_runtime_test.cu\"], \"checkpoints\": [], \"completion_commit\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"completion_gates\": [], \"completion_revision\": 2358, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 815 ++++++++++++++++++++-\\n .../feature_weighted_row_reduction_bench.cu        |   2 +-\\n bench/geometry/hardware_cost_autotune_bench.cu     |   2 +-\\n bench/quantized_transfer_spmm_bench.cu             |   4 +-\\n bench/sparse_ops_bench.cu                          |   4 +-\\n components/CelleraTorch/CMakeLists.txt             |   2 +-\\n .../CelleraTorch/src/quantize/quantize_cuda.cu     |   4 +-\\n include/Cellerator/Cellerator.hh                   |   2 +-\\n .../Cellerator/compute/candidate/sparse/project.hh |   2 +-\\n include/Cellerator/compute/dataset.hh              | 137 +---\\n include/Cellerator/compute/operators/sparse/ops.hh |   4 +-\\n .../models/developmental_time/dT_dataloader.hh     |   4 +-\\n .../examples/models/state_reduce/stateReduce.hh    |   4 +-\\n include/Cellerator/preprocess/operations.cuh       | 390 +---------\\n include/Cellerator/preprocess/preprocess.cuh       |   2 +-\\n .../Cellerator/runtime/legacy_execution_context.hh | 161 +---\\n src/CMakeLists.txt                                 |  57 +-\\n src/abi/abi.cu                                     |   2 +-\\n src/compute/candidate/sparse/project.cu            |   5 +-\\n src/compute/dataset/dataset.cc                     |   2 +-\\n src/compute/neighbors/scoring/cuvs_sharded_knn.cu  |   6 +-\\n .../operators/sparse/kernels/base_sparse.cu        |   5 +-\\n src/geometry/CMakeLists.txt                        |   4 +-\\n src/interop/cellshard/preprocess_session.cu        |   4 +-\\n src/preprocess/preprocess_internal.cuh             |   2 +-\\n src/runtime/legacy/execution_context.cu            | 201 -----\\n src/runtime/legacy/reduce.cu                       | 297 --------\\n tests/dataset_runtime_test.cc                      |   2 +-\\n tests/developmental_time_runtime_test.cu           |   2 +-\\n .../developmental_time_trajectory_runtime_test.cu  |   2 +-\\n tests/preprocess/qc_fleet_test.cu                  |   6 +-\\n tests/sparse_ops_runtime_test.cu                   |   5 +-\\n tests/state_reduce_runtime_test.cu                 |   2 +-\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n 35 files changed, 912 insertions(+), 1243 deletions(-)\", \"git_head\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"interfaces\": [], \"note\": \"Removed the CellShard reverse runtime dependency in the sibling repository (commit 2501a2c pushed); adapted Cellerator cuVS shard assignment to CellShard device_binding_view; promoted fleet/reduction implementation from legacy compute runtime into canonical runtime/multi_gpu and changed all native targets/consumers to Cellerator::runtime_fleet; retained old runtime header/target names only as compatibility forwards; moved CellShard-backed dataset and preprocessing public surfaces under interop/cellshard with compatibility forwarding paths. Mechanical reverse-dependency scan is zero. Focused builds and datasetRuntimeTest, cellshardAccessAdapterCompileTest, sparseOpsRuntimeTest, and celleratorPreprocessQCFleetTest passed under the GPU mutex.\", \"resources\": [], \"task_id\": \"CE-POST-REMAP-01\"}",
+        "revision": 2358,
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-26T21:01:46Z",
         "id": "08615636-1a8d-4646-8205-c7a1c583a01d",
         "kind": "complete",
@@ -40437,6 +40527,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"CMakeLists.txt\", \"examples/CMakeLists.txt\", \"examples/models/README.md\", \"examples/models/developmental_time_model.cu\", \"examples/models/developmental_time_trajectory_model.cu\", \"examples/models/state_reduce.cu\", \"examples/trajectory/README.md\", \"include/Cellerator/compute/preprocess/README.md\", \"include/Cellerator/compute/preprocess/preprocess.cuh\", \"include/Cellerator/models/README.md\", \"include/Cellerator/models/developmental_time.hh\", \"include/Cellerator/models/developmental_time_trajectory.hh\", \"include/Cellerator/models/state_reduce.hh\", \"include/Cellerator/preprocess/operations.cuh\", \"include/Cellerator/preprocess/preprocess.cuh\", \"include/Cellerator/trajectory/README.md\", \"include/Cellerator/trajectory/trajectory_tree.cuh\", \"src/compute/preprocess/fleet.cu\", \"src/compute/preprocess/fused_workflows.cu\", \"src/compute/preprocess/gene_stats.cu\", \"src/compute/preprocess/kernels/preprocess_math.cuh\", \"src/compute/preprocess/normalize.cu\", \"src/compute/preprocess/preprocess.cu\", \"src/compute/preprocess/preprocess_internal.cuh\", \"src/compute/preprocess/qc_metrics.cu\", \"src/compute/preprocess/workspace.cu\", \"src/models/README.md\", \"src/models/developmental_time/dT_dataloader.hh\", \"src/models/developmental_time/dT_infer.hh\", \"src/models/developmental_time/dT_model.cu\", \"src/models/developmental_time/dT_model.hh\", \"src/models/developmental_time/dT_train.hh\", \"src/models/developmental_time/developmentalTime.hh\", \"src/models/developmental_time_trajectory/dTT_dataloader.hh\", \"src/models/developmental_time_trajectory/dTT_infer.hh\", \"src/models/developmental_time_trajectory/dTT_model.cu\", \"src/models/developmental_time_trajectory/dTT_model.hh\", \"src/models/developmental_time_trajectory/dTT_train.hh\", \"src/models/developmental_time_trajectory/developmentalTimeTrajectory.hh\", \"src/models/state_reduce/stateReduce.hh\", \"src/models/state_reduce/state_reduce_cuda.cu\", \"src/preprocess/apps/workbench_main.cc\", \"src/preprocess/fleet.cu\", \"src/preprocess/fused_workflows.cu\", \"src/preprocess/gene_stats.cu\", \"src/preprocess/kernels/preprocess_math.cuh\", \"src/preprocess/normalize.cu\", \"src/preprocess/preprocess.cu\", \"src/preprocess/preprocess_internal.cuh\", \"src/preprocess/qc_metrics.cu\", \"src/preprocess/workspace.cu\", \"src/trajectory/README.md\", \"src/trajectory/trajectory_build.cuh\", \"src/trajectory/trajectory_query.cuh\", \"src/trajectory/trajectory_tree.cuh\", \"tools/CMakeLists.txt\", \"tools/preprocess_workbench/workbench_main.cc\"], \"checkpoints\": [], \"completion_commit\": \"e02054fa103551c27f6a41907c49c6d923ce5777\", \"completion_gates\": [{\"evidence_id\": \"16848c2f-35be-4c7a-8487-ae998af80a28\", \"evidence_revision\": 2330, \"id\": \"CE-REMAP-08-LAYOUT\", \"input_fingerprint\": \"3046cfd79d737f3871e892f10fecd3d6c7e2a2c1161a604305ac9ee7db0554e7\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"e02054fa103551c27f6a41907c49c6d923ce5777\"}, {\"evidence_id\": \"491998e2-ba10-4ea9-b70a-9d626d65a1bb\", \"evidence_revision\": 2332, \"id\": \"CE-REMAP-08-PREPROCESS\", \"input_fingerprint\": \"95cab3fff2632ee9fbb614899a4591cb7c6675f8df7479ada7d1b55ac3451eda\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"e02054fa103551c27f6a41907c49c6d923ce5777\"}], \"completion_revision\": 2333, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-REMAP-08-PREPROCESS\", \"input_fingerprint\": \"95cab3fff2632ee9fbb614899a4591cb7c6675f8df7479ada7d1b55ac3451eda\", \"last_run_at\": \"2026-08-28T07:58:30Z\", \"revision\": 2332, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-REMAP-08-LAYOUT\", \"input_fingerprint\": \"3046cfd79d737f3871e892f10fecd3d6c7e2a2c1161a604305ac9ee7db0554e7\", \"last_run_at\": \"2026-08-28T07:58:29Z\", \"revision\": 2330, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 3842 +++++++++++++++++++-\\n CMakeLists.txt                                     |  257 +-\\n .../ce_arch_76_v100_spec.json                      |    6 +-\\n .../ce_arch_84_v100_spec.json                      |    4 +-\\n .../ce_arch_92_v100_spec.json                      |    6 +-\\n bench/geometry/cell_block_records_bench.cu         |    2 +-\\n bench/geometry/cellpack_apply_plan_bench.cu        |    2 +-\\n bench/geometry/cellpack_evaluator_bench.cc         |    2 +-\\n bench/geometry/cellpack_gating_bench.cu            |    4 +-\\n bench/geometry/cellpack_layout_bench.cc            |    2 +-\\n bench/geometry/cellpack_merge_cost_bench.cu        |    2 +-\\n bench/geometry/cellpack_optimizer_bench.cc         |    2 +-\\n .../feature_weighted_row_reduction_bench.cu        |    2 +-\\n bench/geometry/hardware_cost_autotune_bench.cu     |    4 +-\\n bench/geometry/local_cell_ordering_bench.cu        |    2 +-\\n bench/geometry/warp_tiles_bench.cu                 |    2 +-\\n bench/math/benchmark_support.hh                    |    2 +-\\n .../math/feature_major_candidate_compare_bench.cu  |   10 +-\\n bench/math/packed_dense_operand_bench.cu           |    2 +-\\n .../Cellerator/compute/math/MATH_V1_EVIDENCE.md    |   65 -\\n include/Cellerator/compute/math/execution_plan.hh  |   46 +-\\n .../Cellerator/compute/math/native_tile_view.hh    |  135 +-\\n .../compute/math/native_training_slice.hh          |  113 +-\\n include/Cellerator/compute/math/operation.hh       |  222 +-\\n .../compute/math/operation_core/OPERATION_CORE.md  |   58 -\\n .../compute/math/operation_core/builtin_catalog.hh |  105 +-\\n .../math/operation_core/csr_fallback_candidate.hh  |   56 +-\\n .../math/operation_core/cusparse_csr_candidate.hh  |  100 +-\\n .../feature_major_small_n_candidate.hh             |   92 +-\\n .../compute/math/operation_core/operation_core.hh  |  256 +-\\n .../math/operation_core/preparation_factory.hh     |   64 +-\\n .../math/operation_core/row_masked_n1_candidate.hh |   62 +-\\n .../operation_core/transpose_backward_candidate.hh |   55 +-\\n .../compute/math/packed_dense_operand.hh           |   74 +-\\n include/Cellerator/compute/math/physical_bell.hh   |  196 +-\\n include/Cellerator/compute/math/physical_csr.hh    |  219 +-\\n .../compute/math/physical_feature_major.hh         |  144 +-\\n .../Cellerator/compute/math/physical_transpose.hh  |  115 +-\\n include/Cellerator/compute/math/referee.hh         |  254 +-\\n .../tensor_core/v100_dense_fragment_candidate.hh   |   79 +-\\n .../math/tensor_core/v100_dense_fragment_plan.hh   |   58 +-\\n .../Cellerator/compute/preprocess/preprocess.cuh   |  389 +-\\n include/Cellerator/compute/runtime.hh              |    2 +-\\n .../compute/sequence/BASEPLANE_INTEGRATION.md      |   82 -\\n .../compute/sequence/baseplane_integration.cuh     |  278 +-\\n include/Cellerator/compute/sparse/ops.hh           |    2 +-\\n include/Cellerator/compute/sparse/project.hh       |    2 +-\\n include/Cellerator/dist/distributed.cuh            |  192 +-\\n include/Cellerator/dist/nccl_communicator.cuh      |  574 +--\\n include/Cellerator/dist/nccl_select.cuh            |   18 +-\\n include/Cellerator/distributed/HIERARCHY.md        |   26 +-\\n include/Cellerator/distributed/hierarchy.hh        |  172 +-\\n .../Cellerator/geometry/alternating_refinement.hh  |    2 +-\\n include/Cellerator/geometry/apply_plan.hh          |    2 +-\\n include/Cellerator/geometry/candidate_relation.hh  |    2 +-\\n include/Cellerator/geometry/cell_block_records.hh  |    2 +-\\n .../Cellerator/geometry/cell_block_records_cuda.hh |    2 +-\\n include/Cellerator/geometry/evaluator.hh           |    2 +-\\n .../geometry/feature_weighted_row_reduction.hh     |    2 +-\\n .../feature_weighted_row_reduction_cuda.hh         |    2 +-\\n include/Cellerator/geometry/gating.hh              |    2 +-\\n include/Cellerator/geometry/gating_cuda.cuh        |    4 +-\\n .../geometry/gene_candidate_discovery.hh           |    2 +-\\n include/Cellerator/geometry/hardware_cost_model.hh |    2 +-\\n include/Cellerator/geometry/layout_metrics.hh      |    2 +-\\n include/Cellerator/geometry/layout_selector.hh     |    2 +-\\n include/Cellerator/geometry/local_cell_ordering.hh |    2 +-\\n .../geometry/local_cell_ordering_cuda.hh           |    2 +-\\n include/Cellerator/geometry/matrix_view.hh         |    4 +-\\n include/Cellerator/geometry/merge_cost.hh          |    4 +-\\n include/Cellerator/geometry/optimizer.hh           |    4 +-\\n include/Cellerator/geometry/pack.hh                |    4 +-\\n include/Cellerator/geometry/packing_plan.hh        |    2 +-\\n include/Cellerator/geometry/permutation.hh         |    2 +-\\n .../geometry/persistence/execution_image_v2.hh     |    2 +-\\n .../geometry/persistent_packing_payload.hh         |    2 +-\\n include/Cellerator/geometry/planner.hh             |    4 +-\\n .../geometry/record_statistical_validation.hh      |    4 +-\\n .../geometry/runtime_statistical_validation.hh     |    4 +-\\n include/Cellerator/geometry/semantic_geometry.hh   |    2 +-\\n .../Cellerator/geometry/statistical_validation.hh  |    2 +-\\n .../geometry/tile_statistical_validation.hh        |    4 +-\\n include/Cellerator/geometry/validate.hh            |    4 +-\\n include/Cellerator/geometry/warp_tiles.hh          |    2 +-\\n include/Cellerator/geometry/warp_tiles_cuda.hh     |    2 +-\\n include/Cellerator/interop/cellshard.cuh           |    4 +-\\n include/Cellerator/interop/cellshard_access.cuh    |  285 +-\\n include/Cellerator/models/developmental_time.hh    |    2 +-\\n .../models/developmental_time_trajectory.hh        |    2 +-\\n include/Cellerator/models/state_reduce.hh          |    2 +-\\n include/Cellerator/preprocess/preprocess.cuh       |    2 +-\\n include/Cellerator/trajectory/trajectory_tree.cuh  |    2 +-\\n src/compute/graph/branch_detect.cuh                |   36 -\\n src/compute/graph/forward_candidates.cuh           |  206 --\\n src/compute/graph/forward_prune.cuh                |  138 -\\n src/compute/graph/incremental_insert.cuh           |   60 -\\n src/compute/graph/record_table.cuh                 |  125 -\\n src/compute/graph/slab_index.cuh                   |  112 -\\n src/compute/graph/supernode_reduce.cuh             |  249 --\\n src/compute/graph/workspace.cuh                    |   99 -\\n src/compute/math/native_tile_view.cc               |  251 --\\n src/compute/math/native_training_slice.cu          |  441 ---\\n src/compute/math/operation.cc                      |  294 --\\n src/compute/math/operation_core/builtin_catalog.cc |  246 --\\n .../math/operation_core/csr_fallback_candidate.cu  |  247 --\\n .../math/operation_core/cusparse_csr_candidate.cu  |  497 ---\\n .../feature_major_small_n_candidate.cu             |  499 ---\\n src/compute/math/operation_core/operation_core.cc  |  242 --\\n .../math/operation_core/preparation_factory.cc     |  188 -\\n .../math/operation_core/row_masked_n1_candidate.cu |  297 --\\n .../operation_core/transpose_backward_candidate.cu |  300 --\\n src/compute/math/operation_signature.cc            |   70 -\\n src/compute/math/packed_dense_operand.cu           |  262 --\\n src/compute/math/physical_bell.cc                  |  202 -\\n src/compute/math/physical_bell_candidates.cc       |  240 --\\n src/compute/math/physical_csr.cc                   |  240 --\\n src/compute/math/physical_feature_major.cc         |  557 ---\\n src/compute/math/physical_transpose.cc             |  352 --\\n src/compute/math/referee.cc                        |  255 --\\n .../tensor_core/v100_dense_fragment_candidate.cu   |  334 --\\n .../math/tensor_core/v100_dense_fragment_plan.cc   |  164 -\\n src/compute/ml/README.md                           |    3 +-\\n .../forward_neighbors/forward_neighbors.cu         |    2 +-\\n src/compute/preprocess/fleet.cu                    |  203 --\\n src/compute/preprocess/fused_workflows.cu          |  426 ---\\n src/compute/preprocess/gene_stats.cu               |  297 --\\n src/compute/preprocess/kernels/preprocess_math.cuh |   30 -\\n src/compute/preprocess/normalize.cu                |  183 -\\n src/compute/preprocess/preprocess.cu               |    7 -\\n src/compute/preprocess/preprocess_internal.cuh     |  130 -\\n src/compute/preprocess/qc_metrics.cu               |  146 -\\n src/compute/preprocess/workspace.cu                |  237 --\\n src/compute/runtime/reduce.cu                      |  297 --\\n src/compute/runtime/runtime.cu                     |  201 -\\n src/compute/runtime/runtime.hh                     |  164 -\\n src/compute/sequence/baseplane_integration.cu      |  900 -----\\n src/compute/sequence/baseplane_strategy.cc         |  135 -\\n src/compute/sparse/README.md                       |   11 -\\n src/compute/sparse/ops/kernels/base_sparse.cu      |  434 ---\\n ..._feature_affine_quantize_correction_kernel_.cuh |   56 -\\n ..._feature_affine_quantize_correction_kernel_.cuh |   43 -\\n .../csr_row_scale_bwd_scales_kernel_.cuh           |   16 -\\n .../csr_row_scale_bwd_values_kernel_.cuh           |   13 -\\n .../base_sparse/csr_row_scale_fwd_kernel_.cuh      |   15 -\\n .../base_sparse/csr_spmm_bwd_rhs_kernel_.cuh       |   22 -\\n .../base_sparse/csr_spmm_bwd_values_kernel_.cuh    |   21 -\\n .../base_sparse/csr_spmv_bwd_values_kernel_.cuh    |   16 -\\n .../base_sparse/csr_spmv_bwd_vector_kernel_.cuh    |   16 -\\n .../kernels/base_sparse/csr_spmv_fwd_kernel_.cuh   |   17 -\\n .../feature_affine_quantize_baseline_kernel_.cuh   |   45 -\\n .../base_sparse/fill_from_scalar_kernel_.cuh       |    5 -\\n .../base_sparse/widen_half_to_float_kernel_.cuh    |    5 -\\n src/compute/sparse/ops/kernels/dist_sparse.cu      |  199 -\\n src/compute/sparse/ops/ops.hh                      |  294 --\\n src/compute/sparse/ops/primitives/common.cuh       |   19 -\\n .../kernels/blocked_ell_spmm_fwd_kernel_.cuh       |   33 -\\n .../project/kernels/csr_spmm_fwd_kernel_.cuh       |   22 -\\n .../kernels/narrow_float_to_half_kernel_.cuh       |    5 -\\n .../quantized_blocked_ell_spmm_fwd_kernel_.cuh     |   39 -\\n src/compute/sparse/project/project.cu              |  425 ---\\n src/compute/sparse/project/project.hh              |  151 -\\n src/distributed/hierarchy.cc                       |  275 --\\n src/geometry/CMakeLists.txt                        |  102 +-\\n src/geometry/alternating_refinement.cc             |    2 +-\\n src/geometry/apply_plan.cc                         |    2 +-\\n src/geometry/apply_plan_cuda.cu                    |    2 +-\\n .../gene_candidate_discovery.cc                    |    2 +-\\n .../gene_candidate_discovery_cuda.cu               |    2 +-\\n .../candidate_discovery/gene_candidate_internal.hh |    2 +-\\n src/geometry/candidate_relation.cc                 |    2 +-\\n src/geometry/cell_block_records.cc                 |    2 +-\\n src/geometry/cell_block_records_cuda.cu            |    2 +-\\n src/geometry/evaluator.cc                          |    2 +-\\n src/geometry/feature_weighted_row_reduction.cc     |    2 +-\\n .../feature_weighted_row_reduction_cuda.cu         |    2 +-\\n src/geometry/gating.cc                             |    2 +-\\n src/geometry/gating_cuda.cu                        |    2 +-\\n src/geometry/hardware_cost_model.cc                |    2 +-\\n src/geometry/layout_metrics.cc                     |    2 +-\\n src/geometry/layout_selector.cc                    |    2 +-\\n src/geometry/local_cell_ordering.cc                |    2 +-\\n src/geometry/local_cell_ordering_cuda.cu           |    2 +-\\n src/geometry/merge_cost.cc                         |    2 +-\\n src/geometry/merge_cost_cuda.cu                    |    2 +-\\n src/geometry/merge_cost_internal.cuh               |    2 +-\\n src/geometry/optimizer.cc                          |    4 +-\\n src/geometry/optimizer_state.hh                    |    2 +-\\n src/geometry/pack.cc                               |    2 +-\\n src/geometry/packing_plan.cc                       |    2 +-\\n src/geometry/persistence/execution_image_v2.cc     |    2 +-\\n .../persistence/execution_image_v2_cpk1.cc         |    2 +-\\n src/geometry/persistent_packing_payload.cc         |    2 +-\\n src/geometry/planner.cc                            |    2 +-\\n src/geometry/record_statistical_validation.cc      |    2 +-\\n src/geometry/runtime_statistical_validation.cc     |    2 +-\\n src/geometry/semantic_geometry.cc                  |    2 +-\\n src/geometry/statistical_validation.cc             |    2 +-\\n src/geometry/tile_statistical_validation.cc        |    2 +-\\n src/geometry/warp_tiles.cc                         |    2 +-\\n src/geometry/warp_tiles_cuda.cu                    |    2 +-\\n src/models/README.md                               |   19 -\\n src/models/developmental_time/dT_dataloader.hh     |   57 -\\n src/models/developmental_time/dT_infer.hh          |    9 -\\n src/models/developmental_time/dT_model.cu          |  807 ----\\n src/models/developmental_time/dT_model.hh          |   93 -\\n src/models/developmental_time/dT_train.hh          |   10 -\\n src/models/developmental_time/developmentalTime.hh |    8 -\\n .../dTT_dataloader.hh                              |   45 -\\n .../developmental_time_trajectory/dTT_infer.hh     |    9 -\\n .../developmental_time_trajectory/dTT_model.cu     |  887 -----\\n .../developmental_time_trajectory/dTT_model.hh     |   59 -\\n .../developmental_time_trajectory/dTT_train.hh     |    9 -\\n .../developmentalTimeTrajectory.hh                 |    6 -\\n src/models/state_reduce/stateReduce.hh             |  152 -\\n src/models/state_reduce/state_reduce_cuda.cu       | 1015 ------\\n src/preprocess/apps/workbench_main.cc              |   24 -\\n src/trajectory/README.md                           |    6 -\\n src/trajectory/trajectory_build.cuh                |   65 -\\n src/trajectory/trajectory_query.cuh                |   54 -\\n src/trajectory/trajectory_tree.cuh                 |    9 -\\n tests/cellshard_access_adapter_compile_test.cc     |    2 +-\\n .../hierarchy_partition_boundary_test.cc           |    2 +-\\n tests/exact_search_runtime_test.cu                 |    2 +-\\n tests/geometry/alternating_refinement_test.cc      |    2 +-\\n tests/geometry/apply_plan_test.cu                  |    2 +-\\n tests/geometry/cell_block_records_cuda_test.cu     |    2 +-\\n tests/geometry/cell_block_records_test.cc          |    2 +-\\n tests/geometry/evaluator_test.cc                   |    2 +-\\n .../feature_weighted_row_reduction_cuda_test.cu    |    2 +-\\n .../feature_weighted_row_reduction_test.cc         |    2 +-\\n tests/geometry/format_test.cc                      |    4 +-\\n tests/geometry/gating_cuda_test.cu                 |    2 +-\\n tests/geometry/gating_test.cc                      |    2 +-\\n tests/geometry/hardware_cost_model_test.cc         |    2 +-\\n tests/geometry/inferred_packing_pipeline_test.cc   |   10 +-\\n tests/geometry/layout_metrics_test.cc              |    2 +-\\n tests/geometry/layout_selector_test.cc             |    2 +-\\n tests/geometry/local_cell_ordering_test.cu         |    2 +-\\n tests/geometry/matrix_view_test.cc                 |    2 +-\\n tests/geometry/merge_cost_test.cu                  |    2 +-\\n tests/geometry/optimizer_test.cc                   |    4 +-\\n .../persistence/execution_image_v2_device_test.cu  |    2 +-\\n .../persistence/execution_image_v2_test.cc         |    2 +-\\n tests/geometry/persistent_packing_payload_test.cu  |    4 +-\\n tests/geometry/planner_test.cc                     |    2 +-\\n tests/geometry/reconstruction_test.cc              |    2 +-\\n .../geometry/record_statistical_validation_test.cc |    2 +-\\n .../runtime_statistical_validation_test.cc         |    4 +-\\n tests/geometry/semantic_geometry_adapter_test.cc   |    2 +-\\n tests/geometry/statistical_validation_test.cc      |    2 +-\\n tests/geometry/tile_statistical_validation_test.cc |    2 +-\\n tests/geometry/warp_tiles_cuda_test.cu             |    2 +-\\n tests/geometry/warp_tiles_test.cc                  |    2 +-\\n .../executable_core_integration_test.cc            |    6 +-\\n tests/live/integration/wave_b_cuda_controller.json |    8 +-\\n .../integration/wave_b_sanitizer_controller.json   |    6 +-\\n tests/live/quantitative_forward_test.cu            |    6 +-\\n tests/math_core/builtin_catalog_test.cc            |    2 +-\\n tests/math_core/csr_fallback_candidate_test.cu     |    4 +-\\n tests/math_core/cusparse_csr_candidate_test.cu     |    2 +-\\n .../feature_major_small_n_candidate_test.cu        |   10 +-\\n tests/math_core/native_training_slice_test.cu      |    7 +-\\n tests/math_core/operation_core_test.cc             |    2 +-\\n tests/math_core/preparation_factory_test.cu        |    2 +-\\n tests/math_core/row_masked_n1_candidate_test.cu    |    2 +-\\n .../math_core/transpose_backward_candidate_test.cu |    6 +-\\n tests/persistence/ce_live_program_replay_test.cu   |    4 +-\\n tests/sequence/baseplane_integration_test.cu       |  842 -----\\n todo-status.md                                     |   13 +-\\n todos.md                                           |   13 +-\\n 270 files changed, 4276 insertions(+), 21868 deletions(-)\", \"git_head\": \"e02054fa103551c27f6a41907c49c6d923ce5777\", \"interfaces\": [], \"note\": \"Merged compute preprocessing kernels into canonical src/preprocess and Cellerator/preprocess, moved the ncurses workbench to tools/preprocess_workbench, and demoted model/trajectory orchestration to examples with forwarding compatibility headers. Extracted unchanged reusable graph primitives from private src/compute/graph into public compute/operators/graph so trajectory no longer reaches into private implementation. Registered preprocess/layout gates pass; preprocessing, trajectory, model, and workbench builds pass.\", \"resources\": [], \"task_id\": \"CE-REMAP-08\"}",
         "revision": 2333,
         "task_id": "CE-REMAP-08"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-28T10:37:29Z",
+        "id": "4660c0e7-41b3-407a-a849-b14f97b1d6db",
+        "kind": "complete",
+        "note": "Updated AGENTS.md, README.md, components/README.md, src/compute/README.md, current implementation, migration roadmap, repository consolidation program status, and ARCHITECTURE_FOLLOWUPS.md to teach the post-remap ownership. Build guidance now defaults to -j20. Canonical CE-LIVE replay, forward, concurrency, training, Wave A/B, sanitizer, and Tensor Core campaign scripts now accept CELLERATOR_BUILD_DIR (default build), use canonical generated/include/src/geometry library paths, and contain no build-dissolution-smoke or components/CellPack references. Full native graph built. The canonical replay, quantitative forward, concurrency, training, Wave A, and Wave B harnesses ran successfully without temporary source copies; Tensor Core campaign compiled from canonical candidate/operation paths.",
+        "payload_json": "{\"changed_owned_paths\": [\"AGENTS.md\", \"ARCHITECTURE_FOLLOWUPS.md\", \"README.md\", \"bench/ce_live/baseline/run_wave_a_cuda_suite.sh\", \"bench/ce_live/concurrency/run_concurrency_test.sh\", \"bench/ce_live/forward/run_quantitative_forward_test.sh\", \"bench/ce_live/replay/run_ce_live_program_replay_test.sh\", \"bench/ce_live/tensor_core/campaign/build_candidate_test.sh\", \"bench/ce_live/training/run_training_program_test.sh\", \"components/README.md\", \"docs/current_implementation.qmd\", \"docs/migration_roadmap.qmd\", \"src/compute/README.md\", \"tests/live/integration/run_wave_b_sanitizer.sh\", \"tests/live/integration/run_wave_b_suite.sh\"], \"checkpoints\": [], \"completion_commit\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"completion_gates\": [], \"completion_revision\": 2362, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 875 ++++++++++++++++++++-\\n AGENTS.md                                          |  16 +-\\n ARCHITECTURE_FOLLOWUPS.md                          |  27 +-\\n CMakeLists.txt                                     | 165 +---\\n README.md                                          |  27 +-\\n bench/ce_live/baseline/run_wave_a_cuda_suite.sh    |  17 +-\\n bench/ce_live/concurrency/run_concurrency_test.sh  |   8 +-\\n .../forward/run_quantitative_forward_test.sh       |   8 +-\\n .../replay/run_ce_live_program_replay_test.sh      |  10 +-\\n .../tensor_core/campaign/build_candidate_test.sh   |  20 +-\\n .../ce_live/training/run_training_program_test.sh  |   8 +-\\n .../feature_weighted_row_reduction_bench.cu        |   2 +-\\n bench/geometry/hardware_cost_autotune_bench.cu     |   2 +-\\n bench/quantized_transfer_spmm_bench.cu             |   4 +-\\n bench/sparse_ops_bench.cu                          |  10 +-\\n components/CelleraTorch/CMakeLists.txt             |   2 +-\\n .../CelleraTorch/src/quantize/quantize_cuda.cu     |   4 +-\\n components/README.md                               |  23 +-\\n docs/current_implementation.qmd                    |   7 +\\n docs/migration_roadmap.qmd                         |   6 +\\n examples/CMakeLists.txt                            |  25 +-\\n include/Cellerator/Cellerator.hh                   |   2 +-\\n .../Cellerator/compute/candidate/sparse/project.hh |   2 +-\\n include/Cellerator/compute/dataset.hh              | 137 +---\\n include/Cellerator/compute/operators/sparse/ops.hh |   4 +-\\n .../models/developmental_time/dT_dataloader.hh     |   4 +-\\n .../examples/models/state_reduce/stateReduce.hh    |   4 +-\\n include/Cellerator/preprocess/operations.cuh       | 390 +--------\\n include/Cellerator/preprocess/preprocess.cuh       |   2 +-\\n .../Cellerator/runtime/legacy_execution_context.hh | 161 +---\\n src/CMakeLists.txt                                 | 576 +-------------\\n src/abi/abi.cu                                     |   2 +-\\n src/compute/README.md                              |  26 +-\\n src/compute/candidate/sparse/project.cu            |   5 +-\\n src/compute/dataset/dataset.cc                     |   2 +-\\n src/compute/neighbors/scoring/cuvs_sharded_knn.cu  |   6 +-\\n .../operators/sparse/kernels/base_sparse.cu        |   5 +-\\n src/geometry/CMakeLists.txt                        |   4 +-\\n src/interop/cellshard/preprocess_session.cu        |   4 +-\\n src/planner/CMakeLists.txt                         | 250 ------\\n src/preprocess/preprocess_internal.cuh             |   2 +-\\n src/runtime/legacy/execution_context.cu            | 201 -----\\n src/runtime/legacy/reduce.cu                       | 297 -------\\n tests/dataset_runtime_test.cc                      |   2 +-\\n tests/developmental_time_runtime_test.cu           |   2 +-\\n .../developmental_time_trajectory_runtime_test.cu  |   2 +-\\n tests/live/integration/run_wave_b_sanitizer.sh     |   2 +-\\n tests/live/integration/run_wave_b_suite.sh         |   2 +-\\n tests/preprocess/qc_fleet_test.cu                  |   6 +-\\n tests/sparse_ops_runtime_test.cu                   |   5 +-\\n tests/state_reduce_runtime_test.cu                 |   2 +-\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n tools/CMakeLists.txt                               |  27 +-\\n 54 files changed, 1129 insertions(+), 2285 deletions(-)\", \"git_head\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"interfaces\": [], \"note\": \"Updated AGENTS.md, README.md, components/README.md, src/compute/README.md, current implementation, migration roadmap, repository consolidation program status, and ARCHITECTURE_FOLLOWUPS.md to teach the post-remap ownership. Build guidance now defaults to -j20. Canonical CE-LIVE replay, forward, concurrency, training, Wave A/B, sanitizer, and Tensor Core campaign scripts now accept CELLERATOR_BUILD_DIR (default build), use canonical generated/include/src/geometry library paths, and contain no build-dissolution-smoke or components/CellPack references. Full native graph built. The canonical replay, quantitative forward, concurrency, training, Wave A, and Wave B harnesses ran successfully without temporary source copies; Tensor Core campaign compiled from canonical candidate/operation paths.\", \"resources\": [], \"task_id\": \"CE-POST-REMAP-03\"}",
+        "revision": 2362,
+        "task_id": "CE-POST-REMAP-03"
       },
       {
         "claim_id": null,
@@ -40927,6 +41027,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"CE-ARCH-86-BUILD\", \"last_run_at\": \"2026-08-25T15:54:47Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-86-TEST\", \"last_run_at\": \"2026-08-25T15:54:47Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-86-DIFF\", \"last_run_at\": \"2026-08-25T15:54:47Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 469 ++++++++++++++++++++++++---------\\n Cellerator                             |   2 +-\\n ce-arch-continuation-plan.json         |   6 +-\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/ce-arch-00.md                    |   2 +-\\n todos/ce-arch-79.md                    |   2 +-\\n todos/ce-arch-80.md                    |   2 +-\\n todos/ce-arch-81.md                    |   2 +-\\n todos/ce-arch-82.md                    |   2 +-\\n todos/ce-arch-83.md                    |   2 +-\\n todos/ce-arch-84.md                    |   2 +-\\n todos/ce-arch-85.md                    |   2 +-\\n todos/ce-arch-86.md                    |   6 +-\\n todos/ce-arch-87.md                    |   2 +-\\n todos/ce-arch-88.md                    |   2 +-\\n todos/ce-arch-89.md                    |   2 +-\\n todos/ce-arch-90.md                    |   2 +-\\n todos/ce-arch-91.md                    |   2 +-\\n todos/ce-arch-92.md                    |   2 +-\\n 20 files changed, 369 insertions(+), 150 deletions(-)\", \"git_head\": \"25c87aa0e649fd51480db13aa3fcf89f0981bc62\", \"interfaces\": [], \"note\": \"Cellerator e119bf7; required build 2fb47c5f, diff b9256efa, focused test 5fc45ba4. Connected total-cost planning, bounded path measurement, cache invalidation, and order/conversion crossover proven.\", \"resources\": [], \"task_id\": \"CE-ARCH-86\"}",
         "revision": 1261,
         "task_id": "CE-ARCH-86"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-28T10:32:48Z",
+        "id": "af4b257e-860f-4b72-98f9-5b32ebdc1b86",
+        "kind": "complete",
+        "note": "Reduced root CMakeLists from 530 to 383 lines; root now owns configuration/toolchain/dependency discovery, one global CUDA-mode interface, subsystem fan-in, and install compatibility. Moved runtime, execution/ABI, compute, preprocess, interop, examples, tools, tests, and benchmarks into local ownership files; split planner validation targets into tests/ and bench/ ownership. Preserved all target names and aliases. Kept src/geometry/owned_targets.cmake as a geometry-owned focused fragment because the primary geometry CMake intentionally executes in add_subdirectory scope while the remap-era persistence/validation targets use root-relative paths; folding it would require a noisy path rewrite unrelated to behavior. Reconfigure passed and representative runtime, compute, preprocess, Baseplane, example, planner, geometry, benchmark, test, and workbench targets built with -j20.",
+        "payload_json": "{\"changed_owned_paths\": [\"CMakeLists.txt\", \"bench/CMakeLists.txt\", \"components/CelleraTorch/CMakeLists.txt\", \"examples/CMakeLists.txt\", \"src/CMakeLists.txt\", \"src/abi/abi.cu\", \"src/compute/candidate/sparse/project.cu\", \"src/compute/current_targets.cmake\", \"src/compute/dataset/dataset.cc\", \"src/compute/foundation_targets.cmake\", \"src/compute/neighbors/scoring/cuvs_sharded_knn.cu\", \"src/compute/operators/sparse/kernels/base_sparse.cu\", \"src/execution/CMakeLists.txt\", \"src/execution/legacy_abi_targets.cmake\", \"src/geometry/CMakeLists.txt\", \"src/interop/CMakeLists.txt\", \"src/interop/cellshard/preprocess_session.cu\", \"src/planner/CMakeLists.txt\", \"src/preprocess/CMakeLists.txt\", \"src/preprocess/preprocess_internal.cuh\", \"src/runtime/CMakeLists.txt\", \"src/runtime/legacy/execution_context.cu\", \"src/runtime/legacy/reduce.cu\", \"src/runtime/multi_gpu/fleet.cu\", \"src/runtime/multi_gpu/reduce.cu\", \"tests/CMakeLists.txt\", \"tools/CMakeLists.txt\"], \"checkpoints\": [], \"completion_commit\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"completion_gates\": [], \"completion_revision\": 2360, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 845 ++++++++++++++++++++-\\n CMakeLists.txt                                     | 165 +---\\n .../feature_weighted_row_reduction_bench.cu        |   2 +-\\n bench/geometry/hardware_cost_autotune_bench.cu     |   2 +-\\n bench/quantized_transfer_spmm_bench.cu             |   4 +-\\n bench/sparse_ops_bench.cu                          |   4 +-\\n components/CelleraTorch/CMakeLists.txt             |   2 +-\\n .../CelleraTorch/src/quantize/quantize_cuda.cu     |   4 +-\\n examples/CMakeLists.txt                            |  25 +-\\n include/Cellerator/Cellerator.hh                   |   2 +-\\n .../Cellerator/compute/candidate/sparse/project.hh |   2 +-\\n include/Cellerator/compute/dataset.hh              | 137 +---\\n include/Cellerator/compute/operators/sparse/ops.hh |   4 +-\\n .../models/developmental_time/dT_dataloader.hh     |   4 +-\\n .../examples/models/state_reduce/stateReduce.hh    |   4 +-\\n include/Cellerator/preprocess/operations.cuh       | 390 +---------\\n include/Cellerator/preprocess/preprocess.cuh       |   2 +-\\n .../Cellerator/runtime/legacy_execution_context.hh | 161 +---\\n src/CMakeLists.txt                                 | 576 +-------------\\n src/abi/abi.cu                                     |   2 +-\\n src/compute/candidate/sparse/project.cu            |   5 +-\\n src/compute/dataset/dataset.cc                     |   2 +-\\n src/compute/neighbors/scoring/cuvs_sharded_knn.cu  |   6 +-\\n .../operators/sparse/kernels/base_sparse.cu        |   5 +-\\n src/geometry/CMakeLists.txt                        |   4 +-\\n src/interop/cellshard/preprocess_session.cu        |   4 +-\\n src/planner/CMakeLists.txt                         | 250 ------\\n src/preprocess/preprocess_internal.cuh             |   2 +-\\n src/runtime/legacy/execution_context.cu            | 201 -----\\n src/runtime/legacy/reduce.cu                       | 297 --------\\n tests/dataset_runtime_test.cc                      |   2 +-\\n tests/developmental_time_runtime_test.cu           |   2 +-\\n .../developmental_time_trajectory_runtime_test.cu  |   2 +-\\n tests/preprocess/qc_fleet_test.cu                  |   6 +-\\n tests/sparse_ops_runtime_test.cu                   |   5 +-\\n tests/state_reduce_runtime_test.cu                 |   2 +-\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n tools/CMakeLists.txt                               |  27 +-\\n 39 files changed, 976 insertions(+), 2195 deletions(-)\", \"git_head\": \"812d8bcef51e40b4cfb0b05827ec075bdbef51c8\", \"interfaces\": [], \"note\": \"Reduced root CMakeLists from 530 to 383 lines; root now owns configuration/toolchain/dependency discovery, one global CUDA-mode interface, subsystem fan-in, and install compatibility. Moved runtime, execution/ABI, compute, preprocess, interop, examples, tools, tests, and benchmarks into local ownership files; split planner validation targets into tests/ and bench/ ownership. Preserved all target names and aliases. Kept src/geometry/owned_targets.cmake as a geometry-owned focused fragment because the primary geometry CMake intentionally executes in add_subdirectory scope while the remap-era persistence/validation targets use root-relative paths; folding it would require a noisy path rewrite unrelated to behavior. Reconfigure passed and representative runtime, compute, preprocess, Baseplane, example, planner, geometry, benchmark, test, and workbench targets built with -j20.\", \"resources\": [], \"task_id\": \"CE-POST-REMAP-02\"}",
+        "revision": 2360,
+        "task_id": "CE-POST-REMAP-02"
       },
       {
         "claim_id": null,
@@ -41922,6 +42032,48 @@
         "id": "CE-PLANNING-BOUNDARY",
         "rule": "This recovery revision changes only todo-orchestrator planning state; CellShard, implementation, CMake, tests, benchmarks, runtime behavior, Git pointers, commits, pushes, claims, and resource leases remain untouched.",
         "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-CELLSHARD",
+        "rule": "CellShard owns storage and neutral delivery metadata while Cellerator owns execution resources, collective policy, topology, scheduling, and Cellerator-specific placement.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-CMAKE",
+        "rule": "Root CMake remains configuration-oriented, public targets and aliases remain stable unless proven unused, and CUDA targets do not consume module BMIs.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-DOCS",
+        "rule": "Authority documentation tells the post-remap truth, historical records remain historical, GlassHelix remains unfrozen, and canonical CE-LIVE harnesses require no temporary source edits.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-RUNTIME",
+        "rule": "Cellerator runtime is the sole native runtime authority; compatibility runtime use is explicit and current core does not depend on it accidentally.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-SEMANTICS",
+        "rule": "Preserve frozen CE-ARCH and CE-LIVE contracts, numerical behavior, and current canonical physical ownership.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-POST-VALIDATION",
+        "rule": "Validation distinguishes regressions from environment limits, current native targets do not link CP-Math v1 evidence, the reverse CellShard runtime dependency is absent, and both repositories finish committed, pushed, and clean.",
+        "scope_json": "{\"program\": \"CE-POST-REMAP\"}",
         "severity": "error"
       },
       {
@@ -45964,6 +46116,391 @@
         "mode": "read",
         "path": "tests",
         "task_id": "CE-LIVE-45"
+      },
+      {
+        "mode": "exclusive",
+        "path": "ARCHITECTURE_FOLLOWUPS.md",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cellerator-post-remap-plan.json",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "components/CelleraTorch",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "examples",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/interop/cellshard",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/preprocess",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/runtime",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/abi",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/interop/cellshard",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/preprocess",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/runtime",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "cmake",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "docs",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "modules",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "read",
+        "path": "scope.md",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "compat/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "components/CelleraTorch/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "examples/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tools/CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "components",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "docs",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "examples",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "include",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "read",
+        "path": "tools",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "AGENTS.md",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "ARCHITECTURE_FOLLOWUPS.md",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "README.md",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench/ce_live",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "components/README.md",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "scripts",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/README.md",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/live",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "components",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "examples",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "include",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "modules",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "read",
+        "path": "tools",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".todo-orchestrator",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench/repository_remap/post_remap",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cellerator-post-remap-plan.json",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/REPOSITORY_CONSOLIDATION_PROGRAM.md",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/current_implementation.qmd",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/migration_roadmap.qmd",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-status.md",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todos.md",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "cmake",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "components",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "docs",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "examples",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "include",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "modules",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "scripts",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "mode": "read",
+        "path": "tools",
+        "task_id": "CE-POST-REMAP-04"
       },
       {
         "mode": "read",
@@ -51125,6 +51662,50 @@
         "prerequisite_task_id": "CE-REMAP-09",
         "task_id": "CE-REMAP-10",
         "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"state\": \"done\"}",
+        "decision_id": null,
+        "id": 5033,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-POST-REMAP-01",
+        "task_id": "CE-POST-REMAP-02",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"state\": \"done\"}",
+        "decision_id": null,
+        "id": 5034,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-POST-REMAP-01",
+        "task_id": "CE-POST-REMAP-03",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"state\": \"done\"}",
+        "decision_id": null,
+        "id": 5035,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-POST-REMAP-02",
+        "task_id": "CE-POST-REMAP-04",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"state\": \"done\"}",
+        "decision_id": null,
+        "id": 5036,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-POST-REMAP-03",
+        "task_id": "CE-POST-REMAP-04",
+        "type": "task"
       }
     ],
     "task_invariants": [
@@ -53295,6 +53876,58 @@
       {
         "invariant_id": "CE-LIVE-TORCH",
         "task_id": "CE-LIVE-45"
+      },
+      {
+        "invariant_id": "CE-POST-CELLSHARD",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "invariant_id": "CE-POST-RUNTIME",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "invariant_id": "CE-POST-SEMANTICS",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "invariant_id": "CE-POST-CMAKE",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "invariant_id": "CE-POST-SEMANTICS",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "invariant_id": "CE-POST-DOCS",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "invariant_id": "CE-POST-SEMANTICS",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "invariant_id": "CE-POST-CELLSHARD",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "invariant_id": "CE-POST-CMAKE",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "invariant_id": "CE-POST-DOCS",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "invariant_id": "CE-POST-RUNTIME",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "invariant_id": "CE-POST-SEMANTICS",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
+        "invariant_id": "CE-POST-VALIDATION",
+        "task_id": "CE-POST-REMAP-04"
       },
       {
         "invariant_id": "CE-REMAP-AUTHORITY",
@@ -55744,6 +56377,106 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_git_head": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_revision": 2358,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-01",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Verify the landed CellShard neutral API, classify all runtime and CellShard consumers, then perform only bounded current-core migrations.",
+        "notes": "",
+        "objective": "Consume the independently landed CellShard neutral distributed API, remove the Cellerator-to-CellShard-to-Cellerator runtime cycle, classify every legacy runtime consumer, migrate current core consumers that require only bounded adaptation, and keep genuine compatibility users explicitly scoped.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 400,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
+        "revision": 2358,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Eliminate the CellShard cycle and finish runtime and seam cleanup",
+        "updated_at": "2026-08-28T10:27:52Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_git_head": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_revision": 2360,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-02",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Move target definitions conservatively by source ownership and keep subsystem fan-in explicit.",
+        "notes": "",
+        "objective": "Move implementation, test, benchmark, example, and tool target definitions to sensible subsystem-local CMake files while preserving target names, aliases, options, and runtime behavior.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 300,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
+        "revision": 2360,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Localize CMake ownership",
+        "updated_at": "2026-08-28T10:32:48Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_git_head": "812d8bcef51e40b4cfb0b05827ec075bdbef51c8",
+        "completion_revision": 2362,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-03",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Update stale authority documents and parameterize the canonical CE-LIVE harness paths.",
+        "notes": "",
+        "objective": "Teach the post-remap repository map in authoritative documentation and make canonical CE-LIVE harnesses accept or discover the configured build and geometry locations without temporary patched copies.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 290,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
+        "revision": 2362,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Correct authoritative documentation and repair CE-LIVE harnesses",
+        "updated_at": "2026-08-28T10:37:29Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-04",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.",
+        "notes": "",
+        "objective": "Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": null,
+        "priority": 200,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
+        "revision": 2363,
+        "status": "in_progress",
+        "tags_json": "[]",
+        "title": "Clean validation and workflow reconciliation",
+        "updated_at": "2026-08-28T10:37:38Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -57220,6 +57953,102 @@
     ],
     "workflow_context_fragments": [
       {
+        "content_hash": "652dcbb052dc6e01ef3413debbdb82fa91bba2a9dc8c2ef69eda02a0e977aa77",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-POST-REMAP-01\",\"CE-POST-REMAP-02\",\"CE-POST-REMAP-03\",\"CE-POST-REMAP-04\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:lane_brief:CE-POST-REMAP-MAIN:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-POST-REMAP-MAIN\",\"run_id\":\"CE-POST-REMAP-RUN\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "263a8c9256890c177df10656cbed8502831c9ff2fc5b56401609d380f6435996",
+        "content_json": "{\"acceptance_conditions\":[\"The Cellerator-to-CellShard-to-Cellerator cycle is absent.\",\"Cellerator runtime is the sole current native runtime authority.\",\"CMake ownership and authoritative documentation match the repository.\",\"Canonical CE-LIVE harnesses and complete validation pass without temporary source substitutions.\"],\"boundaries\":[\"No redesign of operation core, planner, execution image, geometry compiler, biological ABI, execution session, projection model, or CE-LIVE behavior.\",\"No cellpack namespace rename and no speculative GlassHelix contract.\",\"No CUDA rewrite and no module imports from CUDA translation units.\",\"CellShard lands its reverse-dependency removal independently before Cellerator consumes it.\"],\"objective\":\"Complete only the bounded post-remap defects while preserving the canonical physical architecture and frozen execution semantics.\"}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"CE-POST-REMAP-RUN\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "e3490ca6f3370230d7cb546b43573d07077064f153e177ed6376a7973f02fd61",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Verify the landed CellShard neutral API, classify all runtime and CellShard consumers, then perform only bounded current-core migrations.\",\"objective\":\"Consume the independently landed CellShard neutral distributed API, remove the Cellerator-to-CellShard-to-Cellerator runtime cycle, classify every legacy runtime consumer, migrate current core consumers that require only bounded adaptation, and keep genuine compatibility users explicitly scoped.\",\"scope\":{\"exclusive_paths\":[\"cellerator-post-remap-plan.json\",\"CMakeLists.txt\",\"include/Cellerator/runtime\",\"include/Cellerator/interop/cellshard\",\"include/Cellerator/preprocess\",\"include/Cellerator/compute\",\"src/runtime\",\"src/interop/cellshard\",\"src/preprocess\",\"src/compute\",\"src/abi\",\"components/CelleraTorch\",\"examples\",\"tests\",\"bench\",\"ARCHITECTURE_FOLLOWUPS.md\",\"docs/REPOSITORY_CONSOLIDATION_PROGRAM.md\"],\"read_paths\":[\"AGENTS.md\",\"scope.md\",\"docs\",\"compat\",\"modules\",\"cmake\"]},\"tests\":[]}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:task_brief:CE-POST-REMAP-MAIN:CE-POST-REMAP-01:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-POST-REMAP-MAIN\",\"run_id\":\"CE-POST-REMAP-RUN\",\"task_id\":\"CE-POST-REMAP-01\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": "CE-POST-REMAP-01",
+        "version": 1
+      },
+      {
+        "content_hash": "6c45b7904763a3aa608249c7aed77cde9cebbc8e2fede3d6a1677eec389a9d0c",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Move target definitions conservatively by source ownership and keep subsystem fan-in explicit.\",\"objective\":\"Move implementation, test, benchmark, example, and tool target definitions to sensible subsystem-local CMake files while preserving target names, aliases, options, and runtime behavior.\",\"scope\":{\"exclusive_paths\":[\"CMakeLists.txt\",\"src\",\"tests/CMakeLists.txt\",\"bench/CMakeLists.txt\",\"examples/CMakeLists.txt\",\"tools/CMakeLists.txt\",\"compat/CMakeLists.txt\",\"components/CelleraTorch/CMakeLists.txt\"],\"read_paths\":[\"include\",\"tests\",\"bench\",\"examples\",\"tools\",\"components\",\"docs\"]},\"tests\":[]}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:task_brief:CE-POST-REMAP-MAIN:CE-POST-REMAP-02:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-POST-REMAP-MAIN\",\"run_id\":\"CE-POST-REMAP-RUN\",\"task_id\":\"CE-POST-REMAP-02\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": "CE-POST-REMAP-02",
+        "version": 1
+      },
+      {
+        "content_hash": "ff2c9f707b562cacfbe6bd315fc573a19ddd03b18b0d70fb88abfbd4cdbc5f93",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Update stale authority documents and parameterize the canonical CE-LIVE harness paths.\",\"objective\":\"Teach the post-remap repository map in authoritative documentation and make canonical CE-LIVE harnesses accept or discover the configured build and geometry locations without temporary patched copies.\",\"scope\":{\"exclusive_paths\":[\"AGENTS.md\",\"README.md\",\"components/README.md\",\"src/compute/README.md\",\"docs\",\"ARCHITECTURE_FOLLOWUPS.md\",\"scripts\",\"tests/live\",\"bench/ce_live\"],\"read_paths\":[\"include\",\"src\",\"components\",\"examples\",\"tools\",\"compat\",\"modules\",\"CMakeLists.txt\"]},\"tests\":[]}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:task_brief:CE-POST-REMAP-MAIN:CE-POST-REMAP-03:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-POST-REMAP-MAIN\",\"run_id\":\"CE-POST-REMAP-RUN\",\"task_id\":\"CE-POST-REMAP-03\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": "CE-POST-REMAP-03",
+        "version": 1
+      },
+      {
+        "content_hash": "24d4a3b860edcf1bb55c7b81e175410f0306aa8d7e1b6ecd853a9980a1306f73",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.\",\"objective\":\"Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.\",\"scope\":{\"exclusive_paths\":[\"bench/repository_remap/post_remap\",\"docs/current_implementation.qmd\",\"docs/migration_roadmap.qmd\",\"docs/REPOSITORY_CONSOLIDATION_PROGRAM.md\",\"cellerator-post-remap-plan.json\",\".todo-orchestrator\",\"todo-status.md\",\"todos.md\"],\"read_paths\":[\"AGENTS.md\",\"CMakeLists.txt\",\"include\",\"src\",\"components\",\"compat\",\"examples\",\"tools\",\"modules\",\"tests\",\"bench\",\"docs\",\"scripts\",\"cmake\"]},\"tests\":[]}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "id": "CE-POST-REMAP-RUN:task_brief:CE-POST-REMAP-MAIN:CE-POST-REMAP-04:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-POST-REMAP-MAIN\",\"run_id\":\"CE-POST-REMAP-RUN\",\"task_id\":\"CE-POST-REMAP-04\"}",
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_by": null,
+        "task_id": "CE-POST-REMAP-04",
+        "version": 1
+      },
+      {
         "content_hash": "b6728c71a0d73d57fdb1d15bef25c35bcded1563a8297fb38f7f8a00ec33d973",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-REMAP-01\",\"CE-REMAP-02\",\"CE-REMAP-03\",\"CE-REMAP-04\",\"CE-REMAP-05\",\"CE-REMAP-06\",\"CE-REMAP-07\",\"CE-REMAP-08\",\"CE-REMAP-09\",\"CE-REMAP-10\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-08-28T07:20:09Z",
@@ -57415,6 +58244,46 @@
     "workflow_integration_queue": [],
     "workflow_lane_tasks": [
       {
+        "activated_at": "2026-08-28T10:18:55Z",
+        "completed_at": "2026-08-28T10:27:52Z",
+        "enqueued_at": "2026-08-28T10:09:51Z",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "position": 0,
+        "revision": 2358,
+        "state": "completed",
+        "task_id": "CE-POST-REMAP-01"
+      },
+      {
+        "activated_at": "2026-08-28T10:27:56Z",
+        "completed_at": "2026-08-28T10:32:48Z",
+        "enqueued_at": "2026-08-28T10:09:51Z",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "position": 1,
+        "revision": 2360,
+        "state": "completed",
+        "task_id": "CE-POST-REMAP-02"
+      },
+      {
+        "activated_at": "2026-08-28T10:32:53Z",
+        "completed_at": "2026-08-28T10:37:29Z",
+        "enqueued_at": "2026-08-28T10:09:51Z",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "position": 2,
+        "revision": 2362,
+        "state": "completed",
+        "task_id": "CE-POST-REMAP-03"
+      },
+      {
+        "activated_at": "2026-08-28T10:37:38Z",
+        "completed_at": null,
+        "enqueued_at": "2026-08-28T10:09:51Z",
+        "lane_id": "CE-POST-REMAP-MAIN",
+        "position": 3,
+        "revision": 2363,
+        "state": "active",
+        "task_id": "CE-POST-REMAP-04"
+      },
+      {
         "activated_at": "2026-08-28T07:20:20Z",
         "completed_at": "2026-08-28T07:21:56Z",
         "enqueued_at": "2026-08-28T07:20:09Z",
@@ -57518,6 +58387,18 @@
     "workflow_lanes": [
       {
         "context_cursor": 0,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-MAIN",
+        "parent_lane_id": null,
+        "revision": 2363,
+        "role": "implementer",
+        "run_id": "CE-POST-REMAP-RUN",
+        "state": "active",
+        "updated_at": "2026-08-28T10:37:38Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-08-28T07:20:09Z",
         "id": "compat-v2-main",
         "parent_lane_id": null,
@@ -57539,6 +58420,16 @@
     "workflow_rendezvous_participants": [],
     "workflow_run_charters": [
       {
+        "content_hash": "263a8c9256890c177df10656cbed8502831c9ff2fc5b56401609d380f6435996",
+        "content_json": "{\"acceptance_conditions\":[\"The Cellerator-to-CellShard-to-Cellerator cycle is absent.\",\"Cellerator runtime is the sole current native runtime authority.\",\"CMake ownership and authoritative documentation match the repository.\",\"Canonical CE-LIVE harnesses and complete validation pass without temporary source substitutions.\"],\"boundaries\":[\"No redesign of operation core, planner, execution image, geometry compiler, biological ABI, execution session, projection model, or CE-LIVE behavior.\",\"No cellpack namespace rename and no speculative GlassHelix contract.\",\"No CUDA rewrite and no module imports from CUDA translation units.\",\"CellShard lands its reverse-dependency removal independently before Cellerator consumes it.\"],\"objective\":\"Complete only the bounded post-remap defects while preserving the canonical physical architecture and frozen execution semantics.\"}",
+        "created_at": "2026-08-28T10:09:51Z",
+        "creation_revision": 2356,
+        "run_id": "CE-POST-REMAP-RUN",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "2b28d276d628c113f56c7eb8ebd58988af73b54fdb13155f60ff4db4a74e4b98",
         "content_json": "{\"acceptance_conditions\":[],\"boundaries\":[\"Compatibility run normalized from plan schema v2\"],\"glossary\":{\"lane\":\"single serial compatibility lane\"},\"invariants\":[],\"objective\":\"CE-REMAP\"}",
         "created_at": "2026-08-28T07:20:09Z",
@@ -57550,6 +58441,16 @@
       }
     ],
     "workflow_runs": [
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-08-28T10:09:51Z",
+        "id": "CE-POST-REMAP-RUN",
+        "revision": 2356,
+        "root_task_id": "CE-POST-REMAP-01",
+        "status": "active",
+        "updated_at": "2026-08-28T10:09:51Z"
+      },
       {
         "active_charter_version": 1,
         "completed_at": null,

@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
 

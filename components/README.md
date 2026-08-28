@@ -1,22 +1,14 @@
 # Cellerator Components
 
-`components/` contains tightly coupled Cellerator subsystems whose build or dependency boundary is useful to keep distinct.
+`components/` contains optional framework integrations whose dependency
+boundary is useful to keep distinct. CelleraTorch is currently its only major
+inhabitant.
 
 A component is not automatically conceptually outside Cellerator.
 
-## CellPack
-
-`components/CellPack/` is the current home of Cellerator's biological geometry compiler and the CP-BP v1 implementation.
-
-CellPack is part of the Cellerator architecture. It observes biological sparse structure, produces semantic execution geometry, constructs and validates physical execution images, and supplies statistics used by the core planner.
-
-Its current location is transitional. Stable domain, geometry, structure, and projection contracts may move into the canonical `include/Cellerator/` and `src/` trees as the core ABI settles.
-
-Read:
-
-- `components/CellPack/AGENTS.md`
-- `docs/cellpack_cp_bp.qmd`
-- `docs/core_execution_cp_math.qmd`
+CellPack is not a component. The CellPack/CP-BP biological geometry compiler is
+owned by `include/Cellerator/geometry/` and `src/geometry/`. Historical
+`CellPack::` targets and `include/CellPack/` paths are compatibility surfaces.
 
 ## CelleraTorch
 
@@ -33,4 +25,5 @@ It must not redefine Cellerator's native math, structure ownership, planner, exe
 
 ## Component rule
 
-Components depend on Cellerator contracts. They do not create competing numerical ecosystems.
+Components depend on Cellerator contracts. They do not create competing
+numerical ecosystems or own native planning, runtime, geometry, or math.

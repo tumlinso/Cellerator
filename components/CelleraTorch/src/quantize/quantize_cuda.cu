@@ -1,6 +1,6 @@
 #include <CelleraTorch/quantize.hh>
 
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 
 #include <ATen/cuda/CUDAContext.h>
@@ -8,7 +8,7 @@
 
 namespace celleratorch::quantize::detail {
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 
 namespace {

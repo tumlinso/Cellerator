@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
+configured_build=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
 build_dir=/tmp/cellerator-ce-live-34
 cuda_root=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
 nvcc="$cuda_root/bin/nvcc"
@@ -13,9 +14,8 @@ common=(
     -DCELLSHARD_CUDA_MODE_GENERIC=1
     -DCELLSHARD_CUDA_MODE_NATIVE=0
     -DCELLSHARD_CUDA_MODE_NATIVE_EXTREME=0
-    -I"$repo_root/build-dissolution-smoke/generated"
+    -I"$configured_build/generated"
     -I"$repo_root/include"
-    -I"$repo_root/components/CellPack/include"
     -I"$repo_root"
     -I"/home/tumlinson/CellShard/include"
     -O2 -std=c++17
@@ -30,9 +30,9 @@ if [[ ${1:-} != --run-only ]]; then
         -o "$build_dir/replay_test.o"
     /usr/bin/c++ "$build_dir/program.o" "$build_dir/replay_test.o" \
         -o "$build_dir/ce_live_program_replay_test" \
-        -L"$repo_root/build-dissolution-smoke" \
-        -L"$repo_root/build-dissolution-smoke/components/CellPack" \
-        -L"$repo_root/build-dissolution-smoke/CellShard" \
+        -L"$configured_build" \
+        -L"$configured_build/src/geometry" \
+        -L"$configured_build/CellShard" \
         -L"$cuda_root/targets/x86_64-linux/lib" \
         -L"$cuda_root/../../math_libs/12.9/lib64" \
         -Wl,-rpath,"$cuda_root/targets/x86_64-linux/lib:$cuda_root/../../math_libs/12.9/lib64" \

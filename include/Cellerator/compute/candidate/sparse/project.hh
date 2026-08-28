@@ -6,7 +6,7 @@
 
 namespace cellerator::compute::sparse::project {
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 
 void csr_spmm_fwd_f16_f32(

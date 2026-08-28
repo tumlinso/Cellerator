@@ -10,6 +10,12 @@ It is not a demand for a clean-slate rewrite. It is a sequence of compatibility
 layers, contract changes, measured kernel additions, and controlled retirement
 of superseded assumptions.
 
+The CE-REMAP physical consolidation is complete. Geometry, runtime, compute,
+planner, preprocessing, interop, examples, components, and compatibility code
+now have their canonical physical owners. The phases below remain a semantic
+migration roadmap where their exit criteria are not already satisfied; they
+must not be read as instructions to recreate pre-remap source islands.
+
 The migration has one governing rule:
 
 > Stabilize identities and lifetimes before multiplying physical formats,

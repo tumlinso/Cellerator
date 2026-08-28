@@ -78,7 +78,7 @@ Implemented and valuable:
 - a checksum-pinned quantitative PBMC3K forward path, bounded N=16 training path, CPE2/CPEXEC01 replay, and runtime-only asynchronous value-generation readiness contract under CE-LIVE;
 - a thin CelleraTorch native adapter with lifetime-bound zero-copy views, current-stream forward dispatch, bounded native autograd/readiness integration, and quantitative native-versus-adapter validation;
 - CSR, SELL, Blocked-ELL, quantized sparse, preprocessing, model, trajectory, distributed, and framework-adapter code that remains useful as implementation evidence and fallback machinery;
-- a retained experimental CP-Math v1 surface under `include/Cellerator/compute/math/` and `src/compute/math/`, used only as compatibility evidence and migration input;
+- retained CP-Math v1 evidence under `compat/cp_math_v1/`, with forwarding compatibility headers under `include/Cellerator/compute/math/`;
 - Baseplane packed sequence, bit-plane, motif-scan, count, mask, and compact-event primitives.
 
 Not yet the end-state core:
@@ -456,11 +456,13 @@ Operation contracts, planners, projections, prepared operations, runtime session
 
 Do not create another independent runtime context when the existing Cellerator session can own the resource.
 
-### CellPack
+### Geometry and CellPack
 
-CellPack currently lives under `components/CellPack/`. New work must follow `components/CellPack/AGENTS.md`.
-
-Long term, its compiler-facing semantic contracts may move into canonical Cellerator include and source trees. Do not use the current component location as evidence that CellPack is conceptually outside Cellerator.
+CellPack and CP-BP are the biological geometry compiler. Their authoritative
+implementation lives under `include/Cellerator/geometry/` and `src/geometry/`.
+The `cellpack` namespace, `include/CellPack/` forwarding headers, and
+`CellPack::` CMake aliases are compatibility surfaces, not alternate ownership.
+New geometry compilation work belongs in the canonical geometry trees.
 
 ### Baseplane
 
@@ -509,7 +511,7 @@ Configure:
 
 ```bash
 cmake -S . -B build
-cmake --build build -j 4
+cmake --build build -j 20
 ```
 
 This default build is native Cellerator and does not discover Torch.
@@ -518,7 +520,7 @@ The retained framework compatibility build is explicit:
 
 ```bash
 cmake -S . -B build-compat -DCELLERATOR_ENABLE_TORCH_MODELS=ON
-cmake --build build-compat -j 4
+cmake --build build-compat -j 20
 ```
 
 Cellerator currently requires CUDA and resolves sibling CellShard and Baseplane source trees before installed packages.

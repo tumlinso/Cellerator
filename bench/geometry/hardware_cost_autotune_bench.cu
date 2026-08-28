@@ -362,7 +362,7 @@ measured_pair measure_case(host_case host, const std::vector<compute_t> &weights
         check_status(cp::evaluate_feature_weighted_row_reduction_tiles_cuda(
             input, order, buffers, stream, &result), "launch packed reduction");
     });
-    cellerator::compute::runtime::execution_context ctx;
+    cellerator::runtime::execution_context ctx;
     ctx.device = 0;
     ctx.stream = stream;
     measured.csr_time = time_cuda(stream, [&] {

@@ -1,4 +1,5 @@
 #include <Cellerator/compute/candidate/sparse/project.hh>
+#include <Cellerator/matrix/blocked_ell.cuh>
 #include "../../operators/sparse/primitives/common.cuh"
 #include <Cellerator/quantized/dispatch.cuh>
 #include <Cellerator/quantized/metadata.cuh>
@@ -13,7 +14,9 @@ namespace {
 constexpr int kValueThreads = 256;
 constexpr int kSpmmColsThreads = 128;
 
-namespace cs = ::cellshard;
+namespace cs {
+namespace sparse = ::cellerator::matrix;
+}
 namespace primitives = ::cellerator::compute::sparse::ops::primitives;
 
 inline void cusparse_require_(cusparseStatus_t status, const char *label) {

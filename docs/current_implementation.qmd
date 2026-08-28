@@ -23,6 +23,13 @@ non-promotion, and the CelleraTorch validation audit. The 2026-08-28 remap
 changes physical ownership and build organization without changing those
 semantic contracts.
 
+The bounded post-remap completion pass then removed the CellShard reverse
+runtime dependency, promoted the remaining fleet/reduction machinery into
+`runtime/multi_gpu`, narrowed CellShard-backed public adapters under
+`interop/cellshard`, and localized CMake target ownership. Compatibility names
+remain available, but normal native targets no longer depend on the historical
+`cellerator_compute_runtime` name.
+
 ## Repository-wide state
 
 The repository now gives those generations distinct physical roles:

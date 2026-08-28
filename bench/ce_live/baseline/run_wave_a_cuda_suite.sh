@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-./build-dissolution-smoke/celleratorExecutionSessionTest
-./build-dissolution-smoke/cellPackExecutionImageV2DeviceTest
-./build-dissolution-smoke/celleratorRowMaskedN1CandidateTest
-./build-dissolution-smoke/celleratorCsrFallbackCandidateTest
-./build-dissolution-smoke/celleratorFeatureMajorSmallNCandidateTest
-./build-dissolution-smoke/celleratorTransposeBackwardCandidateTest
-./build-dissolution-smoke/celleratorValueGenerationReuseTest
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
+build_root=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
+
+"$build_root/celleratorExecutionSessionTest"
+"$build_root/cellPackExecutionImageV2DeviceTest"
+"$build_root/celleratorRowMaskedN1CandidateTest"
+"$build_root/celleratorCsrFallbackCandidateTest"
+"$build_root/celleratorFeatureMajorSmallNCandidateTest"
+"$build_root/celleratorTransposeBackwardCandidateTest"
+"$build_root/celleratorValueGenerationReuseTest"

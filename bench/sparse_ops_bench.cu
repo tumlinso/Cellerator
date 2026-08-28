@@ -1,7 +1,7 @@
-#include <Cellerator/runtime/legacy_execution_context.hh>
+#include <Cellerator/runtime/multi_gpu/fleet.cuh>
 #include <Cellerator/compute/operators/sparse/ops.hh>
 #include <Cellerator/compute/candidate/sparse/project.hh>
-#include <CellShard/formats/blocked_ell.cuh>
+#include <Cellerator/matrix/blocked_ell.cuh>
 #include "benchmark_mutex.hh"
 #include "cellerator_cuda_mode.hh"
 
@@ -18,10 +18,12 @@
 #include <string>
 #include <vector>
 
-namespace runtime = ::cellerator::compute::runtime;
+namespace runtime = ::cellerator::runtime;
 namespace sparse_ops = ::cellerator::compute::sparse::ops;
 namespace sparse_project = ::cellerator::compute::sparse::project;
-namespace cs = ::cellshard;
+namespace cs {
+namespace sparse = ::cellerator::matrix;
+}
 
 namespace {
 

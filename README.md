@@ -144,16 +144,26 @@ See [Current implementation](docs/current_implementation.qmd) for the audited st
 
 ```text
 include/Cellerator/
-    public ABI, matrix, runtime, quantized, interop, and compute contracts
+    execution, runtime, geometry, compute, planner, preprocess, and interop contracts
 
 src/
-    compiled runtime, compute, preprocessing, models, trajectory, and support
+    authoritative execution, runtime, geometry, compute, planner, preprocess,
+    and interop implementation
 
-components/CellPack/
-    CP-BP compiler, native tiles, validation, persistence, tests, and benchmarks
+compat/
+    CP-Math v1, legacy sparse, and legacy C API evidence/compatibility
 
 components/CelleraTorch/
-    Torch and libtorch adapter
+    optional Torch and libtorch adapter
+
+examples/
+    model and trajectory orchestration workloads
+
+tools/
+    preprocessing workbench and developer applications
+
+modules/
+    host-only C++20 semantic-boundary proof infrastructure
 
 tests/
     repository-level compile and runtime checks
@@ -165,7 +175,8 @@ docs/
     authoritative architecture, performance, and migration documentation
 ```
 
-The current location of CellPack under `components/` is organizational, not conceptual. CellPack is part of Cellerator's core architecture.
+CellPack is part of Cellerator's core geometry architecture. Its historical
+namespace and aliases remain compatible, while its physical home is geometry.
 
 ## Build
 
@@ -174,7 +185,7 @@ does not discover Torch:
 
 ```bash
 cmake -S . -B build
-cmake --build build -j 4
+cmake --build build -j 20
 ```
 
 The retained CelleraTorch compatibility build is explicit:
@@ -182,7 +193,7 @@ The retained CelleraTorch compatibility build is explicit:
 ```bash
 cmake -S . -B build-compat \
   -DCELLERATOR_ENABLE_TORCH_MODELS=ON
-cmake --build build-compat -j 4
+cmake --build build-compat -j 20
 ```
 
 The source build resolves dependencies in this order:

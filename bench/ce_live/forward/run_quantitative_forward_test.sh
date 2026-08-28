@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
+configured_build=${CELLERATOR_BUILD_DIR:-"$repo_root/build"}
 build_dir=/tmp/cellerator-ce-live-31
 cuda_root=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9
 nvcc="$cuda_root/bin/nvcc"
@@ -16,9 +17,8 @@ python "$repo_root/bench/ce_live/forward/prepare_pbmc3k_fixture.py" \
 
 common=(
     -ccbin=/usr/bin/g++-12
-    -I"$repo_root/build-dissolution-smoke/generated"
+    -I"$configured_build/generated"
     -I"$repo_root/include"
-    -I"$repo_root/components/CellPack/include"
     -I"$repo_root"
     -O2
     -std=c++17
@@ -34,8 +34,8 @@ if [[ ${1:-} != --run-only ]]; then
     /usr/bin/c++ "$build_dir/program.o" \
         "$build_dir/quantitative_forward_test.o" \
         -o "$build_dir/quantitative_forward_test" \
-        -L"$repo_root/build-dissolution-smoke" \
-        -L"$repo_root/build-dissolution-smoke/components/CellPack" \
+        -L"$configured_build" \
+        -L"$configured_build/src/geometry" \
         -L"$cuda_root/targets/x86_64-linux/lib" \
         -L"$cuda_root/../../math_libs/12.9/lib64" \
         -Wl,-rpath,"$cuda_root/targets/x86_64-linux/lib:$cuda_root/../../math_libs/12.9/lib64" \

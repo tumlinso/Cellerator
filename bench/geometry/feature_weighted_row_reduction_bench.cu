@@ -333,7 +333,7 @@ void run_case(const cp::frozen_packing_plan &plan, host_case host,
             input, order, buffers, stream, &result), "launch packed reduction");
     });
 
-    cellerator::compute::runtime::execution_context ctx;
+    cellerator::runtime::execution_context ctx;
     ctx.device = 0;
     ctx.stream = stream;
     const auto csr_timing = time_cuda(stream, [&] {
