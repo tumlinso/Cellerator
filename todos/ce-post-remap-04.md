@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-POST-REMAP-04: Clean validation and workflow reconciliation
 
-Task revision: `2363`; current project revision is in `todo-status.md`.
+Task revision: `2364`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.

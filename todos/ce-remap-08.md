@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-08: Consolidate preprocessing and demote orchestration
 
-Task revision: `2333`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Merge preprocessing islands, move the workbench to tools, and move model and trajectory orchestration to examples after extracting only genuinely reusable native primitives.

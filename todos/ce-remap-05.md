@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-05: Separate modern compute authority from compatibility evidence
 
-Task revision: `2311`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Promote authoritative operation, projection, candidate, operator, and training implementation; quarantine CP-Math v1 and legacy sparse API evidence without rewriting kernels or algorithms.

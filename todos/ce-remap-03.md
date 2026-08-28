@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-03: Foundational state and execution border inventory
 
-Task revision: `2286`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.

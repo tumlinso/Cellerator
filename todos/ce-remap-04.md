@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-04: Consolidate CellPack and CP-BP into geometry
 
-Task revision: `2292`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Move validated CellPack and related packing/discovery implementation into canonical geometry ownership, preserve namespaces and behavior, and leave compatibility aliases only where real consumers require them.

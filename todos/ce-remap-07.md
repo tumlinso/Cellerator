@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-07: Make Baseplane and CellShard interoperability explicit
 
-Task revision: `2327`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Move Cellerator-owned Baseplane and CellShard seams into narrow conventional interop homes; document module and GlassHelix deferral rather than freezing speculation.

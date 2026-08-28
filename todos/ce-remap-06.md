@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-06: Collapse runtime and distributed ownership
 
-Task revision: `2319`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Keep one canonical runtime, move GPU/fleet/collective resources under runtime, move hierarchy and communication policy under planner/distributed, and retire duplicate compute/runtime and standalone distributed facades.

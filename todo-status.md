@@ -58,10 +58,10 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2363`
+Project revision: `2366`
 
 ## Workstreams
-- `CE-REMAP-00` | status: planned | execution: inactive | next: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
+- `CE-REMAP-00` | status: done | execution: closed | next: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
 - `CE-REMAP-01` | status: done | execution: closed | next: Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.
 - `CE-REMAP-02` | status: done | execution: closed | next: Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.
 - `CE-REMAP-03` | status: done | execution: closed | next: Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.
@@ -115,7 +115,7 @@ Project revision: `2363`
 - `CE-ARCH-12` | status: done | execution: closed | next: Extend existing Cellerator::runtime into one session substrate; migrate rather than wrap it with a second context.
 - `CE-ARCH-20` | status: done | execution: closed | next: Implement read-only adapters for frozen plan/order/records/tiles/CPK1/direct kernel and define semantic geometry/statistics without changing v1 bytes or objective.
 - `CE-ARCH-30` | status: done | execution: closed | next: After explicit authorization, design manifests, deterministic generators, compact traces, tiers, resource contracts, and benchmark watches; do not run them in planning or create watches for nonexistent kernels.
-- `CE-POST-REMAP-04` | status: in_progress | execution: claimed | next: Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.
+- `CE-POST-REMAP-04` | status: done | execution: closed | next: Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.
 - `CE-ARCH-21` | status: done | execution: closed | next: Design a new Cellerator payload schema with section/projection directories and CPK1 loader, inside unchanged CPEXEC01 unless an external decision proves otherwise.
 - `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
 - `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.

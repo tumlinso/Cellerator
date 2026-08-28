@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-10: Final clean-build, CE-LIVE, module, export, and boundary audit
 
-Task revision: `2355`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Validate the remapped repository from clean configuration, run modern CUDA and CE-LIVE regressions, validate modules and compatibility, inspect dependency boundaries, and publish exact evidence and remaining bounded follow-ups.

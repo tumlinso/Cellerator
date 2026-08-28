@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-01: Observe, freeze, and publish the remap contract
 
-Task revision: `2270`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.

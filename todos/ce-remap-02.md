@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-02: Canonical skeleton, naming checks, and bounded module probe
 
-Task revision: `2280`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.

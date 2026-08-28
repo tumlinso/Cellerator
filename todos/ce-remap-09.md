@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-REMAP-09: Demolish obsolete facades and finish CMake ownership
 
-Task revision: `2342`; current project revision is in `todo-status.md`.
+Task revision: `2366`; current project revision is in `todo-status.md`.
 
 ## Objective
 Remove empty historical islands, minimize forwarding and target aliases, ensure current code does not depend on compatibility evidence, and make root CMake configuration-oriented.
