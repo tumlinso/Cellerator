@@ -7,6 +7,7 @@
 #include "optimizer_state.hh"
 
 #include <Cellerator/geometry/gene_support_bitset.hh>
+#include <Cellerator/memory/workspace.hh>
 
 #include <algorithm>
 #include <chrono>
@@ -112,27 +113,121 @@ struct nominated_pair {
     candidate_relation evidence{};
 };
 
+template<class Record>
+struct prepared_relation_table_view {
+    Record *records = nullptr;
+    std::size_t count = 0u;
+    std::size_t capacity = 0u;
+
+    Record *begin() noexcept { return records; }
+    Record *end() noexcept { return records + count; }
+    const Record *begin() const noexcept { return records; }
+    const Record *end() const noexcept { return records + count; }
+    Record &operator[](std::size_t index) noexcept { return records[index]; }
+    const Record &operator[](std::size_t index) const noexcept { return records[index]; }
+    Record &front() noexcept { return records[0]; }
+    const Record &front() const noexcept { return records[0]; }
+    bool empty() const noexcept { return count == 0u; }
+    std::size_t size() const noexcept { return count; }
+    void reset() noexcept { count = 0u; }
+    void truncate(std::size_t size) noexcept { count = size; }
+    void append(const Record &record) {
+        if (count == capacity) throw std::bad_alloc();
+        records[count++] = record;
+    }
+
+    template<class Iterator>
+    void replace(Iterator first, Iterator last) {
+        const std::size_t size = static_cast<std::size_t>(last - first);
+        if (size > capacity) throw std::bad_alloc();
+        std::copy(first, last, records);
+        count = size;
+    }
+};
+
+template<class Record>
+bool add_prepared_table_bytes(
+    std::size_t count,
+    std::size_t *bytes) noexcept {
+    if (count > std::numeric_limits<std::size_t>::max() / sizeof(Record))
+        return false;
+    const std::size_t payload = count * sizeof(Record);
+    constexpr std::size_t padding = alignof(Record) - 1u;
+    if (*bytes > std::numeric_limits<std::size_t>::max() - padding
+        || *bytes + padding > std::numeric_limits<std::size_t>::max() - payload)
+        return false;
+    *bytes += padding + payload;
+    return true;
+}
+
+template<class Record>
+bool bind_prepared_table(
+    cellerator::memory::workspace *storage,
+    std::size_t capacity,
+    prepared_relation_table_view<Record> *table) noexcept {
+    Record *records = nullptr;
+    if (cellerator::memory::take(storage, capacity, &records)
+        != cellerator::memory::status::success)
+        return false;
+    *table = {records, 0u, capacity};
+    return true;
+}
+
 class proposal_relation_workspace {
 public:
     proposal_relation_workspace(u64 relation_count, u32 feature_count, const packing_optimizer_config &config)
-        : fanout_(feature_count, 0u), block_marks_(feature_count, 0u),
-          feature_marks_(feature_count, 0u) {
-        const std::size_t relations = static_cast<std::size_t>(relation_count);
-        pair_relations_.reserve(relations);
-        ranked_relations_.reserve(relations);
-        nominated_relations_.reserve(relations);
-        raw_.reserve(static_cast<std::size_t>(config.proposal_shortlist) * 3u + 3u);
-        proposals_.reserve(std::max<std::size_t>(relations, config.proposal_shortlist));
-        selected_.reserve(config.initial_oracle_batch_size);
-        blacklist_.reserve(config.maximum_oracle_evaluations);
+        : relation_capacity_(std::max<std::size_t>(
+              1u, static_cast<std::size_t>(relation_count))),
+          raw_capacity_(static_cast<std::size_t>(config.proposal_shortlist) * 3u + 3u),
+          proposal_capacity_(std::max<std::size_t>(relation_capacity_, config.proposal_shortlist)),
+          selected_capacity_(config.initial_oracle_batch_size),
+          blacklist_capacity_(config.maximum_oracle_evaluations),
+          feature_capacity_(feature_count) {
+        if constexpr (sizeof(std::size_t) < sizeof(u64)) {
+            if (relation_count > std::numeric_limits<std::size_t>::max())
+                throw std::bad_alloc();
+        }
+        if (!query_storage_bytes())
+            throw std::bad_alloc();
+        storage_ = ::operator new(storage_bytes_, std::align_val_t{64u});
+        cellerator::memory::workspace prepared{
+            static_cast<unsigned char *>(storage_), storage_bytes_, 0u,
+            {cellerator::memory::domain::host, -1, -1, 0u}};
+        if (!bind_prepared_table(&prepared, relation_capacity_, &pair_relations_)
+            || !bind_prepared_table(&prepared, relation_capacity_, &ranked_relations_)
+            || !bind_prepared_table(&prepared, relation_capacity_, &nominated_relations_)
+            || !bind_prepared_table(&prepared, raw_capacity_, &raw_)
+            || !bind_prepared_table(&prepared, proposal_capacity_, &proposals_)
+            || !bind_prepared_table(&prepared, selected_capacity_, &selected_)
+            || !bind_prepared_table(&prepared, blacklist_capacity_, &blacklist_)
+            || !bind_prepared_table(&prepared, feature_capacity_, &fanout_)
+            || !bind_prepared_table(&prepared, feature_capacity_, &block_marks_)
+            || !bind_prepared_table(&prepared, feature_capacity_, &feature_marks_)) {
+            ::operator delete(storage_, std::align_val_t{64u});
+            storage_ = nullptr;
+            throw std::bad_alloc();
+        }
+        fanout_.count = feature_capacity_;
+        block_marks_.count = feature_capacity_;
+        feature_marks_.count = feature_capacity_;
+        std::fill(fanout_.begin(), fanout_.end(), 0u);
+        std::fill(block_marks_.begin(), block_marks_.end(), 0u);
+        std::fill(feature_marks_.begin(), feature_marks_.end(), 0u);
     }
+
+    ~proposal_relation_workspace() {
+        ::operator delete(storage_, std::align_val_t{64u});
+    }
+
+    proposal_relation_workspace(const proposal_relation_workspace &) = delete;
+    proposal_relation_workspace &operator=(const proposal_relation_workspace &) = delete;
 
     bool blacklisted(const mutation_key &key) const noexcept {
         return std::find_if(blacklist_.begin(), blacklist_.end(), [&](const mutation_key &item) {
             return !(item < key) && !(key < item);
         }) != blacklist_.end();
     }
-    void blacklist(const mutation_key &key) { blacklist_.push_back(key); }
+    void blacklist(const mutation_key &key) { blacklist_.append(key); }
     void reset_fanout() { std::fill(fanout_.begin(), fanout_.end(), 0u); }
     void next_marks() {
         if (++mark_generation_ == 0u) {
@@ -146,27 +241,44 @@ public:
     void mark_block(u32 value) { block_marks_[value] = mark_generation_; }
     void mark_feature(u32 value) { feature_marks_[value] = mark_generation_; }
     std::size_t estimated_bytes() const noexcept {
-        return pair_relations_.capacity() * sizeof(nominated_pair)
-            + ranked_relations_.capacity() * sizeof(candidate_relation *)
-            + nominated_relations_.capacity() * sizeof(candidate_relation *)
-            + raw_.capacity() * sizeof(mutation_proposal)
-            + proposals_.capacity() * sizeof(mutation_proposal)
-            + selected_.capacity() * sizeof(mutation_proposal)
-            + blacklist_.capacity() * sizeof(mutation_key)
-            + (fanout_.capacity() + block_marks_.capacity() + feature_marks_.capacity()) * sizeof(u32);
+        return storage_bytes_;
     }
 
-    std::vector<nominated_pair> pair_relations_;
-    std::vector<const candidate_relation *> ranked_relations_;
-    std::vector<const candidate_relation *> nominated_relations_;
-    std::vector<mutation_proposal> raw_;
-    std::vector<mutation_proposal> proposals_;
-    std::vector<mutation_proposal> selected_;
-    std::vector<mutation_key> blacklist_;
-    std::vector<u32> fanout_;
-    std::vector<u32> block_marks_;
-    std::vector<u32> feature_marks_;
+    prepared_relation_table_view<nominated_pair> pair_relations_{};
+    prepared_relation_table_view<const candidate_relation *> ranked_relations_{};
+    prepared_relation_table_view<const candidate_relation *> nominated_relations_{};
+    prepared_relation_table_view<mutation_proposal> raw_{};
+    prepared_relation_table_view<mutation_proposal> proposals_{};
+    prepared_relation_table_view<mutation_proposal> selected_{};
+    prepared_relation_table_view<mutation_key> blacklist_{};
+    prepared_relation_table_view<u32> fanout_{};
+    prepared_relation_table_view<u32> block_marks_{};
+    prepared_relation_table_view<u32> feature_marks_{};
     u32 mark_generation_ = 0u;
+
+private:
+    bool query_storage_bytes() noexcept {
+        storage_bytes_ = 0u;
+        return add_prepared_table_bytes<nominated_pair>(relation_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<const candidate_relation *>(relation_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<const candidate_relation *>(relation_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<mutation_proposal>(raw_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<mutation_proposal>(proposal_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<mutation_proposal>(selected_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<mutation_key>(blacklist_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<u32>(feature_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<u32>(feature_capacity_, &storage_bytes_)
+            && add_prepared_table_bytes<u32>(feature_capacity_, &storage_bytes_);
+    }
+
+    void *storage_ = nullptr;
+    std::size_t storage_bytes_ = 0u;
+    std::size_t relation_capacity_ = 0u;
+    std::size_t raw_capacity_ = 0u;
+    std::size_t proposal_capacity_ = 0u;
+    std::size_t selected_capacity_ = 0u;
+    std::size_t blacklist_capacity_ = 0u;
+    std::size_t feature_capacity_ = 0u;
 };
 
 struct evaluated_geometry {
@@ -332,14 +444,14 @@ std::pair<u32, u32> ordered_block_pair(const detail::optimizer_state &state, u32
     return {lhs, rhs};
 }
 
-const std::vector<mutation_proposal> &generate_merge_proposals(
+const prepared_relation_table_view<mutation_proposal> &generate_merge_proposals(
     const detail::optimizer_state &state,
     candidate_relation_view candidates,
     const packing_optimizer_config &config,
     proposal_relation_workspace *workspace,
     packing_optimizer_diagnostics *diagnostics) {
-    std::vector<nominated_pair> &ranked = workspace->pair_relations_;
-    ranked.clear();
+    prepared_relation_table_view<nominated_pair> &ranked = workspace->pair_relations_;
+    ranked.reset();
     for (u64 index = 0u; index < candidates.relation_count; ++index) {
         const candidate_relation &relation = candidates.relations[index];
         u32 lhs = state.block_slot_for_feature(relation.feature_a);
@@ -348,7 +460,7 @@ const std::vector<mutation_proposal> &generate_merge_proposals(
         std::tie(lhs, rhs) = ordered_block_pair(state, lhs, rhs);
         if (state.block_width(lhs) + state.block_width(rhs) > config.maximum_feature_block_width) continue;
         ++diagnostics->merge_proposals_considered;
-        ranked.push_back({lhs, rhs, relation});
+        ranked.append({lhs, rhs, relation});
     }
     std::sort(ranked.begin(), ranked.end(), [&](const nominated_pair &lhs, const nominated_pair &rhs) {
         const std::pair<u32, u32> lhs_key{state.block_stable_key(lhs.lhs), state.block_stable_key(lhs.rhs)};
@@ -367,7 +479,7 @@ const std::vector<mutation_proposal> &generate_merge_proposals(
             && state.block_stable_key(ranked[index].lhs) == lhs_key
             && state.block_stable_key(ranked[index].rhs) == rhs_key);
     }
-    ranked.resize(compacted);
+    ranked.truncate(compacted);
     std::sort(ranked.begin(), ranked.end(), [&](const nominated_pair &lhs, const nominated_pair &rhs) {
         if (evidence_better(lhs.evidence, rhs.evidence)) return true;
         if (evidence_better(rhs.evidence, lhs.evidence)) return false;
@@ -375,8 +487,8 @@ const std::vector<mutation_proposal> &generate_merge_proposals(
             < std::pair<u32, u32>{state.block_stable_key(rhs.lhs), state.block_stable_key(rhs.rhs)};
     });
     workspace->reset_fanout();
-    std::vector<mutation_proposal> &proposals = workspace->proposals_;
-    proposals.clear();
+    prepared_relation_table_view<mutation_proposal> &proposals = workspace->proposals_;
+    proposals.reset();
     for (const nominated_pair &pair : ranked) {
         const u32 lhs_key = state.block_stable_key(pair.lhs), rhs_key = state.block_stable_key(pair.rhs);
         if (workspace->fanout_[lhs_key] >= config.candidate_fanout
@@ -396,24 +508,24 @@ const std::vector<mutation_proposal> &generate_merge_proposals(
         ++diagnostics->merge_proposals_shortlisted;
         if (proposal.proxy_gain > 0) {
             ++diagnostics->merge_proxy_positive;
-            proposals.push_back(proposal);
+            proposals.append(proposal);
         }
     }
     std::sort(proposals.begin(), proposals.end(), proposal_better);
-    if (proposals.size() > config.proposal_shortlist) proposals.resize(config.proposal_shortlist);
+    if (proposals.size() > config.proposal_shortlist) proposals.truncate(config.proposal_shortlist);
     return proposals;
 }
 
-const std::vector<mutation_proposal> &generate_refinement_proposals(
+const prepared_relation_table_view<mutation_proposal> &generate_refinement_proposals(
     const detail::optimizer_state &state,
     candidate_relation_view candidates,
     const packing_optimizer_config &config,
     proposal_relation_workspace *workspace,
     packing_optimizer_diagnostics *diagnostics) {
-    std::vector<const candidate_relation *> &ranked_relations = workspace->ranked_relations_;
-    ranked_relations.clear();
+    prepared_relation_table_view<const candidate_relation *> &ranked_relations = workspace->ranked_relations_;
+    ranked_relations.reset();
     for (u64 index = 0u; index < candidates.relation_count; ++index) {
-        ranked_relations.push_back(candidates.relations + index);
+        ranked_relations.append(candidates.relations + index);
     }
     std::sort(ranked_relations.begin(), ranked_relations.end(), [](const candidate_relation *lhs, const candidate_relation *rhs) {
         if (evidence_better(*lhs, *rhs)) return true;
@@ -422,18 +534,18 @@ const std::vector<mutation_proposal> &generate_refinement_proposals(
             < std::pair<u32, u32>{rhs->feature_a, rhs->feature_b};
     });
     workspace->reset_fanout();
-    std::vector<const candidate_relation *> &nominated_relations = workspace->nominated_relations_;
-    nominated_relations.clear();
+    prepared_relation_table_view<const candidate_relation *> &nominated_relations = workspace->nominated_relations_;
+    nominated_relations.reset();
     for (const candidate_relation *relation : ranked_relations) {
         if (workspace->fanout_[relation->feature_a] >= config.candidate_fanout
             || workspace->fanout_[relation->feature_b] >= config.candidate_fanout) continue;
         ++workspace->fanout_[relation->feature_a];
         ++workspace->fanout_[relation->feature_b];
-        nominated_relations.push_back(relation);
+        nominated_relations.append(relation);
     }
 
-    std::vector<mutation_proposal> &raw = workspace->raw_;
-    raw.clear();
+    prepared_relation_table_view<mutation_proposal> &raw = workspace->raw_;
+    raw.reset();
     auto compact_raw = [&]() {
         std::sort(raw.begin(), raw.end(), [&](const mutation_proposal &lhs, const mutation_proposal &rhs) {
             if (lhs.key < rhs.key) return true;
@@ -449,13 +561,13 @@ const std::vector<mutation_proposal> &generate_refinement_proposals(
             do { ++index; } while (index < raw.size()
                 && !(raw[index].key < key) && !(key < raw[index].key));
         }
-        raw.resize(compacted);
+        raw.truncate(compacted);
         std::sort(raw.begin(), raw.end(), [&](const mutation_proposal &lhs, const mutation_proposal &rhs) {
             if (evidence_better(lhs.evidence, rhs.evidence)) return true;
             if (evidence_better(rhs.evidence, lhs.evidence)) return false;
             return lhs.key < rhs.key;
         });
-        if (raw.size() > config.proposal_shortlist) raw.resize(config.proposal_shortlist);
+        if (raw.size() > config.proposal_shortlist) raw.truncate(config.proposal_shortlist);
     };
     bool saturated = false;
     for (const candidate_relation *relation_pointer : nominated_relations) {
@@ -470,7 +582,7 @@ const std::vector<mutation_proposal> &generate_refinement_proposals(
         }
         const u32 key_a = state.block_stable_key(slot_a), key_b = state.block_stable_key(slot_b);
         auto insert_raw = [&](mutation_proposal proposal) {
-            if (!workspace->blacklisted(proposal.key)) raw.push_back(proposal);
+            if (!workspace->blacklisted(proposal.key)) raw.append(proposal);
         };
         if (config.enable_feature_moves) {
             ++diagnostics->move_proposals_considered;
@@ -512,24 +624,24 @@ const std::vector<mutation_proposal> &generate_refinement_proposals(
         }
     }
     compact_raw();
-    std::vector<mutation_proposal> &ranked = workspace->proposals_;
-    ranked.assign(raw.begin(), raw.end());
-    raw.clear();
-    std::vector<mutation_proposal> &proposals = raw;
+    prepared_relation_table_view<mutation_proposal> &ranked = workspace->proposals_;
+    ranked.replace(raw.begin(), raw.end());
+    raw.reset();
+    prepared_relation_table_view<mutation_proposal> &proposals = raw;
     for (mutation_proposal proposal : ranked) {
         if (proposal.key.kind == mutation_kind::move) {
             ++diagnostics->move_proposals_shortlisted;
             proposal.proxy_gain = state.move_proxy_gain(proposal.key.feature_a, proposal.slot_b);
             if (proposal.proxy_gain > 0) {
                 ++diagnostics->move_proxy_positive;
-                proposals.push_back(proposal);
+                proposals.append(proposal);
             }
         } else {
             ++diagnostics->swap_proposals_shortlisted;
             proposal.proxy_gain = state.swap_proxy_gain(proposal.key.feature_a, proposal.key.feature_b);
             if (proposal.proxy_gain > 0) {
                 ++diagnostics->swap_proxy_positive;
-                proposals.push_back(proposal);
+                proposals.append(proposal);
             }
         }
     }
@@ -537,13 +649,13 @@ const std::vector<mutation_proposal> &generate_refinement_proposals(
     return proposals;
 }
 
-const std::vector<mutation_proposal> &select_batch(
-    const std::vector<mutation_proposal> &proposals,
+const prepared_relation_table_view<mutation_proposal> &select_batch(
+    const prepared_relation_table_view<mutation_proposal> &proposals,
     u32 limit,
     proposal_relation_workspace *workspace) {
     workspace->next_marks();
-    std::vector<mutation_proposal> &selected = workspace->selected_;
-    selected.clear();
+    prepared_relation_table_view<mutation_proposal> &selected = workspace->selected_;
+    selected.reset();
     for (const mutation_proposal &proposal : proposals) {
         if (selected.size() >= limit) break;
         if (workspace->block_marked(proposal.slot_a) || workspace->block_marked(proposal.slot_b)) continue;
@@ -553,7 +665,7 @@ const std::vector<mutation_proposal> &select_batch(
         workspace->mark_block(proposal.slot_b);
         if (proposal.key.feature_a != invalid_id) workspace->mark_feature(proposal.key.feature_a);
         if (proposal.key.feature_b != invalid_id) workspace->mark_feature(proposal.key.feature_b);
-        selected.push_back(proposal);
+        selected.append(proposal);
     }
     return selected;
 }
@@ -571,7 +683,7 @@ validation_result apply_mutation(detail::optimizer_state *state, const mutation_
     return state->swap_features(proposal.key.feature_a, proposal.key.feature_b);
 }
 
-void record_accepts(const std::vector<mutation_proposal> &batch, packing_optimizer_diagnostics *diagnostics) {
+void record_accepts(const prepared_relation_table_view<mutation_proposal> &batch, packing_optimizer_diagnostics *diagnostics) {
     for (const mutation_proposal &proposal : batch) {
         if (proposal.key.kind == mutation_kind::merge) ++diagnostics->merge_oracle_accepted;
         else if (proposal.key.kind == mutation_kind::move) ++diagnostics->move_oracle_accepted;
@@ -579,7 +691,7 @@ void record_accepts(const std::vector<mutation_proposal> &batch, packing_optimiz
     }
 }
 
-void record_rejects(const std::vector<mutation_proposal> &batch, packing_optimizer_diagnostics *diagnostics) {
+void record_rejects(const prepared_relation_table_view<mutation_proposal> &batch, packing_optimizer_diagnostics *diagnostics) {
     for (const mutation_proposal &proposal : batch) {
         if (proposal.key.kind == mutation_kind::merge) ++diagnostics->merge_oracle_rejected;
         else if (proposal.key.kind == mutation_kind::move) ++diagnostics->move_oracle_rejected;
@@ -602,11 +714,11 @@ validation_result run_one_accepted_batch(
     u32 batch_limit = config.initial_oracle_batch_size;
     while (diagnostics->oracle_evaluations + 1u < config.maximum_oracle_evaluations) {
         const clock_type::time_point proxy_begin = clock_type::now();
-        const std::vector<mutation_proposal> &proposals = generate();
+        const prepared_relation_table_view<mutation_proposal> &proposals = generate();
         const clock_type::time_point proxy_end = clock_type::now();
         diagnostics->proxy_ms += milliseconds(proxy_begin, proxy_end);
         if (proposals.empty()) return validation_ok();
-        const std::vector<mutation_proposal> &batch = select_batch(
+        const prepared_relation_table_view<mutation_proposal> &batch = select_batch(
             proposals, batch_limit, proposal_workspace);
         if (batch.empty()) return validation_ok();
         state->begin_mutation_journal();

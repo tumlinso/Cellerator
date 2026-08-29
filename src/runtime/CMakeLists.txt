@@ -19,6 +19,12 @@ else()
 endif()
 add_library(cellerator_runtime STATIC
     src/runtime/runtime.cu
+    src/runtime/device_descriptor.cu
+    src/runtime/memory/allocation.cc
+    src/runtime/memory/copy.cu
+    src/runtime/memory/generation_marks.cc
+    src/runtime/memory/image.cc
+    src/runtime/memory/session_memory.cu
     src/runtime/value_readiness.cu
 )
 add_library(Cellerator::runtime ALIAS cellerator_runtime)

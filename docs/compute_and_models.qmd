@@ -10,6 +10,7 @@ The rule is simple: reusable math stays in Cellerator, conventional preprocessin
 
 The forward-neighbor caller surface lives in `src/compute/neighbors/forward_neighbors/` and builds directly on the reusable math under `src/compute/neighbors/`:
 
+- its public contract accepts caller-owned prepared index and query views; index construction, persistence, and staging remain downstream responsibilities, so the native target has no CellShard runtime link
 - routed exact top-`k` search now lives in the reusable `src/compute/neighbors/exact_search/` layer, so dense and sliced exact search stream routed segments on device and emit only compact candidate tables instead of updating per-interval score state in HBM
 - lower-level KNN scoring helpers live under `src/compute/neighbors/scoring/`
 - dense exact and dense ANN remain available as the validation and cross-check path

@@ -20,7 +20,6 @@ target_include_directories(cellerator_compute_forward_neighbors
 target_link_libraries(cellerator_compute_forward_neighbors
     PUBLIC
         cellerator_compute_exact_search
-        CellShard::runtime
         CUDA::cudart
         CUDA::cusparse
 )

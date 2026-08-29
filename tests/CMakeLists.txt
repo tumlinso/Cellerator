@@ -63,6 +63,91 @@ set_target_properties(celleratorValueReadinessTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-PTR-02/13: compile the explicit memory substrate through its owning
+# runtime target and keep both host and CUDA/session contracts in the normal
+# integration build.
+add_executable(celleratorMemoryContractTest
+    tests/memory/memory_contract_test.cc
+)
+target_link_libraries(celleratorMemoryContractTest PRIVATE
+    Cellerator::runtime
+)
+target_compile_features(celleratorMemoryContractTest PRIVATE cxx_std_17)
+
+add_executable(celleratorSessionMemoryTest
+    tests/memory/session_memory_test.cu
+)
+target_link_libraries(celleratorSessionMemoryTest PRIVATE
+    Cellerator::runtime
+    CUDA::cudart
+)
+set_target_properties(celleratorSessionMemoryTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+# CE-PTR-13: normal-build integration coverage for prepared execution,
+# graph capture, concurrent streams, and persisted program replay.
+add_executable(celleratorExecutableProgramTest
+    tests/execution/program_test.cu
+)
+target_link_libraries(celleratorExecutableProgramTest PRIVATE
+    Cellerator::executable_program
+    CUDA::cudart
+)
+set_target_properties(celleratorExecutableProgramTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorTrainingProgramTest
+    tests/execution/training_program_test.cu
+)
+target_link_libraries(celleratorTrainingProgramTest PRIVATE
+    Cellerator::training_program
+    CUDA::cudart
+)
+set_target_properties(celleratorTrainingProgramTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorCeLiveConcurrencyTest
+    tests/execution/ce_live_concurrency_test.cu
+)
+target_link_libraries(celleratorCeLiveConcurrencyTest PRIVATE
+    Cellerator::training_program
+    CUDA::cudart
+)
+set_target_properties(celleratorCeLiveConcurrencyTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+add_executable(celleratorCeLiveProgramReplayTest
+    tests/persistence/ce_live_program_replay_test.cu
+)
+target_link_libraries(celleratorCeLiveProgramReplayTest PRIVATE
+    Cellerator::executable_program
+    Cellerator::opaque_execution_artifact
+    CellShard::inspect
+    CUDA::cudart
+)
+set_target_properties(celleratorCeLiveProgramReplayTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
 add_executable(quantizedMatrixTest
     tests/quantized_matrix_test.cu
 )
