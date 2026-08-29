@@ -77,13 +77,6 @@ const layout_selection_entry *find_entry(const layout_selection_plan &selection,
     return nullptr;
 }
 
-bool launch_key_less(const launch_group_key &lhs, const launch_group_key &rhs) {
-    if (lhs.layout != rhs.layout) return lhs.layout < rhs.layout;
-    if (lhs.block_size != rhs.block_size) return lhs.block_size < rhs.block_size;
-    if (lhs.width_class != rhs.width_class) return lhs.width_class < rhs.width_class;
-    return lhs.output_columns < rhs.output_columns;
-}
-
 bool launch_key_equal(const launch_group_key &lhs, const launch_group_key &rhs) {
     return lhs.layout == rhs.layout
         && lhs.block_size == rhs.block_size
@@ -97,9 +90,28 @@ validation_result select_layouts(
     const layout_metrics_plan &metrics,
     const layout_selector_config &config,
     layout_selection_plan *out) {
-    if (out == nullptr) {
-        return validation_error(validation_code::null_pointer, invalid_id, "layout selection output is null");
-    }
+    if (out == nullptr) return validation_error(validation_code::null_pointer, invalid_id, "layout selection output is null");
+    layout_selection_plan selection;
+    selection.entries.resize(metrics.regions.size());
+    layout_selection_plan_view view;
+    validation_result result = select_layouts_into(
+        view_layout_metrics(metrics), config,
+        {{selection.entries.data(), selection.entries.size(), {}}}, &view);
+    if (!result) return result;
+    selection.row_count = view.row_count;
+    selection.feature_count = view.feature_count;
+    selection.nnz = view.nnz;
+    selection.summary = view.summary;
+    *out = std::move(selection);
+    return validation_ok();
+}
+
+validation_result select_layouts_into(
+    layout_metrics_plan_view metrics,
+    const layout_selector_config &config,
+    layout_selection_storage storage,
+    layout_selection_plan_view *out) {
+    if (out == nullptr) return validation_error(validation_code::null_pointer, invalid_id, "layout selection view output is null");
     if (config.min_blocked_ell_fill < 0.0 || config.min_blocked_ell_fill > 1.0
         || config.min_sliced_ell_fill < 0.0 || config.min_sliced_ell_fill > 1.0
         || config.min_dense_tile_fill < 0.0 || config.min_dense_tile_fill > 1.0
@@ -107,54 +119,68 @@ validation_result select_layouts(
         return validation_error(validation_code::invalid_layout, invalid_id, "layout selector thresholds are invalid");
     }
 
-    layout_selection_plan selection;
-    selection.row_count = metrics.row_count;
-    selection.feature_count = metrics.feature_count;
-    selection.nnz = metrics.nnz;
-    selection.entries.reserve(metrics.regions.size());
+    if (storage.entries.count < metrics.regions.count) {
+        return validation_error(validation_code::invalid_offsets, invalid_id, "layout selection storage capacity is insufficient");
+    }
+    if (metrics.regions.count != 0u && (metrics.regions.data == nullptr || storage.entries.data == nullptr)) {
+        return validation_error(validation_code::null_pointer, invalid_id, "layout selection input or storage is null");
+    }
+    layout_plan_summary summary;
     u64 selected_total_bytes = 0u;
     u32 selected_residual_nnz = 0u;
     u32 dense_candidate_nnz = 0u;
-    std::vector<launch_group_key> groups;
-    groups.reserve(metrics.regions.size());
 
-    for (const region_layout_metrics &region : metrics.regions) {
+    for (std::size_t index = 0; index < metrics.regions.count; ++index) {
+        const region_layout_metrics &region = metrics.regions.data[index];
         layout_selection_entry entry = choose_layout(region, config);
         selected_total_bytes += entry.selected_estimated_bytes;
         if (entry.selected_layout == layout_kind::residual_csr) selected_residual_nnz += region.nnz;
         if (entry.selected_layout == layout_kind::dense_tile) dense_candidate_nnz += region.nnz;
-        groups.push_back(entry.launch_key);
-        selection.entries.push_back(entry);
+        bool new_group = true;
+        for (std::size_t prior = 0; prior < index; ++prior) {
+            if (launch_key_equal(storage.entries.data[prior].launch_key, entry.launch_key)) {
+                new_group = false;
+                break;
+            }
+        }
+        summary.launch_group_count += new_group ? 1u : 0u;
+        storage.entries.data[index] = entry;
     }
 
-    std::sort(groups.begin(), groups.end(), launch_key_less);
-    groups.erase(std::unique(groups.begin(), groups.end(), launch_key_equal), groups.end());
-    selection.summary.region_count = static_cast<u32>(selection.entries.size());
-    selection.summary.launch_group_count = static_cast<u32>(groups.size());
-    selection.summary.residual_nnz_fraction = metrics.nnz == 0u
+    summary.region_count = static_cast<u32>(metrics.regions.count);
+    summary.residual_nnz_fraction = metrics.nnz == 0u
         ? 0.0
         : static_cast<double>(selected_residual_nnz) / static_cast<double>(metrics.nnz);
-    selection.summary.total_estimated_bytes = selected_total_bytes;
-    selection.summary.dense_tile_candidate_coverage = metrics.nnz == 0u
+    summary.total_estimated_bytes = selected_total_bytes;
+    summary.dense_tile_candidate_coverage = metrics.nnz == 0u
         ? 0.0
         : static_cast<double>(dense_candidate_nnz) / static_cast<double>(metrics.nnz);
-    for (const region_layout_metrics &region : metrics.regions) {
-        selection.summary.min_blocked_ell_fill = selection.summary.min_blocked_ell_fill == 0.0
+    for (std::size_t index = 0; index < metrics.regions.count; ++index) {
+        const region_layout_metrics &region = metrics.regions.data[index];
+        summary.min_blocked_ell_fill = summary.min_blocked_ell_fill == 0.0
             ? region.blocked_ell_fill_ratio
-            : std::min(selection.summary.min_blocked_ell_fill, region.blocked_ell_fill_ratio);
-        selection.summary.max_blocked_ell_fill = std::max(selection.summary.max_blocked_ell_fill, region.blocked_ell_fill_ratio);
-        selection.summary.mean_blocked_ell_fill += region.blocked_ell_fill_ratio;
-        selection.summary.min_sliced_ell_width = selection.summary.min_sliced_ell_width == 0u
+            : std::min(summary.min_blocked_ell_fill, region.blocked_ell_fill_ratio);
+        summary.max_blocked_ell_fill = std::max(summary.max_blocked_ell_fill, region.blocked_ell_fill_ratio);
+        summary.mean_blocked_ell_fill += region.blocked_ell_fill_ratio;
+        summary.min_sliced_ell_width = summary.min_sliced_ell_width == 0u
             ? region.row_widths.max_width
-            : std::min(selection.summary.min_sliced_ell_width, region.row_widths.max_width);
-        selection.summary.max_sliced_ell_width = std::max(selection.summary.max_sliced_ell_width, region.row_widths.max_width);
+            : std::min(summary.min_sliced_ell_width, region.row_widths.max_width);
+        summary.max_sliced_ell_width = std::max(summary.max_sliced_ell_width, region.row_widths.max_width);
     }
-    if (!metrics.regions.empty()) {
-        selection.summary.mean_blocked_ell_fill /= static_cast<double>(metrics.regions.size());
+    if (metrics.regions.count != 0u) {
+        summary.mean_blocked_ell_fill /= static_cast<double>(metrics.regions.count);
     }
-
-    *out = std::move(selection);
+    out->row_count = metrics.row_count;
+    out->feature_count = metrics.feature_count;
+    out->nnz = metrics.nnz;
+    out->entries = {storage.entries.data, metrics.regions.count, storage.entries.where};
+    out->summary = summary;
     return validation_ok();
+}
+
+layout_selection_plan_view view_layout_selection(const layout_selection_plan &selection) {
+    return {selection.row_count, selection.feature_count, selection.nnz,
+        {selection.entries.data(), selection.entries.size(), {}}, selection.summary};
 }
 
 validation_result apply_layout_selection(

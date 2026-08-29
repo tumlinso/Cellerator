@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Cellerator/geometry/pack.hh"
+#include "Cellerator/memory/view.hh"
+#include "Cellerator/memory/workspace.hh"
 
 #include <vector>
 
@@ -61,6 +63,17 @@ struct layout_metrics_plan {
     std::vector<region_layout_metrics> regions;
 };
 
+struct layout_metrics_plan_view {
+    u32 row_count = 0u;
+    u32 feature_count = 0u;
+    u32 nnz = 0u;
+    ::cellerator::memory::const_array_view<region_layout_metrics> regions;
+};
+
+struct layout_metrics_storage {
+    ::cellerator::memory::array_view<region_layout_metrics> regions;
+};
+
 struct layout_plan_summary {
     u32 region_count = 0u;
     u32 launch_group_count = 0u;
@@ -80,7 +93,22 @@ validation_result build_layout_metrics(
     const layout_metrics_config &config,
     layout_metrics_plan *out);
 
+::cellerator::memory::workspace_requirement layout_metrics_workspace_requirement(
+    const static_plan &plan,
+    ::cellerator::memory::placement where = {});
+
+validation_result build_layout_metrics_into(
+    const static_plan &plan,
+    packed_coordinate_plan_view packed,
+    const layout_metrics_config &config,
+    layout_metrics_storage storage,
+    ::cellerator::memory::workspace workspace,
+    layout_metrics_plan_view *out);
+
+layout_metrics_plan_view view_layout_metrics(const layout_metrics_plan &metrics);
+
 layout_plan_summary summarize_layout_metrics(const layout_metrics_plan &metrics);
+layout_plan_summary summarize_layout_metrics(layout_metrics_plan_view metrics);
 
 u64 csr_estimated_bytes(const region_layout_metrics &metrics);
 u64 blocked_ell_estimated_bytes(const region_layout_metrics &metrics);

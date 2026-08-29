@@ -2,6 +2,7 @@
 
 #include "Cellerator/geometry/gating.hh"
 #include "Cellerator/geometry/pack.hh"
+#include "Cellerator/memory/view.hh"
 
 #include <cuda_runtime_api.h>
 
@@ -35,6 +36,19 @@ struct device_coordinate_plan_view {
     const u32 *feature_ids = nullptr;
     const float *values = nullptr;
 };
+
+struct compiled_coordinate_plan_storage {
+    ::cellerator::memory::array_view<region_coordinate_span> region_spans;
+    ::cellerator::memory::array_view<u32> row_ids;
+    ::cellerator::memory::array_view<u32> feature_ids;
+    ::cellerator::memory::array_view<float> values;
+};
+
+validation_result build_compiled_coordinate_plan_into(
+    const static_plan &plan,
+    packed_coordinate_plan_view packed,
+    compiled_coordinate_plan_storage storage,
+    device_coordinate_plan_view *out);
 
 validation_result build_compiled_coordinate_plan(
     const static_plan &plan,

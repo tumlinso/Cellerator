@@ -1,6 +1,5 @@
 #include "Cellerator/geometry/gating_cuda.cuh"
 
-#include <algorithm>
 #include <utility>
 
 namespace cellpack {
@@ -13,15 +12,9 @@ const packed_region_desc *find_region(const static_plan &plan, u32 region_id) {
     return nullptr;
 }
 
-bool coordinate_less_by_region(const packed_coordinate &lhs, const packed_coordinate &rhs) {
-    if (lhs.region_id != rhs.region_id) return lhs.region_id < rhs.region_id;
-    if (lhs.permuted_row != rhs.permuted_row) return lhs.permuted_row < rhs.permuted_row;
-    return lhs.permuted_feature < rhs.permuted_feature;
-}
-
 validation_result validate_coordinate_plan_source(
     const static_plan &plan,
-    const packed_coordinate_plan &packed) {
+    packed_coordinate_plan_view packed) {
     if (packed.row_count != plan.desc.row_count || packed.feature_count != plan.desc.feature_count) {
         return validation_error(validation_code::invalid_matrix_view, invalid_id, "packed coordinate dimensions do not match plan");
     }
@@ -33,8 +26,11 @@ validation_result validate_coordinate_plan_source(
         plan.desc.row_count,
         plan.desc.feature_count);
     if (!region_result) return region_result;
-    for (u32 i = 0; i < static_cast<u32>(packed.coordinates.size()); ++i) {
-        const packed_coordinate &coordinate = packed.coordinates[i];
+    if (packed.coordinates.count != 0u && packed.coordinates.data == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "packed coordinate storage is null");
+    }
+    for (u32 i = 0; i < static_cast<u32>(packed.coordinates.count); ++i) {
+        const packed_coordinate &coordinate = packed.coordinates.data[i];
         const packed_region_desc *region = find_region(plan, coordinate.region_id);
         if (region == nullptr) {
             return validation_error(validation_code::missing_region, i, "packed coordinate references an unknown route region");
@@ -99,46 +95,85 @@ validation_result build_compiled_coordinate_plan(
     if (out == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "compiled coordinate output is null");
     }
-    validation_result source_result = validate_coordinate_plan_source(plan, packed);
-    if (!source_result) return source_result;
-
-    std::vector<packed_coordinate> sorted = packed.coordinates;
-    std::sort(sorted.begin(), sorted.end(), coordinate_less_by_region);
-
     compiled_coordinate_plan compiled;
     compiled.row_count = packed.row_count;
     compiled.feature_count = packed.feature_count;
     compiled.region_spans.resize(plan.regions.size());
-    for (const packed_region_desc &region : plan.regions) {
-        if (region.region_id >= compiled.region_spans.size()) {
-            return validation_error(validation_code::invalid_region_bounds, region.region_id, "region id is outside compiled span table");
-        }
-        compiled.region_spans[region.region_id].region_id = region.region_id;
-    }
-    compiled.row_ids.reserve(sorted.size());
-    compiled.feature_ids.reserve(sorted.size());
-    compiled.values.reserve(sorted.size());
-
-    u32 coordinate_index = 0u;
-    while (coordinate_index < static_cast<u32>(sorted.size())) {
-        const u32 region_id = sorted[coordinate_index].region_id;
-        if (region_id >= compiled.region_spans.size()) {
-            return validation_error(validation_code::missing_region, coordinate_index, "coordinate region id is outside compiled span table");
-        }
-        region_coordinate_span &span = compiled.region_spans[region_id];
-        span.coordinate_begin = static_cast<u32>(compiled.values.size());
-        while (coordinate_index < static_cast<u32>(sorted.size())
-               && sorted[coordinate_index].region_id == region_id) {
-            const packed_coordinate &coordinate = sorted[coordinate_index];
-            compiled.row_ids.push_back(coordinate.original_row);
-            compiled.feature_ids.push_back(coordinate.original_feature);
-            compiled.values.push_back(coordinate.value);
-            ++coordinate_index;
-        }
-        span.coordinate_count = static_cast<u32>(compiled.values.size()) - span.coordinate_begin;
-    }
+    compiled.row_ids.resize(packed.coordinates.size());
+    compiled.feature_ids.resize(packed.coordinates.size());
+    compiled.values.resize(packed.coordinates.size());
+    device_coordinate_plan_view view;
+    validation_result build_result = build_compiled_coordinate_plan_into(
+        plan, view_packed_coordinates(packed),
+        {{compiled.region_spans.data(), compiled.region_spans.size(), {}},
+         {compiled.row_ids.data(), compiled.row_ids.size(), {}},
+         {compiled.feature_ids.data(), compiled.feature_ids.size(), {}},
+         {compiled.values.data(), compiled.values.size(), {}}},
+        &view);
+    if (!build_result) return build_result;
 
     *out = std::move(compiled);
+    return validation_ok();
+}
+
+validation_result build_compiled_coordinate_plan_into(
+    const static_plan &plan,
+    packed_coordinate_plan_view packed,
+    compiled_coordinate_plan_storage storage,
+    device_coordinate_plan_view *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "compiled coordinate view output is null");
+    }
+    validation_result source_result = validate_coordinate_plan_source(plan, packed);
+    if (!source_result) return source_result;
+    const std::size_t region_count = plan.regions.size();
+    const std::size_t coordinate_count = packed.coordinates.count;
+    if ((region_count != 0u && storage.region_spans.data == nullptr)
+        || (coordinate_count != 0u && (storage.row_ids.data == nullptr
+            || storage.feature_ids.data == nullptr || storage.values.data == nullptr))) {
+        return validation_error(validation_code::null_pointer, invalid_id, "compiled coordinate storage is null");
+    }
+    if (storage.region_spans.count < region_count
+        || storage.row_ids.count < coordinate_count
+        || storage.feature_ids.count < coordinate_count
+        || storage.values.count < coordinate_count) {
+        return validation_error(validation_code::invalid_offsets, invalid_id, "compiled coordinate storage capacity is insufficient");
+    }
+
+    for (std::size_t i = 0; i < region_count; ++i) storage.region_spans.data[i] = {};
+    for (const packed_region_desc &region : plan.regions) {
+        if (region.region_id >= region_count) {
+            return validation_error(validation_code::invalid_region_bounds, region.region_id, "region id is outside compiled span table");
+        }
+        storage.region_spans.data[region.region_id].region_id = region.region_id;
+    }
+    for (std::size_t i = 0; i < coordinate_count; ++i) {
+        ++storage.region_spans.data[packed.coordinates.data[i].region_id].coordinate_count;
+    }
+    u32 coordinate_begin = 0u;
+    for (std::size_t i = 0; i < region_count; ++i) {
+        region_coordinate_span &span = storage.region_spans.data[i];
+        span.coordinate_begin = coordinate_begin;
+        coordinate_begin += span.coordinate_count;
+    }
+    for (std::size_t i = 0; i < coordinate_count; ++i) {
+        const packed_coordinate &coordinate = packed.coordinates.data[i];
+        region_coordinate_span &span = storage.region_spans.data[coordinate.region_id];
+        const u32 destination = span.coordinate_begin + span.reserved0++;
+        storage.row_ids.data[destination] = coordinate.original_row;
+        storage.feature_ids.data[destination] = coordinate.original_feature;
+        storage.values.data[destination] = coordinate.value;
+    }
+    for (std::size_t i = 0; i < region_count; ++i) storage.region_spans.data[i].reserved0 = 0u;
+
+    out->row_count = packed.row_count;
+    out->feature_count = packed.feature_count;
+    out->region_span_count = static_cast<u32>(region_count);
+    out->coordinate_count = static_cast<u32>(coordinate_count);
+    out->region_spans = storage.region_spans.data;
+    out->row_ids = storage.row_ids.data;
+    out->feature_ids = storage.feature_ids.data;
+    out->values = storage.values.data;
     return validation_ok();
 }
 

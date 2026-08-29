@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cellerator/geometry/planner.hh"
+#include "Cellerator/memory/view.hh"
 
 #include <vector>
 
@@ -32,6 +33,10 @@ struct route_tape {
     std::vector<u32> region_ids;
 };
 
+struct route_id_storage {
+    ::cellerator::memory::array_view<u32> region_ids;
+};
+
 struct oracle_active_set_view {
     oracle_gating_scenario scenario = oracle_gating_scenario::all_regions;
     u32 microbatch = 0u;
@@ -55,6 +60,18 @@ validation_result build_oracle_route_mask(
     u32 microbatch,
     route_mask *out);
 
+u32 count_oracle_route_regions(
+    const static_plan &plan,
+    oracle_gating_scenario scenario,
+    u32 microbatch);
+
+validation_result build_oracle_route_mask_into(
+    const static_plan &plan,
+    oracle_gating_scenario scenario,
+    u32 microbatch,
+    route_id_storage storage,
+    route_mask_view *out);
+
 validation_result validate_route_mask_matches_oracle(
     const static_plan &plan,
     oracle_gating_scenario scenario,
@@ -62,6 +79,11 @@ validation_result validate_route_mask_matches_oracle(
     route_mask_view mask);
 
 validation_result record_route_tape(route_mask_view mask, route_tape *out);
+
+validation_result record_route_tape_into(
+    route_mask_view mask,
+    route_id_storage storage,
+    route_tape_view *out);
 
 validation_result validate_route_tape_for_replay(
     const static_plan &plan,

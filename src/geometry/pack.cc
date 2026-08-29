@@ -45,35 +45,162 @@ u32 find_region_id(const static_plan &plan, u32 permuted_row, u32 permuted_featu
     return invalid_id;
 }
 
-validation_result append_coordinate(
+validation_result make_coordinate(
     const static_plan &plan,
     u32 original_row,
     u32 original_feature,
     float value,
-    packed_coordinate_plan *out) {
+    packed_coordinate *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+                                "packed coordinate storage is null");
+    }
     const u32 permuted_row = plan.inverse_row_permutation[original_row];
     const u32 permuted_feature = plan.inverse_feature_permutation[original_feature];
     const u32 region_id = find_region_id(plan, permuted_row, permuted_feature);
     if (region_id == invalid_id) {
-        return validation_error(validation_code::missing_region, original_row, "source entry does not map to a precompiled CellPack region");
+        return validation_error(validation_code::missing_region, original_row,
+                                "source entry does not map to a precompiled CellPack region");
     }
-    packed_coordinate coordinate;
-    coordinate.original_row = original_row;
-    coordinate.original_feature = original_feature;
-    coordinate.permuted_row = permuted_row;
-    coordinate.permuted_feature = permuted_feature;
-    coordinate.region_id = region_id;
-    coordinate.value = value;
-    out->coordinates.push_back(coordinate);
+    *out = {original_row, original_feature, permuted_row, permuted_feature, region_id, value};
     return validation_ok();
 }
 
-bool coordinate_less(const packed_coordinate &lhs, const packed_coordinate &rhs) {
-    if (lhs.original_row != rhs.original_row) return lhs.original_row < rhs.original_row;
-    return lhs.original_feature < rhs.original_feature;
+} // namespace
+
+packed_coordinate_plan_view view_packed_coordinates(const packed_coordinate_plan &plan) {
+    return {plan.row_count, plan.feature_count,
+            {plan.coordinates.data(), plan.coordinates.size(),
+             {::cellerator::memory::domain::host, -1, -1, 0u}}};
 }
 
-} // namespace
+validation_result build_packed_coordinate_plan_into(
+    const csr_view &source,
+    const static_plan &plan,
+    packed_coordinate_plan_storage storage,
+    packed_coordinate_plan_view *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+                                "packed coordinate view output is null");
+    }
+    validation_result source_result = validate_csr_view(source);
+    if (!source_result) return source_result;
+    validation_result plan_result = validate_plan_for_coordinates(
+        plan, source.row_count, source.feature_count);
+    if (!plan_result) return plan_result;
+    if (storage.coordinates.count < source.nnz_count
+        || (source.nnz_count != 0u && storage.coordinates.data == nullptr)) {
+        return validation_error(validation_code::insufficient_capacity, source.nnz_count,
+                                "packed coordinate storage capacity is insufficient");
+    }
+    u32 cursor = 0u;
+    for (u32 row = 0; row < source.row_count; ++row) {
+        for (u32 entry = source.row_offsets[row]; entry < source.row_offsets[row + 1u]; ++entry) {
+            validation_result result = make_coordinate(
+                plan, row, source.feature_ids[entry], source.values[entry],
+                storage.coordinates.data + cursor);
+            if (!result) return result;
+            ++cursor;
+        }
+    }
+    *out = {source.row_count, source.feature_count,
+            {storage.coordinates.data, cursor, storage.coordinates.where}};
+    return validation_ok();
+}
+
+validation_result build_packed_coordinate_plan_into(
+    const coo_view &source,
+    const static_plan &plan,
+    packed_coordinate_plan_storage storage,
+    packed_coordinate_plan_view *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+                                "packed coordinate view output is null");
+    }
+    validation_result source_result = validate_coo_view(source);
+    if (!source_result) return source_result;
+    validation_result plan_result = validate_plan_for_coordinates(
+        plan, source.row_count, source.feature_count);
+    if (!plan_result) return plan_result;
+    if (storage.coordinates.count < source.nnz_count
+        || (source.nnz_count != 0u && storage.coordinates.data == nullptr)) {
+        return validation_error(validation_code::insufficient_capacity, source.nnz_count,
+                                "packed coordinate storage capacity is insufficient");
+    }
+    for (u32 entry = 0; entry < source.nnz_count; ++entry) {
+        validation_result result = make_coordinate(
+            plan, source.row_ids[entry], source.feature_ids[entry], source.values[entry],
+            storage.coordinates.data + entry);
+        if (!result) return result;
+    }
+    *out = {source.row_count, source.feature_count,
+            {storage.coordinates.data, source.nnz_count, storage.coordinates.where}};
+    return validation_ok();
+}
+
+validation_result reconstruct_csr_from_coordinate_plan_into(
+    u32 row_count,
+    u32 feature_count,
+    const static_plan &plan,
+    packed_coordinate_plan_view packed,
+    reconstructed_csr_view output) {
+    if (packed.row_count != row_count || packed.feature_count != feature_count) {
+        return validation_error(validation_code::invalid_matrix_view, invalid_id,
+                                "packed coordinate dimensions do not match reconstruction shape");
+    }
+    validation_result plan_result = validate_plan_for_coordinates(plan, row_count, feature_count);
+    if (!plan_result) return plan_result;
+    const std::size_t nnz = packed.coordinates.count;
+    if ((nnz != 0u && packed.coordinates.data == nullptr)
+        || output.row_offsets.count < static_cast<std::size_t>(row_count) + 1u
+        || output.feature_ids.count < nnz || output.values.count < nnz
+        || output.row_offsets.data == nullptr
+        || (nnz != 0u && (output.feature_ids.data == nullptr || output.values.data == nullptr))) {
+        return validation_error(validation_code::insufficient_capacity, invalid_id,
+                                "direct CSR reconstruction capacity is insufficient");
+    }
+    std::fill_n(output.row_offsets.data, static_cast<std::size_t>(row_count) + 1u, 0u);
+    u32 previous_row = 0u, previous_feature = 0u;
+    bool have_previous = false;
+    for (std::size_t index = 0u; index < nnz; ++index) {
+        const packed_coordinate &coordinate = packed.coordinates.data[index];
+        if (coordinate.original_row >= row_count || coordinate.original_feature >= feature_count) {
+            return validation_error(validation_code::invalid_matrix_view,
+                index > invalid_id ? invalid_id : static_cast<u32>(index),
+                "packed coordinate original index is outside reconstruction bounds");
+        }
+        if (have_previous && (coordinate.original_row < previous_row
+            || (coordinate.original_row == previous_row
+                && coordinate.original_feature <= previous_feature))) {
+            return validation_error(validation_code::invalid_matrix_view,
+                index > invalid_id ? invalid_id : static_cast<u32>(index),
+                "direct CSR reconstruction requires canonical row-major coordinates");
+        }
+        if (coordinate.permuted_row != plan.inverse_row_permutation[coordinate.original_row]
+            || coordinate.permuted_feature != plan.inverse_feature_permutation[coordinate.original_feature]
+            || find_region_id(plan, coordinate.permuted_row,
+                              coordinate.permuted_feature) != coordinate.region_id) {
+            return validation_error(validation_code::invalid_permutation,
+                index > invalid_id ? invalid_id : static_cast<u32>(index),
+                "packed coordinate identity does not match the static plan");
+        }
+        ++output.row_offsets.data[coordinate.original_row + 1u];
+        output.feature_ids.data[index] = coordinate.original_feature;
+        output.values.data[index] = coordinate.value;
+        previous_row = coordinate.original_row;
+        previous_feature = coordinate.original_feature;
+        have_previous = true;
+    }
+    for (u32 row = 0u; row < row_count; ++row) {
+        output.row_offsets.data[row + 1u] += output.row_offsets.data[row];
+    }
+    output.row_count = row_count;
+    output.feature_count = feature_count;
+    output.row_offsets.count = static_cast<std::size_t>(row_count) + 1u;
+    output.feature_ids.count = nnz;
+    output.values.count = nnz;
+    return validation_ok();
+}
 
 validation_result validate_csr_view(const csr_view &view) {
     if (view.row_count != 0u && view.row_offsets == nullptr) {
@@ -145,26 +272,14 @@ validation_result build_packed_coordinate_plan(
     if (out == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "packed coordinate output is null");
     }
-    validation_result source_result = validate_csr_view(source);
-    if (!source_result) return source_result;
-    validation_result plan_result = validate_plan_for_coordinates(plan, source.row_count, source.feature_count);
-    if (!plan_result) return plan_result;
-
     packed_coordinate_plan packed;
-    packed.row_count = source.row_count;
-    packed.feature_count = source.feature_count;
-    packed.coordinates.reserve(source.nnz_count);
-    for (u32 row = 0; row < source.row_count; ++row) {
-        for (u32 entry = source.row_offsets[row]; entry < source.row_offsets[row + 1u]; ++entry) {
-            validation_result append_result = append_coordinate(
-                plan,
-                row,
-                source.feature_ids[entry],
-                source.values[entry],
-                &packed);
-            if (!append_result) return append_result;
-        }
-    }
+    packed.coordinates.resize(source.nnz_count);
+    packed_coordinate_plan_view view;
+    validation_result result = build_packed_coordinate_plan_into(
+        source, plan, {{packed.coordinates.data(), packed.coordinates.size(), {}}}, &view);
+    if (!result) return result;
+    packed.row_count = view.row_count;
+    packed.feature_count = view.feature_count;
     *out = std::move(packed);
     return validation_ok();
 }
@@ -176,24 +291,14 @@ validation_result build_packed_coordinate_plan(
     if (out == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "packed coordinate output is null");
     }
-    validation_result source_result = validate_coo_view(source);
-    if (!source_result) return source_result;
-    validation_result plan_result = validate_plan_for_coordinates(plan, source.row_count, source.feature_count);
-    if (!plan_result) return plan_result;
-
     packed_coordinate_plan packed;
-    packed.row_count = source.row_count;
-    packed.feature_count = source.feature_count;
-    packed.coordinates.reserve(source.nnz_count);
-    for (u32 entry = 0; entry < source.nnz_count; ++entry) {
-        validation_result append_result = append_coordinate(
-            plan,
-            source.row_ids[entry],
-            source.feature_ids[entry],
-            source.values[entry],
-            &packed);
-        if (!append_result) return append_result;
-    }
+    packed.coordinates.resize(source.nnz_count);
+    packed_coordinate_plan_view view;
+    validation_result result = build_packed_coordinate_plan_into(
+        source, plan, {{packed.coordinates.data(), packed.coordinates.size(), {}}}, &view);
+    if (!result) return result;
+    packed.row_count = view.row_count;
+    packed.feature_count = view.feature_count;
     *out = std::move(packed);
     return validation_ok();
 }
@@ -207,47 +312,19 @@ validation_result reconstruct_csr_from_coordinate_plan(
     if (out == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "reconstructed CSR output is null");
     }
-    if (packed.row_count != row_count || packed.feature_count != feature_count) {
-        return validation_error(validation_code::invalid_matrix_view, invalid_id, "packed coordinate dimensions do not match requested reconstruction shape");
-    }
-    validation_result plan_result = validate_plan_for_coordinates(plan, row_count, feature_count);
-    if (!plan_result) return plan_result;
-
-    std::vector<packed_coordinate> sorted = packed.coordinates;
-    std::sort(sorted.begin(), sorted.end(), coordinate_less);
-    for (u32 i = 0; i < static_cast<u32>(sorted.size()); ++i) {
-        const packed_coordinate &coordinate = sorted[i];
-        if (coordinate.original_row >= row_count || coordinate.original_feature >= feature_count) {
-            return validation_error(validation_code::invalid_matrix_view, i, "packed coordinate original index is outside reconstruction bounds");
-        }
-        if (coordinate.permuted_row != plan.inverse_row_permutation[coordinate.original_row]
-            || coordinate.permuted_feature != plan.inverse_feature_permutation[coordinate.original_feature]) {
-            return validation_error(validation_code::invalid_permutation, i, "packed coordinate permutation fields do not match plan inverse maps");
-        }
-        if (find_region_id(plan, coordinate.permuted_row, coordinate.permuted_feature) != coordinate.region_id) {
-            return validation_error(validation_code::missing_region, i, "packed coordinate region does not match plan region lookup");
-        }
-        if (i != 0u
-            && sorted[i - 1u].original_row == coordinate.original_row
-            && sorted[i - 1u].original_feature == coordinate.original_feature) {
-            return validation_error(validation_code::invalid_matrix_view, i, "duplicate packed coordinate in reconstruction");
-        }
-    }
-
     reconstructed_csr csr;
     csr.row_count = row_count;
     csr.feature_count = feature_count;
-    csr.row_offsets.assign(static_cast<std::size_t>(row_count) + 1u, 0u);
-    csr.feature_ids.reserve(sorted.size());
-    csr.values.reserve(sorted.size());
-    for (const packed_coordinate &coordinate : sorted) {
-        ++csr.row_offsets[coordinate.original_row + 1u];
-        csr.feature_ids.push_back(coordinate.original_feature);
-        csr.values.push_back(coordinate.value);
-    }
-    for (u32 row = 0; row < row_count; ++row) {
-        csr.row_offsets[row + 1u] += csr.row_offsets[row];
-    }
+    csr.row_offsets.resize(static_cast<std::size_t>(row_count) + 1u);
+    csr.feature_ids.resize(packed.coordinates.size());
+    csr.values.resize(packed.coordinates.size());
+    validation_result result = reconstruct_csr_from_coordinate_plan_into(
+        row_count, feature_count, plan, view_packed_coordinates(packed),
+        {row_count, feature_count,
+         {csr.row_offsets.data(), csr.row_offsets.size(), {}},
+         {csr.feature_ids.data(), csr.feature_ids.size(), {}},
+         {csr.values.data(), csr.values.size(), {}}});
+    if (!result) return result;
     *out = std::move(csr);
     return validation_ok();
 }
