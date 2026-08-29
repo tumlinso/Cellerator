@@ -13,9 +13,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
-#include <map>
 #include <new>
-#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -106,6 +104,69 @@ struct mutation_proposal {
     std::int64_t proxy_gain = 0;
     candidate_relation evidence{};
     u32 combined_width = 0u;
+};
+
+struct nominated_pair {
+    u32 lhs = invalid_id;
+    u32 rhs = invalid_id;
+    candidate_relation evidence{};
+};
+
+class proposal_relation_workspace {
+public:
+    proposal_relation_workspace(u64 relation_count, u32 feature_count, const packing_optimizer_config &config)
+        : fanout_(feature_count, 0u), block_marks_(feature_count, 0u),
+          feature_marks_(feature_count, 0u) {
+        const std::size_t relations = static_cast<std::size_t>(relation_count);
+        pair_relations_.reserve(relations);
+        ranked_relations_.reserve(relations);
+        nominated_relations_.reserve(relations);
+        raw_.reserve(static_cast<std::size_t>(config.proposal_shortlist) * 3u + 3u);
+        proposals_.reserve(std::max<std::size_t>(relations, config.proposal_shortlist));
+        selected_.reserve(config.initial_oracle_batch_size);
+        blacklist_.reserve(config.maximum_oracle_evaluations);
+    }
+
+    bool blacklisted(const mutation_key &key) const noexcept {
+        return std::find_if(blacklist_.begin(), blacklist_.end(), [&](const mutation_key &item) {
+            return !(item < key) && !(key < item);
+        }) != blacklist_.end();
+    }
+    void blacklist(const mutation_key &key) { blacklist_.push_back(key); }
+    void reset_fanout() { std::fill(fanout_.begin(), fanout_.end(), 0u); }
+    void next_marks() {
+        if (++mark_generation_ == 0u) {
+            std::fill(block_marks_.begin(), block_marks_.end(), 0u);
+            std::fill(feature_marks_.begin(), feature_marks_.end(), 0u);
+            mark_generation_ = 1u;
+        }
+    }
+    bool block_marked(u32 value) const { return block_marks_[value] == mark_generation_; }
+    bool feature_marked(u32 value) const { return feature_marks_[value] == mark_generation_; }
+    void mark_block(u32 value) { block_marks_[value] = mark_generation_; }
+    void mark_feature(u32 value) { feature_marks_[value] = mark_generation_; }
+    std::size_t estimated_bytes() const noexcept {
+        return pair_relations_.capacity() * sizeof(nominated_pair)
+            + ranked_relations_.capacity() * sizeof(candidate_relation *)
+            + nominated_relations_.capacity() * sizeof(candidate_relation *)
+            + raw_.capacity() * sizeof(mutation_proposal)
+            + proposals_.capacity() * sizeof(mutation_proposal)
+            + selected_.capacity() * sizeof(mutation_proposal)
+            + blacklist_.capacity() * sizeof(mutation_key)
+            + (fanout_.capacity() + block_marks_.capacity() + feature_marks_.capacity()) * sizeof(u32);
+    }
+
+    std::vector<nominated_pair> pair_relations_;
+    std::vector<const candidate_relation *> ranked_relations_;
+    std::vector<const candidate_relation *> nominated_relations_;
+    std::vector<mutation_proposal> raw_;
+    std::vector<mutation_proposal> proposals_;
+    std::vector<mutation_proposal> selected_;
+    std::vector<mutation_key> blacklist_;
+    std::vector<u32> fanout_;
+    std::vector<u32> block_marks_;
+    std::vector<u32> feature_marks_;
+    u32 mark_generation_ = 0u;
 };
 
 struct evaluated_geometry {
@@ -271,13 +332,14 @@ std::pair<u32, u32> ordered_block_pair(const detail::optimizer_state &state, u32
     return {lhs, rhs};
 }
 
-std::vector<mutation_proposal> generate_merge_proposals(
+const std::vector<mutation_proposal> &generate_merge_proposals(
     const detail::optimizer_state &state,
     candidate_relation_view candidates,
     const packing_optimizer_config &config,
-    const std::set<mutation_key> &blacklist,
+    proposal_relation_workspace *workspace,
     packing_optimizer_diagnostics *diagnostics) {
-    std::map<std::pair<u32, u32>, candidate_relation> best_by_pair;
+    std::vector<nominated_pair> &ranked = workspace->pair_relations_;
+    ranked.clear();
     for (u64 index = 0u; index < candidates.relation_count; ++index) {
         const candidate_relation &relation = candidates.relations[index];
         u32 lhs = state.block_slot_for_feature(relation.feature_a);
@@ -286,37 +348,44 @@ std::vector<mutation_proposal> generate_merge_proposals(
         std::tie(lhs, rhs) = ordered_block_pair(state, lhs, rhs);
         if (state.block_width(lhs) + state.block_width(rhs) > config.maximum_feature_block_width) continue;
         ++diagnostics->merge_proposals_considered;
-        const std::pair<u32, u32> key{state.block_stable_key(lhs), state.block_stable_key(rhs)};
-        auto iterator = best_by_pair.find(key);
-        if (iterator == best_by_pair.end() || evidence_better(relation, iterator->second)) {
-            best_by_pair[key] = relation;
-        }
+        ranked.push_back({lhs, rhs, relation});
     }
-
-    struct nominated_pair { u32 lhs; u32 rhs; candidate_relation evidence; };
-    std::vector<nominated_pair> ranked;
-    ranked.reserve(best_by_pair.size());
-    for (const auto &entry : best_by_pair) {
-        const u32 lhs = state.block_slot_for_feature(entry.first.first);
-        const u32 rhs = state.block_slot_for_feature(entry.first.second);
-        if (lhs != rhs && state.block_active(lhs) && state.block_active(rhs)) ranked.push_back({lhs, rhs, entry.second});
+    std::sort(ranked.begin(), ranked.end(), [&](const nominated_pair &lhs, const nominated_pair &rhs) {
+        const std::pair<u32, u32> lhs_key{state.block_stable_key(lhs.lhs), state.block_stable_key(lhs.rhs)};
+        const std::pair<u32, u32> rhs_key{state.block_stable_key(rhs.lhs), state.block_stable_key(rhs.rhs)};
+        if (lhs_key != rhs_key) return lhs_key < rhs_key;
+        if (evidence_better(lhs.evidence, rhs.evidence)) return true;
+        if (evidence_better(rhs.evidence, lhs.evidence)) return false;
+        return false;
+    });
+    std::size_t compacted = 0u;
+    for (std::size_t index = 0u; index < ranked.size();) {
+        ranked[compacted++] = ranked[index];
+        const u32 lhs_key = state.block_stable_key(ranked[index].lhs);
+        const u32 rhs_key = state.block_stable_key(ranked[index].rhs);
+        do { ++index; } while (index < ranked.size()
+            && state.block_stable_key(ranked[index].lhs) == lhs_key
+            && state.block_stable_key(ranked[index].rhs) == rhs_key);
     }
+    ranked.resize(compacted);
     std::sort(ranked.begin(), ranked.end(), [&](const nominated_pair &lhs, const nominated_pair &rhs) {
         if (evidence_better(lhs.evidence, rhs.evidence)) return true;
         if (evidence_better(rhs.evidence, lhs.evidence)) return false;
         return std::pair<u32, u32>{state.block_stable_key(lhs.lhs), state.block_stable_key(lhs.rhs)}
             < std::pair<u32, u32>{state.block_stable_key(rhs.lhs), state.block_stable_key(rhs.rhs)};
     });
-    std::map<u32, u32> fanout;
-    std::vector<mutation_proposal> proposals;
+    workspace->reset_fanout();
+    std::vector<mutation_proposal> &proposals = workspace->proposals_;
+    proposals.clear();
     for (const nominated_pair &pair : ranked) {
         const u32 lhs_key = state.block_stable_key(pair.lhs), rhs_key = state.block_stable_key(pair.rhs);
-        if (fanout[lhs_key] >= config.candidate_fanout || fanout[rhs_key] >= config.candidate_fanout) continue;
-        ++fanout[lhs_key];
-        ++fanout[rhs_key];
+        if (workspace->fanout_[lhs_key] >= config.candidate_fanout
+            || workspace->fanout_[rhs_key] >= config.candidate_fanout) continue;
+        ++workspace->fanout_[lhs_key];
+        ++workspace->fanout_[rhs_key];
         mutation_proposal proposal;
         proposal.key = {mutation_kind::merge, invalid_id, invalid_id, lhs_key, rhs_key};
-        if (blacklist.count(proposal.key) != 0u) continue;
+        if (workspace->blacklisted(proposal.key)) continue;
         proposal.slot_a = pair.lhs;
         proposal.slot_b = pair.rhs;
         proposal.generation_a = state.block_generation(pair.lhs);
@@ -335,14 +404,14 @@ std::vector<mutation_proposal> generate_merge_proposals(
     return proposals;
 }
 
-std::vector<mutation_proposal> generate_refinement_proposals(
+const std::vector<mutation_proposal> &generate_refinement_proposals(
     const detail::optimizer_state &state,
     candidate_relation_view candidates,
     const packing_optimizer_config &config,
-    const std::set<mutation_key> &blacklist,
+    proposal_relation_workspace *workspace,
     packing_optimizer_diagnostics *diagnostics) {
-    std::vector<const candidate_relation *> ranked_relations;
-    ranked_relations.reserve(static_cast<std::size_t>(candidates.relation_count));
+    std::vector<const candidate_relation *> &ranked_relations = workspace->ranked_relations_;
+    ranked_relations.clear();
     for (u64 index = 0u; index < candidates.relation_count; ++index) {
         ranked_relations.push_back(candidates.relations + index);
     }
@@ -352,30 +421,56 @@ std::vector<mutation_proposal> generate_refinement_proposals(
         return std::pair<u32, u32>{lhs->feature_a, lhs->feature_b}
             < std::pair<u32, u32>{rhs->feature_a, rhs->feature_b};
     });
-    std::map<u32, u32> feature_fanout;
-    std::vector<const candidate_relation *> nominated_relations;
-    nominated_relations.reserve(ranked_relations.size());
+    workspace->reset_fanout();
+    std::vector<const candidate_relation *> &nominated_relations = workspace->nominated_relations_;
+    nominated_relations.clear();
     for (const candidate_relation *relation : ranked_relations) {
-        if (feature_fanout[relation->feature_a] >= config.candidate_fanout
-            || feature_fanout[relation->feature_b] >= config.candidate_fanout) continue;
-        ++feature_fanout[relation->feature_a];
-        ++feature_fanout[relation->feature_b];
+        if (workspace->fanout_[relation->feature_a] >= config.candidate_fanout
+            || workspace->fanout_[relation->feature_b] >= config.candidate_fanout) continue;
+        ++workspace->fanout_[relation->feature_a];
+        ++workspace->fanout_[relation->feature_b];
         nominated_relations.push_back(relation);
     }
 
-    std::map<mutation_key, mutation_proposal> raw;
+    std::vector<mutation_proposal> &raw = workspace->raw_;
+    raw.clear();
+    auto compact_raw = [&]() {
+        std::sort(raw.begin(), raw.end(), [&](const mutation_proposal &lhs, const mutation_proposal &rhs) {
+            if (lhs.key < rhs.key) return true;
+            if (rhs.key < lhs.key) return false;
+            if (evidence_better(lhs.evidence, rhs.evidence)) return true;
+            if (evidence_better(rhs.evidence, lhs.evidence)) return false;
+            return false;
+        });
+        std::size_t compacted = 0u;
+        for (std::size_t index = 0u; index < raw.size();) {
+            raw[compacted++] = raw[index];
+            const mutation_key key = raw[index].key;
+            do { ++index; } while (index < raw.size()
+                && !(raw[index].key < key) && !(key < raw[index].key));
+        }
+        raw.resize(compacted);
+        std::sort(raw.begin(), raw.end(), [&](const mutation_proposal &lhs, const mutation_proposal &rhs) {
+            if (evidence_better(lhs.evidence, rhs.evidence)) return true;
+            if (evidence_better(rhs.evidence, lhs.evidence)) return false;
+            return lhs.key < rhs.key;
+        });
+        if (raw.size() > config.proposal_shortlist) raw.resize(config.proposal_shortlist);
+    };
+    bool saturated = false;
     for (const candidate_relation *relation_pointer : nominated_relations) {
         const candidate_relation &relation = *relation_pointer;
         const u32 slot_a = state.block_slot_for_feature(relation.feature_a);
         const u32 slot_b = state.block_slot_for_feature(relation.feature_b);
         if (slot_a == slot_b) continue;
+        if (saturated) {
+            diagnostics->move_proposals_considered += config.enable_feature_moves ? 2u : 0u;
+            diagnostics->swap_proposals_considered += config.enable_feature_swaps ? 1u : 0u;
+            continue;
+        }
         const u32 key_a = state.block_stable_key(slot_a), key_b = state.block_stable_key(slot_b);
         auto insert_raw = [&](mutation_proposal proposal) {
-            if (blacklist.count(proposal.key) != 0u) return;
-            auto iterator = raw.find(proposal.key);
-            if (iterator == raw.end() || evidence_better(proposal.evidence, iterator->second.evidence)) {
-                raw[proposal.key] = proposal;
-            }
+            if (!workspace->blacklisted(proposal.key)) raw.push_back(proposal);
         };
         if (config.enable_feature_moves) {
             ++diagnostics->move_proposals_considered;
@@ -411,18 +506,16 @@ std::vector<mutation_proposal> generate_refinement_proposals(
             swap.combined_width = state.block_width(slot_a) + state.block_width(slot_b);
             insert_raw(swap);
         }
+        if (raw.size() >= static_cast<std::size_t>(config.proposal_shortlist) * 2u) {
+            compact_raw();
+            saturated = raw.size() >= config.proposal_shortlist;
+        }
     }
-    std::vector<mutation_proposal> ranked;
-    ranked.reserve(raw.size());
-    for (auto &entry : raw) ranked.push_back(entry.second);
-    std::sort(ranked.begin(), ranked.end(), [&](const mutation_proposal &lhs, const mutation_proposal &rhs) {
-        if (evidence_better(lhs.evidence, rhs.evidence)) return true;
-        if (evidence_better(rhs.evidence, lhs.evidence)) return false;
-        return lhs.key < rhs.key;
-    });
-    if (ranked.size() > config.proposal_shortlist) ranked.resize(config.proposal_shortlist);
-    std::vector<mutation_proposal> proposals;
-    proposals.reserve(ranked.size());
+    compact_raw();
+    std::vector<mutation_proposal> &ranked = workspace->proposals_;
+    ranked.assign(raw.begin(), raw.end());
+    raw.clear();
+    std::vector<mutation_proposal> &proposals = raw;
     for (mutation_proposal proposal : ranked) {
         if (proposal.key.kind == mutation_kind::move) {
             ++diagnostics->move_proposals_shortlisted;
@@ -444,21 +537,22 @@ std::vector<mutation_proposal> generate_refinement_proposals(
     return proposals;
 }
 
-std::vector<mutation_proposal> select_batch(
+const std::vector<mutation_proposal> &select_batch(
     const std::vector<mutation_proposal> &proposals,
-    u32 limit) {
-    std::set<u32> used_blocks;
-    std::set<u32> used_features;
-    std::vector<mutation_proposal> selected;
+    u32 limit,
+    proposal_relation_workspace *workspace) {
+    workspace->next_marks();
+    std::vector<mutation_proposal> &selected = workspace->selected_;
+    selected.clear();
     for (const mutation_proposal &proposal : proposals) {
         if (selected.size() >= limit) break;
-        if (used_blocks.count(proposal.slot_a) != 0u || used_blocks.count(proposal.slot_b) != 0u) continue;
-        if (proposal.key.feature_a != invalid_id && used_features.count(proposal.key.feature_a) != 0u) continue;
-        if (proposal.key.feature_b != invalid_id && used_features.count(proposal.key.feature_b) != 0u) continue;
-        used_blocks.insert(proposal.slot_a);
-        used_blocks.insert(proposal.slot_b);
-        if (proposal.key.feature_a != invalid_id) used_features.insert(proposal.key.feature_a);
-        if (proposal.key.feature_b != invalid_id) used_features.insert(proposal.key.feature_b);
+        if (workspace->block_marked(proposal.slot_a) || workspace->block_marked(proposal.slot_b)) continue;
+        if (proposal.key.feature_a != invalid_id && workspace->feature_marked(proposal.key.feature_a)) continue;
+        if (proposal.key.feature_b != invalid_id && workspace->feature_marked(proposal.key.feature_b)) continue;
+        workspace->mark_block(proposal.slot_a);
+        workspace->mark_block(proposal.slot_b);
+        if (proposal.key.feature_a != invalid_id) workspace->mark_feature(proposal.key.feature_a);
+        if (proposal.key.feature_b != invalid_id) workspace->mark_feature(proposal.key.feature_b);
         selected.push_back(proposal);
     }
     return selected;
@@ -470,6 +564,8 @@ validation_result apply_mutation(detail::optimizer_state *state, const mutation_
         || state->block_generation(proposal.slot_b) != proposal.generation_b) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id, "stale optimizer mutation proposal");
     }
+    const validation_result journal_status = state->journal_blocks(proposal.slot_a, proposal.slot_b);
+    if (!journal_status) return journal_status;
     if (proposal.key.kind == mutation_kind::merge) return state->merge_blocks(proposal.slot_a, proposal.slot_b);
     if (proposal.key.kind == mutation_kind::move) return state->move_feature(proposal.key.feature_a, proposal.slot_b);
     return state->swap_features(proposal.key.feature_a, proposal.key.feature_b);
@@ -500,41 +596,50 @@ validation_result run_one_accepted_batch(
     Generator generate,
     frozen_evaluation_summary *current,
     packing_optimizer_diagnostics *diagnostics,
+    proposal_relation_workspace *proposal_workspace,
     bool *accepted) {
     *accepted = false;
-    std::set<mutation_key> blacklist;
     u32 batch_limit = config.initial_oracle_batch_size;
     while (diagnostics->oracle_evaluations + 1u < config.maximum_oracle_evaluations) {
         const clock_type::time_point proxy_begin = clock_type::now();
-        std::vector<mutation_proposal> proposals = generate(blacklist);
+        const std::vector<mutation_proposal> &proposals = generate();
         const clock_type::time_point proxy_end = clock_type::now();
         diagnostics->proxy_ms += milliseconds(proxy_begin, proxy_end);
         if (proposals.empty()) return validation_ok();
-        std::vector<mutation_proposal> batch = select_batch(proposals, batch_limit);
+        const std::vector<mutation_proposal> &batch = select_batch(
+            proposals, batch_limit, proposal_workspace);
         if (batch.empty()) return validation_ok();
-        detail::optimizer_state snapshot = *state;
+        state->begin_mutation_journal();
         for (const mutation_proposal &proposal : batch) {
             const validation_result mutation_status = apply_mutation(state, proposal);
-            if (!mutation_status) return mutation_status;
+            if (!mutation_status) {
+                state->rollback_mutation_journal();
+                return mutation_status;
+            }
         }
         evaluated_geometry evaluated;
         const validation_result evaluation_status = evaluate_state(
             state, source, config, workspace, &evaluated, diagnostics);
-        if (!evaluation_status) return evaluation_status;
+        if (!evaluation_status) {
+            state->rollback_mutation_journal();
+            return evaluation_status;
+        }
         if (exact_improvement(evaluated.summary, *current, config)) {
+            state->commit_mutation_journal();
             *current = evaluated.summary;
             record_accepts(batch, diagnostics);
             *accepted = true;
             return validation_ok();
         }
-        *state = std::move(snapshot);
+        const validation_result rollback_status = state->rollback_mutation_journal();
+        if (!rollback_status) return rollback_status;
         ++diagnostics->oracle_rollbacks;
         record_rejects(batch, diagnostics);
         if (batch.size() > 1u) {
             batch_limit = std::max<u32>(1u, static_cast<u32>(batch.size() / 2u));
             ++diagnostics->oracle_batch_reductions;
         } else {
-            blacklist.insert(batch.front().key);
+            proposal_workspace->blacklist(batch.front().key);
             ++diagnostics->blacklisted_mutations;
             batch_limit = config.initial_oracle_batch_size;
         }
@@ -677,12 +782,15 @@ validation_result optimize_packing_plan(
 
         detail::optimizer_state state;
         status = state.initialize(source.support.row_count, sampled_support,
-            config.maximum_feature_block_width, config.row_group_width);
+            config.maximum_feature_block_width, config.row_group_width,
+            config.initial_oracle_batch_size);
         if (!status) return status;
+        proposal_relation_workspace proposal_workspace(
+            normalized.view().relation_count, sampled_support.feature_count, config);
         result.diagnostics.initial_block_count = state.active_block_count();
-        result.diagnostics.peak_additional_optimizer_bytes = 2u * state.estimated_additional_bytes()
+        result.diagnostics.peak_additional_optimizer_bytes = state.estimated_additional_bytes()
             + static_cast<std::size_t>(normalized.view().relation_count) * sizeof(candidate_relation)
-            + static_cast<std::size_t>(config.proposal_shortlist) * sizeof(mutation_proposal);
+            + proposal_workspace.estimated_bytes();
 
         result.diagnostics.final_phase = packing_optimizer_phase::baseline;
         evaluated_geometry baseline;
@@ -695,16 +803,17 @@ validation_result optimize_packing_plan(
         for (u32 pass = 0u; pass < config.maximum_coarsening_passes; ++pass) {
             bool accepted = false;
             status = run_one_accepted_batch(&state, source, config, workspace,
-                [&](const std::set<mutation_key> &blacklist) {
-                    return generate_merge_proposals(state, normalized.view(), config, blacklist, &result.diagnostics);
-                }, &current, &result.diagnostics, &accepted);
+                [&]() {
+                    return generate_merge_proposals(state, normalized.view(), config,
+                        &proposal_workspace, &result.diagnostics);
+                }, &current, &result.diagnostics, &proposal_workspace, &accepted);
             if (!status) return status;
             ++result.diagnostics.coarsening_passes;
             result.diagnostics.peak_additional_optimizer_bytes = std::max(
                 result.diagnostics.peak_additional_optimizer_bytes,
-                2u * state.estimated_additional_bytes()
+                state.estimated_additional_bytes()
                     + static_cast<std::size_t>(normalized.view().relation_count) * sizeof(candidate_relation)
-                    + static_cast<std::size_t>(config.proposal_shortlist) * sizeof(mutation_proposal));
+                    + proposal_workspace.estimated_bytes());
             if (!accepted) break;
         }
 
@@ -712,16 +821,17 @@ validation_result optimize_packing_plan(
         for (u32 pass = 0u; pass < config.maximum_refinement_passes; ++pass) {
             bool accepted = false;
             status = run_one_accepted_batch(&state, source, config, workspace,
-                [&](const std::set<mutation_key> &blacklist) {
-                    return generate_refinement_proposals(state, normalized.view(), config, blacklist, &result.diagnostics);
-                }, &current, &result.diagnostics, &accepted);
+                [&]() {
+                    return generate_refinement_proposals(state, normalized.view(), config,
+                        &proposal_workspace, &result.diagnostics);
+                }, &current, &result.diagnostics, &proposal_workspace, &accepted);
             if (!status) return status;
             ++result.diagnostics.refinement_passes;
             result.diagnostics.peak_additional_optimizer_bytes = std::max(
                 result.diagnostics.peak_additional_optimizer_bytes,
-                2u * state.estimated_additional_bytes()
+                state.estimated_additional_bytes()
                     + static_cast<std::size_t>(normalized.view().relation_count) * sizeof(candidate_relation)
-                    + static_cast<std::size_t>(config.proposal_shortlist) * sizeof(mutation_proposal));
+                    + proposal_workspace.estimated_bytes());
             if (!accepted) break;
         }
 

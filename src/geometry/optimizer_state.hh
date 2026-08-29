@@ -20,6 +20,13 @@ struct alignas(16) optimizer_block_desc {
     u32 reserved = 0u;
 };
 
+struct mutation_journal_entry {
+    u32 lhs_slot = invalid_id;
+    u32 rhs_slot = invalid_id;
+    optimizer_block_desc lhs{};
+    optimizer_block_desc rhs{};
+};
+
 static_assert(sizeof(optimizer_block_desc) == 32u,
     "optimizer block descriptors must remain compact and aligned");
 
@@ -31,7 +38,8 @@ public:
         u32 row_count,
         const sampled_feature_support_view &support,
         u32 maximum_block_width,
-        u32 row_group_width) {
+        u32 row_group_width,
+        u32 mutation_journal_capacity = 1u) {
         if (support.feature_count == 0u || maximum_block_width == 0u || row_group_width == 0u) {
             return validation_error(validation_code::invalid_plan_geometry, invalid_id,
                 "optimizer dimensions and configured widths must be nonzero");
@@ -54,6 +62,9 @@ public:
             static_cast<std::size_t>(support.feature_count) * support.words_per_feature, 0u);
         feature_to_slot_.resize(support.feature_count);
         merge_scratch_.resize(maximum_block_width);
+        mutation_journal_.resize(mutation_journal_capacity);
+        mutation_journal_members_.resize(
+            static_cast<std::size_t>(mutation_journal_capacity) * 2u * maximum_block_width);
         for (u32 feature = 0u; feature < support.feature_count; ++feature) {
             blocks_[feature].active = 1u;
             blocks_[feature].stable_key = feature;
@@ -62,6 +73,50 @@ public:
             feature_to_slot_[feature] = feature;
         }
         reserve_materialization();
+        dirty_ = true;
+        return validate();
+    }
+
+    validation_result begin_mutation_journal() noexcept {
+        mutation_journal_size_ = 0u;
+        return validation_ok();
+    }
+
+    validation_result journal_blocks(u32 lhs_slot, u32 rhs_slot) {
+        if (!legal_distinct_blocks(lhs_slot, rhs_slot) || mutation_journal_size_ >= mutation_journal_.size()) {
+            return validation_error(validation_code::insufficient_capacity, invalid_id,
+                "optimizer mutation journal capacity is insufficient");
+        }
+        mutation_journal_entry &entry = mutation_journal_[mutation_journal_size_];
+        entry.lhs_slot = lhs_slot;
+        entry.rhs_slot = rhs_slot;
+        entry.lhs = blocks_[lhs_slot];
+        entry.rhs = blocks_[rhs_slot];
+        u32 *saved = journal_member_row(mutation_journal_size_);
+        std::copy_n(member_row(lhs_slot), maximum_block_width_, saved);
+        std::copy_n(member_row(rhs_slot), maximum_block_width_, saved + maximum_block_width_);
+        ++mutation_journal_size_;
+        return validation_ok();
+    }
+
+    void commit_mutation_journal() noexcept { mutation_journal_size_ = 0u; }
+
+    validation_result rollback_mutation_journal() {
+        while (mutation_journal_size_ != 0u) {
+            const u32 index = --mutation_journal_size_;
+            const mutation_journal_entry &entry = mutation_journal_[index];
+            const u32 *saved = journal_member_row(index);
+            for (u32 member = 0u; member < entry.lhs.member_count; ++member) {
+                feature_to_slot_[saved[member]] = entry.lhs_slot;
+            }
+            for (u32 member = 0u; member < entry.rhs.member_count; ++member) {
+                feature_to_slot_[saved[maximum_block_width_ + member]] = entry.rhs_slot;
+            }
+            blocks_[entry.lhs_slot] = entry.lhs;
+            blocks_[entry.rhs_slot] = entry.rhs;
+            std::copy_n(saved, maximum_block_width_, member_row(entry.lhs_slot));
+            std::copy_n(saved + maximum_block_width_, maximum_block_width_, member_row(entry.rhs_slot));
+        }
         dirty_ = true;
         return validate();
     }
@@ -342,6 +397,8 @@ public:
         return blocks_.capacity() * sizeof(optimizer_block_desc)
             + members_.capacity() * sizeof(u32) + union_words_.capacity() * sizeof(u32)
             + feature_to_slot_.capacity() * sizeof(u32) + merge_scratch_.capacity() * sizeof(u32)
+            + mutation_journal_.capacity() * sizeof(mutation_journal_entry)
+            + mutation_journal_members_.capacity() * sizeof(u32)
             + active_slots_.capacity() * sizeof(u32) + feature_permutation_.capacity() * sizeof(u32)
             + inverse_feature_permutation_.capacity() * sizeof(u32)
             + feature_block_offsets_.capacity() * sizeof(u32)
@@ -360,6 +417,9 @@ private:
     mutable std::vector<u32> union_words_;
     std::vector<u32> feature_to_slot_;
     std::vector<u32> merge_scratch_;
+    std::vector<mutation_journal_entry> mutation_journal_;
+    std::vector<u32> mutation_journal_members_;
+    u32 mutation_journal_size_ = 0u;
     bool dirty_ = true;
     std::vector<u32> active_slots_;
     std::vector<u32> feature_permutation_;
@@ -374,6 +434,14 @@ private:
     }
     const u32 *member_row(u32 slot) const noexcept {
         return members_.data() + static_cast<std::size_t>(slot) * maximum_block_width_;
+    }
+    u32 *journal_member_row(u32 index) noexcept {
+        return mutation_journal_members_.data()
+            + static_cast<std::size_t>(index) * 2u * maximum_block_width_;
+    }
+    const u32 *journal_member_row(u32 index) const noexcept {
+        return mutation_journal_members_.data()
+            + static_cast<std::size_t>(index) * 2u * maximum_block_width_;
     }
     u32 *union_row(u32 slot) const noexcept {
         return union_words_.data() + static_cast<std::size_t>(slot) * support_.words_per_feature;
