@@ -259,6 +259,8 @@ physical_view_status query_feature_major_projection_requirements_host(
     result.feature_value_offset_count =
         static_cast<std::size_t>(counts.feature_records) + 1u;
     result.source_value_position_count = counts.compact_values;
+    result.construction_workspace = {0u, 1u,
+        {cellerator::memory::domain::host, -1, -1, 0u}};
     *out = result;
     return {};
 }

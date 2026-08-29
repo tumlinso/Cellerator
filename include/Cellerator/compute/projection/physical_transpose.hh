@@ -2,6 +2,8 @@
 
 #include <Cellerator/compute/projection/physical_feature_major.hh>
 
+#include <Cellerator/memory/workspace.hh>
+
 #include <cstddef>
 #include <type_traits>
 
@@ -49,6 +51,9 @@ struct transpose_projection_requirements {
     std::size_t payload_bytes = 0u;
     std::size_t feature_offset_count = 0u;
     std::size_t edge_count = 0u;
+    // CTP1 construction uses its output offset section as a reversible cursor
+    // table, so prepared external scratch is exactly zero bytes.
+    cellerator::memory::workspace_requirement construction_workspace{};
 };
 
 struct transpose_projection_build_request {
