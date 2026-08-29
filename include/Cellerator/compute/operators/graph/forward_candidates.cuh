@@ -78,8 +78,7 @@ __device__ inline float dot_half_rows_(const __half *lhs, const __half *rhs, int
 __global__ inline void score_forward_candidates_kernel_(
     const __half *latent,
     const float *time,
-    const std::uint32_t *window_begin,
-    const std::uint32_t *window_end,
+    const RowInterval *windows,
     std::uint32_t rows,
     int latent_dim,
     int top_k,
@@ -91,8 +90,8 @@ __global__ inline void score_forward_candidates_kernel_(
     if (row >= rows) return;
 
     const __half *query = latent + static_cast<std::size_t>(row) * static_cast<std::size_t>(latent_dim);
-    const std::uint32_t begin = window_begin[row];
-    const std::uint32_t end = window_end[row];
+    const std::uint32_t begin = windows[row].begin;
+    const std::uint32_t end = begin + windows[row].count;
     const float query_time = time[row];
 
     device_candidate local_best[max_candidate_k];
@@ -150,7 +149,7 @@ inline CandidateEdgeTable build_forward_candidates_cuda(
     const FutureWindowBounds &bounds,
     const ForwardNeighborConfig &config = ForwardNeighborConfig()) {
     table.validate();
-    if (bounds.row_begin.size() != table.rows || bounds.row_end.size() != table.rows) {
+    if (bounds.rows.size() != table.rows) {
         throw std::invalid_argument("FutureWindowBounds must align with the record table");
     }
     if (config.candidate_k == 0 || config.candidate_k > detail::max_candidate_k) {
@@ -168,23 +167,20 @@ inline CandidateEdgeTable build_forward_candidates_cuda(
 
     device_buffer<__half> d_latent(table.latent.size());
     device_buffer<float> d_time(table.developmental_time.size());
-    device_buffer<std::uint32_t> d_begin(bounds.row_begin.size());
-    device_buffer<std::uint32_t> d_end(bounds.row_end.size());
+    device_buffer<RowInterval> d_windows(bounds.rows.size());
     device_buffer<std::uint32_t> d_dst(result.dst.size());
     device_buffer<float> d_similarity(result.similarity.size());
     device_buffer<float> d_dt(result.delta_t.size());
 
     d_latent.upload(table.latent.data(), table.latent.size());
     d_time.upload(table.developmental_time.data(), table.developmental_time.size());
-    d_begin.upload(bounds.row_begin.data(), bounds.row_begin.size());
-    d_end.upload(bounds.row_end.data(), bounds.row_end.size());
+    d_windows.upload(bounds.rows.data(), bounds.rows.size());
 
     // One block per anchor row keeps the interface simple, but on small tables the fixed launch plus full-device sync cost dominates.
     detail::score_forward_candidates_kernel_<<<table.rows, detail::candidate_block_threads>>>(
         d_latent.data(),
         d_time.data(),
-        d_begin.data(),
-        d_end.data(),
+        d_windows.data(),
         table.rows,
         table.latent_dim,
         static_cast<int>(config.candidate_k),

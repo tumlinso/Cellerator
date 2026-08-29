@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -22,8 +21,8 @@ struct TreeOverlay {
     std::vector<std::uint32_t> depth;
     std::vector<std::uint32_t> tin;
     std::vector<std::uint32_t> tout;
-    std::vector<std::uint32_t> up;
-    std::uint32_t up_levels = 0;
+    std::vector<std::uint32_t> euler_to_node;
+    std::vector<std::uint32_t> node_to_euler;
 };
 
 struct SupernodeTable {
@@ -32,8 +31,7 @@ struct SupernodeTable {
     std::vector<std::uint32_t> super_of_cell;
     std::vector<std::uint32_t> member_row_ptr;
     std::vector<std::uint32_t> member_cell_ids;
-    std::vector<std::uint32_t> row_begin;
-    std::vector<std::uint32_t> row_end;
+    std::vector<RowInterval> row_span;
     std::vector<std::int32_t> embryo_id;
     std::vector<float> time_begin;
     std::vector<float> time_end;
@@ -59,6 +57,8 @@ inline TreeOverlay build_principal_tree(const ForwardCsrGraph &graph) {
     tree.depth.assign(tree.nodes, 0u);
     tree.tin.assign(tree.nodes, 0u);
     tree.tout.assign(tree.nodes, 0u);
+    tree.euler_to_node.assign(tree.nodes, 0u);
+    tree.node_to_euler.assign(tree.nodes, 0u);
 
     for (std::uint32_t node = 0; node < tree.nodes; ++node) {
         for (std::uint32_t edge = inbound.row_ptr[node]; edge < inbound.row_ptr[node + 1u]; ++edge) {
@@ -82,10 +82,6 @@ inline TreeOverlay build_principal_tree(const ForwardCsrGraph &graph) {
         tree.child_ids[cursor[static_cast<std::size_t>(parent)]++] = node;
     }
 
-    tree.up_levels = 1u;
-    while ((1u << tree.up_levels) <= std::max<std::uint32_t>(1u, tree.nodes)) ++tree.up_levels;
-    tree.up.assign(static_cast<std::size_t>(tree.up_levels) * static_cast<std::size_t>(tree.nodes), std::numeric_limits<std::uint32_t>::max());
-
     std::uint32_t timer = 0;
     std::vector<std::pair<std::uint32_t, bool>> stack;
     for (std::uint32_t root = 0; root < tree.nodes; ++root) {
@@ -96,17 +92,13 @@ inline TreeOverlay build_principal_tree(const ForwardCsrGraph &graph) {
             const auto [node, exiting] = stack.back();
             stack.pop_back();
             if (exiting) {
-                tree.tout[node] = timer++;
+                tree.tout[node] = timer;
                 continue;
             }
 
-            tree.tin[node] = timer++;
-            tree.up[node] = tree.parent[node] >= 0 ? static_cast<std::uint32_t>(tree.parent[node]) : node;
-            for (std::uint32_t level = 1; level < tree.up_levels; ++level) {
-                const std::uint32_t prev = tree.up[static_cast<std::size_t>(level - 1u) * tree.nodes + node];
-                tree.up[static_cast<std::size_t>(level) * tree.nodes + node] =
-                    tree.up[static_cast<std::size_t>(level - 1u) * tree.nodes + prev];
-            }
+            tree.tin[node] = timer;
+            tree.node_to_euler[node] = timer;
+            tree.euler_to_node[timer++] = node;
             stack.emplace_back(node, true);
 
             const std::uint32_t child_begin = tree.child_row_ptr[node];
@@ -133,7 +125,17 @@ inline SupernodeTable build_supernodes(
     SupernodeTable supernodes;
     supernodes.latent_dim = table.latent_dim;
     supernodes.super_of_cell.assign(table.rows, std::numeric_limits<std::uint32_t>::max());
+    supernodes.member_cell_ids.reserve(table.rows);
+    supernodes.member_row_ptr.reserve(static_cast<std::size_t>(table.rows) + 1u);
+    supernodes.row_span.reserve(table.rows);
+    supernodes.embryo_id.reserve(table.rows);
+    supernodes.time_begin.reserve(table.rows);
+    supernodes.time_end.reserve(table.rows);
+    supernodes.support_mass.reserve(table.rows);
+    supernodes.is_branch.reserve(table.rows);
+    supernodes.centroid.reserve(static_cast<std::size_t>(table.rows) * table.latent_dim);
     supernodes.member_row_ptr.push_back(0u);
+    std::vector<float> centroid_acc(static_cast<std::size_t>(table.latent_dim), 0.0f);
 
     const auto child_count = [&](std::uint32_t node) {
         return tree.child_row_ptr[node + 1u] - tree.child_row_ptr[node];
@@ -152,36 +154,39 @@ inline SupernodeTable build_supernodes(
 
         const std::uint32_t super_id = supernodes.count++;
         const std::uint32_t begin = row;
-        std::vector<std::uint32_t> members{ row };
+        const std::uint32_t member_begin = static_cast<std::uint32_t>(supernodes.member_cell_ids.size());
+        supernodes.member_cell_ids.push_back(row);
         supernodes.super_of_cell[row] = super_id;
 
         std::uint32_t current = row;
+        std::uint32_t maximum_member = row;
         while (child_count(current) == 1u) {
             const std::uint32_t child = tree.child_ids[tree.child_row_ptr[current]];
             if (tree.parent_score[child] < min_parent_score) break;
             if (table.developmental_time[child] - table.developmental_time[current] > max_chain_merge_dt) break;
             supernodes.super_of_cell[child] = super_id;
-            members.push_back(child);
+            supernodes.member_cell_ids.push_back(child);
+            maximum_member = std::max(maximum_member, child);
             current = child;
         }
 
-        const auto max_it = std::max_element(members.begin(), members.end());
-        supernodes.member_cell_ids.insert(supernodes.member_cell_ids.end(), members.begin(), members.end());
+        const std::uint32_t member_end = static_cast<std::uint32_t>(supernodes.member_cell_ids.size());
+        const std::uint32_t member_count = member_end - member_begin;
         supernodes.member_row_ptr.push_back(static_cast<std::uint32_t>(supernodes.member_cell_ids.size()));
-        supernodes.row_begin.push_back(begin);
-        supernodes.row_end.push_back(*max_it + 1u);
+        supernodes.row_span.push_back(RowInterval{begin, maximum_member + 1u - begin});
         supernodes.embryo_id.push_back(table.embryo_id[begin]);
         supernodes.time_begin.push_back(table.developmental_time[begin]);
         supernodes.time_end.push_back(table.developmental_time[current]);
-        supernodes.support_mass.push_back(static_cast<float>(members.size()));
+        supernodes.support_mass.push_back(static_cast<float>(member_count));
         supernodes.is_branch.push_back(0u);
 
-        std::vector<float> centroid_acc(static_cast<std::size_t>(table.latent_dim), 0.0f);
-        for (std::uint32_t cell : members) {
+        std::fill(centroid_acc.begin(), centroid_acc.end(), 0.0f);
+        for (std::uint32_t member = member_begin; member < member_end; ++member) {
+            const std::uint32_t cell = supernodes.member_cell_ids[member];
             const __half *row_ptr = table.latent_row_ptr(cell);
             for (std::int32_t d = 0; d < table.latent_dim; ++d) centroid_acc[static_cast<std::size_t>(d)] += __half2float(row_ptr[d]);
         }
-        const float inv = 1.0f / static_cast<float>(members.size());
+        const float inv = 1.0f / static_cast<float>(member_count);
         for (float &value : centroid_acc) value *= inv;
         for (float value : centroid_acc) supernodes.centroid.push_back(__float2half_rn(value));
     }
@@ -192,8 +197,7 @@ inline SupernodeTable build_supernodes(
         supernodes.super_of_cell[row] = super_id;
         supernodes.member_cell_ids.push_back(row);
         supernodes.member_row_ptr.push_back(static_cast<std::uint32_t>(supernodes.member_cell_ids.size()));
-        supernodes.row_begin.push_back(row);
-        supernodes.row_end.push_back(row + 1u);
+        supernodes.row_span.push_back(RowInterval{row, 1u});
         supernodes.embryo_id.push_back(table.embryo_id[row]);
         supernodes.time_begin.push_back(table.developmental_time[row]);
         supernodes.time_end.push_back(table.developmental_time[row]);
@@ -213,35 +217,58 @@ inline SupernodeDag build_supernode_dag(
         throw std::invalid_argument("supernodes.super_of_cell must align with graph rows");
     }
 
-    std::vector<std::unordered_map<std::uint32_t, std::pair<float, float>>> rows(supernodes.count);
+    struct alignas(16) aggregated_edge {
+        std::uint64_t key;
+        float mass;
+        float score;
+    };
+    std::vector<aggregated_edge> edges;
+    edges.reserve(graph.dst.size());
     for (std::uint32_t src = 0; src < graph.rows; ++src) {
         const std::uint32_t src_super = supernodes.super_of_cell[src];
         for (std::uint32_t edge = graph.row_ptr[src]; edge < graph.row_ptr[src + 1u]; ++edge) {
             const std::uint32_t dst_super = supernodes.super_of_cell[graph.dst[edge]];
             if (src_super == dst_super) continue;
-            auto &entry = rows[src_super][dst_super];
-            entry.first += 1.0f;
-            entry.second = std::max(entry.second, graph.score[edge]);
+            const std::uint64_t key = (static_cast<std::uint64_t>(src_super) << 32u) | dst_super;
+            edges.push_back({key, 1.0f, graph.score[edge]});
         }
     }
+
+    std::sort(edges.begin(), edges.end(), [](const aggregated_edge &lhs, const aggregated_edge &rhs) {
+        return lhs.key < rhs.key;
+    });
+    std::size_t compact_count = 0u;
+    for (const aggregated_edge &edge : edges) {
+        if (compact_count != 0u && edges[compact_count - 1u].key == edge.key) {
+            edges[compact_count - 1u].mass += edge.mass;
+            edges[compact_count - 1u].score = std::max(edges[compact_count - 1u].score, edge.score);
+        } else {
+            edges[compact_count++] = edge;
+        }
+    }
+    edges.resize(compact_count);
+    std::sort(edges.begin(), edges.end(), [](const aggregated_edge &lhs, const aggregated_edge &rhs) {
+        const std::uint32_t lhs_src = static_cast<std::uint32_t>(lhs.key >> 32u);
+        const std::uint32_t rhs_src = static_cast<std::uint32_t>(rhs.key >> 32u);
+        if (lhs_src != rhs_src) return lhs_src < rhs_src;
+        if (lhs.mass != rhs.mass) return lhs.mass > rhs.mass;
+        return static_cast<std::uint32_t>(lhs.key) < static_cast<std::uint32_t>(rhs.key);
+    });
 
     SupernodeDag dag;
     dag.rows = supernodes.count;
     dag.row_ptr.assign(static_cast<std::size_t>(dag.rows) + 1u, 0u);
-    for (std::uint32_t row = 0; row < dag.rows; ++row) {
-        dag.row_ptr[row + 1u] = dag.row_ptr[row] + static_cast<std::uint32_t>(rows[row].size());
-        std::vector<std::pair<std::uint32_t, std::pair<float, float>>> ordered(rows[row].begin(), rows[row].end());
-        std::sort(ordered.begin(), ordered.end(), [](const auto &lhs, const auto &rhs) {
-            if (lhs.second.first > rhs.second.first) return true;
-            if (lhs.second.first < rhs.second.first) return false;
-            return lhs.first < rhs.first;
-        });
-        for (const auto &entry : ordered) {
-            dag.dst.push_back(entry.first);
-            dag.mass.push_back(entry.second.first);
-            dag.score.push_back(entry.second.second);
-        }
+    dag.dst.reserve(edges.size());
+    dag.mass.reserve(edges.size());
+    dag.score.reserve(edges.size());
+    for (const aggregated_edge &edge : edges) {
+        const std::uint32_t src = static_cast<std::uint32_t>(edge.key >> 32u);
+        ++dag.row_ptr[src + 1u];
+        dag.dst.push_back(static_cast<std::uint32_t>(edge.key));
+        dag.mass.push_back(edge.mass);
+        dag.score.push_back(edge.score);
     }
+    for (std::uint32_t row = 1u; row <= dag.rows; ++row) dag.row_ptr[row] += dag.row_ptr[row - 1u];
 
     return dag;
 }
