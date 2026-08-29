@@ -1,24 +1,18 @@
 # Cellerator Repository Guidance
 
 <!-- coding-workflow:start -->
-## Primary coding workflow
+## Coding workflow
 
-For substantial repository work, use the `coding-workflow` MCP server as the normal front door. It is the preferred interface to todo-orchestrator, cpp-context-compiler, local-coding-worker, and CUDA during ordinary implementation.
+For substantial repository work, use `coding-workflow`.
+Do not directly invoke todo-orchestrator, cpp-context-compiler, CUDA, or
+local-coding-worker unless coding-workflow returns an explicit bounded fallback
+authorization, the user explicitly requests maintenance, or coding-workflow
+itself is being debugged.
 
-1. Call `next_task` to start or resume authoritative work.
-2. Use `inspect_task` only for bounded task, source, or evidence context.
-3. Use `delegate_task` as optional acceleration when useful.
-4. If delegation is unavailable, ineligible, preempted, or unnecessary, continue directly in Codex. Never wait for a GPU merely to obtain a local worker.
-5. Use `collect_delegation` only for a handle returned by the server; do not poll repeatedly.
-6. End every claimed task through `finish_task`.
-
-### Underlying skill interfaces: fallback / debugging only
-
-The direct todo-orchestrator, cpp-context-compiler, local-coding-worker, and CUDA interfaces remain valid for recovery, standalone use, work on the skills themselves, or when `coding-workflow` is unavailable or internally inconsistent. Do not use them as a competing normal workflow. Do not spend implementation context on helper internals such as tokens, databases, ctxpp plumbing, model-server state, GPU leases, worktrees, or worker configuration.
-
-If `coding-workflow` fails, do not make helper debugging the foreground task unless the task is about that machinery. Continue safely in Codex when possible; use a direct skill only when authoritative task state, source correctness, acceptance, or recovery requires it, and record a concise helper warning.
-
-Multiple frontier Codex agents may work in parallel when todo ownership permits it. Local-worker capacity is independent: if all slots are occupied, do not wait, block the parent task, or create a GPU-waiting writable scope lock; continue directly in Codex. Local workers are optional aids, not task authorities.
+Start with `next_task`. First-class Codex agents receive run lanes and roles.
+Local workers are bounded children of one parent claim: they never claim project
+todos, receive lanes or roles, communicate across lanes, join rendezvous, publish
+project decisions or interfaces, or complete the parent task.
 <!-- coding-workflow:end -->
 
 ## Authority
