@@ -28,7 +28,7 @@ inline IncrementalInsertPlan plan_incremental_insert(
     const std::vector<TimeSlabSpan> &base_slabs,
     const TrajectoryRecordTable &new_rows,
     float halo_time) {
-    const std::vector<DeltaSlabAssignment> assignments = assign_rows_to_delta_slabs(base_slabs, new_rows, halo_time);
+    const auto assignments = assign_rows_to_delta_slabs(base_slabs, new_rows, halo_time);
     IncrementalInsertPlan plan;
     plan.slabs.reserve(base_slabs.size());
     plan.unassigned_rows.reserve(assignments.size());
@@ -64,8 +64,7 @@ inline IncrementalInsertPlan plan_incremental_insert(
         total += slab.input_count;
     }
     plan.input_rows.resize(total);
-    std::vector<std::uint32_t> cursor(plan.slabs.size());
-    for (std::size_t slot = 0u; slot < plan.slabs.size(); ++slot) cursor[slot] = plan.slabs[slot].input_begin;
+    for (DeltaSlabBuffer &slab : plan.slabs) slab.input_count = slab.input_begin;
     for (const DeltaSlabAssignment &assignment : assignments) {
         if (assignment.slab_id == std::numeric_limits<std::uint32_t>::max()) continue;
         const auto slab_it = std::find_if(base_slabs.begin(), base_slabs.end(), [&](const TimeSlabSpan &slab) {
@@ -73,7 +72,13 @@ inline IncrementalInsertPlan plan_incremental_insert(
         });
         const std::size_t base_index = static_cast<std::size_t>(slab_it - base_slabs.begin());
         const std::uint32_t output = base_to_output[base_index];
-        plan.input_rows[cursor[output]++] = assignment.input_row;
+        plan.input_rows[plan.slabs[output].input_count++] = assignment.input_row;
+    }
+    for (std::size_t slot = 0u; slot < plan.slabs.size(); ++slot) {
+        const std::uint32_t end = slot + 1u < plan.slabs.size()
+            ? plan.slabs[slot + 1u].input_begin
+            : total;
+        plan.slabs[slot].input_count = end - plan.slabs[slot].input_begin;
     }
 
     return plan;
