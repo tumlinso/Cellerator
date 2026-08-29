@@ -1,6 +1,10 @@
 #pragma once
 
 #include <Cellerator/geometry/gene_support_bitset.hh>
+#include <Cellerator/memory/view.hh>
+#include <Cellerator/memory/workspace.hh>
+
+#include <cuda_runtime_api.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -66,6 +70,65 @@ struct gene_candidate_pair_view {
     std::uint64_t count = 0u;
     const candidate_discovery_provenance *provenance = nullptr;
 };
+
+class owned_gene_candidates;
+
+struct candidate_discovery_device_requirements {
+    candidate_discovery_bounds bounds;
+    std::uint64_t candidate_capacity = 0u;
+    std::size_t cub_temporary_bytes = 0u;
+    ::cellerator::memory::workspace_requirement workspace;
+};
+
+struct candidate_discovery_device_evidence {
+    candidate_discovery_config config;
+    const ::cellerator::compute::sampling::sample_provenance *sampling = nullptr;
+    std::uint64_t sampled_cell_count = 0u;
+    std::uint64_t gene_count = 0u;
+    std::uint64_t nonempty_gene_count = 0u;
+    std::uint64_t lsh_record_count = 0u;
+    std::uint64_t bucket_count = 0u;
+    std::uint64_t oversized_bucket_count = 0u;
+    std::uint64_t discarded_bucket_members = 0u;
+    std::uint64_t raw_pair_occurrences = 0u;
+    std::uint64_t unique_candidate_count = 0u;
+    std::size_t device_cub_temporary_bytes = 0u;
+    std::size_t device_peak_bytes = 0u;
+};
+
+struct gene_candidate_pair_device_view {
+    ::cellerator::memory::array_view<gene_candidate_pair> pairs;
+    std::uint64_t count = 0u;
+    std::uint64_t capacity = 0u;
+    candidate_discovery_device_evidence evidence;
+};
+
+// Queries every CUB primitive at its exact preflight upper bound. No device
+// allocation occurs and the returned workspace requirement is reusable.
+bool prepare_candidate_discovery_cuda(
+    const ::cellerator::compute::gene_support::gene_support_layout &support_layout,
+    const candidate_discovery_config &config,
+    int device,
+    candidate_discovery_device_requirements *out,
+    std::string *error = nullptr);
+
+// Uses only caller-owned workspace. Support stays resident and the canonical,
+// sorted, duplicate-free pair view remains on device for exact scoring.
+bool discover_gene_candidates_cuda_prepared(
+    const ::cellerator::compute::gene_support::gene_support_device_view &support,
+    const candidate_discovery_config &config,
+    const candidate_discovery_device_requirements &requirements,
+    ::cellerator::memory::workspace workspace,
+    cudaStream_t stream,
+    gene_candidate_pair_device_view *out,
+    std::string *error = nullptr);
+
+// Explicit terminal adapter; it is the only prepared-path pair materialization.
+bool materialize_gene_candidates_host(
+    const gene_candidate_pair_device_view &device_candidates,
+    cudaStream_t stream,
+    owned_gene_candidates *out,
+    std::string *error = nullptr);
 
 class owned_gene_candidates {
 public:

@@ -25,6 +25,26 @@ namespace {
 
 namespace cs = ::cellerator::compute::sampling;
 namespace ct = ::cellerator::types;
+namespace cm = ::cellerator::memory;
+
+constexpr std::size_t device_workspace_alignment = 256u;
+
+bool checked_align_add(std::size_t current,
+                       std::size_t bytes,
+                       std::size_t alignment,
+                       std::size_t *out) {
+    if (out == nullptr || alignment == 0u || (alignment & (alignment - 1u)) != 0u) return false;
+    const std::size_t mask = alignment - 1u;
+    if (current > std::numeric_limits<std::size_t>::max() - mask) return false;
+    const std::size_t aligned = (current + mask) & ~mask;
+    if (bytes > std::numeric_limits<std::size_t>::max() - aligned) return false;
+    *out = aligned + bytes;
+    return true;
+}
+
+bool is_device_placement(cm::placement where, int device) {
+    return where.kind == cm::domain::device && where.device_ordinal == device;
+}
 
 void set_error(std::string *error, const std::string &message) {
     if (error != nullptr) *error = message;
@@ -238,6 +258,135 @@ bool calculate_gene_support_layout(std::uint64_t sampled_cell_count,
     }
     *out = layout;
     return true;
+}
+
+bool calculate_gene_support_device_requirements(
+    std::uint64_t sampled_cell_count,
+    std::uint64_t gene_count,
+    int device,
+    gene_support_device_requirements *out,
+    std::string *error) {
+    if (out == nullptr) {
+        set_error(error, "gene-support device requirements output is null");
+        return false;
+    }
+    if (device < 0) {
+        set_error(error, "gene-support device ordinal is negative");
+        return false;
+    }
+    gene_support_device_requirements result;
+    if (!calculate_gene_support_layout(sampled_cell_count, gene_count, &result.layout, error)) {
+        return false;
+    }
+    std::size_t bytes = 0u;
+    if (!checked_align_add(bytes, result.layout.support_bytes, alignof(support_word_t), &bytes)
+        || !checked_align_add(bytes, result.layout.detection_count_bytes,
+                              alignof(ct::count_value_t), &bytes)
+        || !checked_align_add(bytes, sizeof(ct::u32), alignof(ct::u32), &bytes)) {
+        set_error(error, "gene-support resident workspace size overflows size_t");
+        return false;
+    }
+    result.resident_output = {
+        bytes,
+        static_cast<std::uint32_t>(device_workspace_alignment),
+        {cm::domain::device, static_cast<std::int16_t>(device), -1, 0u}};
+    *out = result;
+    return true;
+}
+
+bool bind_gene_support_device_view(
+    const sampled_csr_device_view &sampled,
+    cm::workspace *resident_storage,
+    gene_support_device_view *out,
+    std::string *error) {
+    if (resident_storage == nullptr || out == nullptr) {
+        set_error(error, "gene-support device bind received a null output or workspace");
+        return false;
+    }
+    if (sampled.provenance == nullptr
+        || sampled.provenance->selected_rows != sampled.sampled_row_count) {
+        set_error(error, "gene-support device bind has incompatible sampling provenance");
+        return false;
+    }
+    const int device = resident_storage->where.device_ordinal;
+    if (!is_device_placement(resident_storage->where, device)
+        || !is_device_placement(sampled.row_ptr.where, device)
+        || !is_device_placement(sampled.column_indices.where, device)
+        || !is_device_placement(sampled.sampled_position_to_global_row.where, device)) {
+        set_error(error, "gene-support input and output placements must name one CUDA device");
+        return false;
+    }
+    if (sampled.row_ptr.count < sampled.sampled_row_count + 1u
+        || sampled.column_indices.count < sampled.nnz
+        || sampled.sampled_position_to_global_row.count < sampled.sampled_row_count) {
+        set_error(error, "gene-support device input capacity is insufficient");
+        return false;
+    }
+    gene_support_layout layout;
+    if (!calculate_gene_support_layout(sampled.sampled_row_count, sampled.gene_count,
+                                       &layout, error)) return false;
+    support_word_t *support = nullptr;
+    ct::count_value_t *counts = nullptr;
+    ct::u32 *device_error = nullptr;
+    if (cm::take(resident_storage, layout.support_word_count, &support) != cm::status::success
+        || cm::take(resident_storage, static_cast<std::size_t>(layout.gene_count), &counts)
+            != cm::status::success
+        || cm::take(resident_storage, 1u, &device_error) != cm::status::success) {
+        set_error(error, "gene-support resident workspace capacity is insufficient");
+        return false;
+    }
+    const cm::placement where = resident_storage->where;
+    *out = {layout,
+            {support, layout.support_word_count, where},
+            {counts, static_cast<std::size_t>(layout.gene_count), where},
+            sampled.sampled_position_to_global_row,
+            sampled.provenance,
+            device_error};
+    return true;
+}
+
+bool launch_gene_support_bitsets_cuda(
+    const sampled_csr_device_view &sampled,
+    gene_support_device_view output,
+    cudaStream_t stream,
+    std::string *error) {
+    const int device = output.gene_support.where.device_ordinal;
+    if (output.provenance != sampled.provenance
+        || output.layout.sampled_cell_count != sampled.sampled_row_count
+        || output.layout.gene_count != sampled.gene_count
+        || output.gene_support.count < output.layout.support_word_count
+        || output.detected_cell_counts.count < output.layout.gene_count
+        || output.device_error == nullptr
+        || !is_device_placement(output.gene_support.where, device)
+        || !is_device_placement(output.detected_cell_counts.where, device)
+        || !is_device_placement(sampled.row_ptr.where, device)
+        || !is_device_placement(sampled.column_indices.where, device)) {
+        set_error(error, "gene-support prepared launch contract is invalid");
+        return false;
+    }
+    cudaError_t status = cudaSuccess;
+    if (output.layout.support_bytes != 0u) {
+        status = cudaMemsetAsync(output.gene_support.data, 0,
+                                 output.layout.support_bytes, stream);
+    }
+    if (status == cudaSuccess && output.layout.detection_count_bytes != 0u) {
+        status = cudaMemsetAsync(output.detected_cell_counts.data, 0,
+                                 output.layout.detection_count_bytes, stream);
+    }
+    if (status == cudaSuccess) status = cudaMemsetAsync(output.device_error, 0, sizeof(ct::u32), stream);
+    if (status == cudaSuccess && sampled.sampled_row_count != 0u && sampled.gene_count != 0u) {
+        constexpr unsigned int block_size = 256u;
+        const unsigned int grid_size =
+            (static_cast<unsigned int>(sampled.sampled_row_count) + block_size - 1u) / block_size;
+        build_gene_support_kernel<<<grid_size, block_size, 0u, stream>>>(
+            sampled.row_ptr.data, sampled.column_indices.data,
+            static_cast<ct::dim_t>(sampled.sampled_row_count),
+            static_cast<ct::idx_t>(sampled.gene_count), static_cast<ct::ptr_t>(sampled.nnz),
+            output.layout.words_per_gene, output.gene_support.data,
+            output.detected_cell_counts.data, output.device_error);
+        status = cudaGetLastError();
+    }
+    return cuda_status(status, "prepared gene-support launch", error);
 }
 
 owned_gene_support_bitsets::owned_gene_support_bitsets(

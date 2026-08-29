@@ -3,6 +3,9 @@
 #include "Cellerator/geometry/candidate_relation.hh"
 
 #include <Cellerator/geometry/gene_candidate_discovery.hh>
+#include <Cellerator/memory/view.hh>
+
+#include <cuda_runtime_api.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -79,6 +82,23 @@ struct exact_gene_merge_score_view {
     }
 };
 
+class owned_exact_gene_merge_scores;
+
+struct exact_gene_merge_score_device_view {
+    ::cellerator::memory::array_view<candidate_relation> relations;
+    ::cellerator::memory::array_view<exact_gene_merge_cost> costs;
+    u64 count = 0u;
+    exact_merge_cost_policy policy;
+    ::cellerator::compute::gene_candidates::candidate_discovery_device_evidence candidate_evidence;
+    u32 *device_error_index = nullptr;
+};
+
+struct exact_merge_score_device_storage {
+    ::cellerator::memory::array_view<candidate_relation> relations;
+    ::cellerator::memory::array_view<exact_gene_merge_cost> costs;
+    ::cellerator::memory::array_view<u32> error_index;
+};
+
 class owned_exact_gene_merge_scores {
 public:
     owned_exact_gene_merge_scores() = default;
@@ -132,6 +152,22 @@ validation_result score_gene_merges_cuda(
     const ::cellerator::compute::gene_candidates::gene_candidate_pair_view &candidates,
     const exact_merge_cost_policy &policy,
     int device,
+    owned_exact_gene_merge_scores *out);
+
+// Allocation- and transfer-free resident scoring. Storage capacities are
+// validated before launch and the caller stream owns ordering.
+validation_result score_gene_merges_cuda_prepared(
+    const ::cellerator::compute::gene_support::gene_support_device_view &support,
+    const ::cellerator::compute::gene_candidates::gene_candidate_pair_device_view &candidates,
+    const exact_merge_cost_policy &policy,
+    exact_merge_score_device_storage storage,
+    cudaStream_t stream,
+    exact_gene_merge_score_device_view *out);
+
+// Explicit terminal adapter for relations and exact evidence.
+validation_result materialize_gene_merge_scores_host(
+    const exact_gene_merge_score_device_view &device_scores,
+    cudaStream_t stream,
     owned_exact_gene_merge_scores *out);
 
 } // namespace cellpack
