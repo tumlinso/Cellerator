@@ -5,20 +5,20 @@ placement, and the single caller-stream upload. It validates the CPEXEC01
 transport envelope as opaque bytes and does not include or interpret CPE2
 directories, projections, or operation semantics.
 
-Cellerator's `validate_opaque_execution_artifact_host` first requires the exact
-CellShard transport identity, then validates the inner CPE2 checksum, structure
-epoch, semantic geometry, projection catalog, and image identity. The outer
-legacy row-domain and feature-axis fields remain explicit compatibility facts;
-they are not hashed into or substituted for CPE2's 128-bit identities.
+Cellerator's `validate_opaque_execution_artifact_host` accepts caller-owned
+resident bytes and validates the inner CPE2 checksum, structure epoch, semantic
+geometry, projection catalog, and image identity. CellShard-side integration
+checks transport identity, kind, schema, and payload identity before handing
+the resident byte span to Cellerator.
 
-`bind_opaque_execution_artifact_device` accepts an already uploaded CellShard
-residency. It checks that the device identity and size match validated host
-state, then forms CPE2 device-relative projection pointers from the validated
+`bind_opaque_execution_artifact_device` accepts already uploaded caller-owned
+bytes. It checks that the device size matches validated host state, then forms
+CPE2 device-relative projection pointers from the validated
 host directories. It performs no allocation, copy, parsing, checksum,
 synchronization, stream selection, or device selection.
 
 The validated host view is cold load state. The bound device view is prepared
-state and owns neither the CellShard allocation nor launch values, stream, or
+state and owns neither the caller allocation nor launch values, stream, or
 workspace. Host and device residencies must outlive their corresponding views.
 Persistent identity and generation checks, never pointer equality, determine
 compatibility.

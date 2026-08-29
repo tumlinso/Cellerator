@@ -35,9 +35,6 @@ components/CellPack/
 components/CelleraTorch/
     Torch and libtorch integration boundary
 
-src/preprocess/
-    biology-facing preprocessing policy and orchestration
-
 src/models/
     native and legacy model implementations
 
@@ -143,7 +140,8 @@ quantizedMatrixTest
 developmentalTimeRuntimeTest
 developmentalTimeTrajectoryRuntimeTest
 stateReduceRuntimeTest
-celleratorPreprocessRuntimeTest
+celleratorSparseRowTransformsTest
+celleratorSparseColumnMomentsTest
 ```
 
 Current CP-BP-focused targets include variants of:

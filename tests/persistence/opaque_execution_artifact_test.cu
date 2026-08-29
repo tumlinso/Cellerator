@@ -1,4 +1,4 @@
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <CellShard/interop/cellerator/execution_payload.hh>
 
 #include <cuda_runtime.h>
 
@@ -14,6 +14,7 @@ namespace cp = cellpack;
 namespace persistence = cellpack::persistence;
 namespace execution = cellerator::execution;
 namespace cs = cellshard;
+namespace integration = cellshard::interop::cellerator;
 
 namespace {
 
@@ -167,21 +168,29 @@ int main() {
     require(cs::load_execution_cspack_partition(path.c_str(), 9u, 0u,
         identity, &host) != 0, "fetch exact opaque CPE2");
 
-    execution::opaque_execution_artifact_expected expected{};
+    integration::execution_artifact_expected expected{};
     expected.transport = identity;
-    expected.image = {build.structure_identity, build.structure_epoch,
+    expected.image.image = {build.structure_identity, build.structure_epoch,
         build.semantic_geometry_identity, build.projection_catalog_identity,
         built.header.image_identity};
-    expected.projection_index = 0u;
-    execution::validated_opaque_execution_artifact validated{};
-    require(execution::validate_opaque_execution_artifact_host(
+    expected.image.projection_index = 0u;
+    integration::validated_execution_artifact validated{};
+    require(integration::validate_execution_artifact_host(
         host, expected, &validated), "Cellerator semantic validation");
     auto stale_semantics = expected;
-    ++stale_semantics.image.structure_epoch;
-    require(!execution::validate_opaque_execution_artifact_host(
+    ++stale_semantics.image.image.structure_epoch;
+    require(!integration::validate_execution_artifact_host(
         host, stale_semantics, &validated), "reject stale CPE2 structure epoch");
-    require(execution::validate_opaque_execution_artifact_host(
+    require(integration::validate_execution_artifact_host(
         host, expected, &validated), "restore exact semantic validation");
+
+    if (std::getenv("CELLERATOR_OPAQUE_ARTIFACT_HOST_ONLY") != nullptr) {
+        cs::clear_execution_payload_host(&host);
+        ::unlink(path.c_str());
+        std::puts("celleratorOpaqueExecutionArtifactTest passed "
+            "persist=1 validate=1 host_only=1");
+        return 0;
+    }
 
     cudaStream_t stream = nullptr;
     require_cuda(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking),
@@ -196,7 +205,7 @@ int main() {
     require_cuda(cudaMemGetInfo(&free_before, &total_before),
         "measure before Cellerator bind");
     execution::bound_opaque_execution_artifact bound{};
-    require(execution::bind_opaque_execution_artifact_device(
+    require(integration::bind_execution_artifact_device(
         validated, device, &bound), "bind uploaded CPE2 projection");
     std::size_t free_after = 0u, total_after = 0u;
     require_cuda(cudaMemGetInfo(&free_after, &total_after),
@@ -210,10 +219,10 @@ int main() {
 
     auto mismatched_device = device;
     ++mismatched_device.identity.payload_identity;
-    require(!execution::bind_opaque_execution_artifact_device(
+    require(!integration::bind_execution_artifact_device(
         validated, mismatched_device, &bound),
         "reject mismatched device residency identity");
-    require(execution::bind_opaque_execution_artifact_device(
+    require(integration::bind_execution_artifact_device(
         validated, device, &bound), "restore exact device binding");
 
     std::uint32_t *device_output = nullptr;

@@ -1,11 +1,8 @@
 #include <Cellerator/compute/sampling_materialization.hh>
 
-#include <CellShard/io/csh5/api.cuh>
-
 #include <cuda_fp16.h>
 
 #include <algorithm>
-#include <cstdlib>
 #include <cstdint>
 #include <cstdio>
 #include <string>
@@ -13,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include <unistd.h>
 
 namespace cm = cellerator::matrix;
 namespace cs = cellerator::compute::sampling;
@@ -184,146 +180,22 @@ int test_zero_rows_and_input_validation() {
     return 0;
 }
 
-struct cellshard_fixture {
-    std::string path;
-    cellshard::sparse::blocked_ell part;
-    cellshard::bucketed_blocked_ell_shard shard;
-
-    cellshard_fixture() {
-        cellshard::sparse::init(&part);
-        cellshard::init(&shard);
-    }
-    ~cellshard_fixture() {
-        cellshard::clear(&shard);
-        cellshard::sparse::clear(&part);
-        if (!path.empty()) std::remove(path.c_str());
-    }
-};
-
-bool create_cellshard_fixture(cellshard_fixture *fixture) {
-    cellshard::bucketed_blocked_ell_partition bucket;
-    cellshard::init(&bucket);
-    char path[] = "/tmp/cellerator_sample_structureXXXXXX.csh5";
-    const int fd = ::mkstemps(path, 5);
-    if (fd < 0) return false;
-    ::close(fd);
-    std::remove(path);
-    fixture->path = path;
-
-    cellshard::sparse::init(&fixture->part, 2u, 4u, 4u, 2u, 4u);
-    if (!cellshard::sparse::allocate(&fixture->part)) return false;
-    fixture->part.blockColIdx[0] = 0u;
-    fixture->part.blockColIdx[1] = 1u;
-    fixture->part.val[0] = __float2half(1.0f);
-    fixture->part.val[1] = __float2half(0.0f);
-    fixture->part.val[2] = __float2half(2.0f);
-    fixture->part.val[3] = __float2half(0.0f);
-    fixture->part.val[4] = __float2half(0.0f);
-    fixture->part.val[5] = __float2half(3.0f);
-    fixture->part.val[6] = __float2half(0.0f);
-    fixture->part.val[7] = __float2half(4.0f);
-
-    const std::uint64_t partition_rows[] = {2u}, partition_nnz[] = {4u};
-    const std::uint32_t partition_axes[] = {0u};
-    const std::uint64_t partition_aux[] = {
-        (std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(2u, 2ul)
-    };
-    const std::uint64_t partition_offsets[] = {0u, 2u}, shard_offsets[] = {0u, 2u};
-    const std::uint32_t partition_dataset_ids[] = {0u}, partition_codec_ids[] = {0u};
-    cellshard::dataset_codec_descriptor codec{};
-    codec.codec_id = 0u;
-    codec.family = cellshard::dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) ::real::code_of< ::real::storage_t>::code;
-    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
-    const cellshard::dataset_layout_view layout{
-        2u, 4u, 4u, 1u, 1u,
-        partition_rows, partition_nnz, partition_axes, partition_aux, partition_offsets,
-        partition_dataset_ids, partition_codec_ids, shard_offsets, &codec, 1u
-    };
-    if (!cellshard::build_bucketed_blocked_ell_partition(&bucket, &fixture->part, 1u, nullptr)) {
-        return false;
-    }
-    bucket.exec_to_canonical_cols = (std::uint32_t *) std::calloc(4u, sizeof(std::uint32_t));
-    bucket.canonical_to_exec_cols = (std::uint32_t *) std::calloc(4u, sizeof(std::uint32_t));
-    fixture->shard.rows = 2u;
-    fixture->shard.cols = 4u;
-    fixture->shard.nnz = 4u;
-    fixture->shard.partition_count = 1u;
-    fixture->shard.partitions = (cellshard::bucketed_blocked_ell_partition *)
-        std::calloc(1u, sizeof(cellshard::bucketed_blocked_ell_partition));
-    fixture->shard.partition_row_offsets = (std::uint32_t *) std::calloc(2u, sizeof(std::uint32_t));
-    fixture->shard.exec_to_canonical_cols = (std::uint32_t *) std::calloc(4u, sizeof(std::uint32_t));
-    fixture->shard.canonical_to_exec_cols = (std::uint32_t *) std::calloc(4u, sizeof(std::uint32_t));
-    if (bucket.exec_to_canonical_cols == nullptr || bucket.canonical_to_exec_cols == nullptr
-        || fixture->shard.partitions == nullptr || fixture->shard.partition_row_offsets == nullptr
-        || fixture->shard.exec_to_canonical_cols == nullptr
-        || fixture->shard.canonical_to_exec_cols == nullptr) {
-        cellshard::clear(&bucket);
-        return false;
-    }
-    for (std::uint32_t column = 0u; column < 4u; ++column) {
-        bucket.exec_to_canonical_cols[column] = column;
-        bucket.canonical_to_exec_cols[column] = column;
-        fixture->shard.exec_to_canonical_cols[column] = column;
-        fixture->shard.canonical_to_exec_cols[column] = column;
-    }
-    fixture->shard.partitions[0] = bucket;
-    cellshard::init(&bucket);
-    fixture->shard.partition_row_offsets[0] = 0u;
-    fixture->shard.partition_row_offsets[1] = 2u;
-    return cellshard::create_dataset_optimized_blocked_ell_h5(
-               fixture->path.c_str(), &layout, nullptr, nullptr) != 0
-        && cellshard::append_bucketed_blocked_ell_shard_h5(
-               fixture->path.c_str(), 0ul, &fixture->shard) != 0;
-}
-
-int test_cellshard_complete_rows() {
-    cellshard_fixture fixture;
-    cs::sample_spec spec;
+int test_selected_csr_handoff() {
+    const ct::ptr_t row_ptr[] = {0u, 2u, 2u, 3u};
+    const ct::idx_t indices[] = {0u, 4u, 2u};
+    const std::uint64_t rows[] = {0u, 1u, 2u};
     cs::sample_plan plan;
     cs::owned_sampled_csr_structure bundle;
     std::string error;
-    if (!require(create_cellshard_fixture(&fixture), "failed to create CellShard structural fixture")) return 40;
-    spec.mode = cs::selection_mode::exact_lowest_hash;
-    spec.seed = 919u;
-    spec.split_name = "cellshard-all";
-    spec.requested_row_count = 64u;
-    if (!require(cs::build_cellshard_sample_plan(fixture.path.c_str(), spec, &plan, &error), error.c_str())) return 41;
-    std::reverse(plan.global_row_indices.begin(), plan.global_row_indices.end());
-    std::reverse(plan.identity_hashes.begin(), plan.identity_hashes.end());
-    if (!require(cs::materialize_cellshard_sampled_csr_structure(
-                     fixture.path.c_str(), plan, &bundle, &error), error.c_str())) return 42;
+    if (!require(build_exact_plan(3u, 64u, "selected-handoff", &plan, &error), error.c_str())) return 40;
+    const cs::selected_csr_structure_view source{3u, 3u, 5u, 3u, row_ptr, indices, rows};
+    if (!require(cs::materialize_selected_csr_structure(source, plan, &bundle, &error), error.c_str())) return 41;
     const cs::sampled_csr_structure_view view = bundle.view();
-    if (!require(view.sampled_row_count == 2u && view.gene_count == 4u && view.nnz == 4u,
-                 "CellShard sampled CSR dimensions mismatch")) return 43;
-    const ct::ptr_t expected_ptr[] = {0u, 2u, 4u};
-    const ct::idx_t expected_indices[] = {0u, 2u, 1u, 3u};
-    for (std::size_t i = 0u; i < 3u; ++i) {
-        if (!require(view.row_ptr[i] == expected_ptr[i], "CellShard sampled row pointer mismatch")) return 44;
-    }
-    for (std::size_t i = 0u; i < 4u; ++i) {
-        if (!require(view.column_indices[i] == expected_indices[i],
-                     "CellShard sampled complete row contents mismatch")) return 45;
-    }
-    if (!require(view.sampled_position_to_global_row[0] == 0u
-                 && view.sampled_position_to_global_row[1] == 1u,
-                 "CellShard sampled positions are not canonical global-row order")) return 46;
-    if (!require(view.provenance->requested_row_count == 64u
-                 && view.provenance->selected_rows == 2u
-                 && view.provenance->cell_identity == cs::cell_identity_kind::global_row_index,
-                 "CellShard sampled provenance mismatch")) return 47;
-    spec.split_name = "cellshard-zero";
-    spec.requested_row_count = 0u;
-    error.clear();
-    if (!require(cs::build_cellshard_sample_plan(fixture.path.c_str(), spec, &plan, &error), error.c_str())) return 48;
-    if (!require(cs::materialize_cellshard_sampled_csr_structure(
-                     fixture.path.c_str(), plan, &bundle, &error), error.c_str())) return 49;
-    const cs::sampled_csr_structure_view zero_view = bundle.view();
-    if (!require(zero_view.sampled_row_count == 0u && zero_view.gene_count == 4u
-                 && zero_view.nnz == 0u && zero_view.row_ptr != nullptr
-                 && zero_view.row_ptr[0] == 0u && zero_view.column_indices == nullptr
-                 && zero_view.sampled_position_to_global_row == nullptr,
-                 "CellShard zero-row sampled CSR representation is invalid")) return 50;
+    if (!require(view.sampled_row_count == 3u && view.gene_count == 5u && view.nnz == 3u,
+                 "selected CSR handoff dimensions mismatch")) return 42;
+    if (!require(view.row_ptr[2] == 2u && view.column_indices[2] == 2u
+                 && view.sampled_position_to_global_row[2] == 2u,
+                 "selected CSR handoff arrays mismatch")) return 43;
     return 0;
 }
 
@@ -332,5 +204,5 @@ int main() {
     if (rc != 0) return rc;
     rc = test_zero_rows_and_input_validation();
     if (rc != 0) return rc;
-    return test_cellshard_complete_rows();
+    return test_selected_csr_handoff();
 }

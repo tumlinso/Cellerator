@@ -439,11 +439,13 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `2366`
+Project revision: `2374`
 
 ## Workstreams
+- `CE-BIOPREP-01` | kind: workstream | status: done | parent: - | objective: Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.
 - `CE-REMAP-00` | kind: epic | status: done | parent: - | objective: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
 - `CE-REMAP-01` | kind: integration_task | status: done | parent: CE-REMAP-00 | objective: Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.
+- `CE-STORAGE-01` | kind: task | status: done | parent: - | objective: Delete the file-backed dataset subsystem, make deterministic sampling and sampled CSR materialization storage-neutral, invert CellShard execution-payload coupling, remove HDF5 and storage-only CellShard dependencies, add a production no-disk guard, and preserve frozen CPE2 behavior.
 - `CE-REMAP-02` | kind: task | status: done | parent: CE-REMAP-00 | objective: Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.
 - `CE-REMAP-03` | kind: task | status: done | parent: CE-REMAP-00 | objective: Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.
 - `CE-REMAP-04` | kind: task | status: done | parent: CE-REMAP-00 | objective: Move validated CellPack and related packing/discovery implementation into canonical geometry ownership, preserve namespaces and behavior, and leave compatibility aliases only where real consumers require them.

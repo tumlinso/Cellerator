@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T10:51:17Z",
+  "generated_at": "2026-08-28T16:55:16Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 2366,
+  "project_revision": 2374,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -25120,6 +25120,86 @@
         "revision": 2366,
         "seq": 2366,
         "timestamp": "2026-08-28T10:51:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/cellerator-bioprep-extraction.plan.json\"}",
+        "revision": 2367,
+        "seq": 2367,
+        "timestamp": "2026-08-28T15:29:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-BIOPREP-MAIN",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-BIOPREP-MAIN\", \"run_id\": \"CE-BIOPREP-EXTRACTION-RUN\", \"status\": \"claimed\", \"task_id\": \"CE-BIOPREP-01\"}",
+        "revision": 2368,
+        "seq": 2368,
+        "timestamp": "2026-08-28T15:29:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/cellerator-bioprep-extraction.plan.json\"}",
+        "revision": 2369,
+        "seq": 2369,
+        "timestamp": "2026-08-28T15:45:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-BIOPREP-01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2370, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2370,
+        "seq": 2370,
+        "timestamp": "2026-08-28T16:33:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/cellerator-storage-boundary-plan.json\"}",
+        "revision": 2371,
+        "seq": 2371,
+        "timestamp": "2026-08-28T16:37:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-STORAGE-01",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CE-STORAGE-01\"}",
+        "revision": 2372,
+        "seq": 2372,
+        "timestamp": "2026-08-28T16:39:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-STORAGE-01",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 2373,
+        "seq": 2373,
+        "timestamp": "2026-08-28T16:54:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-STORAGE-01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2374, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2374,
+        "seq": 2374,
+        "timestamp": "2026-08-28T16:55:16Z"
       }
     ],
     "evidence": [
@@ -40900,6 +40980,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-28T16:55:16Z",
+        "id": "923dcf9d-7f94-4bf6-8af0-c15e5fe8dcc9",
+        "kind": "complete",
+        "note": "Storage dataset APIs removed; sampling and CPE2 are resident-memory only; CellShard adapters and no-file-I/O guard validated. GPU execution deferred because live topology lacks required X wiring.",
+        "payload_json": "{\"changed_owned_paths\": [\"CMakeLists.txt\", \"include/Cellerator/Cellerator.hh\", \"include/Cellerator/compute/dataset.hh\", \"include/Cellerator/compute/sampling.hh\", \"include/Cellerator/compute/sampling_materialization.hh\", \"include/Cellerator/execution/opaque_artifact.hh\", \"include/Cellerator/interop/cellshard/dataset.hh\", \"src/compute/current_targets.cmake\", \"src/compute/dataset/dataset.cc\", \"src/compute/dataset/sampling.cc\", \"src/compute/dataset/sampling_materialization.cc\", \"src/execution/opaque_artifact.cc\", \"src/geometry/owned_targets.cmake\", \"tests/CMakeLists.txt\", \"tests/dataset_runtime_test.cc\", \"tests/persistence/opaque_execution_artifact_test.cu\", \"tests/sampling_materialization_runtime_test.cc\", \"tests/sampling_runtime_test.cc\", \"tools/CMakeLists.txt\", \"tools/check_no_production_file_io.py\", \"tools/preprocess_workbench/workbench_main.cc\"], \"checkpoints\": [], \"completion_commit\": \"f851b0c72d0d24d51361a91dbc0f139b4c50ae1b\", \"completion_gates\": [], \"completion_revision\": 2374, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 494 +++++++++++-\\n AGENTS.md                                          |  11 +-\\n CMakeLists.txt                                     |   8 -\\n README.md                                          |  14 +-\\n bench/CMakeLists.txt                               |  19 -\\n bench/filter_h5ad_from_preprocess.py               | 107 ---\\n bench/preprocess/benchmark_mutex.hh                |  77 --\\n bench/preprocess/nccl_gene_reduce_bench.cu         | 322 --------\\n bench/preprocess/scrna_preprocess_bench.cu         | 396 ---------\\n bench/preprocess_scanpy_reference.py               | 291 -------\\n compat/CMakeLists.txt                              |  23 +-\\n compat/legacy_sparse/README.md                     |   6 +-\\n docs/cellshard_behavior.qmd                        |   8 +-\\n docs/compute_and_models.qmd                        |  10 +-\\n docs/current_implementation.qmd                    |  10 +-\\n docs/developer_reference.qmd                       |   6 +-\\n include/Cellerator/Cellerator.hh                   |   4 +-\\n include/Cellerator/compute/dataset.hh              |   5 -\\n include/Cellerator/compute/preprocess/README.md    |   4 -\\n .../Cellerator/compute/preprocess/preprocess.cuh   |   2 -\\n include/Cellerator/compute/sampling.hh             |  11 +-\\n .../Cellerator/compute/sampling_materialization.hh |  24 +-\\n include/Cellerator/execution/OPAQUE_ARTIFACT.md    |  18 +-\\n include/Cellerator/execution/opaque_artifact.hh    |  26 +-\\n include/Cellerator/interop/cellshard/dataset.hh    | 138 ----\\n .../interop/cellshard/preprocess_operations.cuh    | 391 ---------\\n include/Cellerator/matrix/views.cuh                |  15 +\\n include/Cellerator/optimize/runtime_optimizer.hh   | 122 ---\\n include/Cellerator/preprocess/aliases.hh           |   5 -\\n include/Cellerator/preprocess/operations.cuh       |   5 -\\n include/Cellerator/preprocess/preprocess.cuh       |  70 --\\n include/Cellerator/preprocess/runtime.hh           | 186 -----\\n python/cellerator/__init__.py                      |  29 -\\n python/cellerator/pp.py                            |  96 ---\\n python/module.cc                                   | 896 ---------------------\\n scope.md                                           |   9 +-\\n src/CMakeLists.txt                                 |  61 --\\n src/compute/README.md                              |   7 +-\\n src/compute/current_targets.cmake                  |  31 +-\\n src/compute/dataset/dataset.cc                     | 452 -----------\\n src/compute/dataset/sampling.cc                    |  35 +-\\n src/compute/dataset/sampling_materialization.cc    |  93 +--\\n src/execution/opaque_artifact.cc                   |  37 +-\\n src/geometry/owned_targets.cmake                   |   1 -\\n src/interop/cellshard/preprocess_session.cu        | 620 --------------\\n src/preprocess/CMakeLists.txt                      |  37 -\\n src/preprocess/fleet.cu                            | 203 -----\\n src/preprocess/fused_workflows.cu                  | 426 ----------\\n src/preprocess/gene_stats.cu                       | 297 -------\\n src/preprocess/kernels/preprocess_math.cuh         |  30 -\\n src/preprocess/normalize.cu                        | 183 -----\\n src/preprocess/preprocess.cu                       |   7 -\\n src/preprocess/preprocess_internal.cuh             | 130 ---\\n src/preprocess/qc_metrics.cu                       | 146 ----\\n src/preprocess/runtime.cc                          | 182 -----\\n src/preprocess/workspace.cu                        | 237 ------\\n tests/CMakeLists.txt                               | 112 ++-\\n tests/dataset_runtime_test.cc                      | 149 ----\\n tests/persistence/ce_live_program_replay_test.cu   |  15 +-\\n .../persistence/opaque_execution_artifact_test.cu  |  33 +-\\n tests/preprocess/adapter_staging_test.cc           |  23 -\\n tests/preprocess/cellshard_session_api_test.cu     |  43 -\\n .../preprocess/double_preprocess_rejection_test.cc |  28 -\\n tests/preprocess/preprocess_runtime_test.cu        | 102 ---\\n tests/preprocess/qc_fleet_test.cu                  | 184 -----\\n tests/preprocess/qc_mask_groups_test.cu            | 123 ---\\n tests/preprocess/qc_metrics_equivalence_test.cu    |  75 --\\n tests/python_preprocess_smoke.py                   |  72 --\\n tests/sampling_materialization_runtime_test.cc     | 154 +---\\n tests/sampling_runtime_test.cc                     | 183 +----\\n tests/validate_scanpy_preprocess.py                | 223 -----\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n tools/CMakeLists.txt                               |  26 +-\\n tools/preprocess_workbench/workbench_main.cc       |  24 -\\n 75 files changed, 771 insertions(+), 7879 deletions(-)\", \"git_head\": \"f851b0c72d0d24d51361a91dbc0f139b4c50ae1b\", \"interfaces\": [], \"note\": \"Storage dataset APIs removed; sampling and CPE2 are resident-memory only; CellShard adapters and no-file-I/O guard validated. GPU execution deferred because live topology lacks required X wiring.\", \"resources\": [], \"task_id\": \"CE-STORAGE-01\"}",
+        "revision": 2374,
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-25T18:06:48Z",
         "id": "9363787c-c1d6-455d-8a6b-5ac685e3e507",
         "kind": "complete",
@@ -41177,6 +41267,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CELLERATOR_STRUCTURE_VALUE_LIFETIME_V1_READY\", \"reached_at\": \"2026-08-21T13:05:03Z\", \"state\": \"reached\"}, {\"id\": \"CELLERATOR_EXECUTION_ORDER_V1_READY\", \"reached_at\": \"2026-08-21T13:05:03Z\", \"state\": \"reached\"}], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 4062 +++++++++++++++++++++-----------\\n Baseplane                              |    0\\n Cellerator                             |    0\\n todo-status.md                         |   70 +-\\n todos.md                               |   70 +-\\n todos/cp-math-00.md                    |   12 +-\\n todos/cp-math-06.md                    |   25 +-\\n todos/cp-math-08.md                    |   25 +-\\n todos/cp-math-10.md                    |   28 +-\\n todos/cp-math-11.md                    |   26 +-\\n todos/cp-math-12.md                    |   24 +-\\n todos/cp-math-12d.md                   |   23 +-\\n todos/cp-math-13.md                    |   22 +-\\n todos/cp-math-14.md                    |   22 +-\\n todos/cp-math-15.md                    |   21 +-\\n todos/cp-math-16.md                    |   27 +-\\n todos/cp-math-17.md                    |   27 +-\\n todos/cp-math-hard-data.md             |   24 +-\\n todos/cp-math-opt-not-promoted.md      |   22 +-\\n todos/cp-math-opt-promoted.md          |   22 +-\\n todos/cp-math-real-data.md             |   26 +-\\n 21 files changed, 2968 insertions(+), 1610 deletions(-)\", \"git_head\": \"b8aabdcf7c185965b537788118675319e81b4b92\", \"interfaces\": [{\"content_hash\": \"909d88104294deae4f62185de89dfdb6b369862ceb029610977f40ba8c8fb102\", \"id\": \"cellerator-execution-order-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Implemented and froze execution-order/lifetime contract v1 without changing frozen biological ABI v1 or CPK1. Added immutable RelationStructure with epoch/catalog/axes, mutable ValuePlane with independent generation/numeric/quantization/layout, expected-generation ValueBinding, forward/transpose value-position maps, bidirectional order transforms, explicit preserve/transform/canonicalize output contracts per output axis, transform accounting, PreparedBindingContract, and per-launch operands/values/scalars/stream/transient workspace. Validation rejects stale epochs, stale value generations, implicit canonicalization, incomplete or duplicate output-axis order coverage, stale output axes, insufficient workspace, and invalid maps. Host adversarial test proves two compatible operations remain packed, multiple generations reuse one structure, pointer aliasing is not identity, epoch changes invalidate, explicit canonical recovery is exact, and forward/transpose maps are epoch-bound. Direct g++ -Wall -Wextra -Werror and CUDA 12.9 nvcc sm_70 compile tests passed; biological ABI regression targets passed; ctxpp lint/scan and git diff --check passed. Reached CELLERATOR_STRUCTURE_VALUE_LIFETIME_V1_READY and CELLERATOR_EXECUTION_ORDER_V1_READY; froze cellerator-execution-order-v1 hash 909d88104294deae4f62185de89dfdb6b369862ceb029610977f40ba8c8fb102. No GPU lease/run, benchmark, kernel redesign, CPK1 mutation, Baseplane edit, or CellShard edit.\", \"resources\": [], \"task_id\": \"CE-ARCH-11\"}",
         "revision": 489,
         "task_id": "CE-ARCH-11"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-28T16:33:31Z",
+        "id": "cddc698b-5b52-47aa-9e58-7affe990f667",
+        "kind": "complete",
+        "note": "Extracted generic sparse row transforms and column moments; removed Cellerator preprocessing targets/API; full normal build and focused regression tests passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"CMakeLists.txt\", \"README.md\", \"bench/CMakeLists.txt\", \"bench/filter_h5ad_from_preprocess.py\", \"bench/preprocess/benchmark_mutex.hh\", \"bench/preprocess/nccl_gene_reduce_bench.cu\", \"bench/preprocess/scrna_preprocess_bench.cu\", \"bench/preprocess_scanpy_reference.py\", \"compat/CMakeLists.txt\", \"docs/cellshard_behavior.qmd\", \"docs/compute_and_models.qmd\", \"docs/current_implementation.qmd\", \"docs/developer_reference.qmd\", \"include/Cellerator/Cellerator.hh\", \"include/Cellerator/compute/operators/sparse/column_moments.cuh\", \"include/Cellerator/compute/operators/sparse/row_transforms.cuh\", \"include/Cellerator/compute/preprocess/README.md\", \"include/Cellerator/compute/preprocess/preprocess.cuh\", \"include/Cellerator/interop/cellshard/preprocess_operations.cuh\", \"include/Cellerator/matrix/views.cuh\", \"include/Cellerator/optimize/runtime_optimizer.hh\", \"include/Cellerator/preprocess/aliases.hh\", \"include/Cellerator/preprocess/operations.cuh\", \"include/Cellerator/preprocess/preprocess.cuh\", \"include/Cellerator/preprocess/runtime.hh\", \"python/cellerator/__init__.py\", \"python/cellerator/pp.py\", \"python/module.cc\", \"scope.md\", \"src/CMakeLists.txt\", \"src/compute/README.md\", \"src/compute/current_targets.cmake\", \"src/compute/operators/sparse/column_moments.cu\", \"src/compute/operators/sparse/row_transforms.cu\", \"src/interop/cellshard/preprocess_session.cu\", \"src/preprocess/CMakeLists.txt\", \"src/preprocess/fleet.cu\", \"src/preprocess/fused_workflows.cu\", \"src/preprocess/gene_stats.cu\", \"src/preprocess/kernels/preprocess_math.cuh\", \"src/preprocess/normalize.cu\", \"src/preprocess/preprocess.cu\", \"src/preprocess/preprocess_internal.cuh\", \"src/preprocess/qc_metrics.cu\", \"src/preprocess/runtime.cc\", \"src/preprocess/workspace.cu\", \"tests/CMakeLists.txt\", \"tests/preprocess/adapter_staging_test.cc\", \"tests/preprocess/cellshard_session_api_test.cu\", \"tests/preprocess/double_preprocess_rejection_test.cc\", \"tests/preprocess/preprocess_runtime_test.cu\", \"tests/preprocess/qc_fleet_test.cu\", \"tests/preprocess/qc_mask_groups_test.cu\", \"tests/preprocess/qc_metrics_equivalence_test.cu\", \"tests/python_preprocess_smoke.py\", \"tests/sparse_column_moments_test.cu\", \"tests/sparse_row_transforms_test.cu\", \"tests/validate_scanpy_preprocess.py\", \"tools/CMakeLists.txt\"], \"checkpoints\": [], \"completion_commit\": \"f851b0c72d0d24d51361a91dbc0f139b4c50ae1b\", \"completion_gates\": [], \"completion_revision\": 2370, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 251 +++++-\\n AGENTS.md                                          |  11 +-\\n CMakeLists.txt                                     |   3 -\\n README.md                                          |  10 +-\\n bench/CMakeLists.txt                               |  19 -\\n bench/filter_h5ad_from_preprocess.py               | 107 ---\\n bench/preprocess/benchmark_mutex.hh                |  77 --\\n bench/preprocess/nccl_gene_reduce_bench.cu         | 322 --------\\n bench/preprocess/scrna_preprocess_bench.cu         | 396 ---------\\n bench/preprocess_scanpy_reference.py               | 291 -------\\n compat/CMakeLists.txt                              |  23 +-\\n compat/legacy_sparse/README.md                     |   6 +-\\n docs/cellshard_behavior.qmd                        |   8 +-\\n docs/compute_and_models.qmd                        |  10 +-\\n docs/current_implementation.qmd                    |  10 +-\\n docs/developer_reference.qmd                       |   6 +-\\n include/Cellerator/Cellerator.hh                   |   3 +-\\n include/Cellerator/compute/preprocess/README.md    |   4 -\\n .../Cellerator/compute/preprocess/preprocess.cuh   |   2 -\\n .../interop/cellshard/preprocess_operations.cuh    | 391 ---------\\n include/Cellerator/matrix/views.cuh                |  15 +\\n include/Cellerator/optimize/runtime_optimizer.hh   | 122 ---\\n include/Cellerator/preprocess/aliases.hh           |   5 -\\n include/Cellerator/preprocess/operations.cuh       |   5 -\\n include/Cellerator/preprocess/preprocess.cuh       |  70 --\\n include/Cellerator/preprocess/runtime.hh           | 186 -----\\n python/cellerator/__init__.py                      |  29 -\\n python/cellerator/pp.py                            |  96 ---\\n python/module.cc                                   | 896 ---------------------\\n scope.md                                           |   9 +-\\n src/CMakeLists.txt                                 |  61 --\\n src/compute/README.md                              |   7 +-\\n src/compute/current_targets.cmake                  |  13 +-\\n src/interop/cellshard/preprocess_session.cu        | 620 --------------\\n src/preprocess/CMakeLists.txt                      |  37 -\\n src/preprocess/fleet.cu                            | 203 -----\\n src/preprocess/fused_workflows.cu                  | 426 ----------\\n src/preprocess/gene_stats.cu                       | 297 -------\\n src/preprocess/kernels/preprocess_math.cuh         |  30 -\\n src/preprocess/normalize.cu                        | 183 -----\\n src/preprocess/preprocess.cu                       |   7 -\\n src/preprocess/preprocess_internal.cuh             | 130 ---\\n src/preprocess/qc_metrics.cu                       | 146 ----\\n src/preprocess/runtime.cc                          | 182 -----\\n src/preprocess/workspace.cu                        | 237 ------\\n tests/CMakeLists.txt                               |  66 +-\\n tests/preprocess/adapter_staging_test.cc           |  23 -\\n tests/preprocess/cellshard_session_api_test.cu     |  43 -\\n .../preprocess/double_preprocess_rejection_test.cc |  28 -\\n tests/preprocess/preprocess_runtime_test.cu        | 102 ---\\n tests/preprocess/qc_fleet_test.cu                  | 184 -----\\n tests/preprocess/qc_mask_groups_test.cu            | 123 ---\\n tests/preprocess/qc_metrics_equivalence_test.cu    |  75 --\\n tests/python_preprocess_smoke.py                   |  72 --\\n tests/validate_scanpy_preprocess.py                | 223 -----\\n todo-status.md                                     |   3 +-\\n todos.md                                           |   3 +-\\n tools/CMakeLists.txt                               |  26 +-\\n tools/preprocess_workbench/workbench_main.cc       |  24 -\\n 59 files changed, 337 insertions(+), 6620 deletions(-)\", \"git_head\": \"f851b0c72d0d24d51361a91dbc0f139b4c50ae1b\", \"interfaces\": [], \"note\": \"Extracted generic sparse row transforms and column moments; removed Cellerator preprocessing targets/API; full normal build and focused regression tests passed.\", \"resources\": [], \"task_id\": \"CE-BIOPREP-01\"}",
+        "revision": 2370,
+        "task_id": "CE-BIOPREP-01"
       },
       {
         "claim_id": null,
@@ -41929,6 +42029,20 @@
       },
       {
         "enforcement": "review",
+        "id": "CE-BIOPREP-BOUNDARY",
+        "rule": "Retain only generic reusable sparse math in Cellerator; conventional preprocessing policy and workflow ownership move to BioPrep.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": "review",
+        "id": "CE-BIOPREP-FROZEN",
+        "rule": "Do not redesign frozen execution, planner, projection, identity, output, Baseplane, CelleraTorch, native-training, or Tensor Core contracts.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": "review",
         "id": "CE-EXECUTION-ORDER",
         "rule": "Internal execution order survives compatible producers and consumers; canonicalization is an explicit graph-visible, cacheable, hoistable, fusible, or removable operation.",
         "scope_json": "{}",
@@ -42195,6 +42309,27 @@
       },
       {
         "enforcement": null,
+        "id": "CE-STORAGE-CPE2-FROZEN",
+        "rule": "Do not change execution_image_v2 schema, identity, checksum, build, validation, rebind, or prebind semantics.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-STORAGE-NO-DISK",
+        "rule": "Cellerator production include and src surfaces own in-memory computation and CPE2 semantics only; path-backed dataset access and CellShard transport integration live in CellShard.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-STORAGE-PRESERVE-BIOPREP",
+        "rule": "Preserve the completed CE-BIOPREP-01 extraction, including all deletions, new generic sparse operators, tests, CMake changes, and documentation; do not edit BioPrep or recreate preprocessing APIs.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
         "id": "CONTEXT-CYCLE",
         "rule": "Implementation tasks route/slice with ctxpp, edit canonical source only, run focused gates, then refresh or lint the narrow route. Correctness and GPU efficiency outrank source density.",
         "scope_json": "{}",
@@ -42338,6 +42473,11 @@
       {
         "capacity": 1,
         "metadata_json": "{}",
+        "name": "build:cellerator"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{}",
         "name": "ce-arch-operation-candidate-registry"
       },
       {
@@ -42394,6 +42534,11 @@
         "capacity": 1,
         "metadata_json": "{}",
         "name": "runtime-ownership-seam"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{}",
+        "name": "surface:cellerator-storage-boundary"
       }
     ],
     "ownership_scopes": [
@@ -44596,6 +44741,86 @@
         "mode": "read",
         "path": "cp-math-plan.json",
         "task_id": "CE-ARCH-93"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".ctxpp.toml",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "README.md",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "compat/CMakeLists.txt",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "python",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "scope.md",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tools/CMakeLists.txt",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "forbidden",
+        "path": "components/CelleraTorch",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "forbidden",
+        "path": "include/CellShard",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "forbidden",
+        "path": "src/model",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "mode": "forbidden",
+        "path": "src/trajectory",
+        "task_id": "CE-BIOPREP-01"
       },
       {
         "mode": "read",
@@ -47526,6 +47751,126 @@
         "mode": "read",
         "path": "tools",
         "task_id": "CE-REMAP-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/Cellerator.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/dataset.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/sampling.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/sampling_materialization.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/execution/opaque_artifact.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/interop/cellshard/dataset.hh",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/current_targets.cmake",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/dataset",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/execution/opaque_artifact.cc",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/owned_targets.cmake",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/CMakeLists.txt",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/architecture",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/dataset_runtime_test.cc",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/persistence/opaque_execution_artifact_test.cu",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/sampling_materialization_runtime_test.cc",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/sampling_runtime_test.cc",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tools",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "docs",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "include",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-STORAGE-01"
       },
       {
         "mode": "exclusive",
@@ -52150,6 +52495,14 @@
         "task_id": "CE-ARCH-92"
       },
       {
+        "invariant_id": "CE-BIOPREP-BOUNDARY",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
+        "invariant_id": "CE-BIOPREP-FROZEN",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
         "invariant_id": "CE-LIVE-BASEPLANE",
         "task_id": "CE-LIVE-00"
       },
@@ -54180,6 +54533,18 @@
       {
         "invariant_id": "CE-REMAP-SEMANTICS",
         "task_id": "CE-REMAP-10"
+      },
+      {
+        "invariant_id": "CE-STORAGE-CPE2-FROZEN",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "invariant_id": "CE-STORAGE-NO-DISK",
+        "task_id": "CE-STORAGE-01"
+      },
+      {
+        "invariant_id": "CE-STORAGE-PRESERVE-BIOPREP",
+        "task_id": "CE-STORAGE-01"
       }
     ],
     "task_locks": [
@@ -54462,6 +54827,11 @@
         "lock_name": "cuda-benchmark-mutex",
         "phase": "claim",
         "task_id": "CE-REMAP-10"
+      },
+      {
+        "lock_name": "surface:cellerator-storage-boundary",
+        "phase": "claim",
+        "task_id": "CE-STORAGE-01"
       }
     ],
     "tasks": [
@@ -55613,6 +55983,31 @@
         "tags_json": "[\"ce-arch\", \"state-migration\", \"historical-retirement\"]",
         "title": "Retire legacy CP-MATH planning state",
         "updated_at": "2026-08-26T09:19:50Z",
+        "version": 4
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "f851b0c72d0d24d51361a91dbc0f139b4c50ae1b",
+        "completion_git_head": "f851b0c72d0d24d51361a91dbc0f139b4c50ae1b",
+        "completion_revision": 2370,
+        "created_at": "2026-08-28T15:29:02Z",
+        "id": "CE-BIOPREP-01",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 500,
+        "result": "implemented",
+        "result_policy_json": "{}",
+        "revision": 2370,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Extract preprocessing ownership into BioPrep",
+        "updated_at": "2026-08-28T16:33:31Z",
         "version": 4
       },
       {
@@ -56789,6 +57184,31 @@
         "title": "Final clean-build, CE-LIVE, module, export, and boundary audit",
         "updated_at": "2026-08-28T10:51:17Z",
         "version": 5
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "f851b0c72d0d24d51361a91dbc0f139b4c50ae1b",
+        "completion_git_head": "f851b0c72d0d24d51361a91dbc0f139b4c50ae1b",
+        "completion_revision": 2374,
+        "created_at": "2026-08-28T16:37:36Z",
+        "id": "CE-STORAGE-01",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Work from the current dirty post-BioPrep tree, preserve its changes, split only storage-owned APIs, add focused CPU/static tests and the architecture guard, and validate without CUDA execution while X topology is absent.",
+        "notes": "Non-goals: BioPrep, neighbor, ML, trajectory, Torch, Baseplane, Tensor Core, or operation-core redesign. Acceptance follows the user-specified storage/filesystem boundary and keeps developer-support file I/O permitted.",
+        "objective": "Delete the file-backed dataset subsystem, make deterministic sampling and sampled CSR materialization storage-neutral, invert CellShard execution-payload coupling, remove HDF5 and storage-only CellShard dependencies, add a production no-disk guard, and preserve frozen CPE2 behavior.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 490,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\"]}",
+        "revision": 2374,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Remove production storage ownership from Cellerator",
+        "updated_at": "2026-08-28T16:55:16Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -57993,6 +58413,54 @@
     ],
     "workflow_context_fragments": [
       {
+        "content_hash": "ece1a9309e686c86cc8905d952edec3f928c08094d62baf8b21807e748ba51cf",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-BIOPREP-01\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-28T15:29:02Z",
+        "creation_revision": 2367,
+        "id": "CE-BIOPREP-EXTRACTION-RUN:lane_brief:CE-BIOPREP-MAIN:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-BIOPREP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-BIOPREP-MAIN\",\"run_id\":\"CE-BIOPREP-EXTRACTION-RUN\"}",
+        "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "162cc35ba2e832c8694862f3d46b0debe02ea6945247074a0527e846460590ce",
+        "content_json": "{\"non_goals\":[\"neighbors\",\"trajectories\",\"developmental time\",\"models\",\"training\",\"Baseplane\",\"CelleraTorch\",\"CellShard refactoring\"],\"objective\":\"Perform only the Cellerator half of the BioPrep preprocessing extraction.\"}",
+        "created_at": "2026-08-28T15:29:02Z",
+        "creation_revision": 2367,
+        "id": "CE-BIOPREP-EXTRACTION-RUN:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"CE-BIOPREP-EXTRACTION-RUN\"}",
+        "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "a04ae46ca19713af0137797859aa2c9c4b362445a0b7a21970bd9664fdd17312",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[\"components/CelleraTorch\",\"include/CellShard\",\"src/model\",\"src/trajectory\"],\"gates\":[],\"next_action\":\"Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.\",\"objective\":\"Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.\",\"scope\":{\"exclusive_paths\":[\"CMakeLists.txt\",\"README.md\",\"scope.md\",\"docs\",\"include/Cellerator\",\"src\",\"tests\",\"bench\",\"python\",\"compat/CMakeLists.txt\",\"tools/CMakeLists.txt\"],\"forbidden_paths\":[\"components/CelleraTorch\",\"include/CellShard\",\"src/model\",\"src/trajectory\"]},\"tests\":[]}",
+        "created_at": "2026-08-28T15:29:02Z",
+        "creation_revision": 2367,
+        "id": "CE-BIOPREP-EXTRACTION-RUN:task_brief:CE-BIOPREP-MAIN:CE-BIOPREP-01:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-BIOPREP-MAIN",
+        "owner_scope_json": "{\"lane_id\":\"CE-BIOPREP-MAIN\",\"run_id\":\"CE-BIOPREP-EXTRACTION-RUN\",\"task_id\":\"CE-BIOPREP-01\"}",
+        "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+        "superseded_by": null,
+        "task_id": "CE-BIOPREP-01",
+        "version": 1
+      },
+      {
         "content_hash": "652dcbb052dc6e01ef3413debbdb82fa91bba2a9dc8c2ef69eda02a0e977aa77",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-POST-REMAP-01\",\"CE-POST-REMAP-02\",\"CE-POST-REMAP-03\",\"CE-POST-REMAP-04\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-08-28T10:09:51Z",
@@ -58284,6 +58752,16 @@
     "workflow_integration_queue": [],
     "workflow_lane_tasks": [
       {
+        "activated_at": "2026-08-28T15:29:16Z",
+        "completed_at": "2026-08-28T16:33:31Z",
+        "enqueued_at": "2026-08-28T15:29:02Z",
+        "lane_id": "CE-BIOPREP-MAIN",
+        "position": 0,
+        "revision": 2370,
+        "state": "completed",
+        "task_id": "CE-BIOPREP-01"
+      },
+      {
         "activated_at": "2026-08-28T10:18:55Z",
         "completed_at": "2026-08-28T10:27:52Z",
         "enqueued_at": "2026-08-28T10:09:51Z",
@@ -58427,6 +58905,18 @@
     "workflow_lanes": [
       {
         "context_cursor": 0,
+        "created_at": "2026-08-28T15:29:02Z",
+        "id": "CE-BIOPREP-MAIN",
+        "parent_lane_id": null,
+        "revision": 2370,
+        "role": "implementer",
+        "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+        "state": "closed",
+        "updated_at": "2026-08-28T16:33:31Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-08-28T10:09:51Z",
         "id": "CE-POST-REMAP-MAIN",
         "parent_lane_id": null,
@@ -58460,6 +58950,16 @@
     "workflow_rendezvous_participants": [],
     "workflow_run_charters": [
       {
+        "content_hash": "162cc35ba2e832c8694862f3d46b0debe02ea6945247074a0527e846460590ce",
+        "content_json": "{\"non_goals\":[\"neighbors\",\"trajectories\",\"developmental time\",\"models\",\"training\",\"Baseplane\",\"CelleraTorch\",\"CellShard refactoring\"],\"objective\":\"Perform only the Cellerator half of the BioPrep preprocessing extraction.\"}",
+        "created_at": "2026-08-28T15:29:02Z",
+        "creation_revision": 2367,
+        "run_id": "CE-BIOPREP-EXTRACTION-RUN",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "263a8c9256890c177df10656cbed8502831c9ff2fc5b56401609d380f6435996",
         "content_json": "{\"acceptance_conditions\":[\"The Cellerator-to-CellShard-to-Cellerator cycle is absent.\",\"Cellerator runtime is the sole current native runtime authority.\",\"CMake ownership and authoritative documentation match the repository.\",\"Canonical CE-LIVE harnesses and complete validation pass without temporary source substitutions.\"],\"boundaries\":[\"No redesign of operation core, planner, execution image, geometry compiler, biological ABI, execution session, projection model, or CE-LIVE behavior.\",\"No cellpack namespace rename and no speculative GlassHelix contract.\",\"No CUDA rewrite and no module imports from CUDA translation units.\",\"CellShard lands its reverse-dependency removal independently before Cellerator consumes it.\"],\"objective\":\"Complete only the bounded post-remap defects while preserving the canonical physical architecture and frozen execution semantics.\"}",
         "created_at": "2026-08-28T10:09:51Z",
@@ -58481,6 +58981,16 @@
       }
     ],
     "workflow_runs": [
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-08-28T15:29:02Z",
+        "id": "CE-BIOPREP-EXTRACTION-RUN",
+        "revision": 2367,
+        "root_task_id": "CE-BIOPREP-01",
+        "status": "active",
+        "updated_at": "2026-08-28T15:29:02Z"
+      },
       {
         "active_charter_version": 1,
         "completed_at": null,

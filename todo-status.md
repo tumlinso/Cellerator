@@ -58,11 +58,13 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2366`
+Project revision: `2374`
 
 ## Workstreams
+- `CE-BIOPREP-01` | status: done | execution: closed | next: Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.
 - `CE-REMAP-00` | status: done | execution: closed | next: Make Cellerator's physical source and build ownership match the completed CE-ARCH and CE-LIVE architecture without redesigning behavior.
 - `CE-REMAP-01` | status: done | execution: closed | next: Publish the live source/build/dependency/test/compatibility map, record the clean-head and baseline build evidence, validate this transactional program, and define exact migration stop points.
+- `CE-STORAGE-01` | status: done | execution: closed | next: Work from the current dirty post-BioPrep tree, preserve its changes, split only storage-owned APIs, add focused CPU/static tests and the architecture guard, and validate without CUDA execution while X topology is absent.
 - `CE-REMAP-02` | status: done | execution: closed | next: Create canonical subsystem build ownership and repository layout checks, prove direct Clang 18 module import, and record that native CMake scanning is deferred because the required generator and scanner are unavailable.
 - `CE-REMAP-03` | status: done | execution: closed | next: Inventory and tighten the existing conventional state and execution borders without changing ABI; document the future cellerator.state and cellerator.execution exports but do not add .ccm consumers until native CMake scanning is available.
 - `CE-REMAP-04` | status: done | execution: closed | next: Move validated CellPack and related packing/discovery implementation into canonical geometry ownership, preserve namespaces and behavior, and leave compatibility aliases only where real consumers require them.

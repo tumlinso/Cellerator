@@ -25,7 +25,9 @@ enum class cell_identity_kind : std::uint32_t {
     // Canonical dataset/global matrix row identity, not a later physical pack
     // or execution-layout position.
     global_row_index = 1u,
-    stable_cellshard_cell_id = 2u
+    stable_item_id = 2u,
+    // Compatibility spelling for the frozen v1 numeric provenance value.
+    stable_cellshard_cell_id = stable_item_id
 };
 
 struct quantile_boundary {
@@ -138,12 +140,5 @@ bool reproduce_density_sample_plan(const sample_provenance &provenance,
                                    const cell_identity_view &identities,
                                    sample_plan *out,
                                    std::string *error = nullptr);
-
-// CellShard global barcodes are preferred when present and valid. Otherwise
-// canonical global row index is used and recorded explicitly in provenance.
-bool build_cellshard_sample_plan(const char *path,
-                                 const sample_spec &spec,
-                                 sample_plan *out,
-                                 std::string *error = nullptr);
 
 } // namespace cellerator::compute::sampling

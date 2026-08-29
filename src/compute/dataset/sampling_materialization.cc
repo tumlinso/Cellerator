@@ -1,7 +1,5 @@
 #include <Cellerator/compute/sampling_materialization.hh>
 
-#include <CellShard/export/dataset_export.hh>
-
 #include <algorithm>
 #include <limits>
 #include <new>
@@ -13,7 +11,6 @@ namespace cellerator::compute::sampling {
 namespace {
 
 namespace cm = ::cellerator::matrix;
-namespace cse = ::cellshard::exporting;
 namespace ct = ::cellerator::types;
 
 struct staged_csr_structure {
@@ -63,7 +60,7 @@ bool validate_and_order_selection(std::uint64_t total_rows,
         return false;
     }
     if (plan.provenance.cell_identity != cell_identity_kind::global_row_index
-        && plan.provenance.cell_identity != cell_identity_kind::stable_cellshard_cell_id) {
+        && plan.provenance.cell_identity != cell_identity_kind::stable_item_id) {
         set_error(error, "sample plan cell identity kind is invalid");
         return false;
     }
@@ -230,54 +227,57 @@ bool gather_in_memory_structure(const cm::compressed *source,
     return true;
 }
 
-bool convert_cellshard_structure(const cse::csr_matrix_export &csr,
-                                 const std::vector<std::uint64_t> &rows,
-                                 std::uint64_t expected_gene_count,
-                                 staged_csr_structure *out,
-                                 std::string *error) {
-    if (csr.rows != rows.size() || csr.cols != expected_gene_count) {
-        set_error(error, "CellShard selected-row CSR shape does not match the request");
+bool copy_selected_structure(const selected_csr_structure_view &source,
+                             const std::vector<std::uint64_t> &rows,
+                             staged_csr_structure *out,
+                             std::string *error) {
+    if (source.selected_row_count != rows.size()) {
+        set_error(error, "selected-row CSR shape does not match the sample plan");
         return false;
     }
-    if (csr.indptr.size() != rows.size() + 1u || csr.indices.size() != csr.data.size()) {
-        set_error(error, "CellShard selected-row CSR arrays are inconsistent");
+    if (source.row_ptr == nullptr
+        || (source.nnz != 0u && source.column_indices == nullptr)
+        || (source.selected_row_count != 0u && source.global_row_indices == nullptr)) {
+        set_error(error, "selected-row CSR arrays are null");
         return false;
     }
-    if (csr.indptr.empty() || csr.indptr[0] != 0) {
-        set_error(error, "CellShard selected-row CSR pointers must begin at zero");
+    if (source.row_ptr[0] != 0u) {
+        set_error(error, "selected-row CSR pointers must begin at zero");
         return false;
     }
-    std::int64_t previous = 0;
-    for (std::int64_t pointer : csr.indptr) {
-        if (pointer < previous || pointer < 0
-            || (std::uint64_t) pointer > csr.indices.size()
-            || !fits_canonical_ptr((std::uint64_t) pointer)) {
-            set_error(error, "CellShard selected-row CSR pointers are invalid");
+    ct::ptr_t previous = 0u;
+    for (std::size_t i = 0u; i <= rows.size(); ++i) {
+        const ct::ptr_t pointer = source.row_ptr[i];
+        if (pointer < previous || (std::uint64_t) pointer > source.nnz) {
+            set_error(error, "selected-row CSR pointers are invalid");
             return false;
         }
         previous = pointer;
     }
-    if ((std::uint64_t) previous != csr.indices.size()) {
-        set_error(error, "CellShard selected-row CSR terminal pointer does not equal nnz");
+    if ((std::uint64_t) previous != source.nnz) {
+        set_error(error, "selected-row CSR terminal pointer does not equal nnz");
         return false;
     }
-    if (!allocate_structure((std::uint64_t) rows.size(), csr.cols,
-                            (std::uint64_t) csr.indices.size(), out, error)) {
+    if (!allocate_structure(source.selected_row_count, source.gene_count,
+                            source.nnz, out, error)) {
         return false;
     }
-    for (std::size_t i = 0u; i < csr.indptr.size(); ++i) {
-        out->row_ptr[i] = (ct::ptr_t) csr.indptr[i];
+    for (std::size_t i = 0u; i <= rows.size(); ++i) {
+        out->row_ptr[i] = source.row_ptr[i];
     }
-    for (std::size_t slot = 0u; slot < csr.indices.size(); ++slot) {
-        const std::int64_t column = csr.indices[slot];
-        if (column < 0 || (std::uint64_t) column >= csr.cols
-            || !fits_canonical_index((std::uint64_t) column)) {
-            set_error(error, "CellShard selected-row column index is outside the gene dimension");
+    for (std::size_t slot = 0u; slot < (std::size_t) source.nnz; ++slot) {
+        const ct::idx_t column = source.column_indices[slot];
+        if ((std::uint64_t) column >= source.gene_count) {
+            set_error(error, "selected-row column index is outside the gene dimension");
             return false;
         }
-        out->column_indices[slot] = (ct::idx_t) column;
+        out->column_indices[slot] = column;
     }
     for (std::size_t position = 0u; position < rows.size(); ++position) {
+        if (source.global_row_indices[position] != rows[position]) {
+            set_error(error, "selected-row CSR rows are not aligned to the sample plan");
+            return false;
+        }
         out->sampled_position_to_global_row[position] = rows[position];
     }
     return true;
@@ -343,31 +343,20 @@ bool materialize_sampled_csr_structure(const cm::compressed *source,
     return true;
 }
 
-bool materialize_cellshard_sampled_csr_structure(const char *path,
-                                                 const sample_plan &plan,
-                                                 owned_sampled_csr_structure *out,
-                                                 std::string *error) {
-    cse::dataset_summary summary;
-    cse::csr_matrix_export csr;
+bool materialize_selected_csr_structure(const selected_csr_structure_view &source,
+                                        const sample_plan &plan,
+                                        owned_sampled_csr_structure *out,
+                                        std::string *error) {
     std::vector<std::uint64_t> ordered_rows;
     staged_csr_structure staged;
-    if (path == nullptr || *path == '\0' || out == nullptr) {
-        set_error(error, "CellShard sampled CSR materialization requires a path and output");
+    if (out == nullptr) {
+        set_error(error, "owned sampled CSR output is null");
         return false;
     }
-    if (!cse::load_dataset_summary(path, &summary, error)
-        || !validate_and_order_selection(summary.rows, plan, &ordered_rows, error)) {
+    if (!validate_and_order_selection(source.total_row_count, plan, &ordered_rows, error)
+        || !copy_selected_structure(source, ordered_rows, &staged, error)) {
         return false;
     }
-    if (!cse::load_dataset_rows_as_csr(
-            path,
-            ordered_rows.empty() ? nullptr : ordered_rows.data(),
-            ordered_rows.size(),
-            &csr,
-            error)) {
-        return false;
-    }
-    if (!convert_cellshard_structure(csr, ordered_rows, summary.cols, &staged, error)) return false;
     *out = owned_sampled_csr_structure(
         staged.sampled_row_count,
         staged.gene_count,

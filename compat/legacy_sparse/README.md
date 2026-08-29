@@ -12,6 +12,6 @@ support stays under `compute/sparse/ops`.
 
 The retained `preprocess_format_compare_bench.cu` is historical evidence. It
 uses CellShard's private compressed-to-Blocked-ELL conversion machinery and is
-therefore built only as the explicitly named
-`celleratorLegacyPreprocessFormatCompareBench` compatibility target. Current
-Cellerator preprocessing and interop targets do not depend on that machinery.
+no longer compiled: its removed preprocessing facade records the former
+architecture rather than a supported compatibility API. Current Cellerator
+targets do not depend on that machinery.

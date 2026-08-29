@@ -1,7 +1,5 @@
 #include <Cellerator/compute/sampling.hh>
 
-#include <CellShard/export/dataset_export.hh>
-
 #include <algorithm>
 #include <numeric>
 #include <queue>
@@ -85,12 +83,12 @@ bool validate_identities(std::uint64_t total_rows,
                          const cell_identity_view &identities,
                          std::string *error) {
     if (identities.kind == cell_identity_kind::global_row_index) return true;
-    if (identities.kind != cell_identity_kind::stable_cellshard_cell_id) {
+    if (identities.kind != cell_identity_kind::stable_item_id) {
         set_error(error, "unknown cell identity kind");
         return false;
     }
     if (identities.count != total_rows || (total_rows != 0u && identities.stable_cell_ids == nullptr)) {
-        set_error(error, "stable CellShard cell ID count does not match total rows");
+        set_error(error, "stable item ID count does not match total rows");
         return false;
     }
     std::vector<std::string_view> sorted_ids;
@@ -98,14 +96,14 @@ bool validate_identities(std::uint64_t total_rows,
     for (std::uint64_t row = 0u; row < total_rows; ++row) {
         const char *id = identities.stable_cell_ids[(std::size_t) row];
         if (id == nullptr || *id == '\0') {
-            set_error(error, "stable CellShard cell IDs must be non-empty");
+            set_error(error, "stable item IDs must be non-empty");
             return false;
         }
         sorted_ids.emplace_back(id);
     }
     std::sort(sorted_ids.begin(), sorted_ids.end());
     if (std::adjacent_find(sorted_ids.begin(), sorted_ids.end()) != sorted_ids.end()) {
-        set_error(error, "stable CellShard cell IDs must be unique");
+        set_error(error, "stable item IDs must be unique");
         return false;
     }
     return true;
@@ -561,31 +559,6 @@ bool reproduce_density_sample_plan(const sample_provenance &provenance,
         return false;
     }
     return true;
-}
-
-bool build_cellshard_sample_plan(const char *path,
-                                 const sample_spec &spec,
-                                 sample_plan *out,
-                                 std::string *error) {
-    ::cellshard::exporting::dataset_summary summary;
-    if (path == nullptr || *path == '\0') {
-        set_error(error, "CellShard sample plan path is empty");
-        return false;
-    }
-    if (!::cellshard::exporting::load_dataset_summary(path, &summary, error)) return false;
-
-    cell_identity_view identities;
-    std::vector<const char *> stable_ids;
-    if (summary.obs_names.size() == (std::size_t) summary.rows) {
-        identities.kind = cell_identity_kind::stable_cellshard_cell_id;
-        stable_ids.reserve(summary.obs_names.size());
-        for (const std::string &id : summary.obs_names) stable_ids.push_back(id.c_str());
-        identities.stable_cell_ids = stable_ids.empty() ? nullptr : stable_ids.data();
-        identities.count = (std::uint64_t) stable_ids.size();
-    } else {
-        identities.kind = cell_identity_kind::global_row_index;
-    }
-    return build_sample_plan(summary.rows, spec, identities, out, error);
 }
 
 } // namespace cellerator::compute::sampling

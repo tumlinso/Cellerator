@@ -35,7 +35,7 @@ Cellerator owns:
 - training-oriented forward, transpose, backward, and optimizer primitives;
 - precision and quantization policy tied to biological modules or execution blocks;
 - single-GPU and multi-GPU execution planning;
-- layout-aware preprocessing and biological operators that are reused by higher layers;
+- layout-aware sparse transforms, reductions, and biological operators reused by higher layers;
 - independent correctness referees, structural validation, and performance instrumentation;
 - narrow shared ABI contracts used by Baseplane, CellShard, CelleraTorch, and other adapters.
 
@@ -83,7 +83,7 @@ It does not own native Cellerator structures, parameters, planning, or reusable 
 
 ## Higher Layers
 
-Preprocessing, model, trajectory, and workflow code may remain in Cellerator when they:
+Model, trajectory, and workflow code may remain in Cellerator when they:
 
 - exercise Cellerator-native biological operations;
 - provide reusable numerical policy;
@@ -91,6 +91,11 @@ Preprocessing, model, trajectory, and workflow code may remain in Cellerator whe
 - validate the core on realistic workloads.
 
 They must not duplicate core math, runtime ownership, structure semantics, or planning.
+
+Conventional preprocessing semantics, QC policy, normalization conventions,
+workflow ordering, and dataset orchestration belong in downstream BioPrep.
+Cellerator supplies only the reusable low-level operations that such a package
+composes.
 
 ## Out of Scope
 

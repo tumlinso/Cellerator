@@ -19,6 +19,18 @@ struct sampled_csr_structure_view {
     const sample_provenance *provenance = nullptr;
 };
 
+// Storage-neutral handoff for rows selected and loaded by an external owner.
+// Rows and their CSR segments must be aligned in ascending global-row order.
+struct selected_csr_structure_view {
+    std::uint64_t total_row_count = 0u;
+    std::uint64_t selected_row_count = 0u;
+    std::uint64_t gene_count = 0u;
+    std::uint64_t nnz = 0u;
+    const ::cellerator::types::ptr_t *row_ptr = nullptr;
+    const ::cellerator::types::idx_t *column_indices = nullptr;
+    const std::uint64_t *global_row_indices = nullptr;
+};
+
 class owned_sampled_csr_structure {
 public:
     owned_sampled_csr_structure() = default;
@@ -54,8 +66,8 @@ private:
         const sample_plan &,
         owned_sampled_csr_structure *,
         std::string *);
-    friend bool materialize_cellshard_sampled_csr_structure(
-        const char *,
+    friend bool materialize_selected_csr_structure(
+        const selected_csr_structure_view &,
         const sample_plan &,
         owned_sampled_csr_structure *,
         std::string *);
@@ -70,10 +82,10 @@ bool materialize_sampled_csr_structure(
     owned_sampled_csr_structure *out,
     std::string *error = nullptr);
 
-// CellShard owns .csh5 access and partition decoding. This adapter delegates to
-// its selected-row CSR export and discards any incidentally decoded values.
-bool materialize_cellshard_sampled_csr_structure(
-    const char *path,
+// Converts already-loaded selected CSR rows into Cellerator's owned structural
+// representation. This performs no storage access and retains no values.
+bool materialize_selected_csr_structure(
+    const selected_csr_structure_view &source,
     const sample_plan &plan,
     owned_sampled_csr_structure *out,
     std::string *error = nullptr);

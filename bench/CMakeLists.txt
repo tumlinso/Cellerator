@@ -24,25 +24,6 @@ target_link_libraries(sparseOpsBench PRIVATE cellerator_compute_sparse_project c
 set_target_properties(sparseOpsBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(sparseOpsBench)
 
-if(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS)
-    add_executable(celleratorPreprocessScrnaBench
-        bench/preprocess/scrna_preprocess_bench.cu
-    )
-    target_include_directories(celleratorPreprocessScrnaBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(celleratorPreprocessScrnaBench PRIVATE Cellerator::preprocess CUDA::cudart)
-    set_target_properties(celleratorPreprocessScrnaBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(celleratorPreprocessScrnaBench)
-
-    add_executable(celleratorPreprocessNcclReduceBench
-        bench/preprocess/nccl_gene_reduce_bench.cu
-    )
-    target_include_directories(celleratorPreprocessNcclReduceBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(celleratorPreprocessNcclReduceBench PRIVATE Cellerator::preprocess CUDA::cudart)
-    set_target_properties(celleratorPreprocessNcclReduceBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-    cellerator_enable_perf(celleratorPreprocessNcclReduceBench)
-
-endif()
-
 add_executable(geneCandidateDiscoveryBench
     bench/gene_candidate_discovery_bench.cu
 )

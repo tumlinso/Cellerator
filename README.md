@@ -100,6 +100,10 @@ CellShard owns storage and distribution:
 
 Cellerator owns the meaning and execution of packed biological structures. CellShard may persist and transport opaque Cellerator images, but it does not infer their geometry or choose their kernels.
 
+Cellerator production APIs consume resident matrices, byte spans, and device
+views. Dataset paths, `.csh5` loading, selected-row storage export, and
+execution-payload transport adapters remain on the CellShard side.
+
 ### CelleraTorch
 
 CelleraTorch is the explicit Torch and libtorch adapter. Native structures, parameters, planning, and kernels remain Cellerator-owned.
@@ -128,7 +132,7 @@ Implemented:
 - zero-copy CelleraTorch views, current-stream native forward dispatch, bounded
   native autograd/readiness integration, and quantitative adapter-overhead
   evidence;
-- sparse preprocessing and model primitives;
+- generic sparse row transforms, column moments, and model primitives used by downstream workflows;
 - CSR, SELL, Blocked-ELL, quantized, cuSPARSE, CUB, NCCL, and custom CUDA paths;
 - retained experimental CP-Math v1 compatibility contracts and backends.
 
@@ -144,11 +148,11 @@ See [Current implementation](docs/current_implementation.qmd) for the audited st
 
 ```text
 include/Cellerator/
-    execution, runtime, geometry, compute, planner, preprocess, and interop contracts
+    execution, runtime, geometry, compute, planner, and interop contracts
 
 src/
-    authoritative execution, runtime, geometry, compute, planner, preprocess,
-    and interop implementation
+    authoritative execution, runtime, geometry, compute, planner, and interop
+    implementation
 
 compat/
     CP-Math v1, legacy sparse, and legacy C API evidence/compatibility
@@ -160,7 +164,7 @@ examples/
     model and trajectory orchestration workloads
 
 tools/
-    preprocessing workbench and developer applications
+    developer applications
 
 modules/
     host-only C++20 semantic-boundary proof infrastructure

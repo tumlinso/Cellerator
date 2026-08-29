@@ -1,5 +1,5 @@
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
-#include <Cellerator/execution/opaque_artifact.hh>
+#include <CellShard/interop/cellerator/execution_payload.hh>
 #include <Cellerator/execution/program.hh>
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
@@ -26,6 +26,7 @@ namespace planner = cellerator::planner;
 namespace runtime = cellerator::runtime;
 namespace cp = cellpack;
 namespace cs = cellshard;
+namespace integration = cellshard::interop::cellerator;
 
 namespace {
 
@@ -319,18 +320,18 @@ int main() {
     require(cs::load_execution_cspack_partition(path.c_str(), 34u, 0u,
         transport, &loaded), "reload opaque CPEXEC01 payload");
 
-    execution::opaque_execution_artifact_expected expected{};
+    integration::execution_artifact_expected expected{};
     expected.transport = transport;
-    expected.image = {structure, epoch.value,
+    expected.image.image = {structure, epoch.value,
         image_request.semantic_geometry_identity,
         image_request.projection_catalog_identity,
         built_image.header.image_identity};
-    execution::validated_opaque_execution_artifact validated{};
-    require(execution::validate_opaque_execution_artifact_host(
+    integration::validated_execution_artifact validated{};
+    require(integration::validate_execution_artifact_host(
         loaded, expected, &validated), "validate reloaded CPE2 semantics");
     persistence::prebound_projection_view_v1 host_prebound{};
     require(persistence::prebind_execution_projection_host(
-        validated.host_image, 0u, &host_prebound), "prebind reloaded FMP1");
+        validated.image.host_image, 0u, &host_prebound), "prebind reloaded FMP1");
     cm::feature_major_projection_view validated_projection{};
     require(cm::validate_feature_major_projection_payload_host(
         host_prebound.payload, host_prebound.payload_bytes, structure, epoch,
@@ -346,7 +347,7 @@ int main() {
     require_cuda(cs::upload_execution_payload_async(
         loaded, device, stream, &residency), "upload opaque CPE2 once");
     execution::bound_opaque_execution_artifact bound{};
-    require(execution::bind_opaque_execution_artifact_device(
+    require(integration::bind_execution_artifact_device(
         validated, residency, &bound), "bind caller-owned CPE2 residency");
     execution::projection_activation_context activation{};
     activation.structure = structure;

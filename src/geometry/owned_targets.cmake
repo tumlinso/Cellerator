@@ -327,7 +327,6 @@ target_include_directories(cellerator_opaque_execution_artifact PUBLIC
 )
 target_link_libraries(cellerator_opaque_execution_artifact PUBLIC
     CellPack::execution_image_v2
-    CellShard::headers
 )
 target_compile_features(cellerator_opaque_execution_artifact PUBLIC cxx_std_17)
 

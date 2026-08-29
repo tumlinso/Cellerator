@@ -2,8 +2,8 @@
 
 This directory is the compiled home for Cellerator operations, physical
 projections, execution candidates, reusable operators, and native training.
-Runtime resources, preprocessing, geometry compilation, planning, and
-inter-project adapters have separate canonical owners.
+Runtime resources, biological workflow policy, geometry compilation, planning,
+and inter-project adapters have separate canonical owners.
 
 ## Target ownership
 
@@ -48,6 +48,7 @@ The public contracts belong under `include/Cellerator/compute/` or another canon
 Historical CP-Math v1 implementation lives under `compat/cp_math_v1/`.
 Forwarding headers under `include/Cellerator/compute/math/` do not confer
 current ownership. Runtime resources belong under `src/runtime/`, planning
-under `src/planner/`, and preprocessing under `src/preprocess/`.
+under `src/planner/`, and conventional preprocessing workflows in downstream
+BioPrep.
 
 Read `docs/core_execution_cp_math.qmd` before adding new runtime or planner abstractions.

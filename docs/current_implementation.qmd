@@ -34,12 +34,12 @@ remain available, but normal native targets no longer depend on the historical
 
 The repository now gives those generations distinct physical roles:
 
-1. current execution, runtime, geometry, compute, planner, preprocessing, and
-   interop implementation under canonical `include/Cellerator/` and `src/`
+1. current execution, runtime, geometry, compute, planner, and interop
+   implementation under canonical `include/Cellerator/` and `src/`
    ownership;
 2. retained CP-Math v1 and legacy sparse evidence under `compat/`;
-3. model and trajectory orchestration under `examples/`, the preprocessing
-   workbench under `tools/`, and Torch adaptation under `components/CelleraTorch`.
+3. model and trajectory orchestration under `examples/` and Torch adaptation
+   under `components/CelleraTorch`.
 
 The documentation before this replacement described the first generation as the durable architecture, especially through Blocked-ELL-first and CellShard-backed sparse-ML language. That description is superseded.
 
@@ -387,7 +387,7 @@ The repository also contains useful existing systems:
 - Blocked-ELL;
 - SELL and sliced execution;
 - quantized Blocked-ELL;
-- preprocessing kernels and workflows;
+- generic sparse row transforms and column moments used by downstream BioPrep;
 - exact neighbor search;
 - trajectory logic;
 - native model implementations;

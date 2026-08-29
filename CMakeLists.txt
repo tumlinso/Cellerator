@@ -49,7 +49,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE
 add_subdirectory(modules)
 
 find_package(CUDAToolkit REQUIRED)
-find_package(HDF5 REQUIRED COMPONENTS C)
 find_package(PkgConfig QUIET)
 
 # Native Cellerator is the default build. CelleraTorch remains an explicit
@@ -58,9 +57,6 @@ option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch compatibility com
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
-option(CELLERATOR_BUILD_PREPROCESS_WORKBENCH "Build the optional Cellerator preprocessing ncurses workbench." ON)
-option(CELLERATOR_BUILD_PREPROCESS_BENCHMARKS "Build Cellerator preprocessing benchmarks." ON)
-option(CELLERATOR_ENABLE_PYTHON "Build the optional Cellerator Python bindings." OFF)
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
     "CUDA optimization mode: generic, native, or native-extreme")
 set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
@@ -222,10 +218,6 @@ endif()
 if(NOT TARGET CellShard::runtime)
     message(FATAL_ERROR "Cellerator requires CellShard::runtime")
 endif()
-if(NOT TARGET CellShard::export)
-    message(FATAL_ERROR "Cellerator compute dataset utilities require CellShard::export")
-endif()
-
 function(cellerator_add_baseplane_source baseplane_source_dir)
     if(NOT EXISTS "${baseplane_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "BASEPLANE_SOURCE_DIR does not point to a Baseplane source tree: ${baseplane_source_dir}")

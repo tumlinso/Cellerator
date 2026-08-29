@@ -1,5 +1,14 @@
 include(tests/planner_targets.cmake)
 
+find_program(CELLERATOR_PYTHON3_EXECUTABLE NAMES python3 REQUIRED)
+add_custom_target(celleratorNoProductionFileIoCheck ALL
+    COMMAND ${CELLERATOR_PYTHON3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_no_production_file_io.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Checking that Cellerator production sources do not own files"
+    VERBATIM
+)
+
 add_executable(celleratorIdentityRegistryTest
     tests/execution_identity/identity_registry_test.cc
 )
@@ -102,6 +111,16 @@ target_link_libraries(sparseOpsRuntimeTest PRIVATE cellerator_compute_sparse_pro
 set_target_properties(sparseOpsRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(sparseOpsRuntimeTest)
 
+add_executable(celleratorSparseRowTransformsTest tests/sparse_row_transforms_test.cu)
+target_link_libraries(celleratorSparseRowTransformsTest PRIVATE Cellerator::sparse_ops CUDA::cudart)
+set_target_properties(celleratorSparseRowTransformsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorSparseRowTransformsTest)
+
+add_executable(celleratorSparseColumnMomentsTest tests/sparse_column_moments_test.cu)
+target_link_libraries(celleratorSparseColumnMomentsTest PRIVATE Cellerator::sparse_ops CUDA::cudart)
+set_target_properties(celleratorSparseColumnMomentsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+cellerator_enable_perf(celleratorSparseColumnMomentsTest)
+
 add_executable(coreSparseLayoutRuntimeTest
     tests/core_sparse_layout_runtime_test.cu
 )
@@ -110,19 +129,11 @@ target_link_libraries(coreSparseLayoutRuntimeTest PRIVATE cellerator_compute_mat
 set_target_properties(coreSparseLayoutRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(coreSparseLayoutRuntimeTest)
 
-add_executable(datasetRuntimeTest
-    tests/dataset_runtime_test.cc
-)
-target_include_directories(datasetRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(datasetRuntimeTest PRIVATE cellerator_compute_dataset CUDA::cudart)
-set_target_properties(datasetRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-cellerator_enable_perf(datasetRuntimeTest)
-
 add_executable(samplingRuntimeTest
     tests/sampling_runtime_test.cc
 )
 target_include_directories(samplingRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(samplingRuntimeTest PRIVATE cellerator_compute_sampling cellerator_compute_dataset CUDA::cudart)
+target_link_libraries(samplingRuntimeTest PRIVATE cellerator_compute_sampling CUDA::cudart)
 set_target_properties(samplingRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(samplingRuntimeTest)
 
@@ -133,6 +144,33 @@ target_include_directories(samplingMaterializationRuntimeTest PRIVATE ${CMAKE_CU
 target_link_libraries(samplingMaterializationRuntimeTest PRIVATE cellerator_compute_sampling CUDA::cudart)
 set_target_properties(samplingMaterializationRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 cellerator_enable_perf(samplingMaterializationRuntimeTest)
+
+if(TARGET CellShard::export)
+    add_executable(cellShardCelleratorSamplingAdapterTest
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/tests/cellerator_sampling_adapter_test.cc)
+    target_link_libraries(cellShardCelleratorSamplingAdapterTest PRIVATE
+        CellShard::export
+        cellerator_compute_sampling
+        CUDA::cudart)
+    target_compile_features(cellShardCelleratorSamplingAdapterTest PRIVATE cxx_std_17)
+
+    add_executable(cellShardStorageBoundaryIntegrationTest
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/tests/cellshard_export_runtime_test.cu)
+    target_compile_definitions(cellShardStorageBoundaryIntegrationTest PRIVATE
+        CELLSHARD_TEST_CELLERATOR_ADAPTER=1)
+    target_include_directories(cellShardStorageBoundaryIntegrationTest PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/export)
+    target_link_libraries(cellShardStorageBoundaryIntegrationTest PRIVATE
+        CellShard::export
+        cellerator_compute_sampling
+        CUDA::cudart)
+    set_target_properties(cellShardStorageBoundaryIntegrationTest PROPERTIES
+        CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+endif()
 
 add_executable(geneSupportBitsetRuntimeTest
     tests/gene_support_bitset_runtime_test.cu
@@ -162,62 +200,6 @@ set_target_properties(geneCandidateDiscoveryRuntimeTest PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 cellerator_enable_perf(geneCandidateDiscoveryRuntimeTest)
-
-add_executable(celleratorPreprocessRuntimeTest
-    tests/preprocess/preprocess_runtime_test.cu
-)
-target_include_directories(celleratorPreprocessRuntimeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessRuntimeTest PRIVATE Cellerator::preprocess CUDA::cudart)
-set_target_properties(celleratorPreprocessRuntimeTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessRuntimeTest)
-
-add_executable(celleratorPreprocessQCMetricsEquivalenceTest
-    tests/preprocess/qc_metrics_equivalence_test.cu
-)
-target_include_directories(celleratorPreprocessQCMetricsEquivalenceTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessQCMetricsEquivalenceTest PRIVATE Cellerator::preprocess CUDA::cudart)
-set_target_properties(celleratorPreprocessQCMetricsEquivalenceTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessQCMetricsEquivalenceTest)
-
-add_executable(celleratorPreprocessQCMaskGroupsTest
-    tests/preprocess/qc_mask_groups_test.cu
-)
-target_include_directories(celleratorPreprocessQCMaskGroupsTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessQCMaskGroupsTest PRIVATE Cellerator::preprocess CUDA::cudart)
-set_target_properties(celleratorPreprocessQCMaskGroupsTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessQCMaskGroupsTest)
-
-add_executable(celleratorPreprocessQCFleetTest
-    tests/preprocess/qc_fleet_test.cu
-)
-target_include_directories(celleratorPreprocessQCFleetTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessQCFleetTest PRIVATE Cellerator::preprocess CUDA::cudart)
-set_target_properties(celleratorPreprocessQCFleetTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessQCFleetTest)
-
-add_executable(celleratorPreprocessCellShardSessionApiTest
-    tests/preprocess/cellshard_session_api_test.cu
-)
-target_include_directories(celleratorPreprocessCellShardSessionApiTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessCellShardSessionApiTest PRIVATE Cellerator::preprocess CUDA::cudart)
-set_target_properties(celleratorPreprocessCellShardSessionApiTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessCellShardSessionApiTest)
-
-add_executable(celleratorPreprocessAdapterStagingTest
-    tests/preprocess/adapter_staging_test.cc
-)
-target_include_directories(celleratorPreprocessAdapterStagingTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessAdapterStagingTest PRIVATE Cellerator::preprocess)
-set_target_properties(celleratorPreprocessAdapterStagingTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessAdapterStagingTest)
-
-add_executable(celleratorPreprocessDoublePreprocessRejectionTest
-    tests/preprocess/double_preprocess_rejection_test.cc
-)
-target_include_directories(celleratorPreprocessDoublePreprocessRejectionTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(celleratorPreprocessDoublePreprocessRejectionTest PRIVATE Cellerator::preprocess)
-set_target_properties(celleratorPreprocessDoublePreprocessRejectionTest PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-cellerator_enable_perf(celleratorPreprocessDoublePreprocessRejectionTest)
 
 add_executable(abiRuntimeTest
     tests/abi_runtime_test.cu

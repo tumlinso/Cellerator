@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cellerator/geometry/persistence/execution_image_v2.hh>
-#include <CellShard/io/pack/execution_payload.cuh>
 
 #include <cstdint>
 
@@ -26,40 +25,45 @@ struct opaque_artifact_status {
 };
 
 struct opaque_execution_artifact_expected {
-    cellshard::execution_payload_identity transport{};
     cellpack::persistence::execution_image_v2_expected image{};
     std::uint32_t projection_index = 0u;
 };
 
-// Cold validated state. CellShard remains owner of host storage; this view
+struct resident_execution_image {
+    const void *bytes = nullptr;
+    std::uint64_t byte_count = 0u;
+};
+
+struct resident_device_execution_image {
+    const void *bytes = nullptr;
+    std::uint64_t byte_count = 0u;
+    int device_id = -1;
+};
+
+// Cold validated state. The caller remains owner of host storage; this view
 // carries no ownership and pointer identity is never compatibility identity.
 struct validated_opaque_execution_artifact {
-    cellshard::execution_payload_identity transport{};
     cellpack::persistence::execution_image_v2_view host_image{};
     std::uint32_t projection_index = 0u;
 };
 
-#if CELLSHARD_ENABLE_CUDA
 // Prepared device binding. It contains no values, stream, launch workspace, or
-// allocation ownership. The CellShard device residency must outlive this view.
+// allocation ownership. The caller's device residency must outlive this view.
 struct bound_opaque_execution_artifact {
     cellpack::persistence::execution_image_v2_view device_image{};
     cellpack::persistence::prebound_projection_view_v1 projection{};
     std::uint64_t image_identity = 0u;
     int device_id = -1;
 };
-#endif
 
 opaque_artifact_status validate_opaque_execution_artifact_host(
-    const cellshard::execution_payload_host &host,
+    const resident_execution_image &host,
     const opaque_execution_artifact_expected &expected,
     validated_opaque_execution_artifact *out) noexcept;
 
-#if CELLSHARD_ENABLE_CUDA
 opaque_artifact_status bind_opaque_execution_artifact_device(
     const validated_opaque_execution_artifact &validated,
-    const cellshard::execution_payload_device &device,
+    const resident_device_execution_image &device,
     bound_opaque_execution_artifact *out) noexcept;
-#endif
 
 } // namespace cellerator::execution

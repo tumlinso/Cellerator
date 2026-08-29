@@ -1,7 +1,4 @@
-#include <Cellerator/compute/dataset.hh>
 #include <Cellerator/compute/sampling.hh>
-
-#include <CellShard/io/csh5/api.cuh>
 
 #include <cuda_fp16.h>
 
@@ -14,41 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include <unistd.h>
-
-namespace cd = cellerator::compute::dataset;
 namespace cs = cellerator::compute::sampling;
 namespace cm = cellerator::matrix;
 namespace ct = cellerator::types;
-
-struct owned_text_column {
-    std::vector<std::uint32_t> offsets;
-    std::vector<char> data;
-
-    cellshard::dataset_text_column_view view() const {
-        return {
-            offsets.empty() ? 0u : (std::uint32_t) offsets.size() - 1u,
-            (std::uint32_t) data.size(),
-            offsets.empty() ? nullptr : offsets.data(),
-            data.empty() ? nullptr : data.data()
-        };
-    }
-};
-
-owned_text_column make_text_column(const std::vector<const char *> &values) {
-    owned_text_column out;
-    std::uint32_t cursor = 0u;
-    out.offsets.resize(values.size() + 1u, 0u);
-    for (std::size_t i = 0u; i < values.size(); ++i) {
-        const std::size_t length = std::strlen(values[i]);
-        out.offsets[i] = cursor;
-        out.data.insert(out.data.end(), values[i], values[i] + length);
-        out.data.push_back('\0');
-        cursor += (std::uint32_t) length + 1u;
-    }
-    out.offsets[values.size()] = cursor;
-    return out;
-}
 
 int require(bool ok, const char *label) {
     if (!ok) std::fprintf(stderr, "%s\n", label);
@@ -149,7 +114,7 @@ int test_exact_size_and_stable_cell_ids() {
     spec.seed = 99u;
     spec.split_name = "exact-three";
     spec.requested_row_count = 3u;
-    original_view.kind = reordered_view.kind = cs::cell_identity_kind::stable_cellshard_cell_id;
+    original_view.kind = reordered_view.kind = cs::cell_identity_kind::stable_item_id;
     original_view.stable_cell_ids = ids;
     reordered_view.stable_cell_ids = reordered_ids;
     original_view.count = reordered_view.count = 8u;
@@ -177,10 +142,10 @@ int test_exact_size_and_stable_cell_ids() {
     std::sort(original_selected.begin(), original_selected.end());
     std::sort(reordered_selected.begin(), reordered_selected.end());
     if (!require(original_selected == reordered_selected,
-                 "stable CellShard cell ID selection depends on physical row order")) return 25;
-    if (!require(original.provenance.cell_identity == cs::cell_identity_kind::stable_cellshard_cell_id
+                 "stable item ID selection depends on physical row order")) return 25;
+    if (!require(original.provenance.cell_identity == cs::cell_identity_kind::stable_item_id
                  && original.provenance.requested_row_count == 3u,
-                 "stable CellShard ID provenance mismatch")) return 26;
+                 "stable item ID provenance mismatch")) return 26;
     if (!require(cs::reproduce_sample_plan(original.provenance, original_view, &replay, &error), error.c_str())) return 27;
     if (!require(replay.global_row_indices == original.global_row_indices,
                  "stable-ID exact sample did not replay from provenance")) return 28;
@@ -260,91 +225,14 @@ int test_exact_global_rows_limits_and_small_population() {
     return 0;
 }
 
-int test_cellshard_barcode_routing() {
-    const char *ids[] = {"cell-g", "cell-c", "cell-a", "cell-h", "cell-b", "cell-f", "cell-d", "cell-e"};
-    const owned_text_column barcodes = make_text_column(std::vector<const char *>(ids, ids + 8u));
-    const owned_text_column feature_ids = make_text_column({"gene0"});
-    const owned_text_column feature_names = make_text_column({"G0"});
-    const owned_text_column feature_types = make_text_column({"gene"});
-    const std::uint32_t cell_dataset_ids[8] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u};
-    const std::uint64_t cell_local_indices[8] = {0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u};
-    const std::uint32_t feature_dataset_ids[] = {0u};
-    const std::uint64_t feature_local_indices[] = {0u};
-    const cellshard::dataset_provenance_view provenance{
-        barcodes.view(),
-        cell_dataset_ids,
-        cell_local_indices,
-        feature_ids.view(),
-        feature_names.view(),
-        feature_types.view(),
-        feature_dataset_ids,
-        feature_local_indices,
-        nullptr,
-        nullptr
-    };
-    const std::uint64_t partition_rows[] = {8u}, partition_nnz[] = {0u};
-    const std::uint32_t partition_axes[] = {0u};
-    const std::uint64_t partition_aux[] = {(std::uint64_t) cellshard::sparse::pack_blocked_ell_aux(1u, 0ul)};
-    const std::uint64_t partition_offsets[] = {0u, 8u}, shard_offsets[] = {0u, 8u};
-    const std::uint32_t partition_dataset_ids[] = {0u}, partition_codec_ids[] = {0u};
-    cellshard::dataset_codec_descriptor codec{};
-    codec.codec_id = 0u;
-    codec.family = cellshard::dataset_codec_family_blocked_ell;
-    codec.value_code = (std::uint32_t) (::real::code_of< ::real::storage_t>::code);
-    codec.bits = (std::uint32_t) (sizeof(::real::storage_t) * 8u);
-    const cellshard::dataset_layout_view layout{
-        8u, 1u, 0u, 1u, 1u,
-        partition_rows, partition_nnz, partition_axes, partition_aux, partition_offsets,
-        partition_dataset_ids, partition_codec_ids, shard_offsets, &codec, 1u
-    };
-    char path[] = "/tmp/cellerator_samplingXXXXXX.csh5";
-    const int fd = ::mkstemps(path, 5);
-    if (!require(fd >= 0, "failed to allocate temporary CellShard path")) return 30;
-    ::close(fd);
-    std::remove(path);
-    if (!require(cellshard::create_dataset_blocked_ell_h5(path, &layout, nullptr, &provenance) != 0,
-                 "failed to create CellShard metadata fixture")) return 31;
-
-    cs::sample_spec spec;
-    cs::sample_plan file_plan, direct_plan;
-    cs::cell_identity_view identities;
-    std::string error;
-    spec.mode = cs::selection_mode::exact_lowest_hash;
-    spec.seed = 99u;
-    spec.split_name = "cellshard-barcodes";
-    spec.requested_row_count = 3u;
-    identities.kind = cs::cell_identity_kind::stable_cellshard_cell_id;
-    identities.stable_cell_ids = ids;
-    identities.count = 8u;
-    const bool file_ok = cs::build_cellshard_sample_plan(path, spec, &file_plan, &error);
-    std::remove(path);
-    if (!require(file_ok, error.c_str())) return 32;
-    if (!require(cs::build_sample_plan(8u, spec, identities, &direct_plan, &error), error.c_str())) return 33;
-    if (!require(file_plan.provenance.cell_identity == cs::cell_identity_kind::stable_cellshard_cell_id
-                 && file_plan.global_row_indices == direct_plan.global_row_indices,
-                 "CellShard global barcodes were not used as stable cell IDs")) return 34;
-
-    if (!require(cellshard::create_dataset_blocked_ell_h5(path, &layout, nullptr, nullptr) != 0,
-                 "failed to create CellShard fixture without barcodes")) return 35;
-    spec.split_name = "cellshard-global-rows";
-    error.clear();
-    const bool fallback_ok = cs::build_cellshard_sample_plan(path, spec, &file_plan, &error);
-    std::remove(path);
-    if (!require(fallback_ok, error.c_str())) return 36;
-    if (!require(file_plan.provenance.cell_identity == cs::cell_identity_kind::global_row_index,
-                 "CellShard sampling did not record global-row fallback identity")) return 37;
-    return 0;
-}
-
 int test_density_stratified_csr_sampling() {
-    cm::compressed source, sampled;
+    cm::compressed source;
     cs::density_sample_spec spec;
     cs::cell_identity_view identities;
     cs::sample_plan first, second, generic, replay;
     const std::uint64_t row_nnz[] = {2u, 1u, 3u, 2u, 1u, 2u, 1u, 2u};
     std::string error;
     cm::init(&source);
-    cm::init(&sampled);
     if (!require(fill_source(&source), "density source allocation failed")) return 50;
     spec.seed = 71u;
     spec.split_name = "density";
@@ -423,61 +311,6 @@ int test_density_stratified_csr_sampling() {
     if (!require(!cs::build_density_sample_plan(8u, row_nnz_view, undersampled_spec, identities, &rejected, &error),
                  "density sampling allowed a non-empty stratum to be dropped")) return 65;
 
-    if (!require(cd::rebuild_rows_as_compressed(&source,
-                                                first.global_row_indices.data(),
-                                                first.global_row_indices.size(),
-                                                &sampled,
-                                                &error), error.c_str())) return 66;
-    for (std::size_t out_row = 0u; out_row < first.global_row_indices.size(); ++out_row) {
-        const std::uint64_t source_row = first.global_row_indices[out_row];
-        const ct::ptr_t source_begin = source.majorPtr[source_row], source_end = source.majorPtr[source_row + 1u];
-        const ct::ptr_t sampled_begin = sampled.majorPtr[out_row], sampled_end = sampled.majorPtr[out_row + 1u];
-        if (!require(source_end - source_begin == sampled_end - sampled_begin,
-                     "density materialization changed row nnz")) return 67;
-        for (ct::ptr_t slot = 0u; slot < source_end - source_begin; ++slot) {
-            if (!require(source.minorIdx[source_begin + slot] == sampled.minorIdx[sampled_begin + slot]
-                         && __half_as_ushort(source.val[source_begin + slot]) == __half_as_ushort(sampled.val[sampled_begin + slot]),
-                         "density materialization changed row contents")) return 68;
-        }
-    }
-    cm::clear(&sampled);
-    cm::clear(&source);
-    return 0;
-}
-
-int test_complete_row_materialization() {
-    cm::compressed source, sampled;
-    cs::sample_spec spec;
-    cs::sample_plan plan;
-    cs::cell_identity_view identities;
-    std::string error;
-    cm::init(&source);
-    cm::init(&sampled);
-    if (!require(fill_source(&source), "source allocation failed")) return 40;
-    spec.mode = cs::selection_mode::exact_lowest_hash;
-    spec.seed = 13u;
-    spec.split_name = "materialize";
-    spec.requested_row_count = 4u;
-    if (!require(cs::build_sample_plan(source.rows, spec, identities, &plan, &error), error.c_str())) return 41;
-    if (!require(cd::rebuild_rows_as_compressed(&source,
-                                                plan.global_row_indices.data(),
-                                                plan.global_row_indices.size(),
-                                                &sampled,
-                                                &error), error.c_str())) return 42;
-    if (!require(sampled.rows == 4u && sampled.cols == source.cols, "sampled CSR shape mismatch")) return 43;
-    for (std::size_t out_row = 0u; out_row < plan.global_row_indices.size(); ++out_row) {
-        const std::uint64_t source_row = plan.global_row_indices[out_row];
-        const ct::ptr_t source_begin = source.majorPtr[source_row], source_end = source.majorPtr[source_row + 1u];
-        const ct::ptr_t sampled_begin = sampled.majorPtr[out_row], sampled_end = sampled.majorPtr[out_row + 1u];
-        if (!require(source_end - source_begin == sampled_end - sampled_begin,
-                     "sampled row nnz was not preserved")) return 44;
-        for (ct::ptr_t slot = 0u; slot < source_end - source_begin; ++slot) {
-            if (!require(source.minorIdx[source_begin + slot] == sampled.minorIdx[sampled_begin + slot]
-                         && __half_as_ushort(source.val[source_begin + slot]) == __half_as_ushort(sampled.val[sampled_begin + slot]),
-                         "sampled CSR did not copy one complete source row")) return 45;
-        }
-    }
-    cm::clear(&sampled);
     cm::clear(&source);
     return 0;
 }
@@ -491,9 +324,5 @@ int main() {
     if (rc != 0) return rc;
     rc = test_exact_global_rows_limits_and_small_population();
     if (rc != 0) return rc;
-    rc = test_cellshard_barcode_routing();
-    if (rc != 0) return rc;
-    rc = test_density_stratified_csr_sampling();
-    if (rc != 0) return rc;
-    return test_complete_row_materialization();
+    return test_density_stratified_csr_sampling();
 }

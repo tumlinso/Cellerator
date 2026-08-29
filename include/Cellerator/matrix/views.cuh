@@ -35,4 +35,19 @@ struct alignas(16) sliced_ell_view {
     __half *val;
 };
 
+enum compressed_axis : unsigned int {
+    compressed_by_row = 0u,
+    compressed_by_column = 1u
+};
+
+struct alignas(16) compressed_view {
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int nnz;
+    unsigned int axis;
+    unsigned int *major_ptr;
+    unsigned int *minor_idx;
+    __half *val;
+};
+
 } // namespace cellerator::matrix::device
