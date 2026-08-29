@@ -1,4 +1,5 @@
 #include "Cellerator/geometry/persistence/execution_image_v2.hh"
+#include "Cellerator/geometry/persistence/execution_capability_manifest_v1.hh"
 
 #include <algorithm>
 #include <cstddef>
@@ -586,6 +587,49 @@ validation_result prebind_execution_projection_for_base_host(
         &result.scheduling_summary_bytes);
     if (!valid_offsets)
         return invalid("projection prebind destination pointer overflows");
+    *out = result;
+    return validation_ok();
+}
+
+validation_result prebind_execution_projection_v2_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    prebound_projection_view_v2 *out) noexcept {
+    return prebind_execution_projection_v2_for_base_host(validated_host_view,
+        projection_index, validated_host_view.image_base,
+        validated_host_view.image_bytes, out);
+}
+
+validation_result prebind_execution_projection_v2_for_base_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    const void *destination_image_base,
+    std::size_t destination_image_bytes,
+    prebound_projection_view_v2 *out) noexcept {
+    if (out == nullptr)
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "projection v2 prebind output is null");
+
+    prebound_projection_view_v2 result{};
+    validation_result status = prebind_execution_projection_for_base_host(
+        validated_host_view, projection_index, destination_image_base,
+        destination_image_bytes, &result.projection_v1);
+    if (!status) return status;
+
+    const execution_projection_entry_v1 &entry =
+        result.projection_v1.descriptor;
+    if (entry.capability_section != invalid_directory_index) {
+        const execution_capability_manifest_v1 *validated_capability = nullptr;
+        status = bind_execution_capability_manifest_v1_host(
+            validated_host_view, projection_index, &validated_capability);
+        if (!status) return status;
+        const execution_section_entry_v1 &section =
+            validated_host_view.sections[entry.capability_section];
+        if (!relocated_pointer(destination_image_base, section.offset,
+                &result.capability))
+            return invalid("projection v2 capability pointer overflows");
+        result.capability_bytes = static_cast<std::size_t>(section.bytes);
+    }
     *out = result;
     return validation_ok();
 }

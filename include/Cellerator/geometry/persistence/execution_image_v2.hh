@@ -197,6 +197,17 @@ struct prebound_projection_view_v1 {
     std::size_t scheduling_summary_bytes = 0u;
 };
 
+// Compatible extension of the v1 launch view. The complete v1 view remains
+// the first object so existing activation code can consume projection_v1
+// directly without learning about capability metadata. Capability bytes are
+// validated from the host image before either pointer is formed for an opaque
+// destination base.
+struct prebound_projection_view_v2 {
+    prebound_projection_view_v1 projection_v1{};
+    const void *capability = nullptr;
+    std::size_t capability_bytes = 0u;
+};
+
 validation_result query_execution_image_v2_requirements_host(
     const execution_image_v2_build_request &request,
     execution_image_v2_requirements *out) noexcept;
@@ -236,6 +247,21 @@ validation_result prebind_execution_projection_for_base_host(
     std::size_t destination_image_bytes,
     prebound_projection_view_v1 *out) noexcept;
 
+validation_result prebind_execution_projection_v2_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    prebound_projection_view_v2 *out) noexcept;
+
+// As with the v1 destination prebind, destination_image_base may be a device
+// address. All validation reads the validated host image; destination bytes
+// are never dereferenced.
+validation_result prebind_execution_projection_v2_for_base_host(
+    const execution_image_v2_view &validated_host_view,
+    u32 projection_index,
+    const void *destination_image_base,
+    std::size_t destination_image_bytes,
+    prebound_projection_view_v2 *out) noexcept;
+
 // CPK1 remains a combined v1 compatibility section. This validates it through
 // the frozen v1 reader; it never converts the image to CSR, BELL, or v2 values.
 validation_result load_cpk1_v1_compatibility_host(
@@ -254,5 +280,9 @@ static_assert(std::is_trivially_copyable<execution_image_v2_header>::value,
     "execution image header must remain pointer-free");
 static_assert(std::is_trivially_copyable<prebound_projection_view_v1>::value,
     "prebound projection view must remain device-copyable");
+static_assert(offsetof(prebound_projection_view_v2, projection_v1) == 0u,
+    "prebound projection v2 must retain the complete v1 view as its prefix");
+static_assert(std::is_trivially_copyable<prebound_projection_view_v2>::value,
+    "prebound projection v2 must remain device-copyable");
 
 } // namespace cellpack::persistence

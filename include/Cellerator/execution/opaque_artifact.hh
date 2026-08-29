@@ -12,7 +12,8 @@ enum class opaque_artifact_code : std::uint8_t {
     transport_identity_mismatch = 2u,
     unsupported_payload = 3u,
     semantic_image_rejected = 4u,
-    device_binding_mismatch = 5u
+    device_binding_mismatch = 5u,
+    projection_capacity_insufficient = 6u
 };
 
 struct opaque_artifact_status {
@@ -56,6 +57,34 @@ struct bound_opaque_execution_artifact {
     int device_id = -1;
 };
 
+// V2 validates and binds every projection in the image. It deliberately has
+// no selected projection index: the loader exposes candidates and the planner
+// remains the sole authority that chooses one for execution.
+struct opaque_execution_artifact_expected_v2 {
+    cellpack::persistence::execution_image_v2_expected image{};
+};
+
+struct validated_opaque_execution_artifact_v2 {
+    cellpack::persistence::execution_image_v2_view host_image{};
+    std::uint32_t projection_count = 0u;
+};
+
+// Caller-owned cold binding storage. Projection views contain no allocation
+// ownership and remain valid only while both this storage and the uploaded
+// execution image remain alive.
+struct opaque_projection_binding_buffer_v2 {
+    cellpack::persistence::prebound_projection_view_v2 *projections = nullptr;
+    std::uint32_t projection_capacity = 0u;
+};
+
+struct bound_opaque_execution_artifact_v2 {
+    cellpack::persistence::execution_image_v2_view device_image{};
+    const cellpack::persistence::prebound_projection_view_v2 *projections = nullptr;
+    std::uint32_t projection_count = 0u;
+    std::uint64_t image_identity = 0u;
+    int device_id = -1;
+};
+
 opaque_artifact_status validate_opaque_execution_artifact_host(
     const resident_execution_image &host,
     const opaque_execution_artifact_expected &expected,
@@ -65,5 +94,16 @@ opaque_artifact_status bind_opaque_execution_artifact_device(
     const validated_opaque_execution_artifact &validated,
     const resident_device_execution_image &device,
     bound_opaque_execution_artifact *out) noexcept;
+
+opaque_artifact_status validate_opaque_execution_artifact_v2_host(
+    const resident_execution_image &host,
+    const opaque_execution_artifact_expected_v2 &expected,
+    validated_opaque_execution_artifact_v2 *out) noexcept;
+
+opaque_artifact_status bind_opaque_execution_artifact_v2_device(
+    const validated_opaque_execution_artifact_v2 &validated,
+    const resident_device_execution_image &device,
+    const opaque_projection_binding_buffer_v2 &buffer,
+    bound_opaque_execution_artifact_v2 *out) noexcept;
 
 } // namespace cellerator::execution
