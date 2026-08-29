@@ -5,11 +5,9 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <new>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
-#include <vector>
 
 namespace cellpack {
 namespace {
@@ -46,10 +44,15 @@ u64 bounded_random(u64 word, u64 bound) noexcept {
 
 struct validation_units {
     validation_unit_kind kind = validation_unit_kind::row_identity;
-    std::vector<u64> identities;
-    std::vector<u32> row_to_unit;
-    std::vector<std::vector<u32>> unit_rows;
+    u32 row_count = 0u;
+    u32 unit_count = 0u;
+    std::unique_ptr<u64[]> identities;
+    std::unique_ptr<u32[]> row_to_unit;
+    std::unique_ptr<u32[]> unit_offsets;
+    std::unique_ptr<u32[]> unit_rows;
 };
+
+struct group_row_pair { u64 identity = 0u; u32 row = 0u; };
 
 validation_result collect_validation_units(
     const validation_identity_view &source,
@@ -62,10 +65,15 @@ validation_result collect_validation_units(
         return validation_error(validation_code::invalid_matrix_view, invalid_id,
             "validation row identities must describe a nonempty row axis");
     }
-    std::unordered_set<u64> unique_rows;
-    unique_rows.reserve(static_cast<std::size_t>(source.row_count) * 2u);
+    std::unique_ptr<u64[]> unique_rows(new (std::nothrow) u64[source.row_count]);
+    if (unique_rows == nullptr) return validation_error(validation_code::integer_overflow,
+        invalid_id, "validation identity scratch allocation failed");
     for (u32 row = 0u; row < source.row_count; ++row) {
-        if (!unique_rows.insert(source.row_identities[row]).second) {
+        unique_rows[row] = source.row_identities[row];
+    }
+    std::sort(unique_rows.get(), unique_rows.get() + source.row_count);
+    for (u32 row = 1u; row < source.row_count; ++row) {
+        if (unique_rows[row] == unique_rows[row - 1u]) {
             return validation_error(validation_code::duplicate_id, row,
                 "validation row identities must be unique");
         }
@@ -75,33 +83,61 @@ validation_result collect_validation_units(
     result.kind = source.group_identities == nullptr
         ? validation_unit_kind::row_identity
         : validation_unit_kind::caller_group_identity;
-    result.row_to_unit.resize(source.row_count);
+    result.row_count = source.row_count;
+    result.row_to_unit.reset(new (std::nothrow) u32[source.row_count]);
+    result.unit_rows.reset(new (std::nothrow) u32[source.row_count]);
+    if (result.row_to_unit == nullptr || result.unit_rows == nullptr) {
+        return validation_error(validation_code::integer_overflow, invalid_id,
+            "validation relation allocation failed");
+    }
     if (source.group_identities == nullptr) {
-        result.identities.assign(source.row_identities,
-            source.row_identities + source.row_count);
-        result.unit_rows.resize(source.row_count);
+        result.unit_count = source.row_count;
+        result.identities.reset(new (std::nothrow) u64[source.row_count]);
+        result.unit_offsets.reset(new (std::nothrow) u32[static_cast<std::size_t>(source.row_count) + 1u]);
+        if (result.identities == nullptr || result.unit_offsets == nullptr) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "validation row-unit allocation failed");
+        }
         for (u32 row = 0u; row < source.row_count; ++row) {
+            result.identities[row] = source.row_identities[row];
             result.row_to_unit[row] = row;
-            result.unit_rows[row].push_back(row);
+            result.unit_offsets[row] = row;
+            result.unit_rows[row] = row;
         }
+        result.unit_offsets[source.row_count] = source.row_count;
     } else {
-        std::vector<u64> sorted_groups(source.group_identities,
-            source.group_identities + source.row_count);
-        std::sort(sorted_groups.begin(), sorted_groups.end());
-        sorted_groups.erase(std::unique(sorted_groups.begin(), sorted_groups.end()),
-            sorted_groups.end());
-        result.identities = std::move(sorted_groups);
-        result.unit_rows.resize(result.identities.size());
-        std::unordered_map<u64, u32> group_to_unit;
-        group_to_unit.reserve(result.identities.size() * 2u);
-        for (u32 unit = 0u; unit < result.identities.size(); ++unit) {
-            group_to_unit.emplace(result.identities[unit], unit);
-        }
+        std::unique_ptr<group_row_pair[]> pairs(
+            new (std::nothrow) group_row_pair[source.row_count]);
+        if (pairs == nullptr) return validation_error(validation_code::integer_overflow,
+            invalid_id, "validation group-row scratch allocation failed");
         for (u32 row = 0u; row < source.row_count; ++row) {
-            const u32 unit = group_to_unit.at(source.group_identities[row]);
-            result.row_to_unit[row] = unit;
-            result.unit_rows[unit].push_back(row);
+            pairs[row] = {source.group_identities[row], row};
         }
+        std::sort(pairs.get(), pairs.get() + source.row_count,
+            [](const group_row_pair &lhs, const group_row_pair &rhs) {
+                return lhs.identity != rhs.identity ? lhs.identity < rhs.identity : lhs.row < rhs.row;
+            });
+        result.unit_count = 1u;
+        for (u32 i = 1u; i < source.row_count; ++i) {
+            result.unit_count += pairs[i].identity != pairs[i - 1u].identity ? 1u : 0u;
+        }
+        result.identities.reset(new (std::nothrow) u64[result.unit_count]);
+        result.unit_offsets.reset(new (std::nothrow) u32[static_cast<std::size_t>(result.unit_count) + 1u]);
+        if (result.identities == nullptr || result.unit_offsets == nullptr) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "validation grouped relation allocation failed");
+        }
+        u32 unit = 0u;
+        result.unit_offsets[0] = 0u;
+        for (u32 i = 0u; i < source.row_count; ++i) {
+            if (i != 0u && pairs[i].identity != pairs[i - 1u].identity) {
+                result.unit_offsets[++unit] = i;
+            }
+            result.identities[unit] = pairs[i].identity;
+            result.unit_rows[i] = pairs[i].row;
+            result.row_to_unit[pairs[i].row] = unit;
+        }
+        result.unit_offsets[result.unit_count] = source.row_count;
     }
     *out = std::move(result);
     return validation_ok();
@@ -169,6 +205,72 @@ u64 matrix_identity(const csr_support_view &source) noexcept {
 u64 edge_key(u32 row, u32 feature) noexcept {
     return (static_cast<u64>(row) << 32u) | feature;
 }
+
+struct edge_membership_table {
+    std::unique_ptr<u64[]> keys;
+    std::unique_ptr<unsigned char[]> states; // 0 empty, 1 occupied, 2 tombstone
+    std::size_t capacity = 0u;
+
+    bool initialize(std::size_t edge_count) noexcept {
+        capacity = 8u;
+        if (edge_count > SIZE_MAX / 4u) return false;
+        while (capacity < edge_count * 4u) {
+            if (capacity > SIZE_MAX / 2u) return false;
+            capacity *= 2u;
+        }
+        keys.reset(new (std::nothrow) u64[capacity]);
+        states.reset(new (std::nothrow) unsigned char[capacity]());
+        return keys != nullptr && states != nullptr;
+    }
+
+    std::size_t slot(u64 key) const noexcept {
+        return static_cast<std::size_t>(sampling::splitmix64_hash(key)) & (capacity - 1u);
+    }
+
+    bool contains(u64 key) const noexcept {
+        std::size_t index = slot(key);
+        for (std::size_t probe = 0u; probe < capacity; ++probe) {
+            if (states[index] == 0u) return false;
+            if (states[index] == 1u && keys[index] == key) return true;
+            index = (index + 1u) & (capacity - 1u);
+        }
+        return false;
+    }
+
+    bool insert(u64 key) noexcept {
+        std::size_t index = slot(key), tombstone = capacity;
+        for (std::size_t probe = 0u; probe < capacity; ++probe) {
+            if (states[index] == 1u && keys[index] == key) return false;
+            if (states[index] == 2u && tombstone == capacity) tombstone = index;
+            if (states[index] == 0u) {
+                const std::size_t target = tombstone == capacity ? index : tombstone;
+                keys[target] = key;
+                states[target] = 1u;
+                return true;
+            }
+            index = (index + 1u) & (capacity - 1u);
+        }
+        if (tombstone != capacity) {
+            keys[tombstone] = key;
+            states[tombstone] = 1u;
+            return true;
+        }
+        return false;
+    }
+
+    bool erase(u64 key) noexcept {
+        std::size_t index = slot(key);
+        for (std::size_t probe = 0u; probe < capacity; ++probe) {
+            if (states[index] == 0u) return false;
+            if (states[index] == 1u && keys[index] == key) {
+                states[index] = 2u;
+                return true;
+            }
+            index = (index + 1u) & (capacity - 1u);
+        }
+        return false;
+    }
+};
 
 } // namespace
 
@@ -306,27 +408,29 @@ validation_result build_validation_split(
         validation_result status = collect_validation_units(identities, &units);
         if (!status) return status;
         if (config.held_out_unit_count == 0u
-            || config.held_out_unit_count >= units.identities.size()) {
+            || config.held_out_unit_count >= units.unit_count) {
             return validation_error(validation_code::invalid_plan_geometry,
                 config.held_out_unit_count,
                 "held-out unit count must leave nonempty training and held-out sets");
         }
-        std::vector<u32> order(units.identities.size());
-        for (u32 unit = 0u; unit < order.size(); ++unit) order[unit] = unit;
-        std::sort(order.begin(), order.end(), [&](u32 lhs, u32 rhs) {
+        std::unique_ptr<u32[]> order(new (std::nothrow) u32[units.unit_count]);
+        std::unique_ptr<unsigned char[]> held_out(new (std::nothrow) unsigned char[units.unit_count]());
+        if (order == nullptr || held_out == nullptr) return validation_error(
+            validation_code::integer_overflow, invalid_id, "validation split scratch allocation failed");
+        for (u32 unit = 0u; unit < units.unit_count; ++unit) order[unit] = unit;
+        std::sort(order.get(), order.get() + units.unit_count, [&](u32 lhs, u32 rhs) {
             const u64 lhs_hash = random_word(config.seed, split_domain, units.identities[lhs]);
             const u64 rhs_hash = random_word(config.seed, split_domain, units.identities[rhs]);
             return lhs_hash != rhs_hash
                 ? lhs_hash < rhs_hash
                 : units.identities[lhs] < units.identities[rhs];
         });
-        std::vector<bool> held_out(units.identities.size(), false);
         for (u32 index = 0u; index < config.held_out_unit_count; ++index) {
-            held_out[order[index]] = true;
+            held_out[order[index]] = 1u;
         }
         u32 held_out_rows = 0u;
         for (u32 row = 0u; row < identities.row_count; ++row) {
-            const bool selected = held_out[units.row_to_unit[row]];
+            const bool selected = held_out[units.row_to_unit[row]] != 0u;
             buffers.row_partitions[row] = selected
                 ? validation_partition::held_out
                 : validation_partition::training;
@@ -336,7 +440,7 @@ validation_result build_validation_split(
         result.seed = config.seed;
         result.unit_kind = units.kind;
         result.row_count = identities.row_count;
-        result.unit_count = static_cast<u32>(units.identities.size());
+        result.unit_count = units.unit_count;
         result.held_out_unit_count = config.held_out_unit_count;
         result.training_unit_count = result.unit_count - result.held_out_unit_count;
         result.held_out_row_count = held_out_rows;
@@ -370,14 +474,16 @@ validation_result validate_validation_split(
         validation_result status = collect_validation_units(identities, &units);
         if (!status) return status;
         if (provenance.row_count != identities.row_count
-            || provenance.unit_count != units.identities.size()
+            || provenance.unit_count != units.unit_count
             || provenance.unit_kind != units.kind
             || provenance.claims_group_generalization != (identities.group_identities != nullptr)) {
             return validation_error(validation_code::invalid_plan_geometry, invalid_id,
                 "validation split provenance dimensions or unit semantics disagree");
         }
-        std::vector<validation_partition> unit_partition(units.identities.size(),
-            static_cast<validation_partition>(0u));
+        std::unique_ptr<validation_partition[]> unit_partition(
+            new (std::nothrow) validation_partition[units.unit_count]());
+        if (unit_partition == nullptr) return validation_error(validation_code::integer_overflow,
+            invalid_id, "validation split verification scratch allocation failed");
         u32 training_rows = 0u, held_out_rows = 0u;
         for (u32 row = 0u; row < identities.row_count; ++row) {
             const validation_partition partition = row_partitions[row];
@@ -397,7 +503,8 @@ validation_result validate_validation_split(
             held_out_rows += partition == validation_partition::held_out ? 1u : 0u;
         }
         u32 training_units = 0u, held_out_units = 0u;
-        for (validation_partition partition : unit_partition) {
+        for (u32 unit = 0u; unit < units.unit_count; ++unit) {
+            const validation_partition partition = unit_partition[unit];
             training_units += partition == validation_partition::training ? 1u : 0u;
             held_out_units += partition == validation_partition::held_out ? 1u : 0u;
         }
@@ -444,8 +551,9 @@ validation_result build_validation_bootstrap(
         for (u32 draw = 0u; draw < config.unit_draw_count; ++draw) {
             const u32 unit = static_cast<u32>(bounded_random(
                 random_word(config.seed, bootstrap_domain, draw),
-                units.identities.size()));
-            for (u32 row : units.unit_rows[unit]) {
+                units.unit_count));
+            for (u32 offset = units.unit_offsets[unit]; offset < units.unit_offsets[unit + 1u]; ++offset) {
+                const u32 row = units.unit_rows[offset];
                 ++buffers.row_multiplicities[row];
             }
         }
@@ -457,7 +565,7 @@ validation_result build_validation_bootstrap(
         result.seed = config.seed;
         result.unit_kind = units.kind;
         result.row_count = identities.row_count;
-        result.unit_count = static_cast<u32>(units.identities.size());
+        result.unit_count = units.unit_count;
         result.unit_draw_count = config.unit_draw_count;
         result.materialized_row_count = materialized_rows;
         result.bootstrap_identity = bootstrap_identity(
@@ -488,7 +596,7 @@ validation_result validate_validation_bootstrap(
         validation_result status = collect_validation_units(identities, &units);
         if (!status) return status;
         if (provenance.row_count != identities.row_count
-            || provenance.unit_count != units.identities.size()
+            || provenance.unit_count != units.unit_count
             || provenance.unit_kind != units.kind
             || provenance.unit_draw_count == 0u) {
             return validation_error(validation_code::invalid_plan_geometry, invalid_id,
@@ -496,10 +604,12 @@ validation_result validate_validation_bootstrap(
         }
         u64 materialized_rows = 0u;
         u64 observed_unit_draws = 0u;
-        for (const std::vector<u32> &unit_rows : units.unit_rows) {
-            const u32 unit_multiplicity = row_multiplicities[unit_rows.front()];
+        for (u32 unit = 0u; unit < units.unit_count; ++unit) {
+            const u32 begin = units.unit_offsets[unit], end = units.unit_offsets[unit + 1u];
+            const u32 unit_multiplicity = row_multiplicities[units.unit_rows[begin]];
             observed_unit_draws += unit_multiplicity;
-            for (u32 row : unit_rows) {
+            for (u32 offset = begin; offset < end; ++offset) {
+                const u32 row = units.unit_rows[offset];
                 if (row_multiplicities[row] != unit_multiplicity) {
                     return validation_error(validation_code::invalid_permutation, row,
                         "one validation bootstrap group has inconsistent multiplicity");
@@ -580,13 +690,20 @@ validation_result build_degree_preserving_null_reference(
             std::copy(source.feature_ids, source.feature_ids + source.nnz_count,
                 buffers.feature_ids);
         }
-        std::vector<u32> edge_rows(source.nnz_count);
-        std::unordered_set<u64> edges;
-        edges.reserve(static_cast<std::size_t>(source.nnz_count) * 2u);
+        std::unique_ptr<u32[]> edge_rows(new (std::nothrow) u32[source.nnz_count]);
+        edge_membership_table edges;
+        if ((source.nnz_count != 0u && edge_rows == nullptr)
+            || !edges.initialize(source.nnz_count)) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "degree-preserving null membership allocation failed");
+        }
         for (u32 row = 0u; row < source.row_count; ++row) {
             for (u32 entry = source.row_offsets[row]; entry < source.row_offsets[row + 1u]; ++entry) {
                 edge_rows[entry] = row;
-                edges.insert(edge_key(row, source.feature_ids[entry]));
+                if (!edges.insert(edge_key(row, source.feature_ids[entry]))) {
+                    return validation_error(validation_code::duplicate_id, entry,
+                        "degree-preserving null source contains a duplicate edge");
+                }
             }
         }
 
@@ -605,11 +722,13 @@ validation_result build_degree_preserving_null_reference(
             if (lhs_row == rhs_row || lhs_feature == rhs_feature) continue;
             const u64 lhs_new = edge_key(lhs_row, rhs_feature);
             const u64 rhs_new = edge_key(rhs_row, lhs_feature);
-            if (edges.count(lhs_new) != 0u || edges.count(rhs_new) != 0u) continue;
-            edges.erase(edge_key(lhs_row, lhs_feature));
-            edges.erase(edge_key(rhs_row, rhs_feature));
-            edges.insert(lhs_new);
-            edges.insert(rhs_new);
+            if (edges.contains(lhs_new) || edges.contains(rhs_new)) continue;
+            if (!edges.erase(edge_key(lhs_row, lhs_feature))
+                || !edges.erase(edge_key(rhs_row, rhs_feature))
+                || !edges.insert(lhs_new) || !edges.insert(rhs_new)) {
+                return validation_error(validation_code::invalid_plan_geometry,
+                    invalid_id, "degree-preserving null membership state diverged");
+            }
             std::swap(buffers.feature_ids[lhs], buffers.feature_ids[rhs]);
             ++accepted;
         }
@@ -680,8 +799,15 @@ validation_result validate_degree_conservation(
             const u32 candidate_degree = candidate.row_offsets[row + 1u] - candidate.row_offsets[row];
             result.row_degree_mismatches += source_degree == candidate_degree ? 0u : 1u;
         }
-        std::vector<u64> source_degrees(source.feature_count, 0u);
-        std::vector<u64> candidate_degrees(candidate.feature_count, 0u);
+        std::unique_ptr<u64[]> source_degrees(
+            new (std::nothrow) u64[source.feature_count]());
+        std::unique_ptr<u64[]> candidate_degrees(
+            new (std::nothrow) u64[candidate.feature_count]());
+        if ((source.feature_count != 0u && source_degrees == nullptr)
+            || (candidate.feature_count != 0u && candidate_degrees == nullptr)) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "degree-conservation scratch allocation failed");
+        }
         for (u32 entry = 0u; entry < source.nnz_count; ++entry) {
             ++source_degrees[source.feature_ids[entry]];
         }
