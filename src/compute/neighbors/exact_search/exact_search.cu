@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
+#include <type_traits>
 
 namespace cellerator::compute::neighbors::exact_search {
 
@@ -24,6 +25,13 @@ struct Candidate {
     std::int64_t embryo_id = -1;
     std::int64_t cell_index = -1;
     std::int64_t shard_index = -1;
+};
+
+struct RoutedCandidate {
+    float similarity = -INFINITY;
+    float developmental_time = INFINITY;
+    std::int64_t embryo_id = -1;
+    std::int64_t cell_index = -1;
 };
 
 __device__ inline bool candidate_valid_(const Candidate &candidate) {
@@ -46,14 +54,46 @@ __device__ inline bool better_candidate_device_(const Candidate &lhs, const Cand
     return lhs.shard_index < rhs.shard_index;
 }
 
-__device__ inline void init_candidates_device_(Candidate *best, int k) {
-    for (int i = 0; i < k; ++i) best[i] = Candidate{};
+__device__ inline bool routed_candidate_valid_(const RoutedCandidate &candidate) {
+    return isfinite(candidate.similarity) && candidate.cell_index >= 0;
+}
+
+__device__ inline bool better_routed_candidate_device_(const RoutedCandidate &lhs, const RoutedCandidate &rhs) {
+    const bool lhs_valid = routed_candidate_valid_(lhs);
+    const bool rhs_valid = routed_candidate_valid_(rhs);
+    if (!lhs_valid) return false;
+    if (!rhs_valid) return true;
+    if (lhs.similarity > rhs.similarity) return true;
+    if (lhs.similarity < rhs.similarity) return false;
+    if (lhs.developmental_time < rhs.developmental_time) return true;
+    if (lhs.developmental_time > rhs.developmental_time) return false;
+    if (lhs.embryo_id < rhs.embryo_id) return true;
+    if (lhs.embryo_id > rhs.embryo_id) return false;
+    return lhs.cell_index < rhs.cell_index;
+}
+
+template <typename CandidateType>
+__device__ inline void init_candidates_device_(CandidateType *best, int k) {
+    for (int i = 0; i < k; ++i) best[i] = CandidateType{};
 }
 
 __device__ inline void insert_candidate_device_(const Candidate &candidate, Candidate *best, int k) {
     if (!better_candidate_device_(candidate, best[k - 1])) return;
     int insert = k - 1;
     while (insert > 0 && better_candidate_device_(candidate, best[insert - 1])) {
+        best[insert] = best[insert - 1];
+        --insert;
+    }
+    best[insert] = candidate;
+}
+
+__device__ inline void insert_routed_candidate_device_(
+    const RoutedCandidate &candidate,
+    RoutedCandidate *best,
+    int k) {
+    if (!better_routed_candidate_device_(candidate, best[k - 1])) return;
+    int insert = k - 1;
+    while (insert > 0 && better_routed_candidate_device_(candidate, best[insert - 1])) {
         best[insert] = best[insert - 1];
         --insert;
     }
@@ -108,6 +148,18 @@ __device__ inline Candidate shfl_candidate_device_(unsigned mask, const Candidat
     return shuffled;
 }
 
+__device__ inline RoutedCandidate shfl_routed_candidate_device_(
+    unsigned mask,
+    const RoutedCandidate &candidate,
+    int src_lane) {
+    RoutedCandidate shuffled;
+    shuffled.similarity = __shfl_sync(mask, candidate.similarity, src_lane);
+    shuffled.developmental_time = __shfl_sync(mask, candidate.developmental_time, src_lane);
+    shuffled.embryo_id = shfl_i64_device_(mask, candidate.embryo_id, src_lane);
+    shuffled.cell_index = shfl_i64_device_(mask, candidate.cell_index, src_lane);
+    return shuffled;
+}
+
 inline std::int64_t query_blocks_for_rows_(std::int64_t query_rows) {
     return (query_rows + static_cast<std::int64_t>(kWarpsPerBlock) - 1) / static_cast<std::int64_t>(kWarpsPerBlock);
 }
@@ -149,6 +201,7 @@ __global__ void init_best_kernel_(
     best_similarity[index] = -INFINITY;
 }
 
+template <int Capacity>
 __global__ void routed_dense_topk_kernel_(
     const __half *query_latent,
     const float *query_lower,
@@ -177,10 +230,11 @@ __global__ void routed_dense_topk_kernel_(
         + static_cast<std::int64_t>(warp);
     if (row >= query_rows) return;
     const unsigned warp_mask = __activemask();
-    __shared__ Candidate merged_shared[kWarpsPerBlock * kExactSearchMaxTopK];
-    Candidate *merged = merged_shared + warp * kExactSearchMaxTopK;
+    static_assert(Capacity > 0 && Capacity <= kExactSearchMaxTopK);
+    __shared__ RoutedCandidate merged_shared[kWarpsPerBlock * Capacity];
+    RoutedCandidate *merged = merged_shared + warp * Capacity;
 
-    Candidate local_best[kExactSearchMaxTopK];
+    RoutedCandidate local_best[Capacity];
     init_candidates_device_(local_best, k);
 
     const __half *query_row = query_latent + row * static_cast<std::int64_t>(latent_dim);
@@ -196,12 +250,11 @@ __global__ void routed_dense_topk_kernel_(
             if (!(time > lower)) continue;
             if (isfinite(upper) && time > upper) continue;
             if (hard_same_embryo && embryo >= 0 && index_embryo[index_row] != embryo) continue;
-            insert_candidate_device_(Candidate{
+            insert_routed_candidate_device_(RoutedCandidate{
                 dot_half_rows_(query_row, index_latent + index_row * static_cast<std::int64_t>(latent_dim), latent_dim),
                 time,
                 index_embryo[index_row],
-                index_cell[index_row],
-                shard_index
+                index_cell[index_row]
             }, local_best, k);
         }
     }
@@ -209,8 +262,8 @@ __global__ void routed_dense_topk_kernel_(
     if (lane == 0) init_candidates_device_(merged, k);
     for (int src_lane = 0; src_lane < kWarpThreads; ++src_lane) {
         for (int i = 0; i < k; ++i) {
-            const Candidate candidate = shfl_candidate_device_(warp_mask, local_best[i], src_lane);
-            if (lane == 0) insert_candidate_device_(candidate, merged, k);
+            const RoutedCandidate candidate = shfl_routed_candidate_device_(warp_mask, local_best[i], src_lane);
+            if (lane == 0) insert_routed_candidate_device_(candidate, merged, k);
         }
     }
     if (lane == 0) {
@@ -220,11 +273,12 @@ __global__ void routed_dense_topk_kernel_(
             best_time[row_base + i] = merged[i].developmental_time;
             best_embryo[row_base + i] = merged[i].embryo_id;
             best_cell[row_base + i] = merged[i].cell_index;
-            best_shard[row_base + i] = merged[i].shard_index;
+            best_shard[row_base + i] = shard_index;
         }
     }
 }
 
+template <int Capacity>
 __global__ void routed_sliced_topk_kernel_(
     const __half *query_latent,
     const float *query_lower,
@@ -256,10 +310,11 @@ __global__ void routed_sliced_topk_kernel_(
         + static_cast<std::int64_t>(warp);
     if (row >= query_rows) return;
     const unsigned warp_mask = __activemask();
-    __shared__ Candidate merged_shared[kWarpsPerBlock * kExactSearchMaxTopK];
-    Candidate *merged = merged_shared + warp * kExactSearchMaxTopK;
+    static_assert(Capacity > 0 && Capacity <= kExactSearchMaxTopK);
+    __shared__ RoutedCandidate merged_shared[kWarpsPerBlock * Capacity];
+    RoutedCandidate *merged = merged_shared + warp * Capacity;
 
-    Candidate local_best[kExactSearchMaxTopK];
+    RoutedCandidate local_best[Capacity];
     init_candidates_device_(local_best, k);
 
     const __half *query_row = query_latent + row * static_cast<std::int64_t>(latent_dim);
@@ -275,12 +330,11 @@ __global__ void routed_sliced_topk_kernel_(
             if (!(time > lower)) continue;
             if (isfinite(upper) && time > upper) continue;
             if (hard_same_embryo && embryo >= 0 && index_embryo[index_row] != embryo) continue;
-            insert_candidate_device_(Candidate{
+            insert_routed_candidate_device_(RoutedCandidate{
                 dot_query_sliced_row_(query_row, row_slot_offsets, row_widths, col_idx, values, index_row),
                 time,
                 index_embryo[index_row],
-                index_cell[index_row],
-                shard_index
+                index_cell[index_row]
             }, local_best, k);
         }
     }
@@ -288,8 +342,8 @@ __global__ void routed_sliced_topk_kernel_(
     if (lane == 0) init_candidates_device_(merged, k);
     for (int src_lane = 0; src_lane < kWarpThreads; ++src_lane) {
         for (int i = 0; i < k; ++i) {
-            const Candidate candidate = shfl_candidate_device_(warp_mask, local_best[i], src_lane);
-            if (lane == 0) insert_candidate_device_(candidate, merged, k);
+            const RoutedCandidate candidate = shfl_routed_candidate_device_(warp_mask, local_best[i], src_lane);
+            if (lane == 0) insert_routed_candidate_device_(candidate, merged, k);
         }
     }
     if (lane == 0) {
@@ -299,11 +353,12 @@ __global__ void routed_sliced_topk_kernel_(
             best_time[row_base + i] = merged[i].developmental_time;
             best_embryo[row_base + i] = merged[i].embryo_id;
             best_cell[row_base + i] = merged[i].cell_index;
-            best_shard[row_base + i] = merged[i].shard_index;
+            best_shard[row_base + i] = shard_index;
         }
     }
 }
 
+template <int Capacity>
 __global__ void merge_topk_kernel_(
     const std::int64_t *local_cell,
     const std::int64_t *local_shard,
@@ -323,7 +378,8 @@ __global__ void merge_topk_kernel_(
         + static_cast<std::int64_t>(warp);
     if (row >= query_rows || lane != 0) return;
 
-    Candidate merged[kExactSearchMaxTopK];
+    static_assert(Capacity > 0 && Capacity <= kExactSearchMaxTopK);
+    Candidate merged[Capacity];
     init_candidates_device_(merged, k);
     const std::int64_t row_base = row * static_cast<std::int64_t>(k);
     for (int i = 0; i < k; ++i) {
@@ -350,6 +406,25 @@ __global__ void merge_topk_kernel_(
         global_embryo[row_base + i] = merged[i].embryo_id;
         global_cell[row_base + i] = merged[i].cell_index;
         global_shard[row_base + i] = merged[i].shard_index;
+    }
+}
+
+template <typename Launch>
+inline void dispatch_topk_capacity_(int k, Launch &&launch) {
+    // Keep the public runtime K contract while bounding each instantiated
+    // kernel's private and shared top-K storage to the smallest useful class.
+    if (k <= 1) {
+        launch(std::integral_constant<int, 1>{});
+    } else if (k <= 2) {
+        launch(std::integral_constant<int, 2>{});
+    } else if (k <= 4) {
+        launch(std::integral_constant<int, 4>{});
+    } else if (k <= 8) {
+        launch(std::integral_constant<int, 8>{});
+    } else if (k <= 16) {
+        launch(std::integral_constant<int, 16>{});
+    } else {
+        launch(std::integral_constant<int, kExactSearchMaxTopK>{});
     }
 }
 
@@ -394,28 +469,31 @@ void routed_dense_topk(
         || segment_begin == nullptr || segment_end == nullptr) {
         throw std::invalid_argument("dense exact-search view is missing required device buffers");
     }
-    detail::routed_dense_topk_kernel_<<<detail::query_blocks_for_rows_(query.query_rows), detail::kThreadsPerBlock>>>(
-        query.query_latent,
-        query.query_lower,
-        query.query_upper,
-        query.query_embryo,
-        index.latent,
-        index.time,
-        index.embryo,
-        index.cell,
-        segment_begin,
-        segment_end,
-        segment_count,
-        query.query_rows,
-        query.latent_dim,
-        index.shard_index,
-        hard_same_embryo,
-        k,
-        result.best_cell,
-        result.best_shard,
-        result.best_time,
-        result.best_embryo,
-        result.best_similarity);
+    detail::dispatch_topk_capacity_(k, [&](auto capacity) {
+        detail::routed_dense_topk_kernel_<decltype(capacity)::value>
+            <<<detail::query_blocks_for_rows_(query.query_rows), detail::kThreadsPerBlock>>>(
+                query.query_latent,
+                query.query_lower,
+                query.query_upper,
+                query.query_embryo,
+                index.latent,
+                index.time,
+                index.embryo,
+                index.cell,
+                segment_begin,
+                segment_end,
+                segment_count,
+                query.query_rows,
+                query.latent_dim,
+                index.shard_index,
+                hard_same_embryo,
+                k,
+                result.best_cell,
+                result.best_shard,
+                result.best_time,
+                result.best_embryo,
+                result.best_similarity);
+    });
     detail::cg::cuda_require(cudaGetLastError(), "exact_search routed_dense_topk launch");
 }
 
@@ -436,31 +514,34 @@ void routed_sliced_ell_topk(
         || segment_begin == nullptr || segment_end == nullptr) {
         throw std::invalid_argument("sliced exact-search view is missing required device buffers");
     }
-    detail::routed_sliced_topk_kernel_<<<detail::query_blocks_for_rows_(query.query_rows), detail::kThreadsPerBlock>>>(
-        query.query_latent,
-        query.query_lower,
-        query.query_upper,
-        query.query_embryo,
-        index.row_slot_offsets,
-        index.row_widths,
-        index.col_idx,
-        index.values,
-        index.time,
-        index.embryo,
-        index.cell,
-        segment_begin,
-        segment_end,
-        segment_count,
-        query.query_rows,
-        query.latent_dim,
-        index.shard_index,
-        hard_same_embryo,
-        k,
-        result.best_cell,
-        result.best_shard,
-        result.best_time,
-        result.best_embryo,
-        result.best_similarity);
+    detail::dispatch_topk_capacity_(k, [&](auto capacity) {
+        detail::routed_sliced_topk_kernel_<decltype(capacity)::value>
+            <<<detail::query_blocks_for_rows_(query.query_rows), detail::kThreadsPerBlock>>>(
+                query.query_latent,
+                query.query_lower,
+                query.query_upper,
+                query.query_embryo,
+                index.row_slot_offsets,
+                index.row_widths,
+                index.col_idx,
+                index.values,
+                index.time,
+                index.embryo,
+                index.cell,
+                segment_begin,
+                segment_end,
+                segment_count,
+                query.query_rows,
+                query.latent_dim,
+                index.shard_index,
+                hard_same_embryo,
+                k,
+                result.best_cell,
+                result.best_shard,
+                result.best_time,
+                result.best_embryo,
+                result.best_similarity);
+    });
     detail::cg::cuda_require(cudaGetLastError(), "exact_search routed_sliced_ell_topk launch");
 }
 
@@ -475,19 +556,22 @@ void merge_result_arrays(
     if (k <= 0 || k > kExactSearchMaxTopK) {
         throw std::invalid_argument("exact_search top-k exceeds native limit");
     }
-    detail::merge_topk_kernel_<<<detail::query_blocks_for_rows_(query_rows), detail::kThreadsPerBlock>>>(
-        local_result.best_cell,
-        local_result.best_shard,
-        local_result.best_time,
-        local_result.best_embryo,
-        local_result.best_similarity,
-        global_result.best_cell,
-        global_result.best_shard,
-        global_result.best_time,
-        global_result.best_embryo,
-        global_result.best_similarity,
-        query_rows,
-        k);
+    detail::dispatch_topk_capacity_(k, [&](auto capacity) {
+        detail::merge_topk_kernel_<decltype(capacity)::value>
+            <<<detail::query_blocks_for_rows_(query_rows), detail::kThreadsPerBlock>>>(
+                local_result.best_cell,
+                local_result.best_shard,
+                local_result.best_time,
+                local_result.best_embryo,
+                local_result.best_similarity,
+                global_result.best_cell,
+                global_result.best_shard,
+                global_result.best_time,
+                global_result.best_embryo,
+                global_result.best_similarity,
+                query_rows,
+                k);
+    });
     detail::cg::cuda_require(cudaGetLastError(), "exact_search merge_topk_kernel launch");
 }
 
