@@ -1,0 +1,98 @@
+{
+  "schema": "CE-PTR-BASELINE-V1",
+  "campaign": "CE-PTR",
+  "task": "CE-PTR-01",
+  "source_identity": "76711a379f00a3c52a177c58d6acce796ca2a112",
+  "captured_at_utc": "2026-08-29T20:58:00Z",
+  "build": {
+    "mode": "Release",
+    "cuda_architecture": "sm_70",
+    "cxx_compiler": "GNU 13.3.0",
+    "cuda_compiler": "NVIDIA HPC SDK nvcc 12.9.86",
+    "cuda_host_compiler": "/usr/bin/g++-12",
+    "cmake": "3.28.3",
+    "configure": "cmake -S . -B bench/ce_ptr/baseline/build -DCMAKE_BUILD_TYPE=Release -DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard -DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane -DCELLSHARD_BUILD_EXPORT=OFF",
+    "build_command": "cmake --build bench/ce_ptr/baseline/build -j 20 --target cellPackOptimizerBench geneCandidateDiscoveryBench cellPackMergeCostBench cellPackGatingBench"
+  },
+  "hardware": {
+    "driver": "580.173.02",
+    "gpus": [
+      {"ordinal": 0, "name": "Tesla V100-SXM2-16GB", "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8", "pci_bus": "00000000:02:00.0", "compute_capability": "7.0", "memory_mib": 16384, "numa_node": 0},
+      {"ordinal": 1, "name": "Tesla V100-SXM2-16GB", "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505", "pci_bus": "00000000:03:00.0", "compute_capability": "7.0", "memory_mib": 16384, "numa_node": 0},
+      {"ordinal": 2, "name": "Tesla V100-SXM2-16GB", "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206", "pci_bus": "00000000:83:00.0", "compute_capability": "7.0", "memory_mib": 16384, "numa_node": 1},
+      {"ordinal": 3, "name": "Tesla V100-SXM2-16GB", "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a", "pci_bus": "00000000:84:00.0", "compute_capability": "7.0", "memory_mib": 16384, "numa_node": 1}
+    ],
+    "topology": {"gpu0_gpu1": "PHB", "gpu0_gpu2": "NV6", "gpu0_gpu3": "SYS", "gpu1_gpu2": "SYS", "gpu1_gpu3": "NV6", "gpu2_gpu3": "PHB"}
+  },
+  "measurements": [
+    {
+      "id": "optimizer-512-w16",
+      "subsystem": "packing optimizer",
+      "command": "/usr/bin/time -v bench/ce_ptr/baseline/build/cellPackOptimizerBench --features 512 --rows 4096 --sampled-rows 1024 --max-block-width 16",
+      "shape": {"features": 512, "rows": 4096, "sampled_rows": 1024, "nnz": 65536, "block_width": 16, "row_group_width": 128, "candidate_edges": 1021},
+      "correctness": {"initial_exact_objective": 65536, "final_exact_objective": 28672, "deterministic_contract": true},
+      "timing_ms": {"construction_total": 175.390, "candidate_processing": 0.160454, "proxy": 15.0679, "oracle": 156.765, "freeze": 0.008266, "wall": 180.0},
+      "memory": {"rss_high_water_bytes": 6553600, "peak_additional_optimizer_bytes": 329480, "evaluator_workspace_bytes": 1048576},
+      "instrumented_allocations": {"tool": "glibc libmemusage", "command_variant_total_ms": 186.321, "malloc_calls": 71466, "malloc_bytes": 19094002, "realloc_calls": 0, "free_calls": 71464, "heap_peak_bytes": 3171352, "failed_calls": 0},
+      "synchronization": 0,
+      "transfers": {"h2d_bytes": 0, "d2h_bytes": 0, "d2d_bytes": 0},
+      "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock"
+    },
+    {
+      "id": "optimizer-5000-w8",
+      "subsystem": "packing optimizer",
+      "command": "/usr/bin/time -v bench/ce_ptr/baseline/build/cellPackOptimizerBench --features 5000 --rows 20000 --sampled-rows 4096 --max-block-width 8",
+      "shape": {"features": 5000, "rows": 20000, "sampled_rows": 4096, "nnz": 320000, "block_width": 8, "row_group_width": 128, "candidate_edges": 9997},
+      "correctness": {"initial_exact_objective": 320000, "final_exact_objective": 301340, "deterministic_contract": true},
+      "timing_ms": {"construction_total": 1563.50, "candidate_processing": 1.60238, "proxy": 311.832, "oracle": 1215.12, "freeze": 0.073959, "wall": 1590.0},
+      "memory": {"rss_high_water_bytes": 41521152, "peak_additional_optimizer_bytes": 2951056, "evaluator_workspace_bytes": 5120000},
+      "instrumented_allocations": {"tool": "glibc libmemusage", "command_variant_total_ms": 1647.96, "malloc_calls": 888909, "malloc_bytes": 270956498, "realloc_calls": 0, "free_calls": 888907, "heap_peak_bytes": 38715760, "failed_calls": 0},
+      "synchronization": 0,
+      "transfers": {"h2d_bytes": 0, "d2h_bytes": 0, "d2d_bytes": 0},
+      "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock"
+    },
+    {
+      "id": "gene-candidate-v100",
+      "subsystem": "gene candidate discovery",
+      "command": "CUDA_VISIBLE_DEVICES=0 bench/ce_ptr/baseline/build/geneCandidateDiscoveryBench",
+      "shape": {"cells": 65536, "genes": 30000, "sketches": 64, "bands": 16, "rows_per_band": 4, "bucket_capacity": 64, "candidates": 105000, "raw_pairs": 1680000},
+      "repetitions": {"warmups": 1, "measured": 3},
+      "correctness": {"retained_cluster_pairs": 105000, "expected_cluster_pairs": 105000, "recall": 1.0, "candidate_reduction": 0.999767},
+      "timing_ms": {"minimum": 58.057, "median": 60.002},
+      "memory": {"host_rss_high_water_bytes": 368959488, "support_bytes": 245760000, "fixed_device_bytes_excluding_cub": 534306000, "cub_temporary_bytes": 14060031, "accounted_peak_device_bytes": 333424355},
+      "nsight_systems_process_totals": {"cuda_malloc_calls": 80, "cuda_free_calls": 80, "cuda_memcpy_calls": 44, "cuda_memset_async_calls": 80, "cuda_memset_calls": 8, "cuda_device_synchronize_calls": 4, "kernel_launch_calls": 132, "h2d_bytes": 985617000, "d2h_bytes": 3360000, "d2d_bytes": 0},
+      "benchmark_mutex": "/tmp/cuda_v100_benchmark.device0.lock",
+      "dominant_limiter": "intermediate allocation, host-device staging, and launch composition before device kernel throughput"
+    },
+    {
+      "id": "merge-score-v100",
+      "subsystem": "exact merge cost",
+      "command": "CUDA_VISIBLE_DEVICES=0 bench/ce_ptr/baseline/build/cellPackMergeCostBench",
+      "shape": {"cells": 65536, "genes": 30000, "candidates": 105000, "words_per_gene": 2048},
+      "repetitions": {"warmups": 1, "measured": 3},
+      "correctness": {"cpu_gpu_exact_match": true, "value_storage": "compact_nonzeros", "policy_version": 1},
+      "timing_ms": {"cpu_reference": 311.647, "gpu_end_to_end_minimum": 78.494, "gpu_end_to_end_median": 78.951, "profiled_kernel": 4.02},
+      "memory": {"host_rss_high_water_bytes": 487940096, "support_bytes": 245760000, "staged_device_bytes": 281880004},
+      "kernel_profile": {"registers_per_thread": 80, "shared_bytes_per_block": 256, "local_bytes": 0, "theoretical_occupancy_percent": 37.5, "achieved_occupancy_percent": 21.9, "dram_throughput_percent": 8.0, "l2_throughput_percent": 17.0, "compute_throughput_percent": 30.5, "warp_cycles_per_issued_instruction": 11.45, "long_scoreboard_cycles": 6.2, "long_scoreboard_fraction_percent": 53.8, "average_active_threads_per_warp": 23.4},
+      "benchmark_mutex": "/tmp/cuda_v100_benchmark.device0.lock",
+      "dominant_limiter": "register-limited occupancy plus long-scoreboard memory latency; end-to-end staging dominates isolated kernel duration"
+    },
+    {
+      "id": "gating-alternating-modules-v100",
+      "subsystem": "geometry gating",
+      "command": "CUDA_VISIBLE_DEVICES=1 bench/ce_ptr/baseline/build/cellPackGatingBench",
+      "shape": {"rows": 4096, "features": 2048, "modules": 32, "nnz": 65536, "regions": 32, "oracle_active_regions": 16},
+      "correctness": {"status": "pass", "backward_replay": true},
+      "timing_ms": {"generate": 1.48695, "plan_select": 7.74644, "compile_runtime": 7.05789, "forward": 0.0118784, "backward_replay": 0.0114688, "validate": 1.49325},
+      "memory": {"host_rss_high_water_bytes": 122548224, "device_high_water_bytes": null},
+      "allocation_and_transfer_counts": null,
+      "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock",
+      "limitation": "The current benchmark does not expose allocation, transfer, or synchronization counters; this record supports latency and correctness comparisons only."
+    }
+  ],
+  "coverage": {
+    "cpu": ["allocation calls and bytes", "heap and RSS high-water", "construction phase latency", "semantic objective"],
+    "gpu": ["allocation/free calls", "H2D and D2H bytes", "device synchronization", "launches", "end-to-end latency", "kernel registers", "local memory", "occupancy", "throughput", "warp stalls", "correctness"],
+    "not_claimed": ["aggregate cudaMalloc requested bytes from CUPTI", "gating allocation and transfer counts", "post-migration improvement"]
+  }
+}
