@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
 #include <new>
 
 namespace cellpack {
@@ -47,11 +48,61 @@ u64 compute_feature_block_geometry_identity(
     return hash == 0u ? 1u : hash;
 }
 
-std::unique_ptr<u32[]> copy_u32(const u32 *source, std::size_t count) {
-    if (count == 0u) return {};
-    std::unique_ptr<u32[]> result(new u32[count]);
-    std::copy(source, source + count, result.get());
-    return result;
+bool checked_u32_bytes(std::size_t count, std::size_t *out) noexcept {
+    if (count > std::numeric_limits<std::size_t>::max() / sizeof(u32)) return false;
+    *out = count * sizeof(u32);
+    return true;
+}
+
+bool append_aligned_section(
+    std::size_t bytes,
+    std::size_t *cursor,
+    cellerator::memory::rel32 *offset) noexcept {
+    const std::size_t mask = packing_plan_image_alignment - 1u;
+    if (*cursor > std::numeric_limits<std::size_t>::max() - mask) return false;
+    const std::size_t aligned = (*cursor + mask) & ~mask;
+    if (aligned > std::numeric_limits<u32>::max()
+        || bytes > std::numeric_limits<std::size_t>::max() - aligned) return false;
+    offset->byte_offset = static_cast<u32>(aligned);
+    *cursor = aligned + bytes;
+    return true;
+}
+
+validation_result bind_image_view(
+    const packing_plan_image_header &header,
+    const void *base,
+    std::size_t bytes,
+    packing_plan_image_view *out) noexcept {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "packing plan image view output is null");
+    }
+    auto resolve = [&](cellerator::memory::rel32 offset, std::size_t count, const u32 **target) {
+        std::size_t span_bytes = 0u;
+        if (!checked_u32_bytes(count, &span_bytes)
+            || offset.byte_offset > bytes || span_bytes > bytes - offset.byte_offset
+            || (offset.byte_offset % alignof(u32)) != 0u) return false;
+        *target = reinterpret_cast<const u32 *>(
+            static_cast<const unsigned char *>(base) + offset.byte_offset);
+        return true;
+    };
+    packing_plan_image_view result;
+    result.header = header;
+    result.image_base = base;
+    result.image_bytes = bytes;
+    if (!resolve(header.feature_permutation, header.feature_count, &result.feature_permutation)
+        || !resolve(header.inverse_feature_permutation, header.feature_count, &result.inverse_feature_permutation)
+        || !resolve(header.feature_block_offsets,
+            static_cast<std::size_t>(header.feature_block_count) + 1u, &result.feature_block_offsets)
+        || !resolve(header.feature_to_block, header.feature_count, &result.feature_to_block)
+        || !resolve(header.feature_to_local, header.feature_count, &result.feature_to_local)
+        || !resolve(header.row_group_offsets,
+            static_cast<std::size_t>(header.row_group_count) + 1u, &result.row_group_offsets)) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "packing plan image section is out of bounds or misaligned");
+    }
+    *out = result;
+    return validation_ok();
 }
 
 validation_result validate_build_view(const frozen_packing_plan_build_view &source) {
@@ -119,31 +170,125 @@ validation_result validate_build_view(const frozen_packing_plan_build_view &sour
 
 } // namespace
 
+void packing_plan_image_deleter::operator()(unsigned char *pointer) const noexcept {
+    if (pointer != nullptr) {
+        ::operator delete(pointer, std::align_val_t{packing_plan_image_alignment});
+    }
+}
+
+validation_result validate_packing_plan_image_host(
+    const void *image,
+    std::size_t image_bytes,
+    packing_plan_image_view *out) noexcept {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "packing plan image output is null");
+    }
+    *out = packing_plan_image_view{};
+    if (image == nullptr || image_bytes < sizeof(packing_plan_image_header)
+        || (reinterpret_cast<std::uintptr_t>(image) & (packing_plan_image_alignment - 1u)) != 0u) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "packing plan image base is null, short, or misaligned");
+    }
+    const auto *header = static_cast<const packing_plan_image_header *>(image);
+    if (header->common.magic != packing_plan_image_magic
+        || header->common.schema_version != packing_plan_semantic_schema_version
+        || header->common.required_alignment != packing_plan_image_alignment
+        || header->common.section_count != 6u
+        || header->common.total_bytes != image_bytes
+        || header->common.identity == 0u) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "packing plan image header is incompatible");
+    }
+    packing_plan_image_view result;
+    validation_result status = bind_image_view(*header, image, image_bytes, &result);
+    if (!status) return status;
+    frozen_packing_plan_build_view source;
+    source.row_count = header->row_count;
+    source.feature_count = header->feature_count;
+    source.feature_permutation = result.feature_permutation;
+    source.inverse_feature_permutation = result.inverse_feature_permutation;
+    source.feature_block_count = header->feature_block_count;
+    source.feature_block_offsets = result.feature_block_offsets;
+    source.feature_to_block = result.feature_to_block;
+    source.feature_to_local = result.feature_to_local;
+    source.row_group_count = header->row_group_count;
+    source.row_group_offsets = result.row_group_offsets;
+    source.maximum_feature_block_width = header->maximum_feature_block_width;
+    source.row_group_width = header->row_group_width;
+    source.identity = header->identity;
+    source.objective_kind = header->objective_kind;
+    source.cost_policy_identity = header->cost_policy_identity;
+    source.baseline = header->baseline;
+    source.final = header->final;
+    status = validate_build_view(source);
+    if (!status) return status;
+    const u64 geometry_identity = compute_feature_block_geometry_identity(
+        source.feature_count, source.feature_permutation,
+        source.feature_block_count, source.feature_block_offsets);
+    if (geometry_identity != header->common.identity) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "packing plan image identity is inconsistent with canonical geometry");
+    }
+    *out = result;
+    return validation_ok();
+}
+
+validation_result rebind_packing_plan_image(
+    const packing_plan_image_view &validated_host_view,
+    const void *new_image_base,
+    std::size_t new_image_bytes,
+    packing_plan_image_view *out) noexcept {
+    if (new_image_base == nullptr || out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id,
+            "packing plan rebind base or output is null");
+    }
+    if (validated_host_view.image_base == nullptr
+        || validated_host_view.header.common.magic != packing_plan_image_magic
+        || validated_host_view.header.common.identity == 0u
+        || new_image_bytes != validated_host_view.image_bytes) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "packing plan rebind source or destination size is invalid");
+    }
+    return bind_image_view(
+        validated_host_view.header, new_image_base, new_image_bytes, out);
+}
+
 packing_plan_view frozen_packing_plan::view() const noexcept {
     packing_plan_view result;
     result.row_count = row_count_;
     result.feature_count = feature_count_;
-    result.feature_permutation = feature_permutation_.get();
-    result.inverse_feature_permutation = inverse_feature_permutation_.get();
+    result.feature_permutation = feature_permutation();
+    result.inverse_feature_permutation = inverse_feature_permutation();
     result.row_group_count = row_group_count_;
-    result.row_group_offsets = row_group_offsets_.get();
+    result.row_group_offsets = row_group_offsets();
     result.feature_block_count = feature_block_count_;
-    result.feature_block_offsets = feature_block_offsets_.get();
+    result.feature_block_offsets = feature_block_offsets();
     return result;
 }
 
 validation_result frozen_packing_plan::validate() const {
+    packing_plan_image_view rebound;
+    const validation_result image_status = validate_packing_plan_image_host(
+        image_storage_.get(), image_allocation_.bytes, &rebound);
+    if (!image_status) return image_status;
+    if (rebound.header.common.identity != feature_block_geometry_identity_
+        || rebound.header.row_count != row_count_
+        || rebound.header.feature_count != feature_count_) {
+        return validation_error(validation_code::invalid_plan_geometry, invalid_id,
+            "frozen plan metadata disagrees with its image header");
+    }
     frozen_packing_plan_build_view source;
     source.row_count = row_count_;
     source.feature_count = feature_count_;
-    source.feature_permutation = feature_permutation_.get();
-    source.inverse_feature_permutation = inverse_feature_permutation_.get();
+    source.feature_permutation = feature_permutation();
+    source.inverse_feature_permutation = inverse_feature_permutation();
     source.feature_block_count = feature_block_count_;
-    source.feature_block_offsets = feature_block_offsets_.get();
-    source.feature_to_block = feature_to_block_.get();
-    source.feature_to_local = feature_to_local_.get();
+    source.feature_block_offsets = feature_block_offsets();
+    source.feature_to_block = feature_to_block();
+    source.feature_to_local = feature_to_local();
     source.row_group_count = row_group_count_;
-    source.row_group_offsets = row_group_offsets_.get();
+    source.row_group_offsets = row_group_offsets();
     source.maximum_feature_block_width = maximum_feature_block_width_;
     source.row_group_width = row_group_width_;
     source.identity = identity_;
@@ -154,8 +299,8 @@ validation_result frozen_packing_plan::validate() const {
     const validation_result status = validate_build_view(source);
     if (!status) return status;
     const u64 expected_geometry_identity = compute_feature_block_geometry_identity(
-        feature_count_, feature_permutation_.get(), feature_block_count_,
-        feature_block_offsets_.get());
+        feature_count_, feature_permutation(), feature_block_count_,
+        feature_block_offsets());
     if (feature_block_geometry_identity_ != expected_geometry_identity) {
         return validation_error(validation_code::invalid_plan_geometry, invalid_id,
             "frozen plan feature-block geometry identity is inconsistent");
@@ -188,24 +333,79 @@ validation_result freeze_packing_plan(
     const validation_result status = validate_build_view(source);
     if (!status) return status;
     try {
+        packing_plan_image_header header;
+        std::size_t cursor = sizeof(packing_plan_image_header);
+        std::size_t feature_bytes = 0u;
+        std::size_t feature_block_offset_bytes = 0u;
+        std::size_t row_group_offset_bytes = 0u;
+        if (!checked_u32_bytes(source.feature_count, &feature_bytes)
+            || !checked_u32_bytes(static_cast<std::size_t>(source.feature_block_count) + 1u,
+                &feature_block_offset_bytes)
+            || !checked_u32_bytes(static_cast<std::size_t>(source.row_group_count) + 1u,
+                &row_group_offset_bytes)
+            || !append_aligned_section(feature_bytes, &cursor, &header.feature_permutation)
+            || !append_aligned_section(feature_bytes, &cursor, &header.inverse_feature_permutation)
+            || !append_aligned_section(feature_block_offset_bytes, &cursor, &header.feature_block_offsets)
+            || !append_aligned_section(feature_bytes, &cursor, &header.feature_to_block)
+            || !append_aligned_section(feature_bytes, &cursor, &header.feature_to_local)
+            || !append_aligned_section(row_group_offset_bytes, &cursor, &header.row_group_offsets)) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "packing plan image size overflows relative-offset schema");
+        }
+        const u64 geometry_identity = compute_feature_block_geometry_identity(
+            source.feature_count, source.feature_permutation,
+            source.feature_block_count, source.feature_block_offsets);
+        header.common.magic = packing_plan_image_magic;
+        header.common.schema_version = static_cast<std::uint16_t>(packing_plan_semantic_schema_version);
+        header.common.total_bytes = cursor;
+        header.common.required_alignment = packing_plan_image_alignment;
+        header.common.section_count = 6u;
+        header.common.identity = geometry_identity;
+        header.row_count = source.row_count;
+        header.feature_count = source.feature_count;
+        header.feature_block_count = source.feature_block_count;
+        header.row_group_count = source.row_group_count;
+        header.maximum_feature_block_width = source.maximum_feature_block_width;
+        header.row_group_width = source.row_group_width;
+        header.objective_kind = source.objective_kind;
+        header.cost_policy_identity = source.cost_policy_identity;
+        header.identity = source.identity;
+        header.baseline = source.baseline;
+        header.final = source.final;
+
+        auto *storage = static_cast<unsigned char *>(
+            ::operator new(cursor, std::align_val_t{packing_plan_image_alignment}));
+        std::memset(storage, 0, cursor);
+        std::memcpy(storage, &header, sizeof(header));
+        auto copy_section = [&](cellerator::memory::rel32 offset, const u32 *data, std::size_t bytes) {
+            std::memcpy(storage + offset.byte_offset, data, bytes);
+        };
+        copy_section(header.feature_permutation, source.feature_permutation, feature_bytes);
+        copy_section(header.inverse_feature_permutation, source.inverse_feature_permutation, feature_bytes);
+        copy_section(header.feature_block_offsets, source.feature_block_offsets, feature_block_offset_bytes);
+        copy_section(header.feature_to_block, source.feature_to_block, feature_bytes);
+        copy_section(header.feature_to_local, source.feature_to_local, feature_bytes);
+        copy_section(header.row_group_offsets, source.row_group_offsets, row_group_offset_bytes);
+
         frozen_packing_plan result;
+        result.image_storage_.reset(storage);
+        result.image_allocation_ = cellerator::memory::allocation{
+            storage,
+            cursor,
+            packing_plan_image_alignment,
+            cellerator::memory::placement{cellerator::memory::domain::host, -1, -1, 0u},
+            1u
+        };
+        validation_result image_status = validate_packing_plan_image_host(
+            storage, cursor, &result.image_view_);
+        if (!image_status) return image_status;
         result.row_count_ = source.row_count;
         result.feature_count_ = source.feature_count;
         result.feature_block_count_ = source.feature_block_count;
         result.row_group_count_ = source.row_group_count;
         result.maximum_feature_block_width_ = source.maximum_feature_block_width;
         result.row_group_width_ = source.row_group_width;
-        result.feature_block_geometry_identity_ = compute_feature_block_geometry_identity(
-            source.feature_count, source.feature_permutation,
-            source.feature_block_count, source.feature_block_offsets);
-        result.feature_permutation_ = copy_u32(source.feature_permutation, source.feature_count);
-        result.inverse_feature_permutation_ = copy_u32(source.inverse_feature_permutation, source.feature_count);
-        result.feature_block_offsets_ = copy_u32(source.feature_block_offsets,
-            static_cast<std::size_t>(source.feature_block_count) + 1u);
-        result.feature_to_block_ = copy_u32(source.feature_to_block, source.feature_count);
-        result.feature_to_local_ = copy_u32(source.feature_to_local, source.feature_count);
-        result.row_group_offsets_ = copy_u32(source.row_group_offsets,
-            static_cast<std::size_t>(source.row_group_count) + 1u);
+        result.feature_block_geometry_identity_ = geometry_identity;
         result.identity_ = source.identity;
         result.objective_kind_ = source.objective_kind;
         result.cost_policy_identity_ = source.cost_policy_identity;
