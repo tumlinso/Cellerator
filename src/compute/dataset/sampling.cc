@@ -1,6 +1,8 @@
 #include <Cellerator/compute/sampling.hh>
 
 #include <algorithm>
+#include <cstring>
+#include <limits>
 #include <numeric>
 #include <queue>
 #include <string_view>
@@ -15,6 +17,29 @@ constexpr std::uint64_t cell_id_domain = 0x63656c6c5f696431ull;
 constexpr std::uint64_t fnv1a_offset = 14695981039346656037ull;
 constexpr std::uint64_t fnv1a_prime = 1099511628211ull;
 constexpr std::uint64_t max_quantile_denominator = 0xffffffffull;
+
+bool checked_align_and_add(std::size_t *cursor, std::size_t alignment,
+                           std::size_t bytes, std::size_t *offset) noexcept {
+    if (cursor == nullptr || offset == nullptr || alignment == 0u) return false;
+    const std::size_t mask = alignment - 1u;
+    if (*cursor > std::numeric_limits<std::size_t>::max() - mask) return false;
+    const std::size_t aligned = (*cursor + mask) & ~mask;
+    if (bytes > std::numeric_limits<std::size_t>::max() - aligned) return false;
+    *offset = aligned;
+    *cursor = aligned + bytes;
+    return true;
+}
+
+void identity_byte(std::uint64_t *value, std::uint8_t byte) noexcept {
+    *value ^= byte;
+    *value *= fnv1a_prime;
+}
+
+void identity_u64(std::uint64_t *value, std::uint64_t item) noexcept {
+    for (unsigned byte = 0u; byte < 8u; ++byte) {
+        identity_byte(value, static_cast<std::uint8_t>(item >> (byte * 8u)));
+    }
+}
 
 struct candidate {
     std::uint64_t row = 0u;
@@ -558,6 +583,202 @@ bool reproduce_density_sample_plan(const sample_provenance &provenance,
         *out = sample_plan{};
         return false;
     }
+    return true;
+}
+
+std::uint64_t sample_split_identity(const std::string &split_name) noexcept {
+    std::uint64_t identity = fnv1a_offset;
+    identity_u64(&identity, static_cast<std::uint64_t>(split_name.size()));
+    for (const unsigned char byte : split_name) identity_byte(&identity, byte);
+    return identity == 0u ? 1u : identity;
+}
+
+std::size_t sample_selection_image_bytes(const sample_plan &plan) noexcept {
+    const std::size_t selected = plan.global_row_indices.size();
+    const std::size_t strata = plan.provenance.density_strata;
+    if (selected > std::numeric_limits<std::size_t>::max() / sizeof(std::uint64_t)
+        || strata > std::numeric_limits<std::size_t>::max() / sizeof(sample_stratum_desc)
+        || (strata != 0u
+            && selected > std::numeric_limits<std::size_t>::max() / sizeof(std::uint16_t))) {
+        return 0u;
+    }
+    std::size_t cursor = sizeof(sample_selection_header), offset = 0u;
+    if (!checked_align_and_add(&cursor, alignof(std::uint64_t),
+                               selected * sizeof(std::uint64_t), &offset)) return 0u;
+    if (strata != 0u
+        && !checked_align_and_add(&cursor, alignof(std::uint16_t),
+                                  selected * sizeof(std::uint16_t), &offset)) return 0u;
+    if (!checked_align_and_add(&cursor, alignof(sample_stratum_desc),
+                               strata * sizeof(sample_stratum_desc), &offset)) return 0u;
+    return cursor;
+}
+
+bool encode_sample_selection_image(const sample_plan &plan,
+                                   ::cellerator::memory::image_buffer image,
+                                   sample_selection_view *out,
+                                   std::string *error) {
+    if (out == nullptr) {
+        set_error(error, "sample selection image output is null");
+        return false;
+    }
+    *out = {};
+    const std::size_t selected = plan.global_row_indices.size();
+    const std::size_t strata = plan.provenance.density_strata;
+    const std::size_t required = sample_selection_image_bytes(plan);
+    if (required == 0u || image.base == nullptr || image.bytes < required) {
+        set_error(error, "sample selection image capacity is insufficient");
+        return false;
+    }
+    if (plan.provenance.selected_rows != selected
+        || plan.provenance.split_name.empty()
+        || plan.provenance.hash_algorithm != splitmix64_algorithm_name
+        || plan.provenance.hash_version != splitmix64_algorithm_version) {
+        set_error(error, "sample selection provenance is inconsistent");
+        return false;
+    }
+    if (strata != plan.provenance.density_bin_upper_bounds_inclusive.size()
+        || strata != plan.provenance.stratum_total_rows.size()
+        || strata != plan.provenance.stratum_sampled_rows.size()
+        || (strata != 0u && plan.row_strata.size() != selected)) {
+        set_error(error, "sample selection stratum arrays are inconsistent");
+        return false;
+    }
+    if (!std::is_sorted(plan.global_row_indices.begin(), plan.global_row_indices.end())
+        || std::adjacent_find(plan.global_row_indices.begin(), plan.global_row_indices.end())
+            != plan.global_row_indices.end()) {
+        set_error(error, "sample selection rows must be sorted and unique");
+        return false;
+    }
+    std::memset(image.base, 0, required);
+    auto *header = static_cast<sample_selection_header *>(image.base);
+    std::size_t cursor = sizeof(*header), rows_offset = 0u, strata_ids_offset = 0u,
+                strata_offset = 0u;
+    checked_align_and_add(&cursor, alignof(std::uint64_t),
+                          selected * sizeof(std::uint64_t), &rows_offset);
+    if (strata != 0u) {
+        checked_align_and_add(&cursor, alignof(std::uint16_t),
+                              selected * sizeof(std::uint16_t), &strata_ids_offset);
+    }
+    checked_align_and_add(&cursor, alignof(sample_stratum_desc),
+                          strata * sizeof(sample_stratum_desc), &strata_offset);
+    auto *rows = reinterpret_cast<std::uint64_t *>(
+        static_cast<unsigned char *>(image.base) + rows_offset);
+    auto *stratum_ids = strata == 0u ? nullptr : reinterpret_cast<std::uint16_t *>(
+        static_cast<unsigned char *>(image.base) + strata_ids_offset);
+    auto *descriptors = strata == 0u ? nullptr : reinterpret_cast<sample_stratum_desc *>(
+        static_cast<unsigned char *>(image.base) + strata_offset);
+    for (std::size_t i = 0u; i < selected; ++i) {
+        rows[i] = plan.global_row_indices[i];
+        if (stratum_ids != nullptr) {
+            if (plan.row_strata[i] >= strata || plan.row_strata[i] > 0xffffu) {
+                set_error(error, "sample selection stratum id exceeds the image schema");
+                return false;
+            }
+            stratum_ids[i] = static_cast<std::uint16_t>(plan.row_strata[i]);
+        }
+    }
+    for (std::size_t i = 0u; i < strata; ++i) {
+        descriptors[i] = {plan.provenance.density_bin_upper_bounds_inclusive[i],
+                          plan.provenance.stratum_total_rows[i],
+                          plan.provenance.stratum_sampled_rows[i]};
+        if (descriptors[i].sampled_rows == 0u
+            || descriptors[i].sampled_rows > descriptors[i].population_rows) {
+            set_error(error, "sample selection stratum ratio is invalid");
+            return false;
+        }
+    }
+    header->common.magic = sample_selection_magic;
+    header->common.schema_version = sample_selection_schema_version;
+    header->common.total_bytes = required;
+    header->common.required_alignment = alignof(sample_selection_header);
+    header->common.section_count = strata == 0u ? 1u : 3u;
+    header->population_rows = plan.provenance.total_rows;
+    header->selected_rows = selected;
+    header->seed = plan.provenance.seed;
+    header->split_identity = sample_split_identity(plan.provenance.split_name);
+    header->algorithm_id = static_cast<std::uint32_t>(plan.provenance.mode);
+    header->algorithm_version = plan.provenance.hash_version;
+    header->identity_kind = static_cast<std::uint32_t>(plan.provenance.cell_identity);
+    header->stratum_count = static_cast<std::uint32_t>(strata);
+    header->selected_global_rows.byte_offset = rows_offset;
+    header->selected_strata.byte_offset = strata_ids_offset;
+    header->strata.byte_offset = strata_offset;
+    std::uint64_t identity = fnv1a_offset;
+    identity_u64(&identity, header->population_rows);
+    identity_u64(&identity, header->selected_rows);
+    identity_u64(&identity, header->seed);
+    identity_u64(&identity, header->split_identity);
+    identity_u64(&identity, header->algorithm_id);
+    identity_u64(&identity, header->identity_kind);
+    for (std::size_t i = 0u; i < selected; ++i) identity_u64(&identity, rows[i]);
+    for (std::size_t i = 0u; i < selected && stratum_ids != nullptr; ++i) {
+        identity_u64(&identity, stratum_ids[i]);
+    }
+    for (std::size_t i = 0u; i < strata; ++i) {
+        identity_u64(&identity, descriptors[i].upper_bound_inclusive);
+        identity_u64(&identity, descriptors[i].population_rows);
+        identity_u64(&identity, descriptors[i].sampled_rows);
+    }
+    header->common.identity = identity == 0u ? 1u : identity;
+    *out = {header, rows, stratum_ids, descriptors};
+    return true;
+}
+
+bool resolve_sample_selection_image(::cellerator::memory::const_image_view image,
+                                    sample_selection_view *out,
+                                    std::string *error) {
+    if (out == nullptr) {
+        set_error(error, "sample selection image view output is null");
+        return false;
+    }
+    *out = {};
+    if (image.base == nullptr || image.bytes < sizeof(sample_selection_header)) {
+        set_error(error, "sample selection image is truncated");
+        return false;
+    }
+    const auto *header = static_cast<const sample_selection_header *>(image.base);
+    if (header->common.magic != sample_selection_magic
+        || header->common.schema_version != sample_selection_schema_version
+        || header->common.total_bytes > image.bytes
+        || header->common.total_bytes < sizeof(*header)
+        || header->stratum_count > 0xffffu) {
+        set_error(error, "sample selection image header is invalid");
+        return false;
+    }
+    const auto span = [header](std::uint64_t offset, std::size_t count,
+                               std::size_t width, std::size_t alignment) {
+        if ((offset & (alignment - 1u)) != 0u || count > SIZE_MAX / width) return false;
+        const std::size_t bytes = count * width;
+        return offset <= header->common.total_bytes
+            && bytes <= header->common.total_bytes - static_cast<std::size_t>(offset);
+    };
+    const std::size_t selected = static_cast<std::size_t>(header->selected_rows);
+    const std::size_t strata = header->stratum_count;
+    if (!span(header->selected_global_rows.byte_offset, selected,
+              sizeof(std::uint64_t), alignof(std::uint64_t))
+        || (strata != 0u
+            && (!span(header->selected_strata.byte_offset, selected,
+                      sizeof(std::uint16_t), alignof(std::uint16_t))
+                || !span(header->strata.byte_offset, strata,
+                         sizeof(sample_stratum_desc), alignof(sample_stratum_desc))))) {
+        set_error(error, "sample selection image section is invalid");
+        return false;
+    }
+    const auto *base = static_cast<const unsigned char *>(image.base);
+    const auto *rows = reinterpret_cast<const std::uint64_t *>(
+        base + header->selected_global_rows.byte_offset);
+    const auto *stratum_ids = strata == 0u ? nullptr : reinterpret_cast<const std::uint16_t *>(
+        base + header->selected_strata.byte_offset);
+    const auto *descriptors = strata == 0u ? nullptr : reinterpret_cast<const sample_stratum_desc *>(
+        base + header->strata.byte_offset);
+    for (std::size_t i = 0u; i < selected; ++i) {
+        if (rows[i] >= header->population_rows || (i != 0u && rows[i] <= rows[i - 1u])
+            || (stratum_ids != nullptr && stratum_ids[i] >= strata)) {
+            set_error(error, "sample selection image row identity is invalid");
+            return false;
+        }
+    }
+    *out = {header, rows, stratum_ids, descriptors};
     return true;
 }
 

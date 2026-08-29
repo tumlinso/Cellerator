@@ -9,6 +9,47 @@
 
 namespace cellerator::compute::sampling {
 
+inline constexpr std::uint32_t sampled_csr_image_magic = 0x31524353u; // SCR1
+inline constexpr std::uint16_t sampled_csr_image_schema_version = 1u;
+
+struct selected_csr_structure_view;
+
+struct sampled_csr_image_header {
+    ::cellerator::memory::image_header common{};
+    std::uint64_t sampled_row_count = 0u;
+    std::uint64_t gene_count = 0u;
+    std::uint64_t nnz = 0u;
+    std::uint64_t sample_selection_identity = 0u;
+    ::cellerator::memory::rel64 row_ptr{};
+    ::cellerator::memory::rel64 column_indices{};
+    ::cellerator::memory::rel64 sampled_position_to_global_row{};
+};
+
+struct sampled_csr_image_view {
+    const sampled_csr_image_header *header = nullptr;
+    const ::cellerator::types::ptr_t *row_ptr = nullptr;
+    const ::cellerator::types::idx_t *column_indices = nullptr;
+    const std::uint64_t *sampled_position_to_global_row = nullptr;
+};
+
+std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
+                                    std::uint64_t nnz) noexcept;
+bool materialize_sampled_csr_image(
+    const ::cellerator::matrix::compressed *source,
+    const sample_selection_view &selection,
+    ::cellerator::memory::image_buffer image,
+    sampled_csr_image_view *out,
+    std::string *error = nullptr);
+bool materialize_selected_csr_image(
+    const selected_csr_structure_view &source,
+    const sample_selection_view &selection,
+    ::cellerator::memory::image_buffer image,
+    sampled_csr_image_view *out,
+    std::string *error = nullptr);
+bool resolve_sampled_csr_image(::cellerator::memory::const_image_view image,
+                               sampled_csr_image_view *out,
+                               std::string *error = nullptr);
+
 struct sampled_csr_structure_view {
     std::uint64_t sampled_row_count = 0u;
     std::uint64_t gene_count = 0u;

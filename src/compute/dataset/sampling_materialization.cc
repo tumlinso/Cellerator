@@ -1,6 +1,7 @@
 #include <Cellerator/compute/sampling_materialization.hh>
 
 #include <algorithm>
+#include <cstring>
 #include <limits>
 #include <new>
 #include <utility>
@@ -32,6 +33,69 @@ bool fits_canonical_ptr(std::uint64_t value) {
 
 bool fits_canonical_index(std::uint64_t value) {
     return value <= (std::uint64_t) std::numeric_limits<ct::idx_t>::max();
+}
+
+bool image_layout(std::uint64_t sampled_rows, std::uint64_t nnz,
+                  std::size_t *total, std::size_t *row_offset,
+                  std::size_t *column_offset, std::size_t *mapping_offset) noexcept {
+    if (total == nullptr || row_offset == nullptr || column_offset == nullptr
+        || mapping_offset == nullptr || sampled_rows > SIZE_MAX - 1u) return false;
+    const auto add = [](std::size_t *cursor, std::size_t alignment,
+                        std::size_t count, std::size_t width, std::size_t *offset) {
+        if (count > SIZE_MAX / width) return false;
+        const std::size_t mask = alignment - 1u;
+        if (*cursor > SIZE_MAX - mask) return false;
+        const std::size_t aligned = (*cursor + mask) & ~mask;
+        const std::size_t bytes = count * width;
+        if (bytes > SIZE_MAX - aligned) return false;
+        *offset = aligned;
+        *cursor = aligned + bytes;
+        return true;
+    };
+    std::size_t cursor = sizeof(sampled_csr_image_header);
+    if (!add(&cursor, alignof(ct::ptr_t), static_cast<std::size_t>(sampled_rows) + 1u,
+             sizeof(ct::ptr_t), row_offset)
+        || !add(&cursor, alignof(ct::idx_t), static_cast<std::size_t>(nnz),
+                sizeof(ct::idx_t), column_offset)
+        || !add(&cursor, alignof(std::uint64_t), static_cast<std::size_t>(sampled_rows),
+                sizeof(std::uint64_t), mapping_offset)) return false;
+    *total = cursor;
+    return true;
+}
+
+bool prepare_image(std::uint64_t sampled_rows, std::uint64_t gene_count,
+                   std::uint64_t nnz, std::uint64_t selection_identity,
+                   ::cellerator::memory::image_buffer image,
+                   sampled_csr_image_view *out, std::string *error) {
+    std::size_t bytes = 0u, row_offset = 0u, column_offset = 0u, mapping_offset = 0u;
+    if (out == nullptr || !fits_canonical_ptr(sampled_rows)
+        || !fits_canonical_ptr(nnz) || !fits_canonical_index(gene_count)
+        || !image_layout(sampled_rows, nnz, &bytes, &row_offset, &column_offset, &mapping_offset)
+        || image.base == nullptr || image.bytes < bytes) {
+        set_error(error, "sampled CSR image capacity or dimensions are invalid");
+        return false;
+    }
+    std::memset(image.base, 0, bytes);
+    auto *header = static_cast<sampled_csr_image_header *>(image.base);
+    auto *base = static_cast<unsigned char *>(image.base);
+    header->common.magic = sampled_csr_image_magic;
+    header->common.schema_version = sampled_csr_image_schema_version;
+    header->common.total_bytes = bytes;
+    header->common.required_alignment = alignof(sampled_csr_image_header);
+    header->common.section_count = 3u;
+    header->common.identity = selection_identity;
+    header->sampled_row_count = sampled_rows;
+    header->gene_count = gene_count;
+    header->nnz = nnz;
+    header->sample_selection_identity = selection_identity;
+    header->row_ptr.byte_offset = row_offset;
+    header->column_indices.byte_offset = column_offset;
+    header->sampled_position_to_global_row.byte_offset = mapping_offset;
+    *out = {header,
+            reinterpret_cast<ct::ptr_t *>(base + row_offset),
+            reinterpret_cast<ct::idx_t *>(base + column_offset),
+            reinterpret_cast<std::uint64_t *>(base + mapping_offset)};
+    return true;
 }
 
 bool validate_and_order_selection(std::uint64_t total_rows,
@@ -284,6 +348,151 @@ bool copy_selected_structure(const selected_csr_structure_view &source,
 }
 
 } // namespace
+
+std::size_t sampled_csr_image_bytes(std::uint64_t sampled_rows,
+                                    std::uint64_t nnz) noexcept {
+    std::size_t bytes = 0u, row_offset = 0u, column_offset = 0u, mapping_offset = 0u;
+    return image_layout(sampled_rows, nnz, &bytes, &row_offset, &column_offset,
+                        &mapping_offset) ? bytes : 0u;
+}
+
+bool materialize_sampled_csr_image(const cm::compressed *source,
+                                   const sample_selection_view &selection,
+                                   ::cellerator::memory::image_buffer image,
+                                   sampled_csr_image_view *out,
+                                   std::string *error) {
+    if (selection.header == nullptr || selection.selected_global_rows == nullptr
+        || !validate_source_row_ptr(source, error)) {
+        if (selection.header == nullptr || selection.selected_global_rows == nullptr)
+            set_error(error, "sample selection view is incomplete");
+        return false;
+    }
+    std::uint64_t nnz = 0u;
+    for (std::uint64_t position = 0u; position < selection.header->selected_rows; ++position) {
+        const std::uint64_t row = selection.selected_global_rows[position];
+        if (row >= source->rows || (position != 0u && row <= selection.selected_global_rows[position - 1u])) {
+            set_error(error, "sample selection rows are not canonical for source CSR");
+            return false;
+        }
+        const std::uint64_t row_nnz = source->majorPtr[row + 1u] - source->majorPtr[row];
+        if (row_nnz > std::numeric_limits<std::uint64_t>::max() - nnz) {
+            set_error(error, "sampled CSR nnz overflows");
+            return false;
+        }
+        nnz += row_nnz;
+    }
+    if (!prepare_image(selection.header->selected_rows, source->cols, nnz,
+                       selection.header->common.identity, image, out, error)) return false;
+    auto *row_ptr = const_cast<ct::ptr_t *>(out->row_ptr);
+    auto *columns = const_cast<ct::idx_t *>(out->column_indices);
+    auto *mapping = const_cast<std::uint64_t *>(out->sampled_position_to_global_row);
+    std::uint64_t cursor = 0u;
+    row_ptr[0] = 0u;
+    for (std::uint64_t position = 0u; position < selection.header->selected_rows; ++position) {
+        const std::uint64_t row = selection.selected_global_rows[position];
+        mapping[position] = row;
+        for (ct::ptr_t slot = source->majorPtr[row]; slot < source->majorPtr[row + 1u]; ++slot) {
+            if (source->minorIdx[slot] >= source->cols) {
+                set_error(error, "sampled CSR source column is out of range");
+                return false;
+            }
+            columns[cursor++] = source->minorIdx[slot];
+        }
+        row_ptr[position + 1u] = static_cast<ct::ptr_t>(cursor);
+    }
+    return true;
+}
+
+bool materialize_selected_csr_image(const selected_csr_structure_view &source,
+                                    const sample_selection_view &selection,
+                                    ::cellerator::memory::image_buffer image,
+                                    sampled_csr_image_view *out,
+                                    std::string *error) {
+    if (selection.header == nullptr || selection.selected_global_rows == nullptr
+        || source.selected_row_count != selection.header->selected_rows
+        || source.total_row_count != selection.header->population_rows
+        || source.row_ptr == nullptr
+        || (source.nnz != 0u && source.column_indices == nullptr)
+        || (source.selected_row_count != 0u && source.global_row_indices == nullptr)) {
+        set_error(error, "selected CSR and sample selection contract mismatch");
+        return false;
+    }
+    if (source.row_ptr[0] != 0u || source.row_ptr[source.selected_row_count] != source.nnz) {
+        set_error(error, "selected CSR row pointers do not span nnz");
+        return false;
+    }
+    for (std::uint64_t i = 0u; i < source.selected_row_count; ++i) {
+        if (source.global_row_indices[i] != selection.selected_global_rows[i]
+            || source.row_ptr[i + 1u] < source.row_ptr[i]) {
+            set_error(error, "selected CSR row mapping or pointers are invalid");
+            return false;
+        }
+    }
+    if (!prepare_image(source.selected_row_count, source.gene_count, source.nnz,
+                       selection.header->common.identity, image, out, error)) return false;
+    auto *row_ptr = const_cast<ct::ptr_t *>(out->row_ptr);
+    auto *columns = const_cast<ct::idx_t *>(out->column_indices);
+    auto *mapping = const_cast<std::uint64_t *>(out->sampled_position_to_global_row);
+    std::memcpy(row_ptr, source.row_ptr,
+                (static_cast<std::size_t>(source.selected_row_count) + 1u) * sizeof(ct::ptr_t));
+    std::memcpy(mapping, source.global_row_indices,
+                static_cast<std::size_t>(source.selected_row_count) * sizeof(std::uint64_t));
+    for (std::uint64_t slot = 0u; slot < source.nnz; ++slot) {
+        if (source.column_indices[slot] >= source.gene_count) {
+            set_error(error, "selected CSR column is out of range");
+            return false;
+        }
+        columns[slot] = source.column_indices[slot];
+    }
+    return true;
+}
+
+bool resolve_sampled_csr_image(::cellerator::memory::const_image_view image,
+                               sampled_csr_image_view *out,
+                               std::string *error) {
+    if (out == nullptr || image.base == nullptr || image.bytes < sizeof(sampled_csr_image_header)) {
+        set_error(error, "sampled CSR image is truncated or output is null");
+        return false;
+    }
+    *out = {};
+    const auto *header = static_cast<const sampled_csr_image_header *>(image.base);
+    std::size_t expected = 0u, row_offset = 0u, column_offset = 0u, mapping_offset = 0u;
+    if (header->common.magic != sampled_csr_image_magic
+        || header->common.schema_version != sampled_csr_image_schema_version
+        || !image_layout(header->sampled_row_count, header->nnz, &expected,
+                         &row_offset, &column_offset, &mapping_offset)
+        || header->common.total_bytes != expected || expected > image.bytes
+        || header->row_ptr.byte_offset != row_offset
+        || header->column_indices.byte_offset != column_offset
+        || header->sampled_position_to_global_row.byte_offset != mapping_offset) {
+        set_error(error, "sampled CSR image header or sections are invalid");
+        return false;
+    }
+    const auto *base = static_cast<const unsigned char *>(image.base);
+    const auto *row_ptr = reinterpret_cast<const ct::ptr_t *>(base + row_offset);
+    const auto *columns = reinterpret_cast<const ct::idx_t *>(base + column_offset);
+    const auto *mapping = reinterpret_cast<const std::uint64_t *>(base + mapping_offset);
+    if (row_ptr[0] != 0u || row_ptr[header->sampled_row_count] != header->nnz) {
+        set_error(error, "sampled CSR image row pointers do not span nnz");
+        return false;
+    }
+    for (std::uint64_t row = 0u; row < header->sampled_row_count; ++row) {
+        if (row_ptr[row + 1u] < row_ptr[row]
+            || mapping[row] >= std::numeric_limits<std::uint64_t>::max()
+            || (row != 0u && mapping[row] <= mapping[row - 1u])) {
+            set_error(error, "sampled CSR image rows are invalid");
+            return false;
+        }
+    }
+    for (std::uint64_t slot = 0u; slot < header->nnz; ++slot) {
+        if (columns[slot] >= header->gene_count) {
+            set_error(error, "sampled CSR image column is invalid");
+            return false;
+        }
+    }
+    *out = {header, row_ptr, columns, mapping};
+    return true;
+}
 
 owned_sampled_csr_structure::owned_sampled_csr_structure(
     std::uint64_t sampled_row_count,
