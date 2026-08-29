@@ -20,9 +20,13 @@ struct TimeSlabSpan {
     bool is_delta = false;
 };
 
+struct alignas(8) RowInterval {
+    std::uint32_t begin = 0u;
+    std::uint32_t count = 0u;
+};
+
 struct FutureWindowBounds {
-    std::vector<std::uint32_t> row_begin;
-    std::vector<std::uint32_t> row_end;
+    std::vector<RowInterval> rows;
 };
 
 struct DeltaSlabAssignment {
@@ -64,8 +68,7 @@ inline FutureWindowBounds build_future_window_bounds(
     if (strict_future_epsilon < 0.0f) throw std::invalid_argument("strict_future_epsilon must be >= 0");
 
     FutureWindowBounds bounds;
-    bounds.row_begin.assign(table.rows, 0);
-    bounds.row_end.assign(table.rows, 0);
+    bounds.rows.assign(table.rows, RowInterval{});
     const std::vector<EmbryoRowSpan> spans = build_embryo_row_spans(table);
 
     for (const EmbryoRowSpan &span : spans) {
@@ -77,8 +80,11 @@ inline FutureWindowBounds build_future_window_bounds(
             const float upper = t + max_time_delta;
             const auto lo_it = std::upper_bound(time_begin, time_end, lower);
             const auto hi_it = std::upper_bound(lo_it, time_end, upper);
-            bounds.row_begin[row] = static_cast<std::uint32_t>(lo_it - table.developmental_time.begin());
-            bounds.row_end[row] = static_cast<std::uint32_t>(hi_it - table.developmental_time.begin());
+            const std::uint32_t begin = static_cast<std::uint32_t>(lo_it - table.developmental_time.begin());
+            bounds.rows[row] = RowInterval{
+                begin,
+                static_cast<std::uint32_t>(hi_it - lo_it)
+            };
         }
     }
     return bounds;

@@ -3,9 +3,10 @@
 #include "supernode_reduce.cuh"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <limits>
 #include <stdexcept>
-#include <vector>
 
 namespace cellerator::compute::graph {
 
@@ -22,12 +23,21 @@ inline void detect_branch_supernodes(
 
     std::fill(supernodes->is_branch.begin(), supernodes->is_branch.end(), static_cast<std::uint8_t>(0));
     for (std::uint32_t row = 0; row < dag.rows; ++row) {
-        std::vector<float> masses;
-        for (std::uint32_t edge = dag.row_ptr[row]; edge < dag.row_ptr[row + 1u]; ++edge) masses.push_back(dag.mass[edge]);
-        if (masses.size() < 2u) continue;
-        std::sort(masses.begin(), masses.end(), std::greater<float>());
-        const float total = masses[0] + masses[1];
-        if (masses[1] >= min_branch_mass && masses[1] >= total * min_branch_ratio) {
+        float largest = -std::numeric_limits<float>::infinity();
+        float second = -std::numeric_limits<float>::infinity();
+        for (std::uint32_t edge = dag.row_ptr[row]; edge < dag.row_ptr[row + 1u]; ++edge) {
+            const float mass = dag.mass[edge];
+            if (!std::isfinite(mass)) continue;
+            if (mass > largest) {
+                second = largest;
+                largest = mass;
+            } else if (mass > second) {
+                second = mass;
+            }
+        }
+        if (!std::isfinite(second)) continue;
+        const float total = largest + second;
+        if (second >= min_branch_mass && second >= total * min_branch_ratio) {
             supernodes->is_branch[row] = 1u;
         }
     }

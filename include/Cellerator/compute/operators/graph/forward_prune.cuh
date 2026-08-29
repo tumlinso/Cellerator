@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
 namespace cellerator::compute::graph {
@@ -44,19 +43,30 @@ inline ForwardCsrGraph prune_candidate_edges(
             {}
         };
     }
+    if (candidates.k == 0u || candidates.k > static_cast<std::uint32_t>(detail::max_candidate_k)
+        || candidates.dst.size() != static_cast<std::size_t>(candidates.rows) * candidates.k) {
+        throw std::invalid_argument("CandidateEdgeTable must be a bounded fixed-K table with K in [1, 8]");
+    }
 
     ForwardCsrGraph graph;
     graph.rows = candidates.rows;
     graph.row_ptr.resize(static_cast<std::size_t>(graph.rows) + 1u, 0u);
+    const std::size_t maximum_edges = static_cast<std::size_t>(graph.rows)
+        * std::min(config.max_out_degree, candidates.k);
+    graph.dst.reserve(maximum_edges);
+    graph.score.reserve(maximum_edges);
+    graph.delta_t.reserve(maximum_edges);
+    graph.flags.reserve(maximum_edges);
 
     for (std::uint32_t row = 0; row < graph.rows; ++row) {
-        struct edge {
+        struct alignas(16) edge {
             std::uint32_t dst;
             float score;
             float dt;
+            std::uint32_t flags;
         };
-        std::vector<edge> row_edges;
-        row_edges.reserve(candidates.k);
+        edge row_edges[detail::max_candidate_k]{};
+        std::uint32_t row_edge_count = 0u;
 
         const std::size_t base = static_cast<std::size_t>(row) * static_cast<std::size_t>(candidates.k);
         for (std::uint32_t slot = 0; slot < candidates.k; ++slot) {
@@ -64,10 +74,11 @@ inline ForwardCsrGraph prune_candidate_edges(
             if (candidates.dst[off] == std::numeric_limits<std::uint32_t>::max()) continue;
             if (!std::isfinite(candidates.similarity[off])) continue;
             if (candidates.similarity[off] < config.min_similarity) continue;
-            row_edges.push_back(edge{ candidates.dst[off], candidates.similarity[off], candidates.delta_t[off] });
+            row_edges[row_edge_count++] = edge{
+                candidates.dst[off], candidates.similarity[off], candidates.delta_t[off], 0u};
         }
 
-        std::sort(row_edges.begin(), row_edges.end(), [](const edge &lhs, const edge &rhs) {
+        std::sort(row_edges, row_edges + row_edge_count, [](const edge &lhs, const edge &rhs) {
             if (lhs.score > rhs.score) return true;
             if (lhs.score < rhs.score) return false;
             if (lhs.dt < rhs.dt) return true;
@@ -75,11 +86,13 @@ inline ForwardCsrGraph prune_candidate_edges(
             return lhs.dst < rhs.dst;
         });
 
-        std::vector<edge> kept;
-        kept.reserve(std::min<std::size_t>(row_edges.size(), config.max_out_degree));
-        for (const edge &candidate : row_edges) {
+        edge kept[detail::max_candidate_k]{};
+        std::uint32_t kept_count = 0u;
+        for (std::uint32_t index = 0u; index < row_edge_count; ++index) {
+            const edge &candidate = row_edges[index];
             bool dominated = false;
-            for (const edge &existing : kept) {
+            for (std::uint32_t prior = 0u; prior < kept_count; ++prior) {
+                const edge &existing = kept[prior];
                 if (candidate.dt > existing.dt * config.shortcut_ratio
                     && candidate.score + config.shortcut_similarity_gap < existing.score) {
                     dominated = true;
@@ -87,17 +100,18 @@ inline ForwardCsrGraph prune_candidate_edges(
                 }
             }
             if (dominated) continue;
-            kept.push_back(candidate);
-            if (kept.size() >= config.max_out_degree) break;
+            kept[kept_count++] = candidate;
+            if (kept_count >= config.max_out_degree) break;
         }
 
         graph.row_ptr[static_cast<std::size_t>(row + 1u)] =
-            graph.row_ptr[static_cast<std::size_t>(row)] + static_cast<std::uint32_t>(kept.size());
-        for (const edge &entry : kept) {
+            graph.row_ptr[static_cast<std::size_t>(row)] + kept_count;
+        for (std::uint32_t index = 0u; index < kept_count; ++index) {
+            const edge &entry = kept[index];
             graph.dst.push_back(entry.dst);
             graph.score.push_back(entry.score);
             graph.delta_t.push_back(entry.dt);
-            graph.flags.push_back(0u);
+            graph.flags.push_back(static_cast<std::uint8_t>(entry.flags));
         }
     }
 
