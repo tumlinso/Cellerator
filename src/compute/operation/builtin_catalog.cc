@@ -23,6 +23,19 @@ constexpr std::uint32_t common_projection_requirements =
     | catalog_device_resident_projection
     | catalog_projection_local_values;
 
+constexpr stable_id builtin_provider_identity_v2{
+    0x63656c6c65726174ull, 0x6f722d636f72652dull};
+constexpr stable_id builtin_fragment_identity_v2{
+    0x636174616c6f672dull, 0x76322d636f72652dull};
+constexpr stable_id row_masked_view_type_v2{
+    0x726f772d6d61736bull, 0x65642d766965772dull};
+constexpr stable_id csr_view_type_v2{
+    0x6373722d76696577ull, 0x2d747970652d7632ull};
+constexpr stable_id feature_major_view_type_v2{
+    0x666561747572652dull, 0x6d616a6f722d7632ull};
+constexpr stable_id transpose_view_type_v2{
+    0x7472616e73706f73ull, 0x652d766965772d32ull};
+
 const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
     {builtin_candidate_catalog_schema_version,
         row_masked_n1_candidate_id,
@@ -163,6 +176,53 @@ const built_in_candidate_descriptor catalog_entries[builtin_candidate_count]{
         {}}
 };
 
+stable_id view_type_identity_v2(projection_kind projection) noexcept {
+    switch (projection) {
+    case projection_kind::native_row_masked:
+        return row_masked_view_type_v2;
+    case projection_kind::csr:
+        return csr_view_type_v2;
+    case projection_kind::native_feature_major:
+        return feature_major_view_type_v2;
+    case projection_kind::transpose_or_backward:
+        return transpose_view_type_v2;
+    default:
+        return {};
+    }
+}
+
+candidate_descriptor_v2 compatibility_descriptor_v2(
+    const built_in_candidate_descriptor &legacy) noexcept {
+    candidate_descriptor_v2 descriptor{};
+    descriptor.candidate = legacy.factory();
+    descriptor.provider_identity = builtin_provider_identity_v2;
+    descriptor.projection_contract.view_type =
+        view_type_identity_v2(legacy.projection);
+    descriptor.projection_contract.abi_major = 1u;
+    descriptor.projection_contract.schema_version =
+        legacy.projection_schema_version;
+    descriptor.projection_contract.variant = legacy.projection_variant;
+    descriptor.flags = candidate_descriptor_requires_measurement
+        | candidate_descriptor_compatibility;
+    if (legacy.projection == projection_kind::csr)
+        descriptor.flags |= candidate_descriptor_conventional;
+    descriptor.minimum_dense_width = legacy.minimum_dense_width;
+    descriptor.maximum_dense_width = legacy.maximum_dense_width;
+    descriptor.state_bytes = legacy.state_bytes;
+    descriptor.state_alignment = legacy.state_alignment;
+    return descriptor;
+}
+
+const candidate_descriptor_v2 *compatibility_entries_v2() noexcept {
+    static const candidate_descriptor_v2 entries[builtin_candidate_count]{
+        compatibility_descriptor_v2(catalog_entries[0]),
+        compatibility_descriptor_v2(catalog_entries[1]),
+        compatibility_descriptor_v2(catalog_entries[2]),
+        compatibility_descriptor_v2(catalog_entries[3]),
+        compatibility_descriptor_v2(catalog_entries[4])};
+    return entries;
+}
+
 operation_status invalid_catalog(const char *message) noexcept {
     return {operation_status_code::invalid_argument,
         execution::binding_validation_code::ok, message};
@@ -202,6 +262,22 @@ built_in_candidate_catalog_view built_in_candidate_catalog() noexcept {
     return {catalog_entries, builtin_candidate_count};
 }
 
+const candidate_catalog_fragment_v2 &
+built_in_candidate_catalog_fragment_v2() noexcept {
+    static const candidate_catalog_fragment_v2 fragment{
+        candidate_catalog_fragment_schema_version_v2,
+        sizeof(candidate_catalog_fragment_v2),
+        builtin_fragment_identity_v2,
+        builtin_provider_identity_v2,
+        "cellerator-core-five-v2-compatibility",
+        compatibility_entries_v2(),
+        builtin_candidate_count,
+        candidate_fragment_builtin | candidate_fragment_compatibility,
+        1u,
+        {}};
+    return fragment;
+}
+
 const built_in_candidate_descriptor *find_built_in_candidate(
     stable_id identity) noexcept {
     for (const built_in_candidate_descriptor &entry : catalog_entries)
@@ -218,6 +294,10 @@ operation_status validate_built_in_candidate_catalog() noexcept {
             if (same_stable_id(entry.identity, catalog_entries[previous].identity))
                 return invalid_catalog("built-in candidate identity is duplicated");
     }
+    if (validate_candidate_catalog_fragment_v2(
+            built_in_candidate_catalog_fragment_v2())
+        != candidate_catalog_status_v2::success)
+        return invalid_catalog("built-in catalog-v2 fragment is inconsistent");
     return {};
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cellerator/compute/operation/candidate_catalog_v2.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
 
 #include <cstddef>
@@ -83,6 +84,11 @@ struct built_in_candidate_catalog_view {
 };
 
 built_in_candidate_catalog_view built_in_candidate_catalog() noexcept;
+
+// Catalog-v2 compatibility inventory over the same five factories and stable
+// identities. It does not register, promote, or otherwise change v1 behavior.
+const candidate_catalog_fragment_v2 &
+built_in_candidate_catalog_fragment_v2() noexcept;
 
 const built_in_candidate_descriptor *find_built_in_candidate(
     stable_id identity) noexcept;
