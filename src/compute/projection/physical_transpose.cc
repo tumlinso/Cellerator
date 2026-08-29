@@ -122,9 +122,14 @@ physical_view_status query_transpose_projection_requirements_host(
             request.forward.header.nnz_count, &header, &bytes))
         return fail(physical_view_status_code::overflow,
             "transpose payload layout overflows");
-    *out = {bytes,
-        static_cast<std::size_t>(request.forward.header.feature_count) + 1u,
-        request.forward.header.nnz_count};
+    transpose_projection_requirements result{};
+    result.payload_bytes = bytes;
+    result.feature_offset_count =
+        static_cast<std::size_t>(request.forward.header.feature_count) + 1u;
+    result.edge_count = request.forward.header.nnz_count;
+    result.construction_workspace = {0u, 1u,
+        {cellerator::memory::domain::host, -1, -1, 0u}};
+    *out = result;
     return {};
 }
 
@@ -188,8 +193,10 @@ physical_view_status build_transpose_projection_host(
                     forward.participating_row_masks[record]));
     for (u32 feature = 0u; feature < source.feature_count; ++feature)
         offsets[feature + 1u] += offsets[feature];
-    std::vector<u32> cursors(offsets,
-        offsets + static_cast<std::size_t>(source.feature_count));
+    // The prefix table is the exact construction workspace. Each start offset
+    // advances as its feature is filled; one backward shift restores the
+    // immutable CSR offsets after construction. This avoids a feature-count
+    // heap allocation without adding scratch bytes or changing CTP1.
     for (u32 tile = 0u; tile < source.tile_count; ++tile) {
         for (u32 record = forward.tile_feature_offsets[tile];
              record < forward.tile_feature_offsets[tile + 1u]; ++record) {
@@ -200,7 +207,7 @@ physical_view_status build_transpose_projection_host(
                 if ((mask & (1u << lane)) == 0u) continue;
                 const u32 forward_position =
                     forward.feature_value_offsets[record] + local++;
-                const u32 transpose_position = cursors[feature]++;
+                const u32 transpose_position = offsets[feature]++;
                 const u32 logical = forward.source_value_positions[
                     forward_position];
                 rows[transpose_position] =
@@ -211,6 +218,9 @@ physical_view_status build_transpose_projection_host(
             }
         }
     }
+    for (u32 feature = source.feature_count; feature != 0u; --feature)
+        offsets[feature] = offsets[feature - 1u];
+    offsets[0] = 0u;
     return validate_transpose_projection_payload_host(buffer.payload, bytes,
         source.structure_identity, {source.structure_epoch},
         request.projection_identity, source.projection_identity,

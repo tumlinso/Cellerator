@@ -4,6 +4,8 @@
 
 #include <Cellerator/execution/execution_contract.hh>
 
+#include <Cellerator/memory/workspace.hh>
+
 #include <Cellerator/geometry/persistent_packing_payload.hh>
 
 #include <cstddef>
@@ -63,6 +65,9 @@ struct feature_major_projection_requirements {
     std::size_t feature_record_count = 0u;
     std::size_t feature_value_offset_count = 0u;
     std::size_t source_value_position_count = 0u;
+    // Construction writes directly into the final image and needs no external
+    // scratch. These fields make that prepared-workspace contract explicit.
+    cellerator::memory::workspace_requirement construction_workspace{};
 };
 
 struct feature_major_projection_build_request {
