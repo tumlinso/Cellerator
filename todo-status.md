@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2374`
+Project revision: `2376`
 
 ## Workstreams
 - `CE-BIOPREP-01` | status: done | execution: closed | next: Genericize useful sparse row transforms and column moments, remove the preprocessing subsystem and Python ownership, and preserve all unrelated frozen architecture.
@@ -128,10 +128,14 @@ Project revision: `2374`
 - `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
+- `CE-PTR` | status: planned | execution: inactive | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
+- `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
 - `CE-ARCH-70B` | status: done | execution: closed | next: Implement independent recorded persistent allocations, accounting and exhaustion checks, pointer alignment validation, focused CUDA correctness, and Compute Sanitizer if available; do not redesign transient workspace.
 - `CE-ARCH-82` | status: done | execution: closed | next: Audit the existing CPE2 implementation against every Phase 4 exit criterion, implement only missing runtime/compatibility pieces, and add direct-execution regression coverage.
+- `CE-PTR-01` | status: planned | execution: ready | next: Inspect live code and existing gates; publish CE-PTR-POLICY-READY once classification and enforcement semantics are stable so CE-PTR-02 may proceed while remaining baseline measurements finish.
 - `CE-ARCH-70C` | status: done | execution: closed | next: Introduce fixed-size structure requirements and structure-set keys, validate duplicates/missing/stale relations and relation-specific values, then represent coordinate-to-regulatory and regulatory-to-gene as two honest relations in the Baseplane proof.
 - `CE-ARCH-83` | status: done | execution: closed | next: Extend the CE-ARCH-73/76 evidence machinery to the declared real/adversarial corpus and missing forward/transpose and hardware-pressure fields without launching broad tuning.
+- `CE-PTR-02` | status: planned | execution: ready | next: Design against live session/image contracts, implement the minimum coherent substrate, and publish CE-PTR-SUBSTRATE-CONTRACT-READY early enough for independent lanes to proceed against the stable interface.
 - `CE-ARCH-70D` | status: done | execution: closed | next: Add and validate overwrite, accumulate, affine-accumulate, and partial-write contracts; prove nonzero gene-state initialization yields initial plus contribution without hidden zeroing.
 - `CE-ARCH-84` | status: done | execution: closed | next: Use CE-ARCH-83 evidence to implement the narrowest truthful low-sharing/tail and CTA medium-N candidates; retain or reject each only by declared correctness and end-to-end evidence.
 - `CE-ARCH-70E` | status: done | execution: closed | next: Implement the small host registry, deterministic persistent structure-set planning keys, current-handle cache winner resolution, cache-store diagnostics, bounded confidence improvement, and policy fallback when all empirical measurements fail.
@@ -152,9 +156,22 @@ Project revision: `2374`
 - `CE-ARCH-74` | status: done | execution: closed | next: Exercise one immutable CP-BP structure/projection with two valid value generations and adversarial stale-generation, structure-epoch, projection, and pointer-relocation checks.
 - `CE-ARCH-75` | status: done | execution: closed | next: Design and implement feature-major small-N as a second projection under the frozen semantic geometry and operation contracts.
 - `CE-ARCH-76` | status: done | execution: closed | next: Run serialized V100 end-to-end benchmarks across N=1,2,4,8,16 with referee validation and complete phase and memory accounting.
+- `CE-PTR-09` | status: planned | execution: ready | next: Treat the three stages as one pipeline, retain authoritative host referees, and collect before-after V100 end-to-end evidence under the benchmark mutex.
 - `CE-ARCH-77` | status: done | execution: closed | next: Fit and validate Objective V2 against measured total candidate costs before changing CP-BP refinement guidance.
 - `CE-ARCH-78` | status: done | execution: closed | next: Add bounded predicate-mask materialization caching and measured fused-versus-reused selection without moving sequence semantics into Cellerator.
 - `CE-ARCH-79` | status: done | execution: closed | next: Complete for its bounded objective; the independent CellShard foundation and final opaque-artifact integration remain open under CE-ARCH-91.
+- `CE-PTR-03` | status: planned | execution: ready | next: Reinspect CE-GEO live scopes before claim; work only on unowned static-plan sections and defer any path currently interlocked by CE-GEO.
+- `CE-PTR-04` | status: planned | execution: ready | next: Inspect CE-GEO ownership immediately before claiming and split or defer only overlapping paths; continue independent layout or construction surfaces.
+- `CE-PTR-05` | status: planned | execution: ready | next: Freeze and validate the optimizer state contract needed by CE-PTR-06 without coupling unrelated workstreams.
+- `CE-PTR-07` | status: planned | execution: ready | next: Define explicit sample image and workspace contracts, evaluate redundant hashes and weights from live provenance, and preserve exact reproduction.
+- `CE-PTR-10` | status: planned | execution: ready | next: Classify each graph by actual bounds and traversal before selecting fixed-width, CSR, Euler, or packed-relation forms.
+- `CE-PTR-11` | status: planned | execution: ready | next: Measure current V100 register and spill behavior, compare bounded implementation alternatives, and promote only evidence-backed internal forms.
+- `CE-PTR-12` | status: planned | execution: ready | next: Determine the live architectural split first, then migrate or remove Cellerator ownership only where the standing CellShard and BioPrep boundaries require it.
+- `CE-PTR-14` | status: planned | execution: ready | next: Measure builder scratch and migrate only useful construction ownership while preserving existing pointer-free formats and direct rebound views.
+- `CE-PTR-06` | status: planned | execution: ready | next: Consume CE-PTR-05 state contract, implement proposal relations and mutation journal, then validate exact optimizer behavior and memory reductions.
+- `CE-PTR-08` | status: planned | execution: ready | next: Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.
+- `CE-PTR-13` | status: planned | execution: ready | next: Reinventory all consumers after the implementation fan-in, remove only truly obsolete infrastructure, and run integration and graph-capture validation.
+- `CE-PTR-15` | status: planned | execution: ready | next: After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.
 - `CP-BP-00` | status: done | execution: closed | next: Preserve the completed CP-BP v1 coordinator as validated historical evidence.
 - `CP-BP-01` | status: done | execution: closed | next: Preserve sampled support bitsets as completed v1 evidence.
 - `CP-BP-02` | status: done | execution: closed | next: Preserve MinHash/LSH candidate discovery as completed v1 evidence.

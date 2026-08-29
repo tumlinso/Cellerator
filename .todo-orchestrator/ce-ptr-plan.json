@@ -1,0 +1,892 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+      "rule": "No unspecified structure in production Cellerator: every material representation must name its semantic structure, ownership, lifetime, cardinality, mutation pattern, and memory domain.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+      "rule": "Do not introduce a generic vector, buffer, dynamic-array, or array-owner clone with general resize, reserve, or push semantics; prefer named domain structures.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-IMMUTABLE-IMAGES",
+      "rule": "Compiled or frozen structures converge on requirements queries, caller/session-provided bytes, versioned pointer-free images with relative offsets, validation, and typed rebound views; do not duplicate thawed owners when an image can supply the view.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-EXPLICIT-WORKSPACES",
+      "rule": "Substantial construction exposes requirements before execution; prepared or sealed execution must not grow ownership, allocate unexpectedly, or discover capacity in the hot path.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+      "rule": "Views never own; host, pinned-host, device, NUMA-host, external, persistent, plan-lifetime, graph-stable, and transient placement and lifetime remain explicit and separate.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-NO-SHARED-PTR-CORE",
+      "rule": "Low-level production Cellerator does not use shared_ptr as the lifetime mechanism for buffers, GPU allocations, index structures, or execution objects; adapters may retain externally required lifetime mechanisms.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-PHYSICAL-BOUNDS",
+      "rule": "Real fixed bounds such as top-K, fanout, block width, cache capacity, stream count, and warp width are represented physically rather than by unconstrained growable containers.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-FLAT-RELATIONS",
+      "rule": "For integer and index domains prefer direct indexing, packed keys, radix or counting sort, scans, adjacent compaction, offsets or CSR, generation marks, bitsets, fixed-width tables, and exact bounded flat tables before node-based generic containers.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-RESIDENT-COMPOSITION",
+      "rule": "Composed GPU stages keep data resident; host materialization is an explicit terminal adapter and not an incidental ownership boundary.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-NO-RUNTIME-AUTOTUNER",
+      "rule": "CE-PTR may benchmark alternatives during development and select static or preparation-time policy, but must not add a continuously running runtime optimizer or hot-path benchmark tuner.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-V100-FIRST",
+      "rule": "Tesla V100 sm_70 is the primary performance target; stable interfaces remain generation-conscious and portable, and CE-PTR does not depend on later sm_86 work.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-SEMANTICS-FIRST",
+      "rule": "Migrations preserve stable identities, canonical gene and row recovery, persistence compatibility, numerical semantics, and current execution contracts; grep-count reduction never outranks clarity, correctness, or measured behavior.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-CE-GEO-COEXISTENCE",
+      "rule": "Before any implementation claim inspect live CE-GEO tasks, scopes, locks, and interlocks; never duplicate or bypass CE-GEO ownership. Defer only overlapping files or sections and continue independent CE-PTR work. Consume compatible CE-GEO results without ideological rebuilds, and create cross-campaign dependencies only for genuine correctness needs.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-REPOSITORY-BOUNDARIES",
+      "rule": "CellShard retains storage, persistence, transport, staging, and distribution ownership; BioPrep retains biological preprocessing policy and workflow orchestration; CelleraTorch remains a thin adapter. CE-PTR must not move those concerns back into Cellerator or make native Cellerator depend on Torch.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-MIGRATION-EVIDENCE",
+      "rule": "Every material migration records the accidental representation, semantic structure, lifetime, bounds, memory domain, mutation pattern, final replacement, invariants, allocation behavior, validation, and performance evidence. Algorithmic redesign requires equivalence before old-path deletion; uncertain speedups are not claimed.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-PTR-BOOTSTRAP-ONLY",
+      "rule": "CE-PTR-00 changes only durable context and todo coordination state; it performs no production implementation or opportunistic refactor.",
+      "severity": "error"
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-ptr-policy",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Permanent inventory and enforcement policy authority"
+      }
+    },
+    {
+      "name": "ce-ptr-memory-substrate",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Small shared memory, image, allocation, and workspace vocabulary"
+      }
+    },
+    {
+      "name": "surface:geometry-static-plan",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Narrow CE-PTR and CE-GEO static-plan interlock"
+      }
+    },
+    {
+      "name": "surface:geometry-construction",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Narrow CE-PTR and CE-GEO construction-path interlock"
+      }
+    },
+    {
+      "name": "ce-ptr-integration",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Late runtime cleanup and repository-wide convergence"
+      }
+    },
+    {
+      "name": "cuda-benchmark-mutex",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Serialize comparable V100 benchmark, sanitizer, and profiler evidence"
+      }
+    }
+  ],
+  "resource_classes": [
+    {
+      "id": "gpu",
+      "mode": "exclusive",
+      "metadata": {
+        "purpose": "Cellerator correctness, sanitizer, profiler, and benchmark work on the existing Tesla V100 sm_70 fleet"
+      },
+      "instances": [
+        {"id": "gpu:0", "capacity": 1, "metadata": {"model": "Tesla V100-SXM2-16GB", "memory_mib": 16384}},
+        {"id": "gpu:1", "capacity": 1, "metadata": {"model": "Tesla V100-SXM2-16GB", "memory_mib": 16384}},
+        {"id": "gpu:2", "capacity": 1, "metadata": {"model": "Tesla V100-SXM2-16GB", "memory_mib": 16384}},
+        {"id": "gpu:3", "capacity": 1, "metadata": {"model": "Tesla V100-SXM2-16GB", "memory_mib": 16384}}
+      ]
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+      "owner_task_id": "CE-PTR-02",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/memory"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CE-PTR-IMPLEMENTATION-FANIN",
+      "title": "Independent CE-PTR implementation workstreams complete",
+      "mode": "all",
+      "requirements": [
+        {"type": "task", "id": "CE-PTR-03", "state": "done"},
+        {"type": "task", "id": "CE-PTR-04", "state": "done"},
+        {"type": "task", "id": "CE-PTR-06", "state": "done"},
+        {"type": "task", "id": "CE-PTR-08", "state": "done"},
+        {"type": "task", "id": "CE-PTR-09", "state": "done"},
+        {"type": "task", "id": "CE-PTR-10", "state": "done"},
+        {"type": "task", "id": "CE-PTR-11", "state": "done"},
+        {"type": "task", "id": "CE-PTR-12", "state": "done"},
+        {"type": "task", "id": "CE-PTR-14", "state": "done"}
+      ]
+    },
+    {
+      "id": "CE-PTR-FINAL-FANIN",
+      "title": "All CE-PTR workstreams ready for final acceptance",
+      "mode": "all",
+      "requirements": [
+        {"type": "task", "id": "CE-PTR-01", "state": "done"},
+        {"type": "task", "id": "CE-PTR-02", "state": "done"},
+        {"type": "task", "id": "CE-PTR-03", "state": "done"},
+        {"type": "task", "id": "CE-PTR-04", "state": "done"},
+        {"type": "task", "id": "CE-PTR-05", "state": "done"},
+        {"type": "task", "id": "CE-PTR-06", "state": "done"},
+        {"type": "task", "id": "CE-PTR-07", "state": "done"},
+        {"type": "task", "id": "CE-PTR-08", "state": "done"},
+        {"type": "task", "id": "CE-PTR-09", "state": "done"},
+        {"type": "task", "id": "CE-PTR-10", "state": "done"},
+        {"type": "task", "id": "CE-PTR-11", "state": "done"},
+        {"type": "task", "id": "CE-PTR-12", "state": "done"},
+        {"type": "task", "id": "CE-PTR-13", "state": "done"},
+        {"type": "task", "id": "CE-PTR-14", "state": "done"}
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-PTR",
+      "kind": "epic",
+      "title": "Comprehensive explicit production-core structure and ownership migration",
+      "objective": "Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "status": "planned",
+      "invariants": [
+        "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "CE-PTR-SEMANTICS-FIRST",
+        "CE-PTR-CE-GEO-COEXISTENCE",
+        "CE-PTR-REPOSITORY-BOUNDARIES"
+      ],
+      "next_action": "Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.",
+      "notes": "Completion requires CE-PTR-15. Tests, benchmark fixtures, cold diagnostics, required framework adapters, and explicitly justified measured cold paths may retain benign STL. STL algorithms are not categorically banned."
+    },
+    {
+      "id": "CE-PTR-00",
+      "parent_id": "CE-PTR",
+      "kind": "task",
+      "title": "Bootstrap and durable context",
+      "objective": "Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "status": "done",
+      "result": "validated",
+      "scope": {
+        "exclusive_paths": [
+          "todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md",
+          ".todo-orchestrator/ce-ptr-plan.json"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "scope.md",
+          "docs/architecture.qmd",
+          "docs/current_implementation.qmd",
+          "docs/migration_roadmap.qmd",
+          "src/geometry/AGENTS.md",
+          ".todo-orchestrator"
+        ],
+        "forbidden_paths": [
+          "include",
+          "src",
+          "components",
+          "compat",
+          "tests",
+          "bench"
+        ]
+      },
+      "invariants": [
+        "CE-PTR-BOOTSTRAP-ONLY",
+        "CE-PTR-CE-GEO-COEXISTENCE"
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "durable-design-context",
+          "path": "todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md",
+          "sha256": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61"
+        },
+        {
+          "kind": "todo-plan",
+          "path": ".todo-orchestrator/ce-ptr-plan.json"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-PTR-BOOTSTRAP-READY",
+          "title": "CE-PTR durable context and parallel graph established",
+          "state": "reached",
+          "metadata": {
+            "context_path": "todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md",
+            "context_sha256": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61",
+            "production_changes": false
+          }
+        }
+      ],
+      "next_action": "No further bootstrap action; leave CE-PTR-01 unclaimed and ready.",
+      "notes": "The live repository and SQLite ledger remain authoritative if the report becomes stale. The stored bytes are identical to the supplied attachment."
+    },
+    {
+      "id": "CE-PTR-01",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Baseline inventory, policy, and permanent gates",
+      "objective": "Create the authoritative live production-core inventory, explicit allowlist policy, permanent source enforcement, and before-migration CPU/GPU allocation, memory, transfer, synchronization, latency, and kernel baseline evidence.",
+      "priority": 99,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-BOOTSTRAP-READY", "state": "reached"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "docs/CE_PTR_POLICY.md",
+          "docs/CE_PTR_INVENTORY.md",
+          "scripts/check_no_inappropriate_core_stl.py",
+          "bench/ce_ptr/baseline"
+        ],
+        "read_paths": [
+          "include/Cellerator",
+          "src",
+          "compat",
+          "components/CelleraTorch",
+          "tests",
+          "bench",
+          "CMakeLists.txt"
+        ]
+      },
+      "claim_locks": ["ce-ptr-policy"],
+      "invariants": [
+        "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "CE-PTR-SEMANTICS-FIRST",
+        "CE-PTR-MIGRATION-EVIDENCE",
+        "CE-PTR-V100-FIRST"
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-PTR-POLICY-READY",
+          "title": "CE-PTR policy, classification schema, and enforcement contract stable"
+        }
+      ],
+      "completion_contract": {
+        "required_outputs": ["classified inventory", "allowlist with rationale", "source-level anti-regression gate", "CPU/GPU baseline artifacts"],
+        "classification_fields": ["subsystem", "accidental representation", "semantic structure", "lifetime", "cardinality and bounds", "memory domain", "hot or cold", "migration disposition", "allowlist rationale"],
+        "measurements": ["allocations", "allocated bytes", "RSS high-water", "device high-water", "synchronization", "H2D D2H D2D bytes", "construction latency", "warm repeated latency", "relevant kernel registers occupancy and stalls"]
+      },
+      "next_action": "Inspect live code and existing gates; publish CE-PTR-POLICY-READY once classification and enforcement semantics are stable so CE-PTR-02 may proceed while remaining baseline measurements finish.",
+      "notes": "Do not indiscriminately ban tests, benchmarks, diagnostics, external-framework requirements, or benign STL algorithms. Baselines must record exact hardware, topology, toolchain, build, shapes, repetitions, correctness, inclusions, reuse, and benchmark mutex usage."
+    },
+    {
+      "id": "CE-PTR-02",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Core memory, image, and workspace substrate",
+      "objective": "Establish the smallest shared vocabulary for explicit placement, allocation records, typed non-owning views, caller/session-owned workspace, pointer-free image metadata, alignment, status failures, and safe compiler hints by reusing the existing execution session.",
+      "priority": 98,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-POLICY-READY", "state": "reached"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/memory",
+          "src/runtime/memory",
+          "tests/memory"
+        ],
+        "read_paths": [
+          "include/Cellerator/runtime",
+          "src/runtime",
+          "include/Cellerator/execution",
+          "src/execution",
+          "include/Cellerator/geometry/persistence",
+          "src/geometry/persistence"
+        ]
+      },
+      "claim_locks": ["ce-ptr-memory-substrate", "runtime-ownership-seam"],
+      "invariants": [
+        "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "CE-PTR-IMMUTABLE-IMAGES",
+        "CE-PTR-EXPLICIT-WORKSPACES",
+        "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "CE-PTR-NO-SHARED-PTR-CORE"
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+          "title": "Small CE-PTR memory, image, and workspace contract frozen for parallel consumers",
+          "publishes_interfaces": [
+            {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "version": "1"}
+          ]
+        }
+      ],
+      "completion_contract": {
+        "required_analysis": ["current accidental representation", "semantic structure", "lifetime", "bounds", "memory domain", "mutation", "replacement", "invariants", "allocation behavior", "validation", "performance evidence"],
+        "acceptance": ["no generic owning sequence", "views are non-owning", "requirements are queryable", "image offsets validate", "existing session remains sole runtime authority", "host and CUDA compile coverage"]
+      },
+      "next_action": "Design against live session/image contracts, implement the minimum coherent substrate, and publish CE-PTR-SUBSTRATE-CONTRACT-READY early enough for independent lanes to proceed against the stable interface.",
+      "notes": "This is the only intentionally shared implementation substrate. It must stay tiny and must not become a Cellerator standard-library replacement."
+    },
+    {
+      "id": "CE-PTR-03",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Frozen and static plan ownership",
+      "objective": "Migrate frozen packing and other durable static plans from collections of independent owning arrays toward coherent versioned images and typed views, converging with CPK1 and execution-image precedents where semantics permit.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/geometry/packing_plan.hh",
+          "src/geometry/packing_plan.cc",
+          "include/Cellerator/geometry/persistence",
+          "src/geometry/persistence"
+        ],
+        "read_paths": [
+          "include/Cellerator/execution",
+          "src/execution",
+          "tests",
+          "compat/cp_math_v1"
+        ]
+      },
+      "claim_locks": ["surface:geometry-static-plan", "execution-image-schema", "persistent-payload-schema"],
+      "invariants": ["CE-PTR-IMMUTABLE-IMAGES", "CE-PTR-SEMANTICS-FIRST", "CE-PTR-CE-GEO-COEXISTENCE"],
+      "completion_contract": {
+        "required_analysis": ["accidental owners", "semantic plan sections", "plan lifetime", "section bounds", "host and device domains", "freeze and rebind pattern", "image replacement", "identity invariants", "allocation behavior", "round-trip tests", "before-after evidence"],
+        "acceptance": ["canonical identity recovery", "versioned validation", "direct typed rebind", "no duplicate thawed owner unless justified", "CE-GEO overlap deferred rather than bypassed"]
+      },
+      "next_action": "Reinspect CE-GEO live scopes before claim; work only on unowned static-plan sections and defer any path currently interlocked by CE-GEO.",
+      "notes": "Do not redesign stable persistent formats gratuitously. Preserve compatibility and use versioned adapters where representation changes."
+    },
+    {
+      "id": "CE-PTR-04",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Geometry construction intermediates",
+      "objective": "Replace inappropriate nested builders, generic coordinate streams, repeated reconstruction, route tape or mask ownership, nested layout metrics, and selection scratch with count-scan-fill, flat relations, exact workspaces, and direct image compilation.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/geometry/pack.hh",
+          "src/geometry/pack.cc",
+          "include/Cellerator/geometry/gating.hh",
+          "include/Cellerator/geometry/gating_cuda.cuh",
+          "src/geometry/gating.cc",
+          "src/geometry/gating_cuda.cu",
+          "include/Cellerator/geometry/layout_metrics.hh",
+          "include/Cellerator/geometry/layout_selector.hh",
+          "src/geometry/layout_metrics.cc",
+          "src/geometry/layout_selector.cc"
+        ],
+        "read_paths": ["include/Cellerator/geometry", "src/geometry", "tests", "bench"]
+      },
+      "claim_locks": ["surface:geometry-construction"],
+      "invariants": ["CE-PTR-FLAT-RELATIONS", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-CE-GEO-COEXISTENCE", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["each accidental intermediate", "actual geometry relation", "construction lifetime", "preflight cardinality", "host or device domain", "mutation phases", "flat or direct replacement", "codec and identity invariants", "workspace allocation behavior", "equivalence tests", "construction and repeated-use evidence"],
+        "acceptance": ["no duplication of CE-GEO work", "count scan fill where justified", "direct final-image compilation where possible", "prior exact referees preserved"]
+      },
+      "next_action": "Inspect CE-GEO ownership immediately before claiming and split or defer only overlapping paths; continue independent layout or construction surfaces.",
+      "notes": "This workstream is subordinate to CE-GEO path ownership. A CE-GEO STL-free compatible landing is consumed, not rebuilt."
+    },
+    {
+      "id": "CE-PTR-05",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Packing optimizer state representation",
+      "objective": "Replace per-block growable member and cache ownership with a prepared domain representation using bounded fixed-stride slabs where justified, aligned descriptors, direct feature-slot maps, explicit generations, prepared union-cache storage, exact workspaces, and local updates.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": ["src/geometry/optimizer_state.hh", "src/geometry/optimizer.cc"],
+        "read_paths": ["include/Cellerator/geometry", "src/geometry/merge_cost.cc", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-PHYSICAL-BOUNDS", "CE-PTR-FLAT-RELATIONS", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["current member and cache owners", "block state semantics", "block feature and cache bounds", "optimizer lifetime", "host memory placement", "local mutation", "prepared replacement", "canonical feature and codec invariants", "allocation behavior", "objective equivalence", "construction and proposal evidence"],
+        "acceptance": ["canonical feature identities preserved", "exact codec and objective semantics", "local updates", "preflight capacity", "no generic container clone"]
+      },
+      "next_action": "Freeze and validate the optimizer state contract needed by CE-PTR-06 without coupling unrelated workstreams.",
+      "notes": "Fixed-stride slabs are a candidate for the bounded fast path, not doctrine; measure memory expansion and preserve exact behavior."
+    },
+    {
+      "id": "CE-PTR-06",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Packing optimizer proposals and rollback",
+      "objective": "Replace map, set, vector-heavy proposal, shortlist, conflict, blacklist, snapshot, and rollback mechanics with packed keys, flat sort-compact deduplication, direct counters, generation marks, explicit bounded blacklists, and mutation journals.",
+      "priority": 79,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "task", "task_id": "CE-PTR-05", "dispositions": ["implemented", "validated"]}
+      ],
+      "scope": {
+        "exclusive_paths": ["src/geometry/optimizer.cc", "src/geometry/optimizer_state.hh"],
+        "read_paths": ["include/Cellerator/geometry", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-FLAT-RELATIONS", "CE-PTR-PHYSICAL-BOUNDS", "CE-PTR-SEMANTICS-FIRST", "CE-PTR-MIGRATION-EVIDENCE"],
+      "completion_contract": {
+        "required_analysis": ["proposal and snapshot containers", "pair mutation and conflict relations", "fanout and blacklist bounds", "iteration lifetime", "host memory", "proposal mutation and rollback", "packed relation and journal replacement", "determinism and objective invariants", "allocation behavior", "equivalence and rollback tests", "proposal throughput and memory evidence"],
+        "acceptance": ["no whole-state deep snapshot rollback", "deterministic shortlist", "exact conflict behavior", "equivalence before deleting old mechanics"]
+      },
+      "next_action": "Consume CE-PTR-05 state contract, implement proposal relations and mutation journal, then validate exact optimizer behavior and memory reductions.",
+      "notes": "This lane is serial only with CE-PTR-05; it is independent of sampling, GPU pipeline, graph, exact-search, and projection lanes."
+    },
+    {
+      "id": "CE-PTR-07",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Sampling and sampled structural ownership",
+      "objective": "Migrate sampling plans, results, and sampled CSR construction to explicit images and workspaces while preserving deterministic reproduction, provenance, stable row identity, and Cellerator's non-storage boundary.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/sampling.hh",
+          "include/Cellerator/compute/sampling_materialization.hh",
+          "src/compute/dataset/sampling.cc",
+          "src/compute/dataset/sampling_materialization.cc"
+        ],
+        "read_paths": ["include/Cellerator/geometry", "src/geometry", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-IMMUTABLE-IMAGES", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-REPOSITORY-BOUNDARIES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["sampling owners and derived arrays", "sample plan and sampled relation", "plan and result lifetimes", "row and nnz bounds", "host and device domains", "construction mutation", "image workspace replacement", "determinism provenance and row identity", "allocation behavior", "reproduction tests", "construction memory latency evidence"],
+        "acceptance": ["deterministic reproduction", "stable row identity", "derived fields removed only when exactly recoverable", "no file or storage ownership"]
+      },
+      "next_action": "Define explicit sample image and workspace contracts, evaluate redundant hashes and weights from live provenance, and preserve exact reproduction.",
+      "notes": "Do not move canonical dataset storage, files, or ingestion policy into Cellerator."
+    },
+    {
+      "id": "CE-PTR-08",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Statistical validation structures",
+      "objective": "Replace nested vectors and hash maps or sets in statistical validation with sorted group-row relations, offsets, row-unit maps, packed edge keys, exact flat membership, and generation-mark workspaces without changing statistical or provenance semantics.",
+      "priority": 79,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "task", "task_id": "CE-PTR-07", "dispositions": ["implemented", "validated"]}
+      ],
+      "scope": {
+        "exclusive_paths": ["src/geometry/statistical_validation.cc", "src/geometry/record_statistical_validation.cc"],
+        "read_paths": ["include/Cellerator/geometry", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-FLAT-RELATIONS", "CE-PTR-SEMANTICS-FIRST", "CE-PTR-MIGRATION-EVIDENCE"],
+      "completion_contract": {
+        "required_analysis": ["grouped and membership containers", "validation unit edge and record relations", "validation lifetime", "unit row and edge bounds", "host placement", "grouping and null-model mutation", "sorted offsets and flat-table replacement", "statistical provenance invariants", "allocation behavior", "prior validation equivalence", "latency memory evidence"],
+        "acceptance": ["all held-out null bootstrap stability semantics preserved", "provenance identities exact", "deterministic ordering where required", "old path retained until equivalence"]
+      },
+      "next_action": "Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.",
+      "notes": "A structurally clearer relation may be retained without a fabricated speedup claim; report measured outcome honestly."
+    },
+    {
+      "id": "CE-PTR-09",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Device-resident support to candidate to merge pipeline",
+      "objective": "Redesign gene support, candidate discovery, and exact merge scoring as one device-resident prepared pipeline with explicit views and workspaces, preflight capacities and CUB scratch, and terminal-only host materialization.",
+      "priority": 85,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/geometry/gene_support_bitset.hh",
+          "include/Cellerator/geometry/gene_candidate_discovery.hh",
+          "include/Cellerator/geometry/merge_cost.hh",
+          "src/compute/dataset/gene_support_bitset.cu",
+          "src/geometry/candidate_discovery",
+          "src/geometry/merge_cost.cc",
+          "src/geometry/merge_cost_cuda.cu"
+        ],
+        "read_paths": ["include/Cellerator/runtime", "src/runtime", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-RESIDENT-COMPOSITION", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-FLAT-RELATIONS", "CE-PTR-V100-FIRST", "CE-PTR-SEMANTICS-FIRST"],
+      "resource_requests": [
+        {"id": "CE-PTR-09-GPU", "phase": "gate", "selector": "gpu:any", "amount": 1, "mode": "exclusive", "required": true}
+      ],
+      "completion_contract": {
+        "required_analysis": ["three stage host owners", "support candidate and evidence relations", "prepared and launch lifetimes", "exact upper bounds", "device and terminal-host domains", "stage mutation", "resident images and workspaces", "candidate and score semantics", "no steady-state allocation", "CPU and GPU equivalence sanitizer tests", "end-to-end transfers sync allocation latency bandwidth registers occupancy stalls"],
+        "acceptance": ["no incidental D2H host H2D boundary", "no scalar fetch solely for next allocation size when preflight bound exists", "CUB scratch queried and prepared", "host adapter explicit"]
+      },
+      "next_action": "Treat the three stages as one pipeline, retain authoritative host referees, and collect before-after V100 end-to-end evidence under the benchmark mutex.",
+      "notes": "Do not optimize isolated kernels while hiding transfer, allocation, synchronization, or terminal materialization costs."
+    },
+    {
+      "id": "CE-PTR-10",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Trajectory and graph structures",
+      "objective": "Replace generic trajectory graph and table ownership with SoA images, bounded fixed-width candidate or forward edges where natural, tree topology and child CSR projections, Euler order and inverse, two-pass supernodes, packed aggregation, and allocation-aware branch detection.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operators/graph",
+          "include/Cellerator/examples/trajectory",
+          "include/Cellerator/trajectory"
+        ],
+        "read_paths": ["src/compute/operators", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-PHYSICAL-BOUNDS", "CE-PTR-FLAT-RELATIONS", "CE-PTR-IMMUTABLE-IMAGES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["graph and table owners", "trajectory edge tree supernode semantics", "structure and scratch lifetimes", "K degree node and edge bounds", "host and device domains", "build traversal and update mutation", "SoA fixed-width CSR image replacement", "identity topology and traversal invariants", "allocation behavior", "reference graph equivalence", "latency memory traffic evidence"],
+        "acceptance": ["fixed-K used when semantically natural", "CSR not forced as doctrine", "canonical identities recoverable", "branch and supernode equivalence"]
+      },
+      "next_action": "Classify each graph by actual bounds and traversal before selecting fixed-width, CSR, Euler, or packed-relation forms.",
+      "notes": "Preserve example versus core ownership boundaries; reusable mathematical structures stay native while workflow policy does not migrate into core."
+    },
+    {
+      "id": "CE-PTR-11",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Exact-search internal fixed-K representation",
+      "objective": "Preserve raw public device views while evaluating and implementing K-specialized internal top-K storage and merges with controlled register pressure, spills, shared-memory use, warp cooperation, and compact identities.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": ["src/compute/neighbors/exact_search"],
+        "read_paths": ["include/Cellerator/compute/neighbors", "tests", "bench"]
+      },
+      "invariants": ["CE-PTR-PHYSICAL-BOUNDS", "CE-PTR-V100-FIRST", "CE-PTR-SEMANTICS-FIRST"],
+      "resource_requests": [
+        {"id": "CE-PTR-11-GPU", "phase": "gate", "selector": "gpu:any", "amount": 1, "mode": "exclusive", "required": true}
+      ],
+      "completion_contract": {
+        "required_analysis": ["current internal top-K storage", "top-K score identity relation", "kernel lifetime", "K and tile bounds", "register shared local device domains", "merge mutation", "specialized internal replacement", "stable public API and ordering invariants", "no host allocation", "exact-search equivalence and sanitizer", "PTX SASS registers spills occupancy latency"],
+        "acceptance": ["public API remains raw-view capable", "not template-only", "K not globally hard-coded", "assembly only after material compiler limitation evidence"]
+      },
+      "next_action": "Measure current V100 register and spill behavior, compare bounded implementation alternatives, and promote only evidence-backed internal forms.",
+      "notes": "No handwritten assembly is authorized absent later PTX or SASS evidence of a materially relevant compiler limitation."
+    },
+    {
+      "id": "CE-PTR-12",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Forward-neighbor architectural decomposition",
+      "objective": "Split forward-neighbor low-level mathematical kernels, views, routes, workspaces, and fixed-K primitives from downstream index construction, durable ownership, cell lookup, sharding, residency, storage, biological workflow policy, and application results.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/neighbors/forward_neighbors",
+          "src/compute/neighbors/forward_neighbors"
+        ],
+        "read_paths": [
+          "include/Cellerator/interop/cellshard",
+          "src/interop/cellshard",
+          "include/Cellerator/compute/preprocess",
+          "src/preprocess",
+          "tests",
+          "bench"
+        ]
+      },
+      "invariants": ["CE-PTR-REPOSITORY-BOUNDARIES", "CE-PTR-OWNERSHIP-VIEW-SEPARATION", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["monolithic vector owners", "kernel index route result semantics", "prepared versus durable lifetimes", "K index and shard bounds", "host device external domains", "build query and result mutation", "native low-level view plus downstream ownership split", "identity residency and policy invariants", "allocation behavior", "cross-boundary equivalence", "transfer memory latency evidence"],
+        "acceptance": ["Cellerator retains reusable math only", "CellShard and BioPrep boundaries respected", "no mechanical monolith-wide vector translation", "durable application objects downstream"]
+      },
+      "next_action": "Determine the live architectural split first, then migrate or remove Cellerator ownership only where the standing CellShard and BioPrep boundaries require it.",
+      "notes": "This task may require coordinated downstream follow-up, but it does not authorize external repository mutation. Record any genuine cross-repository dependency explicitly."
+    },
+    {
+      "id": "CE-PTR-13",
+      "parent_id": "CE-PTR",
+      "kind": "integration_task",
+      "title": "Runtime buffer, scratch, and ownership cleanup",
+      "objective": "After consumers migrate, remove obsolete host_buffer, shared-owned device buffers, duplicate graph-local buffers, grow-by-reallocation scratch arenas, and blocking copy helpers, converging on session allocation handles, explicit views and streams, prepared scratch, and stable addresses.",
+      "priority": 30,
+      "parallel_policy": "integration_exclusive",
+      "depends_on": [
+        {"type": "barrier", "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/core/host_buffer.hh",
+          "include/Cellerator/runtime/device_buffer.cuh",
+          "include/Cellerator/runtime",
+          "src/runtime"
+        ],
+        "read_paths": ["include/Cellerator", "src", "compat", "components/CelleraTorch", "tests", "bench"]
+      },
+      "claim_locks": ["ce-ptr-integration", "runtime-ownership-seam"],
+      "invariants": ["CE-PTR-NO-SHARED-PTR-CORE", "CE-PTR-OWNERSHIP-VIEW-SEPARATION", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["remaining generic runtime owners", "session allocation and scratch semantics", "all lifetimes", "capacities and high-water", "host pinned device graph-stable domains", "prepare bind execute mutation", "session-handle replacement", "stream sync and address invariants", "sealed allocation behavior", "consumer and graph-capture tests", "allocation sync transfer latency evidence"],
+        "acceptance": ["no infrastructure deletion with live consumers", "prepared scratch stable", "copies explicit and asynchronous where promised", "framework external lifetimes remain at adapter boundary"]
+      },
+      "next_action": "Reinventory all consumers after the implementation fan-in, remove only truly obsolete infrastructure, and run integration and graph-capture validation.",
+      "notes": "This task is deliberately late and integration-exclusive because it removes shared infrastructure earlier lanes may still consume."
+    },
+    {
+      "id": "CE-PTR-14",
+      "parent_id": "CE-PTR",
+      "kind": "workstream",
+      "title": "Projection builder scratch cleanup",
+      "objective": "Preserve CPK1, FMP1, CTP1, and related pointer-free projection contracts while replacing only generic STL-heavy construction scratch with queried caller-owned prepared workspaces where useful.",
+      "priority": 80,
+      "parallel_policy": "parallel_safe",
+      "depends_on": [
+        {"type": "checkpoint", "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY", "state": "reached"}
+      ],
+      "consumes_interfaces": [
+        {"id": "CE-PTR-MEMORY-SUBSTRATE-V1", "required_state": "frozen", "required_version": "1"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/projection/physical_feature_major.cc",
+          "src/compute/projection/physical_transpose.cc",
+          "include/Cellerator/compute/projection"
+        ],
+        "read_paths": ["include/Cellerator/geometry/persistence", "src/geometry/persistence", "tests", "bench"]
+      },
+      "claim_locks": ["execution-image-schema"],
+      "invariants": ["CE-PTR-IMMUTABLE-IMAGES", "CE-PTR-EXPLICIT-WORKSPACES", "CE-PTR-SEMANTICS-FIRST"],
+      "completion_contract": {
+        "required_analysis": ["builder scratch containers", "projection construction relations", "build lifetime", "section and scratch bounds", "host and device domains", "construction mutation", "queried workspace replacement", "payload byte and identity invariants", "allocation behavior", "round-trip rebind execution tests", "construction memory latency evidence"],
+        "acceptance": ["stable payload formats preserved", "no gratuitous schema redesign", "workspace queries exact or safe bounded", "direct execution unchanged"]
+      },
+      "next_action": "Measure builder scratch and migrate only useful construction ownership while preserving existing pointer-free formats and direct rebound views.",
+      "notes": "The successful projection image architecture is a precedent and constraint, not a target for ideological redesign."
+    },
+    {
+      "id": "CE-PTR-15",
+      "parent_id": "CE-PTR",
+      "kind": "validation_task",
+      "title": "Repository-wide final migration and acceptance",
+      "objective": "Converge CE-PTR by removing obsolete generic infrastructure and stale owners, resolving the production inventory to documented exceptions, running comprehensive semantic, allocation, synchronization, transfer, performance, compiler, persistence, sanitizer, and source-tooling acceptance, and updating durable architecture documentation.",
+      "priority": 10,
+      "parallel_policy": "project_exclusive",
+      "depends_on": [
+        {"type": "barrier", "barrier_id": "CE-PTR-FINAL-FANIN"}
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "docs/CE_PTR_POLICY.md",
+          "docs/CE_PTR_INVENTORY.md",
+          "docs/architecture.qmd",
+          "docs/current_implementation.qmd",
+          "docs/performance_validation.qmd",
+          "docs/migration_roadmap.qmd",
+          "bench/ce_ptr/final",
+          "scripts/check_no_inappropriate_core_stl.py"
+        ],
+        "read_paths": [
+          "AGENTS.md",
+          "CMakeLists.txt",
+          "include",
+          "src",
+          "compat",
+          "components",
+          "tests",
+          "bench",
+          "docs",
+          "scripts",
+          ".todo-orchestrator"
+        ]
+      },
+      "claim_locks": ["ce-ptr-integration", "build:cellerator", "cuda-benchmark-mutex"],
+      "invariants": [
+        "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "CE-PTR-IMMUTABLE-IMAGES",
+        "CE-PTR-EXPLICIT-WORKSPACES",
+        "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "CE-PTR-NO-SHARED-PTR-CORE",
+        "CE-PTR-PHYSICAL-BOUNDS",
+        "CE-PTR-FLAT-RELATIONS",
+        "CE-PTR-RESIDENT-COMPOSITION",
+        "CE-PTR-NO-RUNTIME-AUTOTUNER",
+        "CE-PTR-V100-FIRST",
+        "CE-PTR-SEMANTICS-FIRST",
+        "CE-PTR-CE-GEO-COEXISTENCE",
+        "CE-PTR-REPOSITORY-BOUNDARIES",
+        "CE-PTR-MIGRATION-EVIDENCE"
+      ],
+      "resource_requests": [
+        {"id": "CE-PTR-15-GPU", "phase": "gate", "selector": "gpu:any", "amount": 1, "mode": "exclusive", "required": true}
+      ],
+      "completion_contract": {
+        "cpu": ["allocations and bytes", "construction and repeated latency", "cycles instructions cache branch where material", "RSS high-water", "NUMA behavior"],
+        "gpu": ["end-to-end and kernel latency", "allocation count", "device high-water", "H2D D2H D2D bytes", "sync and launch count", "bandwidth", "registers", "local spills", "occupancy", "warp stalls", "workspace high-water"],
+        "semantic": ["bit-exact or tolerance equivalence", "deterministic ordering", "canonical identities", "persistence validation and rebind", "CellShard BioPrep CelleraTorch boundaries"],
+        "toolchains": ["Clang", "GCC", "NVCC", "Compute Sanitizer", "CPP Context Compiler source recovery"],
+        "acceptance": ["only documented allowlisted production exceptions remain", "sealed execution allocation-free where promised", "no hidden global synchronization", "no transfer regression", "obsolete generic helpers removed", "architecture docs current"]
+      },
+      "next_action": "After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.",
+      "notes": "Final acceptance compares against the CE-PTR-01 baseline and strongest relevant paths. It must not rewrite tests merely to reduce STL counts or claim performance without complete cost accounting."
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-PTR-RUN",
+      "root_task_id": "CE-PTR",
+      "charter": {
+        "objective": "Replace inappropriate production-core STL ownership and incidental generic structures with explicit semantic images, views, prepared workspaces, bounded relations, and correct repository ownership while preserving behavior and enabling aggressive parallel delivery.",
+        "boundaries": [
+          "Bootstrap creates durable context and coordination only",
+          "Production implementation occurs only in CE-PTR-01 through CE-PTR-15",
+          "CellShard owns storage and distribution, BioPrep owns preprocessing policy, and CelleraTorch remains an adapter",
+          "CE-GEO active path ownership is never bypassed",
+          "Tests, fixtures, diagnostics, framework-required adapters, and justified cold paths are not indiscriminately purged"
+        ],
+        "invariants": [
+          "No unspecified structure in production Cellerator",
+          "No generic vector clone",
+          "Immutable structures become versioned pointer-free images where appropriate",
+          "Workspaces and capacities are explicit before prepared execution",
+          "Views do not own and shared_ptr is not a core lifetime mechanism",
+          "Flat and bounded domain relations precede node containers",
+          "Composed GPU stages stay resident",
+          "No online runtime autotuner",
+          "V100 sm_70 is the primary performance target",
+          "Semantics and repository boundaries outrank mechanical migration"
+        ],
+        "acceptance_conditions": [
+          "CE-PTR-15 final barrier and acceptance contract pass",
+          "Permanent inventory and allowlist account for every remaining production owning-STL use",
+          "Prepared and sealed paths meet their allocation and synchronization promises",
+          "Canonical identities, persistence, rebind, and numerical behavior remain valid",
+          "CPU and V100 evidence is complete and candid",
+          "No CE-GEO task or interlock was duplicated or bypassed"
+        ],
+        "glossary": {
+          "parallel-forward": "Publish the CE-PTR-01 policy checkpoint and CE-PTR-02 frozen substrate interface before unrelated trailing validation completes, allowing independent first-class lanes to advance safely.",
+          "image": "Versioned pointer-free bytes plus validation and typed rebound view for immutable or compiled structure.",
+          "workspace": "Caller or session-owned explicitly sized transient storage with no hidden growth.",
+          "allowlist": "Measured or externally required cold production exception with explicit rationale, not an unexplained grep exemption."
+        }
+      },
+      "lanes": [
+        {"id": "CE-PTR-COORD", "role": "coordinator", "tasks": ["CE-PTR-00"], "workspace": {"mode": "read_shared"}},
+        {"id": "CE-PTR-BASELINE", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-01"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-SUBSTRATE", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-02"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-STATIC-PLANS", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-03"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-GEOMETRY", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-04"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-OPTIMIZER", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-05", "CE-PTR-06"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-SAMPLING", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-07", "CE-PTR-08"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-DEVICE-PIPELINE", "parent_lane_id": "CE-PTR-COORD", "role": "specialist", "tasks": ["CE-PTR-09"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-GRAPHS", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-10"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-EXACT-SEARCH", "parent_lane_id": "CE-PTR-COORD", "role": "specialist", "tasks": ["CE-PTR-11"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-FORWARD", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-12"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-PROJECTIONS", "parent_lane_id": "CE-PTR-COORD", "role": "implementer", "tasks": ["CE-PTR-14"], "workspace": {"mode": "contract_split"}},
+        {"id": "CE-PTR-INTEGRATION", "parent_lane_id": "CE-PTR-COORD", "role": "integrator", "tasks": ["CE-PTR-13"], "workspace": {"mode": "exclusive"}},
+        {"id": "CE-PTR-ACCEPTANCE", "parent_lane_id": "CE-PTR-COORD", "role": "validator", "tasks": ["CE-PTR-15"], "workspace": {"mode": "read_shared"}}
+      ],
+      "rendezvous": [],
+      "context_fragments": [
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-BASELINE", "task_id": "CE-PTR-01", "content": {"references": [{"packet_id": "CE-PTR-REPORT-01", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 1-98, 298-345, 933-1087", "symbols": ["governing rules", "production migration map", "gates"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-SUBSTRATE", "task_id": "CE-PTR-02", "content": {"references": [{"packet_id": "CE-PTR-REPORT-02", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 99-297, 950-966", "symbols": ["foundational vocabulary", "memory image workspace substrate"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-STATIC-PLANS", "task_id": "CE-PTR-03", "content": {"references": [{"packet_id": "CE-PTR-REPORT-03", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 347-414, 967-977", "symbols": ["static geometry plan", "frozen plan and CPK1 convergence"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-GEOMETRY", "task_id": "CE-PTR-04", "content": {"references": [{"packet_id": "CE-PTR-REPORT-04", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 415-501, 967-977", "symbols": ["packing and coordinate compilation", "gating replay", "layout metrics", "candidate relations"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-OPTIMIZER", "task_id": "CE-PTR-05", "content": {"references": [{"packet_id": "CE-PTR-REPORT-05", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 502-586, 999-1010", "symbols": ["optimizer state", "union cache", "rollback"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-OPTIMIZER", "task_id": "CE-PTR-06", "content": {"references": [{"packet_id": "CE-PTR-REPORT-06", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 574-606, 999-1010", "symbols": ["rollback", "proposal machinery", "validation", "materialization"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-SAMPLING", "task_id": "CE-PTR-07", "content": {"references": [{"packet_id": "CE-PTR-REPORT-07", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 607-657, 978-987", "symbols": ["sampling ownership and images"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-SAMPLING", "task_id": "CE-PTR-08", "content": {"references": [{"packet_id": "CE-PTR-REPORT-08", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 658-694, 978-987", "symbols": ["statistical validation relations"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-DEVICE-PIPELINE", "task_id": "CE-PTR-09", "content": {"references": [{"packet_id": "CE-PTR-REPORT-09", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 695-757, 988-998, 1034-1087", "symbols": ["support candidate merge pipeline", "GPU gates"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-GRAPHS", "task_id": "CE-PTR-10", "content": {"references": [{"packet_id": "CE-PTR-REPORT-10", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 773-844, 1011-1018", "symbols": ["trajectory graph tree supernode structures"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-EXACT-SEARCH", "task_id": "CE-PTR-11", "content": {"references": [{"packet_id": "CE-PTR-REPORT-11", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 845-860, 1011-1018, 1088-1111", "symbols": ["exact search", "V100 and compiler notes"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-FORWARD", "task_id": "CE-PTR-12", "content": {"references": [{"packet_id": "CE-PTR-REPORT-12", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 861-895, 1019-1026", "symbols": ["forward-neighbor ownership decomposition"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-INTEGRATION", "task_id": "CE-PTR-13", "content": {"references": [{"packet_id": "CE-PTR-REPORT-13", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 896-932, 1019-1026", "symbols": ["runtime memory", "late cleanup"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-PROJECTIONS", "task_id": "CE-PTR-14", "content": {"references": [{"packet_id": "CE-PTR-REPORT-14", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 758-772, 1027-1033", "symbols": ["physical projections", "secondary surfaces"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}},
+        {"kind": "source_packet_ref", "lane_id": "CE-PTR-ACCEPTANCE", "task_id": "CE-PTR-15", "content": {"references": [{"packet_id": "CE-PTR-REPORT-15", "content_hash": "a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61", "target": "lines 933-1163", "symbols": ["dispositions", "migration order", "performance correctness gates", "hardware notes", "unchanged surfaces", "final architecture"], "paths": ["todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md"], "budget_bytes": 8192, "compiler": "durable-markdown-range", "created_revision": 2375}]}}
+      ]
+    }
+  ]
+}

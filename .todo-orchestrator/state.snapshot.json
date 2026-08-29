@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T16:55:16Z",
+  "generated_at": "2026-08-29T18:05:35Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -11,14 +11,15 @@
         "planned": 3,
         "stale": 3
       },
-      "resource_lease_seconds": 300
+      "resource_lease_seconds": 300,
+      "workflow_front_door": "coding-workflow"
     },
     "created_at": "2026-08-26T10:34:35Z",
     "project_name": "Cellerator",
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 2374,
+  "project_revision": 2376,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -318,6 +319,190 @@
         "id": 574,
         "required_state": "done",
         "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-03",
+        "id": 598,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-04",
+        "id": 599,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-06",
+        "id": 600,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-08",
+        "id": 601,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-09",
+        "id": 602,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-10",
+        "id": 603,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-11",
+        "id": 604,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-12",
+        "id": 605,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-14",
+        "id": 606,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-01",
+        "id": 607,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-02",
+        "id": 608,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-03",
+        "id": 609,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-04",
+        "id": 610,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-05",
+        "id": 611,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-06",
+        "id": 612,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-07",
+        "id": 613,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-08",
+        "id": 614,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-09",
+        "id": 615,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-10",
+        "id": 616,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-11",
+        "id": 617,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-12",
+        "id": 618,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-13",
+        "id": 619,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "dispositions_json": "[]",
+        "entity_id": "CE-PTR-14",
+        "id": 620,
+        "required_state": "done",
+        "type": "task"
       }
     ],
     "barriers": [
@@ -340,6 +525,26 @@
         "revision": 1412,
         "state": "open",
         "title": "All remaining migration exit criteria validated"
+      },
+      {
+        "explanation": "0/14 requirements satisfied; target=14",
+        "id": "CE-PTR-FINAL-FANIN",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "revision": 2376,
+        "state": "closed",
+        "title": "All CE-PTR workstreams ready for final acceptance"
+      },
+      {
+        "explanation": "0/9 requirements satisfied; target=9",
+        "id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "revision": 2376,
+        "state": "closed",
+        "title": "Independent CE-PTR implementation workstreams complete"
       },
       {
         "explanation": "0/3 requirements satisfied; target=2",
@@ -658,6 +863,11 @@
         "version": "1"
       },
       {
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "version": "1"
+      },
+      {
         "checkpoint_id": "CELLERATOR_BASEPLANE_COMMON_ABI_V1_READY",
         "interface_id": "cellerator-baseplane-common-abi-v1",
         "version": "1"
@@ -828,6 +1038,36 @@
         "state": "reached",
         "task_id": "CE-ARCH-70B",
         "title": "Stable persistent session allocation semantics ready"
+      },
+      {
+        "id": "CE-PTR-BOOTSTRAP-READY",
+        "metadata_json": "{\"context_path\": \"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\", \"context_sha256\": \"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\", \"production_changes\": false}",
+        "reached_at": "2026-08-29T18:02:51Z",
+        "revision": 2376,
+        "revoked_at": null,
+        "state": "reached",
+        "task_id": "CE-PTR-00",
+        "title": "CE-PTR durable context and parallel graph established"
+      },
+      {
+        "id": "CE-PTR-POLICY-READY",
+        "metadata_json": "{}",
+        "reached_at": null,
+        "revision": 2376,
+        "revoked_at": null,
+        "state": "pending",
+        "task_id": "CE-PTR-01",
+        "title": "CE-PTR policy, classification schema, and enforcement contract stable"
+      },
+      {
+        "id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "metadata_json": "{}",
+        "reached_at": null,
+        "revision": 2376,
+        "revoked_at": null,
+        "state": "pending",
+        "task_id": "CE-PTR-02",
+        "title": "Small CE-PTR memory, image, and workspace contract frozen for parallel consumers"
       },
       {
         "id": "CELLERATOR_BASEPLANE_COMMON_ABI_V1_READY",
@@ -25200,6 +25440,26 @@
         "revision": 2374,
         "seq": 2374,
         "timestamp": "2026-08-28T16:55:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/Cellerator/.todo-orchestrator/ce-ptr-plan.json\"}",
+        "revision": 2375,
+        "seq": 2375,
+        "timestamp": "2026-08-29T18:02:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/Cellerator/.todo-orchestrator/ce-ptr-plan.json\"}",
+        "revision": 2376,
+        "seq": 2376,
+        "timestamp": "2026-08-29T18:05:35Z"
       }
     ],
     "evidence": [
@@ -41461,6 +41721,60 @@
     ],
     "interface_consumers": [
       {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "interface_id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "required_state": "frozen",
+        "required_version": "1",
+        "task_id": "CE-PTR-14"
+      },
+      {
         "interface_id": "CPBP-CPK1-ABI",
         "required_state": "frozen",
         "required_version": "1",
@@ -41609,6 +41923,17 @@
         "revised_at": null,
         "revision": 921,
         "state": "frozen",
+        "version": "1"
+      },
+      {
+        "content_hash": null,
+        "contract_paths_json": "[\"include/Cellerator/memory\"]",
+        "frozen_at": null,
+        "id": "CE-PTR-MEMORY-SUBSTRATE-V1",
+        "owner_task_id": "CE-PTR-02",
+        "revised_at": null,
+        "revision": 2376,
+        "state": "draft",
         "version": "1"
       },
       {
@@ -42246,6 +42571,118 @@
       },
       {
         "enforcement": null,
+        "id": "CE-PTR-BOOTSTRAP-ONLY",
+        "rule": "CE-PTR-00 changes only durable context and todo coordination state; it performs no production implementation or opportunistic refactor.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "rule": "Before any implementation claim inspect live CE-GEO tasks, scopes, locks, and interlocks; never duplicate or bypass CE-GEO ownership. Defer only overlapping files or sections and continue independent CE-PTR work. Consume compatible CE-GEO results without ideological rebuilds, and create cross-campaign dependencies only for genuine correctness needs.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "rule": "Substantial construction exposes requirements before execution; prepared or sealed execution must not grow ownership, allocate unexpectedly, or discover capacity in the hot path.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-FLAT-RELATIONS",
+        "rule": "For integer and index domains prefer direct indexing, packed keys, radix or counting sort, scans, adjacent compaction, offsets or CSR, generation marks, bitsets, fixed-width tables, and exact bounded flat tables before node-based generic containers.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-IMMUTABLE-IMAGES",
+        "rule": "Compiled or frozen structures converge on requirements queries, caller/session-provided bytes, versioned pointer-free images with relative offsets, validation, and typed rebound views; do not duplicate thawed owners when an image can supply the view.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-MIGRATION-EVIDENCE",
+        "rule": "Every material migration records the accidental representation, semantic structure, lifetime, bounds, memory domain, mutation pattern, final replacement, invariants, allocation behavior, validation, and performance evidence. Algorithmic redesign requires equivalence before old-path deletion; uncertain speedups are not claimed.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "rule": "Do not introduce a generic vector, buffer, dynamic-array, or array-owner clone with general resize, reserve, or push semantics; prefer named domain structures.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-NO-RUNTIME-AUTOTUNER",
+        "rule": "CE-PTR may benchmark alternatives during development and select static or preparation-time policy, but must not add a continuously running runtime optimizer or hot-path benchmark tuner.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-NO-SHARED-PTR-CORE",
+        "rule": "Low-level production Cellerator does not use shared_ptr as the lifetime mechanism for buffers, GPU allocations, index structures, or execution objects; adapters may retain externally required lifetime mechanisms.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "rule": "No unspecified structure in production Cellerator: every material representation must name its semantic structure, ownership, lifetime, cardinality, mutation pattern, and memory domain.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "rule": "Views never own; host, pinned-host, device, NUMA-host, external, persistent, plan-lifetime, graph-stable, and transient placement and lifetime remain explicit and separate.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-PHYSICAL-BOUNDS",
+        "rule": "Real fixed bounds such as top-K, fanout, block width, cache capacity, stream count, and warp width are represented physically rather than by unconstrained growable containers.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-REPOSITORY-BOUNDARIES",
+        "rule": "CellShard retains storage, persistence, transport, staging, and distribution ownership; BioPrep retains biological preprocessing policy and workflow orchestration; CelleraTorch remains a thin adapter. CE-PTR must not move those concerns back into Cellerator or make native Cellerator depend on Torch.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-RESIDENT-COMPOSITION",
+        "rule": "Composed GPU stages keep data resident; host materialization is an explicit terminal adapter and not an incidental ownership boundary.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-SEMANTICS-FIRST",
+        "rule": "Migrations preserve stable identities, canonical gene and row recovery, persistence compatibility, numerical semantics, and current execution contracts; grep-count reduction never outranks clarity, correctness, or measured behavior.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CE-PTR-V100-FIRST",
+        "rule": "Tesla V100 sm_70 is the primary performance target; stable interfaces remain generation-conscious and portable, and CE-PTR does not depend on later sm_86 work.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
         "id": "CE-REMAP-AUTHORITY",
         "rule": "Modern execution, the sole execution session, the CE-ARCH operation core, planner, CPE2, and native candidates remain authoritative. CP-Math v1 and legacy sparse APIs are compatibility or evidence only.",
         "scope_json": "{\"program\": \"CE-REMAP\"}",
@@ -42497,6 +42934,21 @@
       },
       {
         "capacity": 1,
+        "metadata_json": "{\"purpose\": \"Late runtime cleanup and repository-wide convergence\"}",
+        "name": "ce-ptr-integration"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{\"purpose\": \"Small shared memory, image, allocation, and workspace vocabulary\"}",
+        "name": "ce-ptr-memory-substrate"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{\"purpose\": \"Permanent inventory and enforcement policy authority\"}",
+        "name": "ce-ptr-policy"
+      },
+      {
+        "capacity": 1,
         "metadata_json": "{\"purpose\": \"serialize shared CMake, compatibility, and repository-wide fan-in\"}",
         "name": "ce-remap-integration"
       },
@@ -42512,7 +42964,7 @@
       },
       {
         "capacity": 1,
-        "metadata_json": "{\"purpose\": \"serialize comparable benchmark, sanitizer, and profiler work\"}",
+        "metadata_json": "{\"purpose\": \"Serialize comparable V100 benchmark, sanitizer, and profiler evidence\"}",
         "name": "cuda-benchmark-mutex"
       },
       {
@@ -42539,6 +42991,16 @@
         "capacity": 1,
         "metadata_json": "{}",
         "name": "surface:cellerator-storage-boundary"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{\"purpose\": \"Narrow CE-PTR and CE-GEO construction-path interlock\"}",
+        "name": "surface:geometry-construction"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{\"purpose\": \"Narrow CE-PTR and CE-GEO static-plan interlock\"}",
+        "name": "surface:geometry-static-plan"
       }
     ],
     "ownership_scopes": [
@@ -46768,6 +47230,736 @@
         "task_id": "CE-POST-REMAP-04"
       },
       {
+        "mode": "exclusive",
+        "path": ".todo-orchestrator/ce-ptr-plan.json",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "bench",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "compat",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "components",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "include",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "src",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "tests",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": ".todo-orchestrator",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "docs/architecture.qmd",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "docs/current_implementation.qmd",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "docs/migration_roadmap.qmd",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "scope.md",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry/AGENTS.md",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench/ce_ptr/baseline",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/CE_PTR_INVENTORY.md",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/CE_PTR_POLICY.md",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "scripts/check_no_inappropriate_core_stl.py",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "components/CelleraTorch",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/memory",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/runtime/memory",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/memory",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/execution",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry/persistence",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/runtime",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "src/execution",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry/persistence",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "read",
+        "path": "src/runtime",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/packing_plan.hh",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/persistence",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/packing_plan.cc",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/persistence",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "read",
+        "path": "compat/cp_math_v1",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/execution",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "read",
+        "path": "src/execution",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/gating.hh",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/gating_cuda.cuh",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/layout_metrics.hh",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/layout_selector.hh",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/pack.hh",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/gating.cc",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/gating_cuda.cu",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/layout_metrics.cc",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/layout_selector.cc",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/pack.cc",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/optimizer.cc",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/optimizer_state.hh",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry/merge_cost.cc",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/optimizer.cc",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/optimizer_state.hh",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/sampling.hh",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/sampling_materialization.hh",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/dataset/sampling.cc",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/dataset/sampling_materialization.cc",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/record_statistical_validation.cc",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/statistical_validation.cc",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/gene_candidate_discovery.hh",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/gene_support_bitset.hh",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/geometry/merge_cost.hh",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/dataset/gene_support_bitset.cu",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/candidate_discovery",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/merge_cost.cc",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/geometry/merge_cost_cuda.cu",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/runtime",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "read",
+        "path": "src/runtime",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/operators/graph",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/examples/trajectory",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/trajectory",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "read",
+        "path": "src/compute/operators",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/neighbors/exact_search",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/compute/neighbors",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/neighbors/forward_neighbors",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/neighbors/forward_neighbors",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/compute/preprocess",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/interop/cellshard",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "src/interop/cellshard",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "src/preprocess",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/core/host_buffer.hh",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/runtime",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/runtime/device_buffer.cuh",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/runtime",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "components/CelleraTorch",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "include/Cellerator/compute/projection",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/projection/physical_feature_major.cc",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "exclusive",
+        "path": "src/compute/projection/physical_transpose.cc",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "read",
+        "path": "include/Cellerator/geometry/persistence",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "read",
+        "path": "src/geometry/persistence",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "mode": "exclusive",
+        "path": "bench/ce_ptr/final",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/CE_PTR_INVENTORY.md",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/CE_PTR_POLICY.md",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/architecture.qmd",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/current_implementation.qmd",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/migration_roadmap.qmd",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/performance_validation.qmd",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "scripts/check_no_inappropriate_core_stl.py",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": ".todo-orchestrator",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "CMakeLists.txt",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "bench",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "compat",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "components",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "docs",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "include",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "scripts",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "src",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "mode": "read",
+        "path": "tests",
+        "task_id": "CE-PTR-15"
+      },
+      {
         "mode": "read",
         "path": "AGENTS.md",
         "task_id": "CE-REMAP-00"
@@ -48211,7 +49403,7 @@
       },
       {
         "id": "gpu",
-        "metadata_json": "{}",
+        "metadata_json": "{\"purpose\": \"Cellerator correctness, sanitizer, profiler, and benchmark work on the existing Tesla V100 sm_70 fleet\"}",
         "mode": "exclusive"
       }
     ],
@@ -48337,8 +49529,52 @@
         "metadata_json": "{\"memory_mib\": 16384, \"model\": \"Tesla V100-SXM2-16GB\"}"
       }
     ],
-    "resource_requests": [],
-    "task_artifacts": [],
+    "resource_requests": [
+      {
+        "amount": 1,
+        "gate_id": null,
+        "id": "CE-PTR-09-GPU",
+        "mode": "exclusive",
+        "phase": "gate",
+        "required": 1,
+        "selector": "gpu:any",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "amount": 1,
+        "gate_id": null,
+        "id": "CE-PTR-11-GPU",
+        "mode": "exclusive",
+        "phase": "gate",
+        "required": 1,
+        "selector": "gpu:any",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "amount": 1,
+        "gate_id": null,
+        "id": "CE-PTR-15-GPU",
+        "mode": "exclusive",
+        "phase": "gate",
+        "required": 1,
+        "selector": "gpu:any",
+        "task_id": "CE-PTR-15"
+      }
+    ],
+    "task_artifacts": [
+      {
+        "content_hash": null,
+        "kind": "durable-design-context",
+        "path": "todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "content_hash": null,
+        "kind": "todo-plan",
+        "path": ".todo-orchestrator/ce-ptr-plan.json",
+        "task_id": "CE-PTR-00"
+      }
+    ],
     "task_completion_gates": [
       {
         "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
@@ -52091,6 +53327,171 @@
         "prerequisite_task_id": "CE-REMAP-09",
         "task_id": "CE-REMAP-10",
         "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-BOOTSTRAP-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5061,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-01",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-POLICY-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5062,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-02",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5063,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-03",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5064,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-04",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5065,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-05",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"dispositions\": [\"implemented\", \"validated\"]}",
+        "decision_id": null,
+        "id": 5066,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-PTR-05",
+        "task_id": "CE-PTR-06",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5067,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-07",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"dispositions\": [\"implemented\", \"validated\"]}",
+        "decision_id": null,
+        "id": 5068,
+        "interface_id": null,
+        "prerequisite_task_id": "CE-PTR-07",
+        "task_id": "CE-PTR-08",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5069,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-09",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5070,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-10",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5071,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-11",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5072,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-12",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": "CE-PTR-IMPLEMENTATION-FANIN",
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 5073,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-13",
+        "type": "barrier"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "CE-PTR-SUBSTRATE-CONTRACT-READY",
+        "condition_json": "{\"state\": \"reached\"}",
+        "decision_id": null,
+        "id": 5074,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-14",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": "CE-PTR-FINAL-FANIN",
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 5075,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "CE-PTR-15",
+        "type": "barrier"
       }
     ],
     "task_invariants": [
@@ -54323,6 +55724,310 @@
         "task_id": "CE-POST-REMAP-04"
       },
       {
+        "invariant_id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "task_id": "CE-PTR"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "task_id": "CE-PTR"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "task_id": "CE-PTR"
+      },
+      {
+        "invariant_id": "CE-PTR-REPOSITORY-BOUNDARIES",
+        "task_id": "CE-PTR"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR"
+      },
+      {
+        "invariant_id": "CE-PTR-BOOTSTRAP-ONLY",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "invariant_id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "invariant_id": "CE-PTR-MIGRATION-EVIDENCE",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "invariant_id": "CE-PTR-V100-FIRST",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-SHARED-PTR-CORE",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "invariant_id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "invariant_id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "invariant_id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "invariant_id": "CE-PTR-PHYSICAL-BOUNDS",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "invariant_id": "CE-PTR-MIGRATION-EVIDENCE",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "invariant_id": "CE-PTR-PHYSICAL-BOUNDS",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "invariant_id": "CE-PTR-REPOSITORY-BOUNDARIES",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "invariant_id": "CE-PTR-MIGRATION-EVIDENCE",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "invariant_id": "CE-PTR-RESIDENT-COMPOSITION",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "invariant_id": "CE-PTR-V100-FIRST",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "invariant_id": "CE-PTR-PHYSICAL-BOUNDS",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "invariant_id": "CE-PTR-PHYSICAL-BOUNDS",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "invariant_id": "CE-PTR-V100-FIRST",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "invariant_id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "invariant_id": "CE-PTR-REPOSITORY-BOUNDARIES",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-SHARED-PTR-CORE",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "invariant_id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "invariant_id": "CE-PTR-CE-GEO-COEXISTENCE",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-EXPLICIT-WORKSPACES",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-FLAT-RELATIONS",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-IMMUTABLE-IMAGES",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-MIGRATION-EVIDENCE",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-GENERIC-VECTOR-CLONE",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-RUNTIME-AUTOTUNER",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-SHARED-PTR-CORE",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-NO-UNSPECIFIED-STRUCTURE",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-OWNERSHIP-VIEW-SEPARATION",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-PHYSICAL-BOUNDS",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-REPOSITORY-BOUNDARIES",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-RESIDENT-COMPOSITION",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-SEMANTICS-FIRST",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "invariant_id": "CE-PTR-V100-FIRST",
+        "task_id": "CE-PTR-15"
+      },
+      {
         "invariant_id": "CE-REMAP-AUTHORITY",
         "task_id": "CE-REMAP-00"
       },
@@ -54772,6 +56477,71 @@
         "lock_name": "ce-live-integration",
         "phase": "claim",
         "task_id": "CE-LIVE-45"
+      },
+      {
+        "lock_name": "ce-ptr-policy",
+        "phase": "claim",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "lock_name": "ce-ptr-memory-substrate",
+        "phase": "claim",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "lock_name": "runtime-ownership-seam",
+        "phase": "claim",
+        "task_id": "CE-PTR-02"
+      },
+      {
+        "lock_name": "execution-image-schema",
+        "phase": "claim",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "lock_name": "persistent-payload-schema",
+        "phase": "claim",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "lock_name": "surface:geometry-static-plan",
+        "phase": "claim",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "lock_name": "surface:geometry-construction",
+        "phase": "claim",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "lock_name": "ce-ptr-integration",
+        "phase": "claim",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "lock_name": "runtime-ownership-seam",
+        "phase": "claim",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "lock_name": "execution-image-schema",
+        "phase": "claim",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "lock_name": "build:cellerator",
+        "phase": "claim",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "lock_name": "ce-ptr-integration",
+        "phase": "claim",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "lock_name": "cuda-benchmark-mutex",
+        "phase": "claim",
+        "task_id": "CE-PTR-15"
       },
       {
         "lock_name": "ce-remap-integration",
@@ -56915,6 +58685,431 @@
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR",
+        "kind": "epic",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.",
+        "notes": "Completion requires CE-PTR-15. Tests, benchmark fixtures, cold diagnostics, required framework adapters, and explicitly justified measured cold paths may retain benign STL. STL algorithms are not categorically banned.",
+        "objective": "Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Comprehensive explicit production-core structure and ownership migration",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-00",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "No further bootstrap action; leave CE-PTR-01 unclaimed and ready.",
+        "notes": "The live repository and SQLite ledger remain authoritative if the report becomes stale. The stored bytes are identical to the supplied attachment.",
+        "objective": "Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.",
+        "parallel_policy": "serial",
+        "parent_id": "CE-PTR",
+        "priority": 100,
+        "result": "validated",
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Bootstrap and durable context",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-01",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Inspect live code and existing gates; publish CE-PTR-POLICY-READY once classification and enforcement semantics are stable so CE-PTR-02 may proceed while remaining baseline measurements finish.",
+        "notes": "Do not indiscriminately ban tests, benchmarks, diagnostics, external-framework requirements, or benign STL algorithms. Baselines must record exact hardware, topology, toolchain, build, shapes, repetitions, correctness, inclusions, reuse, and benchmark mutex usage.",
+        "objective": "Create the authoritative live production-core inventory, explicit allowlist policy, permanent source enforcement, and before-migration CPU/GPU allocation, memory, transfer, synchronization, latency, and kernel baseline evidence.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 99,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Baseline inventory, policy, and permanent gates",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-02",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Design against live session/image contracts, implement the minimum coherent substrate, and publish CE-PTR-SUBSTRATE-CONTRACT-READY early enough for independent lanes to proceed against the stable interface.",
+        "notes": "This is the only intentionally shared implementation substrate. It must stay tiny and must not become a Cellerator standard-library replacement.",
+        "objective": "Establish the smallest shared vocabulary for explicit placement, allocation records, typed non-owning views, caller/session-owned workspace, pointer-free image metadata, alignment, status failures, and safe compiler hints by reusing the existing execution session.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 98,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Core memory, image, and workspace substrate",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-03",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Reinspect CE-GEO live scopes before claim; work only on unowned static-plan sections and defer any path currently interlocked by CE-GEO.",
+        "notes": "Do not redesign stable persistent formats gratuitously. Preserve compatibility and use versioned adapters where representation changes.",
+        "objective": "Migrate frozen packing and other durable static plans from collections of independent owning arrays toward coherent versioned images and typed views, converging with CPK1 and execution-image precedents where semantics permit.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Frozen and static plan ownership",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-04",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Inspect CE-GEO ownership immediately before claiming and split or defer only overlapping paths; continue independent layout or construction surfaces.",
+        "notes": "This workstream is subordinate to CE-GEO path ownership. A CE-GEO STL-free compatible landing is consumed, not rebuilt.",
+        "objective": "Replace inappropriate nested builders, generic coordinate streams, repeated reconstruction, route tape or mask ownership, nested layout metrics, and selection scratch with count-scan-fill, flat relations, exact workspaces, and direct image compilation.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Geometry construction intermediates",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-05",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Freeze and validate the optimizer state contract needed by CE-PTR-06 without coupling unrelated workstreams.",
+        "notes": "Fixed-stride slabs are a candidate for the bounded fast path, not doctrine; measure memory expansion and preserve exact behavior.",
+        "objective": "Replace per-block growable member and cache ownership with a prepared domain representation using bounded fixed-stride slabs where justified, aligned descriptors, direct feature-slot maps, explicit generations, prepared union-cache storage, exact workspaces, and local updates.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Packing optimizer state representation",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-06",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Consume CE-PTR-05 state contract, implement proposal relations and mutation journal, then validate exact optimizer behavior and memory reductions.",
+        "notes": "This lane is serial only with CE-PTR-05; it is independent of sampling, GPU pipeline, graph, exact-search, and projection lanes.",
+        "objective": "Replace map, set, vector-heavy proposal, shortlist, conflict, blacklist, snapshot, and rollback mechanics with packed keys, flat sort-compact deduplication, direct counters, generation marks, explicit bounded blacklists, and mutation journals.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 79,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Packing optimizer proposals and rollback",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-07",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Define explicit sample image and workspace contracts, evaluate redundant hashes and weights from live provenance, and preserve exact reproduction.",
+        "notes": "Do not move canonical dataset storage, files, or ingestion policy into Cellerator.",
+        "objective": "Migrate sampling plans, results, and sampled CSR construction to explicit images and workspaces while preserving deterministic reproduction, provenance, stable row identity, and Cellerator's non-storage boundary.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Sampling and sampled structural ownership",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-08",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.",
+        "notes": "A structurally clearer relation may be retained without a fabricated speedup claim; report measured outcome honestly.",
+        "objective": "Replace nested vectors and hash maps or sets in statistical validation with sorted group-row relations, offsets, row-unit maps, packed edge keys, exact flat membership, and generation-mark workspaces without changing statistical or provenance semantics.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 79,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Statistical validation structures",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-09",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Treat the three stages as one pipeline, retain authoritative host referees, and collect before-after V100 end-to-end evidence under the benchmark mutex.",
+        "notes": "Do not optimize isolated kernels while hiding transfer, allocation, synchronization, or terminal materialization costs.",
+        "objective": "Redesign gene support, candidate discovery, and exact merge scoring as one device-resident prepared pipeline with explicit views and workspaces, preflight capacities and CUB scratch, and terminal-only host materialization.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 85,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Device-resident support to candidate to merge pipeline",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-10",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Classify each graph by actual bounds and traversal before selecting fixed-width, CSR, Euler, or packed-relation forms.",
+        "notes": "Preserve example versus core ownership boundaries; reusable mathematical structures stay native while workflow policy does not migrate into core.",
+        "objective": "Replace generic trajectory graph and table ownership with SoA images, bounded fixed-width candidate or forward edges where natural, tree topology and child CSR projections, Euler order and inverse, two-pass supernodes, packed aggregation, and allocation-aware branch detection.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Trajectory and graph structures",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-11",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Measure current V100 register and spill behavior, compare bounded implementation alternatives, and promote only evidence-backed internal forms.",
+        "notes": "No handwritten assembly is authorized absent later PTX or SASS evidence of a materially relevant compiler limitation.",
+        "objective": "Preserve raw public device views while evaluating and implementing K-specialized internal top-K storage and merges with controlled register pressure, spills, shared-memory use, warp cooperation, and compact identities.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Exact-search internal fixed-K representation",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-12",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Determine the live architectural split first, then migrate or remove Cellerator ownership only where the standing CellShard and BioPrep boundaries require it.",
+        "notes": "This task may require coordinated downstream follow-up, but it does not authorize external repository mutation. Record any genuine cross-repository dependency explicitly.",
+        "objective": "Split forward-neighbor low-level mathematical kernels, views, routes, workspaces, and fixed-K primitives from downstream index construction, durable ownership, cell lookup, sharding, residency, storage, biological workflow policy, and application results.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Forward-neighbor architectural decomposition",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-13",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Reinventory all consumers after the implementation fan-in, remove only truly obsolete infrastructure, and run integration and graph-capture validation.",
+        "notes": "This task is deliberately late and integration-exclusive because it removes shared infrastructure earlier lanes may still consume.",
+        "objective": "After consumers migrate, remove obsolete host_buffer, shared-owned device buffers, duplicate graph-local buffers, grow-by-reallocation scratch arenas, and blocking copy helpers, converging on session allocation handles, explicit views and streams, prepared scratch, and stable addresses.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": "CE-PTR",
+        "priority": 30,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Runtime buffer, scratch, and ownership cleanup",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-14",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Measure builder scratch and migrate only useful construction ownership while preserving existing pointer-free formats and direct rebound views.",
+        "notes": "The successful projection image architecture is a precedent and constraint, not a target for ideological redesign.",
+        "objective": "Preserve CPK1, FMP1, CTP1, and related pointer-free projection contracts while replacing only generic STL-heavy construction scratch with queried caller-owned prepared workspaces where useful.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "CE-PTR",
+        "priority": 80,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Projection builder scratch cleanup",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-15",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.",
+        "notes": "Final acceptance compares against the CE-PTR-01 baseline and strongest relevant paths. It must not rewrite tests merely to reduce STL counts or claim performance without complete cost accounting.",
+        "objective": "Converge CE-PTR by removing obsolete generic infrastructure and stale owners, resolving the production inventory to documented exceptions, running comprehensive semantic, allocation, synchronization, transfer, performance, compiler, persistence, sanitizer, and source-tooling acceptance, and updating durable architecture documentation.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": "CE-PTR",
+        "priority": 10,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 2376,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Repository-wide final migration and acceptance",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-08-28T07:20:09Z",
         "id": "CE-REMAP-00",
         "kind": "epic",
@@ -58557,6 +60752,742 @@
         "version": 1
       },
       {
+        "content_hash": "f54ac35faa5da0fc7c5a17a837f7036fcfc9601a91252af1308793e68e3e227d",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-15\"],\"rendezvous\":[],\"role\":\"validator\",\"workspace_mode\":\"read_shared\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-ACCEPTANCE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-ACCEPTANCE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-ACCEPTANCE\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "c1a22b31f398c5ae5be062dab496bba9540bc5fe1d7df160edbe233cb398583f",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-01\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-BASELINE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-BASELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-BASELINE\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "93004c5f521a71dd2dd8e8d81045f60fc571980446fc3a85f81eab619bf7dc23",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-00\"],\"rendezvous\":[],\"role\":\"coordinator\",\"workspace_mode\":\"read_shared\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-COORD:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-COORD",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-COORD\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "6dd02b6d70c48526cb62ac53d66295f09dfb1985e57541545b8ed94b87b5b8ef",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-09\"],\"rendezvous\":[],\"role\":\"specialist\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-DEVICE-PIPELINE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-DEVICE-PIPELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-DEVICE-PIPELINE\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "c6ea9b50334ce6f846d9ab923707921212b9cdeb0906d18c4171d8db7a017b5b",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-11\"],\"rendezvous\":[],\"role\":\"specialist\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-EXACT-SEARCH:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-EXACT-SEARCH",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-EXACT-SEARCH\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "e4db7b0ffc678b135858101b1ec31bc96d43431e2a57f207a25b5c93426b09bb",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-12\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-FORWARD:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-FORWARD",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-FORWARD\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "426e68a06e3947ce43222969e70f7b6cce6ce351a3467b4a3dbc5bf7c693418d",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-04\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-GEOMETRY:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-GEOMETRY",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GEOMETRY\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "6e228c96ff63d8e92c3884fca66a6e68e82ab524565a395993198e417aae1eaf",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-10\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-GRAPHS:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-GRAPHS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GRAPHS\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "f3ccd94773743a9e758bf773614623cb4bf26452514abc45f5490359aba918e3",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-13\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-INTEGRATION:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-INTEGRATION",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-INTEGRATION\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "b41101d06e25f64679ff47f243cdda22e81d37004a44b76aa58d73ea41ca7baa",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-05\",\"CE-PTR-06\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-OPTIMIZER:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-OPTIMIZER\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "7e7d4e22522b8e5250687db75589e514470ce85c628b7466cfbf839b87a9a9cb",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-14\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-PROJECTIONS:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-PROJECTIONS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-PROJECTIONS\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "5f03e5daac84e7700810aff6321b23c139fd5709e63ae73dcc8a131367fb6a73",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-07\",\"CE-PTR-08\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-SAMPLING:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-SAMPLING",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SAMPLING\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "594d6d761629d0800da44de2b7ed7a47d285f3359940db689b28e6a035e6af13",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-03\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-STATIC-PLANS:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-STATIC-PLANS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-STATIC-PLANS\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "730de9e653c9790c15701a7adc57d6b66e352956611160124280e314907f6573",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-PTR-02\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"contract_split\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:lane_brief:CE-PTR-SUBSTRATE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "CE-PTR-SUBSTRATE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SUBSTRATE\",\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "7e5e1e518343ba8814de2af41f63e10f09db2a557ef335bbc3d52cd220f9f8e0",
+        "content_json": "{\"acceptance_conditions\":[\"CE-PTR-15 final barrier and acceptance contract pass\",\"Permanent inventory and allowlist account for every remaining production owning-STL use\",\"Prepared and sealed paths meet their allocation and synchronization promises\",\"Canonical identities, persistence, rebind, and numerical behavior remain valid\",\"CPU and V100 evidence is complete and candid\",\"No CE-GEO task or interlock was duplicated or bypassed\"],\"boundaries\":[\"Bootstrap creates durable context and coordination only\",\"Production implementation occurs only in CE-PTR-01 through CE-PTR-15\",\"CellShard owns storage and distribution, BioPrep owns preprocessing policy, and CelleraTorch remains an adapter\",\"CE-GEO active path ownership is never bypassed\",\"Tests, fixtures, diagnostics, framework-required adapters, and justified cold paths are not indiscriminately purged\"],\"glossary\":{\"allowlist\":\"Measured or externally required cold production exception with explicit rationale, not an unexplained grep exemption.\",\"image\":\"Versioned pointer-free bytes plus validation and typed rebound view for immutable or compiled structure.\",\"parallel-forward\":\"Publish the CE-PTR-01 policy checkpoint and CE-PTR-02 frozen substrate interface before unrelated trailing validation completes, allowing independent first-class lanes to advance safely.\",\"workspace\":\"Caller or session-owned explicitly sized transient storage with no hidden growth.\"},\"invariants\":[\"No unspecified structure in production Cellerator\",\"No generic vector clone\",\"Immutable structures become versioned pointer-free images where appropriate\",\"Workspaces and capacities are explicit before prepared execution\",\"Views do not own and shared_ptr is not a core lifetime mechanism\",\"Flat and bounded domain relations precede node containers\",\"Composed GPU stages stay resident\",\"No online runtime autotuner\",\"V100 sm_70 is the primary performance target\",\"Semantics and repository boundaries outrank mechanical migration\"],\"objective\":\"Replace inappropriate production-core STL ownership and incidental generic structures with explicit semantic images, views, prepared workspaces, bounded relations, and correct repository ownership while preserving behavior and enabling aggressive parallel delivery.\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"CE-PTR-RUN\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "44fa8e191668721de92eb2c388b54cb357c140604b45319c0543b4dba0cb70ee",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-15\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"dispositions\",\"migration order\",\"performance correctness gates\",\"hardware notes\",\"unchanged surfaces\",\"final architecture\"],\"target\":\"lines 933-1163\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-ACCEPTANCE:CE-PTR-15:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-ACCEPTANCE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-ACCEPTANCE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-15\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-15",
+        "version": 1
+      },
+      {
+        "content_hash": "0243554ff3b30df7d6af45e1fdf0d1e31bc707495f3110ef6fe5754bd01907e5",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-01\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"governing rules\",\"production migration map\",\"gates\"],\"target\":\"lines 1-98, 298-345, 933-1087\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-BASELINE:CE-PTR-01:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-BASELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-BASELINE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-01\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-01",
+        "version": 1
+      },
+      {
+        "content_hash": "96df6977bae6d47009e525cf3ef594b21452f4911a12a015405caf852f06e71f",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-09\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"support candidate merge pipeline\",\"GPU gates\"],\"target\":\"lines 695-757, 988-998, 1034-1087\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-DEVICE-PIPELINE:CE-PTR-09:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-DEVICE-PIPELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-DEVICE-PIPELINE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-09\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-09",
+        "version": 1
+      },
+      {
+        "content_hash": "690362e44f704d3b42c271559868d25caa25b35da5ac5405b9c86b1a70beaccf",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-11\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"exact search\",\"V100 and compiler notes\"],\"target\":\"lines 845-860, 1011-1018, 1088-1111\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-EXACT-SEARCH:CE-PTR-11:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-EXACT-SEARCH",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-EXACT-SEARCH\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-11\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-11",
+        "version": 1
+      },
+      {
+        "content_hash": "3f3115a79ea3922f5c323903ef2f5a52a475a64e13282599ccd103ba9e879ddb",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-12\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"forward-neighbor ownership decomposition\"],\"target\":\"lines 861-895, 1019-1026\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-FORWARD:CE-PTR-12:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-FORWARD",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-FORWARD\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-12\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-12",
+        "version": 1
+      },
+      {
+        "content_hash": "3dfe6276575d8f365615ec04dddc25b66bbe3eab7e859c19323abaf4e2641898",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-04\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"packing and coordinate compilation\",\"gating replay\",\"layout metrics\",\"candidate relations\"],\"target\":\"lines 415-501, 967-977\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-GEOMETRY:CE-PTR-04:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-GEOMETRY",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GEOMETRY\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-04\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-04",
+        "version": 1
+      },
+      {
+        "content_hash": "8e21226627158380a96318929a7d2bafc33b38e68be7e14aba37ac7f6a929147",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-10\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"trajectory graph tree supernode structures\"],\"target\":\"lines 773-844, 1011-1018\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-GRAPHS:CE-PTR-10:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-GRAPHS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GRAPHS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-10\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-10",
+        "version": 1
+      },
+      {
+        "content_hash": "04e47542b4bd59674e3672420e9a7e126a58bf8fe1f15c7979590715b86d4a3d",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-13\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"runtime memory\",\"late cleanup\"],\"target\":\"lines 896-932, 1019-1026\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-INTEGRATION:CE-PTR-13:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-INTEGRATION",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-INTEGRATION\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-13\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-13",
+        "version": 1
+      },
+      {
+        "content_hash": "d14a81db26a4064697b9316e6f17fd6375bc10d24eb4517acf22b730a9c006b4",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-05\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"optimizer state\",\"union cache\",\"rollback\"],\"target\":\"lines 502-586, 999-1010\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-OPTIMIZER:CE-PTR-05:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-OPTIMIZER\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-05\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-05",
+        "version": 1
+      },
+      {
+        "content_hash": "7cae891389f015cb11efb87f992c00ba26fc0335cf00652afa9769143b80e20b",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-06\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"rollback\",\"proposal machinery\",\"validation\",\"materialization\"],\"target\":\"lines 574-606, 999-1010\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-OPTIMIZER:CE-PTR-06:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-OPTIMIZER\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-06\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-06",
+        "version": 1
+      },
+      {
+        "content_hash": "e092cf3432a67f6a1698c982b10e109ba91d7786a20a29d569d9f95217c10c79",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-14\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"physical projections\",\"secondary surfaces\"],\"target\":\"lines 758-772, 1027-1033\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-PROJECTIONS:CE-PTR-14:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-PROJECTIONS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-PROJECTIONS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-14\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-14",
+        "version": 1
+      },
+      {
+        "content_hash": "f4c66cb88c7a5e0c37936cc761b0cfc421e54452e01023d633f2fae5b97ae220",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-07\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"sampling ownership and images\"],\"target\":\"lines 607-657, 978-987\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-SAMPLING:CE-PTR-07:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-SAMPLING",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SAMPLING\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-07\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-07",
+        "version": 1
+      },
+      {
+        "content_hash": "8d3de87af84f950794fc57d33e1be8089c2340336cf30034e215419a2c524dec",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-08\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"statistical validation relations\"],\"target\":\"lines 658-694, 978-987\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-SAMPLING:CE-PTR-08:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-SAMPLING",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SAMPLING\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-08\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-08",
+        "version": 1
+      },
+      {
+        "content_hash": "092fe89d56faddcdba56f37b5a823954eee1905c3a918b998f72a354686ed19c",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-03\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"static geometry plan\",\"frozen plan and CPK1 convergence\"],\"target\":\"lines 347-414, 967-977\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-STATIC-PLANS:CE-PTR-03:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-STATIC-PLANS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-STATIC-PLANS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-03\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-03",
+        "version": 1
+      },
+      {
+        "content_hash": "611de78f60a5133e3c390c697994e77d9dd1c9ceba6a4566ec8ef9ee8b764a93",
+        "content_json": "{\"references\":[{\"budget_bytes\":8192,\"compiler\":\"durable-markdown-range\",\"content_hash\":\"a6256a259b67d412d7ca7a1f773fbaab4c6000b1f9c08c5fdda5d45c3f226f61\",\"created_revision\":2375,\"packet_id\":\"CE-PTR-REPORT-02\",\"paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\"],\"symbols\":[\"foundational vocabulary\",\"memory image workspace substrate\"],\"target\":\"lines 99-297, 950-966\"}]}",
+        "created_at": "2026-08-29T18:05:35Z",
+        "creation_revision": 2376,
+        "id": "CE-PTR-RUN:source_packet_ref:CE-PTR-SUBSTRATE:CE-PTR-02:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "source_packet_ref",
+        "lane_id": "CE-PTR-SUBSTRATE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SUBSTRATE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-02\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-02",
+        "version": 1
+      },
+      {
+        "content_hash": "fdc106492c81f2c38b841e65109e28dbe278981914cc51b4e40405177f1e4b26",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"only documented allowlisted production exceptions remain\",\"sealed execution allocation-free where promised\",\"no hidden global synchronization\",\"no transfer regression\",\"obsolete generic helpers removed\",\"architecture docs current\"],\"cpu\":[\"allocations and bytes\",\"construction and repeated latency\",\"cycles instructions cache branch where material\",\"RSS high-water\",\"NUMA behavior\"],\"gpu\":[\"end-to-end and kernel latency\",\"allocation count\",\"device high-water\",\"H2D D2H D2D bytes\",\"sync and launch count\",\"bandwidth\",\"registers\",\"local spills\",\"occupancy\",\"warp stalls\",\"workspace high-water\"],\"semantic\":[\"bit-exact or tolerance equivalence\",\"deterministic ordering\",\"canonical identities\",\"persistence validation and rebind\",\"CellShard BioPrep CelleraTorch boundaries\"],\"toolchains\":[\"Clang\",\"GCC\",\"NVCC\",\"Compute Sanitizer\",\"CPP Context Compiler source recovery\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.\",\"objective\":\"Converge CE-PTR by removing obsolete generic infrastructure and stale owners, resolving the production inventory to documented exceptions, running comprehensive semantic, allocation, synchronization, transfer, performance, compiler, persistence, sanitizer, and source-tooling acceptance, and updating durable architecture documentation.\",\"scope\":{\"exclusive_paths\":[\"docs/CE_PTR_POLICY.md\",\"docs/CE_PTR_INVENTORY.md\",\"docs/architecture.qmd\",\"docs/current_implementation.qmd\",\"docs/performance_validation.qmd\",\"docs/migration_roadmap.qmd\",\"bench/ce_ptr/final\",\"scripts/check_no_inappropriate_core_stl.py\"],\"read_paths\":[\"AGENTS.md\",\"CMakeLists.txt\",\"include\",\"src\",\"compat\",\"components\",\"tests\",\"bench\",\"docs\",\"scripts\",\".todo-orchestrator\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-ACCEPTANCE:CE-PTR-15:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-ACCEPTANCE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-ACCEPTANCE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-15\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-15",
+        "version": 1
+      },
+      {
+        "content_hash": "f5ae338c912db0de7b50fad6b45e97a093aed03a59c4d6d079006306f570e024",
+        "content_json": "{\"completion_contract\":{\"classification_fields\":[\"subsystem\",\"accidental representation\",\"semantic structure\",\"lifetime\",\"cardinality and bounds\",\"memory domain\",\"hot or cold\",\"migration disposition\",\"allowlist rationale\"],\"measurements\":[\"allocations\",\"allocated bytes\",\"RSS high-water\",\"device high-water\",\"synchronization\",\"H2D D2H D2D bytes\",\"construction latency\",\"warm repeated latency\",\"relevant kernel registers occupancy and stalls\"],\"required_outputs\":[\"classified inventory\",\"allowlist with rationale\",\"source-level anti-regression gate\",\"CPU/GPU baseline artifacts\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Inspect live code and existing gates; publish CE-PTR-POLICY-READY once classification and enforcement semantics are stable so CE-PTR-02 may proceed while remaining baseline measurements finish.\",\"objective\":\"Create the authoritative live production-core inventory, explicit allowlist policy, permanent source enforcement, and before-migration CPU/GPU allocation, memory, transfer, synchronization, latency, and kernel baseline evidence.\",\"scope\":{\"exclusive_paths\":[\"docs/CE_PTR_POLICY.md\",\"docs/CE_PTR_INVENTORY.md\",\"scripts/check_no_inappropriate_core_stl.py\",\"bench/ce_ptr/baseline\"],\"read_paths\":[\"include/Cellerator\",\"src\",\"compat\",\"components/CelleraTorch\",\"tests\",\"bench\",\"CMakeLists.txt\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-BASELINE:CE-PTR-01:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-BASELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-BASELINE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-01\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-01",
+        "version": 1
+      },
+      {
+        "content_hash": "5d6a162efd4a8bcf097fa3063156c9f05d8288de56d88170585a329943d427e2",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[\"include\",\"src\",\"components\",\"compat\",\"tests\",\"bench\"],\"gates\":[],\"next_action\":\"No further bootstrap action; leave CE-PTR-01 unclaimed and ready.\",\"objective\":\"Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.\",\"scope\":{\"exclusive_paths\":[\"todos/context/ce-ptr/cellerator_stl_replacement_migration_map.md\",\".todo-orchestrator/ce-ptr-plan.json\"],\"forbidden_paths\":[\"include\",\"src\",\"components\",\"compat\",\"tests\",\"bench\"],\"read_paths\":[\"AGENTS.md\",\"scope.md\",\"docs/architecture.qmd\",\"docs/current_implementation.qmd\",\"docs/migration_roadmap.qmd\",\"src/geometry/AGENTS.md\",\".todo-orchestrator\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-COORD:CE-PTR-00:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-COORD",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-COORD\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-00\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-00",
+        "version": 1
+      },
+      {
+        "content_hash": "99215f6cb2fb1fb355bb39a8580c175a08bbf6ab000faf9423ead63891b3cd36",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"no incidental D2H host H2D boundary\",\"no scalar fetch solely for next allocation size when preflight bound exists\",\"CUB scratch queried and prepared\",\"host adapter explicit\"],\"required_analysis\":[\"three stage host owners\",\"support candidate and evidence relations\",\"prepared and launch lifetimes\",\"exact upper bounds\",\"device and terminal-host domains\",\"stage mutation\",\"resident images and workspaces\",\"candidate and score semantics\",\"no steady-state allocation\",\"CPU and GPU equivalence sanitizer tests\",\"end-to-end transfers sync allocation latency bandwidth registers occupancy stalls\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Treat the three stages as one pipeline, retain authoritative host referees, and collect before-after V100 end-to-end evidence under the benchmark mutex.\",\"objective\":\"Redesign gene support, candidate discovery, and exact merge scoring as one device-resident prepared pipeline with explicit views and workspaces, preflight capacities and CUB scratch, and terminal-only host materialization.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/geometry/gene_support_bitset.hh\",\"include/Cellerator/geometry/gene_candidate_discovery.hh\",\"include/Cellerator/geometry/merge_cost.hh\",\"src/compute/dataset/gene_support_bitset.cu\",\"src/geometry/candidate_discovery\",\"src/geometry/merge_cost.cc\",\"src/geometry/merge_cost_cuda.cu\"],\"read_paths\":[\"include/Cellerator/runtime\",\"src/runtime\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-DEVICE-PIPELINE:CE-PTR-09:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-DEVICE-PIPELINE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-DEVICE-PIPELINE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-09\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-09",
+        "version": 1
+      },
+      {
+        "content_hash": "c651b087a7b17c6934b1f6af407888f6ccb775b8441eff29541379a65acc669f",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"public API remains raw-view capable\",\"not template-only\",\"K not globally hard-coded\",\"assembly only after material compiler limitation evidence\"],\"required_analysis\":[\"current internal top-K storage\",\"top-K score identity relation\",\"kernel lifetime\",\"K and tile bounds\",\"register shared local device domains\",\"merge mutation\",\"specialized internal replacement\",\"stable public API and ordering invariants\",\"no host allocation\",\"exact-search equivalence and sanitizer\",\"PTX SASS registers spills occupancy latency\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Measure current V100 register and spill behavior, compare bounded implementation alternatives, and promote only evidence-backed internal forms.\",\"objective\":\"Preserve raw public device views while evaluating and implementing K-specialized internal top-K storage and merges with controlled register pressure, spills, shared-memory use, warp cooperation, and compact identities.\",\"scope\":{\"exclusive_paths\":[\"src/compute/neighbors/exact_search\"],\"read_paths\":[\"include/Cellerator/compute/neighbors\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-EXACT-SEARCH:CE-PTR-11:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-EXACT-SEARCH",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-EXACT-SEARCH\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-11\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-11",
+        "version": 1
+      },
+      {
+        "content_hash": "8e8bac172f92ce09a592ef8921fb986a1c2b69372a5ded3f22a828a0538583be",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"Cellerator retains reusable math only\",\"CellShard and BioPrep boundaries respected\",\"no mechanical monolith-wide vector translation\",\"durable application objects downstream\"],\"required_analysis\":[\"monolithic vector owners\",\"kernel index route result semantics\",\"prepared versus durable lifetimes\",\"K index and shard bounds\",\"host device external domains\",\"build query and result mutation\",\"native low-level view plus downstream ownership split\",\"identity residency and policy invariants\",\"allocation behavior\",\"cross-boundary equivalence\",\"transfer memory latency evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Determine the live architectural split first, then migrate or remove Cellerator ownership only where the standing CellShard and BioPrep boundaries require it.\",\"objective\":\"Split forward-neighbor low-level mathematical kernels, views, routes, workspaces, and fixed-K primitives from downstream index construction, durable ownership, cell lookup, sharding, residency, storage, biological workflow policy, and application results.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/compute/neighbors/forward_neighbors\",\"src/compute/neighbors/forward_neighbors\"],\"read_paths\":[\"include/Cellerator/interop/cellshard\",\"src/interop/cellshard\",\"include/Cellerator/compute/preprocess\",\"src/preprocess\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-FORWARD:CE-PTR-12:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-FORWARD",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-FORWARD\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-12\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-12",
+        "version": 1
+      },
+      {
+        "content_hash": "f0cac61019167cd4b0e63c335f217261aea8f15af0e2fc2ed484eac154d6486e",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"no duplication of CE-GEO work\",\"count scan fill where justified\",\"direct final-image compilation where possible\",\"prior exact referees preserved\"],\"required_analysis\":[\"each accidental intermediate\",\"actual geometry relation\",\"construction lifetime\",\"preflight cardinality\",\"host or device domain\",\"mutation phases\",\"flat or direct replacement\",\"codec and identity invariants\",\"workspace allocation behavior\",\"equivalence tests\",\"construction and repeated-use evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Inspect CE-GEO ownership immediately before claiming and split or defer only overlapping paths; continue independent layout or construction surfaces.\",\"objective\":\"Replace inappropriate nested builders, generic coordinate streams, repeated reconstruction, route tape or mask ownership, nested layout metrics, and selection scratch with count-scan-fill, flat relations, exact workspaces, and direct image compilation.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/geometry/pack.hh\",\"src/geometry/pack.cc\",\"include/Cellerator/geometry/gating.hh\",\"include/Cellerator/geometry/gating_cuda.cuh\",\"src/geometry/gating.cc\",\"src/geometry/gating_cuda.cu\",\"include/Cellerator/geometry/layout_metrics.hh\",\"include/Cellerator/geometry/layout_selector.hh\",\"src/geometry/layout_metrics.cc\",\"src/geometry/layout_selector.cc\"],\"read_paths\":[\"include/Cellerator/geometry\",\"src/geometry\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-GEOMETRY:CE-PTR-04:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-GEOMETRY",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GEOMETRY\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-04\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-04",
+        "version": 1
+      },
+      {
+        "content_hash": "83fd2ff6bed8e3fafe558eca5a9eb633a6f1b3a0539fbc12e87008ee869d42a9",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"fixed-K used when semantically natural\",\"CSR not forced as doctrine\",\"canonical identities recoverable\",\"branch and supernode equivalence\"],\"required_analysis\":[\"graph and table owners\",\"trajectory edge tree supernode semantics\",\"structure and scratch lifetimes\",\"K degree node and edge bounds\",\"host and device domains\",\"build traversal and update mutation\",\"SoA fixed-width CSR image replacement\",\"identity topology and traversal invariants\",\"allocation behavior\",\"reference graph equivalence\",\"latency memory traffic evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Classify each graph by actual bounds and traversal before selecting fixed-width, CSR, Euler, or packed-relation forms.\",\"objective\":\"Replace generic trajectory graph and table ownership with SoA images, bounded fixed-width candidate or forward edges where natural, tree topology and child CSR projections, Euler order and inverse, two-pass supernodes, packed aggregation, and allocation-aware branch detection.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/compute/operators/graph\",\"include/Cellerator/examples/trajectory\",\"include/Cellerator/trajectory\"],\"read_paths\":[\"src/compute/operators\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-GRAPHS:CE-PTR-10:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-GRAPHS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-GRAPHS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-10\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-10",
+        "version": 1
+      },
+      {
+        "content_hash": "ac62d9b9e5013810e80b6b52a2586059f3c7ddff19d40b208e1ace0117e5a564",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"no infrastructure deletion with live consumers\",\"prepared scratch stable\",\"copies explicit and asynchronous where promised\",\"framework external lifetimes remain at adapter boundary\"],\"required_analysis\":[\"remaining generic runtime owners\",\"session allocation and scratch semantics\",\"all lifetimes\",\"capacities and high-water\",\"host pinned device graph-stable domains\",\"prepare bind execute mutation\",\"session-handle replacement\",\"stream sync and address invariants\",\"sealed allocation behavior\",\"consumer and graph-capture tests\",\"allocation sync transfer latency evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Reinventory all consumers after the implementation fan-in, remove only truly obsolete infrastructure, and run integration and graph-capture validation.\",\"objective\":\"After consumers migrate, remove obsolete host_buffer, shared-owned device buffers, duplicate graph-local buffers, grow-by-reallocation scratch arenas, and blocking copy helpers, converging on session allocation handles, explicit views and streams, prepared scratch, and stable addresses.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/compute/core/host_buffer.hh\",\"include/Cellerator/runtime/device_buffer.cuh\",\"include/Cellerator/runtime\",\"src/runtime\"],\"read_paths\":[\"include/Cellerator\",\"src\",\"compat\",\"components/CelleraTorch\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-INTEGRATION:CE-PTR-13:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-INTEGRATION",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-INTEGRATION\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-13\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-13",
+        "version": 1
+      },
+      {
+        "content_hash": "d23d24d874493ac80af4e6cdda1683070bb00eb517b3214be8a3787d6a78906b",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"canonical feature identities preserved\",\"exact codec and objective semantics\",\"local updates\",\"preflight capacity\",\"no generic container clone\"],\"required_analysis\":[\"current member and cache owners\",\"block state semantics\",\"block feature and cache bounds\",\"optimizer lifetime\",\"host memory placement\",\"local mutation\",\"prepared replacement\",\"canonical feature and codec invariants\",\"allocation behavior\",\"objective equivalence\",\"construction and proposal evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Freeze and validate the optimizer state contract needed by CE-PTR-06 without coupling unrelated workstreams.\",\"objective\":\"Replace per-block growable member and cache ownership with a prepared domain representation using bounded fixed-stride slabs where justified, aligned descriptors, direct feature-slot maps, explicit generations, prepared union-cache storage, exact workspaces, and local updates.\",\"scope\":{\"exclusive_paths\":[\"src/geometry/optimizer_state.hh\",\"src/geometry/optimizer.cc\"],\"read_paths\":[\"include/Cellerator/geometry\",\"src/geometry/merge_cost.cc\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-OPTIMIZER:CE-PTR-05:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-OPTIMIZER\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-05\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-05",
+        "version": 1
+      },
+      {
+        "content_hash": "2aad43ebfd266bdcd12eadd8cb24b6737cf249bf117bbb791c87bfbf33adeba4",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"no whole-state deep snapshot rollback\",\"deterministic shortlist\",\"exact conflict behavior\",\"equivalence before deleting old mechanics\"],\"required_analysis\":[\"proposal and snapshot containers\",\"pair mutation and conflict relations\",\"fanout and blacklist bounds\",\"iteration lifetime\",\"host memory\",\"proposal mutation and rollback\",\"packed relation and journal replacement\",\"determinism and objective invariants\",\"allocation behavior\",\"equivalence and rollback tests\",\"proposal throughput and memory evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Consume CE-PTR-05 state contract, implement proposal relations and mutation journal, then validate exact optimizer behavior and memory reductions.\",\"objective\":\"Replace map, set, vector-heavy proposal, shortlist, conflict, blacklist, snapshot, and rollback mechanics with packed keys, flat sort-compact deduplication, direct counters, generation marks, explicit bounded blacklists, and mutation journals.\",\"scope\":{\"exclusive_paths\":[\"src/geometry/optimizer.cc\",\"src/geometry/optimizer_state.hh\"],\"read_paths\":[\"include/Cellerator/geometry\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-OPTIMIZER:CE-PTR-06:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-OPTIMIZER\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-06\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-06",
+        "version": 1
+      },
+      {
+        "content_hash": "60b621736e8e37548391f8d61b9e4cc8fd8cd609654999c8a43b7f1ea527945b",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"stable payload formats preserved\",\"no gratuitous schema redesign\",\"workspace queries exact or safe bounded\",\"direct execution unchanged\"],\"required_analysis\":[\"builder scratch containers\",\"projection construction relations\",\"build lifetime\",\"section and scratch bounds\",\"host and device domains\",\"construction mutation\",\"queried workspace replacement\",\"payload byte and identity invariants\",\"allocation behavior\",\"round-trip rebind execution tests\",\"construction memory latency evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Measure builder scratch and migrate only useful construction ownership while preserving existing pointer-free formats and direct rebound views.\",\"objective\":\"Preserve CPK1, FMP1, CTP1, and related pointer-free projection contracts while replacing only generic STL-heavy construction scratch with queried caller-owned prepared workspaces where useful.\",\"scope\":{\"exclusive_paths\":[\"src/compute/projection/physical_feature_major.cc\",\"src/compute/projection/physical_transpose.cc\",\"include/Cellerator/compute/projection\"],\"read_paths\":[\"include/Cellerator/geometry/persistence\",\"src/geometry/persistence\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-PROJECTIONS:CE-PTR-14:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-PROJECTIONS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-PROJECTIONS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-14\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-14",
+        "version": 1
+      },
+      {
+        "content_hash": "d5e44ca9f43c89666f4a4ff79482f1a9221a4b55f052c32016cb30febae114c2",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"deterministic reproduction\",\"stable row identity\",\"derived fields removed only when exactly recoverable\",\"no file or storage ownership\"],\"required_analysis\":[\"sampling owners and derived arrays\",\"sample plan and sampled relation\",\"plan and result lifetimes\",\"row and nnz bounds\",\"host and device domains\",\"construction mutation\",\"image workspace replacement\",\"determinism provenance and row identity\",\"allocation behavior\",\"reproduction tests\",\"construction memory latency evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Define explicit sample image and workspace contracts, evaluate redundant hashes and weights from live provenance, and preserve exact reproduction.\",\"objective\":\"Migrate sampling plans, results, and sampled CSR construction to explicit images and workspaces while preserving deterministic reproduction, provenance, stable row identity, and Cellerator's non-storage boundary.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/compute/sampling.hh\",\"include/Cellerator/compute/sampling_materialization.hh\",\"src/compute/dataset/sampling.cc\",\"src/compute/dataset/sampling_materialization.cc\"],\"read_paths\":[\"include/Cellerator/geometry\",\"src/geometry\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-SAMPLING:CE-PTR-07:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-SAMPLING",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SAMPLING\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-07\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-07",
+        "version": 1
+      },
+      {
+        "content_hash": "1f23092d49e59c994f10cbd1520759c463d5b73c7b4b63e3c7b682db14ce5a3e",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"all held-out null bootstrap stability semantics preserved\",\"provenance identities exact\",\"deterministic ordering where required\",\"old path retained until equivalence\"],\"required_analysis\":[\"grouped and membership containers\",\"validation unit edge and record relations\",\"validation lifetime\",\"unit row and edge bounds\",\"host placement\",\"grouping and null-model mutation\",\"sorted offsets and flat-table replacement\",\"statistical provenance invariants\",\"allocation behavior\",\"prior validation equivalence\",\"latency memory evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.\",\"objective\":\"Replace nested vectors and hash maps or sets in statistical validation with sorted group-row relations, offsets, row-unit maps, packed edge keys, exact flat membership, and generation-mark workspaces without changing statistical or provenance semantics.\",\"scope\":{\"exclusive_paths\":[\"src/geometry/statistical_validation.cc\",\"src/geometry/record_statistical_validation.cc\"],\"read_paths\":[\"include/Cellerator/geometry\",\"tests\",\"bench\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-SAMPLING:CE-PTR-08:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-SAMPLING",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SAMPLING\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-08\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-08",
+        "version": 1
+      },
+      {
+        "content_hash": "14a250a4cc392f11ec972b88ae13b4392bf97fb498b16e95fb1d2cfe330e5835",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"canonical identity recovery\",\"versioned validation\",\"direct typed rebind\",\"no duplicate thawed owner unless justified\",\"CE-GEO overlap deferred rather than bypassed\"],\"required_analysis\":[\"accidental owners\",\"semantic plan sections\",\"plan lifetime\",\"section bounds\",\"host and device domains\",\"freeze and rebind pattern\",\"image replacement\",\"identity invariants\",\"allocation behavior\",\"round-trip tests\",\"before-after evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Reinspect CE-GEO live scopes before claim; work only on unowned static-plan sections and defer any path currently interlocked by CE-GEO.\",\"objective\":\"Migrate frozen packing and other durable static plans from collections of independent owning arrays toward coherent versioned images and typed views, converging with CPK1 and execution-image precedents where semantics permit.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/geometry/packing_plan.hh\",\"src/geometry/packing_plan.cc\",\"include/Cellerator/geometry/persistence\",\"src/geometry/persistence\"],\"read_paths\":[\"include/Cellerator/execution\",\"src/execution\",\"tests\",\"compat/cp_math_v1\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-STATIC-PLANS:CE-PTR-03:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-STATIC-PLANS",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-STATIC-PLANS\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-03\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-03",
+        "version": 1
+      },
+      {
+        "content_hash": "ddc1c937400d9513bccae7db6ebca3669fec9926a3a4c936f7fe4175cc4d569f",
+        "content_json": "{\"completion_contract\":{\"acceptance\":[\"no generic owning sequence\",\"views are non-owning\",\"requirements are queryable\",\"image offsets validate\",\"existing session remains sole runtime authority\",\"host and CUDA compile coverage\"],\"required_analysis\":[\"current accidental representation\",\"semantic structure\",\"lifetime\",\"bounds\",\"memory domain\",\"mutation\",\"replacement\",\"invariants\",\"allocation behavior\",\"validation\",\"performance evidence\"]},\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Design against live session/image contracts, implement the minimum coherent substrate, and publish CE-PTR-SUBSTRATE-CONTRACT-READY early enough for independent lanes to proceed against the stable interface.\",\"objective\":\"Establish the smallest shared vocabulary for explicit placement, allocation records, typed non-owning views, caller/session-owned workspace, pointer-free image metadata, alignment, status failures, and safe compiler hints by reusing the existing execution session.\",\"scope\":{\"exclusive_paths\":[\"include/Cellerator/memory\",\"src/runtime/memory\",\"tests/memory\"],\"read_paths\":[\"include/Cellerator/runtime\",\"src/runtime\",\"include/Cellerator/execution\",\"src/execution\",\"include/Cellerator/geometry/persistence\",\"src/geometry/persistence\"]},\"tests\":[]}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "id": "CE-PTR-RUN:task_brief:CE-PTR-SUBSTRATE:CE-PTR-02:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "CE-PTR-SUBSTRATE",
+        "owner_scope_json": "{\"lane_id\":\"CE-PTR-SUBSTRATE\",\"run_id\":\"CE-PTR-RUN\",\"task_id\":\"CE-PTR-02\"}",
+        "run_id": "CE-PTR-RUN",
+        "superseded_by": null,
+        "task_id": "CE-PTR-02",
+        "version": 1
+      },
+      {
         "content_hash": "b6728c71a0d73d57fdb1d15bef25c35bcded1563a8297fb38f7f8a00ec33d973",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"CE-REMAP-01\",\"CE-REMAP-02\",\"CE-REMAP-03\",\"CE-REMAP-04\",\"CE-REMAP-05\",\"CE-REMAP-06\",\"CE-REMAP-07\",\"CE-REMAP-08\",\"CE-REMAP-09\",\"CE-REMAP-10\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-08-28T07:20:09Z",
@@ -58802,6 +61733,166 @@
         "task_id": "CE-POST-REMAP-04"
       },
       {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-ACCEPTANCE",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-15"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-BASELINE",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-01"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-COORD",
+        "position": 0,
+        "revision": 2376,
+        "state": "completed",
+        "task_id": "CE-PTR-00"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-DEVICE-PIPELINE",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-09"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-EXACT-SEARCH",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-11"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-FORWARD",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-12"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-GEOMETRY",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-04"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-GRAPHS",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-10"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-INTEGRATION",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-13"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-05"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-OPTIMIZER",
+        "position": 1,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-06"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-PROJECTIONS",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-14"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-SAMPLING",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-07"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-SAMPLING",
+        "position": 1,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-08"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-STATIC-PLANS",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-03"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-29T18:02:51Z",
+        "lane_id": "CE-PTR-SUBSTRATE",
+        "position": 0,
+        "revision": 2376,
+        "state": "queued",
+        "task_id": "CE-PTR-02"
+      },
+      {
         "activated_at": "2026-08-28T07:20:20Z",
         "completed_at": "2026-08-28T07:21:56Z",
         "enqueued_at": "2026-08-28T07:20:09Z",
@@ -58929,6 +62020,174 @@
       },
       {
         "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-ACCEPTANCE",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "validator",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-BASELINE",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-COORD",
+        "parent_lane_id": null,
+        "revision": 2376,
+        "role": "coordinator",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-DEVICE-PIPELINE",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "specialist",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-EXACT-SEARCH",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "specialist",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-FORWARD",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-GEOMETRY",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-GRAPHS",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-INTEGRATION",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "integrator",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-OPTIMIZER",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-PROJECTIONS",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-SAMPLING",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-STATIC-PLANS",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-SUBSTRATE",
+        "parent_lane_id": "CE-PTR-COORD",
+        "revision": 2376,
+        "role": "implementer",
+        "run_id": "CE-PTR-RUN",
+        "state": "ready",
+        "updated_at": "2026-08-29T18:05:35Z",
+        "workspace_mode": "contract_split"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-08-28T07:20:09Z",
         "id": "compat-v2-main",
         "parent_lane_id": null,
@@ -58970,6 +62229,16 @@
         "version": 1
       },
       {
+        "content_hash": "7e5e1e518343ba8814de2af41f63e10f09db2a557ef335bbc3d52cd220f9f8e0",
+        "content_json": "{\"acceptance_conditions\":[\"CE-PTR-15 final barrier and acceptance contract pass\",\"Permanent inventory and allowlist account for every remaining production owning-STL use\",\"Prepared and sealed paths meet their allocation and synchronization promises\",\"Canonical identities, persistence, rebind, and numerical behavior remain valid\",\"CPU and V100 evidence is complete and candid\",\"No CE-GEO task or interlock was duplicated or bypassed\"],\"boundaries\":[\"Bootstrap creates durable context and coordination only\",\"Production implementation occurs only in CE-PTR-01 through CE-PTR-15\",\"CellShard owns storage and distribution, BioPrep owns preprocessing policy, and CelleraTorch remains an adapter\",\"CE-GEO active path ownership is never bypassed\",\"Tests, fixtures, diagnostics, framework-required adapters, and justified cold paths are not indiscriminately purged\"],\"glossary\":{\"allowlist\":\"Measured or externally required cold production exception with explicit rationale, not an unexplained grep exemption.\",\"image\":\"Versioned pointer-free bytes plus validation and typed rebound view for immutable or compiled structure.\",\"parallel-forward\":\"Publish the CE-PTR-01 policy checkpoint and CE-PTR-02 frozen substrate interface before unrelated trailing validation completes, allowing independent first-class lanes to advance safely.\",\"workspace\":\"Caller or session-owned explicitly sized transient storage with no hidden growth.\"},\"invariants\":[\"No unspecified structure in production Cellerator\",\"No generic vector clone\",\"Immutable structures become versioned pointer-free images where appropriate\",\"Workspaces and capacities are explicit before prepared execution\",\"Views do not own and shared_ptr is not a core lifetime mechanism\",\"Flat and bounded domain relations precede node containers\",\"Composed GPU stages stay resident\",\"No online runtime autotuner\",\"V100 sm_70 is the primary performance target\",\"Semantics and repository boundaries outrank mechanical migration\"],\"objective\":\"Replace inappropriate production-core STL ownership and incidental generic structures with explicit semantic images, views, prepared workspaces, bounded relations, and correct repository ownership while preserving behavior and enabling aggressive parallel delivery.\"}",
+        "created_at": "2026-08-29T18:02:51Z",
+        "creation_revision": 2375,
+        "run_id": "CE-PTR-RUN",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "2b28d276d628c113f56c7eb8ebd58988af73b54fdb13155f60ff4db4a74e4b98",
         "content_json": "{\"acceptance_conditions\":[],\"boundaries\":[\"Compatibility run normalized from plan schema v2\"],\"glossary\":{\"lane\":\"single serial compatibility lane\"},\"invariants\":[],\"objective\":\"CE-REMAP\"}",
         "created_at": "2026-08-28T07:20:09Z",
@@ -59000,6 +62269,16 @@
         "root_task_id": "CE-POST-REMAP-01",
         "status": "active",
         "updated_at": "2026-08-28T10:09:51Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-08-29T18:02:51Z",
+        "id": "CE-PTR-RUN",
+        "revision": 2375,
+        "root_task_id": "CE-PTR",
+        "status": "active",
+        "updated_at": "2026-08-29T18:02:51Z"
       },
       {
         "active_charter_version": 1,
