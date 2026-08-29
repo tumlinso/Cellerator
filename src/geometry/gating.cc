@@ -1,6 +1,5 @@
 #include "Cellerator/geometry/gating.hh"
 
-#include <algorithm>
 #include <cstring>
 #include <utility>
 
@@ -98,8 +97,6 @@ validation_result validate_route_mask(const static_plan &plan, route_mask_view m
     validation_result plan_result = validate_plan_regions(plan);
     if (!plan_result) return plan_result;
 
-    std::vector<u32> sorted;
-    sorted.reserve(mask.region_count);
     for (u32 i = 0; i < mask.region_count; ++i) {
         const u32 region_id = mask.region_ids[i];
         const packed_region_desc *region = find_region(plan, region_id);
@@ -109,12 +106,10 @@ validation_result validate_route_mask(const static_plan &plan, route_mask_view m
         if (static_cast<region_role>(region->role) == region_role::discarded) {
             return validation_error(validation_code::invalid_region_role, region_id, "route mask cannot select discarded regions");
         }
-        sorted.push_back(region_id);
-    }
-    std::sort(sorted.begin(), sorted.end());
-    for (u32 i = 1u; i < static_cast<u32>(sorted.size()); ++i) {
-        if (sorted[i - 1u] == sorted[i]) {
-            return validation_error(validation_code::duplicate_id, sorted[i], "route mask contains a duplicate region id");
+        for (u32 prior = 0u; prior < i; ++prior) {
+            if (mask.region_ids[prior] == region_id) {
+                return validation_error(validation_code::duplicate_id, region_id, "route mask contains a duplicate region id");
+            }
         }
     }
     return validation_ok();
@@ -128,18 +123,55 @@ validation_result build_oracle_route_mask(
     if (out == nullptr) {
         return validation_error(validation_code::null_pointer, invalid_id, "route mask output is null");
     }
+    route_mask mask;
+    mask.region_ids.resize(count_oracle_route_regions(plan, scenario, microbatch));
+    route_mask_view view;
+    validation_result build_result = build_oracle_route_mask_into(
+        plan, scenario, microbatch,
+        {{mask.region_ids.data(), mask.region_ids.size(), {}}}, &view);
+    if (!build_result) return build_result;
+    *out = std::move(mask);
+    return validation_ok();
+}
+
+u32 count_oracle_route_regions(
+    const static_plan &plan,
+    oracle_gating_scenario scenario,
+    u32 microbatch) {
+    u32 count = 0u;
+    for (const packed_region_desc &region : plan.regions) {
+        count += active_for_oracle(region, scenario, microbatch) ? 1u : 0u;
+    }
+    return count;
+}
+
+validation_result build_oracle_route_mask_into(
+    const static_plan &plan,
+    oracle_gating_scenario scenario,
+    u32 microbatch,
+    route_id_storage storage,
+    route_mask_view *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "route mask view output is null");
+    }
     validation_result plan_result = validate_plan_regions(plan);
     if (!plan_result) return plan_result;
-
-    route_mask mask;
-    mask.region_ids.reserve(plan.regions.size());
+    const u32 required = count_oracle_route_regions(plan, scenario, microbatch);
+    if (required != 0u && storage.region_ids.data == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "route mask storage is null");
+    }
+    if (storage.region_ids.count < required) {
+        return validation_error(validation_code::invalid_offsets, required, "route mask storage capacity is insufficient");
+    }
+    u32 count = 0u;
     for (const packed_region_desc &region : plan.regions) {
         if (active_for_oracle(region, scenario, microbatch)) {
-            mask.region_ids.push_back(region.region_id);
+            storage.region_ids.data[count++] = region.region_id;
         }
     }
-    *out = std::move(mask);
-    return validate_route_mask(plan, view_route_mask(*out));
+    out->region_ids = storage.region_ids.data;
+    out->region_count = count;
+    return validate_route_mask(plan, *out);
 }
 
 validation_result validate_route_mask_matches_oracle(
@@ -172,10 +204,36 @@ validation_result record_route_tape(route_mask_view mask, route_tape *out) {
         return validation_error(validation_code::null_pointer, invalid_id, "route mask region ids are null");
     }
     route_tape tape;
-    if (mask.region_count != 0u) {
-        tape.region_ids.assign(mask.region_ids, mask.region_ids + mask.region_count);
-    }
+    tape.region_ids.resize(mask.region_count);
+    route_tape_view view;
+    validation_result result = record_route_tape_into(
+        mask, {{tape.region_ids.data(), tape.region_ids.size(), {}}}, &view);
+    if (!result) return result;
     *out = std::move(tape);
+    return validation_ok();
+}
+
+validation_result record_route_tape_into(
+    route_mask_view mask,
+    route_id_storage storage,
+    route_tape_view *out) {
+    if (out == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "route tape view output is null");
+    }
+    if (mask.region_count != 0u && mask.region_ids == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "route mask region ids are null");
+    }
+    if (mask.region_count != 0u && storage.region_ids.data == nullptr) {
+        return validation_error(validation_code::null_pointer, invalid_id, "route tape storage is null");
+    }
+    if (storage.region_ids.count < mask.region_count) {
+        return validation_error(validation_code::invalid_offsets, mask.region_count, "route tape storage capacity is insufficient");
+    }
+    if (mask.region_count != 0u) {
+        std::memmove(storage.region_ids.data, mask.region_ids, sizeof(u32) * mask.region_count);
+    }
+    out->region_ids = storage.region_ids.data;
+    out->region_count = mask.region_count;
     return validation_ok();
 }
 

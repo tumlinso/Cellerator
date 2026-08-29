@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cellerator/geometry/layout_metrics.hh"
+#include "Cellerator/memory/view.hh"
 
 #include <vector>
 
@@ -33,6 +34,26 @@ struct layout_selection_plan {
     std::vector<layout_selection_entry> entries;
     layout_plan_summary summary{};
 };
+
+struct layout_selection_plan_view {
+    u32 row_count = 0u;
+    u32 feature_count = 0u;
+    u32 nnz = 0u;
+    ::cellerator::memory::const_array_view<layout_selection_entry> entries;
+    layout_plan_summary summary{};
+};
+
+struct layout_selection_storage {
+    ::cellerator::memory::array_view<layout_selection_entry> entries;
+};
+
+validation_result select_layouts_into(
+    layout_metrics_plan_view metrics,
+    const layout_selector_config &config,
+    layout_selection_storage storage,
+    layout_selection_plan_view *out);
+
+layout_selection_plan_view view_layout_selection(const layout_selection_plan &selection);
 
 validation_result select_layouts(
     const layout_metrics_plan &metrics,
