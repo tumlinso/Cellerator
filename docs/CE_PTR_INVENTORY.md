@@ -46,7 +46,40 @@ not permission to infer missing semantics from container length.
 | Trajectory graph operators: `record_table.cuh`, `slab_index.cuh`, `forward_candidates.cuh`, `forward_prune.cuh`, `branch_detect.cuh`, `incremental_insert.cuh`, `supernode_reduce.cuh` | Many growable/nested vectors and hash DAG aggregation | Trajectory record SoA, embryo spans, bounded K edge table, child CSR, tree/member/Euler images, slab relation, packed DAG edges | Structure epoch plus launch workspace | K=4/8 primary bounded cases; exact node/edge/member counts via two-pass construction | Host/device images and caller workspaces | Preparation and hot GPU graph execution | Images + fixed tables + relations | CE-PTR-10 owns 70 vector and 1 unordered-map spellings; stable node/time/embryo identity and deterministic traversal order remain explicit. |
 | Public trajectory examples: `trajectory_build.cuh`, `trajectory_query.cuh` | Materialized vectors | Direct member/subtree spans and caller-provided result path | Caller boundary | Query/build capacities explicit | External/caller host memory | Cold adapter | Views / example migration | CE-PTR-10 owns 7 vector spellings because these headers are publicly importable; no core owner may be reintroduced. |
 | Forward-neighbor workflow: `fn_index.hh`, `forward_neighbors.cu`, `cuvs_sharded_knn.cu` | Shared ownership, hash lookup, growable shard staging | Prepared low-level scoring/refinement views separated from downstream index/storage/workflow ownership | Prepared kernel versus downstream durable index | K, shard count, residency, and transfer bounds explicit | Device workspaces and downstream-owned storage | Hot kernels plus cold boundary | Move + redesign | CE-PTR-12 owns 1 vector, 2 unordered-map, and 6 shared-pointer spellings; CellShard/storage and BioPrep policy must not return to core. |
-| Runtime buffer ownership: `runtime/device_buffer.cuh` | Shared-owned allocation and blocking helper copies | Execution-session allocation handles, leases, raw typed views, explicit stream copies | Session / prepared / launch, separately | Byte size, alignment, device, generation, and stream binding explicit | Device | Hot runtime | Eliminate | CE-PTR-13 retires 2 shared-pointer spellings after consumers migrate; no second runtime or generic buffer owner is allowed. |
+| Runtime buffer ownership: `runtime/device_buffer.cuh` | Shared-owned allocation and blocking helper copies | Execution-session allocation handles, leases, raw typed views, explicit stream copies | Session / prepared / launch, separately | Byte size, alignment, device, generation, and stream binding explicit | Device | Hot runtime | Compatibility keep; prohibit new prepared use | CE-PTR-13 integrates the session substrate but retains 2 shared-pointer spellings for live legacy consumers; no second runtime or generic buffer owner is allowed. |
+
+## Final reconciliation
+
+CE-PTR-15 reconciled the live tree after integration at commit `08ae74f`.
+The strict gate now accounts for 169 controlled spellings in 27 production
+files: 165 `std::vector`, two `std::priority_queue`, and two
+`std::shared_ptr`. This is a reduction of 67 spellings (28.4 percent) and nine
+files from the baseline. All production `std::map`, `std::set`,
+`std::unordered_map`, and `std::unordered_set` debt is gone. The remaining
+path-family ceilings are exact live counts and may only decrease.
+
+Remaining controlled exceptions are transitional and classified by owner:
+
+| Migration owner | Final controlled occurrences | Bounded disposition |
+| --- | ---: | --- |
+| CE-PTR-03 static planner | 18 vectors | Cold frozen-plan construction compatibility around CPI1/CPK1/CPE2. |
+| CE-PTR-04 geometry construction | 15 vectors | Cold count-scan-fill construction tables and compatibility results; no hot runtime ownership. |
+| CE-PTR-05/06 optimizer | 22 vectors | Prepared optimizer state/results; repeated proposal tables and mutation journal use explicit slabs/views. |
+| CE-PTR-07 sampling | 30 vectors, 2 priority queues | Cold deterministic sample/image construction and compatibility result surfaces. |
+| CE-PTR-09 resident pipeline | 5 vectors | Host reference/terminal compatibility around the device-resident pipeline. |
+| CE-PTR-10 graph and public examples | 71 vectors | Compatibility image builders, fixed-width relations, and caller-facing examples; sealed native views remain distinct. |
+| CE-PTR-12 cuVS adapter | 1 vector | Cold external-library shard staging. |
+| CE-PTR-13 runtime compatibility | 2 shared pointers | Legacy `device_buffer` owner only; forbidden as a new prepared-path pattern. |
+| CE-PTR-14 projection builders | 3 vectors | Cold FMP1/CTP1 validation/build compatibility around exact workspace contracts. |
+
+Passing the lexical gate does not mean every generic helper is gone.
+`host_buffer.hh` remains a grow-by-reallocation compatibility sequence used by
+the cuVS boundary. The trajectory compatibility workspace retains allocation
+and blocking-copy helpers for batch construction. These are documented
+non-lexical debt, not sealed allocation-free execution, and must not be moved
+into prepared runtime ownership. Removing live compatibility infrastructure
+without migrating its callers was explicitly out of scope for final
+convergence.
 
 ## Known non-lexical or secondary surfaces
 
@@ -55,10 +88,12 @@ snapshot is zero or the current owner is not one of the gate families:
 
 - frozen packing plans converge with CPK1/CPE2 image precedents under
   CE-PTR-03 without mechanically changing a sound ABI;
-- `host_buffer.hh` is a generic grow-by-reallocation vector clone and is removed
-  by CE-PTR-13 after consumers migrate;
-- runtime scratch growth and blocking transfer helpers converge on prepared
-  session workspaces and explicit stream operations under CE-PTR-13;
+- `host_buffer.hh` remains a generic grow-by-reallocation compatibility
+  sequence; its live cuVS consumers prevent deletion without a separately
+  scoped caller migration;
+- new runtime and prepared paths use session workspaces and explicit stream
+  operations; legacy `device_buffer` and trajectory batch helpers retain
+  bounded blocking compatibility behavior and are not hot-path evidence;
 - raw exact-search public device views remain valid while CE-PTR-11 evaluates
   K-specialized internal register/shared-memory representations on V100;
 - CPK1, FMP1, CTP1, and CPE2 remain versioned pointer-free evidence; only their
@@ -77,5 +112,6 @@ python scripts/check_no_inappropriate_core_stl.py
 The normal gate permits debt removal and rejects new paths, new families, or an
 increase above any exact path/family ceiling. `--strict-stale` is the final
 convergence mode: it also requires removed debt to be deleted from the
-allowlist. CE-PTR-15 reconciles this inventory against live source, measured
-exceptions, repository-boundary moves, and all completed lane evidence.
+allowlist. CE-PTR-15 completed that reconciliation against live source,
+measured exceptions, repository-boundary moves, and all completed lane
+evidence; strict mode is now a required final gate.

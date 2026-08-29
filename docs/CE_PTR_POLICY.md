@@ -79,8 +79,11 @@ literals are removed before token matching so documentation does not create
 false debt. The gate is intentionally lexical and conservative: code review
 and the classified inventory remain authoritative for semantics.
 
-`std::shared_ptr` is prohibited for core runtime and prepared ownership;
-session allocation handles, leases, and typed hot views replace it. Node-based
+New `std::shared_ptr` ownership is prohibited for core runtime and prepared
+paths; session allocation handles, leases, and typed hot views replace it.
+The final CE-PTR inventory retains one explicitly bounded legacy compatibility
+owner in `runtime/device_buffer.cuh`; it is not a prepared-path precedent and
+its blocking transfer helpers are not allocation-free execution. Node-based
 maps and sets require an explicit benchmark exception against the named exact
 table, packed-key, direct-index, or sort/compact alternative. No such permanent
 exception is currently granted. Framework ABI requirements and cold external

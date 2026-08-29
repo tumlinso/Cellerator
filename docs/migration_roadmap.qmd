@@ -537,3 +537,18 @@ code. Host-only module infrastructure is proven by direct Clang import, while
 native CMake module scanning and architectural `.ccm` surfaces remain deferred
 until supported build tooling is installed. Final validation evidence is in
 `bench/repository_remap/final/validation.json`.
+
+## CE-PTR convergence status
+
+CE-PTR-01 through CE-PTR-15 complete the scoped ownership migration and final
+acceptance barrier. The result freezes the production policy and memory
+substrate, integrates all independent migration lanes, reconciles the strict
+inventory, and validates the combined source on the V100-first baseline.
+
+This closes the CE-PTR campaign, not the entire architectural roadmap. Exact
+non-increasing compatibility ceilings remain for cold builders, adapters, and
+legacy runtime surfaces; `host_buffer`, legacy `device_buffer`, and trajectory
+batch helpers require separately scoped caller migrations before removal.
+Future work must reduce those ceilings or replace the live callers and may not
+weaken the source gate, redefine CellShard as a semantic owner, or generalize a
+compatibility helper into the prepared core.
