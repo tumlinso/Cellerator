@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "campaign": "CE-GEO",
+  "task_id": "CE-GEO-01",
+  "observed_at": "2026-08-29T19:38:49Z",
+  "source": {
+    "repository": "cellerator",
+    "branch": "main",
+    "commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+    "remote": "git@github.com:tumlinso/Cellerator.git",
+    "remote_main": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+    "dirty_before_claim": false,
+    "claim_generated_paths": [
+      ".todo-orchestrator/state.snapshot.json",
+      "todo-status.md",
+      "todos.md",
+      "todos/ce-geo-01.md"
+    ],
+    "user_dirty_paths": [],
+    "git_diff_check": "pass"
+  },
+  "workflow": {
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "project_revision_at_claim": 2380,
+    "workflow_front_door": "coding-workflow",
+    "run_id": "CE-GEO-RUN-V1",
+    "lane_id": "CE-GEO-L-COORD",
+    "role": "coordinator",
+    "claimed_task": "CE-GEO-01",
+    "active_claims_observed": ["CE-GEO-01"],
+    "first_class_runs": 6,
+    "workflow_lanes": 39,
+    "integration_queue_entries": 0,
+    "ce_geo": {
+      "tasks": 109,
+      "lanes": 15,
+      "interfaces": 10,
+      "barriers": 5,
+      "rendezvous": 1
+    },
+    "ce_amp": {
+      "tasks": 10,
+      "lanes": 7,
+      "permission_decision": "CE-AMP-PERMISSION",
+      "permission_value": "not_granted",
+      "required_checkpoint": "CE-GEO-COMPLETE",
+      "actionable": false
+    },
+    "project_control_observation": {
+      "coordination_authority": "todo_semantic_workflow",
+      "coordination_revision_before_claim": 2379,
+      "provider_skew": 0,
+      "agent_status_warning": "agent_state_unavailable",
+      "interpretation": "The coding-workflow claim response is authoritative; project-control agent-status unavailability is not treated as proof of quiescence."
+    }
+  },
+  "coordination_entities": {
+    "named_locks": [
+      "ce-geo-artifact-golden",
+      "ce-geo-build-manifest",
+      "ce-geo-cpe2-schema",
+      "ce-geo-documentation",
+      "ce-geo-integration",
+      "ce-geo-operation-core",
+      "cuda-benchmark-mutex"
+    ],
+    "resource_classes": [
+      {
+        "id": "accelerator",
+        "mode": "exclusive",
+        "selector": "accelerator:any"
+      },
+      {
+        "id": "dataset",
+        "mode": "shared"
+      },
+      {
+        "id": "gpu",
+        "mode": "exclusive"
+      }
+    ],
+    "global_interfaces": 42,
+    "global_checkpoints": 74,
+    "global_barriers": 12
+  },
+  "accelerators": {
+    "discovery_command": "nvidia-smi --query-gpu=index,uuid,name,compute_cap,driver_version,memory.total --format=csv,noheader",
+    "driver_version": "580.173.02",
+    "devices": [
+      {"index": 0, "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8", "name": "Tesla V100-SXM2-16GB", "compute_capability": "7.0", "memory_mib": 16384},
+      {"index": 1, "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505", "name": "Tesla V100-SXM2-16GB", "compute_capability": "7.0", "memory_mib": 16384},
+      {"index": 2, "uuid": "GPU-d745da9c-7649-8334-41f1-483afa6f3206", "name": "Tesla V100-SXM2-16GB", "compute_capability": "7.0", "memory_mib": 16384},
+      {"index": 3, "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a", "name": "Tesla V100-SXM2-16GB", "compute_capability": "7.0", "memory_mib": 16384}
+    ],
+    "topology_summary": "GPU0-GPU2 and GPU1-GPU3 have NV6 links; the two linked pairs are attached to separate NUMA nodes.",
+    "leases_held": []
+  },
+  "coexistence": {
+    "ce_ptr_run": "CE-PTR-RUN",
+    "active_ce_ptr_claims": [],
+    "known_overlap_classes": [
+      "runtime headers and sources",
+      "geometry persistence",
+      "geometry optimizer and support discovery",
+      "central build and test registration"
+    ],
+    "avoidance": [
+      "CE-GEO-01 owns only this preflight evidence file.",
+      "Later CE-GEO tasks must revalidate CE-PTR claims before touching overlapping paths.",
+      "Shared build, export, catalog, and documentation paths remain integration-owned and lock-protected.",
+      "No claim, lock, lease, interface, checkpoint, barrier, or integration entry was recovered, released, superseded, or stolen."
+    ]
+  },
+  "additive_identity_proof": {
+    "ce_geo_prefix_preexisting_collision": false,
+    "ce_amp_prefix_preexisting_collision": false,
+    "historical_runs_modified": false,
+    "historical_interfaces_revised": false,
+    "project_reinitialized": false,
+    "generated_projections_mutated_only_by_workflow_authority": true
+  },
+  "rollback": {
+    "source_changes": "Revert only the narrow CE-GEO task commit; never reset, clean, stash, or discard the shared worktree.",
+    "workflow_state": "Use coding-workflow finish_task release or owner-authorized workflow maintenance; never edit SQLite or generated projections manually.",
+    "claims_and_resources": "Release only handles and leases issued to the current CE-GEO task; never force-release sibling work.",
+    "artifacts": "Preserve negative evidence and generated history; remove or supersede records only through the transactional authority."
+  }
+}

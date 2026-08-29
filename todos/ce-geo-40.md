@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-40: Typed CPE2 capability manifest
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2448`; current project revision is in `todo-status.md`.
 
 ## Objective
 Use the existing capability_section hook for a typed device-specific manifest without changing CPE2 record sizes.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

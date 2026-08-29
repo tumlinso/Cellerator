@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T19:11:12Z",
+  "generated_at": "2026-08-29T20:42:38Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 2379,
+  "project_revision": 2459,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -1486,30 +1486,30 @@
       {
         "id": "CE-GEO-ARCHITECTURE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 2379,
+        "reached_at": "2026-08-29T19:43:04Z",
+        "revision": 2424,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-GEO-02",
         "title": "CE-GEO settled execution program frozen"
       },
       {
         "id": "CE-GEO-BASELINE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 2379,
+        "reached_at": "2026-08-29T19:46:47Z",
+        "revision": 2430,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-GEO-03",
         "title": "CPK1 CPE2 catalog session sparse transpose and experimental WMMA baseline frozen"
       },
       {
         "id": "CE-GEO-BENCH-INFRA-V1",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 2379,
+        "reached_at": "2026-08-29T20:42:38Z",
+        "revision": 2459,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-GEO-110",
         "title": "Permanent complete-cost CE-GEO benchmark infrastructure validated"
       },
@@ -26122,6 +26122,806 @@
         "revision": 2379,
         "seq": 2379,
         "timestamp": "2026-08-29T19:11:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2380,
+        "seq": 2380,
+        "timestamp": "2026-08-29T19:38:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2381,
+        "seq": 2381,
+        "timestamp": "2026-08-29T19:40:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2382,
+        "seq": 2382,
+        "timestamp": "2026-08-29T19:40:25Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-DIFF-CHECK\"}",
+        "revision": 2383,
+        "seq": 2383,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5f590946-799c-4f11-a00a-7293f11832cd\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2384,
+        "seq": 2384,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-EVIDENCE\"}",
+        "revision": 2385,
+        "seq": 2385,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f46953fc-400c-4d2d-86d2-f3e8f6a691b8\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 2386,
+        "seq": 2386,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-GIT-STATUS\"}",
+        "revision": 2387,
+        "seq": 2387,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d9614f8f-6ec9-4bf4-8686-0c357a983c2e\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2388,
+        "seq": 2388,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-WORKFLOW-AUDIT\"}",
+        "revision": 2389,
+        "seq": 2389,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"1923e3ac-5cf2-4e82-b6ab-445b40fa0d13\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2390,
+        "seq": 2390,
+        "timestamp": "2026-08-29T19:40:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2391,
+        "seq": 2391,
+        "timestamp": "2026-08-29T19:40:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-DIFF-CHECK\"}",
+        "revision": 2392,
+        "seq": 2392,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b2ae4e8f-2056-4061-a30f-239963ac62da\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2393,
+        "seq": 2393,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-EVIDENCE\"}",
+        "revision": 2394,
+        "seq": 2394,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f9e113f4-d53e-4441-9965-08627b267d63\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 2395,
+        "seq": 2395,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-GIT-STATUS\"}",
+        "revision": 2396,
+        "seq": 2396,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"443400d2-9122-421c-b67c-8f0e5f9c6b0a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2397,
+        "seq": 2397,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-WORKFLOW-AUDIT\"}",
+        "revision": 2398,
+        "seq": 2398,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"3c379da5-935b-47c2-827c-7f386969cc0a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2399,
+        "seq": 2399,
+        "timestamp": "2026-08-29T19:40:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2400,
+        "seq": 2400,
+        "timestamp": "2026-08-29T19:40:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-DIFF-CHECK\"}",
+        "revision": 2401,
+        "seq": 2401,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"c3d4e82d-8ccb-4275-9b69-d0a69e667968\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2402,
+        "seq": 2402,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-EVIDENCE\"}",
+        "revision": 2403,
+        "seq": 2403,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d51ab51c-a1b6-429b-8dbc-fabc0dfdec6f\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 2404,
+        "seq": 2404,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-GIT-STATUS\"}",
+        "revision": 2405,
+        "seq": 2405,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"9914debc-9a90-4388-866b-e6f13a57d4ce\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2406,
+        "seq": 2406,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-WORKFLOW-AUDIT\"}",
+        "revision": 2407,
+        "seq": 2407,
+        "timestamp": "2026-08-29T19:41:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e899f1bf-516b-410d-976e-42f660d87fa2\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2408,
+        "seq": 2408,
+        "timestamp": "2026-08-29T19:41:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2409,
+        "seq": 2409,
+        "timestamp": "2026-08-29T19:42:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-DIFF-CHECK\"}",
+        "revision": 2410,
+        "seq": 2410,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-DIFF-CHECK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"73f8b757-1c01-4321-b035-2a25c45a9698\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2411,
+        "seq": 2411,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-EVIDENCE\"}",
+        "revision": 2412,
+        "seq": 2412,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7143e4a1-6888-4d0a-bb29-2569a76fe043\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2413,
+        "seq": 2413,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-GIT-STATUS\"}",
+        "revision": 2414,
+        "seq": 2414,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-GIT-STATUS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"3d1ac197-8417-4594-8abd-01d38cb499aa\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2415,
+        "seq": 2415,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-01-WORKFLOW-AUDIT\"}",
+        "revision": 2416,
+        "seq": 2416,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2417,
+        "seq": 2417,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2418, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 2418,
+        "seq": 2418,
+        "timestamp": "2026-08-29T19:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-02\"}",
+        "revision": 2419,
+        "seq": 2419,
+        "timestamp": "2026-08-29T19:42:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-02-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-02-DIFF\"}",
+        "revision": 2420,
+        "seq": 2420,
+        "timestamp": "2026-08-29T19:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-02-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"ae6f0e7f-ce5d-476c-98af-c912b29d61ef\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2421,
+        "seq": 2421,
+        "timestamp": "2026-08-29T19:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-02-PROGRAM",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-02-PROGRAM\"}",
+        "revision": 2422,
+        "seq": 2422,
+        "timestamp": "2026-08-29T19:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-02-PROGRAM",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d0204664-39aa-4040-b6c4-b98c69d449f2\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2423,
+        "seq": 2423,
+        "timestamp": "2026-08-29T19:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2424, \"disposition\": \"validated\", \"reached_checkpoints\": [\"CE-GEO-ARCHITECTURE-FROZEN\"]}",
+        "revision": 2424,
+        "seq": 2424,
+        "timestamp": "2026-08-29T19:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-COORD\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-03\"}",
+        "revision": 2425,
+        "seq": 2425,
+        "timestamp": "2026-08-29T19:43:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-03-BASELINE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-03-BASELINE\"}",
+        "revision": 2426,
+        "seq": 2426,
+        "timestamp": "2026-08-29T19:46:46Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-03-BASELINE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"c65a550a-aec7-4fdd-afc3-ea579ff31c12\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2427,
+        "seq": 2427,
+        "timestamp": "2026-08-29T19:46:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-03-CPE2-SIZES",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-03-CPE2-SIZES\"}",
+        "revision": 2428,
+        "seq": 2428,
+        "timestamp": "2026-08-29T19:46:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-03-CPE2-SIZES",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"902e509f-24fd-4677-aef5-74cc98956cd2\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2429,
+        "seq": 2429,
+        "timestamp": "2026-08-29T19:46:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-03",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2430, \"disposition\": \"validated\", \"reached_checkpoints\": [\"CE-GEO-BASELINE-FROZEN\"]}",
+        "revision": 2430,
+        "seq": 2430,
+        "timestamp": "2026-08-29T19:46:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-HARDWARE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-HARDWARE\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-10\"}",
+        "revision": 2431,
+        "seq": 2431,
+        "timestamp": "2026-08-29T20:28:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-SEMANTIC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-SEMANTIC\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-30\"}",
+        "revision": 2432,
+        "seq": 2432,
+        "timestamp": "2026-08-29T20:28:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-PERSISTENCE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-PERSISTENCE\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-40\"}",
+        "revision": 2433,
+        "seq": 2433,
+        "timestamp": "2026-08-29T20:28:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-SUPPORT",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-SUPPORT\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-50\"}",
+        "revision": 2434,
+        "seq": 2434,
+        "timestamp": "2026-08-29T20:28:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-30",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2435, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2435,
+        "seq": 2435,
+        "timestamp": "2026-08-29T20:30:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-PROJECTION",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-PROJECTION\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-60\"}",
+        "revision": 2436,
+        "seq": 2436,
+        "timestamp": "2026-08-29T20:31:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-SUPPORT",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-SUPPORT\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-50\"}",
+        "revision": 2437,
+        "seq": 2437,
+        "timestamp": "2026-08-29T20:31:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-50",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2438, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2438,
+        "seq": 2438,
+        "timestamp": "2026-08-29T20:31:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-CATALOG",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-CATALOG\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-20\"}",
+        "revision": 2439,
+        "seq": 2439,
+        "timestamp": "2026-08-29T20:31:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-20",
+        "entity_type": "task",
+        "event_type": "workflow.task.release",
+        "payload_json": "{\"reason\": \"This first-class agent is delegated only to CE-GEO-L-SUPPORT. An unscoped next_task call selected CE-GEO-20 after explicit CE-GEO-51 returned no_actionable_work; releasing immediately with no catalog inspection or mutation.\"}",
+        "revision": 2440,
+        "seq": 2440,
+        "timestamp": "2026-08-29T20:31:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-SM70",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-SM70\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-70\"}",
+        "revision": 2441,
+        "seq": 2441,
+        "timestamp": "2026-08-29T20:33:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-HARDWARE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-HARDWARE\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-10\"}",
+        "revision": 2442,
+        "seq": 2442,
+        "timestamp": "2026-08-29T20:34:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2443, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2443,
+        "seq": 2443,
+        "timestamp": "2026-08-29T20:34:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-BIOLOGY",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-BIOLOGY\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-80\"}",
+        "revision": 2444,
+        "seq": 2444,
+        "timestamp": "2026-08-29T20:34:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-60",
+        "entity_type": "task",
+        "event_type": "workflow.task.block",
+        "payload_json": "{\"reason\": \"CE-GEO-60's declared read contracts do not exist yet: include/Cellerator/compute/architecture/provider.hh is owned by later CE-GEO-12 after CE-GEO-11 capability freeze, and include/Cellerator/geometry/relation_cover.hh is owned by later semantic-lane work. Defining the target-refinement seam now would infer provider/capability identities or semantic-cover type names contrary to narrow interface ownership.\"}",
+        "revision": 2445,
+        "seq": 2445,
+        "timestamp": "2026-08-29T20:35:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-SM70",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-SM70\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-70\"}",
+        "revision": 2446,
+        "seq": 2446,
+        "timestamp": "2026-08-29T20:35:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-PERSISTENCE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-PERSISTENCE\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-40\"}",
+        "revision": 2447,
+        "seq": 2447,
+        "timestamp": "2026-08-29T20:35:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-40",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2448, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2448,
+        "seq": 2448,
+        "timestamp": "2026-08-29T20:36:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-70",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2449, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 2449,
+        "seq": 2449,
+        "timestamp": "2026-08-29T20:36:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-BENCH-INFRA",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-BENCH-INFRA\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-GEO-110\"}",
+        "revision": 2450,
+        "seq": 2450,
+        "timestamp": "2026-08-29T20:36:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-80",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2451, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 2451,
+        "seq": 2451,
+        "timestamp": "2026-08-29T20:37:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-L-BENCH-INFRA",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-GEO-L-BENCH-INFRA\", \"run_id\": \"CE-GEO-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-GEO-110\"}",
+        "revision": 2452,
+        "seq": 2452,
+        "timestamp": "2026-08-29T20:41:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-110-HARNESS\"}",
+        "revision": 2453,
+        "seq": 2453,
+        "timestamp": "2026-08-29T20:41:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"edef549f-199f-4d4f-9243-2de31482a488\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 2454,
+        "seq": 2454,
+        "timestamp": "2026-08-29T20:41:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-110-HARNESS\"}",
+        "revision": 2455,
+        "seq": 2455,
+        "timestamp": "2026-08-29T20:42:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7fe66525-2c2e-47f3-a5de-d2ef9f836532\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2456,
+        "seq": 2456,
+        "timestamp": "2026-08-29T20:42:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-GEO-110-HARNESS\"}",
+        "revision": 2457,
+        "seq": 2457,
+        "timestamp": "2026-08-29T20:42:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"3e4951fc-eef6-48da-bdcf-ba4824f6957b\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 2458,
+        "seq": 2458,
+        "timestamp": "2026-08-29T20:42:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-GEO-110",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 2459, \"disposition\": \"implemented\", \"reached_checkpoints\": [\"CE-GEO-BENCH-INFRA-V1\"]}",
+        "revision": 2459,
+        "seq": 2459,
+        "timestamp": "2026-08-29T20:42:38Z"
       }
     ],
     "evidence": [
@@ -26864,6 +27664,19 @@
         "metadata_json": "{\"argv\": [\"cmake\", \"--build\", \"Cellerator/build-ce-arch-70\", \"-j\", \"4\", \"--target\", \"celleratorBaseplaneSequenceIntegrationTest\", \"celleratorExecutionSessionTest\", \"celleratorBiologicalAbiCudaCompileTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"Cellerator/build-ce-arch-70\", \"-j\", \"4\", \"--target\", \"celleratorBaseplaneSequenceIntegrationTest\", \"celleratorExecutionSessionTest\", \"celleratorBiologicalAbiCudaCompileTest\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"72963fd6795f81699d65189040021dbdf7ca14822551fa1865f1e5d5198c613a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"ce-arch-70-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-70.md\", \"todos/ce-arch-70a.md\", \"todos/ce-arch-70b.md\", \"todos/ce-arch-70c.md\", \"todos/ce-arch-70d.md\", \"todos/ce-arch-70e.md\", \"todos/ce-arch-70f.md\", \"todos/ce-arch-70g.md\", \"todos/ce-arch-71.md\", \"todos/ce-arch-72.md\", \"todos/ce-arch-73.md\", \"todos/ce-arch-74.md\", \"todos/ce-arch-75.md\", \"todos/ce-arch-76.md\", \"todos/ce-arch-77.md\", \"todos/ce-arch-78.md\", \"todos/ce-arch-79.md\"], \"files\": [{\"path\": \"Cellerator/include/Cellerator/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/execution\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/tests/sequence\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 825}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/1839e53d-8809-4524-a4d7-9eba7a0489bc",
         "revision": 826,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:40:30Z",
+        "gate_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "id": "1923e3ac-5cf2-4e82-b6ab-445b40fa0d13",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2389}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/1923e3ac-5cf2-4e82-b6ab-445b40fa0d13",
+        "revision": 2390,
         "status": "passed"
       },
       {
@@ -28183,6 +28996,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:40:45Z",
+        "gate_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "id": "3c379da5-935b-47c2-827c-7f386969cc0a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2398}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3c379da5-935b-47c2-827c-7f386969cc0a",
+        "revision": 2399,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-21T19:14:59Z",
         "gate_id": "CE-ARCH-70G-CUDA-RUNTIME",
         "id": "3c78ffda-5c23-4d42-a495-74df28b95f19",
@@ -28235,6 +29061,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:42:05Z",
+        "gate_id": "CE-GEO-01-GIT-STATUS",
+        "id": "3d1ac197-8417-4594-8abd-01d38cb499aa",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"status\", \"--short\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2414}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3d1ac197-8417-4594-8abd-01d38cb499aa",
+        "revision": 2415,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-26T21:10:02Z",
         "gate_id": "CE-LIVE-25-DIFF-CHECK",
         "id": "3d3193b5-f608-49cd-ac8d-bf03724dd00c",
@@ -28242,6 +29081,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4b027f5a968776f3d931427ac0f805a20287759f8970a519ae19787524351b71\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"426ee68290c292f351015643b85928d3fd3006471e13c0ff2475dafdce87635c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-00.md\", \"todos/ce-live-01.md\", \"todos/ce-live-10.md\", \"todos/ce-live-11.md\", \"todos/ce-live-12.md\", \"todos/ce-live-13.md\", \"todos/ce-live-14.md\", \"todos/ce-live-15.md\", \"todos/ce-live-16.md\", \"todos/ce-live-19.md\", \"todos/ce-live-20.md\", \"todos/ce-live-21.md\", \"todos/ce-live-22.md\", \"todos/ce-live-23.md\", \"todos/ce-live-24.md\", \"todos/ce-live-25.md\", \"todos/ce-live-26.md\"], \"files\": [], \"git_head\": \"b9a7136dfdd7a53b1d2a5453b71b085aa2b07d12\", \"interfaces\": [], \"recorded_git_head\": \"b9a7136dfdd7a53b1d2a5453b71b085aa2b07d12\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1791}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3d3193b5-f608-49cd-ac8d-bf03724dd00c",
         "revision": 1792,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T20:42:38Z",
+        "gate_id": "CE-GEO-110-HARNESS",
+        "id": "3e4951fc-eef6-48da-bdcf-ba4824f6957b",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"551572852e98c1b7df11ebffa0f2826cf08fd9eccbaca96d77525957c2228ef8\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/README.md\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"bench/ce_geo/evidence/schema/command_manifest.example.json\", \"bench/ce_geo/evidence/schema/command_manifest.schema.json\", \"bench/ce_geo/evidence/schema/evidence_record.schema.json\", \"bench/ce_geo/harness/.gitignore\", \"bench/ce_geo/harness/capture_context.py\", \"bench/ce_geo/harness/test_capture_context.py\", \"bench/ce_geo/harness/test_harness.py\", \"bench/ce_geo/harness/test_validate_evidence.py\", \"bench/ce_geo/harness/validate_evidence.py\", \"docs/CE_GEO_PROGRAM.md\", \"include/Cellerator/compute/operation/relation_algebra.hh\", \"include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh\", \"include/Cellerator/geometry/support_atlas.hh\", \"include/Cellerator/geometry/work_window.hh\", \"include/Cellerator/runtime/device_descriptor.hh\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"src/runtime/device_descriptor.cu\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"tests/ce_geo/hardware/device_descriptor_test.cu\", \"tests/geometry/ce_geo/cpe2_capability_manifest_test.cc\", \"tests/geometry/ce_geo/support_atlas_contract_test.cc\", \"tests/geometry/ce_geo/work_window_test.cc\", \"tests/relation_algebra/contract_test.cc\", \"tests/tensor_core/sm70/historical_dense_fragment_regression.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\", \"todos/ce-geo-10.md\", \"todos/ce-geo-110.md\", \"todos/ce-geo-20.md\", \"todos/ce-geo-30.md\", \"todos/ce-geo-40.md\", \"todos/ce-geo-50.md\", \"todos/ce-geo-60.md\", \"todos/ce-geo-70.md\", \"todos/ce-geo-80.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2457}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3e4951fc-eef6-48da-bdcf-ba4824f6957b",
+        "revision": 2458,
         "status": "passed"
       },
       {
@@ -28463,6 +29315,19 @@
         "metadata_json": "{\"argv\": [\"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"cwd\": \".\", \"resources\": [\"gpu:any\"]}, \"diff_fingerprint\": \"b86490530d5bc9b7a7aaa7b550461725b1cfd0c5893924efc4f6ec6150457898\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Cellerator\", \"cp-math-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/cp-math-00.md\", \"todos/cp-math-00a.md\", \"todos/cp-math-01.md\", \"todos/cp-math-02.md\", \"todos/cp-math-02a.md\", \"todos/cp-math-03.md\", \"todos/cp-math-04.md\", \"todos/cp-math-05.md\", \"todos/cp-math-06.md\", \"todos/cp-math-07.md\", \"todos/cp-math-08.md\", \"todos/cp-math-08a.md\", \"todos/cp-math-09.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\"], \"files\": [{\"path\": \"Cellerator/tests/math_cusparse_bell_test.cu\", \"sha256\": \"e73b5c587bd9cc48c29446a4eaad4577b9f7ad0b52d4ca64ee951c1a95b99ca6\"}], \"interfaces\": [], \"recorded_git_head\": \"d3f51dcfc0fe4196e17368861598c25354104c62\"}, \"locks\": [], \"resources\": [{\"class_id\": \"gpu\", \"expires_at\": \"2026-08-19T14:28:11Z\", \"instance_id\": \"gpu:1\", \"lease_id\": \"928ced6d-8e5e-47c4-aed8-6c680b38b7cc\", \"metadata\": {\"memory_mib\": 16384, \"model\": \"Tesla V100-SXM2-16GB\"}}], \"returncode\": 0, \"started_revision\": 358}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/43ff792a-3928-4c7a-9d3e-e6a6742d998f",
         "revision": 359,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:40:45Z",
+        "gate_id": "CE-GEO-01-GIT-STATUS",
+        "id": "443400d2-9122-421c-b67c-8f0e5f9c6b0a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"status\", \"--short\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2396}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/443400d2-9122-421c-b67c-8f0e5f9c6b0a",
+        "revision": 2397,
         "status": "passed"
       },
       {
@@ -29288,6 +30153,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:40:30Z",
+        "gate_id": "CE-GEO-01-DIFF-CHECK",
+        "id": "5f590946-799c-4f11-a00a-7293f11832cd",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2383}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/5f590946-799c-4f11-a00a-7293f11832cd",
+        "revision": 2384,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-26T19:55:20Z",
         "gate_id": "CE-LIVE-19-TODO-RECONCILE",
         "id": "5f82d23a-e221-4d3d-bff5-1d301d69c787",
@@ -29756,6 +30634,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:42:05Z",
+        "gate_id": "CE-GEO-01-EVIDENCE",
+        "id": "7143e4a1-6888-4d0a-bb29-2569a76fe043",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2412}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/7143e4a1-6888-4d0a-bb29-2569a76fe043",
+        "revision": 2413,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-28T07:27:25Z",
         "gate_id": "CE-REMAP-02-CONFIGURE",
         "id": "7159ee25-eb29-4ae4-9ad9-ff7a0d03aeaa",
@@ -29842,6 +30733,19 @@
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/73bd567a-25c2-464f-b688-a8cc8874fd7c",
         "revision": 563,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:42:05Z",
+        "gate_id": "CE-GEO-01-DIFF-CHECK",
+        "id": "73f8b757-1c01-4321-b035-2a25c45a9698",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2410}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/73f8b757-1c01-4321-b035-2a25c45a9698",
+        "revision": 2411,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -30166,6 +31070,19 @@
         "metadata_json": "{\"argv\": [\"Cellerator/build-cp-math-context/cpMathExecutionCsrTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"Cellerator/build-cp-math-context/cpMathExecutionCsrTest\"], \"cwd\": \".\", \"resources\": [\"gpu:any\"]}, \"diff_fingerprint\": \"d00b1c606bb6ed719a54f1a1697fe36dd73296366c6c1f16ba131e137350ad1d\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \".vscode/settings.json\", \"AGENTS.md\", \"Baseplane\", \"Cellerator\", \"cp-math-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/cp-math-00.md\", \"todos/cp-math-00a.md\", \"todos/cp-math-01.md\", \"todos/cp-math-02.md\", \"todos/cp-math-02a.md\", \"todos/cp-math-03.md\", \"todos/cp-math-04.md\", \"todos/cp-math-05.md\", \"todos/cp-math-06.md\", \"todos/cp-math-07.md\", \"todos/cp-math-08.md\", \"todos/cp-math-08a.md\", \"todos/cp-math-09.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\"], \"files\": [{\"path\": \"Cellerator/tests/math_execution_csr_test.cu\", \"sha256\": \"e0f06e8fecb369ee3ab9d0b83daa3ece6903ef4d57f5c5c981f8dd3788262b09\"}], \"interfaces\": [], \"recorded_git_head\": \"11c4e2042263e0b545b88cbd85872d12419b6aa3\"}, \"locks\": [], \"resources\": [{\"class_id\": \"gpu\", \"expires_at\": \"2026-08-19T10:03:57Z\", \"instance_id\": \"gpu:0\", \"lease_id\": \"be7f3eaf-93f2-426d-9fd4-f371e6b74503\", \"metadata\": {\"memory_mib\": 16384, \"model\": \"Tesla V100-SXM2-16GB\"}}], \"returncode\": 0, \"started_revision\": 158}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/7f98083c-8d2d-41fd-be34-b56bf1256f64",
         "revision": 159,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T20:42:18Z",
+        "gate_id": "CE-GEO-110-HARNESS",
+        "id": "7fe66525-2c2e-47f3-a5de-d2ef9f836532",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"551572852e98c1b7df11ebffa0f2826cf08fd9eccbaca96d77525957c2228ef8\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/README.md\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"bench/ce_geo/evidence/schema/command_manifest.example.json\", \"bench/ce_geo/evidence/schema/command_manifest.schema.json\", \"bench/ce_geo/evidence/schema/evidence_record.schema.json\", \"bench/ce_geo/harness/.gitignore\", \"bench/ce_geo/harness/capture_context.py\", \"bench/ce_geo/harness/test_capture_context.py\", \"bench/ce_geo/harness/test_harness.py\", \"bench/ce_geo/harness/test_validate_evidence.py\", \"bench/ce_geo/harness/validate_evidence.py\", \"docs/CE_GEO_PROGRAM.md\", \"include/Cellerator/compute/operation/relation_algebra.hh\", \"include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh\", \"include/Cellerator/geometry/support_atlas.hh\", \"include/Cellerator/geometry/work_window.hh\", \"include/Cellerator/runtime/device_descriptor.hh\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"src/runtime/device_descriptor.cu\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"tests/ce_geo/hardware/device_descriptor_test.cu\", \"tests/geometry/ce_geo/cpe2_capability_manifest_test.cc\", \"tests/geometry/ce_geo/support_atlas_contract_test.cc\", \"tests/geometry/ce_geo/work_window_test.cc\", \"tests/relation_algebra/contract_test.cc\", \"tests/tensor_core/sm70/historical_dense_fragment_regression.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\", \"todos/ce-geo-10.md\", \"todos/ce-geo-110.md\", \"todos/ce-geo-20.md\", \"todos/ce-geo-30.md\", \"todos/ce-geo-40.md\", \"todos/ce-geo-50.md\", \"todos/ce-geo-60.md\", \"todos/ce-geo-70.md\", \"todos/ce-geo-80.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2455}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/7fe66525-2c2e-47f3-a5de-d2ef9f836532",
+        "revision": 2456,
         "status": "passed"
       },
       {
@@ -30783,6 +31700,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:46:47Z",
+        "gate_id": "CE-GEO-03-CPE2-SIZES",
+        "id": "902e509f-24fd-4677-aef5-74cc98956cd2",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"256\", \"64\", \"64\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"256\", \"64\", \"64\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4c432d70355f3525a83f37615ae5d47c423a4958f0f14bc48fabf7910d63fd81\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2428}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/902e509f-24fd-4677-aef5-74cc98956cd2",
+        "revision": 2429,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-26T22:09:34Z",
         "gate_id": "CE-LIVE-30-NEGATIVE",
         "id": "90b9b141-8e63-4ffb-af8f-ddb22a0dca61",
@@ -31089,6 +32019,19 @@
         "metadata_json": "{\"argv\": [\"cmake\", \"--build\", \"build-dissolution-smoke\", \"--target\", \"cpMathRefereeFoundationTest\", \"-j\", \"4\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"8c4e626a06f8d33208241b6bca20d8e4e76039ef41b71d9e67575c82e8e4993f\", \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"build-dissolution-smoke\", \"--target\", \"cpMathRefereeFoundationTest\", \"-j\", \"4\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a44ef176ca1d6b394f3f686141dea423177833c90847ff2fe9e93d44bc6b33ca\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"include/Cellerator/compute/math/operation_core/cusparse_csr_candidate.hh\", \"src/compute/math/operation_core/csr_fallback_candidate.cu\", \"src/compute/math/operation_core/cusparse_csr_candidate.cu\", \"tests/math_core/cusparse_csr_candidate_test.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-20.md\", \"todos/ce-live-21.md\", \"todos/ce-live-22.md\", \"todos/ce-live-24.md\"], \"files\": [], \"git_head\": \"4b6836d5a2fe7988c1c7c01fbc14411828bf37a4\", \"interfaces\": [], \"recorded_git_head\": \"4b6836d5a2fe7988c1c7c01fbc14411828bf37a4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1720}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/98eba163-2ea0-416e-aab0-8d8bd40b812f",
         "revision": 1721,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:41:01Z",
+        "gate_id": "CE-GEO-01-GIT-STATUS",
+        "id": "9914debc-9a90-4388-866b-e6f13a57d4ce",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"status\", \"--short\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2405}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/9914debc-9a90-4388-866b-e6f13a57d4ce",
+        "revision": 2406,
         "status": "passed"
       },
       {
@@ -31784,6 +32727,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:43:04Z",
+        "gate_id": "CE-GEO-02-DIFF",
+        "id": "ae6f0e7f-ce5d-476c-98af-c912b29d61ef",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"893e55c508f002be84c8fdf4604dd3f538097457190ec5730c95ea949081c482\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2420}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/ae6f0e7f-ce5d-476c-98af-c912b29d61ef",
+        "revision": 2421,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T11:28:45Z",
         "gate_id": "CE-ARCH-72-FOUNDATION",
         "id": "af3078c9-044d-4796-9a0b-67e67c78dda5",
@@ -31921,6 +32877,19 @@
         "metadata_json": "{\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchNativeAdapterCheck\", \"-j\", \"1\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1a815da7d57b629808dc52f0e13bd13bc426e905e143fbbb94dffdee604dc674\", \"inputs\": {\"command_contract\": {\"argv\": [\"cmake\", \"--build\", \"build-celleratorch\", \"--target\", \"celleraTorchNativeAdapterCheck\", \"-j\", \"1\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"git_head\": \"c001f652c2ba0f47904c0ce61586c7b8b0db4604\", \"interfaces\": [], \"recorded_git_head\": \"c001f652c2ba0f47904c0ce61586c7b8b0db4604\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2191}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/b27adbb4-0d9b-4fa8-9a40-c36cd8ebff90",
         "revision": 2192,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:40:45Z",
+        "gate_id": "CE-GEO-01-DIFF-CHECK",
+        "id": "b2ae4e8f-2056-4061-a30f-239963ac62da",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2392}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/b2ae4e8f-2056-4061-a30f-239963ac62da",
+        "revision": 2393,
         "status": "passed"
       },
       {
@@ -32434,6 +33403,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:41:01Z",
+        "gate_id": "CE-GEO-01-DIFF-CHECK",
+        "id": "c3d4e82d-8ccb-4275-9b69-d0a69e667968",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2401}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/c3d4e82d-8ccb-4275-9b69-d0a69e667968",
+        "revision": 2402,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T08:41:51Z",
         "gate_id": "CE-LIVE-34-CORRECTNESS",
         "id": "c3e9c645-e080-41bc-aeb3-3b0e57460c20",
@@ -32590,6 +33572,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:46:47Z",
+        "gate_id": "CE-GEO-03-BASELINE",
+        "id": "c65a550a-aec7-4fdd-afc3-ea579ff31c12",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"tests/ce_geo/baseline/run_baseline.py\", \"--build\", \"build\", \"--evidence\", \"bench/ce_geo/evidence/baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/run_baseline.py\", \"--build\", \"build\", \"--evidence\", \"bench/ce_geo/evidence/baseline\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4c432d70355f3525a83f37615ae5d47c423a4958f0f14bc48fabf7910d63fd81\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2426}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/c65a550a-aec7-4fdd-afc3-ea579ff31c12",
+        "revision": 2427,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T09:33:01Z",
         "gate_id": "CE-LIVE-41-SCOPE-AUDIT",
         "id": "c6ba0d10-d8fe-4c49-9e3e-cee57b175697",
@@ -32707,6 +33702,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:42:05Z",
+        "gate_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "id": "cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2416}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d",
+        "revision": 2417,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-21T13:19:15Z",
         "gate_id": "CE-ARCH-12-BUILD",
         "id": "cc32cf24-2b3c-4c6a-91eb-a2f79a2d5745",
@@ -32779,6 +33787,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-c-runtime.json\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-c-runtime.json\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"72963fd6795f81699d65189040021dbdf7ca14822551fa1865f1e5d5198c613a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"ce-arch-70-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-70.md\", \"todos/ce-arch-70a.md\", \"todos/ce-arch-70b.md\", \"todos/ce-arch-70c.md\", \"todos/ce-arch-70d.md\", \"todos/ce-arch-70e.md\", \"todos/ce-arch-70f.md\", \"todos/ce-arch-70g.md\", \"todos/ce-arch-71.md\", \"todos/ce-arch-72.md\", \"todos/ce-arch-73.md\", \"todos/ce-arch-74.md\", \"todos/ce-arch-75.md\", \"todos/ce-arch-76.md\", \"todos/ce-arch-77.md\", \"todos/ce-arch-78.md\", \"todos/ce-arch-79.md\"], \"files\": [{\"path\": \"Cellerator/include/Cellerator/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/execution\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/tests/sequence\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 831}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/cfffc72a-5422-4c9d-b6ee-69bc49890bf1",
         "revision": 832,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:43:04Z",
+        "gate_id": "CE-GEO-02-PROGRAM",
+        "id": "d0204664-39aa-4040-b6c4-b98c69d449f2",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_program.py\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_program.py\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"893e55c508f002be84c8fdf4604dd3f538097457190ec5730c95ea949081c482\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2422}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d0204664-39aa-4040-b6c4-b98c69d449f2",
+        "revision": 2423,
         "status": "passed"
       },
       {
@@ -32980,6 +34001,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:41:01Z",
+        "gate_id": "CE-GEO-01-EVIDENCE",
+        "id": "d51ab51c-a1b6-429b-8dbc-fabc0dfdec6f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"started_revision\": 2403}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d51ab51c-a1b6-429b-8dbc-fabc0dfdec6f",
+        "revision": 2404,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-19T14:30:46Z",
         "gate_id": "CPMATH-07-TEST",
         "id": "d56384ad-fa3a-4fe9-b328-e990aafd274e",
@@ -33091,6 +34125,19 @@
         "metadata_json": "{\"argv\": [\"/home/tumlinson/.agents/skills/cpp-context-compiler/scripts/ctxpp\", \"--root\", \"Cellerator\", \"route\", \"DeviceMathContext DeviceCapabilities DeviceFingerprint workspace\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.agents/skills/cpp-context-compiler/scripts/ctxpp\", \"--root\", \"Cellerator\", \"route\", \"DeviceMathContext DeviceCapabilities DeviceFingerprint workspace\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"2a5e29b7ef92260accafab7a59e2e805f26762d62a365a8cba855bfadd4cc00a\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \".vscode/settings.json\", \"AGENTS.md\", \"Cellerator\", \"cp-math-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/cp-math-00.md\", \"todos/cp-math-00a.md\", \"todos/cp-math-01.md\", \"todos/cp-math-02.md\", \"todos/cp-math-02a.md\", \"todos/cp-math-03.md\", \"todos/cp-math-04.md\", \"todos/cp-math-05.md\", \"todos/cp-math-06.md\", \"todos/cp-math-07.md\", \"todos/cp-math-08.md\", \"todos/cp-math-08a.md\", \"todos/cp-math-09.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\"], \"files\": [{\"path\": \"Cellerator/include/Cellerator/compute/math/runtime.hh\", \"sha256\": \"cc65e934979ba5e57d34515cd8f54e0b4236ed493a89b0d036d5c3e6c4e7d7ba\"}], \"interfaces\": [], \"recorded_git_head\": \"4aef0f43b2d11205ad2af810b7306a32728c3e6c\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 57}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/d8e0bf1f-c29d-4dbf-81e7-83e310f85e6c",
         "revision": 58,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:40:30Z",
+        "gate_id": "CE-GEO-01-GIT-STATUS",
+        "id": "d9614f8f-6ec9-4bf4-8686-0c357a983c2e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"status\", \"--short\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2387}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d9614f8f-6ec9-4bf4-8686-0c357a983c2e",
+        "revision": 2388,
         "status": "passed"
       },
       {
@@ -33461,6 +34508,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:41:02Z",
+        "gate_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "id": "e899f1bf-516b-410d-976e-42f660d87fa2",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2407}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/e899f1bf-516b-410d-976e-42f660d87fa2",
+        "revision": 2408,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T08:28:19Z",
         "gate_id": "CE-LIVE-31-DIFF-CHECK",
         "id": "e92059a7-b7c0-491d-8505-f2b0fea21a5c",
@@ -33651,6 +34711,19 @@
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/edb79fd9-91af-446e-9045-832d5446a588",
         "revision": 1519,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T20:41:52Z",
+        "gate_id": "CE-GEO-110-HARNESS",
+        "id": "edef549f-199f-4d4f-9243-2de31482a488",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"552a915bb4791475ab902105f08323de02d3ec6dad483788f9b9507e73b5f7bb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/README.md\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"bench/ce_geo/evidence/schema/command_manifest.example.json\", \"bench/ce_geo/evidence/schema/command_manifest.schema.json\", \"bench/ce_geo/evidence/schema/evidence_record.schema.json\", \"bench/ce_geo/harness/.gitignore\", \"bench/ce_geo/harness/capture_context.py\", \"bench/ce_geo/harness/test_capture_context.py\", \"bench/ce_geo/harness/test_validate_evidence.py\", \"bench/ce_geo/harness/validate_evidence.py\", \"docs/CE_GEO_PROGRAM.md\", \"include/Cellerator/compute/operation/relation_algebra.hh\", \"include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh\", \"include/Cellerator/geometry/support_atlas.hh\", \"include/Cellerator/geometry/work_window.hh\", \"include/Cellerator/runtime/device_descriptor.hh\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"src/runtime/device_descriptor.cu\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"tests/ce_geo/hardware/device_descriptor_test.cu\", \"tests/geometry/ce_geo/cpe2_capability_manifest_test.cc\", \"tests/geometry/ce_geo/support_atlas_contract_test.cc\", \"tests/geometry/ce_geo/work_window_test.cc\", \"tests/relation_algebra/contract_test.cc\", \"tests/tensor_core/sm70/historical_dense_fragment_regression.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\", \"todos/ce-geo-10.md\", \"todos/ce-geo-110.md\", \"todos/ce-geo-20.md\", \"todos/ce-geo-30.md\", \"todos/ce-geo-40.md\", \"todos/ce-geo-50.md\", \"todos/ce-geo-60.md\", \"todos/ce-geo-70.md\", \"todos/ce-geo-80.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"started_revision\": 2453}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/edef549f-199f-4d4f-9243-2de31482a488",
+        "revision": 2454,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -33851,6 +34924,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-29T19:40:30Z",
+        "gate_id": "CE-GEO-01-EVIDENCE",
+        "id": "f46953fc-400c-4d2d-86d2-f3e8f6a691b8",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"started_revision\": 2385}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/f46953fc-400c-4d2d-86d2-f3e8f6a691b8",
+        "revision": 2386,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T09:41:51Z",
         "gate_id": "CE-LIVE-42-ARTIFACT",
         "id": "f4cd6cf6-7740-443a-82f9-5baac3496539",
@@ -34002,6 +35088,19 @@
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/f92ee912-178d-4fe3-bf8d-8090c33000ac",
         "revision": 1880,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-29T19:40:45Z",
+        "gate_id": "CE-GEO-01-EVIDENCE",
+        "id": "f9e113f4-d53e-4441-9965-08627b267d63",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"14e0c94d8dd23040b8013f3b07d66c6d9a95f807f76b55a47bcbf9953029ddfb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"started_revision\": 2394}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/f9e113f4-d53e-4441-9965-08627b267d63",
+        "revision": 2395,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -36375,105 +37474,105 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}",
         "id": "CE-GEO-01-DIFF-CHECK",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2",
+        "last_run_at": "2026-08-29T19:42:05Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2411,
+        "status": "passed",
         "task_id": "CE-GEO-01",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}",
         "id": "CE-GEO-01-EVIDENCE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7",
+        "last_run_at": "2026-08-29T19:42:05Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2413,
+        "status": "passed",
         "task_id": "CE-GEO-01",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}",
         "id": "CE-GEO-01-GIT-STATUS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998",
+        "last_run_at": "2026-08-29T19:42:05Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2415,
+        "status": "passed",
         "task_id": "CE-GEO-01",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}",
         "id": "CE-GEO-01-WORKFLOW-AUDIT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331",
+        "last_run_at": "2026-08-29T19:42:05Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2417,
+        "status": "passed",
         "task_id": "CE-GEO-01",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CE-GEO-ARCHITECTURE-FROZEN",
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}",
         "id": "CE-GEO-02-DIFF",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149",
+        "last_run_at": "2026-08-29T19:43:04Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2421,
+        "status": "passed",
         "task_id": "CE-GEO-02",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CE-GEO-ARCHITECTURE-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"scripts/ce_geo/validate_program.py\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}",
         "id": "CE-GEO-02-PROGRAM",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764",
+        "last_run_at": "2026-08-29T19:43:04Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2423,
+        "status": "passed",
         "task_id": "CE-GEO-02",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CE-GEO-BASELINE-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"tests/ce_geo/baseline/run_baseline.py\", \"--build\", \"build\", \"--evidence\", \"bench/ce_geo/evidence/baseline\"], \"cwd\": \".\"}",
         "id": "CE-GEO-03-BASELINE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4",
+        "last_run_at": "2026-08-29T19:46:47Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2427,
+        "status": "passed",
         "task_id": "CE-GEO-03",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CE-GEO-BASELINE-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"256\", \"64\", \"64\"], \"cwd\": \".\"}",
         "id": "CE-GEO-03-CPE2-SIZES",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9",
+        "last_run_at": "2026-08-29T19:46:47Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2429,
+        "status": "passed",
         "task_id": "CE-GEO-03",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -36531,14 +37630,14 @@
         "checkpoint_id": "CE-GEO-BENCH-INFRA-V1",
         "config_json": "{\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"cwd\": \".\"}",
         "id": "CE-GEO-110-HARNESS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20",
+        "last_run_at": "2026-08-29T20:42:38Z",
         "required": 1,
-        "revision": 2379,
-        "status": "pending",
+        "revision": 2458,
+        "status": "passed",
         "task_id": "CE-GEO-110",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -42109,6 +43208,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T20:30:36Z",
+        "id": "11d3b985-1531-4957-a641-15dcd3d0463f",
+        "kind": "complete",
+        "note": "Implemented allocator-free `cellerator::geometry::work_window_view_v1` for explicit caller-selected relation-row, dense-column, and grouped-operation-instance membership bound to a complete biological axis identity. Added closed validation for version/kind/reserved bytes/window identity/axis identity/nonempty bounded unique membership, plus membership helper and focused host regression coverage. Validation: c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude tests/geometry/ce_geo/work_window_test.cc -o /tmp/ce_geo_30_work_window_test && /tmp/ce_geo_30_work_window_test; git diff --check on owned paths.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/geometry/work_window.hh\", \"tests/geometry/ce_geo/work_window_test.cc\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2435, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1196 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   16 +-\\n todos.md                               |   16 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    6 +-\\n todos/ce-geo-30.md                     |    6 +-\\n todos/ce-geo-40.md                     |    6 +-\\n todos/ce-geo-50.md                     |    6 +-\\n 11 files changed, 1117 insertions(+), 167 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Implemented allocator-free `cellerator::geometry::work_window_view_v1` for explicit caller-selected relation-row, dense-column, and grouped-operation-instance membership bound to a complete biological axis identity. Added closed validation for version/kind/reserved bytes/window identity/axis identity/nonempty bounded unique membership, plus membership helper and focused host regression coverage. Validation: c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude tests/geometry/ce_geo/work_window_test.cc -o /tmp/ce_geo_30_work_window_test && /tmp/ce_geo_30_work_window_test; git diff --check on owned paths.\", \"resources\": [], \"task_id\": \"CE-GEO-30\"}",
+        "revision": 2435,
+        "task_id": "CE-GEO-30"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-25T13:58:04Z",
         "id": "13ba8a38-997f-4493-b345-9bc88d181e16",
         "kind": "complete",
@@ -42209,6 +43318,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T20:37:17Z",
+        "id": "20d28f03-3a6a-4464-8613-9f51df41329a",
+        "kind": "complete",
+        "note": "Specified allocator-free relation-algebra v1 contracts for typed apply/transpose, logical-edge support contraction, segment reduction/normalization, projection-aware edge map/gate, and destination-typed bundles. Exact structure/epoch/domain/order/geometry/partition identities and operation-specific numerical/empty/singleton semantics validate explicitly. Recorded direct operation-core v1 compatibility only for apply/transpose and explicit schema-v2 transition for new kinds. Validation: strict g++ C++17 -Wall -Wextra -Werror contract test passed; git diff --check passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/compute/operation/relation_algebra.hh\", \"tests/relation_algebra/contract_test.cc\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2451, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1550 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   26 +-\\n todos.md                               |   26 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    8 +-\\n todos/ce-geo-110.md                    |    6 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    8 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    8 +-\\n todos/ce-geo-80.md                     |    6 +-\\n 16 files changed, 1434 insertions(+), 264 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Specified allocator-free relation-algebra v1 contracts for typed apply/transpose, logical-edge support contraction, segment reduction/normalization, projection-aware edge map/gate, and destination-typed bundles. Exact structure/epoch/domain/order/geometry/partition identities and operation-specific numerical/empty/singleton semantics validate explicitly. Recorded direct operation-core v1 compatibility only for apply/transpose and explicit schema-v2 transition for new kinds. Validation: strict g++ C++17 -Wall -Wextra -Werror contract test passed; git diff --check passed.\", \"resources\": [], \"task_id\": \"CE-GEO-80\"}",
+        "revision": 2451,
+        "task_id": "CE-GEO-80"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T09:33:09Z",
         "id": "20d62b08-8e86-4844-8fc1-917c39598e78",
         "kind": "complete",
@@ -42226,6 +43345,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 3556 +++++++++++++++++++++-----------\\n Baseplane                              |    0\\n Cellerator                             |    0\\n todo-status.md                         |   70 +-\\n todos.md                               |   70 +-\\n todos/cp-math-00.md                    |   12 +-\\n todos/cp-math-06.md                    |   25 +-\\n todos/cp-math-08.md                    |   25 +-\\n todos/cp-math-10.md                    |   28 +-\\n todos/cp-math-11.md                    |   26 +-\\n todos/cp-math-12.md                    |   24 +-\\n todos/cp-math-12d.md                   |   23 +-\\n todos/cp-math-13.md                    |   22 +-\\n todos/cp-math-14.md                    |   22 +-\\n todos/cp-math-15.md                    |   21 +-\\n todos/cp-math-16.md                    |   27 +-\\n todos/cp-math-17.md                    |   27 +-\\n todos/cp-math-hard-data.md             |   24 +-\\n todos/cp-math-opt-not-promoted.md      |   22 +-\\n todos/cp-math-opt-promoted.md          |   22 +-\\n todos/cp-math-real-data.md             |   26 +-\\n 21 files changed, 2550 insertions(+), 1522 deletions(-)\", \"git_head\": \"b8aabdcf7c185965b537788118675319e81b4b92\", \"interfaces\": [], \"note\": \"Contained the only real prepared CP-Math backend without revising frozen generic interfaces. CusparseBellBackend now rejects any padded row or feature domain before context initialization or descriptor creation because v1 dense bindings expose no allocation capacities; prepared BELL state snapshots operation metadata and bindings and rejects stale structure, execution order, pointer/identity bindings, or physical geometry/materialization before vendor launch. CP-Math BELL source is explicitly experimental and DeviceMathContext is not presented as an external/Baseplane ABI. Tests cover 9x13 BELL8, 17x31 BELL16, and 33x65 BELL32 padded cases, device guard regions, stale structure/order/binding/geometry, and unsupported numeric combinations. Evidence: host operation contract passed; direct CUDA 12.9 nvcc sm_70 builds passed; cpMathRuntimeTest passed; cpMathCusparseBellTest passed repeatedly on leased V100 gpu:0; CUDA 12.9 compute-sanitizer memcheck of --padded-rejection-only exited 0 with ERROR SUMMARY: 0 errors. Full aligned BELL under sanitizer separately exposed an existing BELL8 column-major numerical mismatch while reporting zero memory errors; ordinary runs pass, no BELL repair was attempted, and the path remains quarantined experimental evidence. No CMake, Baseplane, CellShard, benchmark, or public frozen interface file changed.\", \"resources\": [{\"acquired_at\": \"2026-08-21T12:05:10Z\", \"instance_id\": \"gpu:0\", \"released_at\": \"2026-08-21T12:07:37Z\", \"state\": \"released\"}, {\"acquired_at\": \"2026-08-21T12:08:47Z\", \"instance_id\": \"gpu:0\", \"released_at\": \"2026-08-21T12:09:01Z\", \"state\": \"released\"}, {\"acquired_at\": \"2026-08-21T12:11:16Z\", \"instance_id\": \"gpu:0\", \"released_at\": \"2026-08-21T12:11:28Z\", \"state\": \"released\"}, {\"acquired_at\": \"2026-08-21T12:15:09Z\", \"instance_id\": \"gpu:0\", \"released_at\": \"2026-08-21T12:15:21Z\", \"state\": \"released\"}], \"task_id\": \"CE-ARCH-02\"}",
         "revision": 459,
         "task_id": "CE-ARCH-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-29T20:34:10Z",
+        "id": "2eae51ad-3ee2-4efb-b455-ac1843d62c6f",
+        "kind": "complete",
+        "note": "Implemented canonical pointer-free runtime::device_descriptor_v1 in the three exclusive CE-GEO-10 paths, with cold CUDA population, compatibility/performance hardware identities separate from build identity, derived runtime/execution/planner compatibility views, and sealed-query rejection before discovery. Validation: nvcc C++17 focused compile/run passed on ordinal 0 sm_70; -Wall,-Wextra,-Werror passed; git diff --check passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/runtime/device_descriptor.hh\", \"src/runtime/device_descriptor.cu\", \"tests/ce_geo/hardware/device_descriptor_test.cu\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2443, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1368 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   22 +-\\n todos.md                               |   22 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    6 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    6 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    6 +-\\n 14 files changed, 1270 insertions(+), 220 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Implemented canonical pointer-free runtime::device_descriptor_v1 in the three exclusive CE-GEO-10 paths, with cold CUDA population, compatibility/performance hardware identities separate from build identity, derived runtime/execution/planner compatibility views, and sealed-query rejection before discovery. Validation: nvcc C++17 focused compile/run passed on ordinal 0 sm_70; -Wall,-Wextra,-Werror passed; git diff --check passed.\", \"resources\": [], \"task_id\": \"CE-GEO-10\"}",
+        "revision": 2443,
+        "task_id": "CE-GEO-10"
       },
       {
         "claim_id": null,
@@ -42406,6 +43535,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"CPMATH-02A-BUILD\", \"last_run_at\": \"2026-08-18T17:41:51Z\", \"status\": \"failed\", \"valid\": 0}, {\"id\": \"CPMATH-02A-TEST\", \"last_run_at\": null, \"status\": \"pending\", \"valid\": 0}, {\"id\": \"CPMATH-02A-CTX\", \"last_run_at\": \"2026-08-18T17:51:43Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"AGENTS.md      | 12 +++++++-----\\n Cellerator     |  2 +-\\n todo-status.md | 34 ++++++++++++++++++++++++++++++++++\\n todos.md       | 34 ++++++++++++++++++++++++++++++++++\\n 4 files changed, 76 insertions(+), 6 deletions(-)\", \"git_head\": \"4aef0f43b2d11205ad2af810b7306a32728c3e6c\", \"interfaces\": [], \"note\": \"Published CP-MATH-02A implementation to Cellerator origin/main as 11a6b6c. Source remains directly sm_70 compiled and V100 tested; CTX gate valid. Completion still requires correcting the nonexistent cpMathDeviceRuntimeTest CMake target, running BUILD/TEST gates, and waiting for CP-MATH-01 operation checkpoint/interface.\", \"resources\": [], \"task_id\": \"CP-MATH-02A\"}",
         "revision": 68,
         "task_id": "CP-MATH-02A"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-29T20:42:38Z",
+        "id": "56018844-e05d-49bb-9c05-a9ee44c55290",
+        "kind": "complete",
+        "note": "Implemented permanent CPU-only CE-GEO benchmark infrastructure in owned paths: methodology README; strict argv command manifest and JSON schemas; controller-supplied source/device/topology/toolchain/build provenance capture that performs no hardware query; fail-closed evidence validation for clean source, leases/mutex, correctness-first execution, cold/warm complete phases including transfers and residual, raw odd repeats, recomputed median/MAD, and contamination disposition; 8 adversarial unit tests plus exact gate entrypoint. Required CE-GEO-110-HARNESS gate passed (evidence 7fe66525-2c2e-47f3-a5de-d2ef9f836532). No GPU query, lease acquisition, or performance run occurred.",
+        "payload_json": "{\"changed_owned_paths\": [\"bench/ce_geo/README.md\", \"bench/ce_geo/evidence/schema/command_manifest.example.json\", \"bench/ce_geo/evidence/schema/command_manifest.schema.json\", \"bench/ce_geo/evidence/schema/evidence_record.schema.json\", \"bench/ce_geo/harness/.gitignore\", \"bench/ce_geo/harness/capture_context.py\", \"bench/ce_geo/harness/test_capture_context.py\", \"bench/ce_geo/harness/test_harness.py\", \"bench/ce_geo/harness/test_validate_evidence.py\", \"bench/ce_geo/harness/validate_evidence.py\"], \"checkpoints\": [{\"id\": \"CE-GEO-BENCH-INFRA-V1\", \"reached_at\": \"2026-08-29T20:42:38Z\", \"state\": \"reached\"}], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [{\"evidence_id\": \"3e4951fc-eef6-48da-bdcf-ba4824f6957b\", \"evidence_revision\": 2458, \"id\": \"CE-GEO-110-HARNESS\", \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}], \"completion_revision\": 2459, \"finalized_checkpoints\": [\"CE-GEO-BENCH-INFRA-V1\"], \"gates\": [{\"id\": \"CE-GEO-110-HARNESS\", \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"last_run_at\": \"2026-08-29T20:42:38Z\", \"revision\": 2458, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1664 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   26 +-\\n todos.md                               |   26 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    8 +-\\n todos/ce-geo-110.md                    |    6 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    8 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    8 +-\\n todos/ce-geo-80.md                     |    8 +-\\n 16 files changed, 1540 insertions(+), 274 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Implemented permanent CPU-only CE-GEO benchmark infrastructure in owned paths: methodology README; strict argv command manifest and JSON schemas; controller-supplied source/device/topology/toolchain/build provenance capture that performs no hardware query; fail-closed evidence validation for clean source, leases/mutex, correctness-first execution, cold/warm complete phases including transfers and residual, raw odd repeats, recomputed median/MAD, and contamination disposition; 8 adversarial unit tests plus exact gate entrypoint. Required CE-GEO-110-HARNESS gate passed (evidence 7fe66525-2c2e-47f3-a5de-d2ef9f836532). No GPU query, lease acquisition, or performance run occurred.\", \"resources\": [], \"task_id\": \"CE-GEO-110\"}",
+        "revision": 2459,
+        "task_id": "CE-GEO-110"
       },
       {
         "claim_id": null,
@@ -42719,6 +43858,26 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T20:35:32Z",
+        "id": "986edd24-20ef-40ff-b14b-cbf9ab49bff0",
+        "kind": "block",
+        "note": "Inspected task and declared read paths through coding-workflow. No CE-GEO-60 owned files remain; a speculative local draft was discarded before handoff. Resume only after the provider/capability and relation-cover contracts are frozen/published.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1426 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   24 +-\\n todos.md                               |   24 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    8 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    6 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    6 +-\\n todos/ce-geo-80.md                     |    6 +-\\n 15 files changed, 1320 insertions(+), 240 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Inspected task and declared read paths through coding-workflow. No CE-GEO-60 owned files remain; a speculative local draft was discarded before handoff. Resume only after the provider/capability and relation-cover contracts are frozen/published.\", \"resources\": [], \"task_id\": \"CE-GEO-60\"}",
+        "revision": 2445,
+        "task_id": "CE-GEO-60"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-29T19:42:05Z",
+        "id": "9afda0b7-8517-489d-b7b0-3ddb3b85cf75",
+        "kind": "complete",
+        "note": "Recorded and validated machine-readable CE-GEO preflight evidence and its narrow validator. Captured live Git/workflow identity, coordination entities, GPU topology, CE-PTR coexistence, additive identity proof, and rollback procedure; no production source or AGENTS.md changes.",
+        "payload_json": "{\"changed_owned_paths\": [\"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [{\"evidence_id\": \"73f8b757-1c01-4321-b035-2a25c45a9698\", \"evidence_revision\": 2411, \"id\": \"CE-GEO-01-DIFF-CHECK\", \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, {\"evidence_id\": \"7143e4a1-6888-4d0a-bb29-2569a76fe043\", \"evidence_revision\": 2413, \"id\": \"CE-GEO-01-EVIDENCE\", \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, {\"evidence_id\": \"3d1ac197-8417-4594-8abd-01d38cb499aa\", \"evidence_revision\": 2415, \"id\": \"CE-GEO-01-GIT-STATUS\", \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, {\"evidence_id\": \"cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d\", \"evidence_revision\": 2417, \"id\": \"CE-GEO-01-WORKFLOW-AUDIT\", \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}], \"completion_revision\": 2418, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-GEO-01-GIT-STATUS\", \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"last_run_at\": \"2026-08-29T19:42:05Z\", \"revision\": 2415, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-01-WORKFLOW-AUDIT\", \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"last_run_at\": \"2026-08-29T19:42:05Z\", \"revision\": 2417, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-01-DIFF-CHECK\", \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"last_run_at\": \"2026-08-29T19:42:05Z\", \"revision\": 2411, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-01-EVIDENCE\", \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"last_run_at\": \"2026-08-29T19:42:05Z\", \"revision\": 2413, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 518 +++++++++++++++++++++++++++++++--\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/ce-geo-01.md                     |   6 +-\\n 4 files changed, 494 insertions(+), 38 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Recorded and validated machine-readable CE-GEO preflight evidence and its narrow validator. Captured live Git/workflow identity, coordination entities, GPU topology, CE-PTR coexistence, additive identity proof, and rollback procedure; no production source or AGENTS.md changes.\", \"resources\": [], \"task_id\": \"CE-GEO-01\"}",
+        "revision": 2418,
+        "task_id": "CE-GEO-01"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-21T18:51:31Z",
         "id": "9c321e29-569a-44de-a938-b49925e1efb3",
         "kind": "complete",
@@ -42919,6 +44078,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T20:36:00Z",
+        "id": "bde6c62d-5f82-45ee-9c05-e69e978c09d1",
+        "kind": "complete",
+        "note": "Added a fixed-width pointer-free execution_capability_manifest_v1 as an optional device-readable CPE2 extension, typed host validation/binding through the existing projection capability_section, architecture cross-checking, and focused adversarial/legacy-compatibility coverage. Existing CPE2 header/section/projection records and prebound v1 remain unchanged. Validation: cellPackExecutionImageV2Test passed; standalone cpe2_capability_manifest_test compiled with -std=c++17 -Wall -Wextra -Werror and passed; git diff --check passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh\", \"tests/geometry/ce_geo/cpe2_capability_manifest_test.cc\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2448, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1464 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   24 +-\\n todos.md                               |   24 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    8 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    6 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    6 +-\\n todos/ce-geo-80.md                     |    6 +-\\n 15 files changed, 1359 insertions(+), 239 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Added a fixed-width pointer-free execution_capability_manifest_v1 as an optional device-readable CPE2 extension, typed host validation/binding through the existing projection capability_section, architecture cross-checking, and focused adversarial/legacy-compatibility coverage. Existing CPE2 header/section/projection records and prebound v1 remain unchanged. Validation: cellPackExecutionImageV2Test passed; standalone cpe2_capability_manifest_test compiled with -std=c++17 -Wall -Wextra -Werror and passed; git diff --check passed.\", \"resources\": [], \"task_id\": \"CE-GEO-40\"}",
+        "revision": 2448,
+        "task_id": "CE-GEO-40"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T08:29:24Z",
         "id": "be4789d8-607e-409a-a0c6-410907289c5f",
         "kind": "complete",
@@ -43049,6 +44218,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T19:43:04Z",
+        "id": "e6cd8c48-2b83-436d-8d8d-bc897b5a0286",
+        "kind": "complete",
+        "note": "Validated and froze docs/CE_GEO_PROGRAM.md as the subordinate execution authority. Added an explicit settled-contract versus empirical-question boundary, refreshed continuation wording, and added the narrow declared program validator. No production source implementation.",
+        "payload_json": "{\"changed_owned_paths\": [\"docs/CE_GEO_PROGRAM.md\"], \"checkpoints\": [{\"id\": \"CE-GEO-ARCHITECTURE-FROZEN\", \"reached_at\": \"2026-08-29T19:43:04Z\", \"state\": \"reached\"}], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [{\"evidence_id\": \"ae6f0e7f-ce5d-476c-98af-c912b29d61ef\", \"evidence_revision\": 2421, \"id\": \"CE-GEO-02-DIFF\", \"input_fingerprint\": \"fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, {\"evidence_id\": \"d0204664-39aa-4040-b6c4-b98c69d449f2\", \"evidence_revision\": 2423, \"id\": \"CE-GEO-02-PROGRAM\", \"input_fingerprint\": \"1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}], \"completion_revision\": 2424, \"finalized_checkpoints\": [\"CE-GEO-ARCHITECTURE-FROZEN\"], \"gates\": [{\"id\": \"CE-GEO-02-PROGRAM\", \"input_fingerprint\": \"1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764\", \"last_run_at\": \"2026-08-29T19:43:04Z\", \"revision\": 2423, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-02-DIFF\", \"input_fingerprint\": \"fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149\", \"last_run_at\": \"2026-08-29T19:43:04Z\", \"revision\": 2421, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 758 +++++++++++++++++++++++++++++++--\\n docs/CE_GEO_PROGRAM.md                 |   8 +-\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/ce-geo-01.md                     |   8 +-\\n todos/ce-geo-02.md                     |   6 +-\\n 6 files changed, 734 insertions(+), 58 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Validated and froze docs/CE_GEO_PROGRAM.md as the subordinate execution authority. Added an explicit settled-contract versus empirical-question boundary, refreshed continuation wording, and added the narrow declared program validator. No production source implementation.\", \"resources\": [], \"task_id\": \"CE-GEO-02\"}",
+        "revision": 2424,
+        "task_id": "CE-GEO-02"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-21T13:32:11Z",
         "id": "e7ce4aad-f554-4fee-b6fd-7b46c13ea2e3",
         "kind": "complete",
@@ -43099,6 +44278,26 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-29T20:36:08Z",
+        "id": "f6e100d2-4574-40ee-acc4-34f384b4b540",
+        "kind": "complete",
+        "note": "Added the exclusive historical sm_70 regression without modifying candidate code or CE-LIVE evidence. It freezes the v1 stable ID/schema/16x16 extent/sm_70 class, exact 50-percent plan qualification and residual edge ownership, checksum-pinned PBMC3K measured rejection, complete-cost rejection rule, and absence from the current production builtin catalog. Passed: nvcc -std=c++17 -arch=sm_70 new regression + host run; existing build_candidate_test.sh + V100 candidate test; git diff --check. Existing Python decision suite independently yielded 2 passing classification tests and 1 pre-existing FileNotFoundError because it still reads the pre-remap src/compute/math/operation_core/builtin_catalog.cc path; this task had read-only ownership outside its new regression.",
+        "payload_json": "{\"changed_owned_paths\": [\"tests/tensor_core/sm70/historical_dense_fragment_regression.cu\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2449, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1492 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   24 +-\\n todos.md                               |   24 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    8 +-\\n todos/ce-geo-20.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    8 +-\\n todos/ce-geo-50.md                     |    8 +-\\n todos/ce-geo-60.md                     |    6 +-\\n todos/ce-geo-70.md                     |    6 +-\\n todos/ce-geo-80.md                     |    6 +-\\n 15 files changed, 1384 insertions(+), 244 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Added the exclusive historical sm_70 regression without modifying candidate code or CE-LIVE evidence. It freezes the v1 stable ID/schema/16x16 extent/sm_70 class, exact 50-percent plan qualification and residual edge ownership, checksum-pinned PBMC3K measured rejection, complete-cost rejection rule, and absence from the current production builtin catalog. Passed: nvcc -std=c++17 -arch=sm_70 new regression + host run; existing build_candidate_test.sh + V100 candidate test; git diff --check. Existing Python decision suite independently yielded 2 passing classification tests and 1 pre-existing FileNotFoundError because it still reads the pre-remap src/compute/math/operation_core/builtin_catalog.cc path; this task had read-only ownership outside its new regression.\", \"resources\": [], \"task_id\": \"CE-GEO-70\"}",
+        "revision": 2449,
+        "task_id": "CE-GEO-70"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-29T19:46:47Z",
+        "id": "f6f32db2-91a5-406c-b6b8-895d9e3e69a0",
+        "kind": "complete",
+        "note": "Frozen CE-GEO compatibility baseline with host-safe CPE2, catalog, planner/program integration, and live-path V100 negative-control tests; pinned CPK1/CPE2 fixture and source hashes; verified CPE2 256/64/64 record sizes; recorded exact CUDA regression commands for later accelerator-leased CE-GEO-100 execution. No production behavior changed.",
+        "payload_json": "{\"changed_owned_paths\": [\"bench/ce_geo/evidence/baseline/baseline.json\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\"], \"checkpoints\": [{\"id\": \"CE-GEO-BASELINE-FROZEN\", \"reached_at\": \"2026-08-29T19:46:47Z\", \"state\": \"reached\"}], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [{\"evidence_id\": \"c65a550a-aec7-4fdd-afc3-ea579ff31c12\", \"evidence_revision\": 2427, \"id\": \"CE-GEO-03-BASELINE\", \"input_fingerprint\": \"4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, {\"evidence_id\": \"902e509f-24fd-4677-aef5-74cc98956cd2\", \"evidence_revision\": 2429, \"id\": \"CE-GEO-03-CPE2-SIZES\", \"input_fingerprint\": \"cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}], \"completion_revision\": 2430, \"finalized_checkpoints\": [\"CE-GEO-BASELINE-FROZEN\"], \"gates\": [{\"id\": \"CE-GEO-03-BASELINE\", \"input_fingerprint\": \"4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4\", \"last_run_at\": \"2026-08-29T19:46:47Z\", \"revision\": 2427, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-03-CPE2-SIZES\", \"input_fingerprint\": \"cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9\", \"last_run_at\": \"2026-08-29T19:46:47Z\", \"revision\": 2429, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 930 ++++++++++++++++++++++++++++++---\\n docs/CE_GEO_PROGRAM.md                 |   8 +-\\n todo-status.md                         |   8 +-\\n todos.md                               |   8 +-\\n todos/ce-geo-01.md                     |   8 +-\\n todos/ce-geo-02.md                     |   8 +-\\n todos/ce-geo-03.md                     |   6 +-\\n 7 files changed, 887 insertions(+), 89 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Frozen CE-GEO compatibility baseline with host-safe CPE2, catalog, planner/program integration, and live-path V100 negative-control tests; pinned CPK1/CPE2 fixture and source hashes; verified CPE2 256/64/64 record sizes; recorded exact CUDA regression commands for later accelerator-leased CE-GEO-100 execution. No production behavior changed.\", \"resources\": [], \"task_id\": \"CE-GEO-03\"}",
+        "revision": 2430,
+        "task_id": "CE-GEO-03"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-28T07:53:28Z",
         "id": "f92f9a63-ff3a-4c3f-8e94-6b9be970307d",
         "kind": "complete",
@@ -43116,6 +44315,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-ARCH-70-DEVICE-PREBIND-READY\", \"reached_at\": null, \"state\": \"pending\"}], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 11046 ++++++++++++++++++++-----------\\n Baseplane                              |     0\\n Cellerator                             |     0\\n todo-status.md                         |    19 +-\\n todos.md                               |    19 +-\\n todos/ce-arch-00.md                    |     2 +-\\n 6 files changed, 7124 insertions(+), 3962 deletions(-)\", \"git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\", \"interfaces\": [{\"content_hash\": null, \"id\": \"CELLERATOR_EXECUTION_IMAGE_V2_DEVICE_PREBIND_V1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"Pause requested at clean phase boundary. CE-ARCH-70A through CE-ARCH-70E are complete with frozen interfaces and passing focused gates. CE-ARCH-70F has no source edits yet. Resume by running todo.py continue --repo-root . --json, then inspect only execution_image_v2.hh/.cc and its host/device tests. Implement relocation-aware prebind from the already validated host directory plus destination device base, reject destination size mismatch, and make the tiny CUDA test read payload through prebound_projection_view_v1::payload. Do not dereference the device directory on host, touch CellShard, or implement any new projection. After F, run the focused host/device tests and explicit CUDA 12.9 memcheck, then complete Phase G docs/full validation/paired commits.\", \"resources\": [], \"task_id\": \"CE-ARCH-70F\"}",
         "revision": 886,
         "task_id": "CE-ARCH-70F"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-29T20:31:38Z",
+        "id": "fb6550cc-db02-4db9-a2df-649889edf2c1",
+        "kind": "complete",
+        "note": "Defined standalone hardware-neutral allocator-free support-atlas POD views, caller-owned buffer/requirement contracts, deterministic provenance, rational normalized affinity records, and a fixed 296-byte pointer-free optional-section header without guessing CSG1 section enum values. Added contract coverage. Validation: c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude tests/geometry/ce_geo/support_atlas_contract_test.cc -o /tmp/ce_geo_support_atlas_contract_test && /tmp/ce_geo_support_atlas_contract_test; git diff --check on owned paths.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/geometry/support_atlas.hh\", \"tests/geometry/ce_geo/support_atlas_contract_test.cc\"], \"checkpoints\": [], \"completion_commit\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"completion_gates\": [], \"completion_revision\": 2438, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1264 ++++++++++++++++++++++++++++----\\n docs/CE_GEO_PROGRAM.md                 |    8 +-\\n todo-status.md                         |   18 +-\\n todos.md                               |   18 +-\\n todos/ce-geo-01.md                     |    8 +-\\n todos/ce-geo-02.md                     |    8 +-\\n todos/ce-geo-03.md                     |    8 +-\\n todos/ce-geo-10.md                     |    6 +-\\n todos/ce-geo-30.md                     |    8 +-\\n todos/ce-geo-40.md                     |    6 +-\\n todos/ce-geo-50.md                     |    6 +-\\n todos/ce-geo-60.md                     |    6 +-\\n 12 files changed, 1177 insertions(+), 187 deletions(-)\", \"git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\", \"interfaces\": [], \"note\": \"Defined standalone hardware-neutral allocator-free support-atlas POD views, caller-owned buffer/requirement contracts, deterministic provenance, rational normalized affinity records, and a fixed 296-byte pointer-free optional-section header without guessing CSG1 section enum values. Added contract coverage. Validation: c++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude tests/geometry/ce_geo/support_atlas_contract_test.cc -o /tmp/ce_geo_support_atlas_contract_test && /tmp/ce_geo_support_atlas_contract_test; git diff --check on owned paths.\", \"resources\": [], \"task_id\": \"CE-GEO-50\"}",
+        "revision": 2438,
+        "task_id": "CE-GEO-50"
       },
       {
         "claim_id": null,
@@ -54596,6 +55805,123 @@
     ],
     "task_completion_gates": [
       {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2418,
+        "evidence_id": "73f8b757-1c01-4321-b035-2a25c45a9698",
+        "evidence_revision": 2411,
+        "gate_id": "CE-GEO-01-DIFF-CHECK",
+        "input_fingerprint": "52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2",
+        "provenance_json": "{\"claim_id\": \"a921abe8-d9a7-4d78-9eb2-51df79bd1b9f\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"52803f5e79b7c0a5da9849212bca8b9fcafc728f0d52a46ad8d6e218cee08bc2\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"ce-geo-plan.json\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2410}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/73f8b757-1c01-4321-b035-2a25c45a9698\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-01",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2418,
+        "evidence_id": "7143e4a1-6888-4d0a-bb29-2569a76fe043",
+        "evidence_revision": 2413,
+        "gate_id": "CE-GEO-01-EVIDENCE",
+        "input_fingerprint": "9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7",
+        "provenance_json": "{\"claim_id\": \"a921abe8-d9a7-4d78-9eb2-51df79bd1b9f\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9037458da6340584bb65da0518cc53c25a9fe2e408a811e0cfacb65197e952d7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_preflight.py\", \"bench/ce_geo/evidence/bootstrap_preflight.json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2412}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/7143e4a1-6888-4d0a-bb29-2569a76fe043\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-01",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2418,
+        "evidence_id": "3d1ac197-8417-4594-8abd-01d38cb499aa",
+        "evidence_revision": 2415,
+        "gate_id": "CE-GEO-01-GIT-STATUS",
+        "input_fingerprint": "89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998",
+        "provenance_json": "{\"claim_id\": \"a921abe8-d9a7-4d78-9eb2-51df79bd1b9f\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"status\", \"--short\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"89dd7374bb2c6a5f75981c771288cc6967e99941666a33fe0a79ede313efc998\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"status\", \"--short\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2414}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3d1ac197-8417-4594-8abd-01d38cb499aa\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-01",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2418,
+        "evidence_id": "cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d",
+        "evidence_revision": 2417,
+        "gate_id": "CE-GEO-01-WORKFLOW-AUDIT",
+        "input_fingerprint": "e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331",
+        "provenance_json": "{\"claim_id\": \"a921abe8-d9a7-4d78-9eb2-51df79bd1b9f\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e0a71e2ec44ffa49e2b278f41bfab5896b9ff149686221cd153b36523d246331\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"audit\", \"--repo-root\", \".\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"38420e7d48be24563c7ce14de10f0a69cd19adc99ab0f10b95b4881d8993bfce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"scripts/ce_geo/validate_preflight.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2416}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/cbd4bfd0-d67e-41d2-9b8b-d2b2af9fe99d\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-01",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2424,
+        "evidence_id": "ae6f0e7f-ce5d-476c-98af-c912b29d61ef",
+        "evidence_revision": 2421,
+        "gate_id": "CE-GEO-02-DIFF",
+        "input_fingerprint": "fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149",
+        "provenance_json": "{\"claim_id\": \"dffe1942-0e4e-46d5-bb72-c0d435b01ec6\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"fb08763f166074a0321f9b2fdd7ebb30a47b8dc9103ff39abdaefbc316d22149\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"893e55c508f002be84c8fdf4604dd3f538097457190ec5730c95ea949081c482\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2420}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/ae6f0e7f-ce5d-476c-98af-c912b29d61ef\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-02",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2424,
+        "evidence_id": "d0204664-39aa-4040-b6c4-b98c69d449f2",
+        "evidence_revision": 2423,
+        "gate_id": "CE-GEO-02-PROGRAM",
+        "input_fingerprint": "1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764",
+        "provenance_json": "{\"claim_id\": \"dffe1942-0e4e-46d5-bb72-c0d435b01ec6\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_program.py\", \"docs/CE_GEO_PROGRAM.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1cbc74ef9fd1d931e9ae5b076696d3b893921b01c2d8c1292418d7e4e12c5764\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/ce_geo/validate_program.py\", \"docs/CE_GEO_PROGRAM.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"893e55c508f002be84c8fdf4604dd3f538097457190ec5730c95ea949081c482\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2422}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/d0204664-39aa-4040-b6c4-b98c69d449f2\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-02",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2430,
+        "evidence_id": "c65a550a-aec7-4fdd-afc3-ea579ff31c12",
+        "evidence_revision": 2427,
+        "gate_id": "CE-GEO-03-BASELINE",
+        "input_fingerprint": "4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4",
+        "provenance_json": "{\"claim_id\": \"406aedd5-5014-4d9c-926a-d809c39216d2\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/run_baseline.py\", \"--build\", \"build\", \"--evidence\", \"bench/ce_geo/evidence/baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4a72add004381136f225e4bc5ab1969237c0c6034a90e904a9f9f20beadac4a4\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/run_baseline.py\", \"--build\", \"build\", \"--evidence\", \"bench/ce_geo/evidence/baseline\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4c432d70355f3525a83f37615ae5d47c423a4958f0f14bc48fabf7910d63fd81\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2426}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/c65a550a-aec7-4fdd-afc3-ea579ff31c12\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-03",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2430,
+        "evidence_id": "902e509f-24fd-4677-aef5-74cc98956cd2",
+        "evidence_revision": 2429,
+        "gate_id": "CE-GEO-03-CPE2-SIZES",
+        "input_fingerprint": "cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9",
+        "provenance_json": "{\"claim_id\": \"406aedd5-5014-4d9c-926a-d809c39216d2\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"256\", \"64\", \"64\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"cc3d8fd8d008c0167f069540a3d888444674fe6ca48dad454a8ec61bf31e7bb9\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"256\", \"64\", \"64\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4c432d70355f3525a83f37615ae5d47c423a4958f0f14bc48fabf7910d63fd81\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"docs/CE_GEO_PROGRAM.md\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2428}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/902e509f-24fd-4677-aef5-74cc98956cd2\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-03",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2459,
+        "evidence_id": "3e4951fc-eef6-48da-bdcf-ba4824f6957b",
+        "evidence_revision": 2458,
+        "gate_id": "CE-GEO-110-HARNESS",
+        "input_fingerprint": "6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20",
+        "provenance_json": "{\"claim_id\": \"2389a23b-5653-49a4-a0cd-7cbafcb4e626\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6074b16d17f54fc7443ea2813561b1ac7b1e6184092e380f63684b577b0a3a20\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"bench/ce_geo/harness/test_harness.py\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"551572852e98c1b7df11ebffa0f2826cf08fd9eccbaca96d77525957c2228ef8\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"bench/ce_geo/README.md\", \"bench/ce_geo/evidence/baseline/baseline.json\", \"bench/ce_geo/evidence/bootstrap_preflight.json\", \"bench/ce_geo/evidence/schema/command_manifest.example.json\", \"bench/ce_geo/evidence/schema/command_manifest.schema.json\", \"bench/ce_geo/evidence/schema/evidence_record.schema.json\", \"bench/ce_geo/harness/.gitignore\", \"bench/ce_geo/harness/capture_context.py\", \"bench/ce_geo/harness/test_capture_context.py\", \"bench/ce_geo/harness/test_harness.py\", \"bench/ce_geo/harness/test_validate_evidence.py\", \"bench/ce_geo/harness/validate_evidence.py\", \"docs/CE_GEO_PROGRAM.md\", \"include/Cellerator/compute/operation/relation_algebra.hh\", \"include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh\", \"include/Cellerator/geometry/support_atlas.hh\", \"include/Cellerator/geometry/work_window.hh\", \"include/Cellerator/runtime/device_descriptor.hh\", \"scripts/ce_geo/validate_preflight.py\", \"scripts/ce_geo/validate_program.py\", \"src/runtime/device_descriptor.cu\", \"tests/ce_geo/baseline/check_cpe2_sizes.py\", \"tests/ce_geo/baseline/run_baseline.py\", \"tests/ce_geo/baseline/test_dense_fragment_negative_control.py\", \"tests/ce_geo/hardware/device_descriptor_test.cu\", \"tests/geometry/ce_geo/cpe2_capability_manifest_test.cc\", \"tests/geometry/ce_geo/support_atlas_contract_test.cc\", \"tests/geometry/ce_geo/work_window_test.cc\", \"tests/relation_algebra/contract_test.cc\", \"tests/tensor_core/sm70/historical_dense_fragment_regression.cu\", \"todo-status.md\", \"todos.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\", \"todos/ce-geo-10.md\", \"todos/ce-geo-110.md\", \"todos/ce-geo-20.md\", \"todos/ce-geo-30.md\", \"todos/ce-geo-40.md\", \"todos/ce-geo-50.md\", \"todos/ce-geo-60.md\", \"todos/ce-geo-70.md\", \"todos/ce-geo-80.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"7ceafdf3b41910c50061a2abf44ba1cdc272991e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2457}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3e4951fc-eef6-48da-bdcf-ba4824f6957b\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-GEO-110",
+        "valid": 1,
+        "validation_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e"
+      },
+      {
         "completion_git_head": "4a9462c9b21f1f1e33df27c370471232105eda34",
         "completion_revision": 1642,
         "evidence_id": "6140a21b-ad18-41dc-b502-449425e053db",
@@ -64070,9 +65396,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2418,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-01",
         "kind": "validation_task",
@@ -64084,20 +65410,20 @@
         "parallel_policy": "serial",
         "parent_id": "CE-GEO-00",
         "priority": 999,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2418,
+        "status": "done",
         "tags_json": "[]",
         "title": "Live preflight and coexistence audit",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T19:42:05Z",
+        "version": 5
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2424,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-02",
         "kind": "validation_task",
@@ -64109,20 +65435,20 @@
         "parallel_policy": "serial",
         "parent_id": "CE-GEO-00",
         "priority": 998,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2424,
+        "status": "done",
         "tags_json": "[]",
         "title": "Freeze CE-GEO architecture and execution program",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T19:43:04Z",
+        "version": 5
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2430,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-03",
         "kind": "validation_task",
@@ -64134,20 +65460,20 @@
         "parallel_policy": "serial",
         "parent_id": "CE-GEO-00",
         "priority": 997,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2430,
+        "status": "done",
         "tags_json": "[]",
         "title": "Freeze compatibility and negative-control baseline",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T19:46:47Z",
+        "version": 5
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2443,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-10",
         "kind": "workstream",
@@ -64159,14 +65485,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 900,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2443,
+        "status": "done",
         "tags_json": "[]",
         "title": "Canonical cold device descriptor",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:34:11Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -64445,9 +65771,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2459,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-110",
         "kind": "workstream",
@@ -64459,14 +65785,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 770,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2459,
+        "status": "done",
         "tags_json": "[]",
         "title": "Benchmark harness and evidence schema",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:42:38Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -64969,7 +66295,7 @@
         "version": 3
       },
       {
-        "attention_reason": null,
+        "attention_reason": "This first-class agent is delegated only to CE-GEO-L-SUPPORT. An unscoped next_task call selected CE-GEO-20 after explicit CE-GEO-51 returned no_actionable_work; releasing immediately with no catalog inspection or mutation.",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -64986,12 +66312,12 @@
         "priority": 890,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2439,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Candidate catalog v2 contract",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:31:52Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -65120,9 +66446,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2435,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-30",
         "kind": "workstream",
@@ -65134,14 +66460,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 880,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2435,
+        "status": "done",
         "tags_json": "[]",
         "title": "Work-window contract",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:30:36Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -65370,9 +66696,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2448,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-40",
         "kind": "workstream",
@@ -65384,14 +66710,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 860,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2448,
+        "status": "done",
         "tags_json": "[]",
         "title": "Typed CPE2 capability manifest",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:36:00Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -65570,9 +66896,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2438,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-50",
         "kind": "workstream",
@@ -65584,14 +66910,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 850,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2438,
+        "status": "done",
         "tags_json": "[]",
         "title": "Support-atlas POD and section schemas",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:31:38Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -65794,7 +67120,7 @@
         "version": 3
       },
       {
-        "attention_reason": null,
+        "attention_reason": "CE-GEO-60's declared read contracts do not exist yet: include/Cellerator/compute/architecture/provider.hh is owned by later CE-GEO-12 after CE-GEO-11 capability freeze, and include/Cellerator/geometry/relation_cover.hh is owned by later semantic-lane work. Defining the target-refinement seam now would infer provider/capability identities or semantic-cover type names contrary to narrow interface ownership.",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -65811,12 +67137,12 @@
         "priority": 840,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2436,
+        "status": "blocked",
         "tags_json": "[]",
         "title": "Provider target-refinement problem and solution seam",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:35:32Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -66045,9 +67371,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2449,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-70",
         "kind": "validation_task",
@@ -66059,14 +67385,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 830,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2449,
+        "status": "done",
         "tags_json": "[]",
         "title": "Preserve historical dense-fragment experiment",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:36:08Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -66295,9 +67621,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_git_head": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+        "completion_revision": 2451,
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-80",
         "kind": "workstream",
@@ -66309,14 +67635,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CE-GEO-00",
         "priority": 810,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 2379,
-        "status": "planned",
+        "revision": 2451,
+        "status": "done",
         "tags_json": "[]",
         "title": "Relation-algebra contract",
-        "updated_at": "2026-08-29T19:11:12Z",
-        "version": 3
+        "updated_at": "2026-08-29T20:37:17Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -73125,13 +74451,13 @@
         "task_id": "CE-GEO-119"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:36:20Z",
+        "completed_at": "2026-08-29T20:42:38Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-BENCH-INFRA",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2459,
+        "state": "completed",
         "task_id": "CE-GEO-110"
       },
       {
@@ -73185,13 +74511,13 @@
         "task_id": "CE-GEO-115"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:34:19Z",
+        "completed_at": "2026-08-29T20:37:17Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-BIOLOGY",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2451,
+        "state": "completed",
         "task_id": "CE-GEO-80"
       },
       {
@@ -73280,7 +74606,7 @@
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-CATALOG",
         "position": 0,
-        "revision": 2379,
+        "revision": 2440,
         "state": "queued",
         "task_id": "CE-GEO-20"
       },
@@ -73335,33 +74661,33 @@
         "task_id": "CE-GEO-25"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T19:38:22Z",
+        "completed_at": "2026-08-29T19:42:05Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-COORD",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2418,
+        "state": "completed",
         "task_id": "CE-GEO-01"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T19:42:10Z",
+        "completed_at": "2026-08-29T19:43:04Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-COORD",
         "position": 1,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2424,
+        "state": "completed",
         "task_id": "CE-GEO-02"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T19:43:10Z",
+        "completed_at": "2026-08-29T19:46:47Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-COORD",
         "position": 2,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2430,
+        "state": "completed",
         "task_id": "CE-GEO-03"
       },
       {
@@ -73405,13 +74731,13 @@
         "task_id": "CE-GEO-127"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:28:02Z",
+        "completed_at": "2026-08-29T20:34:11Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-HARDWARE",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2443,
+        "state": "completed",
         "task_id": "CE-GEO-10"
       },
       {
@@ -73595,13 +74921,13 @@
         "task_id": "CE-GEO-99"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:28:11Z",
+        "completed_at": "2026-08-29T20:36:00Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-PERSISTENCE",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2448,
+        "state": "completed",
         "task_id": "CE-GEO-40"
       },
       {
@@ -73680,7 +75006,7 @@
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-PROJECTION",
         "position": 0,
-        "revision": 2379,
+        "revision": 2445,
         "state": "queued",
         "task_id": "CE-GEO-60"
       },
@@ -73775,13 +75101,13 @@
         "task_id": "CE-GEO-69"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:28:08Z",
+        "completed_at": "2026-08-29T20:30:36Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-SEMANTIC",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2435,
+        "state": "completed",
         "task_id": "CE-GEO-30"
       },
       {
@@ -73875,13 +75201,13 @@
         "task_id": "CE-GEO-39"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:33:21Z",
+        "completed_at": "2026-08-29T20:36:08Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-SM70",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2449,
+        "state": "completed",
         "task_id": "CE-GEO-70"
       },
       {
@@ -73975,13 +75301,13 @@
         "task_id": "CE-GEO-79"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-29T20:28:12Z",
+        "completed_at": "2026-08-29T20:31:38Z",
         "enqueued_at": "2026-08-29T19:10:06Z",
         "lane_id": "CE-GEO-L-SUPPORT",
         "position": 0,
-        "revision": 2379,
-        "state": "queued",
+        "revision": 2438,
+        "state": "completed",
         "task_id": "CE-GEO-50"
       },
       {
@@ -74579,11 +75905,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-BENCH-INFRA",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2459,
         "role": "validator",
         "run_id": "CE-GEO-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "state": "closed",
+        "updated_at": "2026-08-29T20:42:38Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74603,11 +75929,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-BIOLOGY",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2451,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:37:17Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74615,11 +75941,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-CATALOG",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2440,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:31:52Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74627,11 +75953,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-COORD",
         "parent_lane_id": null,
-        "revision": 2379,
+        "revision": 2430,
         "role": "coordinator",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T19:46:47Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74639,11 +75965,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-HARDWARE",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2443,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:34:11Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74675,11 +76001,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-PERSISTENCE",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2448,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:36:00Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74687,11 +76013,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-PROJECTION",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2445,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "state": "attention_required",
+        "updated_at": "2026-08-29T20:35:32Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74699,11 +76025,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-SEMANTIC",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2435,
         "role": "implementer",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:30:36Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74711,11 +76037,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-SM70",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2449,
         "role": "specialist",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:36:08Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -74723,11 +76049,11 @@
         "created_at": "2026-08-29T19:10:06Z",
         "id": "CE-GEO-L-SUPPORT",
         "parent_lane_id": "CE-GEO-L-COORD",
-        "revision": 2379,
+        "revision": 2438,
         "role": "specialist",
         "run_id": "CE-GEO-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-29T19:11:12Z",
+        "updated_at": "2026-08-29T20:31:38Z",
         "workspace_mode": "exclusive"
       },
       {

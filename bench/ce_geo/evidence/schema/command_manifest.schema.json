@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cellerator.local/schemas/ce_geo_command_v1.json",
+  "title": "Cellerator CE-GEO benchmark command manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "campaign_id", "project_root", "commands", "methodology", "resources", "capture", "required_phases"],
+  "properties": {
+    "schema": {"const": "CELLERATOR-CE-GEO-COMMAND/1"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "project_root": {"const": "/home/tumlinson/Cellerator"},
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["build", "correctness", "measure"],
+      "properties": {
+        "build": {"$ref": "#/$defs/command_list"},
+        "correctness": {"$ref": "#/$defs/command_list"},
+        "measure": {"$ref": "#/$defs/command_list"}
+      }
+    },
+    "methodology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["warmups", "repeats", "maximum_mad_percent", "cold_warm_separated", "correctness_before_measurement"],
+      "properties": {
+        "warmups": {"type": "integer", "minimum": 1},
+        "repeats": {"type": "integer", "minimum": 5},
+        "maximum_mad_percent": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "cold_warm_separated": {"const": true},
+        "correctness_before_measurement": {"const": true}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_leases", "benchmark_mutex", "run_without_leases"],
+      "properties": {
+        "required_leases": {"type": "array", "uniqueItems": true, "contains": {"const": "benchmark"}},
+        "benchmark_mutex": {"const": "bench/benchmark_mutex.hh"},
+        "run_without_leases": {"const": false}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "device", "topology", "toolchain", "build"],
+      "properties": {
+        "source": {"const": true}, "device": {"const": true},
+        "topology": {"const": true}, "toolchain": {"const": true},
+        "build": {"const": true}
+      }
+    },
+    "required_phases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cold", "warm"],
+      "properties": {
+        "cold": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "warm": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    }
+  },
+  "$defs": {
+    "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "command_list": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/argv"}}
+  }
+}

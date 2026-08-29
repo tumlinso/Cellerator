@@ -58,25 +58,25 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `2379`
+Project revision: `2459`
 
 ## Workstreams
 - `CE-GEO-00` | status: planned | execution: inactive | next: Own the complete Volta-first CE-GEO campaign and the loaded but permission-gated CE-AMP extension under docs/CE_GEO_PROGRAM.md.
-- `CE-GEO-01` | status: planned | execution: ready | next: Record live Git identity and dirty paths, workflow revision and ownership, runs, lanes, claims, locks, resources, interfaces, checkpoints, barriers, integration queues, GPU inventory, CE-PTR overlaps, rollback procedure, and additive ID proof without source implementation or AGENTS.md edits.
-- `CE-GEO-02` | status: planned | execution: ready | next: Freeze docs/CE_GEO_PROGRAM.md as the subordinate execution authority, preserving every settled boundary and separating benchmark questions from architecture.
-- `CE-GEO-03` | status: planned | execution: ready | next: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
-- `CE-GEO-10` | status: planned | execution: ready | next: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
+- `CE-GEO-01` | status: done | execution: closed | next: Record live Git identity and dirty paths, workflow revision and ownership, runs, lanes, claims, locks, resources, interfaces, checkpoints, barriers, integration queues, GPU inventory, CE-PTR overlaps, rollback procedure, and additive ID proof without source implementation or AGENTS.md edits.
+- `CE-GEO-02` | status: done | execution: closed | next: Freeze docs/CE_GEO_PROGRAM.md as the subordinate execution authority, preserving every settled boundary and separating benchmark questions from architecture.
+- `CE-GEO-03` | status: done | execution: closed | next: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
+- `CE-GEO-10` | status: done | execution: closed | next: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
 - `CE-GEO-11` | status: planned | execution: ready | next: Implement architecture-neutral source-linked matrix-engine capabilities and separate versioned memory-interface restrictions without exposing WMMA types.
 - `CE-GEO-12` | status: planned | execution: ready | next: Implement fixed-capacity explicit provider registration, active-device filtering, and a generated compiled-provider manifest with no constructors or dynamic loader.
 - `CE-GEO-13` | status: planned | execution: ready | next: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
 - `CE-GEO-14` | status: planned | execution: ready | next: Prove a fake source-linked provider and candidate can be added without central runtime modification; validate descriptor, capability, memory-interface, registry, manifest, and sealed-session contracts.
-- `CE-GEO-20` | status: planned | execution: ready | next: Define a rich cold non-STL POD candidate descriptor and fragment view while retaining the compact hot operation_candidate.
+- `CE-GEO-20` | status: in_progress | execution: idle | next: Define a rich cold non-STL POD candidate descriptor and fragment view while retaining the compact hot operation_candidate.
 - `CE-GEO-21` | status: planned | execution: ready | next: Lift the current five built-in candidates into a catalog-v2 compatibility fragment without changing behavior or identities.
 - `CE-GEO-22` | status: planned | execution: ready | next: Implement provider-erased activated projection references carrying provider, view type, ABI, schema, variant, and capability identity.
 - `CE-GEO-23` | status: planned | execution: ready | next: Move typed preparation dispatch behind each catalog entry while preserving existing bridges and eliminating central physical-projection knowledge.
 - `CE-GEO-24` | status: planned | execution: ready | next: Create one v2 program engine without five-entry pointer closure or central projection switch and retain v1 as a compatibility wrapper.
 - `CE-GEO-25` | status: planned | execution: ready | next: Prove existing enumeration/execution and planner selection, fake-provider extension without program.cc edits, and atomic duplicate/capability rejection.
-- `CE-GEO-30` | status: planned | execution: ready | next: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
+- `CE-GEO-30` | status: done | execution: closed | next: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
 - `CE-GEO-31` | status: planned | execution: ready | next: Implement cheap permissive defaults and cold axis-qualified fixed-position, membership, linkage, exclusion, precedence, partition, and exchange-window constraints.
 - `CE-GEO-32` | status: planned | execution: ready | next: Implement exact invertible real-item permutations with independent validation and no physical padding.
 - `CE-GEO-33` | status: planned | execution: ready | next: Implement data-only semantic component ownership and an independent exact logical-edge cover validator.
@@ -86,7 +86,7 @@ Project revision: `2379`
 - `CE-GEO-37` | status: planned | execution: ready | next: Expose existing CP-BP semantic information through new geometry contracts without modifying, thawing, reconstructing, or reinterpreting CPK1.
 - `CE-GEO-38` | status: planned | execution: ready | next: Implement fixed-width little-endian pointer-free checksummed aligned sectioned semantic-image build, validation, identity, relocation, and optional extensions.
 - `CE-GEO-39` | status: planned | execution: ready | next: Run property, corruption, round-trip, relocation, identity, order, exact-cover, permissive-window, and CP-BP compatibility tests and freeze both interfaces.
-- `CE-GEO-40` | status: planned | execution: ready | next: Use the existing capability_section hook for a typed device-specific manifest without changing CPE2 record sizes.
+- `CE-GEO-40` | status: done | execution: closed | next: Use the existing capability_section hook for a typed device-specific manifest without changing CPE2 record sizes.
 - `CE-GEO-41` | status: planned | execution: ready | next: Expose validated capability pointer and bytes through a compatible v2 prebound view while retaining v1 layout, functions, and readers.
 - `CE-GEO-42` | status: planned | execution: ready | next: Generalize opaque-artifact validation and binding from one selected index to a validated projection set without letting the loader choose the winner.
 - `CE-GEO-43` | status: planned | execution: ready | next: Route architecture-specific projection host validation and device activation through provider descriptors without a new central type switch.
@@ -94,7 +94,7 @@ Project revision: `2379`
 - `CE-GEO-45` | status: planned | execution: ready | next: Converge all four acquisition routes on one validated activated projection set and complete candidate costs; CPE2 rebuild from embedded CSG1 is explicit opt-in.
 - `CE-GEO-46` | status: planned | execution: ready | next: Map semantic search, refinement, construction, upload, prebind, preparation, value pack, input pack, kernel, epilogue, and order work into existing planner-v2 phases with reuse diagnostics.
 - `CE-GEO-47` | status: planned | execution: ready | next: Prove old CPE2 and opaque-artifact compatibility, fixed record sizes, typed capabilities, v1/v2 prebinding, corruption rejection, and logical equivalence of all routes.
-- `CE-GEO-50` | status: planned | execution: ready | next: Define hardware-neutral allocator-free support evidence views and optional CSG1 schemas.
+- `CE-GEO-50` | status: done | execution: closed | next: Define hardware-neutral allocator-free support evidence views and optional CSG1 schemas.
 - `CE-GEO-51` | status: planned | execution: ready | next: Reuse compatible sampled-support machinery, add bounded high-degree pair sampling, deterministic provenance and seed, and avoid all-pairs expansion.
 - `CE-GEO-52` | status: planned | execution: ready | next: Produce prevalence, raw and weighted support, normalized association, and bounded sparse top-L source affinity near O(E + S log L).
 - `CE-GEO-53` | status: planned | execution: ready | next: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
@@ -103,7 +103,7 @@ Project revision: `2379`
 - `CE-GEO-56` | status: planned | execution: ready | next: Persist or reference optional support-atlas sections without making them mandatory for core CSG1 validity or semantic identity beyond actual semantic content.
 - `CE-GEO-57` | status: planned | execution: ready | next: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
 - `CE-GEO-58` | status: planned | execution: ready | next: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
-- `CE-GEO-60` | status: planned | execution: ready | next: Define a data-only target-specific refinement seam distinct from the semantic strategy contract.
+- `CE-GEO-60` | status: blocked | execution: blocked_dependency | next: Define a data-only target-specific refinement seam distinct from the semantic strategy contract.
 - `CE-GEO-61` | status: planned | execution: ready | next: Define pointer-free groups, tiles, 256-bit masks, compact slots, width-tagged edge IDs, residual descriptors, schedules, and value maps for architecture_specific projection.
 - `CE-GEO-62` | status: planned | execution: ready | next: Implement checked offsets, alignment, identities, counts, index widths, checksums, corruption rejection, and CPE2 embedding.
 - `CE-GEO-63` | status: planned | execution: ready | next: Implement provider-specific work layouts with invalid-sentinel padding that never enters semantic work identity.
@@ -113,7 +113,7 @@ Project revision: `2379`
 - `CE-GEO-67` | status: planned | execution: ready | next: Use complete target-calibrated marginal cost and bounded moves, swaps, splits, merges, rectangle toggles, and admissible exchanges; always emit pure sparse, conservative hybrid, and aggressive hybrid covers.
 - `CE-GEO-68` | status: planned | execution: ready | next: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-GEO-69` | status: planned | execution: ready | next: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
-- `CE-GEO-70` | status: planned | execution: ready | next: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
+- `CE-GEO-70` | status: done | execution: closed | next: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
 - `CE-GEO-71` | status: planned | execution: ready | next: Add the source-linked nvidia_sm70 provider advertising only implemented FP16 relation/input, FP32 accumulate/output 16x16x16 WMMA.
 - `CE-GEO-72` | status: planned | execution: ready | next: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
 - `CE-GEO-73` | status: planned | execution: ready | next: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
@@ -123,7 +123,7 @@ Project revision: `2379`
 - `CE-GEO-77` | status: planned | execution: ready | next: Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.
 - `CE-GEO-78` | status: planned | execution: ready | next: Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.
 - `CE-GEO-79` | status: planned | execution: ready | next: Consume complete-cost forward evidence, record implemented/evaluated-not-promoted/failed disposition, keep nonwinning code optional and outside normal promotion, and freeze the implemented provider contract.
-- `CE-GEO-80` | status: planned | execution: ready | next: Specify typed relation apply, transpose, support contraction, segments, edge maps/gates, bundles, exact identities, numerical semantics, and reviewed operation-core schema transition.
+- `CE-GEO-80` | status: done | execution: closed | next: Specify typed relation apply, transpose, support contraction, segments, edge maps/gates, bundles, exact identities, numerical semantics, and reviewed operation-core schema transition.
 - `CE-GEO-81` | status: planned | execution: ready | next: Map current v1 forward/transpose operations into the typed algebra without silently changing frozen enum or identity semantics.
 - `CE-GEO-82` | status: planned | execution: ready | next: Implement sum and maximum with explicit segment/axis identity, FP32 policy, empty and singleton handling, and caller-owned workspace.
 - `CE-GEO-83` | status: planned | execution: ready | next: Implement log-sum-exp and softmax with stable FP32 reduction, empty/singleton behavior, NaN/Inf policy, and required backward primitives.
@@ -152,7 +152,7 @@ Project revision: `2379`
 - `CE-GEO-107` | status: planned | execution: ready | next: Create a focused CE-GEO-only audit for new STL ownership, WMMA leakage, architecture in CSG1, CPK1 or CPE2 mutation, global fast math, atomics, and broad ownership; do not certify CE-PTR.
 - `CE-GEO-108` | status: planned | execution: ready | next: Run memcheck and applicable race/init tools over new device views, rebind, value pack, MMA, residual, segments, transpose, contraction, and gradients with exact binary/toolchain evidence.
 - `CE-GEO-109` | status: planned | execution: ready | next: Run normal and relevant compatibility builds plus all compatibility, structure, runtime, numerical, static, sanitizer, and integrated Volta tests; emit machine-readable source/hardware/command/contamination evidence.
-- `CE-GEO-110` | status: planned | execution: ready | next: Create permanent methodology, command manifests, source/device/topology/toolchain/build capture, warmup/repeats, cold/warm complete phase accounting, contamination/spread, and JSON evidence validation without running unleased hardware.
+- `CE-GEO-110` | status: done | execution: closed | next: Create permanent methodology, command manifests, source/device/topology/toolchain/build capture, warmup/repeats, cold/warm complete phase accounting, contamination/spread, and JSON evidence validation without running unleased hardware.
 - `CE-GEO-111` | status: planned | execution: ready | next: Calibrate standalone value pack, dense input layout, residual, epilogue, and output remap across sizes and reuse with exact complete-phase evidence.
 - `CE-GEO-112` | status: planned | execution: ready | next: Compare historical experiment, output-owned N64 WMMA, best local sparse baselines, and legal dense baselines with mechanism and numerical evidence.
 - `CE-GEO-113` | status: planned | execution: ready | next: Measure the integrated N64 path including semantic search, refinement, projection/upload, preparation, value/input pack, MMA, residual, epilogue, order, synchronization, reuse, and best sparse fallback; produce CE-GEO-79 evidence.

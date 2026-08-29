@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-80: Relation-algebra contract
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2451`; current project revision is in `todo-status.md`.
 
 ## Objective
 Specify typed relation apply, transpose, support contraction, segments, edge maps/gates, bundles, exact identities, numerical semantics, and reviewed operation-core schema transition.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

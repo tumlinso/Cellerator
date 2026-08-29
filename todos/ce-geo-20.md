@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-20: Candidate catalog v2 contract
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2439`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define a rich cold non-STL POD candidate descriptor and fragment view while retaining the compact hot operation_candidate.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

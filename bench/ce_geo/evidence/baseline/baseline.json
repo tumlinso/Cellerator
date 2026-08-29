@@ -1,0 +1,160 @@
+{
+  "catalog_program_session": {
+    "builtin_candidate_count": 5,
+    "normal_catalog_excludes_historical_dense_fragment": true,
+    "program_and_session_cuda_commands_recorded": true
+  },
+  "cuda_regression_commands": {
+    "commands": [
+      [
+        "/home/tumlinson/Cellerator/build/cellPackPersistentPackingPayloadTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/cellPackExecutionImageV2DeviceTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorOpaqueExecutionArtifactTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorExecutionSessionTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorRowMaskedN1CandidateTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorCsrFallbackCandidateTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorCusparseCsrCandidateTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorFeatureMajorSmallNCandidateTest"
+      ],
+      [
+        "/home/tumlinson/Cellerator/build/celleratorTransposeBackwardCandidateTest"
+      ]
+    ],
+    "reason": "CE-GEO-03 has no accelerator resource request; unleased CUDA execution is forbidden. CE-GEO-100 independently runs the CUDA baseline under accelerator:any.",
+    "status": "recorded_for_leased_execution"
+  },
+  "historical_dense_fragment": {
+    "legacy_test_note": "The retained CE-LIVE Python test still names the pre-remap catalog path; this task-owned live-path regression preserves its assertions without editing historical evidence.",
+    "source": "tests/tensor_core/v100_dense_fragment_candidate_test.cu",
+    "source_sha256": "199ff2ae371219004954f4d75d9a35f2792491bd92eb7aa42cc4d963501b1a7f",
+    "status": "preserved_negative_control_outside_normal_catalog"
+  },
+  "host_safe_results": [
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/cellPackExecutionImageV2Test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "cellPackExecutionImageV2Test passed image_bytes=1664 directory_bytes=768 projection_count=2\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/celleratorBuiltinCatalogTest"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "builtin_catalog_test passed candidates=5\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/celleratorLivePlannerFeaturesTest"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ce_live_planner_features_test passed\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/celleratorExecutableCoreIntegrationTest"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "executable_core_integration_test passed candidates=7\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/baseline/test_dense_fragment_negative_control.py"
+      ],
+      "returncode": 0,
+      "stderr": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.266s\n\nOK\n",
+      "stdout": ""
+    }
+  ],
+  "pbmc3k_negative_control": {
+    "disposition": "not_promoted",
+    "features": 32738,
+    "logical_edges": 433808,
+    "maximum_tile_density_less_than": 0.5,
+    "maximum_tile_nnz": 106,
+    "qualified_fragment_tiles": 0,
+    "rows": 512,
+    "whole_structure_padding_ratio_greater_than": 38.0
+  },
+  "pinned_source_sha256": {
+    "bench/architecture_evidence/real_traces/pbmc3k-support-512.json": "e8ddfb1e439a32cb0843386b8d2e4c376aedba2ed19e3bd7b9aed72d98d45acd",
+    "bench/ce_live/tensor_core/campaign/run_v100_decision.py": "e87f3146084f5b6363359e3b0f0b01e1cdcfef50d556647793d8e9a30898cde6",
+    "data/manifests/ce_live/pbmc3k_quantitative_v1.json": "7efcee658d359cdf469715e456f00d7666b80228ff250e0d94ec64460a17b70b",
+    "include/Cellerator/compute/operation/builtin_catalog.hh": "891e38bf2983d0c0423866308445412ea2f722d7db816b9587e48dce3b8eb50b",
+    "include/Cellerator/execution/program.hh": "fa22a027aa9526e06f3d3b7279b3f3be13c0ac0e77a9ac70b9336ba48e0d9e72",
+    "include/Cellerator/geometry/persistence/execution_image_v2.hh": "8004c0372272bebc58bf3462094a09504f57d21cd8675b2c5b84e09189d83823",
+    "include/Cellerator/geometry/persistent_packing_payload.hh": "700c8d5cb4fae2d57b415aff09ef15324575c8927cb66d2a9978bc5e05186d0a",
+    "src/compute/operation/builtin_catalog.cc": "847fc6a1464bd5b3b94d1e7b16ad9cc8e97f2b4c4db64326144cb6eaf047f7ac",
+    "src/execution/program.cc": "d6feeb98572e89ac56b655585ae0d40f48fb79901adf4acd443e70f52ee1236f",
+    "src/geometry/persistence/execution_image_v2.cc": "edf769c308bde1e4dd022e8eda62851c7674aeaa3a55029851d8777a6517fe6c",
+    "src/geometry/persistent_packing_payload.cc": "cdb447508276c76eb80de6f53c3fdc96811a5c71727c9880eb7362d30157ddc3",
+    "tests/ce_geo/baseline/test_dense_fragment_negative_control.py": "f0c36ecbd7dd240151b5de81a97942ffbbdac320e9cdb3096d0a8889b5697c41",
+    "tests/execution/program_test.cu": "6646c040b095e2cc4996f22224c1534dc2af20c01d7985da36cb0d0da9ff8a03",
+    "tests/geometry/persistence/execution_image_v2_test.cc": "9c67cc1876739de3f2cd3cd2bc53551c0d5012b9ee13af267103923f2b4f7c6c",
+    "tests/geometry/persistent_packing_payload_test.cu": "3548f7eb4cb979dcc1a3868ae31042ca963e47cda13d2d7aaf64be70fd7391db",
+    "tests/math_core/builtin_catalog_test.cc": "caa1dd0a5444624f165f19dc46a2c35d6c8cec82429de53a926a6b6c0362de50",
+    "tests/math_core/transpose_backward_candidate_test.cu": "40ba572c5b1921895ac188449b1f8fe82ba21664139ef533eb6d0c2c9310ac66",
+    "tests/runtime/execution_session_test.cu": "59e9a8115bd5315424eb1d92f1c12af418149945121de1e47d0a139b37a534a6",
+    "tests/tensor_core/test_v100_dense_fragment_decision.py": "772028f60b347abab7fdd96be5cff8b8996dd8d4bc6408641822f17623104e38",
+    "tests/tensor_core/v100_dense_fragment_candidate_test.cu": "199ff2ae371219004954f4d75d9a35f2792491bd92eb7aa42cc4d963501b1a7f"
+  },
+  "recorded_at": "2026-08-29T19:46:47.072238+00:00",
+  "schema_version": 1,
+  "source": {
+    "branch": "main",
+    "commit": "7ceafdf3b41910c50061a2abf44ba1cdc272991e",
+    "dirty_paths": [
+      "M .todo-orchestrator/state.snapshot.json",
+      " M docs/CE_GEO_PROGRAM.md",
+      " M todo-status.md",
+      " M todos.md",
+      " M todos/ce-geo-01.md",
+      " M todos/ce-geo-02.md",
+      " M todos/ce-geo-03.md",
+      "?? bench/ce_geo/",
+      "?? scripts/ce_geo/",
+      "?? tests/ce_geo/"
+    ]
+  },
+  "task_id": "CE-GEO-03",
+  "wire_contracts": {
+    "CPE2": {
+      "alignment": 64,
+      "fixture_definition": "tests/geometry/persistence/execution_image_v2_test.cc",
+      "fixture_definition_sha256": "9c67cc1876739de3f2cd3cd2bc53551c0d5012b9ee13af267103923f2b4f7c6c",
+      "header_bytes": 256,
+      "kind": "0x43504532",
+      "projection_entry_bytes": 64,
+      "schema_version": 2,
+      "section_entry_bytes": 64
+    },
+    "CPK1": {
+      "alignment": 64,
+      "fixture_definition": "tests/geometry/persistent_packing_payload_test.cu",
+      "fixture_definition_sha256": "3548f7eb4cb979dcc1a3868ae31042ca963e47cda13d2d7aaf64be70fd7391db",
+      "kind": "0x43504b31",
+      "preservation": "wire bytes and v1 semantics remain unchanged",
+      "schema_version": 1
+    }
+  }
+}

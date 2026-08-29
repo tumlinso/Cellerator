@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-50: Support-atlas POD and section schemas
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2438`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define hardware-neutral allocator-free support evidence views and optional CSG1 schemas.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

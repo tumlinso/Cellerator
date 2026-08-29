@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-02: Freeze CE-GEO architecture and execution program
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2424`; current project revision is in `todo-status.md`.
 
 ## Objective
 Freeze docs/CE_GEO_PROGRAM.md as the subordinate execution authority, preserving every settled boundary and separating benchmark questions from architecture.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

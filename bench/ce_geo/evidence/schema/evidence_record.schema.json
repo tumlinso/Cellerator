@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cellerator.local/schemas/ce_geo_evidence_v1.json",
+  "title": "Cellerator CE-GEO benchmark evidence v1",
+  "type": "object",
+  "required": ["schema", "campaign_id", "command_manifest_sha256", "source", "device", "topology", "toolchain", "build", "command", "controller", "methodology", "phase_samples_ns", "complete_samples_ns", "correctness", "contamination", "summary"],
+  "properties": {
+    "schema": {"const": "CELLERATOR-CE-GEO-EVIDENCE/1"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "command_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "source": {"type": "object", "required": ["revision", "clean", "status_digest", "todo_revision", "submodule_revisions"]},
+    "device": {"type": "object", "required": ["uuid", "name", "pci_bus_id", "performance_class", "driver_version"]},
+    "topology": {"type": "object", "required": ["capture_command", "capture_sha256"]},
+    "toolchain": {"type": "object", "required": ["cxx", "cuda_toolkit", "nvcc", "cmake"]},
+    "build": {"type": "object", "required": ["mode", "architecture", "binary_sha256", "cmake_cache_sha256"]},
+    "command": {"type": "object", "required": ["argv", "cwd", "environment_digest"]},
+    "controller": {"type": "object", "required": ["acquired_leases", "benchmark_mutex_acquired"]},
+    "methodology": {"type": "object", "required": ["warmups", "repeats", "clock"]},
+    "phase_samples_ns": {"type": "object", "required": ["cold", "warm"]},
+    "complete_samples_ns": {"type": "array", "minItems": 5, "items": {"type": "number", "exclusiveMinimum": 0}},
+    "correctness": {"type": "object", "required": ["passed", "digest", "numerical_error"]},
+    "contamination": {"type": "object", "required": ["detected", "reasons", "attempt"]},
+    "summary": {"type": "object", "required": ["median_complete_ns", "mad_percent", "accepted"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

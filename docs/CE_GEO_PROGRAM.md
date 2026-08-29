@@ -6,6 +6,12 @@ CE-GEO is the execution program for the Cellerator geometry and Volta campaign. 
 
 The campaign is Volta-first and additive. Ordinary implementation begins only through the configured `coding-workflow` front door. First-class agents own serial run lanes. Local workers may return bounded candidate findings to one claimed parent but never own CE-GEO tasks, lanes, interfaces, decisions, rendezvous, or completion.
 
+### Settled contracts and empirical questions
+
+The boundaries, identities, two-cover model, artifact responsibilities, provider and catalog seams, planner authority, numerical policy, Volta-first ordering, and Ampere permission interlock in this document are settled contracts. Implementation tasks may refine private representation details only within those contracts.
+
+Empirical questions are deliberately narrower: which complete physical covers are profitable; whether N=32, N=16, wider-panel, transpose, contraction, normalization, or fusion candidates should be promoted; which residual realization wins; where reuse amortizes preparation; and whether any measured dataset exposes useful rectangular support. Correct non-promotion is a terminal result and does not reopen the settled architecture.
+
 ## Objective and system boundary
 
 CE-GEO makes biologically natural computation fast without forcing higher layers to deform biological structure around ordinary tensor machinery. Cellerator is a biology and omics accelerator and execution substrate, not a general tensor framework, model framework, generic autograd engine, trainer, optimizer, sampler, loss owner, storage owner, universal sparse library, universal matrix-format doctrine, or mandate to use Tensor Cores.
@@ -217,4 +223,4 @@ The schema-v3 plan stores the following error-severity invariants as executable 
 
 ## Bootstrap and continuation
 
-The bootstrap creates this document and `ce-geo-plan.json`, validates and semantically diffs the additive plan, applies it transactionally, verifies the runs/lanes/interfaces/decisions/barriers/checkpoints/locks/resources and representative readiness, and stops. It does not claim `CE-GEO-01`, begin source implementation, or begin CE-AMP. A later implementation agent starts through `coding-workflow next_task` and follows the bounded run charter and task packet.
+The completed bootstrap created this document and `ce-geo-plan.json`, validated and semantically diffed the additive plan, applied it transactionally, verified the runs, lanes, interfaces, decisions, barriers, checkpoints, locks, resources, and representative readiness, and stopped without implementation. Execution proceeds only through `coding-workflow next_task` and the bounded run charter and task packet. CE-AMP remains dormant until both interlocks are satisfied.
