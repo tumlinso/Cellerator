@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <new>
-#include <vector>
 
 namespace cellpack {
 namespace {
@@ -141,13 +141,31 @@ struct decoded_entry {
     u32 record_value_index = 0u;
 };
 
+struct decoded_row_buffer {
+    static constexpr u32 local_capacity = 64u;
+    decoded_entry local[local_capacity]{};
+    std::unique_ptr<decoded_entry[]> overflow;
+    decoded_entry *data = local;
+    u32 capacity = local_capacity;
+
+    bool reserve(u32 required) noexcept {
+        if (required <= local_capacity) return true;
+        overflow.reset(new (std::nothrow) decoded_entry[required]);
+        if (overflow == nullptr) return false;
+        data = overflow.get();
+        capacity = required;
+        return true;
+    }
+};
+
 validation_result validate_selected_row_exactly(
     const frozen_packing_plan &plan,
     const record_validation_source_view &source,
     const cell_block_record_view &records,
     u32 row,
-    std::vector<decoded_entry> *decoded) {
-    decoded->clear();
+    decoded_entry *decoded,
+    u32 decoded_capacity) {
+    u32 decoded_count = 0u;
     const u32 record_begin = records.row_record_offsets[row];
     const u32 record_end = records.row_record_offsets[row + 1u];
     for (u32 record = record_begin; record < record_end; ++record) {
@@ -158,8 +176,12 @@ validation_result validate_selected_row_exactly(
         u32 value_index = records.record_value_offsets[record];
         for (u32 local = 0u; local < width; ++local) {
             if ((mask & (1u << local)) != 0u) {
-                decoded->push_back({plan.feature_permutation()[execution_begin + local],
-                    value_index++});
+                if (decoded_count >= decoded_capacity) {
+                    return validation_error(validation_code::insufficient_capacity, row,
+                        "record-validation decode workspace is insufficient");
+                }
+                decoded[decoded_count++] = {
+                    plan.feature_permutation()[execution_begin + local], value_index++};
             }
         }
         if (value_index != records.record_value_offsets[record + 1u]) {
@@ -167,28 +189,28 @@ validation_result validate_selected_row_exactly(
                 "record-validation mask rank changed during decode");
         }
     }
-    std::sort(decoded->begin(), decoded->end(),
+    std::sort(decoded, decoded + decoded_count,
         [](const decoded_entry &lhs, const decoded_entry &rhs) {
             return lhs.canonical_feature < rhs.canonical_feature;
         });
     const u32 source_begin = source.support.row_offsets[row];
     const u32 source_end = source.support.row_offsets[row + 1u];
-    if (decoded->size() != static_cast<std::size_t>(source_end - source_begin)) {
+    if (decoded_count != source_end - source_begin) {
         return validation_error(validation_code::invalid_matrix_view, row,
             "held-out record row does not reconstruct the canonical row degree");
     }
     const auto *source_bytes = static_cast<const unsigned char *>(source.values);
     const auto *record_bytes = static_cast<const unsigned char *>(records.values);
-    for (u32 index = 0u; index < decoded->size(); ++index) {
+    for (u32 index = 0u; index < decoded_count; ++index) {
         const u32 source_entry = source_begin + index;
-        if ((*decoded)[index].canonical_feature != source.support.feature_ids[source_entry]) {
+        if (decoded[index].canonical_feature != source.support.feature_ids[source_entry]) {
             return validation_error(validation_code::invalid_matrix_view, row,
                 "held-out record row does not reconstruct canonical feature identity");
         }
         const std::size_t source_offset = static_cast<std::size_t>(source_entry)
             * source.value_size_bytes;
         const std::size_t record_offset =
-            static_cast<std::size_t>((*decoded)[index].record_value_index)
+            static_cast<std::size_t>(decoded[index].record_value_index)
             * source.value_size_bytes;
         if (std::memcmp(source_bytes + source_offset, record_bytes + record_offset,
                 source.value_size_bytes) != 0) {
@@ -260,13 +282,26 @@ validation_result evaluate_held_out_cell_block_records(
         hash_u64(&row_identity, held_out_identity_domain);
         hash_u64(&row_identity, context.split_provenance.assignment_identity);
         hash_u64(&row_identity, records.global_row_begin);
-        std::vector<decoded_entry> decoded;
+        u32 maximum_row_nnz = 0u;
+        for (u32 row = 0u; row < records.row_count; ++row) {
+            const u64 global_row = records.global_row_begin + row;
+            if (context.row_partitions[global_row] == validation_partition::held_out) {
+                maximum_row_nnz = std::max(maximum_row_nnz,
+                    source.support.row_offsets[row + 1u] - source.support.row_offsets[row]);
+            }
+        }
+        decoded_row_buffer decoded;
+        if (!decoded.reserve(maximum_row_nnz)) {
+            return validation_error(validation_code::integer_overflow, invalid_id,
+                "record-validation overflow decode allocation failed");
+        }
         for (u32 row = 0u; row < records.row_count; ++row) {
             const u64 global_row = records.global_row_begin + row;
             if (context.row_partitions[global_row] != validation_partition::held_out) {
                 continue;
             }
-            status = validate_selected_row_exactly(plan, source, records, row, &decoded);
+            status = validate_selected_row_exactly(
+                plan, source, records, row, decoded.data, decoded.capacity);
             if (!status) return status;
             const u32 row_nnz = source.support.row_offsets[row + 1u]
                 - source.support.row_offsets[row];
