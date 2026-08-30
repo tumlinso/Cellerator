@@ -1,0 +1,158 @@
+{
+  "acceptance": {
+    "ablations": "20 measurements; zero promotions",
+    "commands": "22/22",
+    "fusion": "evaluated_not_promoted",
+    "promoted_regime": "sm70 N64 exact hybrid cover only",
+    "sanitizer_runs": "22/22"
+  },
+  "authority": ".git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/state.sqlite3",
+  "checkpoint": "CE-GEO-VOLTA-COMPLETE",
+  "evidence_sha256": {
+    "baseline/baseline.json": "444e6b4c9173da0d8629ae0e4354667e9e604a7beabe0f28a88256cc7977be8f",
+    "full_volta_validation.json": "0fea9ec7288e7d12aaf955197142a68fd9726550e0554b1f4efbe69246cc444e",
+    "fusion_evaluation.json": "2983609e797e292be96802f2cbe358b60e82350ef88d6fc2b71cdb2d4ea3711d",
+    "micro/final_volta_microarchitecture.json": "a7d09ddb148a8b1ba672dc6c173be966c800dbbca682bb23962fe885ed1aa260",
+    "numerical_policy.json": "b4a71ae225f59b0ed2302e0a8338d900300d35d14a3dd318cee8959f2655d38b",
+    "preprint/summary.json": "e258e7374e29b572447d9e8579870fe0686f1e22ef383de0baeb1413cc10a2be",
+    "sanitizer/campaign.json": "f49938befed5ff537990f3f45c5ae39e220e9f00080bc7a32526150620170a46",
+    "sm70_forward_disposition.json": "e09e263a3b82bcbd06f9008a618a5184dd141928af54d1fef67dec54642bada4"
+  },
+  "gates": {
+    "passed_valid_count": 82,
+    "static_contract_audit": "passed"
+  },
+  "interfaces": [
+    {
+      "id": "cellerator-candidate-catalog-v2",
+      "state": "frozen",
+      "version": "2"
+    },
+    {
+      "id": "cellerator-cpe2-capability-binding-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-csg1-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-device-provider-contract-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-geometry-acquisition-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-mma-hybrid-projection-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-rectangular-support-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-relation-algebra-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-semantic-geometry-compiler-v1",
+      "state": "frozen",
+      "version": "1"
+    },
+    {
+      "id": "cellerator-sm70-mma-provider-v1",
+      "state": "frozen",
+      "version": "1"
+    }
+  ],
+  "plan": {
+    "path": "ce-geo-plan.json",
+    "sha256": "b2b04439629c1dd53f35d3cb2bab1772440345c9c90f22d2dc525dd08f0a0f79"
+  },
+  "prerequisite_checkpoints": [
+    {
+      "id": "CE-GEO-ARCHITECTURE-FROZEN",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-BASELINE-FROZEN",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-BENCH-INFRA-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-BIOLOGY-INTEGRATED",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-CATALOG-PROGRAM-V2",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-CPE2-ACQUISITION-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-DEVICE-PROVIDER-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-FOUNDATION-INTEGRATED",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-MMA-PROJECTION-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-RECTANGULAR-SUPPORT-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-RELATION-ALGEBRA-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-SEMANTIC-COMPILER-V1",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-SM70-FORWARD-EVALUATED",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-SM70-N64-VERTICAL",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-SM70-VERTICAL-SLICE",
+      "state": "reached"
+    },
+    {
+      "id": "CE-GEO-VOLTA-SYSTEM-INTEGRATED",
+      "state": "reached"
+    }
+  ],
+  "schema": "CELLERATOR-CE-GEO-FINAL-VOLTA-ACCEPTANCE/1",
+  "task_id": "CE-GEO-125",
+  "tasks": {
+    "dispositions": {
+      "evaluated_not_promoted": 7,
+      "implemented": 77,
+      "validated": 21
+    },
+    "required_terminal_count": 105
+  },
+  "validated": true
+}
