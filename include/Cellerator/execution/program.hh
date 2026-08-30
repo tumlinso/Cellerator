@@ -11,6 +11,7 @@
 namespace cellerator::execution {
 
 inline constexpr std::uint32_t executable_program_schema_version = 1u;
+inline constexpr std::uint32_t executable_program_schema_version_v2 = 2u;
 inline constexpr std::uint32_t maximum_program_candidates =
     planner::maximum_planner_candidates;
 
@@ -84,6 +85,37 @@ struct executable_program_request {
     operation_core::preparation_state_storage preparation_state{};
 };
 
+// Program v2 consumes arbitrary source-linked preparation-bearing catalog
+// entries and provider-erased activated views. Neither the request nor the
+// engine enumerates physical projection types.
+struct executable_program_request_v2 {
+    std::uint32_t schema_version = executable_program_schema_version_v2;
+    std::uint32_t reserved = 0u;
+    operation_core::operation_problem problem{};
+    operation_core::structure_set_key structures{};
+    operation_core::numeric_policy numeric{};
+    operation_core::prepare_policy preparation{};
+    planner::planning_keys planning{};
+    planner::planner_policy planner_policy{};
+    planner::measurement_hook measurement{};
+    planner::plan_cache_hooks cache{};
+    std::uint64_t current_evidence_revision = 0u;
+    operation_core::candidate_preparation_catalog_v2 catalog{};
+    const activated_projection_reference_v2 *projections = nullptr;
+    std::uint32_t projection_count = 0u;
+    std::uint32_t reserved2 = 0u;
+    const program_candidate_cost *costs = nullptr;
+    std::uint32_t cost_count = 0u;
+    std::uint32_t reserved3 = 0u;
+    runtime::execution_session *session = nullptr;
+    std::uint32_t dense_width = 0u;
+    std::uint32_t reserved4 = 0u;
+    program_axis source_axis{};
+    program_axis destination_axis{};
+    program_axis dense_column_axis{};
+    operation_core::preparation_state_storage preparation_state{};
+};
+
 struct program_candidate_summary {
     operation_core::stable_id candidate{};
     const char *name = nullptr;
@@ -97,7 +129,7 @@ struct program_candidate_summary {
 };
 
 struct executable_program {
-    std::uint32_t schema_version = executable_program_schema_version;
+    std::uint32_t schema_version = executable_program_schema_version_v2;
     operation_core::prepared_operation prepared{};
     operation_core::stable_id selected_candidate{};
     operation_core::projection_key selected_projection{};
@@ -145,6 +177,10 @@ struct executable_program_status {
 
 executable_program_status compile_executable_program(
     const executable_program_request &request,
+    executable_program *program) noexcept;
+
+executable_program_status compile_executable_program_v2(
+    const executable_program_request_v2 &request,
     executable_program *program) noexcept;
 
 struct executable_program_launch {
