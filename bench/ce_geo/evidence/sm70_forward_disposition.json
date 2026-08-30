@@ -1,0 +1,67 @@
+{
+  "schema": "CELLERATOR-CE-GEO-SM70-FORWARD-DISPOSITION/1",
+  "task_id": "CE-GEO-79",
+  "disposition": "implemented",
+  "decision": "promote_sm70_hybrid_forward_for_the_measured_n64_exact_cover_regime",
+  "provider_contract": {
+    "interface_id": "cellerator-sm70-mma-provider-v1",
+    "version": "1",
+    "header": "include/Cellerator/compute/architecture/providers/nvidia/sm70_provider.hh",
+    "header_sha256": "fd71ca9ee256c734e66cd3d8c4b561ad031721ff74301d0726495d4529e04366",
+    "provider_identity": "6e76696469615f73:6d37305f70726f76",
+    "capability_identity": "736d37305f776d6d:615f663136663332"
+  },
+  "evidence": {
+    "producer_task": "CE-GEO-113",
+    "producer_completion_commit": "2fe2db329af1430fb52cf3677bb34be9e97a4216",
+    "producer_gate": "CE-GEO-113-BENCH",
+    "producer_gate_evidence_id": "56c4e4e8-7df2-4900-ba5e-3583a28dc4e7",
+    "path": "bench/ce_geo/evidence/sm70_forward_complete_cost.jsonl",
+    "sha256": "f51964ebb5eccf85fde359105c232ccef071608bef5b3ed42ee176b7177964f7",
+    "benchmark_mutex": true,
+    "uncontaminated": true,
+    "accepted_for_promotion": true,
+    "correctness_passed": true,
+    "max_absolute_error": 0.0
+  },
+  "hardware": {
+    "name": "Tesla V100-SXM2-16GB",
+    "compute_capability": "7.0"
+  },
+  "measured_regime": {
+    "dense_width": 64,
+    "logical_edges": 2176,
+    "mma_edges": 2048,
+    "residual_edges": 128,
+    "strongest_sparse_baseline": "cuSPARSE SpMM N64 float32",
+    "warmups": 3,
+    "repeats": 11,
+    "measurements": [
+      {
+        "expected_reuse": 1,
+        "hybrid_complete_ns": 163427.0,
+        "sparse_complete_ns": 4176523.0,
+        "hybrid_speedup_over_sparse": 25.555893457017508
+      },
+      {
+        "expected_reuse": 16,
+        "hybrid_complete_ns": 47221.062,
+        "sparse_complete_ns": 295570.188,
+        "hybrid_speedup_over_sparse": 6.259287179945255
+      }
+    ]
+  },
+  "promotion": {
+    "accepted": true,
+    "reason": "The exact hybrid path is correct and wins complete caller-visible cost against the strongest measured sparse fallback at both measured reuse counts.",
+    "planner_authority": "planner-v2 remains the sole selector",
+    "fallback_policy": "retain the pure sparse fallback as an eligible candidate",
+    "nonwinning_code_policy": "nonwinning experimental paths remain optional and outside normal promotion"
+  },
+  "limits": [
+    "Evidence covers one deterministic synthetic exact-cover shape at N=64 on sm_70.",
+    "Promotion is evidence-scoped and does not establish a universal physical layout or candidate choice.",
+    "Other widths, structures, devices, and reuse regimes remain planner decisions requiring their own evidence."
+  ],
+  "checkpoint": "CE-GEO-SM70-FORWARD-EVALUATED"
+}
