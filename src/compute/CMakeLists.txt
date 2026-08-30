@@ -69,6 +69,20 @@ set_target_properties(cellerator_relation_algebra PROPERTIES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES
 )
+
+# Final CE-GEO source catalog fan-in. This cold target only validates and
+# exposes immutable provider/relation fragments; it never owns selection,
+# preparation, device queries, or execution resources.
+add_library(cellerator_ce_geo_catalog STATIC
+    src/compute/operation/ce_geo_catalog_assembly.cc)
+add_library(Cellerator::ce_geo_catalog ALIAS cellerator_ce_geo_catalog)
+target_include_directories(cellerator_ce_geo_catalog PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(cellerator_ce_geo_catalog PUBLIC
+    Cellerator::architecture_provider
+    Cellerator::relation_algebra)
+target_compile_features(cellerator_ce_geo_catalog PUBLIC cxx_std_17)
 add_library(Cellerator::row_masked_n1_candidate ALIAS
     cellerator_row_masked_n1_candidate)
 target_include_directories(cellerator_row_masked_n1_candidate PUBLIC
@@ -299,6 +313,7 @@ add_library(Cellerator::executable_core ALIAS cellerator_executable_core)
 target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::projection_activation
     Cellerator::builtin_candidate_catalog
+    Cellerator::ce_geo_catalog
     Cellerator::cusparse_csr_candidate
     Cellerator::preparation_factory
     Cellerator::native_training_slice
