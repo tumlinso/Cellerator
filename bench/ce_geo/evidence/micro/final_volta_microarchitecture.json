@@ -1,0 +1,2603 @@
+{
+  "candidate_dispositions": [
+    {
+      "basis": "host-wall complete-cost evidence beats cuSPARSE at measured reuse 1 and 16 with exact correctness",
+      "candidate": "integrated_hybrid_mma_residual_n64",
+      "disposition": "validated",
+      "organization": "exact MMA plus row-owned residual",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "output-owned is not the fastest correct path across the measured tile-depth regimes",
+      "candidate": "output_owned_mma_n64",
+      "disposition": "evaluated_not_promoted",
+      "organization": "output-owned dense 16x16 MMA fragments",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "production candidate entrypoint is private; retained only as historical comparison",
+      "candidate": "historical_atomic_mma_n64",
+      "disposition": "baseline_only",
+      "organization": "source-faithful atomic fragment baseline",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "not a competitive N64 organization and not the strongest integrated sparse baseline",
+      "candidate": "csr_n1_repeated_n64",
+      "disposition": "baseline_only",
+      "organization": "production CSR N=1 repeated 64 times with remap",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "dense-favorable comparison, not a sparse biological candidate",
+      "candidate": "dense_cublas_n64",
+      "disposition": "baseline_only",
+      "organization": "legal cuBLAS dense tensor-op",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "strongest measured integrated sparse fallback and predicted winner beyond break-even reuse",
+      "candidate": "cusparse_spmm_n64",
+      "disposition": "baseline_only",
+      "organization": "cuSPARSE CSR SpMM float32",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": [
+        "src/compute/architecture/providers/nvidia/sm70/residual.cu is absent",
+        "only value_pack is a production kernel",
+        "dense input layout, residual, epilogue, and output remap are calibration-only stand-ins",
+        "consumer complete is an algebraic sum of isolated CUDA-event phases",
+        "repository snapshot was dirty, so evidence is not promotion-ready",
+        "compatibility identity lacked build, inputs, toolchain, and workload keys"
+      ],
+      "candidate": "value_pack_residual_calibration",
+      "disposition": "partial_calibration",
+      "organization": "isolated value pack and calibration-only residual phases",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n1",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        1
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n4",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        4
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n8",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        8
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n16",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        16
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n32",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        32
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n64",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        64
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n128",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        128
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n256",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        256
+      ]
+    },
+    {
+      "basis": "microarchitecture cost-surface calibration only; no biological held-out organization or profiler cache/stall capture",
+      "candidate": "row_owned_residual_n512",
+      "disposition": "evaluated_not_promoted",
+      "organization": "deterministic synthetic row-owned degree-8 residual",
+      "widths": [
+        512
+      ]
+    }
+  ],
+  "complete_mechanism_accounting": {
+    "included_integrated_phases": [
+      "semantic search",
+      "refinement",
+      "projection construction",
+      "structure upload",
+      "backend preparation",
+      "dynamic values and RHS upload",
+      "value pack",
+      "MMA",
+      "residual",
+      "epilogue",
+      "output transfer",
+      "explicit synchronization",
+      "reuse amortization"
+    ],
+    "integrated_hybrid": {
+      "host_controller": "deterministic synthetic search and refinement over one fixed N64 exact cover",
+      "logical_edges": 2176,
+      "mma_edges": 2048,
+      "repeats": 11,
+      "residual_edges": 128,
+      "strongest_sparse_baseline": "cuSPARSE SpMM N64 float32",
+      "timing": "host steady-clock wall time around dynamic upload, launch, consumer D2H, and explicit cudaStreamSynchronize; cold phases amortized by reuse",
+      "warmups": 3,
+      "width": 64
+    },
+    "known_non_equivalences": [
+      "CUDA-event microcalibrations are not treated as host-wall complete cost.",
+      "Analytical byte traffic is not treated as a DRAM or cache profiler counter.",
+      "Synthetic dimensional holdout is not treated as biological held-out evidence."
+    ],
+    "n64_output_owned": {
+      "clock": "cuda_event",
+      "consumer_complete": true,
+      "repeats": 5,
+      "warmups": 2,
+      "width": 64
+    },
+    "value_pack_residual": {
+      "clock": "cuda_event",
+      "complete_formula": "dynamic_h2d+value_pack/reuse+dense_input_layout+residual+epilogue+output_remap+d2h",
+      "repeats": 5,
+      "warmups": 2
+    },
+    "width_reuse": {
+      "clock": "host steady-clock wall time",
+      "consumer_complete": "dynamic value and RHS upload, one kernel launch, output D2H, explicit cudaStreamSynchronize",
+      "preparation": "deterministic synthetic row-owned degree-8 structure construction and structure upload amortized by reuse",
+      "repeats": 3,
+      "reuse_1000_plus": 1024,
+      "warmups": 1
+    }
+  },
+  "correctness": {
+    "all_source_campaigns_passed": true,
+    "held_out_cost_model_error": {
+      "maximum_absolute_percentage_error": 29.774537922243468,
+      "mean_absolute_percentage_error": 13.033728035896269
+    },
+    "held_out_scope_limit": "D=512 timing holdout within one deterministic synthetic organization; not biological held-out correctness evidence.",
+    "integrated_hybrid_max_abs_error": 0.0,
+    "maximum_width_sweep_abs_error": 0.0
+  },
+  "cost_surfaces": {
+    "integrated_hybrid_break_even": {
+      "break_even_reuse": 1524.5747911921032,
+      "cusparse_spmm_n64": {
+        "cold_ns": 4139683.0,
+        "steady_ns": 36840.0
+      },
+      "equation": "steady_ns + cold_ns / reuse",
+      "hybrid": {
+        "cold_ns": 123953.0,
+        "steady_ns": 39474.0
+      },
+      "interpretation": "hybrid is lower complete cost below the crossing; cuSPARSE has lower steady cost and becomes lower beyond it",
+      "measured_checks": [
+        {
+          "hybrid_complete_ns": 163427.0,
+          "reuse": 1,
+          "sparse_complete_ns": 4176523.0
+        },
+        {
+          "hybrid_complete_ns": 47221.062,
+          "reuse": 16,
+          "sparse_complete_ns": 295570.188
+        }
+      ]
+    },
+    "n64_organization_scenarios": [
+      {
+        "destination_groups": 1,
+        "logical_edges": 256,
+        "mad_percent": {
+          "csr_n1_x64": 0.0,
+          "dense_cublas": 7.692303,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 200703.993,
+          "dense_cublas": 13312.0,
+          "historical_atomic": 8192.0,
+          "output_owned": 6144.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            200703.993,
+            199680.001,
+            200703.993,
+            200703.993,
+            200703.993
+          ],
+          "dense_cublas": [
+            12288.0,
+            13312.0,
+            14336.0,
+            13312.0,
+            12288.0
+          ],
+          "historical_atomic": [
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0,
+            9216.0
+          ],
+          "output_owned": [
+            6144.0,
+            7168.0,
+            6144.0,
+            7168.0,
+            6144.0
+          ]
+        },
+        "source_tiles": 1
+      },
+      {
+        "destination_groups": 1,
+        "logical_edges": 1024,
+        "mad_percent": {
+          "csr_n1_x64": 0.0,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 419840.008,
+          "dense_cublas": 14336.0,
+          "historical_atomic": 8192.0,
+          "output_owned": 8192.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            419840.008,
+            419840.008,
+            420863.986,
+            419840.008,
+            419840.008
+          ],
+          "dense_cublas": [
+            14336.0,
+            14336.0,
+            14336.0,
+            14336.0,
+            14336.0
+          ],
+          "historical_atomic": [
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0
+          ],
+          "output_owned": [
+            8192.0,
+            8192.0,
+            9216.0,
+            8192.0,
+            8192.0
+          ]
+        },
+        "source_tiles": 4
+      },
+      {
+        "destination_groups": 1,
+        "logical_edges": 4096,
+        "mad_percent": {
+          "csr_n1_x64": 0.0,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 1291264.057,
+          "dense_cublas": 17408.0,
+          "historical_atomic": 8192.0,
+          "output_owned": 16384.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            1291264.057,
+            1291264.057,
+            1289216.042,
+            1291264.057,
+            1290240.049
+          ],
+          "dense_cublas": [
+            18432.001,
+            17408.0,
+            17408.0,
+            17408.0,
+            17408.0
+          ],
+          "historical_atomic": [
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0
+          ],
+          "output_owned": [
+            16384.0,
+            16384.0,
+            15360.0,
+            16384.0,
+            17408.0
+          ]
+        },
+        "source_tiles": 16
+      },
+      {
+        "destination_groups": 16,
+        "logical_edges": 4096,
+        "mad_percent": {
+          "csr_n1_x64": 0.0,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 328704.0,
+          "dense_cublas": 15360.0,
+          "historical_atomic": 9216.0,
+          "output_owned": 6144.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            327679.992,
+            328704.0,
+            328704.0,
+            328704.0,
+            326656.014
+          ],
+          "dense_cublas": [
+            14336.0,
+            14336.0,
+            15360.0,
+            15360.0,
+            15360.0
+          ],
+          "historical_atomic": [
+            9216.0,
+            9216.0,
+            9216.0,
+            8192.0,
+            8192.0
+          ],
+          "output_owned": [
+            6144.0,
+            6144.0,
+            6144.0,
+            6144.0,
+            6144.0
+          ]
+        },
+        "source_tiles": 1
+      },
+      {
+        "destination_groups": 16,
+        "logical_edges": 16384,
+        "mad_percent": {
+          "csr_n1_x64": 0.05618,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 1822720.051,
+          "dense_cublas": 16384.0,
+          "historical_atomic": 9216.0,
+          "output_owned": 8192.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            1822720.051,
+            1825791.955,
+            1823744.059,
+            1820672.035,
+            1822720.051
+          ],
+          "dense_cublas": [
+            16384.0,
+            19455.999,
+            15360.0,
+            16384.0,
+            16384.0
+          ],
+          "historical_atomic": [
+            8192.0,
+            9216.0,
+            9216.0,
+            9216.0,
+            9216.0
+          ],
+          "output_owned": [
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0,
+            8192.0
+          ]
+        },
+        "source_tiles": 4
+      },
+      {
+        "destination_groups": 16,
+        "logical_edges": 65536,
+        "mad_percent": {
+          "csr_n1_x64": 0.014942,
+          "dense_cublas": 5.555547,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 6854656.219,
+          "dense_cublas": 18432.001,
+          "historical_atomic": 10240.0,
+          "output_owned": 17408.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            6854656.219,
+            6854656.219,
+            6853631.973,
+            6856704.235,
+            6857728.004
+          ],
+          "dense_cublas": [
+            17408.0,
+            18432.001,
+            19455.999,
+            19455.999,
+            18432.001
+          ],
+          "historical_atomic": [
+            11264.0,
+            10240.0,
+            10240.0,
+            10240.0,
+            10240.0
+          ],
+          "output_owned": [
+            17408.0,
+            16384.0,
+            17408.0,
+            17408.0,
+            17408.0
+          ]
+        },
+        "source_tiles": 16
+      },
+      {
+        "destination_groups": 64,
+        "logical_edges": 16384,
+        "mad_percent": {
+          "csr_n1_x64": 0.0,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 331775.993,
+          "dense_cublas": 15360.0,
+          "historical_atomic": 9216.0,
+          "output_owned": 8192.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            331775.993,
+            331775.993,
+            331775.993,
+            331775.993,
+            330751.985
+          ],
+          "dense_cublas": [
+            17408.0,
+            15360.0,
+            15360.0,
+            17408.0,
+            15360.0
+          ],
+          "historical_atomic": [
+            9216.0,
+            10240.0,
+            9216.0,
+            9216.0,
+            9216.0
+          ],
+          "output_owned": [
+            7168.0,
+            7168.0,
+            8192.0,
+            8192.0,
+            8192.0
+          ]
+        },
+        "source_tiles": 1
+      },
+      {
+        "destination_groups": 64,
+        "logical_edges": 65536,
+        "mad_percent": {
+          "csr_n1_x64": 0.055673,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 0.0
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 1839104.056,
+          "dense_cublas": 17408.0,
+          "historical_atomic": 10240.0,
+          "output_owned": 10240.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            1836032.033,
+            1839104.056,
+            1840127.945,
+            1839104.056,
+            1842175.961
+          ],
+          "dense_cublas": [
+            18432.001,
+            17408.0,
+            17408.0,
+            17408.0,
+            17408.0
+          ],
+          "historical_atomic": [
+            11264.0,
+            10240.0,
+            10240.0,
+            10240.0,
+            10240.0
+          ],
+          "output_owned": [
+            10240.0,
+            9216.0,
+            10240.0,
+            10240.0,
+            9216.0
+          ]
+        },
+        "source_tiles": 4
+      },
+      {
+        "destination_groups": 64,
+        "logical_edges": 262144,
+        "mad_percent": {
+          "csr_n1_x64": 0.049379,
+          "dense_cublas": 0.0,
+          "historical_atomic": 0.0,
+          "output_owned": 5.882355
+        },
+        "max_abs_error": 0.0,
+        "median_ns": {
+          "csr_n1_x64": 6220799.923,
+          "dense_cublas": 18432.001,
+          "historical_atomic": 15360.0,
+          "output_owned": 17408.0
+        },
+        "samples_ns": {
+          "csr_n1_x64": [
+            6850560.188,
+            6626304.15,
+            6219776.154,
+            6217728.138,
+            6220799.923
+          ],
+          "dense_cublas": [
+            19455.999,
+            19455.999,
+            18432.001,
+            18432.001,
+            18432.001
+          ],
+          "historical_atomic": [
+            16384.0,
+            15360.0,
+            15360.0,
+            15360.0,
+            15360.0
+          ],
+          "output_owned": [
+            18432.001,
+            18432.001,
+            16384.0,
+            17408.0,
+            15360.0
+          ]
+        },
+        "source_tiles": 16
+      }
+    ],
+    "value_pack_residual_scenarios": [
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 7246.0,
+          "persistent_upload": 26624.0,
+          "projection_construction": 25973.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1024,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            48768.0,
+            48416.001,
+            48544.0,
+            48768.0,
+            50079.999
+          ],
+          "d2h": [
+            10720.0,
+            10784.0,
+            10112.0,
+            10624.0,
+            11072.0
+          ],
+          "dense_input_layout": [
+            5120.0,
+            4096.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "dynamic_h2d": [
+            8352.0,
+            8960.0,
+            8736.0,
+            8448.0,
+            8288.0
+          ],
+          "epilogue": [
+            5120.0,
+            6144.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            5120.0,
+            4096.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "residual": [
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "value_pack": [
+            9216.0,
+            9216.0,
+            9216.0,
+            9216.0,
+            10240.0
+          ]
+        },
+        "reuse": 1,
+        "summary": {
+          "mad_percent": 0.459317,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 48768.0
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 6952.0,
+          "persistent_upload": 24800.001,
+          "projection_construction": 8183.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1024,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            38975.999,
+            38975.999,
+            40063.999,
+            39776.0,
+            39711.999
+          ],
+          "d2h": [
+            10144.0,
+            9888.0,
+            9760.0,
+            10304.0,
+            10336.0
+          ],
+          "dense_input_layout": [
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "dynamic_h2d": [
+            7712.0,
+            7968.0,
+            8160.0,
+            8352.0,
+            8320.0
+          ],
+          "epilogue": [
+            5120.0,
+            5120.0,
+            6144.0,
+            5120.0,
+            5120.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "residual": [
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "value_pack": [
+            10240.0,
+            10240.0,
+            10240.0,
+            10240.0,
+            9216.0
+          ]
+        },
+        "reuse": 16,
+        "summary": {
+          "mad_percent": 0.886383,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 39711.999
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 6730.0,
+          "persistent_upload": 25536.001,
+          "projection_construction": 8125.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1024,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            40583.999,
+            36879.999,
+            40016.0,
+            37648.0,
+            39464.001
+          ],
+          "d2h": [
+            10592.0,
+            9536.0,
+            11008.0,
+            10176.0,
+            10208.0
+          ],
+          "dense_input_layout": [
+            5120.0,
+            4096.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "dynamic_h2d": [
+            8416.0,
+            7808.0,
+            8448.0,
+            7936.0,
+            7680.0
+          ],
+          "epilogue": [
+            5120.0,
+            5120.0,
+            5120.0,
+            4096.0,
+            6144.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            6144.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            4096.0
+          ],
+          "residual": [
+            5120.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            6144.0
+          ],
+          "value_pack": [
+            9216.0,
+            10240.0,
+            10240.0,
+            10240.0,
+            9216.0
+          ]
+        },
+        "reuse": 128,
+        "summary": {
+          "mad_percent": 2.838026,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 39464.001
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 550146.0,
+          "persistent_upload": 528415.978,
+          "projection_construction": 1621190.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 65536,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            203968.006,
+            204160.0,
+            206336.004,
+            210559.995,
+            203679.993
+          ],
+          "d2h": [
+            82592.003,
+            82592.003,
+            84160.0,
+            84831.998,
+            83679.996
+          ],
+          "dense_input_layout": [
+            6144.0,
+            6144.0,
+            6144.0,
+            5120.0,
+            5120.0
+          ],
+          "dynamic_h2d": [
+            84512.003,
+            84671.997,
+            84512.003,
+            89727.998,
+            84639.996
+          ],
+          "epilogue": [
+            6144.0,
+            6144.0,
+            6144.0,
+            6144.0,
+            6144.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            6144.0,
+            5120.0,
+            6144.0,
+            5120.0,
+            5120.0
+          ],
+          "residual": [
+            5120.0,
+            6144.0,
+            6144.0,
+            5120.0,
+            6144.0
+          ],
+          "value_pack": [
+            13312.0,
+            13344.0,
+            13088.0,
+            14496.0,
+            12832.0
+          ]
+        },
+        "reuse": 1,
+        "summary": {
+          "mad_percent": 0.235113,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 204160.0
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 382546.0,
+          "persistent_upload": 525344.014,
+          "projection_construction": 1076794.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 65536,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            190073.995,
+            192969.995,
+            191830.002,
+            199458.0,
+            191401.998
+          ],
+          "d2h": [
+            82847.998,
+            84799.998,
+            84224.001,
+            92639.998,
+            83296.001
+          ],
+          "dense_input_layout": [
+            5120.0,
+            6144.0,
+            6144.0,
+            5120.0,
+            5120.0
+          ],
+          "dynamic_h2d": [
+            84863.998,
+            84767.997,
+            84256.001,
+            84480.003,
+            85727.997
+          ],
+          "epilogue": [
+            6144.0,
+            6144.0,
+            5120.0,
+            5120.0,
+            6144.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            5120.0,
+            5120.0,
+            6144.0,
+            5120.0,
+            5120.0
+          ],
+          "residual": [
+            5120.0,
+            5120.0,
+            5120.0,
+            6144.0,
+            5120.0
+          ],
+          "value_pack": [
+            13728.0,
+            13984.0,
+            13152.0,
+            13344.0,
+            13984.0
+          ]
+        },
+        "reuse": 16,
+        "summary": {
+          "mad_percent": 0.594273,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 191830.002
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 359492.0,
+          "persistent_upload": 527423.978,
+          "projection_construction": 460536.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 65536,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            192132.502,
+            191246.503,
+            188965.5,
+            190049.751,
+            191016.251
+          ],
+          "d2h": [
+            83967.999,
+            83168.0,
+            84256.001,
+            84544.003,
+            84160.0
+          ],
+          "dense_input_layout": [
+            6144.0,
+            5120.0,
+            5120.0,
+            5120.0,
+            6144.0
+          ],
+          "dynamic_h2d": [
+            84512.003,
+            84416.002,
+            84128.0,
+            83903.998,
+            84224.001
+          ],
+          "epilogue": [
+            5120.0,
+            6144.0,
+            5120.0,
+            5120.0,
+            5120.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            6144.0,
+            6144.0,
+            5120.0,
+            5120.0,
+            6144.0
+          ],
+          "residual": [
+            6144.0,
+            6144.0,
+            5120.0,
+            6144.0,
+            5120.0
+          ],
+          "value_pack": [
+            12864.0,
+            14144.0,
+            12992.0,
+            12512.0,
+            13344.0
+          ]
+        },
+        "reuse": 128,
+        "summary": {
+          "mad_percent": 0.505978,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 191016.251
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 7920031.0,
+          "persistent_upload": 7242752.075,
+          "projection_construction": 26221472.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1048576,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            2039168.025,
+            2038495.985,
+            2044480.036,
+            2052383.926,
+            2038880.032
+          ],
+          "d2h": [
+            763264.0,
+            763647.974,
+            766143.978,
+            770111.978,
+            762719.989
+          ],
+          "dense_input_layout": [
+            13312.0,
+            12288.0,
+            13312.0,
+            14336.0,
+            13312.0
+          ],
+          "dynamic_h2d": [
+            1135936.022,
+            1136384.01,
+            1135840.058,
+            1142303.944,
+            1136512.041
+          ],
+          "epilogue": [
+            13312.0,
+            12288.0,
+            13312.0,
+            12288.0,
+            12288.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0
+          ],
+          "residual": [
+            16384.0,
+            16384.0,
+            16384.0,
+            16384.0,
+            16384.0
+          ],
+          "value_pack": [
+            83648.004,
+            84192.0,
+            86176.001,
+            83648.004,
+            84352.002
+          ]
+        },
+        "reuse": 1,
+        "summary": {
+          "mad_percent": 0.032957,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 2039168.025
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 6922155.0,
+          "persistent_upload": 7230463.982,
+          "projection_construction": 21122934.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1048576,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            1968015.958,
+            1962422.021,
+            1961395.998,
+            1961132.003,
+            1956609.976
+          ],
+          "d2h": [
+            771679.997,
+            764895.976,
+            764735.997,
+            764352.024,
+            761792.004
+          ],
+          "dense_input_layout": [
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0
+          ],
+          "dynamic_h2d": [
+            1135679.96,
+            1137024.045,
+            1136096.001,
+            1136255.98,
+            1135231.972
+          ],
+          "epilogue": [
+            13312.0,
+            13312.0,
+            12288.0,
+            12288.0,
+            12288.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            12288.0,
+            12288.0,
+            13312.0,
+            13312.0,
+            13312.0
+          ],
+          "residual": [
+            16384.0,
+            16384.0,
+            16384.0,
+            16384.0,
+            15360.0
+          ],
+          "value_pack": [
+            85759.997,
+            83296.001,
+            84288.001,
+            83648.004,
+            85023.999
+          ]
+        },
+        "reuse": 16,
+        "summary": {
+          "mad_percent": 0.052311,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 1961395.998
+        }
+      },
+      {
+        "cold_ns": {
+          "backend_prepare": 0.0,
+          "host_preparation": 7156680.0,
+          "persistent_upload": 7232575.893,
+          "projection_construction": 21370793.0,
+          "semantic_packing": 0.0
+        },
+        "logical_edges": 1048576,
+        "phase_samples_ns": {
+          "communication": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "consumer_complete": [
+            1957452.531,
+            1956303.302,
+            1955535.186,
+            1960800.815,
+            1955029.742
+          ],
+          "d2h": [
+            764191.985,
+            764288.008,
+            763455.987,
+            768832.028,
+            763199.985
+          ],
+          "dense_input_layout": [
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0,
+            13312.0
+          ],
+          "dynamic_h2d": [
+            1136288.047,
+            1135040.045,
+            1136127.949,
+            1136000.037,
+            1135872.006
+          ],
+          "epilogue": [
+            13312.0,
+            13312.0,
+            13312.0,
+            12288.0,
+            12288.0
+          ],
+          "kernel": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "output_remap": [
+            13312.0,
+            13312.0,
+            12288.0,
+            13312.0,
+            13312.0
+          ],
+          "residual": [
+            16384.0,
+            16384.0,
+            16384.0,
+            16384.0,
+            16384.0
+          ],
+          "value_pack": [
+            83520.003,
+            83871.998,
+            83871.998,
+            86112.0,
+            84703.997
+          ]
+        },
+        "reuse": 128,
+        "summary": {
+          "mad_percent": 0.058745,
+          "max_abs_error": 0.0,
+          "median_complete_ns": 1956303.302
+        }
+      }
+    ],
+    "width_dimension_reuse": [
+      {
+        "N": 1,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 18.0524542445871,
+          "actual_steady_wall_ns": 18607.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 15247.979838709678
+        },
+        "intercept_ns": 15563.291666666668,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 29128.0,
+              "1024": 15060.751,
+              "16": 15927.062,
+              "256": 15102.004,
+              "4": 18567.25,
+              "64": 15267.016
+            },
+            "estimated_effective_bandwidth_gbps": 0.885,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 1.303,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15047.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 47286.0,
+              "1024": 18238.395,
+              "16": 20027.25,
+              "256": 18323.578,
+              "4": 25479.0,
+              "64": 18664.312
+            },
+            "estimated_effective_bandwidth_gbps": 0.091,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 18.572,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 18210.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 36595.0,
+              "1024": 15994.138,
+              "16": 17262.812,
+              "256": 16054.551,
+              "4": 21129.25,
+              "64": 16296.203
+            },
+            "estimated_effective_bandwidth_gbps": 1.667,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 0.232,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15974.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 22069.0,
+              "1024": 14101.788,
+              "16": 14592.438,
+              "256": 14125.152,
+              "4": 16087.75,
+              "64": 14218.609
+            },
+            "estimated_effective_bandwidth_gbps": 0.236,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.383,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14094.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 50072.0,
+              "1024": 18637.728,
+              "16": 20573.562,
+              "256": 18729.91,
+              "4": 26473.25,
+              "64": 19098.641
+            },
+            "estimated_effective_bandwidth_gbps": 2.862,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.296,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 18607.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 25013.0,
+              "1024": 14196.573,
+              "16": 14862.688,
+              "256": 14228.293,
+              "4": 16892.75,
+              "64": 14355.172
+            },
+            "estimated_effective_bandwidth_gbps": 0.469,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.035,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14186.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": -0.6158434139784942,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 4,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 8.909633501710726,
+          "actual_steady_wall_ns": 20346.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 18533.245967741936
+        },
+        "intercept_ns": 13933.375,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 29112.0,
+              "1024": 15044.751,
+              "16": 15911.062,
+              "256": 15086.004,
+              "4": 18551.25,
+              "64": 15251.016
+            },
+            "estimated_effective_bandwidth_gbps": 1.908,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.12,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15031.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 43236.0,
+              "1024": 14188.395,
+              "16": 15977.25,
+              "256": 14273.578,
+              "4": 21429.0,
+              "64": 14614.312
+            },
+            "estimated_effective_bandwidth_gbps": 0.253,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 0.756,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14160.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 36863.0,
+              "1024": 16262.138,
+              "16": 17530.812,
+              "256": 16322.551,
+              "4": 21397.25,
+              "64": 16564.203
+            },
+            "estimated_effective_bandwidth_gbps": 3.531,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 1.219,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 16242.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 22019.0,
+              "1024": 14051.788,
+              "16": 14542.438,
+              "256": 14075.152,
+              "4": 16037.75,
+              "64": 14168.609
+            },
+            "estimated_effective_bandwidth_gbps": 0.51,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.534,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14044.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 51811.0,
+              "1024": 20376.728,
+              "16": 22312.562,
+              "256": 20468.91,
+              "4": 28212.25,
+              "64": 20837.641
+            },
+            "estimated_effective_bandwidth_gbps": 5.637,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 1.75,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 20346.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 25473.0,
+              "1024": 14656.573,
+              "16": 15322.688,
+              "256": 14688.293,
+              "4": 17352.75,
+              "64": 14815.172
+            },
+            "estimated_effective_bandwidth_gbps": 0.979,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.853,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14646.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 8.984122983870968,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 8,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 29.774537922243468,
+          "actual_steady_wall_ns": 31380.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 22036.75
+        },
+        "intercept_ns": 13884.75,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 29714.0,
+              "1024": 15646.751,
+              "16": 16513.062,
+              "256": 15688.004,
+              "4": 19153.25,
+              "64": 15853.016
+            },
+            "estimated_effective_bandwidth_gbps": 3.144,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.166,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15633.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 43235.0,
+              "1024": 14187.395,
+              "16": 15976.25,
+              "256": 14272.578,
+              "4": 21428.0,
+              "64": 14613.312
+            },
+            "estimated_effective_bandwidth_gbps": 0.434,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 0.975,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14159.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 38708.0,
+              "1024": 18107.138,
+              "16": 19375.812,
+              "256": 18167.551,
+              "4": 23242.25,
+              "64": 18409.203
+            },
+            "estimated_effective_bandwidth_gbps": 5.435,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 3.433,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 18087.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 22518.0,
+              "1024": 14550.788,
+              "16": 15041.438,
+              "256": 14574.152,
+              "4": 16536.75,
+              "64": 14667.609
+            },
+            "estimated_effective_bandwidth_gbps": 0.845,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.248,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14543.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 62845.0,
+              "1024": 31410.728,
+              "16": 33346.562,
+              "256": 31502.91,
+              "4": 39246.25,
+              "64": 31871.641
+            },
+            "estimated_effective_bandwidth_gbps": 6.265,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.762,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 31380.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 25726.0,
+              "1024": 14909.573,
+              "16": 15575.688,
+              "256": 14941.293,
+              "4": 17605.75,
+              "64": 15068.172
+            },
+            "estimated_effective_bandwidth_gbps": 1.65,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.819,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14899.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 15.921875,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 16,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 20.20046871941566,
+          "actual_steady_wall_ns": 39717.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 31693.97983870968
+        },
+        "intercept_ns": 13470.625000000002,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 32240.0,
+              "1024": 18172.751,
+              "16": 19039.062,
+              "256": 18214.004,
+              "4": 21679.25,
+              "64": 18379.016
+            },
+            "estimated_effective_bandwidth_gbps": 4.962,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 4.708,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 18159.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 43302.0,
+              "1024": 14254.395,
+              "16": 16043.25,
+              "256": 14339.578,
+              "4": 21495.0,
+              "64": 14680.312
+            },
+            "estimated_effective_bandwidth_gbps": 0.792,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 2.003,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14226.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 43203.0,
+              "1024": 22602.138,
+              "16": 23870.812,
+              "256": 22662.551,
+              "4": 27737.25,
+              "64": 22904.203
+            },
+            "estimated_effective_bandwidth_gbps": 7.981,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 1.807,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 22582.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 22569.0,
+              "1024": 14601.788,
+              "16": 15092.438,
+              "256": 14625.152,
+              "4": 16587.75,
+              "64": 14718.609
+            },
+            "estimated_effective_bandwidth_gbps": 1.544,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 1.316,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14594.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 71182.0,
+              "1024": 39747.728,
+              "16": 41683.562,
+              "256": 39839.91,
+              "4": 47583.25,
+              "64": 40208.641
+            },
+            "estimated_effective_bandwidth_gbps": 9.075,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.413,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 39717.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 26273.0,
+              "1024": 15456.573,
+              "16": 16122.688,
+              "256": 15488.293,
+              "4": 18152.75,
+              "64": 15615.172
+            },
+            "estimated_effective_bandwidth_gbps": 2.917,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.039,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15446.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 35.59248991935484,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 32,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 6.016610973729435,
+          "actual_steady_wall_ns": 55923.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 59287.66935483871
+        },
+        "intercept_ns": 11874.249999999998,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 35947.0,
+              "1024": 21879.751,
+              "16": 22746.062,
+              "256": 21921.004,
+              "4": 25386.25,
+              "64": 22086.016
+            },
+            "estimated_effective_bandwidth_gbps": 7.868,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.261,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 21866.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 43787.0,
+              "1024": 14739.395,
+              "16": 16528.25,
+              "256": 14824.578,
+              "4": 21980.0,
+              "64": 15165.312
+            },
+            "estimated_effective_bandwidth_gbps": 1.462,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 1.142,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14711.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 57173.0,
+              "1024": 36572.138,
+              "16": 37840.812,
+              "256": 36632.551,
+              "4": 41707.25,
+              "64": 36874.203
+            },
+            "estimated_effective_bandwidth_gbps": 9.413,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 0.588,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 36552.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 22883.0,
+              "1024": 14915.788,
+              "16": 15406.438,
+              "256": 14939.152,
+              "4": 16901.75,
+              "64": 15032.609
+            },
+            "estimated_effective_bandwidth_gbps": 2.885,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.094,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 14908.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 87388.0,
+              "1024": 55953.728,
+              "16": 57889.562,
+              "256": 56045.91,
+              "4": 63789.25,
+              "64": 56414.641
+            },
+            "estimated_effective_bandwidth_gbps": 12.305,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 1.406,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 55923.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 28093.0,
+              "1024": 17276.573,
+              "16": 17942.688,
+              "256": 17308.293,
+              "4": 19972.75,
+              "64": 17435.172
+            },
+            "estimated_effective_bandwidth_gbps": 4.982,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.591,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 17266.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 92.60433467741936,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 64,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 23.294758732921082,
+          "actual_steady_wall_ns": 86267.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 106362.68951612903
+        },
+        "intercept_ns": 11327.291666666668,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 50494.0,
+              "1024": 36426.751,
+              "16": 37293.062,
+              "256": 36468.004,
+              "4": 39933.25,
+              "64": 36633.016
+            },
+            "estimated_effective_bandwidth_gbps": 9.224,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 1.494,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 36413.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 44177.0,
+              "1024": 15129.395,
+              "16": 16918.25,
+              "256": 15214.578,
+              "4": 22370.0,
+              "64": 15555.312
+            },
+            "estimated_effective_bandwidth_gbps": 2.78,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 2.073,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 15101.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 79176.0,
+              "1024": 58575.138,
+              "16": 59843.812,
+              "256": 58635.551,
+              "4": 63710.25,
+              "64": 58877.203
+            },
+            "estimated_effective_bandwidth_gbps": 11.472,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 3.651,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 58555.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 24950.0,
+              "1024": 16982.788,
+              "16": 17473.438,
+              "256": 17006.152,
+              "4": 18968.75,
+              "64": 17099.609
+            },
+            "estimated_effective_bandwidth_gbps": 4.947,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.66,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 16975.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 117732.0,
+              "1024": 86297.728,
+              "16": 88233.562,
+              "256": 86389.91,
+              "4": 94133.25,
+              "64": 86758.641
+            },
+            "estimated_effective_bandwidth_gbps": 15.574,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.282,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 86267.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 32485.0,
+              "1024": 21668.573,
+              "16": 22334.688,
+              "256": 21700.293,
+              "4": 24364.75,
+              "64": 21827.172
+            },
+            "estimated_effective_bandwidth_gbps": 7.754,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.014,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 21658.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 185.61601142473117,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 128,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 1.5238310928755672,
+          "actual_steady_wall_ns": 152477.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 154800.49193548388
+        },
+        "intercept_ns": 17462.083333333336,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 67047.0,
+              "1024": 52979.751,
+              "16": 53846.062,
+              "256": 53021.004,
+              "4": 56486.25,
+              "64": 53186.016
+            },
+            "estimated_effective_bandwidth_gbps": 12.528,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.776,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 52966.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 46059.0,
+              "1024": 17011.395,
+              "16": 18800.25,
+              "256": 17096.578,
+              "4": 24252.0,
+              "64": 17437.312
+            },
+            "estimated_effective_bandwidth_gbps": 4.884,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 1.036,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 16983.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 105623.0,
+              "1024": 85022.138,
+              "16": 86290.812,
+              "256": 85082.551,
+              "4": 90157.25,
+              "64": 85324.203
+            },
+            "estimated_effective_bandwidth_gbps": 15.613,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 0.104,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 85002.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 36740.0,
+              "1024": 28772.788,
+              "16": 29263.438,
+              "256": 28796.152,
+              "4": 30758.75,
+              "64": 28889.609
+            },
+            "estimated_effective_bandwidth_gbps": 5.767,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 1.495,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 28765.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 183942.0,
+              "1024": 152507.728,
+              "16": 154443.562,
+              "256": 152599.91,
+              "4": 160343.25,
+              "64": 152968.641
+            },
+            "estimated_effective_bandwidth_gbps": 17.407,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.308,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 152477.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 47468.0,
+              "1024": 36651.573,
+              "16": 37317.688,
+              "256": 36683.293,
+              "4": 39347.75,
+              "64": 36810.172
+            },
+            "estimated_effective_bandwidth_gbps": 9.055,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.123,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 36641.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 268.23907930107526,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 256,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 7.716765395307125,
+          "actual_steady_wall_ns": 259656.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 279693.04435483867
+        },
+        "intercept_ns": 20571.624999999993,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 98681.0,
+              "1024": 84613.751,
+              "16": 85480.062,
+              "256": 84655.004,
+              "4": 88120.25,
+              "64": 84820.016
+            },
+            "estimated_effective_bandwidth_gbps": 15.59,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.103,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 84600.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 58687.0,
+              "1024": 29639.395,
+              "16": 31428.25,
+              "256": 29724.578,
+              "4": 36880.0,
+              "64": 30065.312
+            },
+            "estimated_effective_bandwidth_gbps": 5.568,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 0.003,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 29611.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 171204.0,
+              "1024": 150603.138,
+              "16": 151871.812,
+              "256": 150663.551,
+              "4": 155738.25,
+              "64": 150905.203
+            },
+            "estimated_effective_bandwidth_gbps": 17.517,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 0.039,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 150583.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 44529.0,
+              "1024": 36561.788,
+              "16": 37052.438,
+              "256": 36585.152,
+              "4": 38547.75,
+              "64": 36678.609
+            },
+            "estimated_effective_bandwidth_gbps": 9.02,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 0.235,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 36554.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 291121.0,
+              "1024": 259686.728,
+              "16": 261622.562,
+              "256": 259778.91,
+              "4": 267522.25,
+              "64": 260147.641
+            },
+            "estimated_effective_bandwidth_gbps": 20.318,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.204,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 259656.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 63361.0,
+              "1024": 52544.573,
+              "16": 53210.688,
+              "256": 52576.293,
+              "4": 55240.75,
+              "64": 52703.172
+            },
+            "estimated_effective_bandwidth_gbps": 12.553,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.649,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 52534.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 506.09652217741933,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      },
+      {
+        "N": 512,
+        "held_out": {
+          "D": 512,
+          "absolute_percentage_error": 1.8144917402762624,
+          "actual_steady_wall_ns": 495998.0,
+          "is_structural_holdout": false,
+          "note": "D=512 is a dimensional timing holdout from the same deterministic synthetic organization, not biological held-out evidence.",
+          "predicted_steady_wall_ns": 504997.84274193546
+        },
+        "intercept_ns": 23653.54166666667,
+        "measured_surface": {
+          "128": {
+            "complete_ns_by_reuse": {
+              "1": 164062.0,
+              "1024": 149994.751,
+              "16": 150861.062,
+              "256": 150036.004,
+              "4": 153501.25,
+              "64": 150201.016
+            },
+            "estimated_effective_bandwidth_gbps": 17.533,
+            "host_structure_ns": 5185.0,
+            "mad_percent": 0.191,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 149981.0,
+            "structure_upload_ns": 8896.0
+          },
+          "16": {
+            "complete_ns_by_reuse": {
+              "1": 64699.0,
+              "1024": 35651.395,
+              "16": 37440.25,
+              "256": 35736.578,
+              "4": 42892.0,
+              "64": 36077.312
+            },
+            "estimated_effective_bandwidth_gbps": 9.227,
+            "host_structure_ns": 1619.0,
+            "mad_percent": 0.124,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 35623.0,
+            "structure_upload_ns": 27457.0
+          },
+          "256": {
+            "complete_ns_by_reuse": {
+              "1": 282042.0,
+              "1024": 261441.138,
+              "16": 262709.812,
+              "256": 261501.551,
+              "4": 266576.25,
+              "64": 261743.203
+            },
+            "estimated_effective_bandwidth_gbps": 20.118,
+            "host_structure_ns": 9535.0,
+            "mad_percent": 0.77,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 261421.0,
+            "structure_upload_ns": 11086.0
+          },
+          "32": {
+            "complete_ns_by_reuse": {
+              "1": 60876.0,
+              "1024": 52908.788,
+              "16": 53399.438,
+              "256": 52932.152,
+              "4": 54894.75,
+              "64": 53025.609
+            },
+            "estimated_effective_bandwidth_gbps": 12.427,
+            "host_structure_ns": 1440.0,
+            "mad_percent": 1.737,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 52901.0,
+            "structure_upload_ns": 6535.0
+          },
+          "512": {
+            "complete_ns_by_reuse": {
+              "1": 527463.0,
+              "1024": 496028.728,
+              "16": 497964.562,
+              "256": 496120.91,
+              "4": 503864.25,
+              "64": 496489.641
+            },
+            "estimated_effective_bandwidth_gbps": 21.207,
+            "host_structure_ns": 18360.0,
+            "mad_percent": 0.026,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 495998.0,
+            "structure_upload_ns": 13105.0
+          },
+          "64": {
+            "complete_ns_by_reuse": {
+              "1": 95471.0,
+              "1024": 84654.573,
+              "16": 85320.688,
+              "256": 84686.293,
+              "4": 87350.75,
+              "64": 84813.172
+            },
+            "estimated_effective_bandwidth_gbps": 15.533,
+            "host_structure_ns": 3004.0,
+            "mad_percent": 0.803,
+            "max_abs_error": 0.0,
+            "steady_wall_ns": 84644.0,
+            "structure_upload_ns": 7823.0
+          }
+        },
+        "model": "steady_wall_ns = intercept_ns + ns_per_destination * D",
+        "ns_per_destination": 940.1255880376343,
+        "training_dimensions": [
+          16,
+          32,
+          64,
+          128,
+          256
+        ]
+      }
+    ]
+  },
+  "disposition": "evidence_finalized",
+  "hardware_scope": "Tesla V100 sm_70",
+  "limitations": [
+    "Nsight Compute did not return every requested counter; no missing cache or stall value was inferred.",
+    "CE-GEO-111 retained calibration-only phases and is not promotion-ready.",
+    "CE-GEO-112 includes source-faithful historical and repeated-N1 baselines with documented non-equivalences.",
+    "CE-GEO-114 is a synthetic row-owned residual surface, not an end-to-end biological campaign.",
+    "Only the integrated N64 hybrid campaign supplies host-wall complete-cost comparison against cuSPARSE SpMM."
+  ],
+  "profiler_capture": {
+    "available": true,
+    "cuda_runtime_attributes": {
+      "maximum_dynamic_shared_bytes": 49152,
+      "registers_per_thread": 32,
+      "static_shared_bytes": 0,
+      "theoretical_occupancy_percent": 100.0
+    },
+    "diagnostic": "ncu-Error-Version 13_1 /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/13.1/Nsight_Compute is not available in this installation",
+    "limitation": "Nsight Compute did not return every requested counter; no missing cache or stall value was inferred.",
+    "metrics": {},
+    "missing_metrics": [
+      "dram__bytes_read.sum",
+      "dram__bytes_write.sum",
+      "lts__t_bytes.sum",
+      "sm__warps_active.avg.pct_of_peak_sustained_active",
+      "smsp__warp_issue_stalled_long_scoreboard_per_warp_active.pct",
+      "smsp__warp_issue_stalled_short_scoreboard_per_warp_active.pct"
+    ],
+    "policy": "Unavailable hardware counters remain unavailable; analytical traffic estimates are not relabeled as profiler measurements.",
+    "returncode": 1
+  },
+  "promotion_authority": "candidate records only; this aggregate makes no new promotion",
+  "schema": "CELLERATOR-CE-GEO-FINAL-VOLTA-MICROARCHITECTURE/1",
+  "source_evidence": {
+    "integrated_hybrid_forward": {
+      "path": "bench/ce_geo/evidence/sm70_forward_complete_cost.jsonl",
+      "record_count": 3,
+      "sha256": "f51964ebb5eccf85fde359105c232ccef071608bef5b3ed42ee176b7177964f7"
+    },
+    "n64_output_owned": {
+      "path": "bench/ce_geo/evidence/micro/n64_output_owned.jsonl",
+      "record_count": 3,
+      "sha256": "34d8d3c1ac66dbc2211acde659d995324b20802c1190a6d9fd3618f62c5c7cf7"
+    },
+    "value_pack_residual": {
+      "path": "bench/ce_geo/evidence/micro/value_pack_residual.jsonl",
+      "record_count": 3,
+      "sha256": "5c6097c4605d8b29ba213fa56455b12e833c6155a768e96d8b00e2a8f6985d94"
+    },
+    "width_reuse": {
+      "path": "bench/ce_geo/evidence/micro/width_reuse_sweep.jsonl",
+      "record_count": 326,
+      "sha256": "567b224f26af075facfa7815b808b58162ddaef1e0230e88eeb4139726786837"
+    }
+  },
+  "task_id": "CE-GEO-115"
+}
