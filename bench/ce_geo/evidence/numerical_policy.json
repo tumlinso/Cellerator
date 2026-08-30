@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "policy_id": "CE-GEO-NUMERICAL-POLICY-V1",
+  "reference_modes": {
+    "operand": "accumulate at the declared fp32 or fp64 operand precision",
+    "fp32": "round declared operands, alpha, and beta before FP32 accumulation",
+    "fp64": "round declared operands, alpha, and beta before FP64 accumulation"
+  },
+  "required_report_fields": [
+    "max_absolute_error",
+    "relative_l2_error",
+    "relative_frobenius_error",
+    "mixed_tolerance_mismatches",
+    "degree_normalized_max_error",
+    "depth_normalized_max_error",
+    "absolute_error_p95",
+    "absolute_error_p99",
+    "alpha",
+    "beta",
+    "non_finite_reference_count",
+    "non_finite_candidate_count"
+  ],
+  "mixed_tolerance": "abs(candidate-reference) <= absolute + relative * abs(reference)",
+  "relative_norm_floor": 1e-30,
+  "tail_quantiles": [0.95, 0.99],
+  "nan_inf_policy": "reject any non-finite reference or candidate value and report counts separately",
+  "degree_depth_policy": "report the worst absolute error location and maxima normalized by max(1, degree) and max(1, depth)",
+  "alpha_beta_policy": "record exact referee alpha and beta in every comparison report",
+  "tolerance_classes": {
+    "fp64_logical": {
+      "absolute": 1e-12,
+      "relative": 1e-12,
+      "maximum_relative_l2": 1e-12
+    },
+    "fp32_logical": {
+      "absolute": 1e-6,
+      "relative": 1e-5,
+      "maximum_relative_l2": 1e-5
+    }
+  }
+}
