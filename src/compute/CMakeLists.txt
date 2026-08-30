@@ -3,6 +3,74 @@
 add_library(cellerator_row_masked_n1_candidate STATIC
     src/compute/candidate/row_masked_n1_candidate.cu
 )
+
+# CE-GEO source-linked provider and exact physical-projection inventory.
+# Semantic compilation remains in Cellerator::semantic_geometry_v1; this
+# target owns target refinement, physical realization, and provider discovery.
+add_library(cellerator_architecture_provider STATIC
+    src/compute/architecture/provider_registry.cc
+    src/compute/architecture/providers/nvidia/common/exact_rectangle_census.cc
+    src/compute/architecture/providers/nvidia/common/mma_projection_realization.cc
+    src/compute/architecture/providers/nvidia/common/mma_target_refinement.cc
+    src/compute/architecture/providers/nvidia/common/sm70_grouping.cc
+    src/compute/architecture/providers/nvidia/sm70/provider.cc
+    src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu
+    src/compute/architecture/providers/nvidia/sm70/value_pack.cu
+    src/compute/projection/mma_physical_cover_validation.cc
+    src/compute/projection/mma_physical_work_layout.cc
+    src/compute/projection/mma_residual_builder.cc
+    src/compute/projection/physical_mma_hybrid.cc
+)
+add_library(Cellerator::architecture_provider ALIAS
+    cellerator_architecture_provider)
+target_include_directories(cellerator_architecture_provider PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(cellerator_architecture_provider PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(cellerator_architecture_provider PUBLIC
+    Cellerator::operation_core
+    Cellerator::runtime
+    Cellerator::semantic_geometry_v1
+    CellPack::execution_image_v2
+    CUDA::cudart
+)
+set_target_properties(cellerator_architecture_provider PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+
+# The public relation algebra remains independent of model, trainer, and
+# framework ownership. Its candidate-catalog-v2 declarations are source-linked
+# here, while schema-v2-only operations continue to fail closed under the
+# frozen operation-core schema v1.
+add_library(cellerator_relation_algebra STATIC
+    src/compute/operation/relation_algebra_catalog.cc
+    src/compute/operation/relation_apply_compatibility.cc
+    src/compute/candidate/edge_map_or_gate.cu
+    src/compute/candidate/relation_bundle.cc
+    src/compute/candidate/segment/normalize.cu
+    src/compute/candidate/segment/reduce.cu
+)
+add_library(Cellerator::relation_algebra ALIAS cellerator_relation_algebra)
+target_include_directories(cellerator_relation_algebra PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_relation_algebra PUBLIC
+    Cellerator::operation_core
+    CUDA::cudart
+)
+set_target_properties(cellerator_relation_algebra PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
 add_library(Cellerator::row_masked_n1_candidate ALIAS
     cellerator_row_masked_n1_candidate)
 target_include_directories(cellerator_row_masked_n1_candidate PUBLIC

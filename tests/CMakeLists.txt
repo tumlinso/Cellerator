@@ -9,6 +9,69 @@ add_custom_target(celleratorNoProductionFileIoCheck ALL
     VERBATIM
 )
 
+# CE-GEO-120 foundation reconciliation. These targets exercise the frozen
+# portable provider/catalog/CSG1/CPE2/acquisition contracts without launching
+# benchmark or empirical-promotion work. The companion runner executes this
+# concrete list directly because Cellerator does not use CTest as its primary
+# test runner.
+function(cellerator_add_ce_geo_foundation_test target source)
+    add_executable(${target} ${source})
+    target_link_libraries(${target} PRIVATE ${ARGN})
+    set_target_properties(${target} PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+endfunction()
+
+cellerator_add_ce_geo_foundation_test(ceGeoCapabilityTest
+    tests/ce_geo/hardware/capability_test.cc
+    Cellerator::architecture_provider)
+cellerator_add_ce_geo_foundation_test(ceGeoProviderRegistryTest
+    tests/ce_geo/hardware/provider_registry_test.cc
+    Cellerator::architecture_provider)
+cellerator_add_ce_geo_foundation_test(ceGeoProviderContractTest
+    "tests/ce_geo/hardware/provider_contract_test.cu;tests/ce_geo/hardware/fake_provider.cc"
+    Cellerator::architecture_provider CUDA::cudart)
+
+cellerator_add_ce_geo_foundation_test(ceGeoCatalogContractTest
+    tests/ce_geo/catalog/catalog_contract_test.cc
+    Cellerator::operation_core)
+cellerator_add_ce_geo_foundation_test(ceGeoProjectionReferenceV2Test
+    tests/ce_geo/catalog/projection_reference_v2_test.cc
+    Cellerator::operation_core)
+cellerator_add_ce_geo_foundation_test(ceGeoBuiltinFragmentTest
+    tests/ce_geo/catalog/builtin_fragment_test.cu
+    Cellerator::builtin_candidate_catalog CUDA::cudart)
+cellerator_add_ce_geo_foundation_test(ceGeoRelationCatalogTest
+    tests/relation_algebra/catalog_integration_test.cu
+    Cellerator::relation_algebra CUDA::cudart)
+
+cellerator_add_ce_geo_foundation_test(ceGeoSemanticCompilerTest
+    tests/geometry/ce_geo/semantic_compiler_property_test.cc
+    Cellerator::semantic_geometry_v1)
+cellerator_add_ce_geo_foundation_test(ceGeoCsg1Test
+    tests/geometry/ce_geo/csg1_test.cc
+    Cellerator::semantic_geometry_v1)
+cellerator_add_ce_geo_foundation_test(ceGeoCsg1SupportSectionsTest
+    tests/geometry/ce_geo/csg1_support_sections_test.cc
+    Cellerator::semantic_geometry_v1)
+cellerator_add_ce_geo_foundation_test(ceGeoCpe2CapabilityManifestTest
+    tests/geometry/ce_geo/cpe2_capability_manifest_test.cc
+    Cellerator::semantic_geometry_v1 CellPack::execution_image_v2)
+cellerator_add_ce_geo_foundation_test(ceGeoPreboundProjectionV2Test
+    tests/geometry/ce_geo/prebound_projection_v2_test.cc
+    Cellerator::geometry_acquisition)
+
+cellerator_add_ce_geo_foundation_test(ceGeoGeometryAcquisitionContractTest
+    tests/ce_geo/persistence/geometry_acquisition_contract_test.cc
+    Cellerator::geometry_acquisition)
+cellerator_add_ce_geo_foundation_test(ceGeoAcquisitionCostMappingTest
+    tests/ce_geo/persistence/acquisition_cost_mapping_test.cc
+    Cellerator::geometry_acquisition)
+
 add_executable(celleratorIdentityRegistryTest
     tests/execution_identity/identity_registry_test.cc
 )

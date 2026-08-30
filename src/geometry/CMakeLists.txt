@@ -11,6 +11,37 @@ add_library(cellpack STATIC
     pack.cc
     planner.cc
 )
+
+# CE-GEO portable semantic-geometry compiler. CSG1 construction and
+# validation stay host-only and architecture-neutral; physical providers link
+# this target without becoming geometry authorities.
+add_library(cellerator_semantic_geometry_v1 STATIC
+    compiler/admissibility.cc
+    compiler/compile_geometry.cc
+    compiler/cpbp_v1_compatibility.cc
+    compiler/identity_strategy.cc
+    compiler/relation_cover.cc
+    compiler/strategy_registry.cc
+    compiler/work_layout.cc
+    persistence/semantic_geometry_image_v1.cc
+    persistence/semantic_geometry_support_sections.cc
+    strategy/exact_relation_rescan.cc
+    strategy/rectangular_affinity.cc
+    strategy/support_affinity.cc
+    strategy/support_multiresolution.cc
+    support_atlas.cc
+)
+add_library(Cellerator::semantic_geometry_v1 ALIAS
+    cellerator_semantic_geometry_v1)
+target_include_directories(cellerator_semantic_geometry_v1 PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
+    Cellerator::biological_abi
+    Cellerator::compute_sampling
+)
+target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_17)
 add_library(CellPack::cellpack ALIAS cellpack)
 target_include_directories(cellpack PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
