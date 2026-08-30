@@ -7,15 +7,12 @@ add_library(cellerator_row_masked_n1_candidate STATIC
 # CE-GEO source-linked provider and exact physical-projection inventory.
 # Semantic compilation remains in Cellerator::semantic_geometry_v1; this
 # target owns target refinement, physical realization, and provider discovery.
+include(src/compute/architecture/providers/nvidia/common/CMakeLists.txt)
+include(src/compute/architecture/providers/nvidia/sm70/CMakeLists.txt)
 add_library(cellerator_architecture_provider STATIC
     src/compute/architecture/provider_registry.cc
-    src/compute/architecture/providers/nvidia/common/exact_rectangle_census.cc
-    src/compute/architecture/providers/nvidia/common/mma_projection_realization.cc
-    src/compute/architecture/providers/nvidia/common/mma_target_refinement.cc
-    src/compute/architecture/providers/nvidia/common/sm70_grouping.cc
-    src/compute/architecture/providers/nvidia/sm70/provider.cc
-    src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu
-    src/compute/architecture/providers/nvidia/sm70/value_pack.cu
+    ${CELLERATOR_NVIDIA_COMMON_PROVIDER_SOURCES}
+    ${CELLERATOR_NVIDIA_SM70_PROVIDER_SOURCES}
     src/compute/projection/mma_physical_cover_validation.cc
     src/compute/projection/mma_physical_work_layout.cc
     src/compute/projection/mma_residual_builder.cc
