@@ -2,6 +2,7 @@
 
 #include <Cellerator/execution/projection_activation_v2.hh>
 #include <Cellerator/geometry/persistence/semantic_geometry_image_v1.hh>
+#include <Cellerator/planner/end_to_end_planner.hh>
 
 #include <cstddef>
 #include <cstdint>
@@ -90,6 +91,21 @@ struct geometry_acquisition_request_v1 {
     std::uint32_t reserved[4]{};
 };
 
+// Acquisition owns the cold costs that differ by route. Each record identifies
+// the catalog candidate and the activated projection whose construction cost
+// it carries. The fixed phase_costs record is complete even when a phase is
+// absent and therefore exactly zero; missing or non-finite costs are invalid.
+struct geometry_acquisition_candidate_cost_v1 {
+    std::uint32_t schema_version = geometry_acquisition_schema_version_v1;
+    std::uint32_t record_bytes =
+        sizeof(geometry_acquisition_candidate_cost_v1);
+    compute::math::core::stable_id candidate_identity{};
+    std::uint32_t projection_index = 0u;
+    std::uint32_t reserved0 = 0u;
+    planner::phase_costs phases{};
+    std::uint32_t reserved[4]{};
+};
+
 // All route implementations publish this same non-owning product. The CSG1
 // view preserves portable identity; every projection reference is already
 // validated and activated through its source-linked provider. Candidate
@@ -101,6 +117,8 @@ struct acquired_geometry_v1 {
     geometry::persistence::semantic_geometry_image_view_v1 semantic_geometry{};
     const activated_projection_reference_v2 *projections = nullptr;
     std::uint32_t projection_count = 0u;
+    const geometry_acquisition_candidate_cost_v1 *candidate_costs = nullptr;
+    std::uint32_t candidate_cost_count = 0u;
     std::uint32_t reserved[4]{};
 };
 
@@ -208,6 +226,12 @@ static_assert(std::is_trivially_copyable<geometry_acquisition_request_v1>::value
     "geometry acquisition requests must remain pointer-copyable");
 static_assert(std::is_standard_layout<geometry_acquisition_request_v1>::value,
     "geometry acquisition requests must remain field-addressable");
+static_assert(std::is_trivially_copyable<
+    geometry_acquisition_candidate_cost_v1>::value,
+    "geometry acquisition costs must remain pointer-copyable");
+static_assert(std::is_standard_layout<
+    geometry_acquisition_candidate_cost_v1>::value,
+    "geometry acquisition costs must remain field-addressable");
 static_assert(std::is_trivially_copyable<acquired_geometry_v1>::value,
     "acquired geometry must remain pointer-copyable");
 static_assert(std::is_trivially_copyable<
