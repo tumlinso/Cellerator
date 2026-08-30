@@ -1,0 +1,188 @@
+{
+  "ablation_family_count": 10,
+  "accepted_for_promotion": false,
+  "campaign_id": "preprint-ablations",
+  "controller_evidence_id": "CE-GEO-119-preprint-ablations-v1",
+  "decisions": [
+    {
+      "disposition": "calibration_only",
+      "family": "constraints",
+      "negative_results": [
+        {
+          "complete_ns": 61373.0,
+          "correctness_passed": true,
+          "variant": "pinned_order"
+        }
+      ],
+      "selected_complete_ns": 61359.0,
+      "selected_variant": "adaptive_grouping"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "cost_model",
+      "negative_results": [
+        {
+          "complete_ns": 61396.0,
+          "correctness_passed": true,
+          "variant": "measured_sparse"
+        }
+      ],
+      "selected_complete_ns": 61357.0,
+      "selected_variant": "forced_dense"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "cover_density",
+      "negative_results": [
+        {
+          "complete_ns": 60750.0,
+          "correctness_passed": true,
+          "variant": "dense_padded_cover"
+        }
+      ],
+      "selected_complete_ns": 60558.0,
+      "selected_variant": "sparse_cover"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "cover_sharing",
+      "negative_results": [
+        {
+          "complete_ns": 60526.0,
+          "correctness_passed": true,
+          "variant": "shared_padded_cover"
+        }
+      ],
+      "selected_complete_ns": 60488.0,
+      "selected_variant": "operation_specific_cover"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "order",
+      "negative_results": [
+        {
+          "complete_ns": 61341.0,
+          "correctness_passed": true,
+          "variant": "canonical_remap"
+        }
+      ],
+      "selected_complete_ns": 61300.0,
+      "selected_variant": "persistent_order"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "partial_cover",
+      "negative_results": [
+        {
+          "complete_ns": 60510.0,
+          "correctness_passed": true,
+          "variant": "main_plus_residual"
+        }
+      ],
+      "selected_complete_ns": 60443.0,
+      "selected_variant": "single_cover"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "reorder_grouping",
+      "negative_results": [
+        {
+          "complete_ns": 64395.0,
+          "correctness_passed": true,
+          "variant": "logical_order"
+        }
+      ],
+      "selected_complete_ns": 64151.0,
+      "selected_variant": "grouped_edge_order"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "residual",
+      "negative_results": [
+        {
+          "complete_ns": 60513.0,
+          "correctness_passed": false,
+          "variant": "drop_residual_negative"
+        }
+      ],
+      "selected_complete_ns": 60577.0,
+      "selected_variant": "exact_residual"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "support_refinement",
+      "negative_results": [
+        {
+          "complete_ns": 61663.0,
+          "correctness_passed": true,
+          "variant": "refined_support"
+        }
+      ],
+      "selected_complete_ns": 61355.0,
+      "selected_variant": "coarse_support"
+    },
+    {
+      "disposition": "calibration_only",
+      "family": "value_mutability",
+      "negative_results": [
+        {
+          "complete_ns": 67640.0,
+          "correctness_passed": true,
+          "variant": "reupload_structure"
+        }
+      ],
+      "selected_complete_ns": 61460.0,
+      "selected_variant": "reuse_structure"
+    }
+  ],
+  "disposition": "evaluated_not_promoted",
+  "evidence_valid": 1,
+  "limitations": [
+    "Ablations use one deterministic synthetic degree-16 relation shape on V100; they are mechanism controls, not biological performance claims.",
+    "Analytical padding and launch variants do not replace end-to-end planner campaigns.",
+    "The hierarchy calibration in CE-GEO-118 is benchmark-local and remains non-promoted.",
+    "Nsight Compute cache and stall counters were unavailable in CE-GEO-114 and remain unavailable here.",
+    "Per-family fastest correct variants are calibration observations, not global planner defaults."
+  ],
+  "measurement_count": 20,
+  "negative_result_policy": "Incorrect or slower variants are retained verbatim; no failed result is removed from the package.",
+  "schema": "CELLERATOR-CE-GEO-PREPRINT-ABLATIONS/1",
+  "source_evidence": [
+    {
+      "bytes": 5950,
+      "path": "bench/ce_geo/evidence/biology/operations.jsonl",
+      "sha256": "c529d285a0e2ac3faacbbb577b9a6158f42f1819a9709d6ce7691490f3527f18"
+    },
+    {
+      "bytes": 7607,
+      "path": "bench/ce_geo/evidence/biology/tileability.jsonl",
+      "sha256": "507518c960c10ca1e012b9d28ac86b57b3b34bbac7b042395c66708b51dc66be"
+    },
+    {
+      "bytes": 10053,
+      "path": "bench/ce_geo/evidence/biology/work_window_refinement.jsonl",
+      "sha256": "426a46d5373106a37bd1479a69f99d9265b5afa97ef1507dc190cd59c9dab9ec"
+    },
+    {
+      "bytes": 73427,
+      "path": "bench/ce_geo/evidence/micro/final_volta_microarchitecture.json",
+      "sha256": "a7d09ddb148a8b1ba672dc6c173be966c800dbbca682bb23962fe885ed1aa260"
+    },
+    {
+      "bytes": 9127,
+      "path": "bench/ce_geo/evidence/micro/n64_output_owned.jsonl",
+      "sha256": "34d8d3c1ac66dbc2211acde659d995324b20802c1190a6d9fd3618f62c5c7cf7"
+    },
+    {
+      "bytes": 11387,
+      "path": "bench/ce_geo/evidence/micro/value_pack_residual.jsonl",
+      "sha256": "5c6097c4605d8b29ba213fa56455b12e833c6155a768e96d8b00e2a8f6985d94"
+    },
+    {
+      "bytes": 170130,
+      "path": "bench/ce_geo/evidence/micro/width_reuse_sweep.jsonl",
+      "sha256": "567b224f26af075facfa7815b808b58162ddaef1e0230e88eeb4139726786837"
+    }
+  ],
+  "task_id": "CE-GEO-119"
+}
