@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-102: Work-layout and semantic-cover property tests
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Generate random valid/invalid windows, permutations, axis-qualified constraints, maps, and semantic covers; check invertibility and exact ownership.

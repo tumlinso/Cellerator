@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-91: sm_70 transpose relation apply
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement and validate dX-style transpose execution with exact residual and separate target cover.

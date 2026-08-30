@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-01: sm_86 device and provider capability records
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Advertise only source-linked m16n8k16 FP16xFP16 to FP32 and BF16xBF16 to FP32 capabilities with separate memory interfaces.
@@ -27,4 +27,5 @@ _None._
 ## Dependencies
 - `checkpoint`: `CE-GEO-COMPLETE`
 - `decision`: `CE-AMP-PERMISSION`
+- `checkpoint`: `CE-EXOP-COMPLETE`
 <!-- todo-orchestrator:v2-managed:end -->

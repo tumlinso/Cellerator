@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-44: Unified geometry acquisition contract
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define compile-now, CSG1-load, CPE2-load, and CPK1-adapt routes with explicit incompatible-CPE2 fallback policy.

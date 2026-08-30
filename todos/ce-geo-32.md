@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-32: Compiled semantic work layout
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement exact invertible real-item permutations with independent validation and no physical padding.

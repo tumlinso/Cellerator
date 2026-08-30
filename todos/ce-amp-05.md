@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-05: Ampere transpose and support contraction
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement architecture-comparison parity for transpose relation apply and contract_on_support over the same logical contracts and independent Ampere covers.
@@ -28,4 +28,5 @@ _None._
 - `decision`: `CE-AMP-PERMISSION`
 - `task`: `CE-AMP-02`
 - `task`: `CE-AMP-03`
+- `checkpoint`: `CE-EXOP-COMPLETE`
 <!-- todo-orchestrator:v2-managed:end -->

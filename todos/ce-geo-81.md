@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-81: Relation apply and transpose compatibility semantics
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Map current v1 forward/transpose operations into the typed algebra without silently changing frozen enum or identity semantics.

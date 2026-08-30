@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-121: Integrate first sm_70 vertical slice
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate support evidence, target refinement, physical projection, N64 provider/kernel, residual, planner cost, and prepared execution without altering historical experiment.

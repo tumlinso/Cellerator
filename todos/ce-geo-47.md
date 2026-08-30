@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-47: Persistence and acquisition interface freeze
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove old CPE2 and opaque-artifact compatibility, fixed record sizes, typed capabilities, v1/v2 prebinding, corruption rejection, and logical equivalence of all routes.

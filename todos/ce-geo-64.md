@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-64: Row-owned residual builder and value maps
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build initial row-owned CSR residual in pinned physical order with stable logical-edge value maps and extensible residual descriptors.

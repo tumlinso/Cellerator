@@ -1,0 +1,29 @@
+
+
+<!-- todo-orchestrator:v2-managed:start -->
+# CE-EXOP-192: Normalization suite and backward operations
+
+Task revision: `3016`; current project revision is in `todo-status.md`.
+
+## Objective
+Deliver normalization suite and backward operations exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+
+## State
+- Lifecycle: `planned`
+- Execution: `ready`
+- Parallel policy: `serial`
+- Result: `-`
+
+## Next Action
+_None._
+
+## Ownership
+- `exclusive`: `include/Cellerator/compute/candidate/segment`
+- `exclusive`: `src/compute/candidate/segment`
+- `read`: `AGENTS.md`
+- `read`: `docs/CE_EXOP_PROGRAM.md`
+- `read`: `scope.md`
+
+## Dependencies
+- `task`: `CE-EXOP-191`
+<!-- todo-orchestrator:v2-managed:end -->

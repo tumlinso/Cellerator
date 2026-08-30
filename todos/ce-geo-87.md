@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-87: Public biological examples
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add public-only examples for sparse state embedding, regulatory propagation, transition/transport, hierarchy incidence, multimodal relations, and perturbation delta propagation.

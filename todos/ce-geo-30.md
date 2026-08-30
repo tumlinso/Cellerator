@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-30: Work-window contract
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.

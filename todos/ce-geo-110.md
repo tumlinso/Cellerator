@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-110: Benchmark harness and evidence schema
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create permanent methodology, command manifests, source/device/topology/toolchain/build capture, warmup/repeats, cold/warm complete phase accounting, contamination/spread, and JSON evidence validation without running unleased hardware.

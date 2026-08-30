@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-08: Cross-architecture artifact experiment
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Require identical CSG1 identity, independent V100/A5000 projections, exact logical reconstruction, declared numerical agreement, and compare relowering the Volta target cover with fresh Ampere refinement.
@@ -27,4 +27,6 @@ _None._
 ## Dependencies
 - `task`: `CE-AMP-06`
 - `task`: `CE-AMP-07`
+- `checkpoint`: `CE-EXOP-COMPLETE`
+- `decision`: `CE-AMP-PERMISSION`
 <!-- todo-orchestrator:v2-managed:end -->

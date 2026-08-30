@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-65: Deterministic source and destination grouping
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.

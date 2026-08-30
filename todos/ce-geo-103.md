@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-103: Physical-cover and projection property tests
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Generate omissions, duplicates, padding mistakes, bad maps, residual errors, corrupt offsets, width transitions, and valid covers; independently verify exact contribution ownership.

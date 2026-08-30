@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-24: Executable program v2 and v1 wrapper
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create one v2 program engine without five-entry pointer closure or central projection switch and retain v1 as a compatibility wrapper.

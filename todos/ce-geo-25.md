@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-25: Catalog/program regression and interface freeze
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove existing enumeration/execution and planner selection, fake-provider extension without program.cc edits, and atomic duplicate/capability rejection.

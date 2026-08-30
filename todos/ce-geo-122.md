@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-122: Integrate biology operation substrate
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate relation algebra, transpose, contraction, segments, gradients, bundles, examples, exchange, and explicitly disposed optional fusion.

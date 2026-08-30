@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-114: Width occupancy reuse and resource sweeps
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Sweep N 1,4,8,16,32,64,128,256,512; D 16,32,64,128,256,512; reuse 1,4,16,64,256,1000+; record registers, shared memory, occupancy, bandwidth, caches, stalls, launches, useful/executed work, residuals, and errors.

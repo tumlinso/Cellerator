@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-06: Ampere correctness and sanitizer campaign
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run the same logical fixtures, exact covers, corruptions, generations, graph/runtime rules, numerical policies, gradients, and Compute Sanitizer on live leased sm_86 hardware.
@@ -29,4 +29,5 @@ _None._
 - `decision`: `CE-AMP-PERMISSION`
 - `task`: `CE-AMP-04`
 - `task`: `CE-AMP-05`
+- `checkpoint`: `CE-EXOP-COMPLETE`
 <!-- todo-orchestrator:v2-managed:end -->

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-00: Permission-gated Ampere extension
 
-Task revision: `2999`; current project revision is in `todo-status.md`.
+Task revision: `3016`; current project revision is in `todo-status.md`.
 
 ## Objective
 After CE-GEO-COMPLETE and explicit human permission, activate and preflight a subordinate sm_86 extension by revalidating source identity, live A5000 hardware, toolchain, frozen contracts, and identical CSG1 fixtures.
@@ -27,4 +27,5 @@ _None._
 ## Dependencies
 - `checkpoint`: `CE-GEO-COMPLETE`
 - `decision`: `CE-AMP-PERMISSION`
+- `checkpoint`: `CE-EXOP-COMPLETE`
 <!-- todo-orchestrator:v2-managed:end -->
