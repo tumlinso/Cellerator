@@ -1,0 +1,47 @@
+{
+  "ce_amp": {
+    "actionable_candidates": 0,
+    "claims": 0,
+    "loaded_tasks": 10,
+    "permission": "not_granted",
+    "required_for_ce_geo_completion": false,
+    "started_tasks": 0
+  },
+  "checkpoint_to_reach": "CE-GEO-COMPLETE",
+  "closing_disposition": "validated",
+  "evidence": {
+    "amp_interlock_audit": {
+      "path": "bench/ce_geo/evidence/amp_interlock_audit.json",
+      "sha256": "12ffb9e62234606b291d1fae9feb8deb5d73491d660eb9e13aa8fa413169bea2"
+    },
+    "final_volta_acceptance": {
+      "path": "bench/ce_geo/evidence/final_volta_acceptance.json",
+      "sha256": "540ff84240f50b36e2c6a0af717e4d082c7e9205cce12b3fbd1bb5c4bc880568"
+    },
+    "full_volta_validation": {
+      "path": "bench/ce_geo/evidence/full_volta_validation.json",
+      "sha256": "0fea9ec7288e7d12aaf955197142a68fd9726550e0554b1f4efbe69246cc444e"
+    },
+    "sanitizer_campaign": {
+      "path": "bench/ce_geo/evidence/sanitizer/campaign.json",
+      "sha256": "f49938befed5ff537990f3f45c5ae39e220e9f00080bc7a32526150620170a46"
+    }
+  },
+  "limits": [
+    "The promoted sm70 N64 exact hybrid cover remains evidence-scoped.",
+    "Whole-exchange fusion and the final ablation package remain evaluated_not_promoted.",
+    "CE-AMP remains a separately runnable extension controlled only by explicit human permission."
+  ],
+  "schema": "CELLERATOR-CE-GEO-COMPLETION/1",
+  "task_id": "CE-GEO-127",
+  "terminal_prerequisites": {
+    "count": 107,
+    "dispositions": {
+      "evaluated_not_promoted": 7,
+      "implemented": 77,
+      "validated": 23
+    }
+  },
+  "validated": true,
+  "volta_checkpoint": "reached"
+}
