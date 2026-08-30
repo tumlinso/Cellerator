@@ -87,7 +87,9 @@ __device__ float block_max(float value, float *scratch) {
                 fmaxf(scratch[threadIdx.x], scratch[threadIdx.x + stride]);
         __syncthreads();
     }
-    return scratch[0];
+    const float result = scratch[0];
+    __syncthreads();
+    return result;
 }
 
 __device__ float block_sum(float value, float *scratch) {
@@ -99,7 +101,9 @@ __device__ float block_sum(float value, float *scratch) {
             scratch[threadIdx.x] += scratch[threadIdx.x + stride];
         __syncthreads();
     }
-    return scratch[0];
+    const float result = scratch[0];
+    __syncthreads();
+    return result;
 }
 
 __device__ std::uint32_t block_sum_u32(
@@ -112,7 +116,9 @@ __device__ std::uint32_t block_sum_u32(
             scratch[threadIdx.x] += scratch[threadIdx.x + stride];
         __syncthreads();
     }
-    return scratch[0];
+    const std::uint32_t result = scratch[0];
+    __syncthreads();
+    return result;
 }
 
 template<bool LogSumExp>
