@@ -45,13 +45,14 @@ set_target_properties(cellerator_architecture_provider PROPERTIES
 # framework ownership. Its candidate-catalog-v2 declarations are source-linked
 # here, while schema-v2-only operations continue to fail closed under the
 # frozen operation-core schema v1.
+include(src/compute/candidate/segment/CMakeLists.txt)
 add_library(cellerator_relation_algebra STATIC
     src/compute/operation/relation_algebra_catalog.cc
+    src/compute/operation/relation_algebra_assembly.cc
     src/compute/operation/relation_apply_compatibility.cc
     src/compute/candidate/edge_map_or_gate.cu
     src/compute/candidate/relation_bundle.cc
-    src/compute/candidate/segment/normalize.cu
-    src/compute/candidate/segment/reduce.cu
+    ${CELLERATOR_RELATION_SEGMENT_SOURCES}
 )
 add_library(Cellerator::relation_algebra ALIAS cellerator_relation_algebra)
 target_include_directories(cellerator_relation_algebra PUBLIC

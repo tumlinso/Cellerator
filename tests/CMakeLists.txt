@@ -1,5 +1,6 @@
 include(tests/planner_targets.cmake)
 include(tests/tensor_core/sm70/CMakeLists.txt)
+include(tests/relation_algebra/CMakeLists.txt)
 
 find_program(CELLERATOR_PYTHON3_EXECUTABLE NAMES python3 REQUIRED)
 add_custom_target(celleratorNoProductionFileIoCheck ALL

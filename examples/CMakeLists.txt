@@ -1,3 +1,5 @@
+include(examples/ce_geo/CMakeLists.txt)
+
 add_library(cellerator_state_reduce_cuda STATIC
     examples/models/state_reduce.cu
 )
