@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-09: Device-resident support to candidate to merge pipeline
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2506`; current project revision is in `todo-status.md`.
 
 ## Objective
 Redesign gene support, candidate discovery, and exact merge scoring as one device-resident prepared pipeline with explicit views and workspaces, preflight capacities and CUB scratch, and terminal-only host materialization.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Treat the three stages as one pipeline, retain authoritative host referees, and collect before-after V100 end-to-end evidence under the benchmark mutex.

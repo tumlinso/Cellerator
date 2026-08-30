@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-34: Rectangular-support extension contract
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define hardware-neutral two-axis component membership and portable references to support statistics without tile semantics.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-124: Publish final documentation spine
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update the authoritative existing documentation spine with implemented behavior, measured limits, promotions/non-promotions, evidence, interop boundaries, and migration state after final evidence fan-in.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
@@ -30,6 +30,7 @@ _None._
 - `exclusive`: `docs/performance_validation.qmd`
 - `exclusive`: `docs/storage_distribution_and_interop.qmd`
 - `exclusive`: `scope.md`
+- `exclusive`: `scripts/ce_geo/validate_documentation.py`
 - `read`: `bench/ce_geo/evidence`
 - `read`: `include`
 - `read`: `src`

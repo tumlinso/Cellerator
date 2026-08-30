@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-07: Ampere calibration and local baselines
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Benchmark complete costs against the strongest A5000-local sparse, dense, and vendor baselines with exact hardware/toolchain/profiler evidence.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-112: N=64 output-owned kernel calibration
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Compare historical experiment, output-owned N64 WMMA, best local sparse baselines, and legal dense baselines with mechanism and numerical evidence.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `evaluated_not_promoted`
 
 ## Next Action
 _None._

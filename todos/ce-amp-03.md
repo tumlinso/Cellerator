@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-03: sm_86 staging and PTX MMA kernel
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement provider-private cp.async, ldmatrix, and mma.sync staging/execution where measured appropriate, with no private types in public contracts.

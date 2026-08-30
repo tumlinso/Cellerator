@@ -151,7 +151,16 @@
       "state": "draft",
       "version": "1",
       "contract_paths": [
-        "include/Cellerator/memory"
+        "include/Cellerator/memory/allocation.hh",
+        "include/Cellerator/memory/compiler_hints.hh",
+        "include/Cellerator/memory/copy.cuh",
+        "include/Cellerator/memory/domain.hh",
+        "include/Cellerator/memory/generation_marks.hh",
+        "include/Cellerator/memory/image.hh",
+        "include/Cellerator/memory/session_memory.cuh",
+        "include/Cellerator/memory/status.hh",
+        "include/Cellerator/memory/view.hh",
+        "include/Cellerator/memory/workspace.hh"
       ]
     }
   ],
@@ -701,7 +710,12 @@
           "include/Cellerator/compute/core/host_buffer.hh",
           "include/Cellerator/runtime/device_buffer.cuh",
           "include/Cellerator/runtime",
-          "src/runtime"
+          "src/runtime",
+          "src/geometry/optimizer.cc",
+          "src/geometry/optimizer_state.hh",
+          "src/compute/current_targets.cmake",
+          "docs/compute_and_models.qmd",
+          "tests/CMakeLists.txt"
         ],
         "read_paths": ["include/Cellerator", "src", "compat", "components/CelleraTorch", "tests", "bench"]
       },

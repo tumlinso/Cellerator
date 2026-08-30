@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-109: Full Volta regression and acceptance evidence
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run normal and relevant compatibility builds plus all compatibility, structure, runtime, numerical, static, sanitizer, and integrated Volta tests; emit machine-readable source/hardware/command/contamination evidence.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
@@ -29,4 +29,5 @@ _None._
 
 ## Dependencies
 - `checkpoint`: `CE-GEO-VOLTA-SYSTEM-INTEGRATED`
+- `task`: `CE-GEO-108`
 <!-- todo-orchestrator:v2-managed:end -->

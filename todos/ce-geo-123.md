@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-123: Integrate complete Volta implementation
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Own final shared CMake manifests, package exports, central catalog assembly, program wiring, benchmark/test registration, and cross-module compatibility after all Volta branches have dispositions.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
@@ -28,6 +28,7 @@ _None._
 - `exclusive`: `src/execution/CMakeLists.txt`
 - `exclusive`: `src/geometry/CMakeLists.txt`
 - `exclusive`: `tests/CMakeLists.txt`
+- `exclusive`: `tests/ce_geo/run_build_matrix.py`
 - `read`: `bench`
 - `read`: `cmake`
 - `read`: `examples`

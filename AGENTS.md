@@ -501,16 +501,18 @@ See `style_hint.md` for local file-shape guidance.
 
 ## Build and Test
 
-Default to `-j 20` or higher for parallel builds on this 80-core host unless a
-real memory, toolchain-stability, benchmark-isolation, or serialized-gate
-constraint requires lower parallelism. Use most available cores when it is
-safe to do so.
+Default to all available processors for parallel compilation. On Linux, use
+`-j "$(nproc)"` unless a real memory, toolchain-stability,
+benchmark-isolation, resource-reservation, or serialized-gate/interlock
+constraint requires lower parallelism. Do not retain a lower job count merely
+because it was used by an earlier command; record the concrete reason whenever
+parallelism is reduced.
 
 Configure:
 
 ```bash
 cmake -S . -B build
-cmake --build build -j 20
+cmake --build build -j "$(nproc)"
 ```
 
 This default build is native Cellerator and does not discover Torch.
@@ -519,7 +521,7 @@ The retained framework compatibility build is explicit:
 
 ```bash
 cmake -S . -B build-compat -DCELLERATOR_ENABLE_TORCH_MODELS=ON
-cmake --build build-compat -j 20
+cmake --build build-compat -j "$(nproc)"
 ```
 
 Cellerator currently requires CUDA and resolves sibling CellShard and Baseplane source trees before installed packages.

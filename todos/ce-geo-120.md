@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-120: Integrate geometry foundation
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Reconcile frozen provider, catalog, semantic geometry, CSG1, CPE2, acquisition, root build, exports, and shared tests without redesigning interfaces or disturbing CE-PTR.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
@@ -25,6 +25,7 @@ _None._
 - `exclusive`: `src/execution/CMakeLists.txt`
 - `exclusive`: `src/geometry/CMakeLists.txt`
 - `exclusive`: `tests/CMakeLists.txt`
+- `exclusive`: `tests/ce_geo/run_foundation_suite.py`
 - `read`: `include/Cellerator/compute/architecture`
 - `read`: `include/Cellerator/compute/operation`
 - `read`: `include/Cellerator/execution`

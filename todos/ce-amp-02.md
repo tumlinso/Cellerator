@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-02: sm_86 physical realization
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Realize the same portable CSG1 semantic geometry as an independent Ampere physical cover, schedules, value maps, capabilities, and CPE2 projection.

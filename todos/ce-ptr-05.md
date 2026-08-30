@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-05: Packing optimizer state representation
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2494`; current project revision is in `todo-status.md`.
 
 ## Objective
 Replace per-block growable member and cache ownership with a prepared domain representation using bounded fixed-stride slabs where justified, aligned descriptors, direct feature-slot maps, explicit generations, prepared union-cache storage, exact workspaces, and local updates.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Freeze and validate the optimizer state contract needed by CE-PTR-06 without coupling unrelated workstreams.

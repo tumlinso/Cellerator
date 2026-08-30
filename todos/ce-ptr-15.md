@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-15: Repository-wide final migration and acceptance
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2522`; current project revision is in `todo-status.md`.
 
 ## Objective
 Converge CE-PTR by removing obsolete generic infrastructure and stale owners, resolving the production inventory to documented exceptions, running comprehensive semantic, allocation, synchronization, transfer, performance, compiler, persistence, sanitizer, and source-tooling acceptance, and updating durable architecture documentation.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `project_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.

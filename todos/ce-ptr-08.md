@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-08: Statistical validation structures
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2516`; current project revision is in `todo-status.md`.
 
 ## Objective
 Replace nested vectors and hash maps or sets in statistical validation with sorted group-row relations, offsets, row-unit maps, packed edge keys, exact flat membership, and generation-mark workspaces without changing statistical or provenance semantics.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.

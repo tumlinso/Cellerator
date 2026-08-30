@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-12: Forward-neighbor architectural decomposition
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2502`; current project revision is in `todo-status.md`.
 
 ## Objective
 Split forward-neighbor low-level mathematical kernels, views, routes, workspaces, and fixed-K primitives from downstream index construction, durable ownership, cell lookup, sharding, residency, storage, biological workflow policy, and application results.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Determine the live architectural split first, then migrate or remove Cellerator ownership only where the standing CellShard and BioPrep boundaries require it.

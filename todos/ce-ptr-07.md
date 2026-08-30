@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-PTR-07: Sampling and sampled structural ownership
 
-Task revision: `2376`; current project revision is in `todo-status.md`.
+Task revision: `2510`; current project revision is in `todo-status.md`.
 
 ## Objective
 Migrate sampling plans, results, and sampled CSR construction to explicit images and workspaces while preserving deterministic reproduction, provenance, stable row identity, and Cellerator's non-storage boundary.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Define explicit sample image and workspace contracts, evaluate redundant hashes and weights from live provenance, and preserve exact reproduction.

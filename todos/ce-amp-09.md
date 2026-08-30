@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-AMP-09: Ampere integration and report
 
-Task revision: `2379`; current project revision is in `todo-status.md`.
+Task revision: `2999`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate only validated sm_86 provider, projection, operations, dispositions, build/export wiring, and report; prohibit 2:4 edge pruning and keep TF32/structured sparsity optional and empirical.
