@@ -31,12 +31,23 @@ def validate_campaign(campaign: str, records: list[dict[str, object]]) -> dict[s
         raise ValueError(f"campaign identity does not match {campaign}")
 
     provenance = next((record for record in records
-        if record.get("controller_evidence_id")), None)
+        if record.get("controller_evidence_id")
+        or (isinstance(record.get("controller"), dict)
+            and record["controller"].get("evidence_id"))), None)
     if provenance is None:
         raise ValueError("controller evidence identity is missing")
-    if provenance.get("benchmark_mutex") is not True:
+    controller = provenance.get("controller", {})
+    if not isinstance(controller, dict):
+        raise ValueError("controller provenance is malformed")
+    evidence_id = provenance.get("controller_evidence_id") \
+        or controller.get("evidence_id")
+    benchmark_mutex = provenance.get("benchmark_mutex") is True \
+        or controller.get("benchmark_mutex") is True
+    uncontaminated = provenance.get("uncontaminated") is True \
+        or controller.get("uncontaminated") is True
+    if not benchmark_mutex:
         raise ValueError("benchmark mutex acquisition is not recorded")
-    if provenance.get("uncontaminated") is not True:
+    if not uncontaminated:
         raise ValueError("campaign is absent or contaminated")
 
     measurements = [record for record in records
@@ -52,7 +63,7 @@ def validate_campaign(campaign: str, records: list[dict[str, object]]) -> dict[s
     return {
         "evidence_valid": 1,
         "campaign": campaign,
-        "controller_evidence_id": provenance["controller_evidence_id"],
+        "controller_evidence_id": evidence_id,
         "measurement_records": len(measurements),
         "minimum_complete_ns": min(complete),
         "promotion_claimed": any(

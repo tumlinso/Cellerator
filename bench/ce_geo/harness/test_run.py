@@ -29,6 +29,16 @@ class CampaignGateTest(unittest.TestCase):
                  "complete_ns": 1.0},
             ])
 
+    def test_accepts_nested_controller_provenance(self) -> None:
+        result = validate_campaign("n64-output-owned", [
+            {"campaign_id": "n64-output-owned", "controller": {
+                "evidence_id": "evidence-2", "benchmark_mutex": True,
+                "uncontaminated": True}},
+            {"campaign_id": "n64-output-owned", "correctness_passed": True,
+             "complete_ns": 2.0},
+        ])
+        self.assertEqual(result["controller_evidence_id"], "evidence-2")
+
     def test_loads_json_lines(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "evidence.jsonl"
