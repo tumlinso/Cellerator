@@ -2,6 +2,8 @@
 
 #include <Cellerator/compute/architecture/provider.hh>
 
+// Declarations are collected only from providers explicitly included by the
+// build. They may contain namespace-qualified declarations.
 @CELLERATOR_PROVIDER_MANIFEST_DECLARATIONS@
 
 namespace cellerator::compute::architecture {
@@ -20,5 +22,11 @@ inline constexpr compiled_provider_manifest_v1
             sizeof(compiled_provider_registrations_v1)
                 / sizeof(compiled_provider_registrations_v1[0])
             - 1u)};
+
+// Compatibility name for callers that consumed the pre-freeze generated
+// manifest spelling. It aliases the same immutable span and adds no registry.
+inline constexpr compiled_provider_manifest_v1
+    compiled_provider_manifest_v1_instance =
+        cellerator_compiled_provider_manifest_v1;
 
 } // namespace cellerator::compute::architecture
