@@ -1,0 +1,1942 @@
+{
+  "campaign": "CE-GEO",
+  "commands": [
+    {
+      "argv": [
+        "cmake",
+        "-S",
+        ".",
+        "-B",
+        "build",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CUDA_ARCHITECTURES=70",
+        "-DCELLERATOR_ENABLE_TORCH_MODELS=OFF"
+      ],
+      "elapsed_seconds": 3.810423,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 467,
+      "stdout_sha256": "7c319a2ae0cc2f7189fc7bd127f7367fb25043963cfeec147f3c2b4bab00760f",
+      "stdout_tail": "-- Cellerator default real: storage=f16, compute=f32, accum=f32\n-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)\n-- Cellerator host vector level: avx2\n-- Cellerator CUDA probe: Tesla V100-SXM2-16GB sm_70 (volta), 16144 MiB\n-- CellShard CUDA mode: generic\n-- Cellerator CUDA mode: generic\n-- Configuring done (3.3s)\n-- Generating done (0.4s)\n-- Build files have been written to: /home/tumlinson/Cellerator/build\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/validation/baseline_golden_regression.py",
+        "--build",
+        "build"
+      ],
+      "elapsed_seconds": 132.390571,
+      "returncode": 0,
+      "stderr_bytes": 7751,
+      "stderr_sha256": "e5a52791e4c8630aefd26c1a5a0a5b9aa77b5468fb6997f5afb50cc562a11aeb",
+      "stderr_tail": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n/home/tumlinson/Cellerator/src/compute/matrix/convert/compressed.cu: In function \u2018int cellerator::compute::matrix::convert::build_compressed_from_coo_library_raw(cellerator::types::dim_t, cellerator::types::dim_t, cellerator::types::nnz_t, const cellerator::types::idx_t*, const cellerator::types::idx_t*, const cellerator::real::storage_t*, cellerator::types::ptr_t*, cellerator::types::idx_t*, cellerator::types::idx_t*, cellerator::real::storage_t*, cellerator::types::idx_t*, void*, std::size_t, cudaStream_t)\u2019:\n/home/tumlinson/Cellerator/src/compute/matrix/convert/compressed.cu:275:55: warning: \u2018cusparseStatus_t cusparseCreateIdentityPermutation(cusparseHandle_t, int, int*)\u2019 is deprecated: The routine will be removed in the next major release [-Wdeprecated-declarations]\n  275 |     if (!cusparse_check(cusparseCreateIdentityPermutation(handle, (int) nnz, reinterpret_cast<int *>(d_permutation)), \"cusparseCreateIdentityPermutation\")) return 0;\n      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/math_libs/12.9/include/cusparse.h:4099:1: note: declared here\n 4099 | cusparseCreateIdentityPermutation(cusparseHandle_t handle,\n      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n..\n----------------------------------------------------------------------\nRan 2 tests in 0.269s\n\nOK\n",
+      "stdout_bytes": 31614,
+      "stdout_sha256": "6b0bb02abc912db57f705181e1dca9eae1f8f8ff1402a97cdb3f083d1ae19b42",
+      "stdout_tail": "ctivation.dir/src/execution/projection_activation.cc.o\n[ 77%] Built target cellerator_transpose_backward_candidate\n[ 77%] Built target cellerator_builtin_candidate_catalog\n[ 81%] Building CXX object CMakeFiles/cellerator_preparation_factory.dir/src/compute/operation/preparation_factory.cc.o\n[ 81%] Linking CXX static library libcellerator_live_runtime_fixture.a\n[ 81%] Built target cellerator_live_runtime_fixture\n[ 81%] Linking CXX static library libcellerator_semantic_geometry_v1.a\n[ 81%] Built target cellerator_semantic_geometry_v1\n[ 81%] Linking CXX static library libcellerator_projection_activation.a\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/mma_projection_realization.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/catalog_fragment.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/exact_rectangle_census.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/provider_registry.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/sm70_grouping.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/mma_target_refinement.cc.o\n[ 90%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu.o\n[ 90%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/provider.cc.o\n[ 90%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu.o\n[ 90%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual.cu.o\n[ 90%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_physical_cover_validation.cc.o\n[ 90%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/value_pack.cu.o\n[ 90%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_residual_builder.cc.o\n[ 95%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_physical_work_layout.cc.o\n[ 95%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/physical_mma_hybrid.cc.o\n[ 95%] Built target cellerator_projection_activation\n[ 95%] Linking CXX static library libcellerator_preparation_factory.a\n[ 95%] Built target cellerator_preparation_factory\n[100%] Linking CXX static library libcellerator_relation_algebra.a\n[100%] Built target cellerator_relation_algebra\n[100%] Linking CXX static library libcellerator_architecture_provider.a\n[100%] Built target cellerator_architecture_provider\n[100%] Building CXX object CMakeFiles/cellerator_ce_geo_catalog.dir/src/compute/operation/ce_geo_catalog_assembly.cc.o\n[100%] Linking CXX static library libcellerator_ce_geo_catalog.a\n[100%] Linking CXX static library libcellerator_cusparse_csr_candidate.a\n[100%] Built target cellerator_ce_geo_catalog\n[100%] Built target cellerator_cusparse_csr_candidate\n[100%] Linking CXX static library libcellerator_native_training_slice.a\n[100%] Built target cellerator_native_training_slice\n[100%] Building CXX object CMakeFiles/celleratorExecutableCoreIntegrationTest.dir/tests/live/integration/executable_core_integration_test.cc.o\n[100%] Linking CXX executable celleratorExecutableCoreIntegrationTest\n[100%] Built target celleratorExecutableCoreIntegrationTest\n[  0%] Building CUDA object CellShard/CMakeFiles/cellshard_cellerator_compute_matrix_convert.dir/home/tumlinson/Cellerator/src/compute/matrix/convert/compressed.cu.o\n[  0%] Building CUDA object CellShard/CMakeFiles/cellshard_cellerator_compute_matrix_convert.dir/home/tumlinson/Cellerator/src/compute/matrix/convert/bucket.cu.o\n[ 27%] Built target cellpack\n[ 45%] Built target cellpack_local_cell_ordering\n[ 45%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 54%] Built target cellpack_feature_weighted_row_reduction\n[ 54%] Built target cellpack_persistent_packing_payload\n[ 54%] Built target cellpack_feature_weighted_row_reduction_cuda\n[ 54%] Linking CUDA static library libcellshard_cellerator_compute_matrix_convert.a\n[ 54%] Built target cellshard_cellerator_compute_matrix_convert\n[ 63%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/pack/packfile.cu.o\n[ 63%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/create.cc.o\n[ 63%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/pack/image_envelope.cc.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/metadata.cc.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/pack/execution_payload.cu.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/finalize_preprocess.cc.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/runtime/fetch.cc.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/write.cc.o\n[ 72%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/runtime/bind.cc.o\n[ 81%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/runtime/warm.cc.o\n[ 81%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/runtime/headers.cc.o\n[ 81%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/runtime/storage/shard_storage.cu.o\n[ 81%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/runtime/residency/host.cc.o\n[ 81%] Building CXX object CellShard/CMakeFiles/cellshard_inspect.dir/src/runtime/source/local_file_source.cc.o\n[ 81%] Building CUDA object CellShard/CMakeFiles/cellshard_inspect.dir/src/bucket/blocked_ell_bipartite_optimize_bridge.cu.o\n[ 90%] Building CUDA object CellShard/CMakeFiles/cellshard_inspect.dir/src/io/csh5/sliced_execution_cuda.cu.o\n[ 90%] Linking CXX static library libcellshard_inspect.a\n[ 90%] Built target cellshard_inspect\n[100%] Building CUDA object CMakeFiles/cellPackPersistentPackingPayloadTest.dir/tests/geometry/persistent_packing_payload_test.cu.o\n[100%] Linking CXX executable cellPackPersistentPackingPayloadTest\n[100%] Built target cellPackPersistentPackingPayloadTest\n[ 25%] Built target cellpack\n[ 25%] Built target cellshard_cellerator_compute_matrix_convert\n[ 33%] Built target cellpack_semantic_geometry\n[ 41%] Built target cellpack_apply_plan\n[ 50%] Built target cellpack_local_cell_ordering\n[ 58%] Built target cellpack_warp_tiles\n[ 58%] Built target cellpack_feature_weighted_row_reduction\n[ 91%] Built target cellshard_inspect\n[ 91%] Built target cellpack_persistent_packing_payload\n[100%] Built target cellpack_execution_image_v2\n[100%] Building CUDA object CMakeFiles/cellPackExecutionImageV2DeviceTest.dir/tests/geometry/persistence/execution_image_v2_device_test.cu.o\n[100%] Linking CXX executable cellPackExecutionImageV2DeviceTest\n[100%] Built target cellPackExecutionImageV2DeviceTest\n[ 21%] Built target cellpack\n[ 21%] Built target cellshard_cellerator_compute_matrix_convert\n[ 28%] Built target cellpack_semantic_geometry\n[ 35%] Built target cellpack_apply_plan\n[ 42%] Built target cellpack_local_cell_ordering\n[ 50%] Built target cellpack_warp_tiles\n[ 78%] Built target cellshard_inspect\n[ 78%] Built target cellpack_feature_weighted_row_reduction\n[ 78%] Built target cellpack_persistent_packing_payload\n[ 85%] Built target cellpack_execution_image_v2\n[ 85%] Building CXX object CMakeFiles/cellerator_opaque_execution_artifact.dir/src/execution/opaque_artifact.cc.o\n[ 92%] Linking CXX static library libcellerator_opaque_execution_artifact.a\n[ 92%] Built target cellerator_opaque_execution_artifact\n[ 92%] Building CUDA object CMakeFiles/celleratorOpaqueExecutionArtifactTest.dir/tests/persistence/opaque_execution_artifact_test.cu.o\n[100%] Linking CXX executable celleratorOpaqueExecutionArtifactTest\n[100%] Built target celleratorOpaqueExecutionArtifactTest\n[100%] Built target cellerator_runtime\n[100%] Building CUDA object CMakeFiles/celleratorExecutionSessionTest.dir/tests/runtime/execution_session_test.cu.o\n[100%] Linking CXX executable celleratorExecutionSessionTest\n[100%] Built target celleratorExecutionSessionTest\n[  0%] Built target cellerator_compute_sampling\n[ 18%] Built target cellerator_runtime\n[ 45%] Built target cellpack\n[ 45%] Built target cellerator_operation_core\n[ 45%] Built target cellpack_statistical_validation\n[ 54%] Built target cellpack_semantic_geometry\n[ 63%] Built target cellpack_apply_plan\n[ 72%] Built target cellpack_local_cell_ordering\n[ 81%] Built target cellpack_record_statistical_validation\n[ 90%] Built target cellpack_warp_tiles\n[ 90%] Built target cellpack_alternating_refinement\n[ 90%] Built target cellpack_feature_weighted_row_reduction\n[100%] Built target cellerator_planner\n[100%] Built target cellpack_persistent_packing_payload\n[100%] Built target cellpack_feature_weighted_row_reduction_cuda\n[100%] Built target cellerator_row_masked_n1_candidate\n[100%] Building CUDA object CMakeFiles/celleratorRowMaskedN1CandidateTest.dir/tests/math_core/row_masked_n1_candidate_test.cu.o\n[100%] Linking CXX executable celleratorRowMaskedN1CandidateTest\n[100%] Built target celleratorRowMaskedN1CandidateTest\n[  0%] Built target cellerator_compute_sampling\n[ 25%] Built target cellpack\n[ 41%] Built target cellerator_runtime\n[ 41%] Built target cellpack_statistical_validation\n[ 41%] Built target cellerator_operation_core\n[ 50%] Built target cellpack_semantic_geometry\n[ 58%] Built target cellpack_apply_plan\n[ 66%] Built target cellpack_local_cell_ordering\n[ 75%] Built target cellpack_record_statistical_validation\n[ 83%] Built target cellpack_warp_tiles\n[ 83%] Built target cellpack_alternating_refinement\n[ 83%] Built target cellpack_feature_weighted_row_reduction\n[ 91%] Built target cellerator_planner\n[ 91%] Built target cellpack_feature_weighted_row_reduction_cuda\n[ 91%] Built target cellpack_persistent_packing_payload\n[ 91%] Built target cellerator_csr_fallback_candidate\n[ 91%] Built target cellerator_row_masked_n1_candidate\n[ 91%] Building CUDA object CMakeFiles/celleratorCsrFallbackCandidateTest.dir/tests/math_core/csr_fallback_candidate_test.cu.o\n[100%] Linking CXX executable celleratorCsrFallbackCandidateTest\n[100%] Built target celleratorCsrFallbackCandidateTest\n[ 50%] Built target cellpack\n[ 83%] Built target cellerator_runtime\n[ 83%] Built target cellerator_operation_core\n[100%] Built target cellpack_apply_plan\n[100%] Built target cellerator_cusparse_csr_candidate\n[100%] Building CUDA object CMakeFiles/celleratorCusparseCsrCandidateTest.dir/tests/math_core/cusparse_csr_candidate_test.cu.o\n[100%] Linking CXX executable celleratorCusparseCsrCandidateTest\n[100%] Built target celleratorCusparseCsrCandidateTest\n[  0%] Built target cellerator_compute_sampling\n[ 20%] Built target cellpack\n[ 33%] Built target cellerator_runtime\n[ 33%] Built target cellpack_statistical_validation\n[ 40%] Built target cellpack_semantic_geometry\n[ 46%] Built target cellpack_local_cell_ordering\n[ 53%] Built target cellpack_apply_plan\n[ 53%] Built target cellerator_operation_core\n[ 60%] Built target cellpack_record_statistical_validation\n[ 66%] Built target cellpack_warp_tiles\n[ 66%] Built target cellpack_alternating_refinement\n[ 66%] Built target cellpack_feature_weighted_row_reduction\n[ 73%] Built target cellerator_planner\n[ 73%] Built target cellpack_feature_weighted_row_reduction_cuda\n[ 73%] Built target cellpack_persistent_packing_payload\n[ 73%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/compat/cp_math_v1/src/operation.cc.o\n[ 73%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/src/compute/projection/physical_csr.cc.o\n[ 73%] Built target cellerator_feature_major_projection\n[ 73%] Built target cellerator_csr_fallback_candidate\n[ 73%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/compat/cp_math_v1/src/physical_bell.cc.o\n[ 80%] Built target cellpack_execution_image_v2\n[ 86%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/compat/cp_math_v1/src/operation_signature.cc.o\n[ 86%] Built target cellerator_row_masked_n1_candidate\n[ 86%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/compat/cp_math_v1/src/physical_bell_candidates.cc.o\n[ 86%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/src/compute/projection/native_tile_view.cc.o\n[ 93%] Building CXX object CMakeFiles/cellerator_math_v1_evidence.dir/compat/cp_math_v1/src/referee.cc.o\n[ 93%] Built target cellerator_feature_major_small_n_candidate\n[ 93%] Linking CXX static library libcellerator_math_v1_evidence.a\n[ 93%] Built target cellerator_math_v1_evidence\n[ 93%] Building CUDA object CMakeFiles/celleratorFeatureMajorSmallNCandidateTest.dir/tests/math_core/feature_major_small_n_candidate_test.cu.o\n[100%] Linking CXX executable celleratorFeatureMajorSmallNCandidateTest\n[100%] Built target celleratorFeatureMajorSmallNCandidateTest\n[ 30%] Built target cellpack\n[ 38%] Built target cellerator_runtime\n[ 46%] Built target cellpack_semantic_geometry\n[ 53%] Built target cellpack_apply_plan\n[ 61%] Built target cellpack_local_cell_ordering\n[ 61%] Built target cellerator_operation_core\n[ 69%] Built target cellpack_warp_tiles\n[ 69%] Built target cellpack_feature_weighted_row_reduction\n[ 69%] Built target cellpack_persistent_packing_payload\n[ 69%] Built target cellerator_feature_major_projection\n[ 76%] Built target cellpack_execution_image_v2\n[ 92%] Built target cellerator_math_v1_evidence\n[ 92%] Built target cellerator_transpose_projection\n[ 92%] Built target cellerator_feature_major_small_n_candidate\n[ 92%] Built target cellerator_transpose_backward_candidate\n[100%] Building CUDA object CMakeFiles/celleratorTransposeBackwardCandidateTest.dir/tests/math_core/transpose_backward_candidate_test.cu.o\n[100%] Linking CXX executable celleratorTransposeBackwardCandidateTest\n[100%] Built target celleratorTransposeBackwardCandidateTest\n[CE-GEO-100] /home/tumlinson/Cellerator/build/cellPackExecutionImageV2Test\ncellPackExecutionImageV2Test passed image_bytes=1664 directory_bytes=768 projection_count=2\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorBuiltinCatalogTest\nbuiltin_catalog_test passed candidates=5\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorLivePlannerFeaturesTest\nce_live_planner_features_test passed\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorExecutableCoreIntegrationTest\nexecutable_core_integration_test passed candidates=7\n[CE-GEO-100] /home/tumlinson/Software/miniconda3/bin/python tests/ce_geo/baseline/test_dense_fragment_negative_control.py\n[CE-GEO-100] /home/tumlinson/Cellerator/build/cellPackPersistentPackingPayloadTest\ncellPackPersistentPackingPayloadTest: passed\n[CE-GEO-100] /home/tumlinson/Cellerator/build/cellPackExecutionImageV2DeviceTest\ncellPackExecutionImageV2DeviceTest passed uploads=1 hot_reads=1\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorOpaqueExecutionArtifactTest\ncelleratorOpaqueExecutionArtifactTest passed persist=1 upload=1 bind_allocations=0 execute=1\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorExecutionSessionTest\ncelleratorExecutionSessionTest passed persistent_allocations=64 transient_bytes=6144 launch_binds=2\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorRowMaskedN1CandidateTest\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorCsrFallbackCandidateTest\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorCusparseCsrCandidateTest\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorFeatureMajorSmallNCandidateTest\n[CE-GEO-100] /home/tumlinson/Cellerator/build/celleratorTransposeBackwardCandidateTest\n[CE-GEO-100] historical experimental CUDA target: missing from the CMake build; not run and not counted among the nine recorded CUDA baselines\nCE-GEO-100 baseline golden regression passed: 4 host binaries, 9 CUDA binaries, 1 negative-control decision, 6 reviewed source drifts\n"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "build",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 42.395615,
+      "returncode": 0,
+      "stderr_bytes": 20110,
+      "stderr_sha256": "81456f8dc62626c6113f9f873e21deec2c17cb59d8c575399dd99e5f4e0e75d1",
+      "stderr_tail": "ess warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future relenvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nase (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future relenvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nase (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n/home/tumlinson/Cellerator/src/compute/matrix/convert/compressed.cu: In function \u2018int cellerator::compute::matrix::convert::build_compressed_from_coo_library_raw(cellerator::types::dim_t, cellerator::types::dim_t, cellerator::types::nnz_t, const cellerator::types::idx_t*, const cellerator::types::idx_t*, const cellerator::real::storage_t*, cellerator::types::ptr_t*, cellerator::types::idx_t*, cellerator::types::idx_t*, cellerator::real::storage_t*, cellerator::types::idx_t*, void*, std::size_t, cudaStream_t)\u2019:\n/home/tumlinson/Cellerator/src/compute/matrix/convert/compressed.cu:275:55: warning: \u2018cusparseStatus_t cusparseCreateIdentityPermutation(cusparseHandle_t, int, int*)\u2019 is deprecated: The routine will be removed in the next major release [-Wdeprecated-declarations]\n  275 |     if (!cusparse_check(cusparseCreateIdentityPermutation(handle, (int) nnz, reinterpret_cast<int *>(d_permutation)), \"cusparseCreateIdentityPermutation\")) return 0;\n      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/math_libs/12.9/include/cusparse.h:4099:1: note: declared here\n 4099 | cusparseCreateIdentityPermutation(cusparseHandle_t handle,\n      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n/home/tumlinson/Cellerator/tests/state_reduce_runtime_test.cu(27): warning #177-D: function \"<unnamed>::close_value\" was declared but never referenced\n  bool close_value(float lhs, float rhs, float tol = 1.0e-4f) {\n       ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n",
+      "stdout_bytes": 38890,
+      "stdout_sha256": "2126fa881c1ea5661409f1633c6ce5290478874f8457ba60006ba64833cbf63c",
+      "stdout_tail": "st\n[ 67%] Linking CXX executable ceGeoSm70SegmentBackwardTest\n[ 68%] Building CUDA object CMakeFiles/celleratorCeLiveProgramReplayTest.dir/tests/persistence/ce_live_program_replay_test.cu.o\n[ 69%] Building CUDA object CMakeFiles/celleratorExecutableProgramTest.dir/tests/execution/program_test.cu.o\n[ 69%] Linking CUDA executable celleratorValueGenerationReuseTest\n[ 69%] Built target ceGeoSegmentNormalizeTest\n[ 69%] Linking CXX executable ceGeoSm70ValuePackTest\n[ 69%] Linking CXX executable ceGeoSm70TransposeApplyTest\n[ 69%] Linking CXX executable ceGeoSm70N64Test\n[ 69%] Built target celleratorValueGenerationReuseTest\n[ 69%] Built target ceGeoPreboundProjectionV2Test\n[ 69%] Built target ceGeoSm70SegmentBackwardTest\n[ 69%] Linking CXX executable ceGeoRelationCompatibilityTest\n[ 69%] Built target ceGeoSm70AdvancedOpsTest\n[ 69%] Built target ceGeoSm70ValuePackTest\n[ 69%] Linking CXX executable ceGeoRelationCatalogTest\n[ 69%] Built target ceGeoSm70TransposeApplyTest\n[ 69%] Linking CXX executable cellPackRuntimeStatisticalValidationTest\n[ 69%] Built target ceGeoSm70N64Test\n[ 69%] Built target cellPackWarpTilesTest\n[ 69%] Linking CXX executable ceGeoRelationCatalogIntegrationTest\n[ 69%] Built target cellPackRecordStatisticalValidationTest\n[ 69%] Built target ceGeoRelationCatalogTest\n[ 69%] Built target ceGeoRelationCompatibilityTest\n[ 69%] Built target ceGeoRelationCatalogIntegrationTest\n[ 69%] Linking CXX executable ceGeoSm70HybridTest\n[ 69%] Linking CXX static library libbaseplane_seq.a\n[ 69%] Built target baseplane_seq\n[ 70%] Building CXX object CMakeFiles/celleratorBiologicalAbiHostTest.dir/tests/biological_abi/biological_abi_host_test.cc.o\n[ 70%] Building CXX object CMakeFiles/cellerator_sequence_integration.dir/src/interop/baseplane/baseplane_strategy.cc.o\n[ 70%] Building CUDA object CMakeFiles/cellerator_sequence_integration.dir/src/interop/baseplane/baseplane_integration.cu.o\n[ 70%] Linking CXX static library libcellpack_gating_cuda.a\n[ 70%] Built target ceGeoSm70HybridTest\n[ 70%] Built target cellpack_gating_cuda\n[ 70%] Built target samplingRuntimeTest\n[ 70%] Built target cellPackEvaluatorTest\n[ 70%] Building CUDA object src/geometry/CMakeFiles/cellPackGatingBench.dir/__/__/bench/geometry/cellpack_gating_bench.cu.o\n[ 70%] Building CUDA object src/geometry/CMakeFiles/cellPackGatingCudaTest.dir/__/__/tests/geometry/gating_cuda_test.cu.o\n[ 71%] Linking CXX executable celleratorQuantitativeRelationTest\n[ 72%] Linking CXX executable ceGeoProviderContractTest\n[ 72%] Built target cellPackFeatureWeightedRowReductionTest\n[ 72%] Built target celleratorQuantitativeRelationTest\n[ 72%] Built target ceGeoProviderContractTest\n[ 72%] Linking CXX executable ceGeoSm70ProviderTest\n[ 72%] Linking CXX executable celleratorSessionMemoryTest\n[ 73%] Linking CXX executable celleratorBiologicalAbiHostTest\n[ 73%] Built target ceGeoSm70ProviderTest\n[ 73%] Built target cellPackLayoutBench\n[ 73%] Built target celleratorBiologicalAbiHostTest\n[ 73%] Linking CXX static library libcellerator_packed_dense_operand.a\n[ 75%] Linking CXX executable ceGeoBuiltinFragmentTest\n[ 75%] Built target cellerator_packed_dense_operand\n[ 75%] Building CUDA object CMakeFiles/cpMathPackedDenseOperandBench.dir/bench/math/packed_dense_operand_bench.cu.o\n[ 75%] Built target celleratorSessionMemoryTest\n[ 75%] Built target ceGeoBuiltinFragmentTest\n[ 75%] Built target cellPackTileStatisticalValidationTest\n[ 75%] Linking CXX executable cellPackApplyPlanTest\n[ 75%] Linking CXX executable celleratorProjectionActivationTest\n[ 75%] Built target celleratorProjectionActivationTest\n[ 75%] Built target cellPackOptimizerTest\n[ 76%] Linking CXX static library libcellerator_training_program.a\n[ 76%] Built target cellPackApplyPlanTest\n[ 76%] Linking CXX executable cellPackLocalCellOrderingTest\n[ 76%] Built target cellerator_training_program\n[ 76%] Building CUDA object CMakeFiles/celleratorTrainingProgramTest.dir/tests/execution/training_program_test.cu.o\n[ 76%] Building CUDA object CMakeFiles/celleratorCeLiveConcurrencyTest.dir/tests/execution/ce_live_concurrency_test.cu.o\n[ 76%] Built target cellPackOptimizerBench\n[ 76%] Linking CXX static library libcellerator_runtime_fleet.a\n[ 76%] Linking CXX static library libcellshard_runtime.a\n[ 76%] Built target cellerator_runtime_fleet\n[ 76%] Building CUDA object CMakeFiles/cellerator_compute_sparse_ops.dir/src/compute/operators/sparse/row_transforms.cu.o\n[ 76%] Building CUDA object CMakeFiles/cellerator_compute_sparse_ops.dir/src/compute/operators/sparse/kernels/dist_sparse.cu.o\n[ 77%] Building CUDA object CMakeFiles/cellerator_compute_sparse_ops.dir/src/compute/operators/sparse/column_moments.cu.o\n[ 77%] Building CUDA object CMakeFiles/cellerator_compute_sparse_ops.dir/src/compute/operators/sparse/kernels/base_sparse.cu.o\n[ 77%] Built target cellPackLocalCellOrderingTest\n[ 77%] Built target cellshard_runtime\n[ 77%] Building CXX object CMakeFiles/developmentalTimeCompileTest.dir/tests/developmental_time_compile_test.cc.o\n[ 77%] Linking CUDA executable trajectoryCompileTest\n[ 77%] Linking CXX static library libcellerator_compute_gene_support.a\n[ 77%] Linking CXX executable cellPackLocalCellOrderingBench\n[ 77%] Built target cellerator_compute_gene_support\n[ 78%] Building CUDA object CMakeFiles/cellerator_compute_gene_candidates.dir/src/geometry/candidate_discovery/gene_candidate_discovery_cuda.cu.o\n[ 78%] Building CXX object CMakeFiles/cellerator_compute_gene_candidates.dir/src/geometry/candidate_discovery/gene_candidate_discovery.cc.o\n[ 78%] Building CUDA object CMakeFiles/cellerator_compute_gene_candidates.dir/src/geometry/candidate_discovery/gene_candidate_minhash.cu.o\n[ 78%] Building CUDA object CMakeFiles/geneSupportBitsetRuntimeTest.dir/tests/gene_support_bitset_runtime_test.cu.o\n[ 78%] Built target trajectoryCompileTest\n[ 78%] Linking CXX static library libcellerator_sequence_integration.a\n[ 78%] Built target cellerator_sequence_integration\n[ 79%] Linking CXX executable cellPackApplyPlanBench\n[ 80%] Building CUDA object CMakeFiles/celleratorBaseplaneSequenceIntegrationTest.dir/tests/interop/baseplane/baseplane_integration_test.cu.o\n[ 80%] Built target cellPackRuntimeStatisticalValidationTest\n[ 80%] Built target cellPackLocalCellOrderingBench\n[ 80%] Linking CXX static library libcellpack_merge_cost_cuda.a\n[ 80%] Built target cellpack_merge_cost_cuda\n[ 80%] Building CUDA object src/geometry/CMakeFiles/cellPackMergeCostTest.dir/__/__/tests/geometry/merge_cost_test.cu.o\n[ 80%] Building CUDA object src/geometry/CMakeFiles/cellPackMergeCostBench.dir/__/__/bench/geometry/cellpack_merge_cost_bench.cu.o\n[ 80%] Built target cellPackApplyPlanBench\n[ 80%] Linking CXX executable ../../cellPackFeatureWeightedRowReductionCudaTest\n[ 80%] Linking CXX executable celleratorPreparationFactoryTest\n[ 80%] Linking CXX executable developmentalTimeCompileTest\n[ 80%] Linking CXX executable ../../cellPackGatingCudaTest\n[ 80%] Built target celleratorPreparationFactoryTest\n[ 80%] Built target developmentalTimeCompileTest\n[ 80%] Linking CXX executable celleratorCandidateMeasurementTest\n[ 81%] Linking CUDA static library libcellerator_compute_exact_search.a\n[ 81%] Built target celleratorCandidateMeasurementTest\n[ 81%] Built target cellerator_compute_exact_search\n[ 81%] Building CUDA object CMakeFiles/cellerator_compute_forward_neighbors.dir/src/compute/neighbors/forward_neighbors/forward_neighbors.cu.o\n[ 81%] Building CUDA object CMakeFiles/exactSearchRuntimeTest.dir/tests/exact_search_runtime_test.cu.o\n[ 81%] Linking CXX executable celleratorExecutableProgramTest\n[ 82%] Linking CUDA executable trajectoryRuntimeTest\n[ 82%] Built target celleratorExecutableProgramTest\n[ 82%] Built target trajectoryRuntimeTest\n[ 82%] Built target cellPackFeatureWeightedRowReductionCudaTest\n[ 82%] Linking CXX static library libcellshard_export.a\n[ 82%] Built target cellshard_export\n[ 82%] Linking CXX executable celleratorCeArch76CandidateBench\n[ 82%] Building CUDA object CMakeFiles/cellShardStorageBoundaryIntegrationTest.dir/home/tumlinson/CellShard/tests/cellshard_export_runtime_test.cu.o\n[ 82%] Building CXX object CMakeFiles/cellShardCelleratorSamplingAdapterTest.dir/home/tumlinson/CellShard/tests/cellerator_sampling_adapter_test.cc.o\n[ 82%] Linking CXX executable celleratorCeLiveProgramReplayTest\n[ 82%] Built target cellPackGatingCudaTest\n[ 82%] Built target celleratorCeArch76CandidateBench\n[ 82%] Built target celleratorCeLiveProgramReplayTest\n[ 83%] Linking CXX executable cpMathPackedDenseOperandBench\n[ 83%] Built target cpMathPackedDenseOperandBench\n[ 84%] Linking CXX executable celleratorNativeTrainingSliceTest\n[ 84%] Built target celleratorNativeTrainingSliceTest\n[ 84%] Linking CUDA executable quantizedMatrixBench\n[ 84%] Linking CXX executable celleratorTrainingProgramTest\n[ 84%] Built target quantizedMatrixBench\n[ 84%] Linking CUDA executable quantizedMatrixTest\n[ 84%] Built target quantizedMatrixTest\n[ 84%] Built target celleratorTrainingProgramTest\n[ 85%] Linking CXX executable ../../cellPackGatingBench\n[ 85%] Linking CXX executable cellShardCelleratorSamplingAdapterTest\n[ 85%] Linking CXX executable celleratorCeLiveConcurrencyTest\n[ 85%] Built target celleratorCeLiveConcurrencyTest\n[ 85%] Linking CXX executable celleratorCeArch92RealRegimeBench\n[ 85%] Linking CXX executable celleratorBaseplaneSequenceIntegrationTest\n[ 85%] Built target celleratorCeArch92RealRegimeBench\n[ 85%] Built target celleratorBaseplaneSequenceIntegrationTest\n[ 86%] Linking CXX executable geneSupportBitsetRuntimeTest\n[ 87%] Linking CUDA executable exactSearchRuntimeTest\n[ 87%] Built target exactSearchRuntimeTest\n[ 87%] Linking CXX executable ../../cellPackMergeCostBench\n[ 87%] Built target cellPackGatingBench\n[ 87%] Built target geneSupportBitsetRuntimeTest\n[ 87%] Built target cellShardCelleratorSamplingAdapterTest\n[ 88%] Linking CXX executable ../../cellPackMergeCostTest\n[ 88%] Built target cellPackMergeCostBench\n[ 88%] Built target cellPackMergeCostTest\n[ 88%] Linking CXX static library libcellpack_cell_block_records_cuda.a\n[ 88%] Built target cellpack_cell_block_records_cuda\n[ 89%] Building CUDA object src/geometry/CMakeFiles/cellPackCellBlockRecordsCudaTest.dir/__/__/tests/geometry/cell_block_records_cuda_test.cu.o\n[ 89%] Building CUDA object src/geometry/CMakeFiles/cellPackCellBlockRecordsBench.dir/__/__/bench/geometry/cell_block_records_bench.cu.o\n[ 89%] Linking CXX static library libcellpack_warp_tiles_cuda.a\n[ 89%] Built target cellpack_warp_tiles_cuda\n[ 90%] Building CUDA object src/geometry/CMakeFiles/cellPackWarpTilesBench.dir/__/__/bench/geometry/warp_tiles_bench.cu.o\n[ 90%] Building CUDA object src/geometry/CMakeFiles/cellPackWarpTilesCudaTest.dir/__/__/tests/geometry/warp_tiles_cuda_test.cu.o\n[ 90%] Linking CUDA static library libcellerator_compute_forward_neighbors.a\n[ 90%] Built target cellerator_compute_forward_neighbors\n[ 90%] Linking CXX static library libcellerator_compute_matrix_convert.a\n[ 90%] Built target cellerator_compute_matrix_convert\n[ 90%] Building CUDA object CMakeFiles/coreSparseLayoutRuntimeTest.dir/tests/core_sparse_layout_runtime_test.cu.o\n[ 90%] Linking CXX executable ../../cellPackCellBlockRecordsCudaTest\n[ 90%] Built target cellPackCellBlockRecordsCudaTest\n[ 90%] Linking CXX executable ../../cellPackWarpTilesCudaTest\n[ 90%] Linking CXX executable ../../cellPackCellBlockRecordsBench\n[ 90%] Built target cellPackCellBlockRecordsBench\n[ 90%] Linking CXX executable ../../cellPackWarpTilesBench\n[ 90%] Linking CXX executable cellShardStorageBoundaryIntegrationTest\n[ 90%] Built target cellPackWarpTilesCudaTest\n[ 90%] Linking CXX static library libcellerator_compute_sparse_ops.a\n[ 90%] Built target cellPackWarpTilesBench\n[ 90%] Built target cellerator_compute_sparse_ops\n[ 90%] Building CUDA object CMakeFiles/cellerator_compute_sparse_project.dir/src/compute/candidate/sparse/project.cu.o\n[ 90%] Building CUDA object CMakeFiles/celleratorSparseRowTransformsTest.dir/tests/sparse_row_transforms_test.cu.o\n[ 90%] Building CUDA object src/geometry/CMakeFiles/cellPackFeatureWeightedRowReductionBench.dir/__/__/bench/geometry/feature_weighted_row_reduction_bench.cu.o\n[ 91%] Building CUDA object src/geometry/CMakeFiles/cellPackHardwareCostAutotuneBench.dir/__/__/bench/geometry/hardware_cost_autotune_bench.cu.o\n[ 92%] Building CUDA object CMakeFiles/celleratorSparseColumnMomentsTest.dir/tests/sparse_column_moments_test.cu.o\n[ 92%] Linking CXX static library libcellerator_compute_gene_candidates.a\n[ 92%] Built target cellerator_compute_gene_candidates\n[ 92%] Building CUDA object CMakeFiles/geneCandidateDiscoveryBench.dir/bench/gene_candidate_discovery_bench.cu.o\n[ 92%] Building CUDA object CMakeFiles/geneCandidateDiscoveryRuntimeTest.dir/tests/gene_candidate_discovery_runtime_test.cu.o\n[ 92%] Building CXX object CMakeFiles/cellPackInferredPackingPipelineTest.dir/tests/geometry/inferred_packing_pipeline_test.cc.o\n[ 92%] Built target cellShardStorageBoundaryIntegrationTest\n[ 93%] Linking CXX executable cellPackInferredPackingPipelineTest\n[ 93%] Linking CXX executable celleratorSparseColumnMomentsTest\n[ 93%] Built target celleratorSparseColumnMomentsTest\n[ 93%] Linking CXX executable celleratorSparseRowTransformsTest\n[ 93%] Built target celleratorSparseRowTransformsTest\n[ 94%] Linking CXX static library libcellerator_compute_sparse_project.a\n[ 94%] Built target cellerator_compute_sparse_project\n[ 94%] Building CUDA object CMakeFiles/cellerator_state_reduce_cuda.dir/examples/models/state_reduce.cu.o\n[ 95%] Building CUDA object CMakeFiles/cellerator_developmental_time_cuda.dir/examples/models/developmental_time_model.cu.o\n[ 95%] Built target cellPackInferredPackingPipelineTest\n[ 96%] Building CUDA object CMakeFiles/quantizedTransferSpmmBench.dir/bench/quantized_transfer_spmm_bench.cu.o\n[ 96%] Building CUDA object CMakeFiles/sparseOpsRuntimeTest.dir/tests/sparse_ops_runtime_test.cu.o\n[ 96%] Building CUDA object CMakeFiles/cellerator_abi.dir/src/abi/abi.cu.o\n[ 96%] Building CUDA object CMakeFiles/sparseOpsBench.dir/bench/sparse_ops_bench.cu.o\n[ 96%] Linking CXX executable geneCandidateDiscoveryBench\n[ 96%] Built target geneCandidateDiscoveryBench\n[ 96%] Linking CXX executable geneCandidateDiscoveryRuntimeTest\n[ 96%] Linking CXX executable ../../cellPackFeatureWeightedRowReductionBench\n[ 96%] Built target cellPackFeatureWeightedRowReductionBench\n[ 96%] Built target geneCandidateDiscoveryRuntimeTest\n[ 96%] Linking CXX executable ../../cellPackHardwareCostAutotuneBench\n[ 96%] Built target cellPackHardwareCostAutotuneBench\n[ 96%] Linking CXX static library libcellerator_abi.a\n[ 96%] Built target cellerator_abi\n[ 96%] Building CUDA object CMakeFiles/abiRuntimeTest.dir/tests/abi_runtime_test.cu.o\n[ 97%] Linking CXX executable coreSparseLayoutRuntimeTest\n[ 97%] Built target coreSparseLayoutRuntimeTest\n[ 97%] Linking CXX executable sparseOpsRuntimeTest\n[ 97%] Built target sparseOpsRuntimeTest\n[ 97%] Linking CXX static library libcellerator_state_reduce_cuda.a\n[ 97%] Built target cellerator_state_reduce_cuda\n[ 98%] Building CUDA object CMakeFiles/stateReduceRuntimeTest.dir/tests/state_reduce_runtime_test.cu.o\n[ 98%] Linking CXX static library libcellerator_developmental_time_cuda.a\n[ 98%] Built target cellerator_developmental_time_cuda\n[100%] Building CUDA object CMakeFiles/developmentalTimeRuntimeTest.dir/tests/developmental_time_runtime_test.cu.o\n[100%] Building CUDA object CMakeFiles/cellerator_developmental_time_trajectory_cuda.dir/examples/models/developmental_time_trajectory_model.cu.o\n[100%] Linking CXX executable sparseOpsBench\n[100%] Linking CXX executable abiRuntimeTest\n[100%] Built target sparseOpsBench\n[100%] Built target abiRuntimeTest\n[100%] Linking CXX executable quantizedTransferSpmmBench\n[100%] Built target quantizedTransferSpmmBench\n[100%] Linking CXX executable stateReduceRuntimeTest\n[100%] Built target stateReduceRuntimeTest\n[100%] Linking CXX executable developmentalTimeRuntimeTest\n[100%] Built target developmentalTimeRuntimeTest\n[100%] Linking CXX static library libcellerator_developmental_time_trajectory_cuda.a\n[100%] Built target cellerator_developmental_time_trajectory_cuda\n[100%] Building CUDA object CMakeFiles/developmentalTimeTrajectoryRuntimeTest.dir/tests/developmental_time_trajectory_runtime_test.cu.o\n[100%] Linking CXX executable developmentalTimeTrajectoryRuntimeTest\n[100%] Built target developmentalTimeTrajectoryRuntimeTest\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/run_build_matrix.py",
+        "--jobs",
+        "80"
+      ],
+      "elapsed_seconds": 82.937368,
+      "returncode": 0,
+      "stderr_bytes": 12689,
+      "stderr_sha256": "af2a56cde5365b0aae77872e624ce37e625a5da0b061075f234ad8bf0b4ab714",
+      "stderr_tail": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:140 (message):\n  Failed to compute shorthash for libnvrtc.so\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\nCMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):\n  The package name passed to `find_package_handle_standard_args` (nvtx3) does\n  not match the name of the calling package (Caffe2).  This can lead to\n  problems in calling code that expects `find_package` result variables\n  (e.g., `_FOUND`) to follow a certain pattern.\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\nThis warning is for project developers.  Use -Wno-dev to suppress it.\n\nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:184 (message):\n  Cannot find NVTX3, find old NVTX instead\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n",
+      "stdout_bytes": 32317,
+      "stdout_sha256": "3c372c19a453999cbe6c6be93f28333d1149127142f4153b5f0f3537edb7ee97",
+      "stdout_tail": "iler identification is NVIDIA 12.9.86\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Detecting CUDA compiler ABI info\n-- Detecting CUDA compiler ABI info - done\n-- Check for working CUDA compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc - skipped\n-- Detecting CUDA compile features\n-- Detecting CUDA compile features - done\n-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version \"12.9.86\") \n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE  \n-- Cellerator default real: storage=f16, compute=f32, accum=f32\n-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)\n-- Cellerator host vector level: avx2\n-- Cellerator CUDA probe: Tesla V100-SXM2-16GB sm_70 (volta), 16144 MiB\n-- CellShard CUDA mode: generic\n-- Found HDF5: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so;/usr/lib/x86_64-linux-gnu/libcrypto.so;/usr/lib/x86_64-linux-gnu/libcurl.so;/usr/lib/x86_64-linux-gnu/libpthread.a;/usr/lib/x86_64-linux-gnu/libsz.so;/usr/lib/x86_64-linux-gnu/libz.so;/usr/lib/x86_64-linux-gnu/libdl.a;/usr/lib/x86_64-linux-gnu/libm.so (found version \"1.10.10\") found components: C \n-- Cellerator CUDA mode: generic\n-- Defaulting Torch_DIR to source-built libtorch at /usr/local/share/cmake/Torch\n-- Defaulting Caffe2_DIR to source-built libtorch at /usr/local/share/cmake/Caffe2\n-- Found CUDA: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 (found version \"12.9\") \n-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version \"12.9.86\") \n-- PyTorch: CUDA detected: 12.9\n-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\n-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9\n-- PyTorch: Header version is: 12.9\n-- Found Python: /home/tumlinson/Software/miniconda3/bin/python3 (found version \"3.13.11\") found components: Interpreter \n-- Could NOT find nvtx3 (missing: nvtx3_dir) \n-- USE_CUDNN is set to 0. Compiling without cuDNN support\n-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support\n-- USE_CUDSS is set to 0. Compiling without cuDSS support\n-- USE_CUFILE is set to 0. Compiling without cuFile support\n-- Autodetected CUDA architecture(s):  7.0 7.0 7.0 7.0\n-- Added CUDA NVCC flags for: -gencode;arch=compute_70,code=sm_70\n-- Found Torch: /usr/local/lib/libtorch.so  \n-- Configuring done (12.9s)\n-- Generating done (0.5s)\n-- Build files have been written to: /tmp/ce-geo-build-matrix-afwy28et/compat\n[CE-GEO matrix] cmake --build /tmp/ce-geo-build-matrix-afwy28et/compat --target ceGeoSm70VerticalTests ceGeoBiologyTests -j 80\n[  0%] Building CXX object CMakeFiles/cellerator_compute_sampling.dir/src/compute/dataset/sampling_materialization.cc.o\n[  0%] Building CXX object CMakeFiles/cellerator_compute_sampling.dir/src/compute/dataset/sampling.cc.o\n[  0%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/runtime.cu.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/candidate_relation.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/cell_block_records.cc.o\n[  0%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/allocation.cc.o\n[  0%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/device_descriptor.cu.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/evaluator.cc.o\n[  8%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/image.cc.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/gating.cc.o\n[  8%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/copy.cu.o\n[  8%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/generation_marks.cc.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/layout_metrics.cc.o\n[  8%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/session_memory.cu.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/merge_cost.cc.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/optimizer.cc.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/packing_plan.cc.o\n[  8%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/pack.cc.o\n[ 16%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/planner.cc.o\n[ 25%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/value_readiness.cu.o\n[ 25%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/layout_selector.cc.o\n[ 25%] Linking CXX static library libcellerator_compute_sampling.a\n[ 25%] Built target cellerator_compute_sampling\n[ 25%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/compile_geometry.cc.o\n[ 25%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/cpbp_v1_compatibility.cc.o\n[ 25%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/admissibility.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/identity_strategy.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/strategy_registry.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/persistence/semantic_geometry_image_v1.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/relation_cover.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/compiler/work_layout.cc.o\n[ 33%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/persistence/semantic_geometry_support_sections.cc.o\n[ 41%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/strategy/exact_relation_rescan.cc.o\n[ 41%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/strategy/rectangular_affinity.cc.o\n[ 41%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/strategy/support_multiresolution.cc.o\n[ 41%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/strategy/support_affinity.cc.o\n[ 41%] Building CXX object src/geometry/CMakeFiles/cellerator_semantic_geometry_v1.dir/support_atlas.cc.o\n[ 41%] Linking CXX static library libcellpack.a\n[ 41%] Built target cellpack\n[ 41%] Building CXX object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan.cc.o\n[ 41%] Building CUDA object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering_cuda.cu.o\n[ 41%] Building CXX object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering.cc.o\n[ 41%] Building CUDA object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan_cuda.cu.o\n[ 41%] Building CXX object CMakeFiles/cellpack_semantic_geometry.dir/src/geometry/semantic_geometry.cc.o\n[ 41%] Linking CXX static library libcellerator_semantic_geometry_v1.a\n[ 41%] Built target cellerator_semantic_geometry_v1\n[ 41%] Linking CXX static library libcellpack_semantic_geometry.a\n[ 41%] Built target cellpack_semantic_geometry\n[ 41%] Linking CXX static library libcellerator_runtime.a\n[ 41%] Built target cellerator_runtime\n[ 50%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core.cc.o\n[ 50%] Linking CXX static library libcellerator_operation_core.a\n[ 50%] Built target cellerator_operation_core\n[ 58%] Linking CXX static library libcellpack_apply_plan.a\n[ 58%] Built target cellpack_apply_plan\n[ 66%] Linking CXX static library libcellpack_local_cell_ordering.a\n[ 66%] Built target cellpack_local_cell_ordering\n[ 66%] Building CXX object src/geometry/CMakeFiles/cellpack_warp_tiles.dir/warp_tiles.cc.o\n[ 66%] Linking CXX static library libcellpack_warp_tiles.a\n[ 66%] Built target cellpack_warp_tiles\n[ 66%] Building CXX object CMakeFiles/cellpack_feature_weighted_row_reduction.dir/src/geometry/feature_weighted_row_reduction.cc.o\n[ 66%] Linking CXX static library libcellpack_feature_weighted_row_reduction.a\n[ 66%] Built target cellpack_feature_weighted_row_reduction\n[ 66%] Building CXX object CMakeFiles/cellpack_persistent_packing_payload.dir/src/geometry/persistent_packing_payload.cc.o\n[ 66%] Linking CXX static library libcellpack_persistent_packing_payload.a\n[ 66%] Built target cellpack_persistent_packing_payload\n[ 66%] Building CXX object CMakeFiles/cellpack_execution_image_v2.dir/src/geometry/persistence/execution_image_v2.cc.o\n[ 66%] Building CXX object CMakeFiles/cellpack_execution_image_v2.dir/src/geometry/persistence/execution_image_v2_cpk1.cc.o\n[ 75%] Linking CXX static library libcellpack_execution_image_v2.a\n[ 75%] Built target cellpack_execution_image_v2\n[ 75%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/exact_rectangle_census.cc.o\n[ 75%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/provider_registry.cc.o\n[ 75%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu.o\n[ 83%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/catalog_fragment.cc.o\n[ 83%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/sm70_grouping.cc.o\n[ 83%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/mma_projection_realization.cc.o\n[ 83%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/provider.cc.o\n[ 83%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/value_pack.cu.o\n[ 83%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/common/mma_target_refinement.cc.o\n[ 83%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/residual.cu.o\n[ 91%] Building CUDA object CMakeFiles/cellerator_architecture_provider.dir/src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu.o\n[ 91%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_physical_cover_validation.cc.o\n[ 91%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/physical_mma_hybrid.cc.o\n[ 91%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_physical_work_layout.cc.o\n[ 91%] Building CXX object CMakeFiles/cellerator_architecture_provider.dir/src/compute/projection/mma_residual_builder.cc.o\n[ 91%] Linking CXX static library libcellerator_architecture_provider.a\n[ 91%] Built target cellerator_architecture_provider\n[ 91%] Building CUDA object CMakeFiles/ceGeoSm70ProviderTest.dir/tests/tensor_core/sm70/provider_test.cu.o\n[ 91%] Building CUDA object CMakeFiles/ceGeoSm70ValuePackTest.dir/tests/tensor_core/sm70/value_pack_test.cu.o\n[ 91%] Building CUDA object CMakeFiles/ceGeoSm70N64Test.dir/tests/tensor_core/sm70/relation_apply_n64_test.cu.o\n[ 91%] Building CUDA object CMakeFiles/ceGeoSm70HybridTest.dir/tests/tensor_core/sm70/relation_apply_hybrid_test.cu.o\n[ 91%] Linking CXX executable ceGeoSm70ValuePackTest\n[100%] Linking CXX executable ceGeoSm70N64Test\n[100%] Built target ceGeoSm70ValuePackTest\n[100%] Built target ceGeoSm70N64Test\n[100%] Linking CXX executable ceGeoSm70HybridTest\n[100%] Built target ceGeoSm70HybridTest\n[100%] Linking CXX executable ceGeoSm70ProviderTest\n[100%] Built target ceGeoSm70ProviderTest\n[100%] Built target ceGeoSm70VerticalTests\n[ 14%] Built target cellerator_runtime\n[ 28%] Built target cellerator_operation_core\n[ 28%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_algebra_assembly.cc.o\n[ 42%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/relation_bundle.cc.o\n[ 42%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_algebra_catalog.cc.o\n[ 42%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/edge_map_or_gate.cu.o\n[ 42%] Building CXX object CMakeFiles/cellerator_relation_algebra.dir/src/compute/operation/relation_apply_compatibility.cc.o\n[ 42%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/normalize.cu.o\n[ 42%] Building CUDA object CMakeFiles/cellerator_relation_algebra.dir/src/compute/candidate/segment/reduce.cu.o\n[ 42%] Linking CXX static library libcellerator_relation_algebra.a\n[ 42%] Built target cellerator_relation_algebra\n[ 57%] Building CUDA object CMakeFiles/ceGeoSm70TransposeApplyTest.dir/tests/tensor_core/sm70/transpose_relation_apply_test.cu.o\n[ 57%] Building CUDA object CMakeFiles/ceGeoRelationCatalogIntegrationTest.dir/tests/relation_algebra/catalog_integration_test.cu.o\n[ 57%] Building CXX object CMakeFiles/ceGeoRelationContractTest.dir/tests/relation_algebra/contract_test.cc.o\n[ 57%] Building CUDA object CMakeFiles/ceGeoRelationCompatibilityTest.dir/tests/relation_algebra/relation_apply_compatibility_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoRelationBundleTest.dir/tests/relation_algebra/relation_bundle_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoRelationInterfaceTest.dir/tests/relation_algebra/interface_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoEdgeMapOrGateTest.dir/tests/relation_algebra/edge_map_or_gate_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSegmentNormalizeTest.dir/tests/relation_algebra/segment_normalize_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSegmentReduceTest.dir/tests/relation_algebra/segment_reduce_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSm70SegmentBackwardTest.dir/tests/tensor_core/sm70/segment_backward_integration_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSm70CoverNormalizeTest.dir/tests/tensor_core/sm70/cover_native_normalize_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSm70EdgeValueGradientTest.dir/tests/tensor_core/sm70/edge_value_gradient_test.cu.o\n[ 71%] Building CUDA object CMakeFiles/ceGeoSm70AdvancedOpsTest.dir/tests/tensor_core/sm70/advanced_operations_test.cu.o\n[ 71%] Building CXX object CMakeFiles/ceGeoBiologicalRelationsExample.dir/examples/ce_geo/biological_relations.cc.o\n[ 71%] Linking CXX executable ceGeoRelationContractTest\n[ 71%] Built target ceGeoRelationContractTest\n[ 71%] Linking CXX executable ceGeoBiologicalRelationsExample\n[ 71%] Built target ceGeoBiologicalRelationsExample\n[ 85%] Linking CXX executable ceGeoSm70CoverNormalizeTest\n[100%] Linking CXX executable ceGeoRelationInterfaceTest\n[100%] Built target ceGeoRelationInterfaceTest\n[100%] Built target ceGeoSm70CoverNormalizeTest\n[100%] Linking CXX executable ceGeoEdgeMapOrGateTest\n[100%] Linking CXX executable ceGeoRelationBundleTest\n[100%] Built target ceGeoRelationBundleTest\n[100%] Built target ceGeoEdgeMapOrGateTest\n[100%] Linking CXX executable ceGeoSm70EdgeValueGradientTest\n[100%] Built target ceGeoSm70EdgeValueGradientTest\n[100%] Linking CXX executable ceGeoSegmentReduceTest\n[100%] Linking CXX executable ceGeoSegmentNormalizeTest\n[100%] Built target ceGeoSegmentReduceTest\n[100%] Linking CXX executable ceGeoSm70SegmentBackwardTest\n[100%] Linking CXX executable ceGeoSm70TransposeApplyTest\n[100%] Built target ceGeoSegmentNormalizeTest\n[100%] Linking CXX executable ceGeoSm70AdvancedOpsTest\n[100%] Built target ceGeoSm70SegmentBackwardTest\n[100%] Built target ceGeoSm70TransposeApplyTest\n[100%] Built target ceGeoSm70AdvancedOpsTest\n[100%] Linking CXX executable ceGeoRelationCatalogIntegrationTest\n[100%] Linking CXX executable ceGeoRelationCompatibilityTest\n[100%] Built target ceGeoRelationCatalogIntegrationTest\n[100%] Built target ceGeoRelationCompatibilityTest\n[100%] Built target ceGeoBiologyTests\nCE-GEO native/compatibility build matrix passed\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/run_foundation_suite.py",
+        "--build",
+        "build"
+      ],
+      "elapsed_seconds": 0.076057,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 1415,
+      "stdout_sha256": "89d62c64f1222a024b9bf93079ff65b15516e46c4a362f15f009e4f4399c14c8",
+      "stdout_tail": "[CE-GEO foundation] build/ceGeoCapabilityTest\ncapability_test passed capability_bytes=128 memory_interface_bytes=176\n[CE-GEO foundation] build/ceGeoProviderRegistryTest\nprovider_registry_test passed providers=0 active_volta=1 active_ampere=0\n[CE-GEO foundation] build/ceGeoProviderContractTest\nprovider_contract_test: ok providers=1 sealed_query_count=0\n[CE-GEO foundation] build/ceGeoCatalogContractTest\ncatalog_contract_test passed descriptor_bytes=184 fragment_bytes=88\n[CE-GEO foundation] build/ceGeoProjectionReferenceV2Test\n[CE-GEO foundation] build/ceGeoBuiltinFragmentTest\nbuiltin_fragment_test passed candidates=5\n[CE-GEO foundation] build/ceGeoRelationCatalogTest\ncatalog_integration_test passed entries=7 fragments=2\n[CE-GEO foundation] build/ceGeoSemanticCompilerTest\nsemantic_compiler_property_test: ok\n[CE-GEO foundation] build/ceGeoCsg1Test\ncsg1_test: ok\n[CE-GEO foundation] build/ceGeoCsg1SupportSectionsTest\n[CE-GEO foundation] build/ceGeoCpe2CapabilityManifestTest\ncpe2_capability_manifest_test passed manifest_bytes=256 cpe2_header_bytes=256\n[CE-GEO foundation] build/ceGeoPreboundProjectionV2Test\nprebound_projection_v2_test passed v1_bytes=128 v2_bytes=144\n[CE-GEO foundation] build/ceGeoGeometryAcquisitionContractTest\ngeometry_acquisition_contract_test: ok\n[CE-GEO foundation] build/ceGeoAcquisitionCostMappingTest\nacquisition_cost_mapping_test: ok\nCE-GEO foundation suite passed 14 binaries\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/run_sm70_vertical_suite.py",
+        "--build",
+        "build"
+      ],
+      "elapsed_seconds": 10.234219,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 318,
+      "stdout_sha256": "c5b0a288d13a15b5da3d2090b23edc3cce7283d374b4525736443111fb536dc2",
+      "stdout_tail": "[CE-GEO sm70 vertical] build/ceGeoSm70ProviderTest\nsm70_provider_test passed capability=16x16x16-f16-f32 device=7.0 queries=3\n[CE-GEO sm70 vertical] build/ceGeoSm70ValuePackTest\n[CE-GEO sm70 vertical] build/ceGeoSm70N64Test\n[CE-GEO sm70 vertical] build/ceGeoSm70HybridTest\nCE-GEO sm70 vertical suite passed 4 binaries\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/run_biology_suite.py",
+        "--build",
+        "build"
+      ],
+      "elapsed_seconds": 20.681977,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 1508,
+      "stdout_sha256": "0eb65fd8722002a25c9e4207d47cfd13484c909176a3312a9e3af127e9672463",
+      "stdout_tail": "[CE-GEO biology] build/ceGeoRelationCatalogIntegrationTest\ncatalog_integration_test passed entries=7 fragments=2\n[CE-GEO biology] build/ceGeoRelationContractTest\ncelleratorRelationAlgebraContractTest passed\n[CE-GEO biology] build/ceGeoEdgeMapOrGateTest\nedge map-or-gate passed\n[CE-GEO biology] build/ceGeoRelationInterfaceTest\n[CE-GEO biology] build/ceGeoRelationCompatibilityTest\nrelation_apply_compatibility_test passed forward=1 transpose=1 frozen_enum=1 identity=1\n[CE-GEO biology] build/ceGeoRelationBundleTest\nrelation bundle composition passed\n[CE-GEO biology] build/ceGeoSegmentNormalizeTest\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n[CE-GEO biology] build/ceGeoSegmentReduceTest\nsegment_reduce_test passed sum=1 maximum=1 empty=1 singleton=1 fp32=1 allocations=0\n[CE-GEO biology] build/ceGeoSm70AdvancedOpsTest\n[CE-GEO biology] build/ceGeoSm70EdgeValueGradientTest\n[CE-GEO biology] build/ceGeoSm70SegmentBackwardTest\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n[CE-GEO biology] build/ceGeoSm70CoverNormalizeTest\n[CE-GEO biology] build/ceGeoSm70TransposeApplyTest\n[CE-GEO biology] build/ceGeoBiologicalRelationsExample\nsparse state embedding contract passed\nregulatory propagation contract passed\ntransition/transport contract passed\nhierarchy incidence contract passed\nmultimodal relations contract passed\nperturbation delta propagation contract passed\nCE-GEO biology suite passed 14 binaries\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Iinclude",
+        "tests/ce_geo/validation/semantic_property_test.cc",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoSemanticPropertyTest",
+        "build/src/geometry/libcellerator_semantic_geometry_v1.a"
+      ],
+      "elapsed_seconds": 0.834303,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoSemanticPropertyTest"
+      ],
+      "elapsed_seconds": 0.019725,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 104,
+      "stdout_sha256": "209dd64d9d64caab3aa3c537283c6d8264ff079b8b9ed9553f981c84b23fe468",
+      "stdout_tail": "semantic_property_test passed seed=98869506 trials=512 invertible_layouts=512 exact_semantic_covers=512\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Iinclude",
+        "tests/ce_geo/validation/physical_cover_property_test.cc",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoPhysicalCoverPropertyTest",
+        "build/libcellerator_architecture_provider.a"
+      ],
+      "elapsed_seconds": 0.817308,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoPhysicalCoverPropertyTest"
+      ],
+      "elapsed_seconds": 0.034843,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 105,
+      "stdout_sha256": "702d403d823ed92f6187c187bef38435025edaff15ea3653f7920642ceef2df4",
+      "stdout_tail": "physical_cover_property_test passed seed=202367235 trials=384 width_transitions=12 mutations_per_trial=9\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Iinclude",
+        "tests/ce_geo/validation/numerical_referee_test.cc",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoNumericalRefereeTest"
+      ],
+      "elapsed_seconds": 0.710461,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoNumericalRefereeTest"
+      ],
+      "elapsed_seconds": 0.002583,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 147,
+      "stdout_sha256": "097889fdd8dafb06503c049e6d160917e0ec5a346ce1d62bcaefa0a84f5aeadf",
+      "stdout_tail": "numerical_referee_test passed modes=operand,fp32,fp64 metrics=abs,l2,frobenius,mixed,degree,depth,p95,p99 finite_policy=reject alpha_beta=reported\n"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-std=c++17",
+        "-arch=sm_70",
+        "-Wno-deprecated-gpu-targets",
+        "-Xcompiler=-Wall,-Wextra,-Werror",
+        "-ccbin",
+        "/usr/bin/g++",
+        "-Iinclude",
+        "-Ibuild/generated",
+        "tests/ce_geo/validation/foundation_negative_test.cu",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoFoundationNegativeTest",
+        "build/libcellerator_architecture_provider.a",
+        "build/libcellerator_operation_core.a",
+        "build/libcellerator_runtime.a"
+      ],
+      "elapsed_seconds": 1.89232,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoFoundationNegativeTest"
+      ],
+      "elapsed_seconds": 0.003686,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 92,
+      "stdout_sha256": "462ee599f1e0aa6c1df23cd0ae8f1ff6188d59c8cdad395dab2d085456aadc23",
+      "stdout_tail": "foundation_negative_test passed providers=1 candidates=1 atomic_rollback=1 sealed_queries=0\n"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-std=c++17",
+        "-arch=sm_70",
+        "-Wno-deprecated-gpu-targets",
+        "-Xcompiler=-Wall,-Wextra,-Werror",
+        "-ccbin",
+        "/usr/bin/g++",
+        "-Iinclude",
+        "-Ibuild/generated",
+        "tests/ce_geo/validation/gradient_validation_test.cu",
+        "src/compute/candidate/segment/normalize.cu",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "elapsed_seconds": 4.295055,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "elapsed_seconds": 2.614331,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 27,
+      "stdout_sha256": "2dc736d08d07302cebe359b5b4262b18d50b7300018c34b1eb1d70aae1010101",
+      "stdout_tail": "gradient validation passed\n"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-std=c++17",
+        "-arch=sm_70",
+        "-Wno-deprecated-gpu-targets",
+        "-Xcompiler=-Wall,-Wextra,-Werror",
+        "-ccbin",
+        "/usr/bin/g++",
+        "-Iinclude",
+        "-Ibuild/generated",
+        "tests/ce_geo/validation/hot_path_test.cu",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoHotPathTest",
+        "build/libcellerator_executable_program.a",
+        "build/libcellerator_projection_activation.a",
+        "build/libcellpack_execution_image_v2.a",
+        "build/libcellerator_cusparse_csr_candidate.a",
+        "build/libcellerator_preparation_factory.a",
+        "build/libcellerator_builtin_candidate_catalog.a",
+        "build/libcellerator_csr_fallback_candidate.a",
+        "build/libcellerator_row_masked_n1_candidate.a",
+        "build/src/geometry/libcellpack_feature_weighted_row_reduction_cuda.a",
+        "build/libcellerator_feature_major_small_n_candidate.a",
+        "build/libcellerator_transpose_backward_candidate.a",
+        "build/libcellerator_native_training_slice.a",
+        "build/libcellerator_transpose_projection.a",
+        "build/libcellerator_feature_major_projection.a",
+        "build/libcellpack_persistent_packing_payload.a",
+        "build/libcellpack_feature_weighted_row_reduction.a",
+        "build/libcellpack_apply_plan.a",
+        "build/src/geometry/libcellpack_warp_tiles.a",
+        "build/libcellpack_local_cell_ordering.a",
+        "build/libcellerator_planner.a",
+        "build/libcellerator_operation_core.a",
+        "build/libcellerator_runtime.a",
+        "build/libcellpack_semantic_geometry.a",
+        "build/libcellpack_alternating_refinement.a",
+        "build/libcellpack_record_statistical_validation.a",
+        "build/libcellpack_statistical_validation.a",
+        "build/src/geometry/libcellpack.a",
+        "build/libcellerator_compute_sampling.a",
+        "-L/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/math_libs/12.9/lib64",
+        "-lcusparse",
+        "-lcublas",
+        "-lcublasLt"
+      ],
+      "elapsed_seconds": 3.341463,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build/ceGeoHotPathTest"
+      ],
+      "elapsed_seconds": 2.737927,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 83,
+      "stdout_sha256": "54eabfc1a5e5d85a9dbb9d37b4e93da586cdc39399faa8bd94fa11481a4e8fd9",
+      "stdout_tail": "hot path validation passed plans=2 generations=3 graph_nodes=1 cold_preparations=2\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/validation/test_static_contracts.py"
+      ],
+      "elapsed_seconds": 0.09356,
+      "returncode": 0,
+      "stderr_bytes": 107,
+      "stderr_sha256": "f9fd52ad1ff09651c49285b6e7e5150e81914830dccc08a31e4bc415681bbcbb",
+      "stderr_tail": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.025s\n\nOK\n",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "scripts/ce_geo/check_static_contracts.py",
+        "--manifest",
+        "tests/ce_geo/validation/owned_production_paths.json"
+      ],
+      "elapsed_seconds": 0.21559,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 97,
+      "stdout_sha256": "baae2eaa67ffecbe20264dbb4d0e941a27c3bc6d3e2506493af8362c6fe85a3a",
+      "stdout_tail": "CE-GEO static contracts passed: production=68 protected=3 campaign=CE-GEO (CE-PTR not certified)\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "tests/ce_geo/validation/run_compute_sanitizer.py",
+        "--build",
+        "build",
+        "--output",
+        "/tmp/ce_geo_full_volta_sanitizer"
+      ],
+      "elapsed_seconds": 67.816496,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 114,
+      "stdout_sha256": "66ad0a7814ca163c581d97f0fd3178aeea3f84f35501af5888b6fe9e21812cca",
+      "stdout_tail": "CE-GEO compute-sanitizer campaign passed: targets=7 runs=22 output=/tmp/ce_geo_full_volta_sanitizer/campaign.json\n"
+    }
+  ],
+  "contamination": {
+    "after": {
+      "disallowed_entries": [],
+      "entries": [
+        {
+          "allowed_projection_dirt": true,
+          "path": ".todo-orchestrator/ce-ptr-plan.json",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": ".todo-orchestrator/state.snapshot.json",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "AGENTS.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todo-status.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-00.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-04.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-05.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-06.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-07.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-08.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-09.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-00.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-10.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-100.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-101.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-102.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-103.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-104.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-105.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-106.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-107.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-108.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-109.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-11.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-110.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-111.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-112.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-113.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-114.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-115.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-116.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-117.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-118.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-119.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-12.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-120.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-121.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-122.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-123.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-124.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-125.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-126.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-127.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-13.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-14.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-20.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-21.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-22.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-23.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-24.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-25.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-30.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-31.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-32.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-33.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-34.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-35.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-36.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-37.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-38.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-39.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-40.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-41.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-42.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-43.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-44.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-45.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-46.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-47.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-50.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-51.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-52.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-53.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-54.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-55.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-56.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-57.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-58.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-60.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-61.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-62.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-63.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-64.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-65.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-66.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-67.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-68.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-69.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-70.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-71.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-72.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-73.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-74.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-75.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-76.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-77.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-78.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-79.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-80.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-81.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-82.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-83.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-84.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-85.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-86.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-87.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-88.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-90.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-91.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-92.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-93.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-94.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-95.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-96.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-97.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-98.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-99.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-04.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-05.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-06.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-07.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-08.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-09.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-10.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-11.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-12.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-13.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-14.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-15.md",
+          "status": " M"
+        }
+      ],
+      "porcelain": " M .todo-orchestrator/ce-ptr-plan.json\n M .todo-orchestrator/state.snapshot.json\n M AGENTS.md\n M todo-status.md\n M todos.md\n M todos/ce-amp-00.md\n M todos/ce-amp-01.md\n M todos/ce-amp-02.md\n M todos/ce-amp-03.md\n M todos/ce-amp-04.md\n M todos/ce-amp-05.md\n M todos/ce-amp-06.md\n M todos/ce-amp-07.md\n M todos/ce-amp-08.md\n M todos/ce-amp-09.md\n M todos/ce-geo-00.md\n M todos/ce-geo-01.md\n M todos/ce-geo-02.md\n M todos/ce-geo-03.md\n M todos/ce-geo-10.md\n M todos/ce-geo-100.md\n M todos/ce-geo-101.md\n M todos/ce-geo-102.md\n M todos/ce-geo-103.md\n M todos/ce-geo-104.md\n M todos/ce-geo-105.md\n M todos/ce-geo-106.md\n M todos/ce-geo-107.md\n M todos/ce-geo-108.md\n M todos/ce-geo-109.md\n M todos/ce-geo-11.md\n M todos/ce-geo-110.md\n M todos/ce-geo-111.md\n M todos/ce-geo-112.md\n M todos/ce-geo-113.md\n M todos/ce-geo-114.md\n M todos/ce-geo-115.md\n M todos/ce-geo-116.md\n M todos/ce-geo-117.md\n M todos/ce-geo-118.md\n M todos/ce-geo-119.md\n M todos/ce-geo-12.md\n M todos/ce-geo-120.md\n M todos/ce-geo-121.md\n M todos/ce-geo-122.md\n M todos/ce-geo-123.md\n M todos/ce-geo-124.md\n M todos/ce-geo-125.md\n M todos/ce-geo-126.md\n M todos/ce-geo-127.md\n M todos/ce-geo-13.md\n M todos/ce-geo-14.md\n M todos/ce-geo-20.md\n M todos/ce-geo-21.md\n M todos/ce-geo-22.md\n M todos/ce-geo-23.md\n M todos/ce-geo-24.md\n M todos/ce-geo-25.md\n M todos/ce-geo-30.md\n M todos/ce-geo-31.md\n M todos/ce-geo-32.md\n M todos/ce-geo-33.md\n M todos/ce-geo-34.md\n M todos/ce-geo-35.md\n M todos/ce-geo-36.md\n M todos/ce-geo-37.md\n M todos/ce-geo-38.md\n M todos/ce-geo-39.md\n M todos/ce-geo-40.md\n M todos/ce-geo-41.md\n M todos/ce-geo-42.md\n M todos/ce-geo-43.md\n M todos/ce-geo-44.md\n M todos/ce-geo-45.md\n M todos/ce-geo-46.md\n M todos/ce-geo-47.md\n M todos/ce-geo-50.md\n M todos/ce-geo-51.md\n M todos/ce-geo-52.md\n M todos/ce-geo-53.md\n M todos/ce-geo-54.md\n M todos/ce-geo-55.md\n M todos/ce-geo-56.md\n M todos/ce-geo-57.md\n M todos/ce-geo-58.md\n M todos/ce-geo-60.md\n M todos/ce-geo-61.md\n M todos/ce-geo-62.md\n M todos/ce-geo-63.md\n M todos/ce-geo-64.md\n M todos/ce-geo-65.md\n M todos/ce-geo-66.md\n M todos/ce-geo-67.md\n M todos/ce-geo-68.md\n M todos/ce-geo-69.md\n M todos/ce-geo-70.md\n M todos/ce-geo-71.md\n M todos/ce-geo-72.md\n M todos/ce-geo-73.md\n M todos/ce-geo-74.md\n M todos/ce-geo-75.md\n M todos/ce-geo-76.md\n M todos/ce-geo-77.md\n M todos/ce-geo-78.md\n M todos/ce-geo-79.md\n M todos/ce-geo-80.md\n M todos/ce-geo-81.md\n M todos/ce-geo-82.md\n M todos/ce-geo-83.md\n M todos/ce-geo-84.md\n M todos/ce-geo-85.md\n M todos/ce-geo-86.md\n M todos/ce-geo-87.md\n M todos/ce-geo-88.md\n M todos/ce-geo-90.md\n M todos/ce-geo-91.md\n M todos/ce-geo-92.md\n M todos/ce-geo-93.md\n M todos/ce-geo-94.md\n M todos/ce-geo-95.md\n M todos/ce-geo-96.md\n M todos/ce-geo-97.md\n M todos/ce-geo-98.md\n M todos/ce-geo-99.md\n M todos/ce-ptr-01.md\n M todos/ce-ptr-02.md\n M todos/ce-ptr-03.md\n M todos/ce-ptr-04.md\n M todos/ce-ptr-05.md\n M todos/ce-ptr-06.md\n M todos/ce-ptr-07.md\n M todos/ce-ptr-08.md\n M todos/ce-ptr-09.md\n M todos/ce-ptr-10.md\n M todos/ce-ptr-11.md\n M todos/ce-ptr-12.md\n M todos/ce-ptr-13.md\n M todos/ce-ptr-14.md\n M todos/ce-ptr-15.md\n"
+    },
+    "before": {
+      "disallowed_entries": [],
+      "entries": [
+        {
+          "allowed_projection_dirt": true,
+          "path": ".todo-orchestrator/ce-ptr-plan.json",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": ".todo-orchestrator/state.snapshot.json",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "AGENTS.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todo-status.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-00.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-04.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-05.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-06.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-07.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-08.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-amp-09.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-00.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-10.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-100.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-101.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-102.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-103.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-104.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-105.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-106.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-107.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-108.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-109.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-11.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-110.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-111.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-112.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-113.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-114.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-115.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-116.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-117.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-118.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-119.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-12.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-120.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-121.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-122.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-123.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-124.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-125.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-126.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-127.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-13.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-14.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-20.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-21.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-22.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-23.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-24.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-25.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-30.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-31.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-32.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-33.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-34.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-35.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-36.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-37.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-38.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-39.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-40.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-41.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-42.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-43.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-44.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-45.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-46.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-47.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-50.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-51.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-52.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-53.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-54.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-55.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-56.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-57.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-58.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-60.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-61.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-62.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-63.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-64.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-65.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-66.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-67.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-68.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-69.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-70.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-71.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-72.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-73.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-74.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-75.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-76.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-77.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-78.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-79.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-80.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-81.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-82.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-83.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-84.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-85.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-86.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-87.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-88.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-90.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-91.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-92.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-93.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-94.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-95.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-96.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-97.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-98.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-geo-99.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-01.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-02.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-03.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-04.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-05.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-06.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-07.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-08.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-09.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-10.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-11.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-12.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-13.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-14.md",
+          "status": " M"
+        },
+        {
+          "allowed_projection_dirt": true,
+          "path": "todos/ce-ptr-15.md",
+          "status": " M"
+        }
+      ],
+      "porcelain": " M .todo-orchestrator/ce-ptr-plan.json\n M .todo-orchestrator/state.snapshot.json\n M AGENTS.md\n M todo-status.md\n M todos.md\n M todos/ce-amp-00.md\n M todos/ce-amp-01.md\n M todos/ce-amp-02.md\n M todos/ce-amp-03.md\n M todos/ce-amp-04.md\n M todos/ce-amp-05.md\n M todos/ce-amp-06.md\n M todos/ce-amp-07.md\n M todos/ce-amp-08.md\n M todos/ce-amp-09.md\n M todos/ce-geo-00.md\n M todos/ce-geo-01.md\n M todos/ce-geo-02.md\n M todos/ce-geo-03.md\n M todos/ce-geo-10.md\n M todos/ce-geo-100.md\n M todos/ce-geo-101.md\n M todos/ce-geo-102.md\n M todos/ce-geo-103.md\n M todos/ce-geo-104.md\n M todos/ce-geo-105.md\n M todos/ce-geo-106.md\n M todos/ce-geo-107.md\n M todos/ce-geo-108.md\n M todos/ce-geo-109.md\n M todos/ce-geo-11.md\n M todos/ce-geo-110.md\n M todos/ce-geo-111.md\n M todos/ce-geo-112.md\n M todos/ce-geo-113.md\n M todos/ce-geo-114.md\n M todos/ce-geo-115.md\n M todos/ce-geo-116.md\n M todos/ce-geo-117.md\n M todos/ce-geo-118.md\n M todos/ce-geo-119.md\n M todos/ce-geo-12.md\n M todos/ce-geo-120.md\n M todos/ce-geo-121.md\n M todos/ce-geo-122.md\n M todos/ce-geo-123.md\n M todos/ce-geo-124.md\n M todos/ce-geo-125.md\n M todos/ce-geo-126.md\n M todos/ce-geo-127.md\n M todos/ce-geo-13.md\n M todos/ce-geo-14.md\n M todos/ce-geo-20.md\n M todos/ce-geo-21.md\n M todos/ce-geo-22.md\n M todos/ce-geo-23.md\n M todos/ce-geo-24.md\n M todos/ce-geo-25.md\n M todos/ce-geo-30.md\n M todos/ce-geo-31.md\n M todos/ce-geo-32.md\n M todos/ce-geo-33.md\n M todos/ce-geo-34.md\n M todos/ce-geo-35.md\n M todos/ce-geo-36.md\n M todos/ce-geo-37.md\n M todos/ce-geo-38.md\n M todos/ce-geo-39.md\n M todos/ce-geo-40.md\n M todos/ce-geo-41.md\n M todos/ce-geo-42.md\n M todos/ce-geo-43.md\n M todos/ce-geo-44.md\n M todos/ce-geo-45.md\n M todos/ce-geo-46.md\n M todos/ce-geo-47.md\n M todos/ce-geo-50.md\n M todos/ce-geo-51.md\n M todos/ce-geo-52.md\n M todos/ce-geo-53.md\n M todos/ce-geo-54.md\n M todos/ce-geo-55.md\n M todos/ce-geo-56.md\n M todos/ce-geo-57.md\n M todos/ce-geo-58.md\n M todos/ce-geo-60.md\n M todos/ce-geo-61.md\n M todos/ce-geo-62.md\n M todos/ce-geo-63.md\n M todos/ce-geo-64.md\n M todos/ce-geo-65.md\n M todos/ce-geo-66.md\n M todos/ce-geo-67.md\n M todos/ce-geo-68.md\n M todos/ce-geo-69.md\n M todos/ce-geo-70.md\n M todos/ce-geo-71.md\n M todos/ce-geo-72.md\n M todos/ce-geo-73.md\n M todos/ce-geo-74.md\n M todos/ce-geo-75.md\n M todos/ce-geo-76.md\n M todos/ce-geo-77.md\n M todos/ce-geo-78.md\n M todos/ce-geo-79.md\n M todos/ce-geo-80.md\n M todos/ce-geo-81.md\n M todos/ce-geo-82.md\n M todos/ce-geo-83.md\n M todos/ce-geo-84.md\n M todos/ce-geo-85.md\n M todos/ce-geo-86.md\n M todos/ce-geo-87.md\n M todos/ce-geo-88.md\n M todos/ce-geo-90.md\n M todos/ce-geo-91.md\n M todos/ce-geo-92.md\n M todos/ce-geo-93.md\n M todos/ce-geo-94.md\n M todos/ce-geo-95.md\n M todos/ce-geo-96.md\n M todos/ce-geo-97.md\n M todos/ce-geo-98.md\n M todos/ce-geo-99.md\n M todos/ce-ptr-01.md\n M todos/ce-ptr-02.md\n M todos/ce-ptr-03.md\n M todos/ce-ptr-04.md\n M todos/ce-ptr-05.md\n M todos/ce-ptr-06.md\n M todos/ce-ptr-07.md\n M todos/ce-ptr-08.md\n M todos/ce-ptr-09.md\n M todos/ce-ptr-10.md\n M todos/ce-ptr-11.md\n M todos/ce-ptr-12.md\n M todos/ce-ptr-13.md\n M todos/ce-ptr-14.md\n M todos/ce-ptr-15.md\n"
+    }
+  },
+  "coverage": {
+    "compute_sanitizer": true,
+    "frozen_baseline": true,
+    "integrated_biology": true,
+    "negative_contracts": true,
+    "normal_release_sm70_build": true,
+    "numerical_referee_and_gradients": true,
+    "portable_foundation": true,
+    "sealed_hot_path": true,
+    "semantic_and_physical_properties": true,
+    "sm70_vertical": true,
+    "static_contracts": true,
+    "torch_compatibility_build": true
+  },
+  "generated_at_utc": "2026-08-30T04:15:06.190024+00:00",
+  "hardware_and_toolchain": [
+    {
+      "argv": [
+        "nvidia-smi",
+        "--query-gpu=name,uuid,compute_cap,driver_version,pci.bus_id,memory.total",
+        "--format=csv,noheader,nounits"
+      ],
+      "elapsed_seconds": 2.450933,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 420,
+      "stdout_sha256": "4bec3b6cbe20a7f46fc972206ba8016e299aae6a4ac1a00e470d7a38ec0f3033",
+      "stdout_tail": "Tesla V100-SXM2-16GB, GPU-21131915-1488-23af-38dd-1743ae1f5cc8, 7.0, 580.173.02, 00000000:02:00.0, 16384\nTesla V100-SXM2-16GB, GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505, 7.0, 580.173.02, 00000000:03:00.0, 16384\nTesla V100-SXM2-16GB, GPU-d745da9c-7649-8334-41f1-483afa6f3206, 7.0, 580.173.02, 00000000:83:00.0, 16384\nTesla V100-SXM2-16GB, GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a, 7.0, 580.173.02, 00000000:84:00.0, 16384\n"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "--version"
+      ],
+      "elapsed_seconds": 0.003908,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 208,
+      "stdout_sha256": "77d7ef23109cd2437a8b9cf5efbc4e89996b816276077edb86143ee04f6d5269",
+      "stdout_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0\n"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--version"
+      ],
+      "elapsed_seconds": 0.011587,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 91,
+      "stdout_sha256": "d3d5b682f3f5ef5b24a79ed8cf4b8c5868fc950dad48cab1be0e3c060a77f8ee",
+      "stdout_tail": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "elapsed_seconds": 0.001717,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 246,
+      "stdout_sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8",
+      "stdout_tail": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "--version"
+      ],
+      "elapsed_seconds": 0.002531,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 15,
+      "stdout_sha256": "38ef1fadde02a6382af1c086feb75499e55cec0827e1f749465a912a6c442c0a",
+      "stdout_tail": "Python 3.13.11\n"
+    }
+  ],
+  "sanitizer": {
+    "report": "/tmp/ce_geo_full_volta_sanitizer/campaign.json",
+    "sha256": "2ca42f380f77c3dcdfd7b790b88f6b8d22cff9cffcc26cb71af443fa56c15f75",
+    "summary": {
+      "passed_run_count": 22,
+      "sanitizer_run_count": 22,
+      "target_count": 7,
+      "tools": [
+        "initcheck",
+        "memcheck",
+        "racecheck",
+        "synccheck"
+      ]
+    }
+  },
+  "schema_version": 1,
+  "source": {
+    "commit": "e7f8be1b30510f096b0a7e23247a5070116c2fa6",
+    "owned_manifest_sha256": "6cb5057076902a8ef33ef53f91957bba0a9c2787bd3d5332b178de7fd8c09341",
+    "sanitizer_evidence_sha256": "f49938befed5ff537990f3f45c5ae39e220e9f00080bc7a32526150620170a46",
+    "tree": "3a3e4e21798b8e639f4e071bb0e58b6613c37884"
+  },
+  "summary": {
+    "metadata_command_count": 5,
+    "passed_validation_command_count": 22,
+    "validation_command_count": 22
+  },
+  "task_id": "CE-GEO-109",
+  "validated": true
+}
