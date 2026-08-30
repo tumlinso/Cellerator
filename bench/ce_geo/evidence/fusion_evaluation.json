@@ -1,0 +1,71 @@
+{
+  "accepted_for_promotion": false,
+  "baseline": {
+    "launches": 4,
+    "name": "materialized_gather_normalize_scatter"
+  },
+  "benchmark_mutex": true,
+  "campaign_id": "exchange-cover-native-normalize",
+  "candidate": {
+    "launches": 2,
+    "name": "cover_native_normalize_without_selected_value_materialization",
+    "supported": true,
+    "wins_all_measured_reuse_points": true
+  },
+  "controller_evidence_id": "CE-GEO-98-fusion-evaluation-v1",
+  "correctness_passed": true,
+  "decision": "The cover-native normalization mechanism is retained as measured implementation evidence, but whole-exchange fusion is not promoted.",
+  "disposition": "evaluated_not_promoted",
+  "evidence_valid": 1,
+  "limitations": [
+    "Production exposes cover-native segment normalization, not a fused four-step contract/gate/normalize/apply exchange entrypoint.",
+    "The materialized comparator is an explicit gather/normalize/scatter normalization stage, not a separately prepared whole exchange program.",
+    "One deterministic synthetic 256-partition case cannot promote a general exchange fusion policy.",
+    "No whole-program intermediate lifetime, downstream relation-apply cost, or biological held-out organization is measured."
+  ],
+  "measurement": {
+    "compute_capability": "7.0",
+    "cover_native_launches": 2,
+    "cover_native_mad_percent": 1.114,
+    "cover_native_max_abs_error": 0.0,
+    "cover_native_steady_wall_ns": 32401.0,
+    "edges_per_partition": 16,
+    "hardware_name": "Tesla V100-SXM2-16GB",
+    "host_prepare_ns": 17343.0,
+    "logical_edge_count": 4096,
+    "materialized_launches": 4,
+    "materialized_mad_percent": 0.402,
+    "materialized_max_abs_error": 0.0,
+    "materialized_steady_wall_ns": 36567.0,
+    "partition_count": 256,
+    "reuse": [
+      {
+        "cover_native_complete_ns": 114329.0,
+        "materialized_complete_ns": 118495.0,
+        "reuse": 1
+      },
+      {
+        "cover_native_complete_ns": 37521.5,
+        "materialized_complete_ns": 41687.5,
+        "reuse": 16
+      },
+      {
+        "cover_native_complete_ns": 32721.031,
+        "materialized_complete_ns": 36887.031,
+        "reuse": 256
+      }
+    ],
+    "structure_upload_ns": 64585.0
+  },
+  "methodology": {
+    "clock": "host steady-clock wall time",
+    "cold_cost": "deterministic partition preparation plus immutable edge/partition upload, amortized by reuse",
+    "consumer_complete": "dynamic logical-value upload through output D2H and explicit cudaStreamSynchronize",
+    "numerical_reference": "independent CPU partition softmax",
+    "repeats": 11,
+    "warmups": 3
+  },
+  "schema": "CELLERATOR-CE-GEO-FUSION-EVALUATION/1",
+  "task_id": "CE-GEO-98",
+  "uncontaminated": true
+}
