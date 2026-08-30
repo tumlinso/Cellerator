@@ -19,6 +19,6 @@ int main() {
     missing.plan = &invalid_plan;
     missing.partition = &partition;
     assert(sm70::enqueue_prepared_segment_backward_v1(missing)
-        == sm70::prepared_segment_backward_status_v1::invalid_argument);
+        == sm70::prepared_segment_backward_status_v1::segment_failure);
     return 0;
 }
