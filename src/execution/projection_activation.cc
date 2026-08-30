@@ -1,5 +1,7 @@
 #include <Cellerator/execution/projection_activation.hh>
 
+#include <Cellerator/geometry/persistence/execution_capability_manifest_v1.hh>
+
 namespace cellerator::execution {
 namespace {
 
@@ -76,7 +78,154 @@ bool no_maps(const prebound_projection_view_v1 &prebound) noexcept {
         && prebound.transpose_map_bytes == 0u;
 }
 
+constexpr bool same_architecture_identity(
+    compute::architecture::architecture_identity_v1 lhs,
+    compute::architecture::architecture_identity_v1 rhs) noexcept {
+    return compute::architecture::same_architecture_identity_v1(lhs, rhs);
+}
+
+const compute::architecture::matrix_engine_capability_v1 *find_capability(
+    const compute::architecture::architecture_provider_v1 &provider,
+    compute::architecture::architecture_identity_v1 identity) noexcept {
+    for (std::uint32_t index = 0u; index < provider.capability_count; ++index) {
+        if (same_architecture_identity(provider.capabilities[index].identity,
+                identity))
+            return provider.capabilities + index;
+    }
+    return nullptr;
+}
+
 } // namespace
+
+projection_activation_status validate_projection_provider_descriptor_v1(
+    const projection_provider_descriptor_v1 &provider) noexcept {
+    if (provider.schema_version != projection_provider_descriptor_schema_v1
+        || provider.record_bytes != sizeof(projection_provider_descriptor_v1)
+        || provider.architecture == nullptr || provider.validate_host == nullptr
+        || provider.activate_device == nullptr
+        || provider.projection_schema_version == 0u
+        || provider.required_directory_capability == 0u
+        || provider.validated_host_view_bytes == 0u
+        || provider.activated_device_view_bytes == 0u
+        || !compute::architecture::valid_architecture_identity_v1(
+            provider.capability_identity))
+        return {projection_activation_code::invalid_argument,
+            "projection provider descriptor is incomplete"};
+    if (provider.reserved0 != 0u)
+        return {projection_activation_code::invalid_argument,
+            "projection provider descriptor reserved field is nonzero"};
+    for (std::uint32_t value : provider.reserved)
+        if (value != 0u)
+            return {projection_activation_code::invalid_argument,
+                "projection provider descriptor reserved field is nonzero"};
+    if (provider.architecture->schema_version
+            != compute::architecture::architecture_provider_schema_version_v1
+        || provider.architecture->record_bytes
+            != sizeof(compute::architecture::architecture_provider_v1)
+        || !compute::architecture::valid_architecture_identity_v1(
+            provider.architecture->identity)
+        || provider.architecture->name == nullptr
+        || provider.architecture->capabilities == nullptr
+        || provider.architecture->capability_count == 0u)
+        return {projection_activation_code::provider_mismatch,
+            "projection provider architecture descriptor shape is invalid"};
+    const auto *capability = find_capability(
+        *provider.architecture, provider.capability_identity);
+    if (capability == nullptr
+        || compute::architecture::validate_matrix_engine_capability_v1(*capability)
+            != compute::architecture::capability_status_v1::success
+        || !same_architecture_identity(capability->provider_identity,
+            provider.architecture->identity))
+        return {projection_activation_code::provider_mismatch,
+            "projection provider capability is not source-linked"};
+    return {};
+}
+
+projection_activation_status validate_and_activate_projection_via_provider_v1(
+    const projection_provider_descriptor_v1 &provider,
+    const cellpack::persistence::prebound_projection_view_v2 &host_prebound,
+    const cellpack::persistence::prebound_projection_view_v2 &device_prebound,
+    const projection_activation_context &context,
+    void *validated_host_view,
+    std::size_t validated_host_view_bytes,
+    void *activated_device_view,
+    std::size_t activated_device_view_bytes) noexcept {
+    const auto descriptor_status =
+        validate_projection_provider_descriptor_v1(provider);
+    if (!descriptor_status) return descriptor_status;
+    if (validated_host_view == nullptr || activated_device_view == nullptr
+        || validated_host_view_bytes != provider.validated_host_view_bytes
+        || activated_device_view_bytes != provider.activated_device_view_bytes)
+        return {projection_activation_code::size_mismatch,
+            "projection provider view storage does not match its descriptor"};
+
+    const auto &host = host_prebound.projection_v1;
+    const auto &device = device_prebound.projection_v1;
+    if (host.descriptor.kind != provider.projection_kind
+        || device.descriptor.kind != provider.projection_kind)
+        return {projection_activation_code::kind_mismatch,
+            "projection provider kind does not match prebound projection"};
+    if (host.descriptor.schema_version != provider.projection_schema_version
+        || device.descriptor.schema_version
+            != provider.projection_schema_version)
+        return {projection_activation_code::schema_mismatch,
+            "projection provider schema does not match prebound projection"};
+    if (host.descriptor.orientation
+            != static_cast<std::uint16_t>(provider.orientation)
+        || device.descriptor.orientation
+            != static_cast<std::uint16_t>(provider.orientation)
+        || (host.descriptor.flags & provider.required_directory_capability) == 0u
+        || (device.descriptor.flags & provider.required_directory_capability) == 0u)
+        return {projection_activation_code::orientation_mismatch,
+            "projection provider orientation capability does not match"};
+    if (host_prebound.capability == nullptr
+        || host_prebound.capability_bytes
+            != sizeof(cellpack::persistence::execution_capability_manifest_v1)
+        || device_prebound.capability == nullptr
+        || device_prebound.capability_bytes != host_prebound.capability_bytes)
+        return {projection_activation_code::provider_mismatch,
+            "projection provider requires a typed capability manifest"};
+
+    const auto &manifest = *static_cast<const
+        cellpack::persistence::execution_capability_manifest_v1 *>(
+            host_prebound.capability);
+    const auto manifest_status =
+        cellpack::persistence::validate_execution_capability_manifest_v1(manifest);
+    if (!manifest_status)
+        return {projection_activation_code::provider_mismatch,
+            manifest_status.message};
+    const compute::architecture::architecture_identity_v1 manifest_provider{
+        manifest.provider_identity_low, manifest.provider_identity_high};
+    const compute::architecture::architecture_identity_v1 manifest_capability{
+        manifest.capability_identity_low, manifest.capability_identity_high};
+    if (!same_architecture_identity(manifest_provider,
+            provider.architecture->identity)
+        || !same_architecture_identity(manifest_capability,
+            provider.capability_identity))
+        return {projection_activation_code::provider_mismatch,
+            "projection capability manifest does not match source-linked provider"};
+
+    const auto host_common = validate_common(host, context, provider.projection_kind,
+        provider.projection_schema_version, provider.orientation,
+        provider.required_directory_capability);
+    if (!host_common) return host_common;
+    const auto device_common = validate_common(device, context,
+        provider.projection_kind, provider.projection_schema_version,
+        provider.orientation, provider.required_directory_capability);
+    if (!device_common) return device_common;
+    if (device.payload_bytes != host.payload_bytes
+        || device.forward_map_bytes != host.forward_map_bytes
+        || device.transpose_map_bytes != host.transpose_map_bytes
+        || device.scheduling_summary_bytes != host.scheduling_summary_bytes)
+        return {projection_activation_code::size_mismatch,
+            "host and device prebind section sizes differ"};
+    const auto validation = provider.validate_host(host_prebound, context,
+        validated_host_view, validated_host_view_bytes);
+    if (!validation) return validation;
+    return provider.activate_device(device_prebound, context,
+        validated_host_view, validated_host_view_bytes, activated_device_view,
+        activated_device_view_bytes);
+}
 
 projection_activation_status activate_row_masked_projection(
     const prebound_projection_view_v1 &prebound,
