@@ -1,13 +1,23 @@
-# CE-GEO public-contract examples
+# CE-GEO public biological examples
 
-`relation_algebra_examples.cc` expresses six biological mappings using only
-public Cellerator contracts: sparse state embedding, regulatory propagation,
-transition/transport, hierarchy incidence, multimodal relation bundles, and
-perturbation-delta propagation.
+This host-only example constructs and validates six biological scenarios using
+Cellerator's public typed-relation and execution-lifetime contracts. It does
+not execute a kernel, parse or store a dataset, or depend on a framework
+adapter.
 
-The example validates biological axis identity, relation structure identity,
-numeric semantics, and operation semantics. It deliberately does not select a
-kernel, load data, allocate device memory, or claim that schema-v2 relation
-operations already execute. Storage and biological preprocessing remain owned
-by CellShard and BioPrep respectively; framework adapters remain consumers of
-the same native contracts.
+- Sparse state embedding: gene-feature to latent-state relation apply.
+- Regulatory propagation: directed regulator to target-gene propagation.
+- Transition/transport: identity-preserving state transition.
+- Hierarchy incidence: forward incidence pooling and transpose broadcast.
+- Multimodal relations: distinct RNA and ATAC sources with one destination.
+- Perturbation delta propagation: immutable response structure with a
+  generation-checked mutable delta value plane.
+
+Compile and run the example directly with a strict C++17 compiler:
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude \
+    examples/ce_geo/biological_relations.cc \
+    -o build/ceGeoBiologicalRelations
+build/ceGeoBiologicalRelations
+```
