@@ -1,0 +1,753 @@
+{
+  "builds": [
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-std=c++17",
+        "-arch=sm_70",
+        "-Wno-deprecated-gpu-targets",
+        "-Xcompiler=-Wall,-Wextra,-Werror",
+        "-ccbin",
+        "/usr/bin/g++",
+        "-I/home/tumlinson/Cellerator/include",
+        "-I/home/tumlinson/Cellerator/build/generated",
+        "/home/tumlinson/Cellerator/tests/ce_geo/persistence/projection_enumeration_test.cu",
+        "-o",
+        "/home/tumlinson/Cellerator/build/projectionEnumerationTest",
+        "/home/tumlinson/Cellerator/build/libcellerator_opaque_execution_artifact.a",
+        "/home/tumlinson/Cellerator/build/libcellpack_execution_image_v2.a",
+        "/home/tumlinson/Cellerator/build/libcellpack_persistent_packing_payload.a"
+      ],
+      "elapsed_seconds": 2.505099,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target": "projectionEnumerationTest"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/build",
+        "--target",
+        "ceGeoSm70ValuePackTest",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 0.297965,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "[  0%] Built target cellerator_compute_sampling\n[ 11%] Built target cellerator_runtime\n[ 29%] Built target cellpack\n[ 47%] Built target cellerator_semantic_geometry_v1\n[ 47%] Built target cellerator_operation_core\n[ 52%] Built target cellpack_semantic_geometry\n[ 64%] Built target cellpack_apply_plan\n[ 64%] Built target cellpack_local_cell_ordering\n[ 70%] Built target cellpack_warp_tiles\n[ 70%] Built target cellpack_feature_weighted_row_reduction\n[ 70%] Built target cellpack_persistent_packing_payload\n[ 76%] Built target cellpack_execution_image_v2\n[ 94%] Built target cellerator_architecture_provider\n[100%] Built target ceGeoSm70ValuePackTest\n",
+      "stdout_sha256": "325dd0ac215b7a81a49ea4d962649cfad9aa5d9cb49311b4c5bb97a927399d68",
+      "target": "ceGeoSm70ValuePackTest"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/build",
+        "--target",
+        "ceGeoSm70N64HybridTest",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 0.025665,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target": "ceGeoSm70N64HybridTest"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/build",
+        "--target",
+        "ceGeoSegmentNormalizeTest",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 0.179823,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "[ 40%] Built target cellerator_runtime\n[ 40%] Built target cellerator_operation_core\n[ 80%] Built target cellerator_relation_algebra\n[100%] Built target ceGeoSegmentNormalizeTest\n",
+      "stdout_sha256": "8df3fdd0b3109b1b27ec2294e8d0ec18468a30b5dec09ef9e1a893981157580a",
+      "target": "ceGeoSegmentNormalizeTest"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/build",
+        "--target",
+        "ceGeoSm70TransposeRelationApplyTest",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 0.025255,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target": "ceGeoSm70TransposeRelationApplyTest"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/home/tumlinson/Cellerator/build",
+        "--target",
+        "ceGeoSm70ContractOnSupportTest",
+        "-j",
+        "80"
+      ],
+      "elapsed_seconds": 0.02376,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target": "ceGeoSm70ContractOnSupportTest"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "-std=c++17",
+        "-arch=sm_70",
+        "-Wno-deprecated-gpu-targets",
+        "-Xcompiler=-Wall,-Wextra,-Werror",
+        "-ccbin",
+        "/usr/bin/g++",
+        "-I/home/tumlinson/Cellerator/include",
+        "-I/home/tumlinson/Cellerator/build/generated",
+        "/home/tumlinson/Cellerator/tests/ce_geo/validation/gradient_validation_test.cu",
+        "-o",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest",
+        "/home/tumlinson/Cellerator/build/libcellerator_relation_algebra.a",
+        "/home/tumlinson/Cellerator/build/libcellerator_operation_core.a",
+        "/home/tumlinson/Cellerator/build/libcellerator_runtime.a"
+      ],
+      "elapsed_seconds": 3.081766,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target": "ceGeoGradientValidationTest"
+    }
+  ],
+  "campaign": "CE-GEO",
+  "environment": {
+    "build_directory": "build",
+    "cuda_visible_devices": null,
+    "parallel_build_jobs": 80
+  },
+  "generated_at_utc": "2026-08-30T04:01:11.541142+00:00",
+  "observed_coverage": [
+    "contraction",
+    "cpe2_rebind",
+    "device_views",
+    "epilogue",
+    "generation_reuse",
+    "gradients",
+    "mma",
+    "residual",
+    "segments",
+    "transpose",
+    "value_pack"
+  ],
+  "required_coverage": [
+    "contraction",
+    "cpe2_rebind",
+    "device_views",
+    "gradients",
+    "mma",
+    "residual",
+    "segments",
+    "transpose",
+    "value_pack"
+  ],
+  "runs": [
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/projectionEnumerationTest"
+      ],
+      "binary": "build/projectionEnumerationTest",
+      "binary_sha256": "50d43f53eb7ab195c6938f783aecc63d9fab80a21ece51cf86d17929ecd77d37",
+      "coverage": [
+        "device_views",
+        "cpe2_rebind"
+      ],
+      "elapsed_seconds": 2.723159,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nprojection_enumeration_test passed projections=2 planner_selected=1,0 bind_allocations=0 legacy=1\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "3eab449f1e1cff75c5bfb28bbe094b7647c507a99a37e01cf3239c708245a50f",
+      "target": "projectionEnumerationTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/projectionEnumerationTest"
+      ],
+      "binary": "build/projectionEnumerationTest",
+      "binary_sha256": "50d43f53eb7ab195c6938f783aecc63d9fab80a21ece51cf86d17929ecd77d37",
+      "coverage": [
+        "device_views",
+        "cpe2_rebind"
+      ],
+      "elapsed_seconds": 2.732674,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nprojection_enumeration_test passed projections=2 planner_selected=1,0 bind_allocations=0 legacy=1\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "3eab449f1e1cff75c5bfb28bbe094b7647c507a99a37e01cf3239c708245a50f",
+      "target": "projectionEnumerationTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ValuePackTest"
+      ],
+      "binary": "build/ceGeoSm70ValuePackTest",
+      "binary_sha256": "bf928b674cbd1fe438973929f698502c744b4163ab9f37ef063a06ae85c64f2e",
+      "coverage": [
+        "value_pack",
+        "generation_reuse"
+      ],
+      "elapsed_seconds": 2.716453,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70ValuePackTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ValuePackTest"
+      ],
+      "binary": "build/ceGeoSm70ValuePackTest",
+      "binary_sha256": "bf928b674cbd1fe438973929f698502c744b4163ab9f37ef063a06ae85c64f2e",
+      "coverage": [
+        "value_pack",
+        "generation_reuse"
+      ],
+      "elapsed_seconds": 3.15006,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "stdout_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "target": "ceGeoSm70ValuePackTest",
+      "tool": "racecheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ValuePackTest"
+      ],
+      "binary": "build/ceGeoSm70ValuePackTest",
+      "binary_sha256": "bf928b674cbd1fe438973929f698502c744b4163ab9f37ef063a06ae85c64f2e",
+      "coverage": [
+        "value_pack",
+        "generation_reuse"
+      ],
+      "elapsed_seconds": 2.734032,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70ValuePackTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ValuePackTest"
+      ],
+      "binary": "build/ceGeoSm70ValuePackTest",
+      "binary_sha256": "bf928b674cbd1fe438973929f698502c744b4163ab9f37ef063a06ae85c64f2e",
+      "coverage": [
+        "value_pack",
+        "generation_reuse"
+      ],
+      "elapsed_seconds": 2.715809,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70ValuePackTest",
+      "tool": "synccheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70N64HybridTest"
+      ],
+      "binary": "build/ceGeoSm70N64HybridTest",
+      "binary_sha256": "056adae5eef18352a1a76503619dcdce9c0ceece85e83ffdc2a1f7c92d5427d5",
+      "coverage": [
+        "mma",
+        "residual",
+        "epilogue"
+      ],
+      "elapsed_seconds": 2.725074,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70N64HybridTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70N64HybridTest"
+      ],
+      "binary": "build/ceGeoSm70N64HybridTest",
+      "binary_sha256": "056adae5eef18352a1a76503619dcdce9c0ceece85e83ffdc2a1f7c92d5427d5",
+      "coverage": [
+        "mma",
+        "residual",
+        "epilogue"
+      ],
+      "elapsed_seconds": 3.146074,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "stdout_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "target": "ceGeoSm70N64HybridTest",
+      "tool": "racecheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70N64HybridTest"
+      ],
+      "binary": "build/ceGeoSm70N64HybridTest",
+      "binary_sha256": "056adae5eef18352a1a76503619dcdce9c0ceece85e83ffdc2a1f7c92d5427d5",
+      "coverage": [
+        "mma",
+        "residual",
+        "epilogue"
+      ],
+      "elapsed_seconds": 2.735742,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70N64HybridTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70N64HybridTest"
+      ],
+      "binary": "build/ceGeoSm70N64HybridTest",
+      "binary_sha256": "056adae5eef18352a1a76503619dcdce9c0ceece85e83ffdc2a1f7c92d5427d5",
+      "coverage": [
+        "mma",
+        "residual",
+        "epilogue"
+      ],
+      "elapsed_seconds": 2.723528,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70N64HybridTest",
+      "tool": "synccheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSegmentNormalizeTest"
+      ],
+      "binary": "build/ceGeoSegmentNormalizeTest",
+      "binary_sha256": "9245bed6a8bafe15a1c0bd875305fe9aeebd0a078e099e4234b4c5748a8e750f",
+      "coverage": [
+        "segments"
+      ],
+      "elapsed_seconds": 2.682695,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "adaf00751507e490e1ab37eca86d7223d1d6ee14e7a9d01db423f6ab7c31ba55",
+      "target": "ceGeoSegmentNormalizeTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSegmentNormalizeTest"
+      ],
+      "binary": "build/ceGeoSegmentNormalizeTest",
+      "binary_sha256": "9245bed6a8bafe15a1c0bd875305fe9aeebd0a078e099e4234b4c5748a8e750f",
+      "coverage": [
+        "segments"
+      ],
+      "elapsed_seconds": 3.218849,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "stdout_sha256": "16354d2c32d786977388ffe8ea17c88facbdf7448ebd347017954baa5dfaf6bf",
+      "target": "ceGeoSegmentNormalizeTest",
+      "tool": "racecheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSegmentNormalizeTest"
+      ],
+      "binary": "build/ceGeoSegmentNormalizeTest",
+      "binary_sha256": "9245bed6a8bafe15a1c0bd875305fe9aeebd0a078e099e4234b4c5748a8e750f",
+      "coverage": [
+        "segments"
+      ],
+      "elapsed_seconds": 2.740345,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "adaf00751507e490e1ab37eca86d7223d1d6ee14e7a9d01db423f6ab7c31ba55",
+      "target": "ceGeoSegmentNormalizeTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSegmentNormalizeTest"
+      ],
+      "binary": "build/ceGeoSegmentNormalizeTest",
+      "binary_sha256": "9245bed6a8bafe15a1c0bd875305fe9aeebd0a078e099e4234b4c5748a8e750f",
+      "coverage": [
+        "segments"
+      ],
+      "elapsed_seconds": 2.725713,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\nsegment_normalize_test passed lse=1 softmax=1 backward=1 empty=1 singleton=1 nonfinite=1 fp32=1\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "adaf00751507e490e1ab37eca86d7223d1d6ee14e7a9d01db423f6ab7c31ba55",
+      "target": "ceGeoSegmentNormalizeTest",
+      "tool": "synccheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70TransposeRelationApplyTest"
+      ],
+      "binary": "build/ceGeoSm70TransposeRelationApplyTest",
+      "binary_sha256": "21891f12167ecc09812a773b5a5285bf78f4ea599848c9620894966a3b593903",
+      "coverage": [
+        "transpose"
+      ],
+      "elapsed_seconds": 2.718626,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70TransposeRelationApplyTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70TransposeRelationApplyTest"
+      ],
+      "binary": "build/ceGeoSm70TransposeRelationApplyTest",
+      "binary_sha256": "21891f12167ecc09812a773b5a5285bf78f4ea599848c9620894966a3b593903",
+      "coverage": [
+        "transpose"
+      ],
+      "elapsed_seconds": 2.728223,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70TransposeRelationApplyTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ContractOnSupportTest"
+      ],
+      "binary": "build/ceGeoSm70ContractOnSupportTest",
+      "binary_sha256": "d47bd93f388ccdde235e11f071997d7f5fceebb61af066fca1b68e1052b9f60b",
+      "coverage": [
+        "contraction"
+      ],
+      "elapsed_seconds": 2.72329,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70ContractOnSupportTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoSm70ContractOnSupportTest"
+      ],
+      "binary": "build/ceGeoSm70ContractOnSupportTest",
+      "binary_sha256": "d47bd93f388ccdde235e11f071997d7f5fceebb61af066fca1b68e1052b9f60b",
+      "coverage": [
+        "contraction"
+      ],
+      "elapsed_seconds": 2.732303,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "target": "ceGeoSm70ContractOnSupportTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "binary": "build/ceGeoGradientValidationTest",
+      "binary_sha256": "894dc147730b9b3dd2db8545095885b7c17f26bf8b257edd5a2150969fb77887",
+      "coverage": [
+        "gradients",
+        "transpose",
+        "contraction",
+        "segments"
+      ],
+      "elapsed_seconds": 2.733044,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\ngradient validation passed\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "32b828069fbfa53559ed88a1247b1cedec304429024da7cce401e4e4b7690f29",
+      "target": "ceGeoGradientValidationTest",
+      "tool": "memcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "binary": "build/ceGeoGradientValidationTest",
+      "binary_sha256": "894dc147730b9b3dd2db8545095885b7c17f26bf8b257edd5a2150969fb77887",
+      "coverage": [
+        "gradients",
+        "transpose",
+        "contraction",
+        "segments"
+      ],
+      "elapsed_seconds": 3.182232,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\ngradient validation passed\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "stdout_sha256": "25e2583258edddd0500f8ff15a7e2d19f55baa7393db8806fad228b80492710c",
+      "target": "ceGeoGradientValidationTest",
+      "tool": "racecheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "binary": "build/ceGeoGradientValidationTest",
+      "binary_sha256": "894dc147730b9b3dd2db8545095885b7c17f26bf8b257edd5a2150969fb77887",
+      "coverage": [
+        "gradients",
+        "transpose",
+        "contraction",
+        "segments"
+      ],
+      "elapsed_seconds": 2.744971,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\ngradient validation passed\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "32b828069fbfa53559ed88a1247b1cedec304429024da7cce401e4e4b7690f29",
+      "target": "ceGeoGradientValidationTest",
+      "tool": "initcheck",
+      "validated": true
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "/home/tumlinson/Cellerator/build/ceGeoGradientValidationTest"
+      ],
+      "binary": "build/ceGeoGradientValidationTest",
+      "binary_sha256": "894dc147730b9b3dd2db8545095885b7c17f26bf8b257edd5a2150969fb77887",
+      "coverage": [
+        "gradients",
+        "transpose",
+        "contraction",
+        "segments"
+      ],
+      "elapsed_seconds": 2.723533,
+      "returncode": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "========= COMPUTE-SANITIZER\ngradient validation passed\n========= ERROR SUMMARY: 0 errors\n",
+      "stdout_sha256": "32b828069fbfa53559ed88a1247b1cedec304429024da7cce401e4e4b7690f29",
+      "target": "ceGeoGradientValidationTest",
+      "tool": "synccheck",
+      "validated": true
+    }
+  ],
+  "schema_version": 1,
+  "source_commit": "36e812a0401d4c8f63e103156aebb4cfd07f94ba",
+  "summary": {
+    "passed_run_count": 22,
+    "sanitizer_run_count": 22,
+    "target_count": 7,
+    "tools": [
+      "initcheck",
+      "memcheck",
+      "racecheck",
+      "synccheck"
+    ]
+  },
+  "task_id": "CE-GEO-108",
+  "tool": {
+    "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "version_stderr": "",
+    "version_stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+  },
+  "validated": true
+}
