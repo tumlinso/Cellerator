@@ -145,3 +145,14 @@ The current repository contains older layout, preprocessing, model, and runtime 
 - benchmark baselines.
 
 Do not interpret their continued presence as permanent ownership or as evidence for the future core ABI.
+
+## CE-GEO boundary after Volta integration
+
+CE-GEO does not widen Cellerator into storage, workflow, model, or framework
+ownership. Cellerator owns portable biological geometry semantics, physical
+projection meaning, planner-visible complete cost, and native numerical
+execution. CellShard still owns persistence and transport, BioPrep owns
+biological preprocessing policy, Baseplane owns sequence-specialized
+primitives, and CelleraTorch remains an adapter. The measured `sm_70` N=64
+hybrid promotion is regime-specific and does not make MMA or one sparse layout
+the repository default.

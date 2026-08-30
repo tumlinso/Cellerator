@@ -383,3 +383,13 @@ Before adding cross-repository code, verify:
 - Will the boundary work for multi-GPU execution?
 
 The correct boundary is the one that moves the fewest bytes while leaving ownership unambiguous.
+
+## CE-GEO persistence and interop outcome
+
+CSG1 remains portable and pointer-free; CPE2 may embed the compatible physical
+projection for delivery; CPK1 compatibility bytes remain frozen. CellShard
+transports these opaque artifacts and retains storage, sharding, staging, and
+distribution ownership. Cellerator owns validation, projection meaning,
+execution order, and numerical use after acquisition. The final baseline and
+acceptance campaigns replayed CPK1/CPE2 compatibility without rewriting stored
+history or transferring file ownership into the compute core.

@@ -661,3 +661,22 @@ candidate pipeline. Nsight Compute 2025.2.1 successfully collected launch,
 register, occupancy, cache, and throughput metrics for exact-search kernels.
 Exact commands and limitations are recorded in
 `bench/ce_ptr/final/acceptance.md`.
+
+## CE-GEO Volta evidence
+
+On Tesla V100-SXM2-16GB (`sm_70`), the exact N=64 hybrid path was accepted for
+one measured synthetic cover with 2,176 logical edges: 2,048 MMA-owned and 128
+residual-owned. Complete caller-visible cost was 163,427 ns versus 4,176,523 ns
+for cuSPARSE at reuse 1 (25.56x), and 47,221.062 ns versus 295,570.188 ns at
+reuse 16 (6.26x). Warmups were 3 and repeats were 11; maximum absolute error
+was zero. This is not evidence for other widths, structures, devices, or reuse
+regimes.
+
+The cover-native normalization prototype reduced the measured normalization
+stage from four launches to two and was correct, but whole-exchange fusion was
+not promoted because the benchmark did not cover the complete prepared
+exchange lifetime or held-out biological organizations. The final ablation
+bundle contains 20 measurements across 10 synthetic families, retains one
+expected dropped-residual correctness failure, and promotes none. Fresh final
+acceptance passed 22/22 commands; sanitizer evidence passed 22/22 invocations
+across memcheck, racecheck, initcheck, and synccheck.

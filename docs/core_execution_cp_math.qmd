@@ -770,3 +770,14 @@ and receive the fastest validated execution strategy without manually deciding:
 - communication.
 
 The planner should make that decision with less overhead than the execution it improves.
+
+## CE-GEO execution outcome
+
+The first source-linked Volta path is integrated into core execution rather
+than retained as a separate CP-Math runtime. Prepared value packing, N=64
+output-owned WMMA, exact residual accumulation, one epilogue, persistent order,
+and pure-sparse fallback are visible to planner v2. Complete-cost evidence
+promotes that hybrid only for the measured exact-cover N=64 regime. Streams and
+changing value generations remain launch bindings; repeated values do not
+rebuild immutable geometry. The sealed hot-path validation found no allocation,
+provider search, image parse, hidden synchronization, or canonicalization.

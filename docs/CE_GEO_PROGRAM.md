@@ -205,6 +205,18 @@ Tasks with empirical outcomes explicitly allow `evaluated_not_promoted`; failure
 
 ## Completion semantics
 
+### Implemented Volta record
+
+The implementation and evidence fan-ins are now reached. The source-linked
+Volta system promotes only the measured exact-cover N=64 hybrid, retains the
+pure sparse fallback, and records other width/fusion/ablation candidates as
+calibration or `evaluated_not_promoted`. Native and explicit Torch
+compatibility matrices pass. Independent acceptance passed 22/22 commands and
+Compute Sanitizer passed 22/22 invocations after a shared-scratch lifetime race
+in segment normalization was corrected. These facts satisfy implementation and
+evidence prerequisites; the final documentation, acceptance, permission
+interlock, and closure tasks still establish the terminal checkpoints.
+
 CE-GEO is complete when all required Volta-capable foundation, implementation, operation, validation, benchmark, documentation, and integration tasks are terminal in allowed dispositions; mandatory interfaces are frozen; mandatory checkpoints are reached; correctness/compatibility gates pass; every benchmark-driven candidate has a recorded disposition including negative results; `CE-GEO-VOLTA-COMPLETE` is reached; the optional Ampere graph is loaded and proven dormant; and `CE-GEO-COMPLETE` is reached.
 
 CE-GEO completion does not require CE-AMP execution.

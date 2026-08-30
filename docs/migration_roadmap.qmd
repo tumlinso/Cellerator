@@ -552,3 +552,15 @@ batch helpers require separately scoped caller migrations before removal.
 Future work must reduce those ceilings or replace the live callers and may not
 weaken the source gate, redefine CellShard as a semantic owner, or generalize a
 compatibility helper into the prepared core.
+
+## CE-GEO Volta convergence
+
+The Volta implementation branches and shared integrations are complete through
+CE-GEO-123, and independent validation/evidence is complete through CE-GEO-109.
+The migration now has portable semantic geometry, compatible persistence,
+source-linked provider/catalog assembly, an evidence-scoped N=64 hybrid
+promotion, exact advanced relation operations, normal-build integration, and
+native/Torch compatibility validation. Remaining closure is administrative:
+publish this documentation spine, run the final acceptance/interlock audits,
+and record CE-GEO completion. CE-AMP is loaded but remains dormant because
+`CE-AMP-PERMISSION` is `not_granted`.

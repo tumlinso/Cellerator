@@ -223,6 +223,20 @@ source checkouts or installed CMake packages; neither dependency is vendored.
 
 The current local default targets Tesla V100 and `sm_70`, while stable semantic contracts must remain portable across NVIDIA generations.
 
+## CE-GEO Volta implementation status
+
+The integrated CE-GEO Volta system now includes portable CSG1 semantic
+geometry, target-specific exact MMA/residual covers, source-linked `sm_70`
+provider truth, prepared N=64 hybrid relation apply, transpose, support
+contraction, logical-edge gradients, segment operations, and biological
+relation composition. Evidence promotes the hybrid path only for the measured
+N=64 exact-cover regime on Tesla V100: complete-cost speedup over cuSPARSE was
+25.56x at reuse 1 and 6.26x at reuse 16. Other widths and the whole-exchange
+fusion prototype remain unpromoted. Fresh native and explicit Torch
+compatibility builds passed; the acceptance campaign passed 22/22 commands and
+Compute Sanitizer passed 22/22 runs. CE-AMP remains permission-gated and has
+not been authorized.
+
 ## Tests
 
 The repository currently runs focused binaries directly rather than relying on `ctest`.

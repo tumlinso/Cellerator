@@ -594,3 +594,12 @@ The Baseplane-to-Cellerator boundary is ready when:
 - sequence and state operations can share a prepared Cellerator program.
 
 The result should feel like one execution system with two specialized vocabularies, not two libraries exchanging exported tables.
+
+## CE-GEO boundary confirmation
+
+The Volta integration does not move sequence ownership into Cellerator or
+numerical planning into Baseplane. CSG1 axis/order identities and relation
+builder outputs remain the narrow seam. CE-GEO's provider, projection, and
+relation-algebra additions consume generic biological relations; they add no
+Baseplane event container and make no sequence-specific materialization a
+mandatory step.
