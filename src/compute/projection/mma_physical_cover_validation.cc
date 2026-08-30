@@ -233,6 +233,66 @@ bool validate_physical_mma_hybrid_image_v1(
                 return false;
     }
 
+    for (std::uint32_t index = 0u; index < header.residual_region_count;
+        ++index) {
+        residual_region_v1 residual{};
+        physical_group_v1 destination{};
+        if (!read_record(image, header.residual_region_offset, index, &residual)
+            || !read_record(image, header.destination_group_offset,
+                residual.destination_group_index, &destination)
+            || residual.row_count > destination.padded_count)
+            return false;
+        std::uint64_t row_end = 0u;
+        std::uint64_t column_end = 0u;
+        std::uint64_t value_end = 0u;
+        if (!add_u64(residual.row_offset_index,
+                static_cast<std::uint64_t>(residual.row_count) + 1u, &row_end)
+            || row_end > residual_row_count
+            || !add_u64(residual.column_index_offset, residual.edge_count,
+                &column_end)
+            || column_end > residual_column_count
+            || !add_u64(residual.value_map_offset, residual.edge_count,
+                &value_end)
+            || value_end > header.value_map_count)
+            return false;
+        std::uint32_t previous = 0u;
+        for (std::uint32_t row = 0u; row <= residual.row_count; ++row) {
+            std::uint32_t current = 0u;
+            if (!read_record(image, header.residual_row_offset_offset,
+                    residual.row_offset_index + row, &current)
+                || current > residual.edge_count
+                || (row == 0u && current != 0u)
+                || (row != 0u && current < previous))
+                return false;
+            previous = current;
+        }
+        if (previous != residual.edge_count) return false;
+
+        for (std::uint32_t prior_index = 0u; prior_index < index;
+            ++prior_index) {
+            residual_region_v1 prior{};
+            if (!read_record(image, header.residual_region_offset,
+                    prior_index, &prior))
+                return false;
+            const std::uint64_t prior_row_end =
+                static_cast<std::uint64_t>(prior.row_offset_index)
+                + prior.row_count + 1u;
+            const std::uint64_t prior_column_end =
+                static_cast<std::uint64_t>(prior.column_index_offset)
+                + prior.edge_count;
+            const std::uint64_t prior_value_end =
+                static_cast<std::uint64_t>(prior.value_map_offset)
+                + prior.edge_count;
+            if ((residual.row_offset_index < prior_row_end
+                    && prior.row_offset_index < row_end)
+                || (residual.column_index_offset < prior_column_end
+                    && prior.column_index_offset < column_end)
+                || (residual.value_map_offset < prior_value_end
+                    && prior.value_map_offset < value_end))
+                return false;
+        }
+    }
+
     for (std::uint32_t index = 0u; index < header.schedule_entry_count; ++index) {
         projection_schedule_entry_v1 entry{};
         if (!read_record(image, header.schedule_entry_offset, index, &entry)
@@ -295,7 +355,9 @@ bool validate_physical_mma_hybrid_image_v1(
             residual_region_v1 residual{};
             if (!read_record(image, header.residual_region_offset,
                     map.region_index, &residual)
-                || map.projection_slot >= residual.edge_count)
+                || map.projection_slot >= residual.edge_count
+                || index != static_cast<std::uint64_t>(
+                    residual.value_map_offset) + map.projection_slot)
                 return false;
         }
     }
