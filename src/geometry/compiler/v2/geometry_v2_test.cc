@@ -54,7 +54,27 @@ void test_separate_strategy_registries() {
     require(validate_semantic_strategy_registry({semantic, 2}).code
         == workload_status_code::invalid_argument);
 }
+
+void test_exact_evaluator_and_incremental_state() {
+    exact_contribution entries[2]{};
+    entries[0].logical_identity = 1;
+    entries[0].cost = {2, 3, 4, 5, 6, 7};
+    entries[1].logical_identity = (std::uint64_t{1} << 32) + 1;
+    entries[1].cost = {11, 13, 17, 19, 23, 29};
+    exact_evaluation result{};
+    require(static_cast<bool>(evaluate_exact({{21, 22}, {23, 24}, {25, 26}, entries, 2}, &result)));
+    require(result.total.persistent_bytes == 29);
+    incremental_exact_state state{};
+    require(static_cast<bool>(initialize_incremental_exact_state(result, {25, 26}, &state)));
+    exact_delta delta{};
+    delta.removed = entries[0].cost;
+    delta.removed_contributions = 1;
+    delta.next_work_window = {27, 28};
+    require(static_cast<bool>(apply_exact_delta(delta, &state)));
+    require(state.evaluated_contributions == 1 && state.generation == 2);
+}
 }
 
 int main() { test_workload_profile(); test_original_groups_and_incremental_window();
-    test_separate_strategy_registries(); return 0; }
+    test_separate_strategy_registries(); test_exact_evaluator_and_incremental_state();
+    return 0; }
