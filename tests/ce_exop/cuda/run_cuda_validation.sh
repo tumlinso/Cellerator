@@ -4,12 +4,18 @@ set -euo pipefail
 repo_root="${1:-.}"
 build_dir="${2:-${repo_root}/build-ce-exop-valid-cuda}"
 mode="${3:---build-only}"
+suite="${4:-candidate-matrix}"
 
 candidate_matrix_tests=(
     "ceGeoSm70WidthsTest|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
     "ceGeoSm70N64Test|tests/tensor_core/sm70/relation_apply_n64_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu"
     "ceGeoSm70ValuePackTest|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
     "ceGeoSm70HybridTest|tests/tensor_core/sm70/relation_apply_hybrid_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu src/compute/architecture/providers/nvidia/sm70/value_pack.cu src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu src/compute/architecture/providers/nvidia/sm70/residual.cu"
+)
+
+dynamic_value_tests=(
+    "ceGeoEdgeMapOrGateTest|tests/relation_algebra/edge_map_or_gate_test.cu|src/compute/candidate/edge_map_or_gate.cu"
+    "ceGeoSm70ValuePackTest|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
 )
 
 compile_tests() {
@@ -43,23 +49,36 @@ execute_targets() {
     done
 }
 
-compile_tests "${candidate_matrix_tests[@]}"
+case "${suite}" in
+    candidate-matrix)
+        selected_tests=("${candidate_matrix_tests[@]}")
+        ;;
+    dynamic-values)
+        selected_tests=("${dynamic_value_tests[@]}")
+        ;;
+    *)
+        echo "unknown CUDA validation suite: ${suite}" >&2
+        exit 2
+        ;;
+esac
+
+compile_tests "${selected_tests[@]}"
 
 case "${mode}" in
     --build-only)
         ;;
     --execute)
         targets=()
-        for record in "${candidate_matrix_tests[@]}"; do
+        for record in "${selected_tests[@]}"; do
             targets+=("${record%%|*}")
         done
         execute_targets "${targets[@]}"
         ;;
     *)
-        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute]" >&2
+        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values]" >&2
         exit 2
         ;;
 esac
 
-echo "CE-EXOP CUDA candidate matrix ${mode}: PASS"
+echo "CE-EXOP CUDA ${suite} ${mode}: PASS"
 echo "cuda_architectures=70"
