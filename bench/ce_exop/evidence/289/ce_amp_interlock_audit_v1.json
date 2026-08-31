@@ -1,0 +1,122 @@
+{
+  "schema": "ce-exop-ce-amp-interlock-audit-v1",
+  "task_id": "CE-EXOP-289",
+  "authority_revision": 3596,
+  "audit_result": "validated",
+  "unexpected_discrepancies": [],
+  "decision": {
+    "id": "CE-AMP-PERMISSION",
+    "value": "not_granted",
+    "allowed_values": ["not_granted", "granted"],
+    "revision": 3281,
+    "updated_at": "2026-08-31T06:28:30Z",
+    "changed_by_ce_exop_campaign": false
+  },
+  "tasks": {
+    "count": 10,
+    "ids": [
+      "CE-AMP-00", "CE-AMP-01", "CE-AMP-02", "CE-AMP-03",
+      "CE-AMP-04", "CE-AMP-05", "CE-AMP-06", "CE-AMP-07",
+      "CE-AMP-08", "CE-AMP-09"
+    ],
+    "status_counts": {"planned": 10},
+    "execution_counts": {"inactive": 7, "blocked_dependency": 3},
+    "ready": 0,
+    "results_non_null": 0,
+    "completed": 0,
+    "claims": 0,
+    "task_revision": 3281,
+    "completion_revisions_non_null": 0,
+    "permission_condition_false": 10,
+    "ce_exop_complete_condition_pending": 10,
+    "lifecycle_advanced_by_ce_exop_campaign": false
+  },
+  "preconfigured_authority_skeleton": {
+    "exists": true,
+    "interpretation": "configured but inactive; not execution evidence",
+    "run": {
+      "id": "CE-AMP-RUN-V1",
+      "status": "active",
+      "revision": 2377,
+      "created_at": "2026-08-29T19:10:06Z",
+      "updated_at": "2026-08-29T19:10:06Z",
+      "completed_at": null,
+      "predates_ce_exop_run": true
+    },
+    "lanes": {
+      "count": 7,
+      "ids": [
+        "CE-AMP-L-COORD",
+        "CE-AMP-L-PROVIDER",
+        "CE-AMP-L-KERNEL",
+        "CE-AMP-L-OPS",
+        "CE-AMP-L-VALIDATION",
+        "CE-AMP-L-BENCH",
+        "CE-AMP-L-INTEGRATION"
+      ],
+      "state_counts": {"ready": 7},
+      "context_cursor": 0,
+      "workspace_mode": "exclusive",
+      "revision": 2379,
+      "updated_at": "2026-08-29T19:11:12Z",
+      "advanced_by_ce_exop_campaign": false
+    }
+  },
+  "authority_side_effects": {
+    "active_claims": 0,
+    "active_resource_leases": 0,
+    "active_lock_leases": 0,
+    "workspaces": 0,
+    "owned_interfaces": 0,
+    "checkpoints": 0,
+    "patch_artifacts": 0
+  },
+  "git": {
+    "audit_snapshot_commit": "c028299ff85edf5947aab6ebab82eef321b86163",
+    "audit_snapshot_tree": "4081342557bb19aaf0e3ad5af279d90eecbe4ac6",
+    "main_equals_origin_main": true,
+    "ce_exop_run_started_at": "2026-08-30T11:15:02Z",
+    "commits_since_campaign_start_with_ce_amp_subject": 0,
+    "non_generated_ce_amp_source_changes": 0,
+    "non_generated_ce_amp_documentation_changes": 0,
+    "non_generated_ce_amp_evidence_changes": 0,
+    "tracked_ce_amp_runtime_or_profile_artifacts_added": 0,
+    "preexisting_interlock_evidence": {
+      "path": "bench/ce_geo/evidence/amp_interlock_audit.json",
+      "commit": "5eeac5dd206b3ac232cf0db6705aa9f54cb1cdda",
+      "commit_time": "2026-08-30T04:33:25Z",
+      "sha256": "12ffb9e62234606b291d1fae9feb8deb5d73491d660eb9e13aa8fa413169bea2",
+      "predates_ce_exop_run": true,
+      "classification": "CE-GEO interlock verification, not CE-AMP execution"
+    },
+    "diff_check": "passed"
+  },
+  "workflow_projections": {
+    "paths": [
+      "todos/ce-amp-00.md", "todos/ce-amp-01.md", "todos/ce-amp-02.md",
+      "todos/ce-amp-03.md", "todos/ce-amp-04.md", "todos/ce-amp-05.md",
+      "todos/ce-amp-06.md", "todos/ce-amp-07.md", "todos/ce-amp-08.md",
+      "todos/ce-amp-09.md"
+    ],
+    "modified_entries": 10,
+    "classification": "generated authority projections",
+    "staged": 0,
+    "committed_by_ce_exop_campaign": 0,
+    "used_as_authority": false
+  },
+  "execution_absence": {
+    "ce_amp_runtime_work": false,
+    "ce_amp_profiling_work": false,
+    "ce_amp_biological_data_work": false,
+    "ce_amp_candidate_promotion": false,
+    "ce_amp_performance_claims": false,
+    "ce_amp_preprint_work": false
+  },
+  "interlock_conditions": {
+    "CE-AMP-PERMISSION=granted": false,
+    "CE-EXOP-COMPLETE": false,
+    "ce_amp_task_ready": false,
+    "ce_amp_execution_authorized": false
+  },
+  "conclusion": "CE-AMP remains configured but dormant. CE-EXOP did not authorize, claim, resource, execute, publish, checkpoint, or promote CE-AMP work."
+}
