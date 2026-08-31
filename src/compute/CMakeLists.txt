@@ -138,6 +138,11 @@ add_library(cellerator_relation_algebra STATIC
     src/compute/operation/relation_apply_compatibility.cc
     src/compute/candidate/edge_map_or_gate.cu
     src/compute/candidate/relation_bundle.cc
+    src/compute/candidate/edge/dynamic_support_mask_v1.cu
+    src/compute/candidate/edge/gate_update_validation_v1.cc
+    src/compute/candidate/edge/general_edge_map_v1.cu
+    src/compute/candidate/edge/indexed_gates_v1.cu
+    src/compute/candidate/sparse_axis_update/sparse_axis_update_v1.cu
     ${CELLERATOR_RELATION_SEGMENT_SOURCES}
 )
 add_library(Cellerator::relation_algebra ALIAS cellerator_relation_algebra)
@@ -155,6 +160,37 @@ set_target_properties(cellerator_relation_algebra PROPERTIES
     CUDA_STANDARD 17
     CUDA_STANDARD_REQUIRED YES
 )
+
+target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+    Cellerator::relation_algebra)
+
+set(CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES
+    src/compute/candidate/relation_bundle/moments_test.cc
+    src/compute/candidate/relation_bundle/plan_validation_test.cc
+    src/compute/candidate/relation_bundle/portfolio_validation_test.cc
+    src/compute/candidate/relation_bundle/sequential_grouped_test.cc
+    src/compute/candidate/relation_bundle/shared_owner_test.cc
+    src/compute/candidate/relation_chain/two_hop_test.cc
+    ${CELLERATOR_RELATION_SEGMENT_TEST_SOURCES})
+foreach(test_source IN LISTS CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES)
+    get_filename_component(test_stem ${test_source} NAME_WE)
+    get_filename_component(test_parent ${test_source} DIRECTORY)
+    string(MD5 test_parent_hash ${test_parent})
+    set(test_target cellerator_ce_exop_relation_${test_parent_hash}_${test_stem})
+    add_executable(${test_target} ${test_source})
+    target_link_libraries(${test_target} PRIVATE Cellerator::relation_algebra)
+    target_compile_features(${test_target} PRIVATE cxx_std_17)
+    target_compile_options(${test_target} PRIVATE -UNDEBUG)
+    list(APPEND CELLERATOR_CE_EXOP_RELATION_HOST_TEST_TARGETS ${test_target})
+endforeach()
+
+add_library(cellerator_ce_exop_relation_sm70_compile OBJECT
+    src/compute/candidate/relation_bundle/sm70_compile_test.cu)
+target_include_directories(cellerator_ce_exop_relation_sm70_compile PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set_target_properties(cellerator_ce_exop_relation_sm70_compile PROPERTIES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES)
 
 # Final CE-GEO source catalog fan-in. This cold target only validates and
 # exposes immutable provider/relation fragments; it never owns selection,

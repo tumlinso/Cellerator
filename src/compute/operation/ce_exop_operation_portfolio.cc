@@ -9,6 +9,7 @@ ce_exop_operation_portfolio_v1 query_ce_exop_operation_portfolio_v1() noexcept {
     namespace residual = architecture::providers::nvidia::sm70::residual;
     namespace contract = architecture::providers::nvidia::sm70::contract;
     namespace transpose = architecture::providers::nvidia::sm70::transpose;
+    namespace gate = operation::edge;
 
     const apply::sm70_apply_inventory_v1 apply_inventory =
         apply::built_in_sm70_apply_inventory_v1();
@@ -19,6 +20,8 @@ ce_exop_operation_portfolio_v1 query_ce_exop_operation_portfolio_v1() noexcept {
         contract::catalog_v1(&contraction_count);
     const transpose::transpose_candidate_catalog_v1 transpose_inventory =
         transpose::query_transpose_candidates_v1();
+    std::size_t gate_count = 0u;
+    const gate::registry_entry_v1 *gate_inventory = gate::registry_v1(&gate_count);
 
     bool measurement_contract = true;
     for (std::size_t index = 0; index < contraction_count; ++index) {
@@ -32,11 +35,19 @@ ce_exop_operation_portfolio_v1 query_ce_exop_operation_portfolio_v1() noexcept {
         measurement_contract = measurement_contract
             && (!candidate.experimental || candidate.requires_measurement);
     }
+    for (std::size_t index = 0u; index < gate_count; ++index) {
+        measurement_contract = measurement_contract
+            && !gate_inventory[index].promoted
+            && gate_inventory[index].requires_measurement;
+    }
 
     return {apply_inventory.candidate_count,
             residual_inventory.candidate_count,
             static_cast<std::uint64_t>(contraction_count),
             transpose_inventory.candidate_count,
+            static_cast<std::uint64_t>(gate_count),
+            static_cast<std::uint64_t>(relation_bundle::candidate_count),
+            static_cast<std::uint64_t>(segment::segment_candidate_count_v2()),
             true,
             measurement_contract};
 }
