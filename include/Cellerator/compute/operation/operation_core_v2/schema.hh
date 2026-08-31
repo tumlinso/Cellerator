@@ -46,6 +46,76 @@ enum operation_requirement_flag : std::uint32_t {
     dynamic_support_mask = 1u << 6u
 };
 
+enum class rounding_policy : std::uint8_t {
+    nearest_even = 1,
+    toward_zero = 2,
+    stochastic = 3
+};
+
+enum class saturation_policy : std::uint8_t {
+    none = 1,
+    saturate = 2
+};
+
+enum class nan_policy : std::uint8_t {
+    propagate = 1,
+    reject = 2
+};
+
+enum class infinity_policy : std::uint8_t {
+    propagate = 1,
+    reject = 2,
+    saturate = 3
+};
+
+enum class destination_update : std::uint8_t {
+    overwrite = 1,
+    accumulate = 2,
+    affine_accumulate = 3,
+    partial_write = 4
+};
+
+enum class output_order_requirement : std::uint8_t {
+    preserve_persistent = 1,
+    packed_allowed = 2,
+    canonical_required = 3
+};
+
+inline constexpr std::uint32_t invalid_scalar_binding = 0xffffffffu;
+
+struct numerical_policy {
+    execution::numeric_type relation_storage = execution::numeric_type::invalid;
+    execution::numeric_type state_storage = execution::numeric_type::invalid;
+    execution::numeric_type multiply = execution::numeric_type::invalid;
+    execution::numeric_type accumulation = execution::numeric_type::invalid;
+    execution::numeric_type output_storage = execution::numeric_type::invalid;
+    execution::numeric_type scalar = execution::numeric_type::invalid;
+    rounding_policy rounding = rounding_policy::nearest_even;
+    saturation_policy saturation = saturation_policy::none;
+    nan_policy nan = nan_policy::propagate;
+    infinity_policy infinity = infinity_policy::propagate;
+};
+
+struct output_contract {
+    execution::persistent_axis_identity produced_axis{};
+    execution::persistent_axis_identity canonical_axis{};
+    destination_update update = destination_update::overwrite;
+    output_order_requirement order = output_order_requirement::preserve_persistent;
+    bool explicit_order_transform = false;
+    bool input_output_aliasing_legal = false;
+    std::uint32_t alpha_binding = invalid_scalar_binding;
+    std::uint32_t beta_binding = invalid_scalar_binding;
+};
+
+struct determinism_contract {
+    bool deterministic_required = true;
+    bool stable_work_order = true;
+    bool fixed_reduction_tree = true;
+    bool nondeterministic_atomics_permitted = false;
+    std::uint32_t deterministic_seed_binding = invalid_scalar_binding;
+    std::uint32_t reserved = 0;
+};
+
 struct typed_relation {
     execution::structure_id structure{};
     execution::structure_epoch epoch{};
@@ -80,6 +150,9 @@ struct operation_problem {
     execution::persistent_axis_identity result_axis{};
     execution::order_id logical_edge_order{};
     execution::value_generation expected_value_generation{};
+    numerical_policy numeric{};
+    output_contract output{};
+    determinism_contract determinism{};
     std::uint64_t logical_work_items = 0;
     std::uint32_t dense_width = 0;
     std::uint32_t requirement_flags = 0;
@@ -94,6 +167,9 @@ enum class schema_status_code : std::uint8_t {
     invalid_axis,
     invalid_orientation,
     invalid_value_ownership,
+    invalid_numeric_policy,
+    invalid_output_contract,
+    invalid_determinism_contract,
     invalid_generation,
     invalid_shape,
     invalid_argument
@@ -122,12 +198,20 @@ constexpr bool valid_operation_kind(operation_kind kind) noexcept {
 }
 
 schema_status validate_typed_relation(const typed_relation &relation) noexcept;
+schema_status validate_numerical_policy(const numerical_policy &policy) noexcept;
+schema_status validate_output_contract(const output_contract &contract) noexcept;
+schema_status validate_determinism_contract(
+    const determinism_contract &contract,
+    const numerical_policy &numeric) noexcept;
 schema_status validate_operation_problem(const operation_problem &problem) noexcept;
 
 static_assert(std::is_trivially_copyable_v<stable_id>);
 static_assert(std::is_trivially_copyable_v<typed_relation>);
 static_assert(std::is_trivially_copyable_v<typed_relation_view>);
 static_assert(std::is_trivially_copyable_v<value_generation_contract>);
+static_assert(std::is_trivially_copyable_v<numerical_policy>);
+static_assert(std::is_trivially_copyable_v<output_contract>);
+static_assert(std::is_trivially_copyable_v<determinism_contract>);
 static_assert(std::is_trivially_copyable_v<operation_problem>);
 
 }  // namespace cellerator::compute::operation::v2

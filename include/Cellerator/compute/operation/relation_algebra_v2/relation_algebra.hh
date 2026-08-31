@@ -55,6 +55,18 @@ enum relation_value_component_flag : std::uint32_t {
     value_gradient_plane = 1u << 5u
 };
 
+enum relation_semantic_flag : std::uint32_t {
+    alpha_applied_once = 1u << 0u,
+    beta_applied_once = 1u << 1u,
+    stable_logical_edge_output = 1u << 2u,
+    empty_sum_is_zero = 1u << 3u,
+    empty_max_is_negative_infinity = 1u << 4u,
+    empty_normalization_has_no_output = 1u << 5u,
+    singleton_normalization_is_exact = 1u << 6u,
+    projection_aware_edge_values = 1u << 7u,
+    support_superset_preserved = 1u << 8u
+};
+
 struct relation_value_binding_contract {
     execution::structure_id structure{};
     execution::structure_epoch epoch{};
@@ -92,6 +104,8 @@ struct relation_algebra_problem {
     edge_operation edge = edge_operation::none;
     gate_indexing gate = gate_indexing::none;
     std::uint8_t reserved[5]{};
+    std::uint32_t semantic_flags = 0;
+    std::uint32_t reserved_flags = 0;
 };
 
 schema_status validate_relation_value_binding(
