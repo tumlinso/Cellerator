@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-280: Integrate complete CE-EXOP source and package surface
 
-Task revision: `3578`; current project revision is in `todo-status.md`.
+Task revision: `3579`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver integrate complete ce-exop source and package surface exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

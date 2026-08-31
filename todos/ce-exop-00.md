@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-00: Extended operation portfolio, scalable geometry, and profiler readiness
 
-Task revision: `3281`; current project revision is in `todo-status.md`.
+Task revision: `3600`; current project revision is in `todo-status.md`.
 
 ## Objective
 Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `inactive`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
