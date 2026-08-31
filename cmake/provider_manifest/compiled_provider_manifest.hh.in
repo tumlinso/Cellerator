@@ -1,0 +1,21 @@
+#pragma once
+
+#include <Cellerator/compute/architecture/provider.hh>
+
+@CELLERATOR_PROVIDER_MANIFEST_DECLARATIONS@
+
+namespace cellerator::compute::architecture {
+
+inline constexpr provider_registration_function_v1
+    compiled_provider_registrations_v1[]{
+@CELLERATOR_PROVIDER_MANIFEST_ENTRIES@
+        nullptr};
+
+inline constexpr compiled_provider_manifest_v1 compiled_provider_manifest_v1_instance{
+    compiled_provider_registrations_v1,
+    static_cast<std::uint32_t>(
+        sizeof(compiled_provider_registrations_v1)
+            / sizeof(compiled_provider_registrations_v1[0])
+        - 1u)};
+
+} // namespace cellerator::compute::architecture
