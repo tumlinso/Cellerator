@@ -28,6 +28,10 @@ target_compile_features(cellerator_identity_registry PUBLIC cxx_std_17)
 add_library(cellerator_geometry_acquisition STATIC
     src/execution/geometry_acquisition.cc
     src/execution/geometry_acquisition_diagnostics.cc
+    src/execution/geometry_acquisition_v2/assembly.cc
+    src/execution/geometry_acquisition_v2/external_payload.cc
+    src/execution/geometry_acquisition_v2/projections.cc
+    src/execution/geometry_acquisition_v2/schema.cc
     src/execution/projection_activation_v2.cc
 )
 add_library(Cellerator::geometry_acquisition ALIAS
