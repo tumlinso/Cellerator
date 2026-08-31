@@ -451,6 +451,37 @@ endif()
 include(bench/CMakeLists.txt)
 if(CELLERATOR_BUILD_TESTS)
     include(tests/CMakeLists.txt)
+
+    # CE-EXOP final acceptance entry points. These targets keep correctness,
+    # profiler-fixture validation, and CUDA compile validation explicit. The
+    # CUDA target compiles sm_70 binaries only; device execution remains under
+    # Project Control resource authority.
+    add_custom_target(cellerator_ce_exop_host_acceptance
+        COMMAND ${CMAKE_COMMAND} -E env
+            CXX=${CMAKE_CXX_COMPILER}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/ce_exop/host/run_host_acceptance.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        USES_TERMINAL)
+
+    add_custom_target(cellerator_ce_exop_profiler_acceptance
+        COMMAND ${CMAKE_COMMAND} -E env
+            CXX=${CMAKE_CXX_COMPILER}
+            CUDA_ROOT=${CUDAToolkit_ROOT}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/profiling/ce_exop/run_fixture_validation.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        USES_TERMINAL)
+
+    add_custom_target(cellerator_ce_exop_cuda_compile_acceptance
+        COMMAND ${CMAKE_COMMAND} -E env
+            PATH=${CUDAToolkit_BIN_DIR}:$ENV{PATH}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/ce_exop/cuda/run_cuda_validation.sh
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_BINARY_DIR}/ce-exop-cuda-validation
+            --build-only
+            all
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        USES_TERMINAL)
 endif()
 
 add_subdirectory(compat)
