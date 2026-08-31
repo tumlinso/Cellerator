@@ -20,6 +20,7 @@ add_library(cellerator_semantic_geometry_v1 STATIC
     compiler/compile_geometry.cc
     compiler/cpbp_v1_compatibility.cc
     compiler/identity_strategy.cc
+    compiler/optimizer_portfolio.cc
     compiler/relation_cover.cc
     compiler/strategy_registry.cc
     compiler/work_layout.cc
@@ -30,6 +31,27 @@ add_library(cellerator_semantic_geometry_v1 STATIC
     strategy/support_affinity.cc
     strategy/support_multiresolution.cc
     support_atlas.cc
+    optimizer/device/device_assisted_disposition.cc
+    optimizer/device/exact_census.cc
+    optimizer/device/parity_validation.cc
+    optimizer/device/proposal_scoring.cc
+    optimizer/greedy/greedy_validation.cc
+    optimizer/greedy/joint_greedy.cc
+    optimizer/greedy/joint_grouping_state.cc
+    optimizer/greedy/multi_operation_frontier.cc
+    optimizer/multilevel/affinity_hierarchy_v1.cc
+    optimizer/multilevel/coarse_refinement_v1.cc
+    optimizer/multilevel/streaming_provenance_v1.cc
+    optimizer/multilevel/validation_v1.cc
+    optimizer/multilevel/workload_affinity_v1.cc
+    optimizer/oracle/exact_oracle.cc
+    optimizer/oracle/exact_portfolio.cc
+    optimizer/oracle/external_snapshot.cc
+    optimizer/oracle/optimizer_portfolio_contract.cc
+    optimizer/overlap/bounded_overlap_solver.cc
+    optimizer/overlap/logical_mapping.cc
+    optimizer/overlap/overlap_contract.cc
+    optimizer/overlap/work_window.cc
 )
 add_library(Cellerator::semantic_geometry_v1 ALIAS
     cellerator_semantic_geometry_v1)
@@ -42,6 +64,67 @@ target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
     Cellerator::compute_sampling
 )
 target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_17)
+
+add_library(cellerator_geometry_optimizer_device_v1 STATIC
+    optimizer/device/exact_census.cu
+    optimizer/device/proposal_scoring.cu
+)
+add_library(Cellerator::geometry_optimizer_device_v1 ALIAS
+    cellerator_geometry_optimizer_device_v1)
+target_include_directories(cellerator_geometry_optimizer_device_v1 PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_geometry_optimizer_device_v1 PUBLIC
+    Cellerator::semantic_geometry_v1
+    CUDA::cudart
+)
+target_compile_features(cellerator_geometry_optimizer_device_v1 PUBLIC cxx_std_17)
+set_target_properties(cellerator_geometry_optimizer_device_v1 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+)
+if(COMMAND cellerator_enable_perf)
+    cellerator_enable_perf(cellerator_geometry_optimizer_device_v1)
+endif()
+
+add_executable(celleratorGeometryOptimizerPortfolioTest
+    compiler/optimizer_portfolio_test.cc
+)
+target_link_libraries(celleratorGeometryOptimizerPortfolioTest PRIVATE
+    Cellerator::semantic_geometry_v1
+)
+set_target_properties(celleratorGeometryOptimizerPortfolioTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+
+add_executable(celleratorGeometryOverlapContractTest
+    optimizer/overlap/overlap_contract_test.cc
+)
+target_link_libraries(celleratorGeometryOverlapContractTest PRIVATE
+    Cellerator::semantic_geometry_v1
+)
+set_target_properties(celleratorGeometryOverlapContractTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+
+add_executable(celleratorGeometryOverlapValidationTest
+    optimizer/overlap/overlap_validation_test.cc
+)
+target_link_libraries(celleratorGeometryOverlapValidationTest PRIVATE
+    Cellerator::semantic_geometry_v1
+)
+set_target_properties(celleratorGeometryOverlapValidationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
 add_library(CellPack::cellpack ALIAS cellpack)
 target_include_directories(cellpack PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
