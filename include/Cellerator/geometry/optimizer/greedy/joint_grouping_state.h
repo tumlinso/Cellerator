@@ -52,6 +52,9 @@ struct mutable_joint_grouping_state {
     joint_grouping_storage storage{};
     std::uint32_t source_group_count = 0;
     std::uint32_t destination_group_count = 0;
+    // Number of keyed rectangles with a nonzero contribution census. The hash
+    // table may retain zero-count keys created by evaluated and rolled-back
+    // moves so lookup never needs deletion or rehashing.
     std::uint32_t occupied_rectangle_count = 0;
     std::uint64_t generation = 0;
 };
