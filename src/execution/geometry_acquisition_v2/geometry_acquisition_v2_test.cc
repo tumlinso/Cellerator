@@ -104,10 +104,52 @@ void test_default_assembly() {
         == status_code::invalid_argument);
 }
 
+void test_chunked_projection_and_explicit_fallback() {
+    projection_requirement requirements[2]{};
+    requirements[0].candidate = {41, 42};
+    requirements[0].logical_work_items = (std::uint64_t{1} << 32) + 5;
+    requirements[1].candidate = {43, 44};
+    requirements[1].logical_work_items = 7;
+    acquisition_request request{};
+    request.structure.low = 45;
+    request.epoch.value = 1;
+    std::uint64_t source = 0;
+    request.source = {&source, sizeof(source)};
+    request.projection_requirements = requirements;
+    request.projection_requirement_count = 2;
+
+    projection_record projections[2]{};
+    projections[0] = {{41, 42}, {51, 52}, requirements[0].logical_work_items,
+        requirements[0].logical_work_items + 3, 0, 2,
+        logical_primary_values, true, {}};
+    projections[1] = {{43, 44}, {53, 54}, 7, 8, 2, 1,
+        logical_primary_values, true, {}};
+    projection_chunk chunks[3]{};
+    chunks[0] = {0, 0, 0, 0xffffffffu, 32, {}, 0, 16};
+    chunks[1] = {0, 1, 0xffffffffu, 6, 16, {}, 16, 16};
+    chunks[2] = {1, 0, 0, 7, 16, {}, 32, 16};
+    projection_set set{projections, 2, chunks, 3, 48};
+    require(static_cast<bool>(validate_projection_set(request, set)));
+    chunks[1].logical_begin = 0;
+    require(validate_projection_set(request, set).code == status_code::invalid_result);
+    chunks[1].logical_begin = 0xffffffffu;
+
+    request.preferred_route = route::load_cpe2;
+    request.cpe2 = cpe2_disposition::incompatible;
+    route_resolution resolution{};
+    require(resolve_route(request, &resolution).code
+        == status_code::incompatible_cpe2_rejected);
+    request.fallback = fallback_policy::rebuild_from_embedded_csg1;
+    require(static_cast<bool>(resolve_route(request, &resolution)));
+    require(resolution.selected == route::load_csg1
+        && resolution.rebuilt_from_embedded_csg1);
+}
+
 }  // namespace
 
 int main() {
     test_two_pass_facade();
     test_default_assembly();
+    test_chunked_projection_and_explicit_fallback();
     return 0;
 }
