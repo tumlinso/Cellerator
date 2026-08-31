@@ -26,3 +26,6 @@ python3 "${repo_root}/tests/profiling/ce_exop/validate_manifests.py" \
 
 python3 "${repo_root}/tests/profiling/ce_exop/validate_generic_export.py" \
     "${repo_root}/bench/ce_exop/generic_partition_export_v1.json"
+
+python3 "${repo_root}/tests/profiling/ce_exop/validate_deferred_requirements.py" \
+    "${repo_root}/bench/ce_exop/deferred_profiling_requirements_v1.json"
