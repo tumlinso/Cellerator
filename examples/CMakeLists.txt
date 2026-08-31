@@ -1,5 +1,6 @@
 include(examples/ce_geo/CMakeLists.txt)
 
+if(TARGET CellShard::runtime)
 add_library(cellerator_state_reduce_cuda STATIC
     examples/models/state_reduce.cu
 )
@@ -23,3 +24,4 @@ target_include_directories(cellerator_developmental_time_trajectory_cuda PRIVATE
 target_link_libraries(cellerator_developmental_time_trajectory_cuda PRIVATE cellerator_developmental_time_cuda cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
 set_target_properties(cellerator_developmental_time_trajectory_cuda PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(cellerator_developmental_time_trajectory_cuda)
+endif()

@@ -258,22 +258,24 @@ set_target_properties(cellpack_persistent_packing_payload PROPERTIES
 )
 cellerator_enable_perf(cellpack_persistent_packing_payload)
 
-add_executable(cellPackPersistentPackingPayloadTest
-    tests/geometry/persistent_packing_payload_test.cu
-)
-target_link_libraries(cellPackPersistentPackingPayloadTest PRIVATE
-    CellPack::persistent_packing_payload
-    CellPack::feature_weighted_row_reduction_cuda
-    CellShard::inspect
-    CUDA::cudart
-)
-set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
-cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
+if(TARGET CellShard::inspect)
+    add_executable(cellPackPersistentPackingPayloadTest
+        tests/geometry/persistent_packing_payload_test.cu
+    )
+    target_link_libraries(cellPackPersistentPackingPayloadTest PRIVATE
+        CellPack::persistent_packing_payload
+        CellPack::feature_weighted_row_reduction_cuda
+        CellShard::inspect
+        CUDA::cudart
+    )
+    set_target_properties(cellPackPersistentPackingPayloadTest PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+    )
+    cellerator_enable_perf(cellPackPersistentPackingPayloadTest)
+endif()
 
 # CE-ARCH-60: recovered architecture foundations are reusable targets rather
 # than standalone source bursts. CellPack remains the owner of semantic
@@ -344,32 +346,34 @@ set_target_properties(cellPackExecutionImageV2Test PROPERTIES
 # The device proof is intentionally a separately scheduled executable. It
 # performs one opaque CellShard upload and consumes a CPE2-prebound projection
 # directly on the caller stream; resource-aware CUDA gates launch it.
-add_executable(cellPackExecutionImageV2DeviceTest
-    tests/geometry/persistence/execution_image_v2_device_test.cu
-)
-target_link_libraries(cellPackExecutionImageV2DeviceTest PRIVATE
-    CellPack::execution_image_v2
-    CellShard::inspect
-    CUDA::cudart
-)
-set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
+if(TARGET CellShard::inspect)
+    add_executable(cellPackExecutionImageV2DeviceTest
+        tests/geometry/persistence/execution_image_v2_device_test.cu
+    )
+    target_link_libraries(cellPackExecutionImageV2DeviceTest PRIVATE
+        CellPack::execution_image_v2
+        CellShard::inspect
+        CUDA::cudart
+    )
+    set_target_properties(cellPackExecutionImageV2DeviceTest PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+    )
 
-add_executable(celleratorOpaqueExecutionArtifactTest
-    tests/persistence/opaque_execution_artifact_test.cu
-)
-target_link_libraries(celleratorOpaqueExecutionArtifactTest PRIVATE
-    Cellerator::opaque_execution_artifact
-    CellShard::inspect
-    CUDA::cudart
-)
-set_target_properties(celleratorOpaqueExecutionArtifactTest PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CUDA_STANDARD 17
-    CUDA_STANDARD_REQUIRED YES
-)
+    add_executable(celleratorOpaqueExecutionArtifactTest
+        tests/persistence/opaque_execution_artifact_test.cu
+    )
+    target_link_libraries(celleratorOpaqueExecutionArtifactTest PRIVATE
+        Cellerator::opaque_execution_artifact
+        CellShard::inspect
+        CUDA::cudart
+    )
+    set_target_properties(celleratorOpaqueExecutionArtifactTest PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CUDA_STANDARD 17
+        CUDA_STANDARD_REQUIRED YES
+    )
+endif()

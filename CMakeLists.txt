@@ -54,6 +54,7 @@ find_package(PkgConfig QUIET)
 # Native Cellerator is the default build. CelleraTorch remains an explicit
 # compatibility adapter and is the only path that may discover Torch.
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch compatibility component targets" OFF)
+option(CELLERATOR_ENABLE_CELLSHARD "Build the embedded CellShard component" OFF)
 option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
@@ -84,7 +85,7 @@ set(CELLERATOR_DEFAULT_GRADIENT_CLIP_NORM "1.0" CACHE STRING
 set(CELLERATOR_DEFAULT_GRADIENT_CLIP_VALUE "1.0" CACHE STRING
     "Default value gradient clipping threshold for future model configs")
 set(CELLERATOR_CELLSHARD_SOURCE_DIR "" CACHE PATH
-    "Optional local CellShard source checkout. Defaults to ../CellShard before find_package(CellShard).")
+    "Optional CellShard source override. Defaults to components/CellShard when CELLERATOR_ENABLE_CELLSHARD is enabled.")
 set(BASEPLANE_SOURCE_DIR "" CACHE PATH
     "Optional local Baseplane source checkout. Defaults to ../Baseplane before find_package(Baseplane).")
 
@@ -211,19 +212,23 @@ function(cellerator_add_cellshard_source cellshard_source_dir)
     endif()
     set(CELLSHARD_CELLERATOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH
         "Cellerator source checkout used by CellShard compatibility conversion." FORCE)
+    if(NOT TARGET cellshard_cellerator_compute_matrix_convert)
+        add_library(cellshard_cellerator_compute_matrix_convert INTERFACE)
+        target_link_libraries(cellshard_cellerator_compute_matrix_convert INTERFACE
+            $<BUILD_INTERFACE:cellerator_compute_matrix_convert>)
+    endif()
     add_subdirectory("${cellshard_source_dir}" "${CMAKE_CURRENT_BINARY_DIR}/CellShard" EXCLUDE_FROM_ALL)
 endfunction()
 
-if(CELLERATOR_CELLSHARD_SOURCE_DIR)
-    cellerator_add_cellshard_source("${CELLERATOR_CELLSHARD_SOURCE_DIR}")
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/CMakeLists.txt")
-    cellerator_add_cellshard_source("${CMAKE_CURRENT_SOURCE_DIR}/../CellShard")
-else()
-    find_package(CellShard CONFIG REQUIRED)
-endif()
-
-if(NOT TARGET CellShard::runtime)
-    message(FATAL_ERROR "Cellerator requires CellShard::runtime")
+if(CELLERATOR_ENABLE_CELLSHARD)
+    if(CELLERATOR_CELLSHARD_SOURCE_DIR)
+        cellerator_add_cellshard_source("${CELLERATOR_CELLSHARD_SOURCE_DIR}")
+    else()
+        cellerator_add_cellshard_source("${CMAKE_CURRENT_SOURCE_DIR}/components/CellShard")
+    endif()
+    if(NOT TARGET CellShard::runtime)
+        message(FATAL_ERROR "CELLERATOR_ENABLE_CELLSHARD requires CellShard::runtime")
+    endif()
 endif()
 function(cellerator_add_baseplane_source baseplane_source_dir)
     if(NOT EXISTS "${baseplane_source_dir}/CMakeLists.txt")

@@ -8,13 +8,15 @@ target_link_libraries(quantizedMatrixBench PRIVATE CUDA::cudart)
 set_target_properties(quantizedMatrixBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 cellerator_enable_perf(quantizedMatrixBench)
 
-add_executable(quantizedTransferSpmmBench
-    bench/quantized_transfer_spmm_bench.cu
-)
-target_include_directories(quantizedTransferSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
-set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
-cellerator_enable_perf(quantizedTransferSpmmBench)
+if(TARGET CellShard::runtime)
+    add_executable(quantizedTransferSpmmBench
+        bench/quantized_transfer_spmm_bench.cu
+    )
+    target_include_directories(quantizedTransferSpmmBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(quantizedTransferSpmmBench PRIVATE cellerator_compute_sparse_project cellerator_compute_sparse_ops Cellerator::runtime_fleet CellShard::runtime CUDA::cudart CUDA::cusparse)
+    set_target_properties(quantizedTransferSpmmBench PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+    cellerator_enable_perf(quantizedTransferSpmmBench)
+endif()
 
 add_executable(sparseOpsBench
     bench/sparse_ops_bench.cu
