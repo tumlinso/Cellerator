@@ -139,4 +139,43 @@ status_v1 enqueue_segment_statistic_unfused_v1(
 status_v1 enqueue_contract_segment_statistic_fused_v1(
     const contract_composition_request_v1 &request) noexcept;
 
+struct sparse_exchange_request_v1 {
+    const contract_edge_v1 *edges = nullptr;
+    const std::uint32_t *destination_segment_offsets = nullptr;
+    const float *source_key = nullptr;
+    const float *destination_query = nullptr;
+    const float *source_value = nullptr;
+    const float *per_edge_gate = nullptr;
+    float *contraction_workspace = nullptr;
+    float *mapped_workspace = nullptr;
+    float *normalized_workspace = nullptr;
+    float *destination_output = nullptr;
+    std::uint32_t edge_count = 0u;
+    std::uint32_t source_count = 0u;
+    std::uint32_t destination_count = 0u;
+    std::uint32_t contraction_width = 0u;
+    std::uint32_t value_width = 0u;
+    float map_scale = 1.0f;
+    float map_bias = 0.0f;
+    std::uint64_t structure_id = 0u;
+    std::uint64_t structure_epoch = 0u;
+    std::uint64_t value_generation = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+status_v1 validate_sparse_exchange_request_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_exchange_contraction_unfused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_exchange_map_gate_unfused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_exchange_normalization_unfused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_exchange_apply_unfused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_normalize_apply_fused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+status_v1 enqueue_sparse_exchange_fused_v1(
+    const sparse_exchange_request_v1 &request) noexcept;
+
 } // namespace cellerator::compute::operation::fusion
