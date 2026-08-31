@@ -20,6 +20,44 @@ struct joint_greedy_cost_policy {
     std::int64_t rectangle_setup_cost = 0;
     std::int64_t dense_contribution_cost = 0;
     std::int64_t residual_contribution_cost = 0;
+    std::uint64_t dense_capacity_per_rectangle = 0;
+    std::uint64_t minimum_dense_contributions = 1;
+};
+
+enum class joint_group_axis : std::uint32_t {
+    source = 0,
+    destination = 1,
+};
+
+struct joint_assignment_change {
+    joint_group_axis axis = joint_group_axis::source;
+    std::uint32_t item = 0;
+    std::uint32_t target_group = 0;
+};
+
+struct joint_assignment_batch_view {
+    const joint_assignment_change* changes = nullptr;
+    std::uint32_t change_count = 0;
+};
+
+struct joint_refinement_workspace {
+    std::uint64_t* source_marks = nullptr;
+    std::uint32_t source_mark_capacity = 0;
+    std::uint64_t* destination_marks = nullptr;
+    std::uint32_t destination_mark_capacity = 0;
+    std::uint32_t* original_groups = nullptr;
+    std::uint32_t original_group_capacity = 0;
+    // Caller advances this nonzero epoch for each evaluation/application. No
+    // O(axis-size) clearing is performed between cold proposals.
+    std::uint64_t mark_epoch = 0;
+};
+
+struct joint_refinement_evaluation {
+    joint_grouping_status status = joint_grouping_status::invalid_argument;
+    std::int64_t objective_delta = 0;
+    std::uint64_t incident_edge_visits = 0;
+    std::uint64_t state_generation = 0;
+    bool admissible = false;
 };
 
 struct joint_greedy_options {
@@ -46,6 +84,26 @@ joint_grouping_status compute_joint_greedy_objective(
         const mutable_joint_grouping_state& state,
         const joint_greedy_cost_policy& policy,
         std::int64_t* objective) noexcept;
+
+// Exact transactional evaluation for any batch of unique item reassignments.
+// Two-item batches express swaps; larger batches express split/merge,
+// agglomeration, and admissible work-item exchange. Rectangle activation and
+// removal follow exact zero/nonzero census transitions.
+joint_refinement_evaluation evaluate_joint_refinement_batch(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace) noexcept;
+
+joint_refinement_evaluation apply_joint_refinement_batch(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace,
+        std::uint64_t expected_generation,
+        std::int64_t expected_objective_delta) noexcept;
 
 // Alternates real source and destination sweeps. Every trial mutates the exact
 // rectangle census and rolls it back before the next candidate; accepted moves
