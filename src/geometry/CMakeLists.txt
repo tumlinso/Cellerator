@@ -20,6 +20,7 @@ add_library(cellerator_semantic_geometry_v1 STATIC
     compiler/compile_geometry.cc
     compiler/cpbp_v1_compatibility.cc
     compiler/identity_strategy.cc
+    compiler/geometry_value_integration.cc
     compiler/optimizer_portfolio.cc
     compiler/relation_cover.cc
     compiler/strategy_registry.cc
@@ -65,6 +66,27 @@ target_link_libraries(cellerator_semantic_geometry_v1 PUBLIC
 )
 target_compile_features(cellerator_semantic_geometry_v1 PUBLIC cxx_std_17)
 
+# Mutable value generations remain a separate execution-owned target from the
+# immutable semantic geometry/compiler target above.
+add_library(cellerator_projection_value_plane_v1 STATIC
+    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/canonical_transfer_v1.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/composite_plane_v1.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/generation_publication_v1.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/validation_v1.cc
+    ${PROJECT_SOURCE_DIR}/src/execution/projection_value_plane/value_plane_v1.cc
+    ${PROJECT_SOURCE_DIR}/src/compute/architecture/providers/nvidia/sm70/value_pack/value_pack_portfolio_v1.cc
+)
+add_library(Cellerator::projection_value_plane_v1 ALIAS
+    cellerator_projection_value_plane_v1)
+target_include_directories(cellerator_projection_value_plane_v1 PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_projection_value_plane_v1 PUBLIC
+    Cellerator::biological_abi
+)
+target_compile_features(cellerator_projection_value_plane_v1 PUBLIC cxx_std_17)
+
 add_library(cellerator_geometry_optimizer_device_v1 STATIC
     optimizer/device/exact_census.cu
     optimizer/device/proposal_scoring.cu
@@ -92,6 +114,19 @@ endif()
 
 add_executable(celleratorGeometryOptimizerPortfolioTest
     compiler/optimizer_portfolio_test.cc
+)
+
+add_executable(celleratorGeometryValueIntegrationTest
+    compiler/geometry_value_integration_test.cc
+)
+target_link_libraries(celleratorGeometryValueIntegrationTest PRIVATE
+    Cellerator::semantic_geometry_v1
+    Cellerator::projection_value_plane_v1
+)
+set_target_properties(celleratorGeometryValueIntegrationTest PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 target_link_libraries(celleratorGeometryOptimizerPortfolioTest PRIVATE
     Cellerator::semantic_geometry_v1
