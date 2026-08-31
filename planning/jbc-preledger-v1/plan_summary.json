@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "total_tasks": 415,
+  "repository_counts": {
+    "Cellerator": 100,
+    "CellShard": 315
+  },
+  "workstream_counts": {
+    "CEBOOT": 6,
+    "CEIF": 12,
+    "CEDEC": 18,
+    "CEFRAG": 14,
+    "CEMULTI": 10,
+    "CEPLANE": 10,
+    "CERESUME": 10,
+    "CEXOP": 8,
+    "CECOST": 6,
+    "CEVAL": 6,
+    "CSBOOT": 6,
+    "CSATOM": 20,
+    "CSEVID": 16,
+    "CSCERT": 16,
+    "CSSS": 10,
+    "CSCO": 10,
+    "CSBC": 8,
+    "CSOC": 6,
+    "CSMF": 8,
+    "CSFT": 6,
+    "CSTR": 12,
+    "CSMM": 10,
+    "CSSQ": 6,
+    "CSOT": 8,
+    "CSCOMP": 24,
+    "CSGRAM": 10,
+    "CSIGRAM": 10,
+    "CSBASIS": 18,
+    "CSSUPER": 8,
+    "CSPART": 18,
+    "CSSTORE": 29,
+    "CSGLOBAL": 14,
+    "CSRUNTIME": 22,
+    "CSVAL": 20
+  },
+  "classification_counts": {
+    "validation/evidence": 44,
+    "settled required mechanism": 304,
+    "compatibility/migration": 5,
+    "experimental candidate; baseline and negative result required": 13,
+    "generic infrastructure supporting the biology-native compiler": 49
+  },
+  "interface_count": 20,
+  "promotion_gate_count": 18,
+  "lane_count": 34,
+  "immediate_safe_fanout": 24,
+  "peak_safe_fanout": 27,
+  "major_barriers": [
+    "JBC-G0-LIVE-BASELINE",
+    "JBC-G1-ATOM-THIN-WAIST",
+    "JBC-G2-EVIDENCE-CERTIFICATION",
+    "JBC-G3-CELLERATOR-FRAGMENT",
+    "JBC-G4-COMPOSITION-BASIS",
+    "JBC-G5-PARTIAL-ARTIFACT",
+    "JBC-G6-RUNTIME-SUBSTRATE",
+    "JBC-G7-VERTICAL-SLICES"
+  ],
+  "remaining_planner_decisions": [
+    "Choose exact Todo priorities, run IDs, and plan-schema fields after rereading the current Todo Orchestrator skill.",
+    "Choose final atom-store format name/magics after live collision audit; the architecture and sections are already fixed.",
+    "Resolve the canonical exported numaBraid CMake target/package name during the transport preflight.",
+    "Populate numeric promotion thresholds from local calibration; do not invent them in the ledger."
+  ],
+  "live_contradictions": [
+    "Cellerator components/README.md currently says components do not own planning/runtime; CellShard requires a privileged compiler-component category.",
+    "CellShard AGENTS.md and FORMAT_ROLES center storage/staging and CSH5\u2192CSPACK; the successor charter must supersede that while preserving compatibility.",
+    "Cellerator exact CSG1 cover cannot represent overlapping proposals; use a sibling CellShard evidence atlas.",
+    "program_v2 is narrow; first use an atom-fragment wrapper rather than premature program_v3.",
+    "Cellerator uses 128-bit stable IDs while CellShard strong IDs are 64-bit; use explicit namespace-qualified adapters.",
+    "The two Todo authorities lack native cross-project interface links in the current observation; use mirrored receipts."
+  ]
+}

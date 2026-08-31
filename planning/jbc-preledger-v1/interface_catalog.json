@@ -1,0 +1,297 @@
+[
+  {
+    "id": "JBC-I01",
+    "name": "Namespace-qualified persistent identity",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard atom core",
+      "all operation providers"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+      "include/Cellerator/execution/identity.hh",
+      "include/CellShard/identity/strong_id.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/joint_compiler/persistent_identity_v1.hh",
+    "semantics": "Explicit producer namespace plus local 64-bit identity; adapters preserve legacy IDs without hashing pointers or conflating content identity."
+  },
+  {
+    "id": "JBC-I02",
+    "name": "Exact logical coverage and role",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard atoms",
+      "Cellerator fragments",
+      "external providers"
+    ],
+    "existing": [
+      "include/Cellerator/geometry/relation_cover.hh",
+      "include/Cellerator/execution/index_space/hierarchical_index_space_v1.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/joint_compiler/logical_coverage_v1.hh",
+    "semantics": "Typed axes, structure/epoch, exact member or edge set, role, canonical maps, global 64-bit identity, compact local indexes; proposal/halo/replica/contribution roles are distinct."
+  },
+  {
+    "id": "JBC-I03",
+    "name": "Atom requirement descriptor",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard materializer and linker"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/candidate_catalog_v3/",
+      "include/Cellerator/execution/geometry_acquisition_v2/schema.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/joint_compiler/atom_requirement_v1.hh",
+    "semantics": "Coverage, planes, order, numeric/index types, extent and alignment rules, generation, target, graph-stability, and accepted transform routes."
+  },
+  {
+    "id": "JBC-I04",
+    "name": "Atom affordance descriptor",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard atom store, graph compiler, persistence planner"
+    ],
+    "existing": [
+      "include/Cellerator/profiling/partition_export.h",
+      "include/Cellerator/execution/projection_value_plane/"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/joint_compiler/atom_affordance_v1.hh",
+    "semantics": "What a physical or output atom can directly satisfy, including operation families, planes, orders, partial forms, target ABI, direct gradient/output, and persistence eligibility."
+  },
+  {
+    "id": "JBC-I05",
+    "name": "Partial-result algebra",
+    "owner": "Cellerator/operation provider",
+    "consumers": [
+      "CellShard global graph, partial persistence, collection"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/relation_algebra_v2/",
+      "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/compute/decomposition/partial_result_algebra_v1.hh",
+    "semantics": "State schema, neutral element, merge, finalize, algebraic laws, order/determinism constraints, numeric policy, and stable implementation identities."
+  },
+  {
+    "id": "JBC-I06",
+    "name": "Operation decomposition alternatives",
+    "owner": "Cellerator/operation provider",
+    "consumers": [
+      "CellShard global compiler"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/operation_core_v2/",
+      "include/Cellerator/geometry/relation_cover.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/compute/decomposition/decomposition_v1.hh",
+    "semantics": "Legal split axes, exact input/output/partial coverage, replication and halos, order constraints, partial algebra, numeric consequences, and complete unsplit fallback."
+  },
+  {
+    "id": "JBC-I07",
+    "name": "Atom-fragment request and candidate frontier",
+    "owner": "Cellerator",
+    "consumers": [
+      "Embedded CellShard bridge",
+      "standalone callers"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/candidate_catalog_v3/",
+      "include/Cellerator/execution/program/program_v2.h",
+      "include/Cellerator/geometry/compiler/v2/"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/atom_fragment/fragment_v1.hh",
+    "semantics": "Atom-bound operation request plus bounded Pareto alternatives, exact cover, requirements/affordances, program recipe, resources, local complete cost, and verifier receipt."
+  },
+  {
+    "id": "JBC-I08",
+    "name": "Multi-extent external binding",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard residency/runtime"
+    ],
+    "existing": [
+      "include/Cellerator/execution/geometry_acquisition_v2/external_payload.hh",
+      "include/CellShard/runtime/residency/"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/object_binding/external_binding_v1.hh",
+    "semantics": "Ordered extents with address space, offsets, alignment, order, generation, readiness and lease tokens; raw runtime handles are not durable."
+  },
+  {
+    "id": "JBC-I09",
+    "name": "Lowering-resumption contract",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard artifact store and linker"
+    ],
+    "existing": [
+      "include/Cellerator/execution/geometry_acquisition_v2/",
+      "include/Cellerator/geometry/persistence/semantic_geometry_image_v1.hh",
+      "include/Cellerator/geometry/persistence/execution_image_v2.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/execution/lowering_resumption/resumption_v1.hh",
+    "semantics": "Canonical, evidence, semantic atom/basis, target cover, projection, packed operand, executable recipe, topology-linked and resident stages with validation, fallback and phases-bypassed."
+  },
+  {
+    "id": "JBC-I10",
+    "name": "External global cost vector",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard global optimizer",
+      "other standalone global planners"
+    ],
+    "existing": [
+      "include/Cellerator/planner/",
+      "include/Cellerator/geometry/compiler/v2/workload_profile.hh"
+    ],
+    "proposed": "[proposed] include/Cellerator/planner/external_cost/external_cost_v1.hh",
+    "semantics": "Generic storage, build, memory, movement, canonicalization, combine, replication, invalidation, latency and throughput prices; never overrides correctness."
+  },
+  {
+    "id": "JBC-I11",
+    "name": "Atom-aware execution export v2",
+    "owner": "Cellerator",
+    "consumers": [
+      "CellShard graph/basis/topology compilers"
+    ],
+    "existing": [
+      "include/Cellerator/profiling/partition_export.h"
+    ],
+    "proposed": "[proposed] include/Cellerator/profiling/joint_compiler/execution_export_v2.hh",
+    "semantics": "Exact coverage, decomposition, requirements/affordances, partial algebra, persistent orders, stage graph, candidate frontier, complete local cost, compatibility and freshness."
+  },
+  {
+    "id": "JBC-I12",
+    "name": "Common atom envelope",
+    "owner": "CellShard",
+    "consumers": [
+      "CellShard compiler/runtime",
+      "embedded Cellerator bridge"
+    ],
+    "existing": [
+      "include/CellShard/artifact/image.hh",
+      "include/CellShard/artifact/catalog.hh",
+      "include/CellShard/artifact/snapshot.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/atom/atom_v1.hh",
+    "semantics": "Level-relative atom identity, species, exact coverage, typed ports, planes, dependencies, evidence, affordances and lineage; candidate/certified/basis/physical/replica/partial/super/resident states remain distinct."
+  },
+  {
+    "id": "JBC-I13",
+    "name": "Atom evidence atlas",
+    "owner": "CellShard",
+    "consumers": [
+      "Discovery portfolio",
+      "basis/grammar planners"
+    ],
+    "existing": [
+      "include/Cellerator/geometry/support_atlas.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/evidence/atlas_v1.hh",
+    "semantics": "Overlapping approximate proposal evidence, provenance, strata, confidence/stability, negative evidence and exact-rescan status; never execution ownership."
+  },
+  {
+    "id": "JBC-I14",
+    "name": "Composition production and derivation",
+    "owner": "CellShard",
+    "consumers": [
+      "Grammar, basis, superatom, artifact linker"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/relation_algebra_v2/composition.hh",
+      "include/CellShard/artifact/image.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/composition/production_v1.hh",
+    "semantics": "Typed inputs/output, parameters, exact coverage equation, identity/order/generation rules, contribution semantics, cost, invalidation, verifier and multi-parent derivation DAG."
+  },
+  {
+    "id": "JBC-I15",
+    "name": "Biological execution basis manifest",
+    "owner": "CellShard",
+    "consumers": [
+      "Materializer, graph-family linker, persistence"
+    ],
+    "existing": [
+      "include/CellShard/artifact/snapshot.hh",
+      "include/Cellerator/geometry/compiler/v2/workload_profile.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/basis/basis_v1.hh",
+    "semantics": "Selected atoms/productions for workload-family distribution, budgets, objective vector, memberships, no-basis fallback, dependencies, validity and cost freshness."
+  },
+  {
+    "id": "JBC-I16",
+    "name": "Persistent partial atom",
+    "owner": "CellShard with Cellerator algebra",
+    "consumers": [
+      "Global graph, store, collection"
+    ],
+    "existing": [
+      "include/Cellerator/compute/operation/relation_algebra_v2/",
+      "include/Cellerator/execution/projection_value_plane/"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/partial/partial_atom_v1.hh",
+    "semantics": "Exact dependency closure, contribution coverage, merge/finalize algebra, numeric policy, generation, persistence legality and profitability."
+  },
+  {
+    "id": "JBC-I17",
+    "name": "Atom-store generation and physical instance",
+    "owner": "CellShard",
+    "consumers": [
+      "CellShard linker/runtime",
+      "Cellerator external payload/binding adapters"
+    ],
+    "existing": [
+      "include/CellShard/artifact/extent.hh",
+      "include/CellShard/artifact/catalog.hh",
+      "include/CellShard/artifact/snapshot.hh",
+      "include/CellShard/io/pack/image_envelope.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/artifact/atom_store/",
+    "semantics": "Immutable root, atom dictionary, indexes, grammar/bases/partials, actions/lineage, large arenas and frames, encoded replicas, atomic publication, recovery, consolidation and GC."
+  },
+  {
+    "id": "JBC-I18",
+    "name": "Global operation provider and portable schedule",
+    "owner": "CellShard",
+    "consumers": [
+      "Cellerator bridge",
+      "future Baseplane/model providers"
+    ],
+    "existing": [
+      "include/CellShard/runtime/",
+      "include/Cellerator/execution/program/program_v2.h"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/graph/provider_v1.hh and schedule_v1.hh",
+    "semantics": "Provider-neutral typed operations/effects, atom flow, graph families, rewrites, local fragment alternatives, partial trees, replay modes and machine-independent schedule."
+  },
+  {
+    "id": "JBC-I19",
+    "name": "Exact distributed certificate",
+    "owner": "CellShard",
+    "consumers": [
+      "Scheduler, runtime, recovery, validation"
+    ],
+    "existing": [
+      "include/Cellerator/geometry/relation_cover.hh",
+      "include/Cellerator/execution/projection_value_plane/composite_plane_v1.hh"
+    ],
+    "proposed": "[proposed] include/CellShard/compiler/certification/distributed_certificate_v1.hh",
+    "semantics": "Exact inputs, owners, contributors, halos, replicas, partial algebra/tree, generations, effects, canonical recovery and duplicate/omission proof."
+  },
+  {
+    "id": "JBC-I20",
+    "name": "Topology realization, transport and residency lease",
+    "owner": "CellShard",
+    "consumers": [
+      "Runtime executors",
+      "Cellerator external bindings"
+    ],
+    "existing": [
+      "include/CellShard/runtime/source/",
+      "include/CellShard/runtime/residency/",
+      "include/Cellerator/runtime/"
+    ],
+    "proposed": "[proposed] include/CellShard/runtime/v2/",
+    "semantics": "Topology-linked placement, sources, routes, resident atom planes, ready events, lease/pin lifetime, reconstruction, runtime command graph and no durable raw handles."
+  }
+]

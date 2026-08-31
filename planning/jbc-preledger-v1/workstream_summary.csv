@@ -1,0 +1,35 @@
+workstream,title,repository,lane,task_count,barrier,subsystem
+CEBOOT,"Cellerator baseline, charter, and source ownership",Cellerator,CE-JBC-L-BOOTSTRAP,6,JBC-G0-LIVE-BASELINE,program/bootstrap
+CEIF,Cellerator-owned joint-compiler thin-waist interfaces,Cellerator,CE-JBC-L-INTERFACES,12,JBC-G0-LIVE-BASELINE,"execution/identity, coverage, decomposition, fragment ABI"
+CEDEC,Biological operation decomposition and partial algebra,Cellerator,CE-JBC-L-DECOMPOSITION,18,JBC-G1-ATOM-THIN-WAIST,compute/decomposition
+CEFRAG,Atom-aware Cellerator fragment compiler,Cellerator,CE-JBC-L-FRAGMENT,14,JBC-G1-ATOM-THIN-WAIST,execution/atom_fragment
+CEMULTI,Multi-atom and multi-extent Cellerator operands,Cellerator,CE-JBC-L-MULTIATOM,10,JBC-G3-CELLERATOR-FRAGMENT,execution/object_binding and candidate adapters
+CEPLANE,"Cellerator atom planes, mutable values, gradients, and atom outputs",Cellerator,CE-JBC-L-PLANES,10,JBC-G1-ATOM-THIN-WAIST,execution/atom_plane and projection_value_plane adapters
+CERESUME,Cellerator lowering-resumption contracts,Cellerator,CE-JBC-L-RESUMPTION,10,JBC-G3-CELLERATOR-FRAGMENT,execution/lowering_resumption and acquisition adapters
+CEXOP,Cross-operation Cellerator projection families,Cellerator,CE-JBC-L-CROSSOP,8,JBC-G3-CELLERATOR-FRAGMENT,compute/projection_family
+CECOST,External global costs and bounded joint compiler exchange,Cellerator,CE-JBC-L-EXTERNAL-COST,6,JBC-G3-CELLERATOR-FRAGMENT,planner/external_cost and geometry objective adapters
+CEVAL,"Cellerator exact verification, profiling, packaging, and integration",Cellerator,CE-JBC-L-VERIFY-INTEGRATE,6,JBC-G5-PARTIAL-ARTIFACT,"tests/jbc, profiling, component bridge, integration"
+CSBOOT,"CellShard baseline, successor charter, and compatibility map",CellShard,CS-JBC-L-BOOTSTRAP,6,JBC-G0-LIVE-BASELINE,program/bootstrap
+CSATOM,CellShard biological execution atom core,CellShard,CS-JBC-L-ATOM-CORE,20,JBC-G0-LIVE-BASELINE,compiler/atom
+CSEVID,CellShard atom evidence atlas,CellShard,CS-JBC-L-EVIDENCE-CORE,16,JBC-G1-ATOM-THIN-WAIST,compiler/evidence
+CSCERT,Independent exact atom certification,CellShard,CS-JBC-L-CERTIFICATION,16,JBC-G1-ATOM-THIN-WAIST,compiler/certification
+CSSS,Support-signature atom discovery,CellShard,CS-JBC-L-DISC-SIGNATURE,10,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/support_signature
+CSCO,Co-support and affinity atom discovery,CellShard,CS-JBC-L-DISC-COSUPPORT,10,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/co_support
+CSBC,Biclustering and co-clustering atom discovery,CellShard,CS-JBC-L-DISC-BICLUSTER,8,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/bicluster
+CSOC,Bounded overlapping-community atom discovery,CellShard,CS-JBC-L-DISC-OVERLAP,6,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/overlap
+CSMF,Typed motif and frequent-fragment atom discovery,CellShard,CS-JBC-L-DISC-MOTIF,8,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/motif
+CSFT,Factor/topic program atom proposals,CellShard,CS-JBC-L-DISC-FACTOR,6,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/factor_topic
+CSTR,Trajectory and lineage atom discovery,CellShard,CS-JBC-L-DISC-TRAJECTORY,12,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/trajectory
+CSMM,Multimodal identity-spine and atom discovery,CellShard,CS-JBC-L-DISC-MULTIMODAL,10,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/multimodal
+CSSQ,Future sequence/Baseplane-compatible atom interfaces,CellShard,CS-JBC-L-DISC-SEQUENCE,6,JBC-G1-ATOM-THIN-WAIST,compiler/discovery/sequence_compat
+CSOT,Operation-trace and graph-family atom discovery,CellShard,CS-JBC-L-DISC-OPTRACE,8,JBC-G2-EVIDENCE-CERTIFICATION,compiler/discovery/operation_trace
+CSCOMP,Typed atom composition DAG,CellShard,CS-JBC-L-COMPOSITION,24,JBC-G2-EVIDENCE-CERTIFICATION,compiler/composition
+CSGRAM,Explicit typed biological execution grammar,CellShard,CS-JBC-L-EXPLICIT-GRAMMAR,10,JBC-G2-EVIDENCE-CERTIFICATION,compiler/grammar/explicit
+CSIGRAM,Induced execution grammar and MDL experiment,CellShard,CS-JBC-L-INDUCED-GRAMMAR,10,JBC-G4-COMPOSITION-BASIS,compiler/grammar/induced
+CSBASIS,Biological execution basis selection,CellShard,CS-JBC-L-BASIS,18,JBC-G2-EVIDENCE-CERTIFICATION,compiler/basis
+CSSUPER,"Superatom promotion, demotion, and evolution",CellShard,CS-JBC-L-SUPERATOM,8,JBC-G4-COMPOSITION-BASIS,compiler/composition/superatom
+CSPART,Persistent partial computation atoms,CellShard,CS-JBC-L-PARTIALS,18,JBC-G2-EVIDENCE-CERTIFICATION,compiler/partial
+CSSTORE,Atom-native immutable persistence and lowering artifacts,CellShard,CS-JBC-L-PERSISTENCE,29,JBC-G1-ATOM-THIN-WAIST,artifact/atom_store
+CSGLOBAL,CellShard global operation graph and portable schedule compiler,CellShard,CS-JBC-L-GLOBAL-IR,14,JBC-G3-CELLERATOR-FRAGMENT,compiler/graph and compiler/schedule
+CSRUNTIME,"CellShard topology, I/O, transport, residency, and runtime lowering",CellShard,CS-JBC-L-RUNTIME,22,JBC-G5-PARTIAL-ARTIFACT,runtime/v2
+CSVAL,"Exact validation, biological evidence, vertical slices, and final integration",CellShard,CS-JBC-L-VALIDATION-INTEGRATION,20,JBC-G6-RUNTIME-SUBSTRATE,"tests/jbc, bench/jbc, integration"
