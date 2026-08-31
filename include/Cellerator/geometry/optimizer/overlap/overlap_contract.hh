@@ -6,12 +6,14 @@
 namespace cellerator::geometry::optimizer::overlap {
 
 using source_id = std::uint64_t;
+using source_ordinal = std::uint64_t;
 using source_group_id = std::uint64_t;
 using logical_contribution_id = std::uint64_t;
 
 struct source_group_dictionary_view {
     const std::uint64_t *group_offsets = nullptr;
-    const source_id *source_ids = nullptr;
+    const source_ordinal *source_ordinals = nullptr;
+    const source_id *source_identities = nullptr;
     std::uint64_t group_count = 0;
     std::uint64_t membership_count = 0;
     std::uint64_t source_count = 0;
@@ -55,6 +57,7 @@ enum class contract_error : std::uint8_t {
     null_pointer,
     invalid_offset,
     source_out_of_range,
+    duplicate_source_identity,
     duplicate_source_in_group,
     empty_group,
     contribution_out_of_range,

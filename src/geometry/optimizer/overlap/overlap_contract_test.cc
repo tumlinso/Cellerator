@@ -19,9 +19,12 @@ void require(bool condition) {
 
 void test_dictionary_and_replication_cost() {
     const std::array<std::uint64_t, 4> offsets{0, 2, 4, 5};
-    const std::array<source_id, 5> sources{0, 1, 1, 2, 3};
+    const std::array<source_ordinal, 5> sources{0, 1, 1, 2, 3};
+    const std::array<source_id, 4> identities{
+        (std::uint64_t{1} << 32) + 7, (std::uint64_t{1} << 32) + 11,
+        (std::uint64_t{1} << 40) + 3, (std::uint64_t{1} << 48) + 1};
     const source_group_dictionary_view dictionary{
-        offsets.data(), sources.data(), 3, 5, 4};
+        offsets.data(), sources.data(), identities.data(), 3, 5, 4};
     require(static_cast<bool>(validate_source_group_dictionary(dictionary)));
 
     std::array<std::uint64_t, 4> counts{};
@@ -53,15 +56,16 @@ void test_unique_contribution_ownership() {
 
 void test_contract_rejections() {
     const std::array<std::uint64_t, 2> offsets{0, 2};
-    const std::array<source_id, 2> duplicate{1, 1};
+    const std::array<source_ordinal, 2> duplicate{1, 1};
+    const std::array<source_id, 2> identities{100, 200};
     const source_group_dictionary_view dictionary{
-        offsets.data(), duplicate.data(), 1, 2, 2};
+        offsets.data(), duplicate.data(), identities.data(), 1, 2, 2};
     require(validate_source_group_dictionary(dictionary).error
         == contract_error::duplicate_source_in_group);
 
-    const std::array<source_id, 2> valid{0, 1};
+    const std::array<source_ordinal, 2> valid{0, 1};
     const source_group_dictionary_view valid_dictionary{
-        offsets.data(), valid.data(), 1, 2, 2};
+        offsets.data(), valid.data(), identities.data(), 1, 2, 2};
     std::array<std::uint64_t, 1> short_workspace{};
     replication_cost cost;
     require(evaluate_replication_cost(
@@ -79,9 +83,10 @@ void test_contract_rejections() {
 
 void test_bounded_solver_complete_cost_and_determinism() {
     const std::array<std::uint64_t, 3> offsets{0, 2, 4};
-    const std::array<source_id, 4> sources{0, 1, 2, 3};
+    const std::array<source_ordinal, 4> sources{0, 1, 2, 3};
+    const std::array<source_id, 4> identities{10, 20, 30, 40};
     const source_group_dictionary_view baseline{
-        offsets.data(), sources.data(), 2, 4, 4};
+        offsets.data(), sources.data(), identities.data(), 2, 4, 4};
     const replication_unit_cost cost{1, 1, 1, 1, 1, 1, 1};
     const std::array<overlap_proposal, 5> proposals{{
         {0, 1, 20, cost},
@@ -112,9 +117,10 @@ void test_bounded_solver_complete_cost_and_determinism() {
 
 void test_zero_overlap_solver_equivalence() {
     const std::array<std::uint64_t, 3> offsets{0, 1, 2};
-    const std::array<source_id, 2> sources{0, 1};
+    const std::array<source_ordinal, 2> sources{0, 1};
+    const std::array<source_id, 2> identities{10, 20};
     const source_group_dictionary_view baseline{
-        offsets.data(), sources.data(), 2, 2, 2};
+        offsets.data(), sources.data(), identities.data(), 2, 2, 2};
     const overlap_proposal proposal{0, 1, 100, {}};
     std::array<std::uint64_t, 2> source_uses{};
     std::array<std::uint64_t, 2> group_sizes{};
@@ -181,9 +187,10 @@ void test_replica_gradient_reconciliation() {
 
 void test_work_windows_and_disjoint_fallback() {
     const std::array<std::uint64_t, 3> offsets{0, 1, 2};
-    const std::array<source_id, 2> sources{0, 1};
+    const std::array<source_ordinal, 2> sources{0, 1};
+    const std::array<source_id, 2> identities{10, 20};
     const source_group_dictionary_view skeleton{
-        offsets.data(), sources.data(), 2, 2, 2};
+        offsets.data(), sources.data(), identities.data(), 2, 2, 2};
     const std::array<windowed_overlap_proposal, 3> proposals{{
         {{0, 1, 10, {}}, 0, 2},
         {{1, 0, 20, {}}, 1, 3},

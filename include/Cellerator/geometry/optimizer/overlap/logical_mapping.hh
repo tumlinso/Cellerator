@@ -19,7 +19,7 @@ struct logical_value_map_view {
 };
 
 struct source_replica_location {
-    source_id logical_source = 0;
+    source_ordinal logical_source = 0;
     source_group_id group = 0;
     std::uint64_t physical_index = 0;
     bool canonical_owner = false;
@@ -56,11 +56,21 @@ contract_status pack_logical_values(
     T *physical_values,
     std::uint64_t physical_count) noexcept {
     if ((logical_count != 0 && logical_values == nullptr)
-        || (physical_count != 0 && physical_values == nullptr)) {
+        || (physical_count != 0 && physical_values == nullptr)
+        || (map.location_count != 0 && map.locations == nullptr)) {
         return {contract_error::null_pointer, 0};
     }
     if (logical_count < map.logical_count || physical_count < map.physical_capacity) {
         return {contract_error::insufficient_workspace, map.location_count};
+    }
+    for (std::uint64_t index = 0; index < map.location_count; ++index) {
+        const logical_value_location location = map.locations[index];
+        if (location.logical >= map.logical_count) {
+            return {contract_error::contribution_out_of_range, index};
+        }
+        if (location.physical_index >= map.physical_capacity) {
+            return {contract_error::physical_index_out_of_range, index};
+        }
     }
     for (std::uint64_t index = 0; index < map.location_count; ++index) {
         const logical_value_location location = map.locations[index];
@@ -77,11 +87,21 @@ contract_status gather_logical_gradients(
     T *logical_gradients,
     std::uint64_t logical_count) noexcept {
     if ((physical_count != 0 && physical_gradients == nullptr)
-        || (logical_count != 0 && logical_gradients == nullptr)) {
+        || (logical_count != 0 && logical_gradients == nullptr)
+        || (map.location_count != 0 && map.locations == nullptr)) {
         return {contract_error::null_pointer, 0};
     }
     if (logical_count < map.logical_count || physical_count < map.physical_capacity) {
         return {contract_error::insufficient_workspace, map.location_count};
+    }
+    for (std::uint64_t index = 0; index < map.location_count; ++index) {
+        const logical_value_location location = map.locations[index];
+        if (location.logical >= map.logical_count) {
+            return {contract_error::contribution_out_of_range, index};
+        }
+        if (location.physical_index >= map.physical_capacity) {
+            return {contract_error::physical_index_out_of_range, index};
+        }
     }
     for (std::uint64_t index = 0; index < map.location_count; ++index) {
         const logical_value_location location = map.locations[index];
@@ -98,11 +118,21 @@ contract_status reconcile_source_gradients(
     T *logical_gradients,
     std::uint64_t logical_count) noexcept {
     if ((physical_count != 0 && physical_gradients == nullptr)
-        || (logical_count != 0 && logical_gradients == nullptr)) {
+        || (logical_count != 0 && logical_gradients == nullptr)
+        || (map.location_count != 0 && map.locations == nullptr)) {
         return {contract_error::null_pointer, 0};
     }
     if (logical_count < map.logical_source_count || physical_count < map.physical_capacity) {
         return {contract_error::insufficient_workspace, map.location_count};
+    }
+    for (std::uint64_t index = 0; index < map.location_count; ++index) {
+        const source_replica_location location = map.locations[index];
+        if (location.logical_source >= map.logical_source_count) {
+            return {contract_error::source_out_of_range, index};
+        }
+        if (location.physical_index >= map.physical_capacity) {
+            return {contract_error::physical_index_out_of_range, index};
+        }
     }
     for (std::uint64_t source = 0; source < map.logical_source_count; ++source) {
         logical_gradients[source] = T{};
