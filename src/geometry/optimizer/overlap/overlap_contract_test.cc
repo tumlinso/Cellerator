@@ -1,6 +1,7 @@
 #include <Cellerator/geometry/optimizer/overlap/overlap_contract.hh>
 #include <Cellerator/geometry/optimizer/overlap/bounded_overlap_solver.hh>
 #include <Cellerator/geometry/optimizer/overlap/logical_mapping.hh>
+#include <Cellerator/geometry/optimizer/overlap/work_window.hh>
 
 #include <array>
 #include <cstdlib>
@@ -178,6 +179,50 @@ void test_replica_gradient_reconciliation() {
         == contract_error::duplicate_source_owner);
 }
 
+void test_work_windows_and_disjoint_fallback() {
+    const std::array<std::uint64_t, 3> offsets{0, 1, 2};
+    const std::array<source_id, 2> sources{0, 1};
+    const source_group_dictionary_view skeleton{
+        offsets.data(), sources.data(), 2, 2, 2};
+    const std::array<windowed_overlap_proposal, 3> proposals{{
+        {{0, 1, 10, {}}, 0, 2},
+        {{1, 0, 20, {}}, 1, 3},
+        {{0, 1, 30, {}}, 3, 4}
+    }};
+    std::array<overlap_proposal, 3> filtered{};
+    std::array<std::uint64_t, 3> filtered_to_original{};
+    std::array<std::uint64_t, 2> filtered_selected{};
+    std::array<std::uint64_t, 2> source_uses{};
+    std::array<std::uint64_t, 2> group_sizes{};
+    std::array<std::uint8_t, 3> proposal_state{};
+    std::array<std::uint64_t, 2> selected{};
+    work_window_result result;
+    const work_window_workspace_view workspace{
+        filtered.data(), filtered.size(), filtered_to_original.data(), filtered_to_original.size(),
+        filtered_selected.data(), filtered_selected.size(),
+        {source_uses.data(), source_uses.size(), group_sizes.data(), group_sizes.size(),
+         proposal_state.data(), proposal_state.size()}};
+
+    require(static_cast<bool>(solve_work_window_overlap(
+        skeleton, proposals.data(), proposals.size(), 1, {2, 2, 2}, workspace,
+        {selected.data(), selected.size()}, &result)));
+    require(result.kind == overlap_solution_kind::bounded_overlap);
+    require(result.eligible_proposal_count == 2 && result.overlap.selected_count == 2);
+    require(selected[0] == 1 && selected[1] == 0);
+
+    require(static_cast<bool>(solve_work_window_overlap(
+        skeleton, proposals.data(), proposals.size(), 2, {2, 2, 2}, workspace,
+        {selected.data(), selected.size()}, &result)));
+    require(result.eligible_proposal_count == 1 && result.overlap.selected_count == 1);
+    require(selected[0] == 1);
+
+    require(static_cast<bool>(solve_work_window_overlap(
+        skeleton, proposals.data(), proposals.size(), 0, {0, 1, 1}, workspace,
+        {}, &result)));
+    require(result.kind == overlap_solution_kind::disjoint_baseline);
+    require(result.overlap.selected_count == 0 && result.overlap.net_predicted_benefit == 0);
+}
+
 }  // namespace
 
 int main() {
@@ -188,5 +233,6 @@ int main() {
     test_zero_overlap_solver_equivalence();
     test_exact_logical_value_and_gradient_maps();
     test_replica_gradient_reconciliation();
+    test_work_windows_and_disjoint_fallback();
     return 0;
 }
