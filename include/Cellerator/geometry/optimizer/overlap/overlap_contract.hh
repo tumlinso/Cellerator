@@ -61,6 +61,10 @@ enum class contract_error : std::uint8_t {
     owner_group_out_of_range,
     duplicate_contribution_owner,
     missing_contribution_owner,
+    physical_index_out_of_range,
+    duplicate_physical_index,
+    duplicate_source_owner,
+    missing_source_owner,
     insufficient_workspace,
     integer_overflow
 };
