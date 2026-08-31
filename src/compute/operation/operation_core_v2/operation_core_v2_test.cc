@@ -194,6 +194,49 @@ void test_sparse_update_and_composition_descriptors() {
     require(validate_composition(composition).code == schema_status_code::invalid_argument);
 }
 
+void test_v1_adapter_uses_persistent_identity() {
+    cellerator::compute::operation::relation_algebra_problem_v1 source{};
+    source.kind = cellerator::compute::operation::relation_algebra_kind_v1::relation_apply;
+    source.operation_identity = {71, 72};
+    source.relation.structure = persistent<execution::structure_tag>(700);
+    source.relation.epoch.value = 2;
+    source.relation.source_axis = axis(720);
+    source.relation.destination_axis = axis(740);
+    source.relation.logical_edge_count = 23;
+    source.logical_edge_order = persistent<execution::order_tag>(760);
+    source.dense_width = 8;
+    source.numeric.relation_storage = execution::numeric_type::f32;
+    source.numeric.state_storage = execution::numeric_type::f32;
+    source.numeric.multiply = execution::numeric_type::f32;
+    source.numeric.accumulation = execution::numeric_type::f32;
+    source.numeric.output_storage = execution::numeric_type::f32;
+    source.numeric.scalar = execution::numeric_type::f32;
+    source.semantic_flags = cellerator::compute::operation::alpha_applied_once
+        | cellerator::compute::operation::beta_applied_once;
+
+    typed_relation relations[1]{};
+    relation_binding_contract bindings[1]{};
+    relation_value_binding_contract values[1]{};
+    v1_adapter_request request{};
+    request.persistent_problem_identity = {81, 82};
+    request.value_generation.value = 4;
+    request.storage = {relations, bindings, values, 1};
+    v1_adapter_result result{};
+    require(static_cast<bool>(adapt_relation_algebra_v1(source, request, &result)));
+    require(same_stable_id(result.problem.core.persistent_problem_identity, {81, 82}));
+    require(result.problem.core.relations.relations == relations);
+
+    typed_relation moved_relations[1]{};
+    relation_binding_contract moved_bindings[1]{};
+    relation_value_binding_contract moved_values[1]{};
+    request.storage = {moved_relations, moved_bindings, moved_values, 1};
+    require(static_cast<bool>(adapt_relation_algebra_v1(source, request, &result)));
+    require(same_stable_id(result.problem.core.persistent_problem_identity, {81, 82}));
+    request.persistent_problem_identity = {};
+    require(adapt_relation_algebra_v1(source, request, &result).code
+        == schema_status_code::invalid_argument);
+}
+
 }  // namespace
 
 int main() {
@@ -201,5 +244,6 @@ int main() {
     test_complete_relation_algebra_bindings();
     test_output_order_and_determinism_contracts();
     test_sparse_update_and_composition_descriptors();
+    test_v1_adapter_uses_persistent_identity();
     return 0;
 }
