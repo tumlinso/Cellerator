@@ -29,3 +29,6 @@ python3 "${repo_root}/tests/profiling/ce_exop/validate_generic_export.py" \
 
 python3 "${repo_root}/tests/profiling/ce_exop/validate_deferred_requirements.py" \
     "${repo_root}/bench/ce_exop/deferred_profiling_requirements_v1.json"
+
+python3 "${repo_root}/tests/profiling/ce_exop/validate_acceptance.py" \
+    "${repo_root}/bench/ce_exop"
