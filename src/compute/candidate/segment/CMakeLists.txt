@@ -20,4 +20,9 @@ set(CELLERATOR_RELATION_SEGMENT_TEST_SOURCES
     src/compute/candidate/segment/portfolio_v2_test.cc
     src/compute/candidate/segment/reduce_v2_test.cc
     src/compute/candidate/segment/segment_v2_test.cc
+    src/compute/candidate/segment/validation_v2_test.cc
+)
+
+set(CELLERATOR_RELATION_SEGMENT_CUDA_TEST_SOURCES
+    src/compute/candidate/segment/cuda_validation_v2.cu
 )
