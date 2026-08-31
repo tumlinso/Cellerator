@@ -26,7 +26,7 @@ bool within(immutable_byte_span view, byte_span buffer) noexcept {
     const auto begin = reinterpret_cast<std::uintptr_t>(buffer.data);
     const auto end = begin + buffer.bytes;
     const auto view_begin = reinterpret_cast<std::uintptr_t>(view.data);
-    return view_begin >= begin && view_begin <= end
+    return end >= begin && view_begin >= begin && view_begin <= end
         && view.bytes <= end - view_begin;
 }
 
@@ -128,6 +128,11 @@ status query_requirements(const acquisition_facade &facade,
     const status request_status = validate_request(request);
     if (!request_status) {
         return request_status;
+    }
+    route_resolution resolution{};
+    const status route_status = resolve_route(request, &resolution);
+    if (!route_status) {
+        return route_status;
     }
     if (facade.query == nullptr) {
         return {status_code::callback_unavailable, 0};
