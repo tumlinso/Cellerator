@@ -162,6 +162,9 @@ void test_chunked_projection_and_explicit_fallback() {
     route_resolution resolution{};
     require(resolve_route(request, &resolution).code
         == status_code::incompatible_cpe2_rejected);
+    acquisition_requirements queried{};
+    require(query_requirements({query, execute}, request, &queried).code
+        == status_code::incompatible_cpe2_rejected);
     request.fallback = fallback_policy::rebuild_from_embedded_csg1;
     require(static_cast<bool>(resolve_route(request, &resolution)));
     require(resolution.selected == route::load_csg1
