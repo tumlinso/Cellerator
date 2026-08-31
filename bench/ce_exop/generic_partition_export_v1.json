@@ -1,0 +1,80 @@
+{
+  "schema": "cellerator-generic-partition-export-v1",
+  "exports": [
+    {
+      "candidate_id": "sm70_relation_hybrid_n64",
+      "provider_id": "sm70",
+      "capability_id": "hybrid_mma_residual",
+      "semantic_partition": {
+        "domain_id": "synthetic_source_domain",
+        "partition_id": 72057594037927937,
+        "global_extent": 4294967329,
+        "local_extent": 8192,
+        "local_index_width_bits": 16,
+        "local_to_global_identity": "synthetic_affine_4294967296_plus_local"
+      },
+      "input_order": "persistent_physical_source_order",
+      "output_order": "projection_destination_order",
+      "stage_graph": [
+        {"stage_id": "relation.hybrid.mma", "predecessors": []},
+        {"stage_id": "relation.hybrid.residual", "predecessors": ["relation.hybrid.mma"]}
+      ],
+      "costs": {
+        "persistent_bytes": 98304,
+        "transient_bytes": 32768,
+        "input_transform_bytes": 16384,
+        "output_transform_bytes": 0
+      },
+      "graph_capture": "compatible",
+      "device_requirements": {
+        "architecture": "sm_70",
+        "minimum_shared_memory_bytes": 0,
+        "minimum_threads_per_block": 128
+      },
+      "communication_boundary": {
+        "present": true,
+        "source_partition_id": 72057594037927937,
+        "destination_partition_id": 72057594037927938,
+        "logical_interaction_count": 8192
+      }
+    },
+    {
+      "candidate_id": "sm70_softmax_segment",
+      "provider_id": "sm70",
+      "capability_id": "segment_softmax",
+      "semantic_partition": {
+        "domain_id": "synthetic_edge_domain",
+        "partition_id": 72057594037927939,
+        "global_extent": 4294967360,
+        "local_extent": 4096,
+        "local_index_width_bits": 16,
+        "local_to_global_identity": "synthetic_chunk_manifest_v1"
+      },
+      "input_order": "projection_edge_order",
+      "output_order": "projection_edge_order",
+      "stage_graph": [
+        {"stage_id": "segment.softmax.max", "predecessors": []},
+        {"stage_id": "segment.softmax.sum", "predecessors": ["segment.softmax.max"]},
+        {"stage_id": "segment.softmax.apply", "predecessors": ["segment.softmax.sum"]}
+      ],
+      "costs": {
+        "persistent_bytes": 2048,
+        "transient_bytes": 512,
+        "input_transform_bytes": 0,
+        "output_transform_bytes": 0
+      },
+      "graph_capture": "compatible",
+      "device_requirements": {
+        "architecture": "sm_70",
+        "minimum_shared_memory_bytes": 0,
+        "minimum_threads_per_block": 32
+      },
+      "communication_boundary": {
+        "present": false,
+        "source_partition_id": 72057594037927939,
+        "destination_partition_id": 72057594037927939,
+        "logical_interaction_count": 0
+      }
+    }
+  ]
+}

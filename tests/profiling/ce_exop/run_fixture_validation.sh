@@ -23,3 +23,6 @@ python3 "${repo_root}/tests/profiling/ce_exop/validate_manifests.py" \
     "${repo_root}/bench/ce_exop"
 
 "${repo_root}/tests/profiling/ce_exop/run_compile_smoke.sh"
+
+python3 "${repo_root}/tests/profiling/ce_exop/validate_generic_export.py" \
+    "${repo_root}/bench/ce_exop/generic_partition_export_v1.json"
