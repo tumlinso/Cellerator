@@ -37,6 +37,29 @@ status execute(const acquisition_request &, const acquisition_requirements &requ
     return {};
 }
 
+struct external_fixture {
+    std::uint8_t bytes[16]{};
+    bool return_outside = false;
+};
+
+status describe_external(void *, const external_payload_query &query,
+    external_payload_descriptor *descriptor) noexcept {
+    descriptor->payload_identity = query.payload_identity;
+    descriptor->encoding = query.encoding;
+    descriptor->payload_bytes = 16;
+    descriptor->content_hash[0] = 1;
+    return {};
+}
+
+status read_external(void *context, const external_payload_descriptor &descriptor,
+    byte_span destination, immutable_byte_span *payload) noexcept {
+    auto *fixture = static_cast<external_fixture *>(context);
+    *payload = fixture->return_outside
+        ? immutable_byte_span{fixture->bytes, descriptor.payload_bytes}
+        : immutable_byte_span{destination.data, descriptor.payload_bytes};
+    return {};
+}
+
 void test_two_pass_facade() {
     projection_requirement projection{};
     projection.candidate = {1, 2};
@@ -145,11 +168,46 @@ void test_chunked_projection_and_explicit_fallback() {
         && resolution.rebuilt_from_embedded_csg1);
 }
 
+void test_generic_external_payload_boundary() {
+    external_fixture fixture{};
+    external_payload_source source{&fixture, describe_external, read_external};
+    external_payload_query query_request{{61, 62}, external_payload_encoding::csg1};
+    external_payload_descriptor descriptor{};
+    require(static_cast<bool>(describe_external_payload(source, query_request, &descriptor)));
+    alignas(8) std::uint8_t destination[16]{};
+    external_payload_consumption consumption{};
+    require(static_cast<bool>(consume_external_payload(
+        source, descriptor, {destination, sizeof(destination)}, &consumption)));
+
+    projection_requirement projection{};
+    projection.candidate = {63, 64};
+    projection.logical_work_items = 1;
+    acquisition_request prototype{};
+    prototype.structure.low = 65;
+    prototype.epoch.value = 1;
+    prototype.projection_requirements = &projection;
+    prototype.projection_requirement_count = 1;
+    acquisition_request bound{};
+    require(static_cast<bool>(bind_external_payload_request(
+        consumption, prototype, &bound)));
+    require(bound.preferred_route == route::load_csg1
+        && bound.source.data == destination);
+
+    fixture.return_outside = true;
+    require(consume_external_payload(source, descriptor,
+        {destination, sizeof(destination)}, &consumption).code
+        == status_code::invalid_source);
+    require(consume_external_payload(source, descriptor,
+        {destination, sizeof(destination) - 1}, &consumption).code
+        == status_code::insufficient_capacity);
+}
+
 }  // namespace
 
 int main() {
     test_two_pass_facade();
     test_default_assembly();
     test_chunked_projection_and_explicit_fallback();
+    test_generic_external_payload_boundary();
     return 0;
 }
