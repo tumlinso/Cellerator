@@ -296,8 +296,15 @@ set_target_properties(samplingMaterializationRuntimeTest PROPERTIES CXX_STANDARD
 cellerator_enable_perf(samplingMaterializationRuntimeTest)
 
 if(TARGET CellShard::export)
+    if(CELLERATOR_CELLSHARD_SOURCE_DIR)
+        set(cellerator_cellshard_test_source_dir
+            "${CELLERATOR_CELLSHARD_SOURCE_DIR}")
+    else()
+        set(cellerator_cellshard_test_source_dir
+            "${CMAKE_CURRENT_SOURCE_DIR}/../CellShard")
+    endif()
     add_executable(cellShardCelleratorSamplingAdapterTest
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/tests/cellerator_sampling_adapter_test.cc)
+        ${cellerator_cellshard_test_source_dir}/tests/cellerator_sampling_adapter_test.cc)
     target_link_libraries(cellShardCelleratorSamplingAdapterTest PRIVATE
         CellShard::export
         cellerator_compute_sampling
@@ -305,14 +312,14 @@ if(TARGET CellShard::export)
     target_compile_features(cellShardCelleratorSamplingAdapterTest PRIVATE cxx_std_17)
 
     add_executable(cellShardStorageBoundaryIntegrationTest
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/tests/cellshard_export_runtime_test.cu)
+        ${cellerator_cellshard_test_source_dir}/tests/cellshard_export_runtime_test.cu)
     target_compile_definitions(cellShardStorageBoundaryIntegrationTest PRIVATE
         CELLSHARD_TEST_CELLERATOR_ADAPTER=1)
     target_include_directories(cellShardStorageBoundaryIntegrationTest PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CellShard/export)
+        ${cellerator_cellshard_test_source_dir}
+        ${cellerator_cellshard_test_source_dir}/include
+        ${cellerator_cellshard_test_source_dir}/src
+        ${cellerator_cellshard_test_source_dir}/export)
     target_link_libraries(cellShardStorageBoundaryIntegrationTest PRIVATE
         CellShard::export
         cellerator_compute_sampling
