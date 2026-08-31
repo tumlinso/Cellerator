@@ -45,6 +45,7 @@ struct search_state {
     exact_oracle_workspace workspace{};
     exact_oracle_result result{};
     bool has_best = false;
+    bool use_objective_pruning = true;
     bool overflow = false;
     bool limit_reached = false;
 };
@@ -140,7 +141,9 @@ void search(
     // Retain enough of the tree to certify both the optimum and the next
     // distinct objective. A known runner-up is an exact upper bound for all
     // remaining second-best candidates.
-    if (state->result.has_runner_up && lower_bound >= state->result.runner_up_cost) {
+    if (state->use_objective_pruning &&
+        state->result.has_runner_up &&
+        lower_bound >= state->result.runner_up_cost) {
         ++state->result.pruned_nodes;
         return;
     }
@@ -313,10 +316,11 @@ exact_oracle_evaluation evaluate_exact_oracle_selection(
     return evaluation;
 }
 
-exact_oracle_result solve_exact_oracle(
+exact_oracle_result solve_exact_oracle_impl(
         const exact_oracle_problem_view& problem,
         const exact_oracle_limits& limits,
-        const exact_oracle_workspace& workspace) noexcept {
+        const exact_oracle_workspace& workspace,
+        bool use_objective_pruning) noexcept {
     exact_oracle_result result{};
     result.status = validate_exact_oracle_problem(problem, limits);
     if (result.status != exact_oracle_status::success) {
@@ -388,6 +392,7 @@ exact_oracle_result solve_exact_oracle(
     state.limits = &limits;
     state.workspace = workspace;
     state.result = result;
+    state.use_objective_pruning = use_objective_pruning;
     search(&state, 0, result.residual_only_cost);
     result = state.result;
     if (state.overflow) {
@@ -405,6 +410,56 @@ exact_oracle_result solve_exact_oracle(
     result.status = exact_oracle_status::success;
     result.search_complete = true;
     return result;
+}
+
+exact_oracle_result solve_exact_oracle(
+        const exact_oracle_problem_view& problem,
+        const exact_oracle_limits& limits,
+        const exact_oracle_workspace& workspace) noexcept {
+    return solve_exact_oracle_impl(problem, limits, workspace, true);
+}
+
+exact_oracle_result solve_exact_oracle_exhaustive(
+        const exact_oracle_problem_view& problem,
+        const exact_oracle_limits& limits,
+        const exact_oracle_workspace& workspace) noexcept {
+    return solve_exact_oracle_impl(problem, limits, workspace, false);
+}
+
+exact_oracle_comparison compare_exact_oracle_results(
+        const exact_oracle_result& branch_and_bound,
+        const std::uint8_t* branch_and_bound_selection,
+        const exact_oracle_result& exhaustive,
+        const std::uint8_t* exhaustive_selection,
+        std::uint32_t candidate_count) noexcept {
+    exact_oracle_comparison comparison{};
+    if ((candidate_count != 0 &&
+         (branch_and_bound_selection == nullptr || exhaustive_selection == nullptr)) ||
+        branch_and_bound.status != exact_oracle_status::success ||
+        exhaustive.status != exact_oracle_status::success) {
+        comparison.status = exact_oracle_status::invalid_argument;
+        return comparison;
+    }
+    comparison.status = exact_oracle_status::success;
+    comparison.both_complete =
+            branch_and_bound.search_complete && exhaustive.search_complete;
+    comparison.objective_matches =
+            branch_and_bound.optimum_cost == exhaustive.optimum_cost;
+    comparison.runner_up_matches =
+            branch_and_bound.has_runner_up == exhaustive.has_runner_up &&
+            (!branch_and_bound.has_runner_up ||
+             branch_and_bound.runner_up_cost == exhaustive.runner_up_cost);
+    comparison.multiplicity_matches =
+            branch_and_bound.optimum_solution_count ==
+            exhaustive.optimum_solution_count;
+    comparison.selection_matches = true;
+    for (std::uint32_t candidate = 0; candidate < candidate_count; ++candidate) {
+        if (branch_and_bound_selection[candidate] != exhaustive_selection[candidate]) {
+            comparison.selection_matches = false;
+            break;
+        }
+    }
+    return comparison;
 }
 
 }  // namespace cellerator::geometry::optimizer::oracle

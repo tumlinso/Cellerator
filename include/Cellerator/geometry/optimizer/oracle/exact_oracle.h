@@ -93,4 +93,29 @@ exact_oracle_result solve_exact_oracle(
         const exact_oracle_limits& limits,
         const exact_oracle_workspace& workspace) noexcept;
 
+// Independent exhaustive traversal using the same admissibility and objective
+// definitions but no objective-bound pruning. Intended only for tiny fixtures
+// and oracle-regression validation.
+exact_oracle_result solve_exact_oracle_exhaustive(
+        const exact_oracle_problem_view& problem,
+        const exact_oracle_limits& limits,
+        const exact_oracle_workspace& workspace) noexcept;
+
+struct exact_oracle_comparison {
+    exact_oracle_status status = exact_oracle_status::invalid_argument;
+    bool both_complete = false;
+    bool objective_matches = false;
+    bool runner_up_matches = false;
+    bool multiplicity_matches = false;
+    bool selection_matches = false;
+};
+
+// Compares two completed certificates, including their stable selected bytes.
+exact_oracle_comparison compare_exact_oracle_results(
+        const exact_oracle_result& branch_and_bound,
+        const std::uint8_t* branch_and_bound_selection,
+        const exact_oracle_result& exhaustive,
+        const std::uint8_t* exhaustive_selection,
+        std::uint32_t candidate_count) noexcept;
+
 }  // namespace cellerator::geometry::optimizer::oracle
