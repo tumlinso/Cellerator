@@ -14,6 +14,8 @@ int main() {
     assert(portfolio.gate_and_update_candidates == 14u);
     assert(portfolio.bundle_and_chain_candidates == 6u);
     assert(portfolio.segment_candidates == 162u);
+    assert(portfolio.fusion_candidates == 20u);
+    assert(portfolio.training_stage_kinds == 6u);
     assert(portfolio.all_candidates_planner_owned);
     assert(portfolio.all_experimental_candidates_require_measurement);
 

@@ -164,6 +164,90 @@ set_target_properties(cellerator_relation_algebra PROPERTIES
 target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
     Cellerator::relation_algebra)
 
+# CE-EXOP-278: exact fusion and generic training-program fan-in. Optimizer,
+# loss, model, and framework policy remain caller-owned; these targets expose
+# only prepared stage graphs, projection-primary values, and exact validation.
+add_library(cellerator_fusion_training STATIC
+    src/compute/candidate/fusion/bundle_moments_v1.cu
+    src/compute/candidate/fusion/contract_compositions_v1.cu
+    src/compute/candidate/fusion/fusion_validation_v1.cc
+    src/compute/candidate/fusion/mma_same_owner_residual_v1.cu
+    src/compute/candidate/fusion/pack_apply_epilogue_v1.cu
+    src/compute/candidate/fusion/prepared_stage_graph_v1.cc
+    src/compute/candidate/fusion/sparse_exchange_v1.cu
+    src/compute/training/v2/generation_readiness.cc
+    src/compute/training/v2/relation_closure.cc
+    src/compute/training/v2/value_modes.cc
+    src/execution/training_program_v2/graph_capture.cc
+    src/execution/training_program_v2/program.cc)
+add_library(Cellerator::fusion_training ALIAS cellerator_fusion_training)
+target_include_directories(cellerator_fusion_training PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(cellerator_fusion_training PUBLIC
+    Cellerator::relation_algebra
+    CUDA::cudart)
+set_target_properties(cellerator_fusion_training PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    CUDA_ARCHITECTURES 70)
+
+target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+    Cellerator::fusion_training)
+
+add_executable(cellerator_ce_exop_fusion_training_integration_test
+    src/compute/operation/fusion_training_integration_test.cc)
+target_link_libraries(cellerator_ce_exop_fusion_training_integration_test PRIVATE
+    Cellerator::ce_exop_operation_portfolio)
+target_compile_features(cellerator_ce_exop_fusion_training_integration_test
+    PRIVATE cxx_std_17)
+target_compile_options(cellerator_ce_exop_fusion_training_integration_test
+    PRIVATE -UNDEBUG)
+
+set(CELLERATOR_CE_EXOP_TRAINING_TESTS
+    generation_readiness
+    relation_closure
+    value_modes)
+foreach(test_name IN LISTS CELLERATOR_CE_EXOP_TRAINING_TESTS)
+    add_executable(cellerator_ce_exop_training_${test_name}_test
+        src/compute/training/v2/${test_name}_test.cc)
+    target_link_libraries(cellerator_ce_exop_training_${test_name}_test PRIVATE
+        Cellerator::fusion_training)
+    target_compile_features(cellerator_ce_exop_training_${test_name}_test
+        PRIVATE cxx_std_17)
+    target_compile_options(cellerator_ce_exop_training_${test_name}_test
+        PRIVATE -UNDEBUG)
+endforeach()
+
+set(CELLERATOR_CE_EXOP_TRAINING_PROGRAM_TESTS
+    graph_capture
+    program)
+foreach(test_name IN LISTS CELLERATOR_CE_EXOP_TRAINING_PROGRAM_TESTS)
+    add_executable(cellerator_ce_exop_training_${test_name}_test
+        src/execution/training_program_v2/${test_name}_test.cc)
+    target_link_libraries(cellerator_ce_exop_training_${test_name}_test PRIVATE
+        Cellerator::fusion_training)
+    target_compile_features(cellerator_ce_exop_training_${test_name}_test
+        PRIVATE cxx_std_17)
+    target_compile_options(cellerator_ce_exop_training_${test_name}_test
+        PRIVATE -UNDEBUG)
+endforeach()
+
+add_library(cellerator_ce_exop_fusion_sm70_compile OBJECT
+    src/compute/candidate/fusion/bundle_moments_v1.cu
+    src/compute/candidate/fusion/contract_compositions_v1.cu
+    src/compute/candidate/fusion/mma_same_owner_residual_v1.cu
+    src/compute/candidate/fusion/pack_apply_epilogue_v1.cu
+    src/compute/candidate/fusion/sparse_exchange_v1.cu)
+target_include_directories(cellerator_ce_exop_fusion_sm70_compile PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set_target_properties(cellerator_ce_exop_fusion_sm70_compile PROPERTIES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES
+    CUDA_ARCHITECTURES 70)
+
 set(CELLERATOR_CE_EXOP_RELATION_HOST_TEST_SOURCES
     src/compute/candidate/relation_bundle/moments_test.cc
     src/compute/candidate/relation_bundle/plan_validation_test.cc
