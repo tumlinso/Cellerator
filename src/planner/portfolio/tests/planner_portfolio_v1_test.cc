@@ -1,7 +1,4 @@
-#include <Cellerator/planner/portfolio/candidate_workspace_v1.hh>
-#include <Cellerator/planner/portfolio/connected_economics_v1.hh>
-#include <Cellerator/planner/portfolio/pareto_portfolio_v1.hh>
-#include <Cellerator/planner/resource/planning_resources_v1.hh>
+#include <Cellerator/planner/portfolio/planner_portfolio_v1.hh>
 
 #include <array>
 #include <cassert>
@@ -161,6 +158,16 @@ int main() {
     assert(economics.layout_cost_ns == 5.0);
     assert(economics.persistent_bytes == 40u);
     assert(economics.peak_transient_bytes == 64u);
+
+    policy = {};
+    frozen_planner_portfolio_v1 frozen{candidates.data(), candidates.size(),
+        policy, workspace, &program};
+    frozen_planner_result_v1 frozen_result{};
+    assert(validate_frozen_planner_portfolio_v1(&frozen, &frozen_result));
+    assert(frozen_result.pareto.compatible_count == 87u);
+    assert(frozen_result.has_connected_economics);
+    assert(frozen_result.connected.complete_cost_ns
+        == economics.complete_cost_ns);
 
     transitions[0].destination_order = order(9u);
     assert(compute_connected_economics_v1(program, &economics).code
