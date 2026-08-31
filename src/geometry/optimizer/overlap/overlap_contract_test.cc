@@ -1,5 +1,6 @@
 #include <Cellerator/geometry/optimizer/overlap/overlap_contract.hh>
 #include <Cellerator/geometry/optimizer/overlap/bounded_overlap_solver.hh>
+#include <Cellerator/geometry/optimizer/overlap/logical_mapping.hh>
 
 #include <array>
 #include <cstdlib>
@@ -126,6 +127,57 @@ void test_zero_overlap_solver_equivalence() {
     require(result.selected_count == 0 && result.net_predicted_benefit == 0);
 }
 
+void test_exact_logical_value_and_gradient_maps() {
+    const std::array<logical_value_location, 3> locations{{{0, 2}, {1, 0}, {2, 4}}};
+    const logical_value_map_view map{locations.data(), locations.size(), 3, 5};
+    std::array<std::uint8_t, 5> physical_seen{};
+    std::array<std::uint8_t, 3> logical_seen{};
+    require(static_cast<bool>(validate_logical_value_map(
+        map, {physical_seen.data(), physical_seen.size(),
+              logical_seen.data(), logical_seen.size()})));
+
+    const std::array<double, 3> logical_values{2.0, 3.0, 5.0};
+    std::array<double, 5> physical_values{-1.0, -1.0, -1.0, -1.0, -1.0};
+    require(static_cast<bool>(pack_logical_values(
+        map, logical_values.data(), logical_values.size(),
+        physical_values.data(), physical_values.size())));
+    require(physical_values[2] == 2.0 && physical_values[0] == 3.0
+        && physical_values[4] == 5.0 && physical_values[1] == -1.0);
+
+    const std::array<double, 5> physical_gradients{7.0, 0.0, 11.0, 0.0, 13.0};
+    std::array<double, 3> logical_gradients{};
+    require(static_cast<bool>(gather_logical_gradients(
+        map, physical_gradients.data(), physical_gradients.size(),
+        logical_gradients.data(), logical_gradients.size())));
+    require(logical_gradients[0] == 11.0 && logical_gradients[1] == 7.0
+        && logical_gradients[2] == 13.0);
+}
+
+void test_replica_gradient_reconciliation() {
+    const std::array<source_replica_location, 4> replicas{{
+        {0, 0, 0, true}, {0, 1, 2, false}, {1, 0, 1, true}, {2, 1, 3, true}}};
+    const source_replica_map_view map{replicas.data(), replicas.size(), 3, 2, 4};
+    std::array<std::uint8_t, 4> physical_seen{};
+    std::array<std::uint8_t, 3> logical_seen{};
+    require(static_cast<bool>(validate_source_replica_map(
+        map, {physical_seen.data(), physical_seen.size(),
+              logical_seen.data(), logical_seen.size()})));
+    const std::array<double, 4> physical_gradients{2.0, 3.0, 5.0, 7.0};
+    std::array<double, 3> logical_gradients{};
+    require(static_cast<bool>(reconcile_source_gradients(
+        map, physical_gradients.data(), physical_gradients.size(),
+        logical_gradients.data(), logical_gradients.size())));
+    require(logical_gradients[0] == 7.0 && logical_gradients[1] == 3.0
+        && logical_gradients[2] == 7.0);
+
+    auto duplicate_owner = replicas;
+    duplicate_owner[1].canonical_owner = true;
+    require(validate_source_replica_map(
+        {duplicate_owner.data(), duplicate_owner.size(), 3, 2, 4},
+        {physical_seen.data(), physical_seen.size(), logical_seen.data(), logical_seen.size()}).error
+        == contract_error::duplicate_source_owner);
+}
+
 }  // namespace
 
 int main() {
@@ -134,5 +186,7 @@ int main() {
     test_contract_rejections();
     test_bounded_solver_complete_cost_and_determinism();
     test_zero_overlap_solver_equivalence();
+    test_exact_logical_value_and_gradient_maps();
+    test_replica_gradient_reconciliation();
     return 0;
 }
