@@ -18,6 +18,12 @@ dynamic_value_tests=(
     "ceGeoSm70ValuePackTest|tests/tensor_core/sm70/value_pack_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
 )
 
+transpose_gradient_tests=(
+    "ceGeoSm70TransposeApplyTest|tests/tensor_core/sm70/transpose_relation_apply_test.cu|"
+    "ceGeoSm70ContractOnSupportTest|tests/tensor_core/sm70/contract_on_support_test.cu|"
+    "ceGeoSm70EdgeValueGradientTest|tests/tensor_core/sm70/edge_value_gradient_test.cu|"
+)
+
 compile_tests() {
     mkdir -p "${build_dir}"
     local record target test_source source_list source
@@ -56,6 +62,9 @@ case "${suite}" in
     dynamic-values)
         selected_tests=("${dynamic_value_tests[@]}")
         ;;
+    transpose-gradients)
+        selected_tests=("${transpose_gradient_tests[@]}")
+        ;;
     *)
         echo "unknown CUDA validation suite: ${suite}" >&2
         exit 2
@@ -75,7 +84,7 @@ case "${mode}" in
         execute_targets "${targets[@]}"
         ;;
     *)
-        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values]" >&2
+        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients]" >&2
         exit 2
         ;;
 esac
