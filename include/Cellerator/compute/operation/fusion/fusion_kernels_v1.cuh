@@ -98,4 +98,45 @@ status_v1 enqueue_same_owner_residual_unfused_v1(
 status_v1 enqueue_mma_same_owner_residual_fused_v1(
     const mma_residual_request_v1 &request) noexcept;
 
+struct contract_edge_v1 {
+    std::uint32_t source_local = 0u;
+    std::uint32_t destination_local = 0u;
+};
+
+struct contract_composition_request_v1 {
+    const contract_edge_v1 *edges = nullptr;
+    const float *source = nullptr;
+    const float *destination = nullptr;
+    const float *per_edge_gate = nullptr;
+    const std::uint32_t *segment_offsets = nullptr;
+    float *contraction_workspace = nullptr;
+    float *mapped_output = nullptr;
+    float *segment_sum_output = nullptr;
+    float *segment_maximum_output = nullptr;
+    std::uint64_t global_edge_begin = 0u;
+    std::uint32_t edge_count = 0u;
+    std::uint32_t source_count = 0u;
+    std::uint32_t destination_count = 0u;
+    std::uint32_t dense_width = 0u;
+    std::uint32_t segment_count = 0u;
+    float map_scale = 1.0f;
+    float map_bias = 0.0f;
+    std::uint64_t structure_epoch = 0u;
+    std::uint64_t value_generation = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+status_v1 validate_contract_composition_request_v1(
+    const contract_composition_request_v1 &request) noexcept;
+status_v1 enqueue_contraction_unfused_v1(
+    const contract_composition_request_v1 &request) noexcept;
+status_v1 enqueue_edge_map_unfused_v1(
+    const contract_composition_request_v1 &request) noexcept;
+status_v1 enqueue_contract_edge_map_fused_v1(
+    const contract_composition_request_v1 &request) noexcept;
+status_v1 enqueue_segment_statistic_unfused_v1(
+    const contract_composition_request_v1 &request) noexcept;
+status_v1 enqueue_contract_segment_statistic_fused_v1(
+    const contract_composition_request_v1 &request) noexcept;
+
 } // namespace cellerator::compute::operation::fusion
