@@ -83,4 +83,27 @@ constexpr candidate_contract_v1 sparse_candidate_contract_v1(
 status_v1 validate_launch_v1(const launch_request_v1 &request) noexcept;
 status_v1 enqueue_sparse_v1(const launch_request_v1 &request) noexcept;
 
+struct rectangular_tile_v1 {
+    std::uint32_t source_begin_local = 0u;
+    std::uint32_t destination_begin_local = 0u;
+    std::uint32_t projection_output_begin_local = 0u;
+};
+
+struct rectangular_request_v1 {
+    const rectangular_tile_v1 *tiles = nullptr;
+    std::uint32_t tile_count = 0u;
+    dense_pair_v1 dense{};
+    std::uint32_t source_count = 0u;
+    std::uint32_t destination_count = 0u;
+    float *projection_output = nullptr;
+    std::uint64_t global_projection_begin = 0u;
+    std::uint64_t profiler_correlation_id = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+// Produces one 16x16 physical score tile per descriptor. The tail components
+// not representable by m16n16k16 are accumulated by an exact scalar residual.
+status_v1 enqueue_rectangular_mma_residual_v1(
+    const rectangular_request_v1 &request) noexcept;
+
 } // namespace cellerator::compute::architecture::providers::nvidia::sm70::contract
