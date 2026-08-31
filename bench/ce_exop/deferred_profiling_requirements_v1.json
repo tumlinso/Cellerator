@@ -1,0 +1,60 @@
+{
+  "schema": "ce-exop-deferred-profiling-requirements-v1",
+  "generated_from": "synthetic_profiler_fixtures_only",
+  "claims": {
+    "hardware_results": false,
+    "performance_promotion": false,
+    "real_data_speedup": false,
+    "universal_winner": false,
+    "preprint_readiness": false
+  },
+  "deferred_campaigns": [
+    {
+      "id": "deep_nsight",
+      "state": "deferred",
+      "authorization": "CE-EXOP-DEEP-PROFILING=authorized",
+      "resource_requirements": ["accelerator:any", "cuda-benchmark-mutex"],
+      "evidence_required": [
+        "leased_device_identity",
+        "driver_cuda_compiler_library_versions",
+        "exact_build_and_architecture",
+        "warmup_repeat_and_synchronization_policy",
+        "source_correlated_stage_capture",
+        "strongest_relevant_baselines",
+        "exact_correctness_before_timing"
+      ]
+    },
+    {
+      "id": "biological_data",
+      "state": "deferred",
+      "authorization": "explicit_dataset_campaign",
+      "resource_requirements": ["declared_dataset_source", "checksum_and_license"],
+      "evidence_required": [
+        "shape_and_structural_distribution",
+        "domain_and_order_identity",
+        "dtype_and_accumulation_policy",
+        "dataset_provenance"
+      ]
+    },
+    {
+      "id": "preprint",
+      "state": "deferred",
+      "authorization": "completed_measured_campaign_review",
+      "resource_requirements": [],
+      "evidence_required": [
+        "reproducible_accepted_measurements",
+        "end_to_end_cost_accounting",
+        "statistical_uncertainty",
+        "reviewed_figures_and_claims"
+      ]
+    },
+    {
+      "id": "ce_amp",
+      "state": "blocked",
+      "authorization": "CE-AMP-PERMISSION=granted",
+      "resource_requirements": [],
+      "evidence_required": ["CE-EXOP-COMPLETE"]
+    }
+  ],
+  "synthetic_evidence_limit": "Fixtures validate identities, schemas, compile surfaces, and deterministic coverage only."
+}

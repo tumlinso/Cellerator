@@ -1,0 +1,10 @@
+candidate_id	operation	provider	capability	stage_count	requires_measurement	fallback	value_modes	order_modes
+sm70_contract_scalar	contract_on_support	sm70	contract_scalar	1	true	true	logical_primary,projection_primary	logical,projection
+sm70_contract_warp	contract_on_support	sm70	contract_warp	1	true	false	logical_primary,projection_primary	logical,projection
+sm70_relation_hybrid_n64	relation_apply	sm70	hybrid_mma_residual	2	false	false	logical_primary,projection_primary	canonical,logical,projection
+sm70_relation_panel_gt64	relation_apply	sm70	disjoint_panels	2	true	false	logical_primary,projection_primary	logical,projection
+sm70_relation_pure_sparse	relation_apply	sm70	pure_sparse	1	false	true	logical_primary,projection_primary	canonical,logical,projection
+sm70_relation_wmma_16x16x16	relation_apply	sm70	wmma_16x16x16	2	true	false	logical_primary,projection_primary	logical,projection
+sm70_segment_cta	segment_reduce	sm70	segment_cta	1	true	false	logical_primary,projection_primary	logical,projection
+sm70_segment_warp	segment_reduce	sm70	segment_warp	1	true	true	logical_primary,projection_primary	logical,projection
+sm70_softmax_segment	segment_normalize	sm70	segment_softmax	3	true	true	logical_primary,projection_primary	logical,projection
