@@ -73,8 +73,25 @@ void test_exact_evaluator_and_incremental_state() {
     require(static_cast<bool>(apply_exact_delta(delta, &state)));
     require(state.evaluated_contributions == 1 && state.generation == 2);
 }
+
+void test_multi_candidate_solution_and_snapshot() {
+    std::uint64_t bytes[2]{};
+    solution_candidate candidates[2]{};
+    candidates[0] = {{1, 31}, {3, 4}, {}, {&bytes[0], sizeof(bytes[0])}, false, false, {}};
+    candidates[1] = {{2, 31}, {5, 6}, {}, {&bytes[1], sizeof(bytes[1])}, true, true, {}};
+    require(static_cast<bool>(validate_multi_candidate_solution(
+        {optimizer_stage::portable_semantic_geometry, {}, candidates, 2})));
+    optimizer_snapshot snapshot{};
+    snapshot.strategy_identity = {3, 4};
+    snapshot.problem_identity = {7, 8};
+    snapshot.work_window_identity = {9, 10};
+    snapshot.iteration = (std::uint64_t{1} << 32) + 1;
+    snapshot.state = {bytes, sizeof(bytes)};
+    require(static_cast<bool>(validate_optimizer_snapshot(snapshot)));
+}
 }
 
 int main() { test_workload_profile(); test_original_groups_and_incremental_window();
     test_separate_strategy_registries(); test_exact_evaluator_and_incremental_state();
+    test_multi_candidate_solution_and_snapshot();
     return 0; }
