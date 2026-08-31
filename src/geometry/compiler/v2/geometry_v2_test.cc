@@ -1,4 +1,5 @@
 #include <Cellerator/geometry/compiler/workload_profile_v2.hh>
+#include <Cellerator/compute/architecture/target_cover/strategy_registry.hh>
 
 #include <cstdlib>
 
@@ -6,6 +7,13 @@ using namespace cellerator::geometry::compiler::v2;
 
 namespace {
 void require(bool condition) { if (!condition) std::abort(); }
+
+workload_status query_semantic(const semantic_strategy_problem &,
+    std::uint64_t *bytes, std::uint64_t *alignment) noexcept {
+    *bytes = 1; *alignment = 1; return {};
+}
+workload_status solve_semantic(const semantic_strategy_problem &,
+    void *, std::uint64_t, semantic_strategy_solution *) noexcept { return {}; }
 
 void test_workload_profile() {
     workload_component component{};
@@ -36,6 +44,17 @@ void test_original_groups_and_incremental_window() {
     require(validate_incremental_work_window(skeleton, window).code
         == workload_status_code::invalid_argument);
 }
+
+void test_separate_strategy_registries() {
+    semantic_strategy semantic[2]{};
+    semantic[0] = {{1, 1}, "portable-a", query_semantic, solve_semantic, true, false, {}};
+    semantic[1] = {{2, 1}, "portable-b", query_semantic, solve_semantic, true, true, {}};
+    require(static_cast<bool>(validate_semantic_strategy_registry({semantic, 2})));
+    semantic[1].identity = semantic[0].identity;
+    require(validate_semantic_strategy_registry({semantic, 2}).code
+        == workload_status_code::invalid_argument);
+}
 }
 
-int main() { test_workload_profile(); test_original_groups_and_incremental_window(); return 0; }
+int main() { test_workload_profile(); test_original_groups_and_incremental_window();
+    test_separate_strategy_registries(); return 0; }
