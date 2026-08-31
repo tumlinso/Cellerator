@@ -76,4 +76,26 @@ status_v1 enqueue_epilogue_unfused_v1(
 status_v1 enqueue_apply_epilogue_fused_v1(
     const apply_epilogue_request_v1 &request) noexcept;
 
+struct mma_residual_request_v1 {
+    const float *mma_contribution = nullptr;
+    const float *same_owner_residual = nullptr;
+    float *output = nullptr;
+    std::uint64_t global_output_begin = 0u;
+    std::uint32_t local_output_count = 0u;
+    std::uint64_t owner_order_id = 0u;
+    std::uint64_t structure_epoch = 0u;
+    std::uint64_t value_generation = 0u;
+    std::uint64_t profiler_correlation_id = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+status_v1 validate_mma_residual_request_v1(
+    const mma_residual_request_v1 &request) noexcept;
+status_v1 enqueue_mma_contribution_unfused_v1(
+    const mma_residual_request_v1 &request) noexcept;
+status_v1 enqueue_same_owner_residual_unfused_v1(
+    const mma_residual_request_v1 &request) noexcept;
+status_v1 enqueue_mma_same_owner_residual_fused_v1(
+    const mma_residual_request_v1 &request) noexcept;
+
 } // namespace cellerator::compute::operation::fusion
