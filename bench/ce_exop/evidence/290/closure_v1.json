@@ -1,0 +1,161 @@
+{
+  "schema": "ce-exop-closure-v1",
+  "task_id": "CE-EXOP-290",
+  "authority_revision": 3598,
+  "closure_status": "ready_for_transactional_completion",
+  "unexpected_discrepancies": [],
+  "run": {
+    "id": "CE-EXOP-RUN-V1",
+    "status_before_finish": "active",
+    "revision_before_finish": 3015,
+    "tasks_total": 170,
+    "other_tasks_terminal": 169,
+    "other_tasks_nonterminal": 0,
+    "allowed_dispositions": "validated by Project Control at terminalization",
+    "lanes_total": 31,
+    "noncoordinator_lanes_closed": 30,
+    "coordinator_lane_status_before_finish": "active",
+    "coordinator_lane_revision_before_finish": 3598
+  },
+  "live_coordination": {
+    "active_claims": 1,
+    "sole_active_claim": {
+      "task_id": "CE-EXOP-290",
+      "claim_id": "8a601818-4043-48b5-87b3-32cff17e6f5d"
+    },
+    "claim_inventory_sha256_prefix": "1c7f3d37",
+    "active_resource_leases": 0,
+    "resource_lease_inventory_sha256_prefix": "4f53cda1",
+    "active_lock_leases": 0,
+    "lock_lease_inventory_sha256_prefix": "4f53cda1"
+  },
+  "integration": {
+    "queue_rows": 26,
+    "integrated_rows": 26,
+    "pending_rows": 0,
+    "conflicts": 0,
+    "rendezvous": {
+      "CE-EXOP-RV-CORE": {"satisfied": true, "achieved": 8, "target": 8},
+      "CE-EXOP-RV-OPTIMIZER": {"satisfied": true, "achieved": 5, "target": 5}
+    }
+  },
+  "authority_contracts": {
+    "checkpoints": {
+      "total": 19,
+      "reached": 18,
+      "pending": ["CE-EXOP-COMPLETE"],
+      "pending_owner": "CE-EXOP-290",
+      "inventory_sha256": "1e9b6d9b0c07ee36c48221122a66f2493c0e112196c991152e3967259cc62cfb"
+    },
+    "interfaces": {
+      "total": 18,
+      "frozen": 18,
+      "missing": 0,
+      "inventory_sha256": "ef1f136f9b70acabdb798c2acc6b70028e8c54105eb02cc9aff67cf4fd0ba695"
+    },
+    "barriers": {
+      "total": 7,
+      "open": 7,
+      "blocked": 0,
+      "inventory_sha256": "96a9d07c1b0029c9b6657873e2a9ae54c0055a8ba622f16b1b6439b3dcfc3923"
+    }
+  },
+  "git_and_package": {
+    "snapshot_commit": "bbcaed96e0acf33e115243cee9ba4e44a6970d62",
+    "snapshot_tree": "d176f75a629effebc9368a690b24d62b849cb2a7",
+    "main_equals_origin_main": true,
+    "validated_implementation_commit": "eef1fd25013a38eaf2034b164760ba0f63dd5ded",
+    "validated_implementation_tree": "c71f1308e310c94a96c5b8807f50b9c9cc782096",
+    "implementation_package_tree_sha256": "d217e6b92568e7360802e01dc92b8739ee51ac00cf46f03b331b4a247b76c5f1",
+    "implementation_package_unchanged_since_validation": true,
+    "full_release_all_target_build": "passed",
+    "missing_cmake_sources": 0,
+    "missing_package_sources": 0,
+    "git_diff_check": "passed",
+    "generated_uncommitted_workflow_projection_entries": 294,
+    "non_generated_source_dirt": 0,
+    "staged_workflow_projections": 0
+  },
+  "closure_evidence": {
+    "CE-EXOP-286": {
+      "terminal_revision": 3590,
+      "disposition": "implemented",
+      "path": "bench/ce_exop/evidence/286/documentation_spine_v1.json",
+      "sha256": "dceef389e921cad8f9bef1521eee1b83a5f1b04b810bda69bb0eed1c921fd3f3"
+    },
+    "CE-EXOP-287": {
+      "terminal_revision": 3592,
+      "disposition": "implemented",
+      "path": "docs/CE_EXOP_PROFILING_HANDOFF.md",
+      "sha256": "2aa4645846be7da50ad2023b6a185b510eb1b532f6b771efa8aaa2913f2e007e"
+    },
+    "CE-EXOP-288": {
+      "terminal_revision": 3595,
+      "disposition": "validated",
+      "path": "bench/ce_exop/evidence/288/final_acceptance_audit_v1.json",
+      "sha256": "90a37d68e9945e0d307fb2aa94d192413fc87a3045814a23e796702fab9a8811"
+    },
+    "CE-EXOP-289": {
+      "terminal_revision": 3597,
+      "disposition": "validated",
+      "path": "bench/ce_exop/evidence/289/ce_amp_interlock_audit_v1.json",
+      "sha256": "76f4a95d82e7b4d8c6a3bd39d7368a749e7e43d0a80beb4118cfec1818af8ebc"
+    }
+  },
+  "validation_evidence": {
+    "CE-EXOP-255": {
+      "terminal_revision": 3568,
+      "leased_v100_runtime_matrix": "passed",
+      "compute_sanitizer_memcheck_errors": 0
+    },
+    "CE-EXOP-280": {
+      "terminal_revision": 3578,
+      "release_host_sanitizer_profiler_cuda_compile_package": "passed"
+    },
+    "CE-EXOP-281": {
+      "terminal_revision": 3585,
+      "integrated_regression": "passed"
+    },
+    "CE-EXOP-282": {
+      "terminal_revision": 3588,
+      "checkpoint": "CE-EXOP-PROFILER-READY",
+      "compile_only": true,
+      "cuda_runtime_executed": false,
+      "profiler_artifact_manifest_sha256": "5cde357d609425e51b779bc19533b8108171ca1c024bc3714b544b07ac51aa5c"
+    }
+  },
+  "deferred_limits": {
+    "deep_profiling": "deferred",
+    "biological_data": "deferred",
+    "candidate_promotion": "not performed",
+    "performance_claims": false,
+    "preprint_work": "not performed",
+    "sm86_work": "not performed"
+  },
+  "ce_amp": {
+    "permission": "not_granted",
+    "decision_revision": 3281,
+    "decision_inventory_sha256_prefix": "43524c7e",
+    "tasks": 10,
+    "task_state": "all planned with null result",
+    "task_inventory_sha256_prefix": "65479fe0",
+    "claims": 0,
+    "leases": 0,
+    "workspaces": 0,
+    "interfaces": 0,
+    "checkpoints": 0,
+    "artifacts": 0,
+    "execution": false
+  },
+  "required_finish_transaction": {
+    "action": "complete",
+    "disposition": "validated",
+    "must_reach_checkpoint": "CE-EXOP-COMPLETE",
+    "must_close_lane": "CE-EXOP-L-COORD",
+    "must_complete_run": "CE-EXOP-RUN-V1",
+    "must_release_claim": "8a601818-4043-48b5-87b3-32cff17e6f5d",
+    "post_finish_active_claims": 0,
+    "post_finish_active_resource_leases": 0,
+    "post_finish_active_lock_leases": 0
+  }
+}
