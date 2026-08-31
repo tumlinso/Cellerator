@@ -20,14 +20,14 @@ catalog_status validate_candidate_catalog_v3(
         for (std::uint32_t stage = 0; stage < item.stage_count; ++stage) {
             if (item.stages[stage].stage_id == 0 ||
                 item.stages[stage].kernel_id == 0 ||
-                item.stages[stage].stable_name[0] == 0) {
+                item.stages[stage].stable_name[0] == 0 ||
+                (stage != 0 && item.stages[stage - 1].stage_id >=
+                               item.stages[stage].stage_id)) {
                 return catalog_status::invalid_stage;
             }
         }
-        for (std::uint64_t prior = 0; prior < i; ++prior) {
-            if (catalog.candidates[prior].identity.candidate_id ==
-                item.identity.candidate_id) return catalog_status::duplicate_identity;
-        }
+        if (i != 0 && catalog.candidates[i - 1].identity.candidate_id >=
+                      item.identity.candidate_id) return catalog_status::duplicate_identity;
     }
     return catalog_status::success;
 }
