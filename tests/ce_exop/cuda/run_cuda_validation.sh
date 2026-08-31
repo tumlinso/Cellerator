@@ -24,6 +24,13 @@ transpose_gradient_tests=(
     "ceGeoSm70EdgeValueGradientTest|tests/tensor_core/sm70/edge_value_gradient_test.cu|"
 )
 
+composition_tests=(
+    "ceGeoSegmentNormalizeTest|tests/relation_algebra/segment_normalize_test.cu|src/compute/candidate/segment/normalize.cu"
+    "ceGeoSegmentReduceTest|tests/relation_algebra/segment_reduce_test.cu|src/compute/candidate/segment/reduce.cu"
+    "ceGeoRelationBundleTest|tests/relation_algebra/relation_bundle_test.cu|src/compute/candidate/relation_bundle.cc"
+    "ceGeoSm70AdvancedOpsTest|tests/tensor_core/sm70/advanced_operations_test.cu|"
+)
+
 compile_tests() {
     mkdir -p "${build_dir}"
     local record target test_source source_list source
@@ -65,6 +72,9 @@ case "${suite}" in
     transpose-gradients)
         selected_tests=("${transpose_gradient_tests[@]}")
         ;;
+    compositions)
+        selected_tests=("${composition_tests[@]}")
+        ;;
     *)
         echo "unknown CUDA validation suite: ${suite}" >&2
         exit 2
@@ -84,7 +94,7 @@ case "${mode}" in
         execute_targets "${targets[@]}"
         ;;
     *)
-        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients]" >&2
+        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients|compositions]" >&2
         exit 2
         ;;
 esac
