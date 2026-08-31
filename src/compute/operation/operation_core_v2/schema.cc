@@ -45,7 +45,8 @@ schema_status validate_operation_problem(const operation_problem &problem) noexc
             return {status.code, index};
         }
     }
-    if (problem.expected_value_generation.value == 0) {
+    if (problem.relations.relation_count != 0
+        && problem.expected_value_generation.value == 0) {
         return {schema_status_code::invalid_generation, 0};
     }
     if (problem.logical_work_items == 0) {
