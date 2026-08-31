@@ -41,6 +41,92 @@ set_target_properties(cellerator_architecture_provider PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# CE-EXOP-276: operation-complete sm_70 fan-in. Producer lanes own these
+# mechanisms; this integration point only makes their exact source portfolios
+# part of the normal architecture-provider build and publishes one inventory.
+target_sources(cellerator_architecture_provider PRIVATE
+    src/compute/architecture/providers/nvidia/sm70/residual/degree_partition.cc
+    src/compute/architecture/providers/nvidia/sm70/residual/feature_major_residual.cu
+    src/compute/architecture/providers/nvidia/sm70/residual/portfolio_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/residual/residual_kernels.cu
+    src/compute/architecture/providers/nvidia/sm70/residual/same_owner_fused.cu
+    src/compute/architecture/providers/nvidia/sm70/residual/separate_residual.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_inventory_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_n16_n32_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_n64_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_ptx_m8n8k4_experiment_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_reference_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_registration_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_wide_panels_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_wmma_shapes_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/contract/contract_catalog_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/contract/exact_validation_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/contract/sparse_contract_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/direct_edge_gradient_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_candidates_v1.cu
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_cover_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_integration_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_validation_v1.cc
+    src/compute/architecture/providers/nvidia/sm70/transpose/transpose_value_map_v1.cc
+)
+
+add_library(cellerator_ce_exop_operation_portfolio STATIC
+    src/compute/operation/ce_exop_operation_portfolio.cc
+    src/compute/operation/candidate_catalog/catalog_v3.cc
+    src/planner/end_to_end_planner/resource_cost_v1.cc)
+add_library(Cellerator::ce_exop_operation_portfolio ALIAS
+    cellerator_ce_exop_operation_portfolio)
+target_include_directories(cellerator_ce_exop_operation_portfolio PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(cellerator_ce_exop_operation_portfolio PUBLIC
+    Cellerator::architecture_provider)
+target_compile_features(cellerator_ce_exop_operation_portfolio PUBLIC cxx_std_17)
+
+add_executable(cellerator_ce_exop_operation_portfolio_test
+    src/compute/operation/ce_exop_operation_portfolio_test.cc)
+target_link_libraries(cellerator_ce_exop_operation_portfolio_test PRIVATE
+    Cellerator::ce_exop_operation_portfolio)
+target_compile_features(cellerator_ce_exop_operation_portfolio_test PRIVATE cxx_std_17)
+target_compile_options(cellerator_ce_exop_operation_portfolio_test PRIVATE -UNDEBUG)
+
+set(CELLERATOR_CE_EXOP_OPERATION_FOCUSED_TESTS
+    residual_portfolio_v1_test
+    transpose_candidates_v1_test
+    transpose_cover_v1_test
+    transpose_integration_v1_test
+    transpose_validation_v1_test
+    transpose_value_map_v1_test)
+foreach(test_name IN LISTS CELLERATOR_CE_EXOP_OPERATION_FOCUSED_TESTS)
+    if(test_name STREQUAL "residual_portfolio_v1_test")
+        set(test_source
+            src/compute/architecture/providers/nvidia/sm70/residual/portfolio_v1_test.cc)
+    else()
+        set(test_source
+            src/compute/architecture/providers/nvidia/sm70/transpose/${test_name}.cc)
+    endif()
+    add_executable(cellerator_ce_exop_${test_name} ${test_source})
+    target_link_libraries(cellerator_ce_exop_${test_name} PRIVATE
+        Cellerator::ce_exop_operation_portfolio)
+    target_compile_features(cellerator_ce_exop_${test_name} PRIVATE cxx_std_17)
+    target_compile_options(cellerator_ce_exop_${test_name} PRIVATE -UNDEBUG)
+endforeach()
+
+add_executable(cellerator_ce_exop_relation_apply_v1_test
+    src/compute/architecture/providers/nvidia/sm70/relation_apply/tests/relation_apply_v1_test.cu)
+target_link_libraries(cellerator_ce_exop_relation_apply_v1_test PRIVATE
+    Cellerator::ce_exop_operation_portfolio)
+set_target_properties(cellerator_ce_exop_relation_apply_v1_test PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED YES)
+target_compile_options(cellerator_ce_exop_relation_apply_v1_test PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:-UNDEBUG>
+    $<$<COMPILE_LANGUAGE:CUDA>:-UNDEBUG>)
+
 # The public relation algebra remains independent of model, trainer, and
 # framework ownership. Its candidate-catalog-v2 declarations are source-linked
 # here, while schema-v2-only operations continue to fail closed under the
@@ -317,6 +403,7 @@ target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::cusparse_csr_candidate
     Cellerator::preparation_factory
     Cellerator::native_training_slice
+    Cellerator::ce_exop_operation_portfolio
 )
 
 # CE-LIVE-43: publish the CE-LIVE-30 host orchestration layer as a normal
