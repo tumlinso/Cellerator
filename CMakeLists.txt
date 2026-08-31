@@ -376,6 +376,11 @@ cellerator_enable_perf(cellerator_compute_matrix_convert)
 cellerator_enable_perf(cellerator_runtime_fleet)
 
 include(src/CMakeLists.txt)
+# The legacy compute manifest declares the provider source inventories.  Split
+# them into provider-owned targets after all of their shared dependencies have
+# been declared, then emit the cold compiled-provider manifest.
+include(cmake/providers/CelleratorProviderTargets.cmake)
+cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
 include(src/planner/CMakeLists.txt)
 include(bench/CMakeLists.txt)
