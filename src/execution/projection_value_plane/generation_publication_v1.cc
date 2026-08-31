@@ -100,8 +100,15 @@ value_plane_status_v1 bind_direct_projection_gradients_v1(
             plane.generation.value);
     }
     if (publication.phase != generation_publication_phase_v1::published
-        || binding_count == nullptr) {
+        || publication.required_component_count != plane.required_component_count
+        || publication.ready_count != plane.required_component_count
+        || publication.ready_components == nullptr || binding_count == nullptr) {
         return failure(value_plane_status_code_v1::not_ready, 0u);
+    }
+    for (u32 index = 0u; index < plane.required_component_count; ++index) {
+        if (publication.ready_components[index] == 0u) {
+            return failure(value_plane_status_code_v1::not_ready, index);
+        }
     }
     u32 trainable_count = 0u;
     for (u32 index = 0u; index < plane.required_component_count; ++index) {
