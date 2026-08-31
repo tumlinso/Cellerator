@@ -1,4 +1,4 @@
-#include <Cellerator/execution/geometry_acquisition_v2/schema.hh>
+#include <Cellerator/execution/geometry_acquisition_v2/projections.hh>
 
 namespace cellerator::execution::acquisition_v2 {
 namespace {
@@ -82,6 +82,16 @@ status validate_requirements(const acquisition_request &request,
         || requirements.projection_count == 0
         || requirements.projection_count > request.projection_requirement_count
         || requirements.projection_chunk_count < requirements.projection_count) {
+        return {status_code::invalid_requirements, 0};
+    }
+    route_resolution expected{};
+    const status route_status = resolve_route(request, &expected);
+    if (!route_status) {
+        return route_status;
+    }
+    if (requirements.selected_route != expected.selected
+        || requirements.rebuilt_from_embedded_csg1
+            != expected.rebuilt_from_embedded_csg1) {
         return {status_code::invalid_requirements, 0};
     }
     if (requirements.rebuilt_from_embedded_csg1
