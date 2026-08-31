@@ -1,0 +1,234 @@
+{
+  "schema": "ce-exop-final-acceptance-audit-v1",
+  "task_id": "CE-EXOP-288",
+  "authority_revision": 3594,
+  "audit_result": "validated_with_expected_coordinator_steps_pending",
+  "unexpected_discrepancies": [],
+  "expected_pending": [
+    "CE-EXOP-288 is the active audit task",
+    "CE-EXOP-289 is queued after this audit",
+    "CE-EXOP-290 is queued after CE-EXOP-289",
+    "CE-EXOP-COMPLETE is reached only by CE-EXOP-290"
+  ],
+  "authority": {
+    "run_id": "CE-EXOP-RUN-V1",
+    "lanes_total": 31,
+    "tasks_total": 170,
+    "tasks_completed": 167,
+    "tasks_active": ["CE-EXOP-288"],
+    "tasks_queued": ["CE-EXOP-289", "CE-EXOP-290"],
+    "completed_task_dispositions": "accepted by Project Control fixed-disposition validation",
+    "closed_noncoordinator_lanes": 30,
+    "active_lanes": ["CE-EXOP-L-COORD"],
+    "integration_queue": {
+      "rows": 26,
+      "integrated": 26,
+      "pending": 0,
+      "conflicts": 0
+    },
+    "rendezvous": {
+      "CE-EXOP-RV-CORE": {
+        "state": "satisfied",
+        "achieved": 8,
+        "target": 8,
+        "barrier": "CE-EXOP-CORE-ABI-FANIN"
+      },
+      "CE-EXOP-RV-OPTIMIZER": {
+        "state": "satisfied",
+        "achieved": 5,
+        "target": 5,
+        "barrier": "CE-EXOP-OPTIMIZER-FANIN"
+      }
+    },
+    "barriers": {
+      "state": "open",
+      "meaning": "dependency requirements satisfied and downstream work unblocked",
+      "ids": [
+        "CE-EXOP-BIO-PRIMITIVE",
+        "CE-EXOP-CORE-ABI",
+        "CE-EXOP-FINAL-VALIDATION",
+        "CE-EXOP-FUSION-TRAINING",
+        "CE-EXOP-GEOMETRY",
+        "CE-EXOP-OPTIMIZER",
+        "CE-EXOP-SM70-PRIMITIVE"
+      ]
+    }
+  },
+  "checkpoints": {
+    "reached": {
+      "CE-EXOP-ACQUISITION-V2": 3281,
+      "CE-EXOP-ARCHITECTURE-FROZEN": 3281,
+      "CE-EXOP-BASELINE-FROZEN": 3281,
+      "CE-EXOP-CATALOG-PROGRAM-V3": 3281,
+      "CE-EXOP-CORE-INTEGRATED": 3352,
+      "CE-EXOP-GEOMETRY-CONTRACT-V2": 3324,
+      "CE-EXOP-GEOMETRY-INTEGRATED": 3372,
+      "CE-EXOP-OPCORE-V2": 3281,
+      "CE-EXOP-OPS-INTEGRATED": 3527,
+      "CE-EXOP-OPTIMIZER-PORTFOLIO-V1": 3281,
+      "CE-EXOP-PLANNER-PORTFOLIO-V2": 3281,
+      "CE-EXOP-PROFILE-CONTRACT-V1": 3292,
+      "CE-EXOP-PROFILER-FIXTURES-READY": 3571,
+      "CE-EXOP-PROFILER-READY": 3588,
+      "CE-EXOP-PROVIDER-BUILD-V1": 3281,
+      "CE-EXOP-SCALE-V1": 3281,
+      "CE-EXOP-TRAINING-V2": 3516,
+      "CE-EXOP-VALUE-PLANES-V1": 3364
+    },
+    "pending": {
+      "CE-EXOP-COMPLETE": "expected; owned by CE-EXOP-290"
+    }
+  },
+  "interfaces": {
+    "hashes_are_authority_prefixes": true,
+    "frozen": {
+      "cellerator-candidate-catalog-v3": "cb80077e",
+      "cellerator-executable-program-v2": "e0646401",
+      "cellerator-fusion-stage-graph-v1": "3f994622",
+      "cellerator-geometry-acquisition-v2": "e894f241",
+      "cellerator-geometry-workload-v2": "cf791e96",
+      "cellerator-hierarchical-index-space-v1": "e545e654",
+      "cellerator-joint-optimizer-portfolio-v1": "31b86c6d",
+      "cellerator-operation-core-v2": "5ed9f306",
+      "cellerator-partition-resource-export-v1": "527b8c9d",
+      "cellerator-planner-portfolio-v2": "3be6661f",
+      "cellerator-profiler-contract-v1": "2a1139f8",
+      "cellerator-projection-value-plane-v1": "aae725bd",
+      "cellerator-provider-build-v1": "46468b1e",
+      "cellerator-relation-algebra-v2": "3e0ea250",
+      "cellerator-scalable-geometry-v2": "aeb8ae1e",
+      "cellerator-sm70-operation-portfolio-v2": "f55bd558",
+      "cellerator-target-cover-strategy-v1": "51f0ff75",
+      "cellerator-training-program-v2": "853e37ec"
+    },
+    "missing": [],
+    "unfrozen_required": []
+  },
+  "git_and_source": {
+    "audit_snapshot_commit": "e6dc3e1c10346b222ed84c950e6ac334f1de174a",
+    "audit_snapshot_tree": "f777b8092ab3589b2a5cf1566f896342e14a3b7a",
+    "main_equals_origin_main": true,
+    "validated_implementation_commit": "eef1fd25013a38eaf2034b164760ba0f63dd5ded",
+    "validated_implementation_tree": "c71f1308e310c94a96c5b8807f50b9c9cc782096",
+    "implementation_package_tree_sha256": "d217e6b92568e7360802e01dc92b8739ee51ac00cf46f03b331b4a247b76c5f1",
+    "implementation_paths": [
+      "CMakeLists.txt", "cmake", "include", "src", "tests", "compat",
+      "components", "examples"
+    ],
+    "implementation_paths_unchanged_since_validation": true,
+    "changes_after_validated_tree": [
+      "bench/ce_exop/evidence/286/documentation_spine_v1.json",
+      "docs/CE_EXOP_PROFILING_HANDOFF.md"
+    ],
+    "full_release_all_target_build_on_validated_tree": "passed",
+    "missing_cmake_sources": [],
+    "missing_package_sources": [],
+    "git_diff_check": "passed",
+    "staged_source_changes_before_audit_artifact": false,
+    "unstaged_source_changes_before_audit_artifact": false,
+    "generated_uncommitted_workflow_projection_entries": 294,
+    "workflow_projection_dirt_classification": "generated and excluded from source identity"
+  },
+  "gpu_correctness": {
+    "source_task": "CE-EXOP-255",
+    "terminal_revision": 3568,
+    "request_id": "CE-EXOP-255-ACCELERATOR",
+    "claim_id": "0f50df65-797e-4aca-ac7c-4091b71bb2c4",
+    "lease_id": "de3474b4-6300-4a51-99ee-f354c281198c",
+    "lease_acquired_revision": 3562,
+    "lease_released_at": "2026-08-31T09:50:30Z",
+    "lease_release": "automatic_on_completion",
+    "authorized_scope": "tests/ce_exop/cuda integrated runtime acceptance only",
+    "device": "Tesla V100-SXM2-16GB",
+    "device_uuid_prefix": "GPU-21131915",
+    "compute_capability": "7.0",
+    "driver": "580.173.02",
+    "nvcc": "12.0.140",
+    "compute_sanitizer": "2025.2.1",
+    "runtime_runner_tip": "5f1eeb133e1fa2c81f882927bece697dd477b461",
+    "runtime_runner_sha256": "d8b28eaff6b614d5ae2f6e44cb6988773b20ef4f26904cc64dec467b58ebfe91",
+    "runtime_matrix": "passed",
+    "memcheck_targets": 2,
+    "memcheck_errors": 0
+  },
+  "final_validation": {
+    "CE-EXOP-280": {
+      "terminal_revision": 3578,
+      "disposition": "implemented",
+      "release_build": "passed",
+      "strict_host": "passed",
+      "asan_ubsan": "passed",
+      "profiler_synthetic": "passed",
+      "cuda_all_build_only_sm70": "passed",
+      "package_export_host": "passed",
+      "diff_check": "passed"
+    },
+    "CE-EXOP-281": {
+      "terminal_revision": 3585,
+      "disposition": "implemented",
+      "source_changes": false,
+      "release_build": "passed",
+      "strict_host": "passed",
+      "asan_ubsan": "passed",
+      "integrated_host_package_export_tests": 36,
+      "profiler_synthetic": "passed",
+      "cuda_all_build_only_sm70": "passed",
+      "architecture_file_io_diff_audits": "passed"
+    },
+    "CE-EXOP-282": {
+      "terminal_revision": 3588,
+      "disposition": "validated",
+      "checkpoint": "CE-EXOP-PROFILER-READY",
+      "ordered_profiler_artifact_manifest_sha256": "5cde357d609425e51b779bc19533b8108171ca1c024bc3714b544b07ac51aa5c",
+      "compile_only": true,
+      "cuda_runtime_executed": false,
+      "synthetic_fixture_and_deferred_validators": "passed"
+    }
+  },
+  "evidence_files": {
+    "documentation_spine": {
+      "path": "bench/ce_exop/evidence/286/documentation_spine_v1.json",
+      "sha256": "dceef389e921cad8f9bef1521eee1b83a5f1b04b810bda69bb0eed1c921fd3f3"
+    },
+    "profiling_handoff": {
+      "path": "docs/CE_EXOP_PROFILING_HANDOFF.md",
+      "sha256": "2aa4645846be7da50ad2023b6a185b510eb1b532f6b771efa8aaa2913f2e007e"
+    },
+    "deferred_requirements": {
+      "path": "bench/ce_exop/deferred_profiling_requirements_v1.json",
+      "sha256": "3d96ba6caad570592667016d9774a76a374f47b6e4158a770f77814c45bdd941"
+    },
+    "profiler_readiness": {
+      "path": "bench/ce_exop/profiler_readiness_acceptance_v1.json",
+      "sha256": "5a476385e6aeda1876b3f695023ccdcb1432f6a58a9e97c8bde0c993c45142ee"
+    }
+  },
+  "live_coordination": {
+    "active_claims": [
+      {
+        "task_id": "CE-EXOP-288",
+        "claim_id": "1083429e-299d-4849-b328-546e34a29311"
+      }
+    ],
+    "unexpected_active_claims": [],
+    "active_resource_leases": 0,
+    "active_lock_leases": 0
+  },
+  "deferred_boundaries": {
+    "deep_profiling": "deferred",
+    "biological_data": "deferred",
+    "candidate_promotion": "not performed",
+    "performance_claims": false,
+    "preprint_work": "not performed",
+    "sm86_work": "not performed"
+  },
+  "ce_amp_interlock": {
+    "permission": "not_granted",
+    "tasks_checked": 10,
+    "task_lifecycle": "all planned and inactive or dependency-blocked",
+    "active_claims": 0,
+    "completed_tasks": 0,
+    "work_performed": false,
+    "required_checkpoint_pending": "CE-EXOP-COMPLETE"
+  }
+}
