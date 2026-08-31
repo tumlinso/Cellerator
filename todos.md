@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `3016`
+Project revision: `3024`
 
 ## Workstreams
 - `CE-EXOP-00` | kind: epic | status: planned | parent: - | objective: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
@@ -449,11 +449,11 @@ Project revision: `3016`
 - `CE-GEO-02` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Freeze docs/CE_GEO_PROGRAM.md as the subordinate execution authority, preserving every settled boundary and separating benchmark questions from architecture.
 - `CE-GEO-03` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
 - `CE-GEO-10` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
-- `CE-EXOP-01` | kind: validation_task | status: planned | parent: CE-EXOP-00 | objective: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-01` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-11` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement architecture-neutral source-linked matrix-engine capabilities and separate versioned memory-interface restrictions without exposing WMMA types.
-- `CE-EXOP-02` | kind: workstream | status: planned | parent: CE-EXOP-00 | objective: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-02` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-12` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixed-capacity explicit provider registration, active-device filtering, and a generated compiled-provider manifest with no constructors or dynamic loader.
-- `CE-EXOP-03` | kind: validation_task | status: planned | parent: CE-EXOP-00 | objective: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-03` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-13` | kind: integration_task | status: done | parent: CE-GEO-00 | objective: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
 - `CE-GEO-14` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove a fake source-linked provider and candidate can be added without central runtime modification; validate descriptor, capability, memory-interface, registry, manifest, and sealed-session contracts.
 - `CE-EXOP-10` | kind: workstream | status: planned | parent: CE-EXOP-00 | objective: Deliver audit provider and cuda build topology exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

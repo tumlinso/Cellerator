@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `3016`
+Project revision: `3024`
 
 ## Workstreams
 - `CE-EXOP-00` | status: planned | execution: inactive | next: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
@@ -68,11 +68,11 @@ Project revision: `3016`
 - `CE-GEO-02` | status: done | execution: closed | next: Freeze docs/CE_GEO_PROGRAM.md as the subordinate execution authority, preserving every settled boundary and separating benchmark questions from architecture.
 - `CE-GEO-03` | status: done | execution: closed | next: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
 - `CE-GEO-10` | status: done | execution: closed | next: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
-- `CE-EXOP-01` | status: planned | execution: ready | next: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-01` | status: done | execution: closed | next: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-11` | status: done | execution: closed | next: Implement architecture-neutral source-linked matrix-engine capabilities and separate versioned memory-interface restrictions without exposing WMMA types.
-- `CE-EXOP-02` | status: planned | execution: ready | next: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-02` | status: done | execution: closed | next: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-12` | status: done | execution: closed | next: Implement fixed-capacity explicit provider registration, active-device filtering, and a generated compiled-provider manifest with no constructors or dynamic loader.
-- `CE-EXOP-03` | status: planned | execution: ready | next: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
+- `CE-EXOP-03` | status: done | execution: closed | next: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-13` | status: done | execution: closed | next: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
 - `CE-GEO-14` | status: done | execution: closed | next: Prove a fake source-linked provider and candidate can be added without central runtime modification; validate descriptor, capability, memory-interface, registry, manifest, and sealed-session contracts.
 - `CE-EXOP-10` | status: planned | execution: ready | next: Deliver audit provider and cuda build topology exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

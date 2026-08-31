@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T11:16:02Z",
+  "generated_at": "2026-08-31T04:55:30Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 3016,
+  "project_revision": 3024,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -2120,20 +2120,20 @@
       {
         "id": "CE-EXOP-ARCHITECTURE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 3016,
+        "reached_at": "2026-08-31T04:55:16Z",
+        "revision": 3022,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-EXOP-02",
         "title": "Ce Exop Architecture Frozen"
       },
       {
         "id": "CE-EXOP-BASELINE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 3016,
+        "reached_at": "2026-08-31T04:55:30Z",
+        "revision": 3024,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-EXOP-03",
         "title": "Ce Exop Baseline Frozen"
       },
@@ -33324,6 +33324,86 @@
         "revision": 3016,
         "seq": 3016,
         "timestamp": "2026-08-30T11:16:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-EXOP-L-COORD\", \"run_id\": \"CE-EXOP-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-EXOP-01\"}",
+        "revision": 3017,
+        "seq": 3017,
+        "timestamp": "2026-08-31T04:54:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-EXOP-L-COORD\", \"run_id\": \"CE-EXOP-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-EXOP-01\"}",
+        "revision": 3018,
+        "seq": 3018,
+        "timestamp": "2026-08-31T04:54:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-EXOP-L-COORD\", \"run_id\": \"CE-EXOP-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-EXOP-01\"}",
+        "revision": 3019,
+        "seq": 3019,
+        "timestamp": "2026-08-31T04:55:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3020, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 3020,
+        "seq": 3020,
+        "timestamp": "2026-08-31T04:55:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-EXOP-L-COORD\", \"run_id\": \"CE-EXOP-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-EXOP-02\"}",
+        "revision": 3021,
+        "seq": 3021,
+        "timestamp": "2026-08-31T04:55:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3022, \"disposition\": \"implemented\", \"reached_checkpoints\": [\"CE-EXOP-ARCHITECTURE-FROZEN\"]}",
+        "revision": 3022,
+        "seq": 3022,
+        "timestamp": "2026-08-31T04:55:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-L-COORD",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-EXOP-L-COORD\", \"run_id\": \"CE-EXOP-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-EXOP-03\"}",
+        "revision": 3023,
+        "seq": 3023,
+        "timestamp": "2026-08-31T04:55:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-EXOP-03",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3024, \"disposition\": \"validated\", \"reached_checkpoints\": [\"CE-EXOP-BASELINE-FROZEN\"]}",
+        "revision": 3024,
+        "seq": 3024,
+        "timestamp": "2026-08-31T04:55:30Z"
       }
     ],
     "evidence": [
@@ -51955,6 +52035,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-31T04:55:30Z",
+        "id": "4ce23327-7bec-4e20-9e0d-7af98d594fc9",
+        "kind": "complete",
+        "note": "Source and behavioral baseline frozen at 12a495f3dc3e3376728b160121086408be5f30f5. Baseline authority includes completed CE-GEO and CE-PTR checkpoints, current architecture/current-implementation contracts, clean source tree before workflow projections, and explicit preservation of CellShard independence, projection semantics, planner authority, deferred deep profiling, and CE-AMP permission gate.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-EXOP-BASELINE-FROZEN\", \"reached_at\": \"2026-08-31T04:55:30Z\", \"state\": \"reached\"}], \"completion_commit\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"completion_gates\": [], \"completion_revision\": 3024, \"finalized_checkpoints\": [\"CE-EXOP-BASELINE-FROZEN\"], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 168 +++++++++++++++++++++++++--------\\n todo-status.md                         |   8 +-\\n todos.md                               |   8 +-\\n todos/ce-exop-01.md                    |   8 +-\\n todos/ce-exop-02.md                    |   8 +-\\n todos/ce-exop-03.md                    |   6 +-\\n 6 files changed, 148 insertions(+), 58 deletions(-)\", \"git_head\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"interfaces\": [], \"note\": \"Source and behavioral baseline frozen at 12a495f3dc3e3376728b160121086408be5f30f5. Baseline authority includes completed CE-GEO and CE-PTR checkpoints, current architecture/current-implementation contracts, clean source tree before workflow projections, and explicit preservation of CellShard independence, projection semantics, planner authority, deferred deep profiling, and CE-AMP permission gate.\", \"resources\": [], \"task_id\": \"CE-EXOP-03\"}",
+        "revision": 3024,
+        "task_id": "CE-EXOP-03"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T10:22:48Z",
         "id": "4e6bf328-9f01-4c1b-a67a-145994819ce3",
         "kind": "complete",
@@ -53175,6 +53265,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-31T04:55:16Z",
+        "id": "d3ace5b7-2684-4426-a1ec-8117e18a0632",
+        "kind": "complete",
+        "note": "Frozen the bootstrap-authored CE-EXOP architecture at docs/CE_EXOP_PROGRAM.md without redesign. The document at commit 12a495f remains the detailed authority for the loaded run and preserves the declared scope, portfolios, lane topology, deferred profiling, and CE-AMP interlock.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-EXOP-ARCHITECTURE-FROZEN\", \"reached_at\": \"2026-08-31T04:55:16Z\", \"state\": \"reached\"}], \"completion_commit\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"completion_gates\": [], \"completion_revision\": 3022, \"finalized_checkpoints\": [\"CE-EXOP-ARCHITECTURE-FROZEN\"], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 108 +++++++++++++++++++++++++--------\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/ce-exop-01.md                    |   8 +--\\n todos/ce-exop-02.md                    |   6 +-\\n 5 files changed, 97 insertions(+), 37 deletions(-)\", \"git_head\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"interfaces\": [], \"note\": \"Frozen the bootstrap-authored CE-EXOP architecture at docs/CE_EXOP_PROGRAM.md without redesign. The document at commit 12a495f remains the detailed authority for the loaded run and preserves the declared scope, portfolios, lane topology, deferred profiling, and CE-AMP interlock.\", \"resources\": [], \"task_id\": \"CE-EXOP-02\"}",
+        "revision": 3022,
+        "task_id": "CE-EXOP-02"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-25T12:34:04Z",
         "id": "d3bfa3ed-fd52-402a-affe-df4bff516914",
         "kind": "complete",
@@ -53252,6 +53352,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-GEO-VOLTA-SYSTEM-INTEGRATED\", \"reached_at\": \"2026-08-30T03:39:12Z\", \"state\": \"reached\"}], \"completion_commit\": \"ff9c0bbf54809cf2de0b745469e26212a72cc879\", \"completion_gates\": [{\"evidence_id\": \"fc406a83-ba3f-4b17-8bb8-0bc4a0026959\", \"evidence_revision\": 2956, \"id\": \"CE-GEO-123-MATRIX\", \"input_fingerprint\": \"2a301ff448bf302d18c6001e99b9ffda31dcdee7aa618dadb07d75539cd98df2\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"ff9c0bbf54809cf2de0b745469e26212a72cc879\"}, {\"evidence_id\": \"e0a0dbbc-f41a-4388-ba7f-4f1e2e5f3b0e\", \"evidence_revision\": 2958, \"id\": \"CE-GEO-123-NATIVE\", \"input_fingerprint\": \"f6a6cdf7590348febdac33943187e75241fab9c42fd69ebfe361434dfb983fcb\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"ff9c0bbf54809cf2de0b745469e26212a72cc879\"}], \"completion_revision\": 2959, \"finalized_checkpoints\": [\"CE-GEO-VOLTA-SYSTEM-INTEGRATED\"], \"gates\": [{\"id\": \"CE-GEO-123-NATIVE\", \"input_fingerprint\": \"f6a6cdf7590348febdac33943187e75241fab9c42fd69ebfe361434dfb983fcb\", \"last_run_at\": \"2026-08-30T03:39:12Z\", \"revision\": 2958, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-GEO-123-MATRIX\", \"input_fingerprint\": \"2a301ff448bf302d18c6001e99b9ffda31dcdee7aa618dadb07d75539cd98df2\", \"last_run_at\": \"2026-08-30T03:39:12Z\", \"revision\": 2956, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/ce-ptr-plan.json    |    18 +-\\n .todo-orchestrator/state.snapshot.json | 15033 +++++++++++++++++++++++++------\\n AGENTS.md                              |    14 +-\\n todo-status.md                         |   210 +-\\n todos.md                               |   210 +-\\n todos/ce-amp-00.md                     |     2 +-\\n todos/ce-amp-01.md                     |     2 +-\\n todos/ce-amp-02.md                     |     2 +-\\n todos/ce-amp-03.md                     |     2 +-\\n todos/ce-amp-04.md                     |     2 +-\\n todos/ce-amp-05.md                     |     2 +-\\n todos/ce-amp-06.md                     |     2 +-\\n todos/ce-amp-07.md                     |     2 +-\\n todos/ce-amp-08.md                     |     2 +-\\n todos/ce-amp-09.md                     |     2 +-\\n todos/ce-geo-00.md                     |     2 +-\\n todos/ce-geo-01.md                     |     2 +-\\n todos/ce-geo-02.md                     |     2 +-\\n todos/ce-geo-03.md                     |     2 +-\\n todos/ce-geo-10.md                     |     2 +-\\n todos/ce-geo-100.md                    |     8 +-\\n todos/ce-geo-101.md                    |     8 +-\\n todos/ce-geo-102.md                    |     8 +-\\n todos/ce-geo-103.md                    |     8 +-\\n todos/ce-geo-104.md                    |     8 +-\\n todos/ce-geo-105.md                    |    17 +-\\n todos/ce-geo-106.md                    |     8 +-\\n todos/ce-geo-107.md                    |     2 +-\\n todos/ce-geo-108.md                    |     2 +-\\n todos/ce-geo-109.md                    |     2 +-\\n todos/ce-geo-11.md                     |     8 +-\\n todos/ce-geo-110.md                    |     2 +-\\n todos/ce-geo-111.md                    |     8 +-\\n todos/ce-geo-112.md                    |     8 +-\\n todos/ce-geo-113.md                    |     9 +-\\n todos/ce-geo-114.md                    |     9 +-\\n todos/ce-geo-115.md                    |     9 +-\\n todos/ce-geo-116.md                    |     8 +-\\n todos/ce-geo-117.md                    |     8 +-\\n todos/ce-geo-118.md                    |     2 +-\\n todos/ce-geo-119.md                    |     4 +-\\n todos/ce-geo-12.md                     |     8 +-\\n todos/ce-geo-120.md                    |     9 +-\\n todos/ce-geo-121.md                    |    11 +-\\n todos/ce-geo-122.md                    |    12 +-\\n todos/ce-geo-123.md                    |     7 +-\\n todos/ce-geo-124.md                    |     2 +-\\n todos/ce-geo-125.md                    |     2 +-\\n todos/ce-geo-126.md                    |     2 +-\\n todos/ce-geo-127.md                    |     2 +-\\n todos/ce-geo-13.md                     |     8 +-\\n todos/ce-geo-14.md                     |     8 +-\\n todos/ce-geo-20.md                     |     8 +-\\n todos/ce-geo-21.md                     |     8 +-\\n todos/ce-geo-22.md                     |     8 +-\\n todos/ce-geo-23.md                     |     8 +-\\n todos/ce-geo-24.md                     |     8 +-\\n todos/ce-geo-25.md                     |     8 +-\\n todos/ce-geo-30.md                     |     2 +-\\n todos/ce-geo-31.md                     |     8 +-\\n todos/ce-geo-32.md                     |     8 +-\\n todos/ce-geo-33.md                     |     8 +-\\n todos/ce-geo-34.md                     |     8 +-\\n todos/ce-geo-35.md                     |     8 +-\\n todos/ce-geo-36.md                     |     8 +-\\n todos/ce-geo-37.md                     |     8 +-\\n todos/ce-geo-38.md                     |     8 +-\\n todos/ce-geo-39.md                     |     9 +-\\n todos/ce-geo-40.md                     |     2 +-\\n todos/ce-geo-41.md                     |     8 +-\\n todos/ce-geo-42.md                     |     8 +-\\n todos/ce-geo-43.md                     |     8 +-\\n todos/ce-geo-44.md                     |     8 +-\\n todos/ce-geo-45.md                     |    10 +-\\n todos/ce-geo-46.md                     |     8 +-\\n todos/ce-geo-47.md                     |     8 +-\\n todos/ce-geo-50.md                     |     2 +-\\n todos/ce-geo-51.md                     |     8 +-\\n todos/ce-geo-52.md                     |     8 +-\\n todos/ce-geo-53.md                     |     8 +-\\n todos/ce-geo-54.md                     |     8 +-\\n todos/ce-geo-55.md                     |     8 +-\\n todos/ce-geo-56.md                     |     8 +-\\n todos/ce-geo-57.md                     |     8 +-\\n todos/ce-geo-58.md                     |     8 +-\\n todos/ce-geo-60.md                     |     8 +-\\n todos/ce-geo-61.md                     |     8 +-\\n todos/ce-geo-62.md                     |     8 +-\\n todos/ce-geo-63.md                     |     8 +-\\n todos/ce-geo-64.md                     |     8 +-\\n todos/ce-geo-65.md                     |     8 +-\\n todos/ce-geo-66.md                     |     8 +-\\n todos/ce-geo-67.md                     |     8 +-\\n todos/ce-geo-68.md                     |     8 +-\\n todos/ce-geo-69.md                     |     9 +-\\n todos/ce-geo-70.md                     |     2 +-\\n todos/ce-geo-71.md                     |     8 +-\\n todos/ce-geo-72.md                     |     8 +-\\n todos/ce-geo-73.md                     |     8 +-\\n todos/ce-geo-74.md                     |    10 +-\\n todos/ce-geo-75.md                     |     9 +-\\n todos/ce-geo-76.md                     |     9 +-\\n todos/ce-geo-77.md                     |     8 +-\\n todos/ce-geo-78.md                     |     8 +-\\n todos/ce-geo-79.md                     |     8 +-\\n todos/ce-geo-80.md                     |     2 +-\\n todos/ce-geo-81.md                     |     8 +-\\n todos/ce-geo-82.md                     |     8 +-\\n todos/ce-geo-83.md                     |     8 +-\\n todos/ce-geo-84.md                     |     8 +-\\n todos/ce-geo-85.md                     |     8 +-\\n todos/ce-geo-86.md                     |     8 +-\\n todos/ce-geo-87.md                     |     8 +-\\n todos/ce-geo-88.md                     |     8 +-\\n todos/ce-geo-90.md                     |     8 +-\\n todos/ce-geo-91.md                     |     8 +-\\n todos/ce-geo-92.md                     |     8 +-\\n todos/ce-geo-93.md                     |     8 +-\\n todos/ce-geo-94.md                     |     8 +-\\n todos/ce-geo-95.md                     |     8 +-\\n todos/ce-geo-96.md                     |     8 +-\\n todos/ce-geo-97.md                     |     8 +-\\n todos/ce-geo-98.md                     |     9 +-\\n todos/ce-geo-99.md                     |     8 +-\\n todos/ce-ptr-01.md                     |     8 +-\\n todos/ce-ptr-02.md                     |     8 +-\\n todos/ce-ptr-03.md                     |     8 +-\\n todos/ce-ptr-04.md                     |     8 +-\\n todos/ce-ptr-05.md                     |     8 +-\\n todos/ce-ptr-06.md                     |     8 +-\\n todos/ce-ptr-07.md                     |     8 +-\\n todos/ce-ptr-08.md                     |     8 +-\\n todos/ce-ptr-09.md                     |     8 +-\\n todos/ce-ptr-10.md                     |     8 +-\\n todos/ce-ptr-11.md                     |     8 +-\\n todos/ce-ptr-12.md                     |     8 +-\\n todos/ce-ptr-13.md                     |    13 +-\\n todos/ce-ptr-14.md                     |     8 +-\\n todos/ce-ptr-15.md                     |     8 +-\\n 139 files changed, 12874 insertions(+), 3538 deletions(-)\", \"git_head\": \"ff9c0bbf54809cf2de0b745469e26212a72cc879\", \"interfaces\": [], \"note\": \"Integrated final immutable CE-GEO provider/relation catalog fan-in into executable core; full native 80-way build and sterile native/CelleraTorch compatibility matrices pass for vertical and biology aggregates.\", \"resources\": [], \"task_id\": \"CE-GEO-123\"}",
         "revision": 2959,
         "task_id": "CE-GEO-123"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-31T04:55:00Z",
+        "id": "e1283df7-bbcb-455f-9939-1e1e542359a4",
+        "kind": "complete",
+        "note": "Live preflight validated against clean main at 12a495f3dc3e3376728b160121086408be5f30f5, active run authority, empty coordination queue, no pre-created CE-EXOP workspaces, and preserved decisions CE-AMP-PERMISSION=not_granted and CE-EXOP-DEEP-PROFILING=deferred.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"completion_gates\": [], \"completion_revision\": 3020, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 54 ++++++++++++++++++++++++++--------\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/ce-exop-01.md                    |  6 ++--\\n 4 files changed, 49 insertions(+), 19 deletions(-)\", \"git_head\": \"12a495f3dc3e3376728b160121086408be5f30f5\", \"interfaces\": [], \"note\": \"Live preflight validated against clean main at 12a495f3dc3e3376728b160121086408be5f30f5, active run authority, empty coordination queue, no pre-created CE-EXOP workspaces, and preserved decisions CE-AMP-PERMISSION=not_granted and CE-EXOP-DEEP-PROFILING=deferred.\", \"resources\": [], \"task_id\": \"CE-EXOP-01\"}",
+        "revision": 3020,
+        "task_id": "CE-EXOP-01"
       },
       {
         "claim_id": null,
@@ -112528,9 +112638,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_git_head": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_revision": 3020,
         "created_at": "2026-08-30T11:15:02Z",
         "id": "CE-EXOP-01",
         "kind": "validation_task",
@@ -112542,20 +112652,20 @@
         "parallel_policy": "serial",
         "parent_id": "CE-EXOP-00",
         "priority": 899,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 3016,
-        "status": "planned",
+        "revision": 3020,
+        "status": "done",
         "tags_json": "[]",
         "title": "Live preflight and coordination cleanup",
-        "updated_at": "2026-08-30T11:16:01Z",
-        "version": 2
+        "updated_at": "2026-08-31T04:55:00Z",
+        "version": 4
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_git_head": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_revision": 3022,
         "created_at": "2026-08-30T11:15:02Z",
         "id": "CE-EXOP-02",
         "kind": "workstream",
@@ -112567,20 +112677,20 @@
         "parallel_policy": "serial",
         "parent_id": "CE-EXOP-00",
         "priority": 898,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
-        "revision": 3016,
-        "status": "planned",
+        "revision": 3022,
+        "status": "done",
         "tags_json": "[]",
         "title": "Freeze CE-EXOP program architecture",
-        "updated_at": "2026-08-30T11:16:01Z",
-        "version": 2
+        "updated_at": "2026-08-31T04:55:16Z",
+        "version": 4
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_git_head": "12a495f3dc3e3376728b160121086408be5f30f5",
+        "completion_revision": 3024,
         "created_at": "2026-08-30T11:15:02Z",
         "id": "CE-EXOP-03",
         "kind": "validation_task",
@@ -112592,14 +112702,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-EXOP-00",
         "priority": 897,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 3016,
-        "status": "planned",
+        "revision": 3024,
+        "status": "done",
         "tags_json": "[]",
         "title": "Freeze source and behavioral baseline",
-        "updated_at": "2026-08-30T11:16:01Z",
-        "version": 2
+        "updated_at": "2026-08-31T04:55:30Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -129553,33 +129663,33 @@
         "task_id": "CE-EXOP-184"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-31T04:54:05Z",
+        "completed_at": "2026-08-31T04:55:00Z",
         "enqueued_at": "2026-08-30T11:15:02Z",
         "lane_id": "CE-EXOP-L-COORD",
         "position": 0,
-        "revision": 3016,
-        "state": "queued",
+        "revision": 3020,
+        "state": "completed",
         "task_id": "CE-EXOP-01"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-31T04:55:10Z",
+        "completed_at": "2026-08-31T04:55:16Z",
         "enqueued_at": "2026-08-30T11:15:02Z",
         "lane_id": "CE-EXOP-L-COORD",
         "position": 1,
-        "revision": 3016,
-        "state": "queued",
+        "revision": 3022,
+        "state": "completed",
         "task_id": "CE-EXOP-02"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-31T04:55:23Z",
+        "completed_at": "2026-08-31T04:55:30Z",
         "enqueued_at": "2026-08-30T11:15:02Z",
         "lane_id": "CE-EXOP-L-COORD",
         "position": 2,
-        "revision": 3016,
-        "state": "queued",
+        "revision": 3024,
+        "state": "completed",
         "task_id": "CE-EXOP-03"
       },
       {
@@ -132457,11 +132567,11 @@
         "created_at": "2026-08-30T11:15:02Z",
         "id": "CE-EXOP-L-COORD",
         "parent_lane_id": null,
-        "revision": 3016,
+        "revision": 3024,
         "role": "coordinator",
         "run_id": "CE-EXOP-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:16:02Z",
+        "updated_at": "2026-08-31T04:55:30Z",
         "workspace_mode": "exclusive"
       },
       {
