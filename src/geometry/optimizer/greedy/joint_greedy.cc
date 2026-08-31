@@ -34,21 +34,47 @@ joint_grouping_status rectangle_cost(
         std::int64_t* cost) noexcept {
     if (cost == nullptr || policy.rectangle_setup_cost < 0 ||
         policy.dense_contribution_cost < 0 ||
-        policy.residual_contribution_cost < 0) {
+        policy.residual_contribution_cost < 0 ||
+        policy.minimum_dense_contributions == 0) {
         return joint_grouping_status::invalid_argument;
     }
     if (contributions == 0) {
         *cost = 0;
         return joint_grouping_status::success;
     }
-    std::int64_t dense = 0;
-    std::int64_t residual = 0;
-    if (!checked_multiply(policy.dense_contribution_cost, contributions, &dense) ||
-        !checked_add(dense, policy.rectangle_setup_cost, &dense) ||
-        !checked_multiply(policy.residual_contribution_cost, contributions, &residual)) {
+    std::int64_t pure_residual = 0;
+    if (!checked_multiply(
+                policy.residual_contribution_cost,
+                contributions,
+                &pure_residual)) {
         return joint_grouping_status::arithmetic_overflow;
     }
-    *cost = dense < residual ? dense : residual;
+    if (policy.dense_capacity_per_rectangle == 0 ||
+        contributions < policy.minimum_dense_contributions) {
+        *cost = pure_residual;
+        return joint_grouping_status::success;
+    }
+    const std::uint64_t dense_contributions =
+            contributions < policy.dense_capacity_per_rectangle
+                    ? contributions
+                    : policy.dense_capacity_per_rectangle;
+    const std::uint64_t residual_contributions =
+            contributions - dense_contributions;
+    std::int64_t hybrid = 0;
+    std::int64_t residual_tail = 0;
+    if (!checked_multiply(
+                policy.dense_contribution_cost,
+                dense_contributions,
+                &hybrid) ||
+        !checked_add(hybrid, policy.rectangle_setup_cost, &hybrid) ||
+        !checked_multiply(
+                policy.residual_contribution_cost,
+                residual_contributions,
+                &residual_tail) ||
+        !checked_add(hybrid, residual_tail, &hybrid)) {
+        return joint_grouping_status::arithmetic_overflow;
+    }
+    *cost = hybrid < pure_residual ? hybrid : pure_residual;
     return joint_grouping_status::success;
 }
 
@@ -240,6 +266,147 @@ bool accepts_delta(std::int64_t delta, bool accept_equal) noexcept {
     return delta < 0 || (accept_equal && delta == 0);
 }
 
+joint_grouping_status validate_refinement_batch(
+        const mutable_joint_grouping_state& state,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace) noexcept {
+    if (workspace.mark_epoch == 0 ||
+        (batch.change_count != 0 && batch.changes == nullptr) ||
+        workspace.source_mark_capacity < state.problem.source_count ||
+        workspace.destination_mark_capacity < state.problem.destination_count ||
+        workspace.original_group_capacity < batch.change_count ||
+        (state.problem.source_count != 0 && workspace.source_marks == nullptr) ||
+        (state.problem.destination_count != 0 && workspace.destination_marks == nullptr) ||
+        (batch.change_count != 0 && workspace.original_groups == nullptr)) {
+        return joint_grouping_status::insufficient_storage;
+    }
+    for (std::uint32_t index = 0; index < batch.change_count; ++index) {
+        const auto& change = batch.changes[index];
+        if (change.axis == joint_group_axis::source) {
+            if (change.item >= state.problem.source_count ||
+                change.target_group >= state.source_group_count ||
+                workspace.source_marks[change.item] == workspace.mark_epoch) {
+                return joint_grouping_status::invalid_problem;
+            }
+            workspace.source_marks[change.item] = workspace.mark_epoch;
+        } else if (change.axis == joint_group_axis::destination) {
+            if (change.item >= state.problem.destination_count ||
+                change.target_group >= state.destination_group_count ||
+                workspace.destination_marks[change.item] == workspace.mark_epoch) {
+                return joint_grouping_status::invalid_problem;
+            }
+            workspace.destination_marks[change.item] = workspace.mark_epoch;
+        } else {
+            return joint_grouping_status::invalid_problem;
+        }
+    }
+    return joint_grouping_status::success;
+}
+
+joint_grouping_status mutate_change(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_change& change,
+        std::int64_t* delta,
+        std::uint64_t* edge_visits) noexcept {
+    if (change.axis == joint_group_axis::source) {
+        *edge_visits += adjacency.source_edge_offsets[change.item + 1] -
+                        adjacency.source_edge_offsets[change.item];
+        return mutate_source(
+                state, adjacency, policy, change.item, change.target_group, delta);
+    }
+    *edge_visits += adjacency.destination_edge_offsets[change.item + 1] -
+                    adjacency.destination_edge_offsets[change.item];
+    return mutate_destination(
+            state, adjacency, policy, change.item, change.target_group, delta);
+}
+
+joint_refinement_evaluation execute_refinement_batch(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace,
+        bool retain,
+        std::uint64_t expected_generation,
+        std::int64_t expected_delta) noexcept {
+    joint_refinement_evaluation evaluation{};
+    if (state == nullptr) {
+        return evaluation;
+    }
+    evaluation.state_generation = state->generation;
+    evaluation.status = validate_joint_grouping_adjacency(state->problem, adjacency);
+    if (evaluation.status != joint_grouping_status::success) return evaluation;
+    evaluation.status = validate_refinement_batch(*state, batch, workspace);
+    if (evaluation.status != joint_grouping_status::success) return evaluation;
+    if (retain && state->generation != expected_generation) {
+        evaluation.status = joint_grouping_status::state_mismatch;
+        return evaluation;
+    }
+    if (retain && batch.change_count != 0 &&
+        state->generation == std::numeric_limits<std::uint64_t>::max()) {
+        evaluation.status = joint_grouping_status::arithmetic_overflow;
+        return evaluation;
+    }
+
+    std::uint32_t applied = 0;
+    for (; applied < batch.change_count; ++applied) {
+        const auto& change = batch.changes[applied];
+        workspace.original_groups[applied] =
+                change.axis == joint_group_axis::source
+                        ? state->storage.source_groups[change.item]
+                        : state->storage.destination_groups[change.item];
+        std::int64_t delta = 0;
+        evaluation.status = mutate_change(
+                state, adjacency, policy, change, &delta,
+                &evaluation.incident_edge_visits);
+        if (evaluation.status != joint_grouping_status::success ||
+            !checked_add(evaluation.objective_delta, delta,
+                         &evaluation.objective_delta)) {
+            evaluation.status = joint_grouping_status::state_mismatch;
+            break;
+        }
+    }
+    if (applied != batch.change_count ||
+        (!retain) || evaluation.objective_delta != expected_delta) {
+        std::int64_t rollback_total = 0;
+        while (applied != 0) {
+            --applied;
+            auto reverse = batch.changes[applied];
+            reverse.target_group = workspace.original_groups[applied];
+            std::int64_t reverse_delta = 0;
+            std::uint64_t ignored_visits = 0;
+            const auto rollback_status = mutate_change(
+                    state, adjacency, policy, reverse, &reverse_delta,
+                    &ignored_visits);
+            if (rollback_status != joint_grouping_status::success ||
+                !checked_add(rollback_total, reverse_delta, &rollback_total)) {
+                evaluation.status = joint_grouping_status::state_mismatch;
+                return evaluation;
+            }
+        }
+        std::int64_t round_trip = 0;
+        if (!checked_add(evaluation.objective_delta, rollback_total, &round_trip) ||
+            round_trip != 0) {
+            evaluation.status = joint_grouping_status::state_mismatch;
+            return evaluation;
+        }
+        if (retain && evaluation.objective_delta != expected_delta) {
+            evaluation.status = joint_grouping_status::state_mismatch;
+            return evaluation;
+        }
+    } else {
+        if (batch.change_count != 0) {
+            ++state->generation;
+        }
+        evaluation.state_generation = state->generation;
+    }
+    evaluation.status = joint_grouping_status::success;
+    evaluation.admissible = true;
+    return evaluation;
+}
+
 }  // namespace
 
 joint_grouping_status validate_joint_grouping_adjacency(
@@ -317,6 +484,29 @@ joint_grouping_status compute_joint_greedy_objective(
         }
     }
     return joint_grouping_status::success;
+}
+
+joint_refinement_evaluation evaluate_joint_refinement_batch(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace) noexcept {
+    return execute_refinement_batch(
+            state, adjacency, policy, batch, workspace, false, 0, 0);
+}
+
+joint_refinement_evaluation apply_joint_refinement_batch(
+        mutable_joint_grouping_state* state,
+        const joint_grouping_adjacency_view& adjacency,
+        const joint_greedy_cost_policy& policy,
+        const joint_assignment_batch_view& batch,
+        const joint_refinement_workspace& workspace,
+        std::uint64_t expected_generation,
+        std::int64_t expected_objective_delta) noexcept {
+    return execute_refinement_batch(
+            state, adjacency, policy, batch, workspace, true,
+            expected_generation, expected_objective_delta);
 }
 
 joint_greedy_result optimize_joint_grouping_greedy(
