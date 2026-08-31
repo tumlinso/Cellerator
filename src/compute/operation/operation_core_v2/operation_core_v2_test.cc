@@ -165,11 +165,41 @@ void test_output_order_and_determinism_contracts() {
     require(static_cast<bool>(validate_operation_problem(problem)));
 }
 
+void test_sparse_update_and_composition_descriptors() {
+    sparse_axis_update_descriptor update{};
+    update.target_axis = axis(600);
+    update.index_type = sparse_index_type::u64;
+    update.value_type = execution::numeric_type::f32;
+    for (std::uint8_t value = 1; value <= 5; ++value) {
+        update.update = static_cast<sparse_update_operation>(value);
+        require(static_cast<bool>(validate_sparse_axis_update(update)));
+    }
+    update.preserve_canonical_identity = false;
+    require(validate_sparse_axis_update(update).code == schema_status_code::invalid_axis);
+
+    const composition_stage stages[] = {
+        {{31, 32}, operation_kind::contract_on_support, 0},
+        {{33, 34}, operation_kind::segment_reduce, 1}
+    };
+    composition_dependency dependency{0, 1};
+    composition_descriptor composition{};
+    composition.identity = {35, 36};
+    composition.kind = composition_kind::contraction_to_segment;
+    composition.stages = stages;
+    composition.stage_count = 2;
+    composition.dependencies = &dependency;
+    composition.dependency_count = 1;
+    require(static_cast<bool>(validate_composition(composition)));
+    dependency = {1, 0};
+    require(validate_composition(composition).code == schema_status_code::invalid_argument);
+}
+
 }  // namespace
 
 int main() {
     test_schema_v2_problem();
     test_complete_relation_algebra_bindings();
     test_output_order_and_determinism_contracts();
+    test_sparse_update_and_composition_descriptors();
     return 0;
 }
