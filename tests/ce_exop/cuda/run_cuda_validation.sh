@@ -31,6 +31,11 @@ composition_tests=(
     "ceGeoSm70AdvancedOpsTest|tests/tensor_core/sm70/advanced_operations_test.cu|"
 )
 
+runtime_safety_tests=(
+    "ceGeoSm70PreparedReuseGraphTest|tests/tensor_core/sm70/prepared_reuse_graph_test.cu|src/compute/architecture/providers/nvidia/sm70/value_pack.cu"
+    "ceGeoSm70WidthsTest|tests/tensor_core/sm70/relation_apply_widths_test.cu|src/compute/architecture/providers/nvidia/sm70/relation_apply_widths.cu"
+)
+
 compile_tests() {
     mkdir -p "${build_dir}"
     local record target test_source source_list source
@@ -62,6 +67,14 @@ execute_targets() {
     done
 }
 
+sanitize_targets() {
+    local target
+    for target in "$@"; do
+        compute-sanitizer --tool memcheck --error-exitcode=86 \
+            "${build_dir}/${target}"
+    done
+}
+
 case "${suite}" in
     candidate-matrix)
         selected_tests=("${candidate_matrix_tests[@]}")
@@ -74,6 +87,9 @@ case "${suite}" in
         ;;
     compositions)
         selected_tests=("${composition_tests[@]}")
+        ;;
+    runtime-safety)
+        selected_tests=("${runtime_safety_tests[@]}")
         ;;
     *)
         echo "unknown CUDA validation suite: ${suite}" >&2
@@ -92,9 +108,12 @@ case "${mode}" in
             targets+=("${record%%|*}")
         done
         execute_targets "${targets[@]}"
+        if [[ "${suite}" == runtime-safety ]]; then
+            sanitize_targets "${targets[@]}"
+        fi
         ;;
     *)
-        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients|compositions]" >&2
+        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients|compositions|runtime-safety]" >&2
         exit 2
         ;;
 esac
