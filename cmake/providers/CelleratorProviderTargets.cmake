@@ -53,6 +53,7 @@ function(cellerator_finalize_cuda_provider_targets)
     add_library(Cellerator::provider_common ALIAS
         cellerator_provider_common)
     cellerator_configure_provider_target(cellerator_provider_common)
+    cellerator_apply_provider_build_policy(cellerator_provider_common)
 
     # The generic target is an explicit target-neutral provider surface.  It
     # owns no accelerator-specific source and therefore remains an interface
@@ -67,6 +68,7 @@ function(cellerator_finalize_cuda_provider_targets)
         add_library(cellerator_provider_sm70 STATIC
             ${CELLERATOR_NVIDIA_SM70_PROVIDER_SOURCES})
         cellerator_configure_provider_target(cellerator_provider_sm70)
+        cellerator_apply_provider_build_policy(cellerator_provider_sm70)
         set_property(TARGET cellerator_provider_sm70 PROPERTY
             CUDA_ARCHITECTURES 70)
         target_link_libraries(cellerator_architecture_provider PUBLIC

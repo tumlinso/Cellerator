@@ -54,6 +54,7 @@ find_package(PkgConfig QUIET)
 # Native Cellerator is the default build. CelleraTorch remains an explicit
 # compatibility adapter and is the only path that may discover Torch.
 option(CELLERATOR_ENABLE_TORCH_MODELS "Enable the CelleraTorch compatibility component targets" OFF)
+option(CELLERATOR_BUILD_TESTS "Build Cellerator test executables" ON)
 option(CELLERATOR_ENABLE_CUDA_LINEINFO "Emit CUDA line mapping for Nsight profiling" OFF)
 option(CELLERATOR_ENABLE_HARDWARE_PROBE "Probe host CPU vector features and visible CUDA device capability at configure time." ON)
 option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the default CMAKE_CUDA_ARCHITECTURES when the user did not provide one." ON)
@@ -352,10 +353,9 @@ target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_17)
 function(cellerator_enable_perf target)
     set(cellerator_cuda_perf_flags
         -O3
-        --use_fast_math
         --expt-relaxed-constexpr
         --expt-extended-lambda
-        -Xptxas=-O3,-dlcm=ca
+        -Xptxas=-O3
     )
     if(CELLERATOR_ENABLE_CUDA_LINEINFO)
         list(APPEND cellerator_cuda_perf_flags -lineinfo)
@@ -384,7 +384,9 @@ cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
 include(src/planner/CMakeLists.txt)
 include(bench/CMakeLists.txt)
-include(tests/CMakeLists.txt)
+if(CELLERATOR_BUILD_TESTS)
+    include(tests/CMakeLists.txt)
+endif()
 
 add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
