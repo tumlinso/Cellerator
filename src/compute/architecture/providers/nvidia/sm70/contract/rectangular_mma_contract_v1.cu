@@ -2,6 +2,8 @@
 
 #include <mma.h>
 
+#include <limits>
+
 namespace wmma = nvcuda::wmma;
 
 namespace cellerator::compute::architecture::providers::nvidia::sm70::contract {
@@ -67,6 +69,8 @@ __global__ void rectangular_exact_tail_kernel(
 status_v1 enqueue_rectangular_mma_residual_v1(
     const rectangular_request_v1 &request) noexcept {
     if (request.tiles == nullptr || request.tile_count == 0u
+        || request.tile_count
+            > std::numeric_limits<std::uint32_t>::max() / 256u
         || request.dense.source == nullptr || request.dense.destination == nullptr
         || request.dense.dense_width < 16u || request.source_count < 16u
         || request.destination_count < 16u
