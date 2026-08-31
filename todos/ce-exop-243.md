@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-243: Catalog, acquisition, artifact, and provider negative tests
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3496`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver catalog, acquisition, artifact, and provider negative tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

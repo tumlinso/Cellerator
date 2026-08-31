@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-78: Prepared reuse value generations and CUDA Graphs
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.

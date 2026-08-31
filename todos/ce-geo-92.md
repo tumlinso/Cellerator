@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-92: Support-contraction projection adapter
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prepare hybrid projection views for support-restricted destination/source contractions with stable edge output.

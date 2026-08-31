@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-287: Publish deferred profiling/data/preprint handoff
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3592`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver publish deferred profiling/data/preprint handoff exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

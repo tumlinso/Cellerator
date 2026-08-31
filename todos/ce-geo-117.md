@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-117: Work-window and target-refinement campaign
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Measure source/destination grouping, exact census, search tiers, work windows 1/4/16/64 original groups, cross-group pooling, fixed-membership overrides, residual fragmentation, and CSG1 reuse.

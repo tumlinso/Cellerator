@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-109: Full Volta regression and acceptance evidence
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run normal and relevant compatibility builds plus all compatibility, structure, runtime, numerical, static, sanitizer, and integrated Volta tests; emit machine-readable source/hardware/command/contamination evidence.

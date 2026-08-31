@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-77: Alpha beta epilogue and persistent order
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.

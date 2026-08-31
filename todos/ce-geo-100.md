@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-100: Baseline golden regression
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Independently rerun frozen CPK1, CPE2, session, program, catalog, sparse, transpose, and experimental WMMA baselines and compare exact golden evidence.

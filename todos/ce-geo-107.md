@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-107: Static contract audits
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create a focused CE-GEO-only audit for new STL ownership, WMMA leakage, architecture in CSG1, CPK1 or CPE2 mutation, global fast math, atomics, and broad ownership; do not certify CE-PTR.

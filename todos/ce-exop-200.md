@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-200: General edge-map and per-edge gate
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3409`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver general edge-map and per-edge gate exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

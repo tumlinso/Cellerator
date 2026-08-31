@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-116: Real-data tileability census
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Census PBMC3K negative control, available developmental embryo data, at least one heart-relevant relation/dataset, controlled synthetic structures, and checked perturbation/multiome/regulatory/trajectory manifests without core parsing or storage ownership.

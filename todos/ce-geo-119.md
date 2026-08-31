@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-119: Ablations and preprint evidence bundle
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run all required reorder/grouping, constraint, cost-model, support/refinement, order, value mutability, sparse/dense/partial cover, residual, and shared/operation-specific cover ablations; preserve negative results and publish preprint-grade evidence.

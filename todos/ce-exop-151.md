@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-151: N=16 and differentiated N=32 output-owner variants
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3300`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver n=16 and differentiated n=32 output-owner variants exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

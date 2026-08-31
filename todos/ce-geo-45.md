@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-45: Implement all acquisition routes
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Converge all four acquisition routes on one validated activated projection set and complete candidate costs; CPE2 rebuild from embedded CSG1 is explicit opt-in.

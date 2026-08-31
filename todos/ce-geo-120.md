@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-120: Integrate geometry foundation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Reconcile frozen provider, catalog, semantic geometry, CSG1, CPE2, acquisition, root build, exports, and shared tests without redesigning interfaces or disturbing CE-PTR.

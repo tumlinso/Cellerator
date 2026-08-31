@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-104: Numerical referee and tolerance evidence
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement operand-precision and FP32/FP64 logical referees; report max absolute, relative L2/Frobenius, mixed tolerance, degree/depth error, tails, alpha/beta, and NaN/Inf policy.

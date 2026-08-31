@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-98: Fusion evaluation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Evaluate selected fused exchange candidates against materialized stages using complete cost, numerical referees, and explicit disposition.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-172: Global identity, local maps, and direct gradient order
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3399`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver global identity, local maps, and direct gradient order exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

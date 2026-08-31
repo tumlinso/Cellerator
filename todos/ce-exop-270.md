@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-270: Integrate core ABI fan-in
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3345`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver integrate core abi fan-in exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-174: Transpose correctness and scale validation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3415`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver transpose correctness and scale validation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

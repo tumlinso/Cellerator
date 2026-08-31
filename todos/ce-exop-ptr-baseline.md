@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-PTR-BASELINE: Record completed CE-PTR baseline
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record that terminal CE-PTR-15 and its final acceptance evidence satisfy the settled CE-EXOP prerequisite without revising CE-PTR history.

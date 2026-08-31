@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-240: Legacy and baseline regression suite
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3477`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver legacy and baseline regression suite exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

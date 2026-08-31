@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-39: Semantic compiler and CSG1 freeze
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run property, corruption, round-trip, relocation, identity, order, exact-cover, permissive-window, and CP-BP compatibility tests and freeze both interfaces.

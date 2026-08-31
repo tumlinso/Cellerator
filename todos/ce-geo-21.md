@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-21: Core five-candidate compatibility fragment
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Lift the current five built-in candidates into a catalog-v2 compatibility fragment without changing behavior or identities.

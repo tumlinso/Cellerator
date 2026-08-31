@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-99: Advanced Volta operation validation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Validate transpose, contraction, edge gradients, segment backward, sparse exchange composition, optional fusion dispositions, and exact fallbacks.

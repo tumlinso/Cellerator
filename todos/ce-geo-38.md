@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-38: CSG1 persistence
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement fixed-width little-endian pointer-free checksummed aligned sectioned semantic-image build, validation, identity, relocation, and optional extensions.

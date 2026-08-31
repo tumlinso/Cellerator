@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-125: Final Volta acceptance audit
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Verify every required Volta task, interface, checkpoint, gate, artifact, regression, empirical disposition, complete cost, architecture boundary, and CE-GEO-only STL audit.

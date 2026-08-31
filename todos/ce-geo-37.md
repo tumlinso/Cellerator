@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-37: CP-BP and CPK1 semantic adapter
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose existing CP-BP semantic information through new geometry contracts without modifying, thawing, reconstructing, or reinterpreting CPK1.

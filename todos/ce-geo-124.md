@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-124: Publish final documentation spine
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update the authoritative existing documentation spine with implemented behavior, measured limits, promotions/non-promotions, evidence, interop boundaries, and migration state after final evidence fan-in.

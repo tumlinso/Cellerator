@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-115: Final Volta microarchitecture evidence
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Produce calibrated cost surfaces, held-out error, break-even reuse, profiler captures, complete mechanism accounting, and an explicit disposition for every forward width/organization candidate.

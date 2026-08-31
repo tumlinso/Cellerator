@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-276: Integrate apply, residual, transpose, and contraction
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3453`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver integrate apply, residual, transpose, and contraction exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

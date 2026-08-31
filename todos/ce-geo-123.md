@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-123: Integrate complete Volta implementation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Own final shared CMake manifests, package exports, central catalog assembly, program wiring, benchmark/test registration, and cross-module compatibility after all Volta branches have dispositions.

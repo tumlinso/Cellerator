@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-113: First complete-cost hybrid forward campaign
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Measure the integrated N64 path including semantic search, refinement, projection/upload, preparation, value/input pack, MMA, residual, epilogue, order, synchronization, reuse, and best sparse fallback; produce CE-GEO-79 evidence.

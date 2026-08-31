@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-42: Whole-image projection enumeration
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Generalize opaque-artifact validation and binding from one selected index to a validated projection set without letting the loader choose the winner.

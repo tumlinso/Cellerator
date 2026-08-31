@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-101: Foundation ABI and provider negative tests
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Test invalid and duplicate providers/candidates, stale capability, wrong device, incompatible numeric tuple, failed atomic assembly, and no query after sealing.

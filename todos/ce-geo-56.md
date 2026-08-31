@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-56: CSG1 support evidence persistence
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Persist or reference optional support-atlas sections without making them mandatory for core CSG1 validity or semantic identity beyond actual semantic content.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-170: Explicit transpose cover and source-owner schedule
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3387`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver explicit transpose cover and source-owner schedule exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

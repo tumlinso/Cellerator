@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-154: Alternate legal WMMA shapes and PTX m8n8k4 experiment
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3320`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver alternate legal wmma shapes and ptx m8n8k4 experiment exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

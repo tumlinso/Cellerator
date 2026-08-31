@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-126: Verify loaded CE-AMP extension and interlock
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Verify the complete CE-AMP run/lanes/tasks exist, every lane head requires CE-GEO-COMPLETE and human permission, no CE-AMP task started, and permission remains not_granted absent explicit user change.

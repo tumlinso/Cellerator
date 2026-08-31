@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-75: Freeze profiling interfaces
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3292`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

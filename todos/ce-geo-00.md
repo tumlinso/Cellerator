@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-00: Biological geometry compilation, Volta MMA, and relation algebra
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Own the complete Volta-first CE-GEO campaign and the loaded but permission-gated CE-AMP extension under docs/CE_GEO_PROGRAM.md.

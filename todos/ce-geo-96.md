@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-96: Sparse biological exchange composition
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Compose support contraction, edge mapping/gating, segment normalization, and relation apply as separate operations under one prepared execution context.

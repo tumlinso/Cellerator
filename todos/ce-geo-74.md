@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-74: Integrate N=64 hybrid relation apply
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Combine prepared value pack, output-owned MMA, exact row-owned residual, one epilogue, persistent order, planner visibility, and pure-sparse fallback.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-85: Relation bundle and incidence composition
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement typed multi-relation destination accumulation and incidence pool/broadcast as relation apply/transpose compositions; initial sequential execution is allowed.

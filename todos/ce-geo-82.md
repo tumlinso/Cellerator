@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-82: Segment reductions
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement sum and maximum with explicit segment/axis identity, FP32 policy, empty and singleton handling, and caller-owned workspace.

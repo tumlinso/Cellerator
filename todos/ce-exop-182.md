@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-EXOP-182: Projection-native outputs and direct edge gradients
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3391`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver projection-native outputs and direct edge gradients exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-GEO-105: Gradient validation
 
-Task revision: `3016`; current project revision is in `todo-status.md`.
+Task revision: `3281`; current project revision is in `todo-status.md`.
 
 ## Objective
 Validate transpose, logical edge values, support contraction, segment softmax, and composed exchange gradients against independent finite-difference or high-precision references.
