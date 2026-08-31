@@ -119,6 +119,12 @@ function(cellerator_real_kind_code out_var real_kind)
     endif()
 endfunction()
 
+# CE-EXOP provider inclusion and tuning are explicit build inputs.  The
+# provider policy module deliberately does not inspect a visible device or
+# mutate CMAKE_CUDA_ARCHITECTURES; binary content remains reproducible from
+# the cache configuration alone.
+include(cmake/providers/CelleratorProviderPolicy.cmake)
+
 cellerator_require_choice(CELLERATOR_REAL_STORAGE f16 bf16 fp8_e4m3 fp8_e5m2 f32 f64)
 cellerator_require_choice(CELLERATOR_REAL_COMPUTE f32 f64)
 cellerator_require_choice(CELLERATOR_REAL_ACCUM f32 f64)
