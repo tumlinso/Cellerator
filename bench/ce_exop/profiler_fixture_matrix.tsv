@@ -1,0 +1,17 @@
+fixture_id	operation	width	degree	mma_fraction	value_mode	work_window_groups	segment_size	fusion	order_mode
+pf_contract_d017	contract_on_support	17	1	0.00	logical_primary	1	0	unfused	logical
+pf_contract_d033	contract_on_support	33	17	0.50	projection_primary	2	0	map_gate	projection
+pf_relation_n015	relation_apply	15	1	0.00	logical_primary	1	0	unfused	canonical
+pf_relation_n016	relation_apply	16	16	1.00	projection_primary	1	0	value_pack	projection
+pf_relation_n017	relation_apply	17	33	0.50	projection_primary	2	0	mma_residual	projection
+pf_relation_n031	relation_apply	31	15	0.25	logical_primary	3	0	unfused	logical
+pf_relation_n032	relation_apply	32	32	0.75	projection_primary	4	0	mma_residual	projection
+pf_relation_n033	relation_apply	33	64	0.50	logical_primary	4	0	epilogue	logical
+pf_relation_n064	relation_apply	64	128	0.90	projection_primary	8	0	mma_residual	projection
+pf_relation_n096	relation_apply	96	257	0.67	projection_primary	16	0	panelized	projection
+pf_segment_s001	segment_normalize	1	1	0.00	logical_primary	1	1	unfused	logical
+pf_segment_s016	segment_reduce	16	16	0.00	logical_primary	2	16	unfused	logical
+pf_segment_s017	segment_normalize	17	17	0.00	projection_primary	2	17	normalize_apply	projection
+pf_segment_s032	segment_reduce	32	32	0.00	projection_primary	4	32	unfused	projection
+pf_segment_s033	segment_normalize	33	33	0.00	logical_primary	4	33	unfused	logical
+pf_sparse_high_degree	relation_apply	64	4097	0.00	projection_primary	32	0	unfused	projection
