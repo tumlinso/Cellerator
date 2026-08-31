@@ -3,4 +3,9 @@
 set(CELLERATOR_RELATION_SEGMENT_SOURCES
     src/compute/candidate/segment/normalize.cu
     src/compute/candidate/segment/reduce.cu
+    src/compute/candidate/segment/segment_v2.cc
+)
+
+set(CELLERATOR_RELATION_SEGMENT_TEST_SOURCES
+    src/compute/candidate/segment/segment_v2_test.cc
 )
