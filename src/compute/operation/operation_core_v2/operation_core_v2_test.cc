@@ -33,6 +33,19 @@ execution::persistent_axis_identity axis(std::uint64_t seed) {
     return result;
 }
 
+void set_common_policies(operation_problem *problem) {
+    problem->numeric.relation_storage = execution::numeric_type::f32;
+    problem->numeric.state_storage = execution::numeric_type::f32;
+    problem->numeric.multiply = execution::numeric_type::f32;
+    problem->numeric.accumulation = execution::numeric_type::f32;
+    problem->numeric.output_storage = execution::numeric_type::f32;
+    problem->numeric.scalar = execution::numeric_type::f32;
+    problem->values_axis = axis(200);
+    problem->result_axis = axis(220);
+    problem->output.produced_axis = problem->result_axis;
+    problem->output.canonical_axis = problem->result_axis;
+}
+
 void test_schema_v2_problem() {
     typed_relation relation{};
     relation.structure = persistent<execution::structure_tag>(10);
@@ -49,6 +62,7 @@ void test_schema_v2_problem() {
     problem.expected_value_generation.value = 7;
     problem.logical_work_items = relation.logical_edge_count;
     problem.dense_width = 32;
+    set_common_policies(&problem);
     require(static_cast<bool>(validate_operation_problem(problem)));
 
     problem.expected_value_generation.value = 0;
@@ -69,6 +83,7 @@ operation_problem relation_problem(
     problem.expected_value_generation.value = 9;
     problem.logical_work_items = relation->logical_edge_count;
     problem.dense_width = 16;
+    set_common_policies(&problem);
     return problem;
 }
 
@@ -96,6 +111,19 @@ void test_complete_relation_algebra_bindings() {
     problem.bindings = {&binding, 1};
     problem.value_bindings = &values;
     problem.value_binding_count = 1;
+    problem.semantic_flags = alpha_applied_once | beta_applied_once;
+    require(static_cast<bool>(validate_relation_algebra_problem(problem)));
+
+    problem.core.output.update = destination_update::affine_accumulate;
+    problem.core.output.alpha_binding = 0;
+    problem.core.output.beta_binding = 1;
+    require(static_cast<bool>(validate_relation_algebra_problem(problem)));
+
+    problem.core.numeric.rounding = rounding_policy::stochastic;
+    require(validate_relation_algebra_problem(problem).code
+        == schema_status_code::invalid_determinism_contract);
+    problem.core.determinism.deterministic_required = false;
+    problem.core.determinism.deterministic_seed_binding = 2;
     require(static_cast<bool>(validate_relation_algebra_problem(problem)));
 
     problem.core.kind = operation_kind::relation_apply_transpose;
@@ -105,6 +133,7 @@ void test_complete_relation_algebra_bindings() {
     problem.core.kind = operation_kind::edge_map_or_gate;
     problem.edge = edge_operation::multiplicative_gate;
     problem.gate = gate_indexing::per_source;
+    problem.semantic_flags = projection_aware_edge_values;
     require(static_cast<bool>(validate_relation_algebra_problem(problem)));
 
     values.ownership = value_ownership_mode::projection_primary;
@@ -114,10 +143,33 @@ void test_complete_relation_algebra_bindings() {
     require(static_cast<bool>(validate_relation_algebra_problem(problem)));
 }
 
+void test_output_order_and_determinism_contracts() {
+    operation_problem problem{};
+    problem.persistent_problem_identity = {21, 22};
+    problem.operation_identity = {23, 24};
+    problem.kind = operation_kind::segment_reduce;
+    problem.logical_work_items = 8;
+    set_common_policies(&problem);
+    problem.output.order = output_order_requirement::canonical_required;
+    problem.output.canonical_axis.order = persistent<execution::order_tag>(500);
+    require(validate_operation_problem(problem).code
+        == schema_status_code::invalid_output_contract);
+    problem.output.explicit_order_transform = true;
+    require(static_cast<bool>(validate_operation_problem(problem)));
+
+    problem.numeric.rounding = rounding_policy::stochastic;
+    require(validate_operation_problem(problem).code
+        == schema_status_code::invalid_determinism_contract);
+    problem.determinism.deterministic_required = false;
+    problem.determinism.deterministic_seed_binding = 3;
+    require(static_cast<bool>(validate_operation_problem(problem)));
+}
+
 }  // namespace
 
 int main() {
     test_schema_v2_problem();
     test_complete_relation_algebra_bindings();
+    test_output_order_and_determinism_contracts();
     return 0;
 }
