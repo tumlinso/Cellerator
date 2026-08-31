@@ -383,6 +383,71 @@ include(cmake/providers/CelleratorProviderTargets.cmake)
 cellerator_finalize_cuda_provider_targets()
 include(src/geometry/owned_targets.cmake)
 include(src/planner/CMakeLists.txt)
+
+# CE-EXOP core-contract fan-in.  Keep the portfolio and profiling surfaces
+# explicit: the portfolio is planner input rather than canonical selection,
+# and profiling remains a cold, optional observation path.
+target_sources(cellerator_semantic_geometry_v1 PRIVATE
+    src/geometry/compiler/v2/exact_evaluator.cc
+    src/geometry/compiler/v2/solution.cc
+    src/geometry/compiler/v2/strategy_registry.cc
+    src/geometry/compiler/v2/work_window.cc
+    src/geometry/compiler/v2/workload_profile.cc
+    src/geometry/persistence/chunk/chunk_manifest_v1.cc
+    src/geometry/validation/scalable_validation_v2.cc
+)
+target_sources(cellerator_architecture_provider PRIVATE
+    src/compute/architecture/target_cover/contract.cc
+    src/compute/architecture/target_cover/strategy_registry.cc
+)
+target_sources(cellerator_planner PRIVATE
+    src/planner/end_to_end_planner/connected_economics_v1.cc
+    src/planner/end_to_end_planner/resource_cost_v1.cc
+    src/planner/portfolio/candidate_workspace_v1.cc
+    src/planner/portfolio/pareto_portfolio_v1.cc
+    src/planner/portfolio/validation_v1.cc
+)
+
+add_library(cellerator_profiling_v1 STATIC
+    src/profiling/mechanism_manifest.cc
+    src/profiling/partition_export.cc
+    src/profiling/resource_receipt.cc
+    src/profiling/static_markers.cc
+)
+add_library(Cellerator::profiling_v1 ALIAS cellerator_profiling_v1)
+target_include_directories(cellerator_profiling_v1 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_17)
+
+if(CELLERATOR_BUILD_TESTS)
+    add_executable(cellerator_operation_core_v2_test
+        src/compute/operation/operation_core_v2/operation_core_v2_test.cc)
+    target_link_libraries(cellerator_operation_core_v2_test PRIVATE
+        Cellerator::operation_core)
+    target_compile_features(cellerator_operation_core_v2_test PRIVATE cxx_std_17)
+
+    add_executable(cellerator_geometry_acquisition_v2_test
+        src/execution/geometry_acquisition_v2/geometry_acquisition_v2_test.cc)
+    target_link_libraries(cellerator_geometry_acquisition_v2_test PRIVATE
+        Cellerator::geometry_acquisition)
+    target_compile_features(cellerator_geometry_acquisition_v2_test PRIVATE cxx_std_17)
+
+    add_executable(cellerator_geometry_v2_test
+        src/geometry/compiler/v2/geometry_v2_test.cc)
+    target_link_libraries(cellerator_geometry_v2_test PRIVATE
+        Cellerator::architecture_provider
+        Cellerator::semantic_geometry_v1)
+    target_compile_features(cellerator_geometry_v2_test PRIVATE cxx_std_17)
+
+    add_executable(cellerator_planner_portfolio_v1_test
+        src/planner/portfolio/tests/planner_portfolio_v1_test.cc)
+    target_link_libraries(cellerator_planner_portfolio_v1_test PRIVATE
+        Cellerator::planner)
+    target_compile_features(cellerator_planner_portfolio_v1_test PRIVATE cxx_std_17)
+endif()
+
 include(bench/CMakeLists.txt)
 if(CELLERATOR_BUILD_TESTS)
     include(tests/CMakeLists.txt)

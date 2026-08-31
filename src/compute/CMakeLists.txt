@@ -1,5 +1,12 @@
 # CE-ARCH-71: operation-core activation of the preserved CP-BP v1 row-masked
 # N=1 direct consumer. This adapter adds no kernel or persistence format.
+target_sources(cellerator_operation_core PRIVATE
+    src/compute/operation/operation_core_v2/composition.cc
+    src/compute/operation/operation_core_v2/relation_algebra.cc
+    src/compute/operation/operation_core_v2/schema.cc
+    src/compute/operation/operation_core_v2/v1_adapter.cc
+)
+
 add_library(cellerator_row_masked_n1_candidate STATIC
     src/compute/candidate/row_masked_n1_candidate.cu
 )
@@ -252,6 +259,10 @@ target_compile_features(cellerator_projection_activation PUBLIC cxx_std_17)
 
 add_library(cellerator_builtin_candidate_catalog STATIC
     src/compute/operation/builtin_catalog.cc
+    src/compute/operation/candidate_catalog/catalog_v3.cc
+    src/compute/operation/candidate_catalog/discovery_v3.cc
+    src/compute/operation/candidate_catalog/inventory_v3.cc
+    src/compute/operation/candidate_catalog/validation_v3.cc
 )
 add_library(Cellerator::builtin_candidate_catalog ALIAS
     cellerator_builtin_candidate_catalog)
@@ -324,6 +335,8 @@ target_link_libraries(cellerator_executable_core INTERFACE
 # contract instead of compiling or reimplementing it privately.
 add_library(cellerator_executable_program STATIC
     src/execution/program.cc
+    src/execution/program/program_v1_adapter.cc
+    src/execution/program/program_v2.cc
 )
 add_library(Cellerator::executable_program ALIAS
     cellerator_executable_program)
