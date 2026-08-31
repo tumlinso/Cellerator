@@ -5,7 +5,7 @@
 namespace cellerator::geometry::optimizer::overlap {
 
 struct overlap_proposal {
-    source_id source = 0;
+    source_ordinal source = 0;
     source_group_id destination_group = 0;
     std::uint64_t predicted_benefit = 0;
     replication_unit_cost duplication_cost{};
@@ -35,6 +35,8 @@ struct bounded_overlap_result {
     std::uint64_t selected_count = 0;
     std::uint64_t rejected_duplicate_count = 0;
     std::uint64_t rejected_bound_count = 0;
+    std::uint64_t proposal_evaluations = 0;
+    std::uint64_t duplicate_checks = 0;
     std::uint64_t total_predicted_benefit = 0;
     replication_unit_cost charged_duplication{};
     std::uint64_t total_duplication_cost = 0;

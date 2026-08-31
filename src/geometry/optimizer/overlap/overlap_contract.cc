@@ -27,7 +27,10 @@ contract_status validate_source_group_dictionary(source_group_dictionary_view di
     if (dictionary.group_count != 0 && dictionary.group_offsets == nullptr) {
         return {contract_error::null_pointer, 0};
     }
-    if (dictionary.membership_count != 0 && dictionary.source_ids == nullptr) {
+    if (dictionary.membership_count != 0 && dictionary.source_ordinals == nullptr) {
+        return {contract_error::null_pointer, 0};
+    }
+    if (dictionary.source_count != 0 && dictionary.source_identities == nullptr) {
         return {contract_error::null_pointer, 0};
     }
     if (dictionary.group_count == 0) {
@@ -45,9 +48,9 @@ contract_status validate_source_group_dictionary(source_group_dictionary_view di
         if (begin >= end || end > dictionary.membership_count) {
             return {begin == end ? contract_error::empty_group : contract_error::invalid_offset, group};
         }
-        source_id previous = 0;
+        source_ordinal previous = 0;
         for (std::uint64_t index = begin; index < end; ++index) {
-            const source_id source = dictionary.source_ids[index];
+            const source_ordinal source = dictionary.source_ordinals[index];
             if (source >= dictionary.source_count) {
                 return {contract_error::source_out_of_range, index};
             }
@@ -57,6 +60,11 @@ contract_status validate_source_group_dictionary(source_group_dictionary_view di
                         index};
             }
             previous = source;
+        }
+    }
+    for (source_ordinal ordinal = 1; ordinal < dictionary.source_count; ++ordinal) {
+        if (dictionary.source_identities[ordinal] <= dictionary.source_identities[ordinal - 1]) {
+            return {contract_error::duplicate_source_identity, ordinal};
         }
     }
     return {};
@@ -114,7 +122,7 @@ contract_status evaluate_replication_cost(
         workspace.source_use_counts[source] = 0;
     }
     for (std::uint64_t index = 0; index < dictionary.membership_count; ++index) {
-        ++workspace.source_use_counts[dictionary.source_ids[index]];
+        ++workspace.source_use_counts[dictionary.source_ordinals[index]];
     }
     for (std::uint64_t source = 0; source < dictionary.source_count; ++source) {
         const std::uint64_t count = workspace.source_use_counts[source];

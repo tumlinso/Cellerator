@@ -37,26 +37,11 @@ bool cost_total(replication_unit_cost value, std::uint64_t *total) noexcept {
 bool baseline_contains(
     source_group_dictionary_view baseline,
     source_group_id group,
-    source_id source) noexcept {
+    source_ordinal source) noexcept {
     const std::uint64_t begin = baseline.group_offsets[group];
     const std::uint64_t end = baseline.group_offsets[group + 1];
     for (std::uint64_t index = begin; index < end; ++index) {
-        if (baseline.source_ids[index] == source) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool selected_duplicate(
-    const overlap_proposal *proposals,
-    const std::uint8_t *state,
-    std::uint64_t proposal_count,
-    std::uint64_t index) noexcept {
-    for (std::uint64_t candidate = 0; candidate < proposal_count; ++candidate) {
-        if (state[candidate] == 1
-            && proposals[candidate].source == proposals[index].source
-            && proposals[candidate].destination_group == proposals[index].destination_group) {
+        if (baseline.source_ordinals[index] == source) {
             return true;
         }
     }
@@ -100,7 +85,7 @@ contract_status solve_bounded_overlap(
         workspace.group_sizes[group] = baseline.group_offsets[group + 1] - baseline.group_offsets[group];
     }
     for (std::uint64_t membership = 0; membership < baseline.membership_count; ++membership) {
-        ++workspace.source_use_counts[baseline.source_ids[membership]];
+        ++workspace.source_use_counts[baseline.source_ordinals[membership]];
     }
     for (std::uint64_t index = 0; index < proposal_count; ++index) {
         workspace.proposal_state[index] = 0;
@@ -119,10 +104,9 @@ contract_status solve_bounded_overlap(
             if (workspace.proposal_state[index] != 0) {
                 continue;
             }
+            ++result->proposal_evaluations;
             const overlap_proposal proposal = proposals[index];
-            if (baseline_contains(baseline, proposal.destination_group, proposal.source)
-                || selected_duplicate(
-                    proposals, workspace.proposal_state, proposal_count, index)) {
+            if (baseline_contains(baseline, proposal.destination_group, proposal.source)) {
                 workspace.proposal_state[index] = 2;
                 ++result->rejected_duplicate_count;
                 continue;
@@ -160,6 +144,17 @@ contract_status solve_bounded_overlap(
             return {contract_error::integer_overflow, best};
         }
         workspace.proposal_state[best] = 1;
+        for (std::uint64_t index = 0; index < proposal_count; ++index) {
+            if (workspace.proposal_state[index] != 0) {
+                continue;
+            }
+            ++result->duplicate_checks;
+            if (proposals[index].source == selected.source
+                && proposals[index].destination_group == selected.destination_group) {
+                workspace.proposal_state[index] = 2;
+                ++result->rejected_duplicate_count;
+            }
+        }
         ++workspace.source_use_counts[selected.source];
         ++workspace.group_sizes[selected.destination_group];
         output.selected_proposal_indices[result->selected_count++] = best;
