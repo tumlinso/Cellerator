@@ -21,3 +21,5 @@ ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
 
 python3 "${repo_root}/tests/profiling/ce_exop/validate_manifests.py" \
     "${repo_root}/bench/ce_exop"
+
+"${repo_root}/tests/profiling/ce_exop/run_compile_smoke.sh"
