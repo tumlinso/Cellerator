@@ -279,9 +279,11 @@ joint_grouping_status validate_joint_grouping_state(
             continue;
         }
         if (rectangle.source_group >= state.source_group_count ||
-            rectangle.destination_group >= state.destination_group_count ||
-            rectangle.contribution_count == 0) {
+            rectangle.destination_group >= state.destination_group_count) {
             return joint_grouping_status::state_mismatch;
+        }
+        if (rectangle.contribution_count == 0) {
+            continue;
         }
         if (*validated_contributions > std::numeric_limits<std::uint64_t>::max() -
                                            rectangle.contribution_count) {
