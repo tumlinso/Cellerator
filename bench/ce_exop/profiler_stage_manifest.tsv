@@ -1,0 +1,15 @@
+candidate_id	stage_id	correlation_id	static_name	stage_kind	launch_index	logical_work	physical_work	useful_work	padded_work	relation_bytes	dense_input_bytes	output_bytes	value_pack_bytes	residual_edges	graph_capture	numerics
+sm70_contract_scalar	contract.scalar.score	1001	ce_exop_contract_scalar_score	contraction	0	4096	4096	4096	0	32768	4096	16384	0	0	compatible	precise_fp32
+sm70_contract_warp	contract.warp.score	1002	ce_exop_contract_warp_score	contraction	0	4096	4096	4096	0	32768	4096	16384	0	0	compatible	precise_fp32
+sm70_relation_hybrid_n64	relation.hybrid.mma	1101	ce_exop_relation_hybrid_mma	mma	0	8192	9216	7373	1843	65536	16384	16384	32768	819	compatible	precise_fp32_accum
+sm70_relation_hybrid_n64	relation.hybrid.residual	1102	ce_exop_relation_hybrid_residual	residual	1	819	819	819	0	6552	16384	16384	0	819	compatible	precise_fp32
+sm70_relation_panel_gt64	relation.panel.0	1201	ce_exop_relation_panel_0	mma	0	12288	13824	10240	3584	98304	24576	24576	49152	2048	compatible	precise_fp32_accum
+sm70_relation_panel_gt64	relation.panel.residual	1202	ce_exop_relation_panel_residual	residual	1	2048	2048	2048	0	16384	24576	24576	0	2048	compatible	precise_fp32
+sm70_relation_pure_sparse	relation.sparse.apply	1301	ce_exop_relation_sparse_apply	sparse	0	8192	8192	8192	0	65536	16384	16384	0	8192	compatible	precise_fp32
+sm70_relation_wmma_16x16x16	relation.wmma.apply	1401	ce_exop_relation_wmma_apply	mma	0	8192	10240	8192	2048	65536	16384	16384	32768	0	compatible	precise_fp32_accum
+sm70_relation_wmma_16x16x16	relation.wmma.residual	1402	ce_exop_relation_wmma_residual	residual	1	512	512	512	0	4096	16384	16384	0	512	compatible	precise_fp32
+sm70_segment_cta	segment.cta.reduce	1501	ce_exop_segment_cta_reduce	segment_reduce	0	4096	4096	4096	0	16384	0	512	0	0	compatible	precise_fp32
+sm70_segment_warp	segment.warp.reduce	1502	ce_exop_segment_warp_reduce	segment_reduce	0	4096	4096	4096	0	16384	0	512	0	0	compatible	precise_fp32
+sm70_softmax_segment	segment.softmax.max	1601	ce_exop_segment_softmax_max	segment_max	0	4096	4096	4096	0	16384	0	512	0	0	compatible	precise_fp32
+sm70_softmax_segment	segment.softmax.sum	1602	ce_exop_segment_softmax_sum	segment_sum	1	4096	4096	4096	0	16384	0	512	0	0	compatible	precise_fp32
+sm70_softmax_segment	segment.softmax.apply	1603	ce_exop_segment_softmax_apply	segment_apply	2	4096	4096	4096	0	16384	0	16384	0	0	compatible	precise_fp32

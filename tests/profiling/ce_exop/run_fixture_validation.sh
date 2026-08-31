@@ -18,3 +18,6 @@ candidate_file="${repo_root}/bench/ce_exop/profiler_candidate_matrix.tsv"
     -fsanitize=address,undefined "${source_file}" -o "${build_dir}/validate_sanitized"
 ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
     "${build_dir}/validate_sanitized" "${fixture_file}" "${candidate_file}"
+
+python3 "${repo_root}/tests/profiling/ce_exop/validate_manifests.py" \
+    "${repo_root}/bench/ce_exop"
