@@ -122,6 +122,8 @@ enum class status_code : std::uint8_t {
     invalid_header,
     invalid_identity,
     invalid_route,
+    incompatible_cpe2_rejected,
+    invalid_source,
     invalid_requirements,
     insufficient_capacity,
     callback_unavailable,
