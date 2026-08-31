@@ -7,6 +7,7 @@ namespace cellerator::compute::architecture::nvidia::sm70::relation_apply {
 enum class apply_n64_variant_v1 : std::uint8_t {
     direct_global = 1u,
     shared_a = 2u,
+    software_pipeline = 3u,
 };
 
 struct apply_n64_request_v1 {

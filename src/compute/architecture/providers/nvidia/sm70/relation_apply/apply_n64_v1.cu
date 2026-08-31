@@ -75,6 +75,85 @@ __global__ void apply_n64_output_owner_kernel_v1(
         accumulator, 64u, wmma::mem_row_major);
 }
 
+__global__ void apply_n64_software_pipeline_kernel_v1(
+    const __half *relation_tiles,
+    std::uint32_t tile_count,
+    const std::uint32_t *destination_tile_offsets,
+    std::uint32_t destination_group_count,
+    const std::uint32_t *tile_source_bases,
+    const __half *dense_rhs,
+    std::uint32_t local_source_count,
+    float *output) {
+    extern __shared__ __half shared_relation[];
+    __half *buffers[2] = {shared_relation, shared_relation + 256u};
+    const std::uint32_t destination_group = blockIdx.x;
+    const std::uint32_t warp = threadIdx.x / 32u;
+    if (destination_group >= destination_group_count || warp >= 4u) {
+        return;
+    }
+    const std::uint32_t tile_begin =
+        destination_tile_offsets[destination_group];
+    const std::uint32_t tile_end =
+        destination_tile_offsets[destination_group + 1u];
+    if (tile_begin > tile_end || tile_end > tile_count) {
+        return;
+    }
+    wmma::fragment<wmma::accumulator, 16, 16, 16, float> accumulator;
+    wmma::fill_fragment(accumulator, 0.0f);
+    if (tile_begin == tile_end) {
+        wmma::store_matrix_sync(
+            output + static_cast<std::size_t>(destination_group) * 16u * 64u
+                + warp * 16u,
+            accumulator, 64u, wmma::mem_row_major);
+        return;
+    }
+    const __half *first = relation_tiles
+        + static_cast<std::size_t>(tile_begin) * 256u;
+    for (std::uint32_t element = threadIdx.x; element < 256u;
+         element += blockDim.x) {
+        buffers[0][element] = first[element];
+    }
+    __syncthreads();
+
+    std::uint32_t current_buffer = 0u;
+    const std::uint32_t column_base = warp * 16u;
+    for (std::uint32_t tile = tile_begin; tile < tile_end; ++tile) {
+        const std::uint32_t source_base = tile_source_bases[tile];
+        if (source_base > local_source_count
+            || local_source_count - source_base < 16u) {
+            return;
+        }
+        wmma::fragment<wmma::matrix_a, 16, 16, 16, __half,
+            wmma::row_major> relation;
+        wmma::fragment<wmma::matrix_b, 16, 16, 16, __half,
+            wmma::row_major> rhs;
+        wmma::load_matrix_sync(relation, buffers[current_buffer], 16u);
+        const bool has_next = tile + 1u < tile_end;
+        if (has_next) {
+            const std::uint32_t next_buffer = current_buffer ^ 1u;
+            const __half *next = relation_tiles
+                + static_cast<std::size_t>(tile + 1u) * 256u;
+            for (std::uint32_t element = threadIdx.x; element < 256u;
+                 element += blockDim.x) {
+                buffers[next_buffer][element] = next[element];
+            }
+        }
+        wmma::load_matrix_sync(rhs,
+            dense_rhs + static_cast<std::size_t>(source_base) * 64u
+                + column_base,
+            64u);
+        wmma::mma_sync(accumulator, relation, rhs, accumulator);
+        if (has_next) {
+            __syncthreads();
+            current_buffer ^= 1u;
+        }
+    }
+    wmma::store_matrix_sync(
+        output + static_cast<std::size_t>(destination_group) * 16u * 64u
+            + column_base,
+        accumulator, 64u, wmma::mem_row_major);
+}
+
 }  // namespace
 
 apply_launch_status_v1 validate_apply_n64_v1(
@@ -101,6 +180,9 @@ apply_launch_status_v1 validate_apply_n64_v1(
     } else if (request.variant == apply_n64_variant_v1::shared_a) {
         *shape = {component.destination_group_count, 128u,
             256u * static_cast<std::uint32_t>(sizeof(__half)), 4u};
+    } else if (request.variant == apply_n64_variant_v1::software_pipeline) {
+        *shape = {component.destination_group_count, 128u,
+            512u * static_cast<std::uint32_t>(sizeof(__half)), 4u};
     } else {
         return apply_launch_status_v1::invalid_argument;
     }
@@ -123,8 +205,16 @@ apply_launch_status_v1 enqueue_apply_n64_v1(
             component.destination_group_count, component.tile_source_bases,
             component.dense_rhs, component.local_source_count,
             component.output);
-    } else {
+    } else if (request.variant == apply_n64_variant_v1::shared_a) {
         apply_n64_output_owner_kernel_v1<true><<<shape.grid_x, shape.block_x,
+            shape.dynamic_shared_bytes, request.stream>>>(
+            component.relation_tiles, component.tile_count,
+            component.destination_tile_offsets,
+            component.destination_group_count, component.tile_source_bases,
+            component.dense_rhs, component.local_source_count,
+            component.output);
+    } else {
+        apply_n64_software_pipeline_kernel_v1<<<shape.grid_x, shape.block_x,
             shape.dynamic_shared_bytes, request.stream>>>(
             component.relation_tiles, component.tile_count,
             component.destination_tile_offsets,
