@@ -1,4 +1,5 @@
 #include <Cellerator/geometry/optimizer/overlap/overlap_contract.hh>
+#include <Cellerator/geometry/optimizer/overlap/bounded_overlap_solver.hh>
 
 #include <array>
 #include <cstdlib>
@@ -74,11 +75,64 @@ void test_contract_rejections() {
         == contract_error::integer_overflow);
 }
 
+void test_bounded_solver_complete_cost_and_determinism() {
+    const std::array<std::uint64_t, 3> offsets{0, 2, 4};
+    const std::array<source_id, 4> sources{0, 1, 2, 3};
+    const source_group_dictionary_view baseline{
+        offsets.data(), sources.data(), 2, 4, 4};
+    const replication_unit_cost cost{1, 1, 1, 1, 1, 1, 1};
+    const std::array<overlap_proposal, 5> proposals{{
+        {0, 1, 20, cost},
+        {1, 1, 13, cost},
+        {0, 1, 20, cost},
+        {2, 0, 7, cost},
+        {3, 1, 100, cost}
+    }};
+    std::array<std::uint64_t, 4> source_uses{};
+    std::array<std::uint64_t, 2> group_sizes{};
+    std::array<std::uint8_t, 5> proposal_state{};
+    std::array<std::uint64_t, 2> selected{};
+    bounded_overlap_result result;
+    const contract_status status = solve_bounded_overlap(
+        baseline, proposals.data(), proposals.size(), {2, 2, 4},
+        {source_uses.data(), source_uses.size(), group_sizes.data(), group_sizes.size(),
+         proposal_state.data(), proposal_state.size()},
+        {selected.data(), selected.size()}, &result);
+    require(static_cast<bool>(status));
+    require(result.selected_count == 2);
+    require(selected[0] == 0 && selected[1] == 1);
+    require(result.total_predicted_benefit == 33);
+    require(result.total_duplication_cost == 14);
+    require(result.net_predicted_benefit == 19);
+    require(result.charged_duplication.gradient_reconciliation == 2);
+    require(result.rejected_duplicate_count == 2);
+}
+
+void test_zero_overlap_solver_equivalence() {
+    const std::array<std::uint64_t, 3> offsets{0, 1, 2};
+    const std::array<source_id, 2> sources{0, 1};
+    const source_group_dictionary_view baseline{
+        offsets.data(), sources.data(), 2, 2, 2};
+    const overlap_proposal proposal{0, 1, 100, {}};
+    std::array<std::uint64_t, 2> source_uses{};
+    std::array<std::uint64_t, 2> group_sizes{};
+    std::array<std::uint8_t, 1> proposal_state{};
+    bounded_overlap_result result;
+    require(static_cast<bool>(solve_bounded_overlap(
+        baseline, &proposal, 1, {0, 1, 1},
+        {source_uses.data(), source_uses.size(), group_sizes.data(), group_sizes.size(),
+         proposal_state.data(), proposal_state.size()},
+        {}, &result)));
+    require(result.selected_count == 0 && result.net_predicted_benefit == 0);
+}
+
 }  // namespace
 
 int main() {
     test_dictionary_and_replication_cost();
     test_unique_contribution_ownership();
     test_contract_rejections();
+    test_bounded_solver_complete_cost_and_determinism();
+    test_zero_overlap_solver_equivalence();
     return 0;
 }
