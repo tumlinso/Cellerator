@@ -1,5 +1,6 @@
 #include <Cellerator/geometry/compiler/workload_profile_v2.hh>
 #include <Cellerator/compute/architecture/target_cover/strategy_registry.hh>
+#include <Cellerator/compute/architecture/target_cover_strategy_v1.hh>
 
 #include <cstdlib>
 
@@ -89,9 +90,46 @@ void test_multi_candidate_solution_and_snapshot() {
     snapshot.state = {bytes, sizeof(bytes)};
     require(static_cast<bool>(validate_optimizer_snapshot(snapshot)));
 }
+
+void test_target_cover_keeps_semantics_separate() {
+    workload_component component{};
+    component.identity = {41, 42};
+    workload_profile workload{workload_profile_schema_version,
+        sizeof(workload_profile), &component, 1};
+    const std::uint64_t edge_count = (std::uint64_t{1} << 32) + 5;
+    cellerator::compute::architecture::target_cover::semantic_component semantic{
+        7, 0, edge_count};
+    cellerator::compute::architecture::target_cover::strategy_problem problem{};
+    problem.semantic_geometry_identity = {43, 44};
+    problem.provider_identity = {45, 46};
+    problem.semantic_components = &semantic;
+    problem.semantic_component_count = 1;
+    problem.logical_edge_count = edge_count;
+    problem.workload = workload;
+    using namespace cellerator::compute::architecture::target_cover;
+    require(static_cast<bool>(validate_problem(problem)));
+    target_region region{1, 7, {}, region_role::pure_sparse, {}, edge_count};
+    ownership_range ownership{0, edge_count, 0};
+    cover_candidate candidate{};
+    candidate.identity = {47, 48};
+    candidate.regions = &region;
+    candidate.region_count = 1;
+    candidate.ownership = &ownership;
+    candidate.ownership_range_count = 1;
+    strategy_solution solution{};
+    solution.semantic_geometry_identity = problem.semantic_geometry_identity;
+    solution.provider_identity = problem.provider_identity;
+    solution.candidates = &candidate;
+    solution.candidate_count = 1;
+    solution.logical_edge_count = edge_count;
+    require(static_cast<bool>(validate_solution(problem, solution)));
+    candidate.kind = cover_kind::conservative_hybrid;
+    require(validate_solution(problem, solution).code == workload_status_code::invalid_requirements);
+}
 }
 
 int main() { test_workload_profile(); test_original_groups_and_incremental_window();
     test_separate_strategy_registries(); test_exact_evaluator_and_incremental_state();
     test_multi_candidate_solution_and_snapshot();
+    test_target_cover_keeps_semantics_separate();
     return 0; }
