@@ -178,4 +178,49 @@ status_v1 enqueue_normalize_apply_fused_v1(
 status_v1 enqueue_sparse_exchange_fused_v1(
     const sparse_exchange_request_v1 &request) noexcept;
 
+struct bundle_output_request_v1 {
+    const float *bundle_partial_outputs = nullptr;
+    float *materialized_workspace = nullptr;
+    float *shared_destination = nullptr;
+    std::uint32_t bundle_count = 0u;
+    std::uint32_t local_output_count = 0u;
+    std::uint64_t global_output_begin = 0u;
+    std::uint64_t destination_order_id = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+status_v1 validate_bundle_output_request_v1(
+    const bundle_output_request_v1 &request) noexcept;
+status_v1 enqueue_bundle_materialize_unfused_v1(
+    const bundle_output_request_v1 &request) noexcept;
+status_v1 enqueue_shared_destination_accumulate_unfused_v1(
+    const bundle_output_request_v1 &request) noexcept;
+status_v1 enqueue_bundle_shared_destination_fused_v1(
+    const bundle_output_request_v1 &request) noexcept;
+
+struct relation_moments_request_v1 {
+    const std::uint32_t *destination_row_offsets = nullptr;
+    const row_edge_v1 *edges = nullptr;
+    const float *edge_values = nullptr;
+    const float *source = nullptr;
+    float *first_moment = nullptr;
+    float *second_moment = nullptr;
+    std::uint32_t edge_count = 0u;
+    std::uint32_t source_count = 0u;
+    std::uint32_t destination_count = 0u;
+    std::uint32_t component_count = 0u;
+    std::uint64_t structure_epoch = 0u;
+    std::uint64_t value_generation = 0u;
+    cudaStream_t stream = nullptr;
+};
+
+status_v1 validate_relation_moments_request_v1(
+    const relation_moments_request_v1 &request) noexcept;
+status_v1 enqueue_first_moment_unfused_v1(
+    const relation_moments_request_v1 &request) noexcept;
+status_v1 enqueue_second_moment_unfused_v1(
+    const relation_moments_request_v1 &request) noexcept;
+status_v1 enqueue_relation_moments_fused_v1(
+    const relation_moments_request_v1 &request) noexcept;
+
 } // namespace cellerator::compute::operation::fusion
