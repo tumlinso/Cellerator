@@ -95,6 +95,15 @@ case "${suite}" in
     runtime-safety)
         selected_tests=("${runtime_safety_tests[@]}")
         ;;
+    all)
+        selected_tests=(
+            "${candidate_matrix_tests[@]}"
+            "${dynamic_value_tests[@]}"
+            "${transpose_gradient_tests[@]}"
+            "${composition_tests[@]}"
+            "${runtime_safety_tests[@]}"
+        )
+        ;;
     *)
         echo "unknown CUDA validation suite: ${suite}" >&2
         exit 2
@@ -114,10 +123,12 @@ case "${mode}" in
         execute_targets "${targets[@]}"
         if [[ "${suite}" == runtime-safety ]]; then
             sanitize_targets "${targets[@]}"
+        elif [[ "${suite}" == all ]]; then
+            sanitize_targets ceGeoSm70PreparedReuseGraphTest ceGeoSm70WidthsTest
         fi
         ;;
     *)
-        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients|compositions|runtime-safety]" >&2
+        echo "usage: $0 [repo-root] [build-dir] [--build-only|--execute] [candidate-matrix|dynamic-values|transpose-gradients|compositions|runtime-safety|all]" >&2
         exit 2
         ;;
 esac
