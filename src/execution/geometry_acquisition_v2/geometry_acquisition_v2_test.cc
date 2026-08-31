@@ -69,9 +69,45 @@ void test_two_pass_facade() {
         == status_code::insufficient_capacity);
 }
 
+void test_default_assembly() {
+    compiled_provider provider{};
+    provider.identity = {21, 22};
+    provider.provider_kind = 7;
+    provider.architecture_major = 7;
+    provider.primary = true;
+    catalog_candidate candidate{};
+    candidate.identity = {23, 24};
+    candidate.provider_kind = 7;
+    candidate.projection_kind = 11;
+    default_assembly assembly{};
+    assembly.registry = {{25, 26}, &provider, 1};
+    assembly.catalog = {{27, 28}, &candidate, 1};
+    assembly.planner = {{29, 30}, {query, execute}};
+    require(static_cast<bool>(validate_default_assembly(assembly)));
+
+    projection_requirement projection{};
+    projection.candidate = candidate.identity;
+    projection.provider_kind = provider.provider_kind;
+    projection.projection_kind = candidate.projection_kind;
+    projection.logical_work_items = 10;
+    acquisition_request request{};
+    request.structure.low = 31;
+    request.epoch.value = 1;
+    std::uint64_t source = 0;
+    request.source = {&source, sizeof(source)};
+    request.projection_requirements = &projection;
+    request.projection_requirement_count = 1;
+    acquisition_requirements requirements{};
+    require(static_cast<bool>(query_default_assembly(assembly, request, &requirements)));
+    candidate.experimental = true;
+    require(query_default_assembly(assembly, request, &requirements).code
+        == status_code::invalid_argument);
+}
+
 }  // namespace
 
 int main() {
     test_two_pass_facade();
+    test_default_assembly();
     return 0;
 }
