@@ -68,9 +68,13 @@ execute_targets() {
 }
 
 sanitize_targets() {
+    local sanitizer=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer
+    if [[ ! -x "${sanitizer}" ]]; then
+        sanitizer=compute-sanitizer
+    fi
     local target
     for target in "$@"; do
-        compute-sanitizer --tool memcheck --error-exitcode=86 \
+        "${sanitizer}" --tool memcheck --error-exitcode=86 \
             "${build_dir}/${target}"
     done
 }
