@@ -1,0 +1,101 @@
+{
+  "schema": "ce-exop-documentation-spine-evidence-v1",
+  "task_id": "CE-EXOP-286",
+  "source": {
+    "canonical_commit": "eef1fd25013a38eaf2034b164760ba0f63dd5ded",
+    "validated_tree": "c71f1308e310c94a96c5b8807f50b9c9cc782096",
+    "final_integration_commit": "cf20192a4d243235411e79a63a16b0d59e15b742",
+    "frozen_base_to_final_diff_sha256": "75d9b3f5f4d6c509afb68ad0b8ee326c2099a2b0140a8793dff70d4a3f88de71"
+  },
+  "final_integration": {
+    "CE-EXOP-280": {
+      "terminal_revision": 3578,
+      "disposition": "implemented",
+      "evidence": [
+        "Release build completed at sm_70 with hardware probing disabled",
+        "strict C++17 host acceptance passed with GCC 13",
+        "ASan and UBSan acceptance passed",
+        "synthetic profiler-fixture acceptance passed",
+        "all declared CUDA suites passed in build-only mode",
+        "central operation, fusion, training, optimizer, overlap, package, and export host tests passed",
+        "production file-I/O audit and git diff --check passed"
+      ]
+    },
+    "CE-EXOP-281": {
+      "terminal_revision": 3585,
+      "disposition": "implemented",
+      "source_changes": false,
+      "evidence": [
+        "final-head Release sm_70 build passed",
+        "strict host, ASan, and UBSan acceptance passed",
+        "36 integrated host, package, and export executables passed",
+        "synthetic profiler acceptance passed",
+        "all CUDA suites passed in build-only mode",
+        "architecture, file-I/O, and diff audits passed"
+      ]
+    },
+    "CE-EXOP-282": {
+      "terminal_revision": 3588,
+      "disposition": "validated",
+      "checkpoint": "CE-EXOP-PROFILER-READY",
+      "checkpoint_revision": 3588,
+      "source_changes": false,
+      "ordered_profiler_artifact_manifest_sha256": "5cde357d609425e51b779bc19533b8108171ca1c024bc3714b544b07ac51aa5c",
+      "compile_only": true,
+      "cuda_runtime_executed": false,
+      "evidence": [
+        "strict and ASan/UBSan synthetic fixture validation passed",
+        "profiler manifests, generic export, deferred requirements, and acceptance validators passed",
+        "CUDA 12.9 profiler marker and symbol smoke compiled for sm_70"
+      ]
+    }
+  },
+  "leased_v100_correctness": {
+    "source_task": "CE-EXOP-255",
+    "terminal_revision": 3568,
+    "request_id": "CE-EXOP-255-ACCELERATOR",
+    "claim_id": "0f50df65-797e-4aca-ac7c-4091b71bb2c4",
+    "lease_id": "de3474b4-6300-4a51-99ee-f354c281198c",
+    "acquired_revision": 3562,
+    "released_at": "2026-08-31T09:50:30Z",
+    "release": "automatic_on_task_completion",
+    "authorized_scope": "tests/ce_exop/cuda integrated runtime acceptance only",
+    "instance": "gpu-0",
+    "cuda_visible_devices": "0",
+    "device": {
+      "name": "Tesla V100-SXM2-16GB",
+      "uuid_prefix": "GPU-21131915",
+      "compute_capability": "7.0",
+      "driver": "580.173.02"
+    },
+    "toolchain": {
+      "nvcc": "12.0.140",
+      "compute_sanitizer": "2025.2.1",
+      "compute_sanitizer_distribution": "NVIDIA HPC SDK CUDA 12.9"
+    },
+    "runtime_runner_tip": "5f1eeb133e1fa2c81f882927bece697dd477b461",
+    "runtime_runner_sha256": "d8b28eaff6b614d5ae2f6e44cb6988773b20ef4f26904cc64dec467b58ebfe91",
+    "result": "full declared runtime matrix passed",
+    "compute_sanitizer": {
+      "tool": "memcheck",
+      "targets": 2,
+      "errors": 0
+    }
+  },
+  "claim_boundaries": {
+    "hardware_results": "limited to the leased CE-EXOP-255 V100 correctness and sanitizer run",
+    "synthetic_profiler_evidence": "compile-only profiler readiness; no device runtime",
+    "performance_promotion": false,
+    "timing_claim": false,
+    "real_data_speedup": false,
+    "universal_winner": false,
+    "preprint_readiness": false
+  },
+  "deferred_or_omitted": {
+    "deep_nsight_profiling": "deferred",
+    "biological_data_campaigns": "deferred",
+    "performance_calibration_and_promotion": "deferred",
+    "preprint_evidence_and_claims": "deferred",
+    "CE-AMP": "not run and not authorized"
+  }
+}
