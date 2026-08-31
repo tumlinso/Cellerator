@@ -85,4 +85,43 @@ inline execution_stats execute_grouped_launch(const plan_v2& plan, float* output
     return stats;
 }
 
+// A destination owner accumulates all relations into caller-provided feature
+// scratch and commits once. This is the CPU referee for a CTA/warp owner CUDA
+// candidate; scratch capacity is exactly feature_width floats.
+inline execution_stats execute_shared_destination_owner(
+    const plan_v2& plan,
+    float* output,
+    float* feature_scratch) noexcept {
+    execution_stats stats{};
+    stats.logical_launches = 1;
+    for (local_index_type destination = 0;
+         destination < plan.destination_axis.local_extent; ++destination) {
+        const std::size_t output_base = static_cast<std::size_t>(destination) * plan.feature_width;
+        for (std::uint32_t feature = 0; feature < plan.feature_width; ++feature) {
+            feature_scratch[feature] = plan.accumulation == accumulation_policy::add
+                ? output[output_base + feature] : 0.0F;
+        }
+        for (std::uint32_t m = 0; m < plan.member_count; ++m) {
+            const member_view& member = plan.members[m];
+            for (local_index_type edge = member.destination_offsets[destination];
+                 edge < member.destination_offsets[destination + 1]; ++edge) {
+                const local_index_type source = member.source_local[edge];
+                for (std::uint32_t feature = 0; feature < plan.feature_width; ++feature) {
+                    feature_scratch[feature] += member.values[edge] *
+                        member.source_features[static_cast<std::size_t>(source) *
+                                               plan.feature_width + feature];
+                }
+                ++stats.visited_edges;
+            }
+        }
+        for (std::uint32_t feature = 0; feature < plan.feature_width; ++feature) {
+            float value = feature_scratch[feature];
+            if (plan.epilogue == epilogue_kind::bias) value += plan.bias[feature];
+            if (plan.epilogue == epilogue_kind::relu && value < 0.0F) value = 0.0F;
+            output[output_base + feature] = value;
+        }
+    }
+    return stats;
+}
+
 }  // namespace cellerator::compute::relation_bundle
