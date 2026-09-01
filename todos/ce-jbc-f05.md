@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-F05: Validate externally supplied persistent order
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3841`; current project revision is in `todo-status.md`.
 
 ## Objective
 Validate externally supplied persistent order. Deliver this as one isolated, reviewable step in the Atom-aware Cellerator fragment compiler workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

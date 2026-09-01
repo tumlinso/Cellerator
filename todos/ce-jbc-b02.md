@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-B02: Produce the source-backed Cellerator transition map
 
-Task revision: `3607`; current project revision is in `todo-status.md`.
+Task revision: `3841`; current project revision is in `todo-status.md`.
 
 ## Objective
 Produce the source-backed Cellerator transition map. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.

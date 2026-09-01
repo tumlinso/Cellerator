@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-C03: Inject global reuse and movement prices into geometry objectives
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3841`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inject global reuse and movement prices into geometry objectives. Deliver this as one isolated, reviewable step in the External global costs and bounded joint compiler exchange workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
