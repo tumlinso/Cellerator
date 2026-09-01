@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-C02: Inject external costs into the local complete-cost planner
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inject external costs into the local complete-cost planner. Deliver this as one isolated, reviewable step in the External global costs and bounded joint compiler exchange workstream.

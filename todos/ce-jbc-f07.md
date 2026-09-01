@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-F07: Discover atom-bound local candidates
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Discover atom-bound local candidates. Deliver this as one isolated, reviewable step in the Atom-aware Cellerator fragment compiler workstream.

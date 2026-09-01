@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-P09: Emit partial-result atoms
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Emit partial-result atoms. Deliver this as one isolated, reviewable step in the Cellerator atom planes, mutable values, gradients, and atom outputs workstream.

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-P07: Bind generation_publication_v1 to atom generations
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Bind generation_publication_v1 to atom generations. Deliver this as one isolated, reviewable step in the Cellerator atom planes, mutable values, gradients, and atom outputs workstream.

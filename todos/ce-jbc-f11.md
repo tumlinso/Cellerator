@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-F11: Describe output atom and partial affordances
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Describe output atom and partial affordances. Deliver this as one isolated, reviewable step in the Atom-aware Cellerator fragment compiler workstream.

@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `3601`
+Project revision: `3602`
 
 ## Workstreams
 - `CE-EXOP-00` | status: done | execution: closed | next: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.

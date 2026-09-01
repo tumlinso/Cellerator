@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-M03: Query contiguity, alignment, and extent requirements
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Query contiguity, alignment, and extent requirements. Deliver this as one isolated, reviewable step in the Multi-atom and multi-extent Cellerator operands workstream.

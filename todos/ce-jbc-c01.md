@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-C01: Define generic external cost vector v1
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define generic external cost vector v1. Deliver this as one isolated, reviewable step in the External global costs and bounded joint compiler exchange workstream.

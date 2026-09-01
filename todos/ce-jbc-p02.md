@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-P02: Define structural atom-plane binding
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define structural atom-plane binding. Deliver this as one isolated, reviewable step in the Cellerator atom planes, mutable values, gradients, and atom outputs workstream.

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-X05: Build segment and gate physical views
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build segment and gate physical views. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.

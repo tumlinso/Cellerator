@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-I12: Extend generic execution export to atom-aware v2
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Extend generic execution export to atom-aware v2. Deliver this as one isolated, reviewable step in the Cellerator-owned joint-compiler thin-waist interfaces workstream.

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-D11: Implement segment-disjoint decomposition
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement segment-disjoint decomposition. Deliver this as one isolated, reviewable step in the Biological operation decomposition and partial algebra workstream.

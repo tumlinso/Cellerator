@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-B05: Record frozen ABI and compatibility baseline
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record frozen ABI and compatibility baseline. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.

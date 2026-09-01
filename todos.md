@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `3601`
+Project revision: `3602`
 
 ## Workstreams
 - `CE-EXOP-00` | kind: epic | status: done | parent: - | objective: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
@@ -958,7 +958,7 @@ Project revision: `3601`
 - `CE-JBC-V03` | kind: task | status: planned | parent: - | objective: Export atom-aware profiler and mechanism manifests. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.
 - `CE-JBC-V04` | kind: task | status: planned | parent: - | objective: Enforce standalone libCellerator build and ABI gate. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.
 - `CE-JBC-V05` | kind: task | status: planned | parent: - | objective: Enforce embedded privileged CellShard bridge gate. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.
-- `CE-JBC-V06` | kind: task | status: planned | parent: - | objective: Integrate and publish the Cellerator JBC handoff. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.
+- `CE-JBC-V06` | kind: integration_task | status: planned | parent: - | objective: Integrate and publish the Cellerator JBC handoff. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.
 - `CE-JBC-X01` | kind: task | status: planned | parent: - | objective: Define operation-polymorphic support-family identity. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X02` | kind: task | status: planned | parent: - | objective: Build the forward relation-apply physical view. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X03` | kind: task | status: planned | parent: - | objective: Build the transpose physical view. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.

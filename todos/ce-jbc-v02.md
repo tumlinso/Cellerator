@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-V02: Implement scalable exact reconstruction and numerical verification
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement scalable exact reconstruction and numerical verification. Deliver this as one isolated, reviewable step in the Cellerator exact verification, profiling, packaging, and integration workstream.

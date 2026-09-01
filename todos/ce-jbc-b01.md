@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-B01: Revalidate live Cellerator, submodule, and Todo cursors
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Revalidate live Cellerator, submodule, and Todo cursors. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-R03: Resume from atom-evidence artifact
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Resume from atom-evidence artifact. Deliver this as one isolated, reviewable step in the Cellerator lowering-resumption contracts workstream.

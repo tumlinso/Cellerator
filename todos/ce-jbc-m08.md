@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-M08: Bind a structural atom plus mutable value overlay
 
-Task revision: `3601`; current project revision is in `todo-status.md`.
+Task revision: `3602`; current project revision is in `todo-status.md`.
 
 ## Objective
 Bind a structural atom plus mutable value overlay. Deliver this as one isolated, reviewable step in the Multi-atom and multi-extent Cellerator operands workstream.
