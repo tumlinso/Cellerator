@@ -451,6 +451,28 @@ if(CELLERATOR_BUILD_TESTS)
     target_link_libraries(cellerator_planner_portfolio_v1_test PRIVATE
         Cellerator::planner)
     target_compile_features(cellerator_planner_portfolio_v1_test PRIVATE cxx_std_17)
+
+    # JBC standalone ABI gate. This target intentionally consumes only
+    # Cellerator public headers and the Cellerator-owned profiling library;
+    # it must not gain a CellShard source, include, or link dependency.
+    add_executable(cellerator_jbc_standalone_abi_gate
+        tests/jbc/verification/standalone_abi_gate_v1_test.cc)
+    target_link_libraries(cellerator_jbc_standalone_abi_gate PRIVATE
+        Cellerator::profiling_v1)
+    target_compile_features(cellerator_jbc_standalone_abi_gate PRIVATE cxx_std_17)
+
+    # The privileged bridge is a combined-build-only gate. It consumes the
+    # CellShard transport envelope and the Cellerator-owned opaque execution
+    # contract without making either surface mandatory for standalone builds.
+    if(CELLERATOR_ENABLE_CELLSHARD)
+        add_executable(cellerator_jbc_cellshard_bridge_gate
+            tests/jbc/verification/cellshard_bridge_gate_v1_test.cc)
+        target_link_libraries(cellerator_jbc_cellshard_bridge_gate PRIVATE
+            CellShard::inspect
+            Cellerator::opaque_execution_artifact)
+        target_compile_features(cellerator_jbc_cellshard_bridge_gate PRIVATE
+            cxx_std_17)
+    endif()
 endif()
 
 include(bench/CMakeLists.txt)
