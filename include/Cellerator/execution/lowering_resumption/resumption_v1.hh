@@ -172,6 +172,13 @@ inline compatibility_status_v1 validate_artifact_for_stage_v1(
             compatibility_code_v1::structure_epoch_mismatch, expected_stage,
             artifact.context.structure_epoch);
     }
+    if (static_cast<std::uint8_t>(expected_stage) >=
+            static_cast<std::uint8_t>(lowering_stage_v1::semantic_atom) &&
+        !same_identity_v1(
+            artifact.context.order_identity, expected.order_identity)) {
+        return make_status_v1(
+            compatibility_code_v1::order_mismatch, expected_stage);
+    }
     return make_status_v1(
         compatibility_code_v1::compatible, expected_stage);
 }
@@ -186,6 +193,25 @@ inline compatibility_status_v1 resume_from_atom_evidence_v1(
     }
     const auto status = validate_artifact_for_stage_v1(
         artifact, lowering_stage_v1::atom_evidence, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_semantic_atom_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::semantic_atom);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::semantic_atom, expected);
     if (!status) {
         *cursor = {};
         return status;
