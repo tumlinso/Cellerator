@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T05:59:11Z",
+  "generated_at": "2026-09-01T06:02:03Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 3611,
+  "project_revision": 3613,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -39274,6 +39274,26 @@
         "revision": 3611,
         "seq": 3611,
         "timestamp": "2026-09-01T05:59:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-L-BOOTSTRAP",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-JBC-L-BOOTSTRAP\", \"run_id\": \"CE-JBC-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-JBC-B05\"}",
+        "revision": 3612,
+        "seq": 3612,
+        "timestamp": "2026-09-01T05:59:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-B05",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3613, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 3613,
+        "seq": 3613,
+        "timestamp": "2026-09-01T06:02:03Z"
       }
     ],
     "evidence": [
@@ -57492,6 +57512,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"e6613b88648bce6f9b5e231a4d0e13291668eedc\", \"completion_gates\": [], \"completion_revision\": 3401, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 13176 +++++++++++++++++++++++--------\\n todo-status.md                         |   216 +-\\n todos.md                               |   216 +-\\n todos/ce-amp-00.md                     |     2 +-\\n todos/ce-amp-01.md                     |     2 +-\\n todos/ce-amp-02.md                     |     2 +-\\n todos/ce-amp-03.md                     |     2 +-\\n todos/ce-amp-04.md                     |     2 +-\\n todos/ce-amp-05.md                     |     2 +-\\n todos/ce-amp-06.md                     |     2 +-\\n todos/ce-amp-07.md                     |     2 +-\\n todos/ce-amp-08.md                     |     2 +-\\n todos/ce-amp-09.md                     |     2 +-\\n todos/ce-exop-00.md                    |     2 +-\\n todos/ce-exop-01.md                    |     2 +-\\n todos/ce-exop-02.md                    |     2 +-\\n todos/ce-exop-03.md                    |     2 +-\\n todos/ce-exop-10.md                    |     8 +-\\n todos/ce-exop-100.md                   |     8 +-\\n todos/ce-exop-101.md                   |     8 +-\\n todos/ce-exop-102.md                   |     8 +-\\n todos/ce-exop-103.md                   |     8 +-\\n todos/ce-exop-104.md                   |     8 +-\\n todos/ce-exop-11.md                    |     8 +-\\n todos/ce-exop-110.md                   |     8 +-\\n todos/ce-exop-111.md                   |     8 +-\\n todos/ce-exop-112.md                   |     8 +-\\n todos/ce-exop-113.md                   |     8 +-\\n todos/ce-exop-114.md                   |     8 +-\\n todos/ce-exop-12.md                    |     8 +-\\n todos/ce-exop-120.md                   |     8 +-\\n todos/ce-exop-121.md                   |     8 +-\\n todos/ce-exop-122.md                   |     8 +-\\n todos/ce-exop-123.md                   |     8 +-\\n todos/ce-exop-124.md                   |     9 +-\\n todos/ce-exop-13.md                    |     8 +-\\n todos/ce-exop-130.md                   |     8 +-\\n todos/ce-exop-131.md                   |     8 +-\\n todos/ce-exop-132.md                   |     8 +-\\n todos/ce-exop-133.md                   |     8 +-\\n todos/ce-exop-14.md                    |     8 +-\\n todos/ce-exop-140.md                   |     8 +-\\n todos/ce-exop-141.md                   |     8 +-\\n todos/ce-exop-142.md                   |     8 +-\\n todos/ce-exop-143.md                   |     8 +-\\n todos/ce-exop-144.md                   |     8 +-\\n todos/ce-exop-145.md                   |     8 +-\\n todos/ce-exop-15.md                    |     8 +-\\n todos/ce-exop-150.md                   |     8 +-\\n todos/ce-exop-151.md                   |     8 +-\\n todos/ce-exop-152.md                   |     8 +-\\n todos/ce-exop-153.md                   |     8 +-\\n todos/ce-exop-154.md                   |     8 +-\\n todos/ce-exop-155.md                   |     8 +-\\n todos/ce-exop-156.md                   |     8 +-\\n todos/ce-exop-160.md                   |     8 +-\\n todos/ce-exop-161.md                   |     8 +-\\n todos/ce-exop-162.md                   |     8 +-\\n todos/ce-exop-163.md                   |     8 +-\\n todos/ce-exop-164.md                   |     8 +-\\n todos/ce-exop-165.md                   |     8 +-\\n todos/ce-exop-170.md                   |     8 +-\\n todos/ce-exop-171.md                   |     8 +-\\n todos/ce-exop-172.md                   |     8 +-\\n todos/ce-exop-173.md                   |     2 +-\\n todos/ce-exop-174.md                   |     2 +-\\n todos/ce-exop-180.md                   |     8 +-\\n todos/ce-exop-181.md                   |     8 +-\\n todos/ce-exop-182.md                   |     8 +-\\n todos/ce-exop-183.md                   |     8 +-\\n todos/ce-exop-184.md                   |     2 +-\\n todos/ce-exop-190.md                   |     8 +-\\n todos/ce-exop-191.md                   |     2 +-\\n todos/ce-exop-192.md                   |     2 +-\\n todos/ce-exop-193.md                   |     2 +-\\n todos/ce-exop-194.md                   |     2 +-\\n todos/ce-exop-195.md                   |     2 +-\\n todos/ce-exop-20.md                    |     8 +-\\n todos/ce-exop-200.md                   |     2 +-\\n todos/ce-exop-201.md                   |     2 +-\\n todos/ce-exop-202.md                   |     2 +-\\n todos/ce-exop-203.md                   |     2 +-\\n todos/ce-exop-204.md                   |     2 +-\\n todos/ce-exop-21.md                    |     8 +-\\n todos/ce-exop-210.md                   |     2 +-\\n todos/ce-exop-211.md                   |     2 +-\\n todos/ce-exop-212.md                   |     2 +-\\n todos/ce-exop-213.md                   |     2 +-\\n todos/ce-exop-214.md                   |     2 +-\\n todos/ce-exop-215.md                   |     2 +-\\n todos/ce-exop-22.md                    |     8 +-\\n todos/ce-exop-220.md                   |     2 +-\\n todos/ce-exop-221.md                   |     2 +-\\n todos/ce-exop-222.md                   |     2 +-\\n todos/ce-exop-223.md                   |     2 +-\\n todos/ce-exop-224.md                   |     2 +-\\n todos/ce-exop-225.md                   |     2 +-\\n todos/ce-exop-226.md                   |     2 +-\\n todos/ce-exop-23.md                    |     8 +-\\n todos/ce-exop-230.md                   |     2 +-\\n todos/ce-exop-231.md                   |     2 +-\\n todos/ce-exop-232.md                   |     2 +-\\n todos/ce-exop-233.md                   |     2 +-\\n todos/ce-exop-234.md                   |     2 +-\\n todos/ce-exop-235.md                   |     2 +-\\n todos/ce-exop-24.md                    |     8 +-\\n todos/ce-exop-240.md                   |     2 +-\\n todos/ce-exop-241.md                   |     2 +-\\n todos/ce-exop-242.md                   |     2 +-\\n todos/ce-exop-243.md                   |     2 +-\\n todos/ce-exop-244.md                   |     2 +-\\n todos/ce-exop-245.md                   |     2 +-\\n todos/ce-exop-25.md                    |     8 +-\\n todos/ce-exop-250.md                   |     2 +-\\n todos/ce-exop-251.md                   |     2 +-\\n todos/ce-exop-252.md                   |     2 +-\\n todos/ce-exop-253.md                   |     2 +-\\n todos/ce-exop-254.md                   |     2 +-\\n todos/ce-exop-255.md                   |     2 +-\\n todos/ce-exop-26.md                    |     8 +-\\n todos/ce-exop-260.md                   |     2 +-\\n todos/ce-exop-261.md                   |     2 +-\\n todos/ce-exop-262.md                   |     2 +-\\n todos/ce-exop-263.md                   |     2 +-\\n todos/ce-exop-264.md                   |     2 +-\\n todos/ce-exop-265.md                   |     2 +-\\n todos/ce-exop-270.md                   |     8 +-\\n todos/ce-exop-271.md                   |     8 +-\\n todos/ce-exop-272.md                   |     8 +-\\n todos/ce-exop-273.md                   |     8 +-\\n todos/ce-exop-274.md                   |     8 +-\\n todos/ce-exop-275.md                   |     8 +-\\n todos/ce-exop-276.md                   |     2 +-\\n todos/ce-exop-277.md                   |     2 +-\\n todos/ce-exop-278.md                   |     2 +-\\n todos/ce-exop-279.md                   |     2 +-\\n todos/ce-exop-280.md                   |     2 +-\\n todos/ce-exop-281.md                   |     2 +-\\n todos/ce-exop-282.md                   |     2 +-\\n todos/ce-exop-286.md                   |     2 +-\\n todos/ce-exop-287.md                   |     2 +-\\n todos/ce-exop-288.md                   |     2 +-\\n todos/ce-exop-289.md                   |     2 +-\\n todos/ce-exop-290.md                   |     2 +-\\n todos/ce-exop-30.md                    |     8 +-\\n todos/ce-exop-31.md                    |     8 +-\\n todos/ce-exop-32.md                    |     8 +-\\n todos/ce-exop-33.md                    |     8 +-\\n todos/ce-exop-34.md                    |     8 +-\\n todos/ce-exop-35.md                    |     8 +-\\n todos/ce-exop-40.md                    |     8 +-\\n todos/ce-exop-41.md                    |     8 +-\\n todos/ce-exop-42.md                    |     8 +-\\n todos/ce-exop-43.md                    |     8 +-\\n todos/ce-exop-44.md                    |     8 +-\\n todos/ce-exop-45.md                    |     8 +-\\n todos/ce-exop-50.md                    |     8 +-\\n todos/ce-exop-51.md                    |     8 +-\\n todos/ce-exop-52.md                    |     8 +-\\n todos/ce-exop-53.md                    |     8 +-\\n todos/ce-exop-54.md                    |     8 +-\\n todos/ce-exop-55.md                    |     8 +-\\n todos/ce-exop-60.md                    |     8 +-\\n todos/ce-exop-61.md                    |     8 +-\\n todos/ce-exop-62.md                    |     8 +-\\n todos/ce-exop-63.md                    |     8 +-\\n todos/ce-exop-64.md                    |     8 +-\\n todos/ce-exop-70.md                    |     8 +-\\n todos/ce-exop-71.md                    |     8 +-\\n todos/ce-exop-72.md                    |     8 +-\\n todos/ce-exop-73.md                    |     8 +-\\n todos/ce-exop-74.md                    |     8 +-\\n todos/ce-exop-75.md                    |     8 +-\\n todos/ce-exop-80.md                    |     8 +-\\n todos/ce-exop-81.md                    |     8 +-\\n todos/ce-exop-82.md                    |     8 +-\\n todos/ce-exop-83.md                    |     8 +-\\n todos/ce-exop-84.md                    |     8 +-\\n todos/ce-exop-85.md                    |     8 +-\\n todos/ce-exop-90.md                    |     8 +-\\n todos/ce-exop-91.md                    |     8 +-\\n todos/ce-exop-92.md                    |     8 +-\\n todos/ce-exop-93.md                    |     8 +-\\n todos/ce-exop-94.md                    |     8 +-\\n todos/ce-exop-ptr-baseline.md          |     2 +-\\n todos/ce-geo-00.md                     |     2 +-\\n todos/ce-geo-01.md                     |     2 +-\\n todos/ce-geo-02.md                     |     2 +-\\n todos/ce-geo-03.md                     |     2 +-\\n todos/ce-geo-10.md                     |     2 +-\\n todos/ce-geo-100.md                    |     2 +-\\n todos/ce-geo-101.md                    |     2 +-\\n todos/ce-geo-102.md                    |     2 +-\\n todos/ce-geo-103.md                    |     2 +-\\n todos/ce-geo-104.md                    |     2 +-\\n todos/ce-geo-105.md                    |     2 +-\\n todos/ce-geo-106.md                    |     2 +-\\n todos/ce-geo-107.md                    |     2 +-\\n todos/ce-geo-108.md                    |     2 +-\\n todos/ce-geo-109.md                    |     2 +-\\n todos/ce-geo-11.md                     |     2 +-\\n todos/ce-geo-110.md                    |     2 +-\\n todos/ce-geo-111.md                    |     2 +-\\n todos/ce-geo-112.md                    |     2 +-\\n todos/ce-geo-113.md                    |     2 +-\\n todos/ce-geo-114.md                    |     2 +-\\n todos/ce-geo-115.md                    |     2 +-\\n todos/ce-geo-116.md                    |     2 +-\\n todos/ce-geo-117.md                    |     2 +-\\n todos/ce-geo-118.md                    |     2 +-\\n todos/ce-geo-119.md                    |     2 +-\\n todos/ce-geo-12.md                     |     2 +-\\n todos/ce-geo-120.md                    |     2 +-\\n todos/ce-geo-121.md                    |     2 +-\\n todos/ce-geo-122.md                    |     2 +-\\n todos/ce-geo-123.md                    |     2 +-\\n todos/ce-geo-124.md                    |     2 +-\\n todos/ce-geo-125.md                    |     2 +-\\n todos/ce-geo-126.md                    |     2 +-\\n todos/ce-geo-127.md                    |     2 +-\\n todos/ce-geo-13.md                     |     2 +-\\n todos/ce-geo-14.md                     |     2 +-\\n todos/ce-geo-20.md                     |     2 +-\\n todos/ce-geo-21.md                     |     2 +-\\n todos/ce-geo-22.md                     |     2 +-\\n todos/ce-geo-23.md                     |     2 +-\\n todos/ce-geo-24.md                     |     2 +-\\n todos/ce-geo-25.md                     |     2 +-\\n todos/ce-geo-30.md                     |     2 +-\\n todos/ce-geo-31.md                     |     2 +-\\n todos/ce-geo-32.md                     |     2 +-\\n todos/ce-geo-33.md                     |     2 +-\\n todos/ce-geo-34.md                     |     2 +-\\n todos/ce-geo-35.md                     |     2 +-\\n todos/ce-geo-36.md                     |     2 +-\\n todos/ce-geo-37.md                     |     2 +-\\n todos/ce-geo-38.md                     |     2 +-\\n todos/ce-geo-39.md                     |     2 +-\\n todos/ce-geo-40.md                     |     2 +-\\n todos/ce-geo-41.md                     |     2 +-\\n todos/ce-geo-42.md                     |     2 +-\\n todos/ce-geo-43.md                     |     2 +-\\n todos/ce-geo-44.md                     |     2 +-\\n todos/ce-geo-45.md                     |     2 +-\\n todos/ce-geo-46.md                     |     2 +-\\n todos/ce-geo-47.md                     |     2 +-\\n todos/ce-geo-50.md                     |     2 +-\\n todos/ce-geo-51.md                     |     2 +-\\n todos/ce-geo-52.md                     |     2 +-\\n todos/ce-geo-53.md                     |     2 +-\\n todos/ce-geo-54.md                     |     2 +-\\n todos/ce-geo-55.md                     |     2 +-\\n todos/ce-geo-56.md                     |     2 +-\\n todos/ce-geo-57.md                     |     2 +-\\n todos/ce-geo-58.md                     |     2 +-\\n todos/ce-geo-60.md                     |     2 +-\\n todos/ce-geo-61.md                     |     2 +-\\n todos/ce-geo-62.md                     |     2 +-\\n todos/ce-geo-63.md                     |     2 +-\\n todos/ce-geo-64.md                     |     2 +-\\n todos/ce-geo-65.md                     |     2 +-\\n todos/ce-geo-66.md                     |     2 +-\\n todos/ce-geo-67.md                     |     2 +-\\n todos/ce-geo-68.md                     |     2 +-\\n todos/ce-geo-69.md                     |     2 +-\\n todos/ce-geo-70.md                     |     2 +-\\n todos/ce-geo-71.md                     |     2 +-\\n todos/ce-geo-72.md                     |     2 +-\\n todos/ce-geo-73.md                     |     2 +-\\n todos/ce-geo-74.md                     |     2 +-\\n todos/ce-geo-75.md                     |     2 +-\\n todos/ce-geo-76.md                     |     2 +-\\n todos/ce-geo-77.md                     |     2 +-\\n todos/ce-geo-78.md                     |     2 +-\\n todos/ce-geo-79.md                     |     2 +-\\n todos/ce-geo-80.md                     |     2 +-\\n todos/ce-geo-81.md                     |     2 +-\\n todos/ce-geo-82.md                     |     2 +-\\n todos/ce-geo-83.md                     |     2 +-\\n todos/ce-geo-84.md                     |     2 +-\\n todos/ce-geo-85.md                     |     2 +-\\n todos/ce-geo-86.md                     |     2 +-\\n todos/ce-geo-87.md                     |     2 +-\\n todos/ce-geo-88.md                     |     2 +-\\n todos/ce-geo-90.md                     |     2 +-\\n todos/ce-geo-91.md                     |     2 +-\\n todos/ce-geo-92.md                     |     2 +-\\n todos/ce-geo-93.md                     |     2 +-\\n todos/ce-geo-94.md                     |     2 +-\\n todos/ce-geo-95.md                     |     2 +-\\n todos/ce-geo-96.md                     |     2 +-\\n todos/ce-geo-97.md                     |     2 +-\\n todos/ce-geo-98.md                     |     2 +-\\n todos/ce-geo-99.md                     |     2 +-\\n 294 files changed, 10667 insertions(+), 4154 deletions(-)\", \"git_head\": \"e6613b88648bce6f9b5e231a4d0e13291668eedc\", \"interfaces\": [], \"note\": \"Implemented the exact warp-per-output, CTA-per-output, and large-segment-CTA prepared mechanism portfolio at commit 7794da6. Each has a unique stable identity/static name, explicit threads/warps/preferred regime, graph-capture compatibility, and requires_measurement=true/production_promoted=false. Duplicate identity/name and incomplete-portfolio rejection are independently tested. Strict C++17 ASan+UBSan host test and git diff --check passed; branch pushed.\", \"resources\": [], \"task_id\": \"CE-EXOP-191\"}",
         "revision": 3401,
         "task_id": "CE-EXOP-191"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-01T06:02:03Z",
+        "id": "071d6383-b509-4ab9-abe7-9b53abc9800a",
+        "kind": "complete",
+        "note": "Added docs/JBC/CE_JBC_B05_FROZEN_ABI_BASELINE.md and machine-readable planning/jbc/cellerator_frozen_abi_v1.csv. Snapshotted primary headers/hashes, versions, classifications, validators/guards, and only adjacent extension routes for operation_core_v2, relation_algebra_v2, CSG1, CPE2, CPK1, projection-value-plane v1, candidate-catalog v3, program_v2, training-program v2, acquisition-v2, and hierarchical-index v1. Explicitly recorded the missing aggregate hierarchy validator as an adjacent-validator requirement. Validated all 11 rows, live SHA-256 values, interface coverage, and git diff --check. B04 already proved standalone/embedded build baselines; B05 changes documentation/planning only.",
+        "payload_json": "{\"changed_owned_paths\": [\"planning/jbc/cellerator_frozen_abi_v1.csv\"], \"checkpoints\": [], \"completion_commit\": \"db5dcfc56a09498cd5a214c30054bd112da77218\", \"completion_gates\": [], \"completion_revision\": 3613, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n components/CellShard                   |  2 +-\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-jbc-b05.md                    |  6 +++---\\n 5 files changed, 30 insertions(+), 20 deletions(-)\", \"git_head\": \"db5dcfc56a09498cd5a214c30054bd112da77218\", \"interfaces\": [], \"note\": \"Added docs/JBC/CE_JBC_B05_FROZEN_ABI_BASELINE.md and machine-readable planning/jbc/cellerator_frozen_abi_v1.csv. Snapshotted primary headers/hashes, versions, classifications, validators/guards, and only adjacent extension routes for operation_core_v2, relation_algebra_v2, CSG1, CPE2, CPK1, projection-value-plane v1, candidate-catalog v3, program_v2, training-program v2, acquisition-v2, and hierarchical-index v1. Explicitly recorded the missing aggregate hierarchy validator as an adjacent-validator requirement. Validated all 11 rows, live SHA-256 values, interface coverage, and git diff --check. B04 already proved standalone/embedded build baselines; B05 changes documentation/planning only.\", \"resources\": [], \"task_id\": \"CE-JBC-B05\"}",
+        "revision": 3613,
+        "task_id": "CE-JBC-B05"
       },
       {
         "claim_id": null,
@@ -133188,9 +133218,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "db5dcfc56a09498cd5a214c30054bd112da77218",
+        "completion_git_head": "db5dcfc56a09498cd5a214c30054bd112da77218",
+        "completion_revision": 3613,
         "created_at": "2026-08-31T19:41:45Z",
         "id": "CE-JBC-B05",
         "kind": "task",
@@ -133202,14 +133232,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 0,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 3602,
-        "status": "planned",
+        "revision": 3613,
+        "status": "done",
         "tags_json": "[]",
         "title": "Record frozen ABI and compatibility baseline",
-        "updated_at": "2026-09-01T05:43:49Z",
-        "version": 2
+        "updated_at": "2026-09-01T06:02:03Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -150198,13 +150228,13 @@
         "task_id": "CE-JBC-B04"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-01T05:59:29Z",
+        "completed_at": "2026-09-01T06:02:03Z",
         "enqueued_at": "2026-09-01T05:43:49Z",
         "lane_id": "CE-JBC-L-BOOTSTRAP",
         "position": 4,
-        "revision": 3602,
-        "state": "queued",
+        "revision": 3613,
+        "state": "completed",
         "task_id": "CE-JBC-B05"
       },
       {
@@ -152112,11 +152142,11 @@
         "created_at": "2026-09-01T05:43:49Z",
         "id": "CE-JBC-L-BOOTSTRAP",
         "parent_lane_id": null,
-        "revision": 3611,
+        "revision": 3613,
         "role": "coordinator",
         "run_id": "CE-JBC-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-01T05:59:11Z",
+        "updated_at": "2026-09-01T06:02:03Z",
         "workspace_mode": "exclusive"
       },
       {
