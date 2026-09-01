@@ -77,6 +77,7 @@ struct lowering_artifact_v1 {
     std::uint8_t reserved[7]{};
     stable_identity_v1 artifact_identity{};
     stable_identity_v1 cover_identity{};
+    stable_identity_v1 executable_identity{};
     lowering_identity_context_v1 context{};
     const void *payload = nullptr;
     std::uint64_t payload_bytes = 0u;
@@ -304,6 +305,33 @@ inline compatibility_status_v1 resume_from_packed_operand_v1(
     if (!status) {
         *cursor = {};
         return status;
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_executable_recipe_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    stable_identity_v1 expected_executable_identity,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr ||
+        !valid_identity_v1(expected_executable_identity)) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::executable_recipe);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::executable_recipe, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    if (!same_identity_v1(
+            artifact.executable_identity, expected_executable_identity)) {
+        *cursor = {};
+        return make_status_v1(compatibility_code_v1::identity_mismatch,
+            lowering_stage_v1::executable_recipe);
     }
     *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
         artifact.payload, artifact.payload_bytes};
