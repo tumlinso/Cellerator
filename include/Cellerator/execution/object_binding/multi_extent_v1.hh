@@ -57,6 +57,35 @@ struct multi_atom_port_binding_list_v1 {
     std::uint64_t port_count = 0u;
 };
 
+enum class extent_residency_v1 : std::uint8_t {
+    host = 1u,
+    device = 2u,
+    managed = 3u,
+};
+
+struct physical_extent_binding_v1 {
+    stable_identity_v1 atom_identity{};
+    const void *data = nullptr;
+    std::uint64_t byte_count = 0u;
+    std::uint64_t element_count = 0u;
+    std::uint64_t element_stride_bytes = 0u;
+    std::uint64_t alignment_bytes = 1u;
+    std::uint64_t value_generation = 0u;
+    extent_residency_v1 residency = extent_residency_v1::host;
+    std::uint8_t reserved[7]{};
+};
+
+struct multi_extent_physical_binding_v1 {
+    stable_identity_v1 port_identity{};
+    const physical_extent_binding_v1 *extents = nullptr;
+    std::uint64_t extent_count = 0u;
+};
+
+struct multi_extent_physical_binding_list_v1 {
+    const multi_extent_physical_binding_v1 *ports = nullptr;
+    std::uint64_t port_count = 0u;
+};
+
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
@@ -106,8 +135,56 @@ inline binding_status_v1 validate_multi_atom_port_bindings_v1(
     return {};
 }
 
+constexpr bool power_of_two_v1(std::uint64_t value) noexcept {
+    return value != 0u && (value & (value - 1u)) == 0u;
+}
+
+inline binding_status_v1 validate_multi_extent_physical_bindings_v1(
+    const multi_extent_physical_binding_list_v1 &list) noexcept {
+    if (list.port_count != 0u && list.ports == nullptr) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    for (std::uint64_t port_index = 0u; port_index < list.port_count;
+         ++port_index) {
+        const auto &port = list.ports[port_index];
+        if (!valid_identity_v1(port.port_identity)) {
+            return {binding_status_code_v1::invalid_identity, port_index};
+        }
+        if (port.extent_count == 0u || port.extents == nullptr) {
+            return {binding_status_code_v1::invalid_argument, port_index};
+        }
+        for (std::uint64_t extent_index = 0u;
+             extent_index < port.extent_count; ++extent_index) {
+            const auto &extent = port.extents[extent_index];
+            if (!valid_identity_v1(extent.atom_identity)) {
+                return {binding_status_code_v1::invalid_identity, extent_index};
+            }
+            if (extent.data == nullptr || extent.byte_count == 0u ||
+                extent.element_count == 0u ||
+                extent.element_stride_bytes == 0u ||
+                !power_of_two_v1(extent.alignment_bytes) ||
+                extent.element_count >
+                    extent.byte_count / extent.element_stride_bytes) {
+                return {binding_status_code_v1::invalid_extent, extent_index};
+            }
+            for (std::uint64_t other = 0u; other < extent_index; ++other) {
+                const auto &identity = port.extents[other].atom_identity;
+                if (identity.low == extent.atom_identity.low &&
+                    identity.high == extent.atom_identity.high) {
+                    return {binding_status_code_v1::duplicate_atom, extent_index};
+                }
+            }
+        }
+    }
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
+static_assert(std::is_trivially_copyable_v<physical_extent_binding_v1>);
+static_assert(std::is_trivially_copyable_v<multi_extent_physical_binding_v1>);
+static_assert(
+    std::is_trivially_copyable_v<multi_extent_physical_binding_list_v1>);
 
 }  // namespace cellerator::execution::object_binding
