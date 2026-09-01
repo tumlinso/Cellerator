@@ -78,6 +78,10 @@ struct lowering_artifact_v1 {
     stable_identity_v1 artifact_identity{};
     stable_identity_v1 cover_identity{};
     stable_identity_v1 executable_identity{};
+    stable_identity_v1 topology_identity{};
+    std::uint64_t topology_epoch = 0u;
+    stable_identity_v1 partition_identity{};
+    std::uint64_t local_extent = 0u;
     lowering_identity_context_v1 context{};
     const void *payload = nullptr;
     std::uint64_t payload_bytes = 0u;
@@ -332,6 +336,46 @@ inline compatibility_status_v1 resume_from_executable_recipe_v1(
         *cursor = {};
         return make_status_v1(compatibility_code_v1::identity_mismatch,
             lowering_stage_v1::executable_recipe);
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_local_realization_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    stable_identity_v1 expected_topology_identity,
+    std::uint64_t expected_topology_epoch,
+    stable_identity_v1 expected_partition_identity,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr || !valid_identity_v1(expected_topology_identity) ||
+        expected_topology_epoch == 0u ||
+        !valid_identity_v1(expected_partition_identity)) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::local_realization);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::local_realization, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    if (!same_identity_v1(
+            artifact.topology_identity, expected_topology_identity) ||
+        !same_identity_v1(
+            artifact.partition_identity, expected_partition_identity)) {
+        *cursor = {};
+        return make_status_v1(compatibility_code_v1::identity_mismatch,
+            lowering_stage_v1::local_realization);
+    }
+    if (artifact.topology_epoch != expected_topology_epoch ||
+        artifact.local_extent == 0u) {
+        *cursor = {};
+        return make_status_v1(
+            compatibility_code_v1::structure_epoch_mismatch,
+            lowering_stage_v1::local_realization,
+            artifact.topology_epoch);
     }
     *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
         artifact.payload, artifact.payload_bytes};
