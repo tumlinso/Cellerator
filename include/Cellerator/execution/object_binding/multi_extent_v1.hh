@@ -161,6 +161,29 @@ struct direct_multi_extent_candidate_v1 {
     direct_multi_extent_launch_v1 launch = nullptr;
 };
 
+struct structural_atom_v1 {
+    stable_identity_v1 atom_identity{};
+    stable_identity_v1 domain_identity{};
+    stable_identity_v1 order_identity{};
+    std::uint64_t structure_epoch = 0u;
+    const void *topology = nullptr;
+    std::uint64_t topology_bytes = 0u;
+    std::uint64_t logical_value_count = 0u;
+};
+
+struct mutable_value_overlay_v1 {
+    stable_identity_v1 atom_identity{};
+    std::uint64_t value_generation = 0u;
+    const void *values = nullptr;
+    std::uint64_t value_count = 0u;
+    std::uint64_t element_bytes = 0u;
+};
+
+struct bound_structural_atom_v1 {
+    const structural_atom_v1 *structure = nullptr;
+    const mutable_value_overlay_v1 *overlay = nullptr;
+};
+
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
@@ -480,6 +503,30 @@ inline binding_status_v1 validate_direct_multi_extent_candidate_v1(
     return {};
 }
 
+inline binding_status_v1 bind_structural_atom_overlay_v1(
+    const structural_atom_v1 &structure,
+    const mutable_value_overlay_v1 &overlay,
+    bound_structural_atom_v1 *binding) noexcept {
+    if (binding == nullptr || !valid_identity_v1(structure.atom_identity) ||
+        !valid_identity_v1(structure.domain_identity) ||
+        !valid_identity_v1(structure.order_identity) ||
+        structure.structure_epoch == 0u || structure.topology == nullptr ||
+        structure.topology_bytes == 0u || structure.logical_value_count == 0u ||
+        overlay.values == nullptr || overlay.value_generation == 0u ||
+        overlay.element_bytes == 0u) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    *binding = {};
+    if (structure.atom_identity.low != overlay.atom_identity.low ||
+        structure.atom_identity.high != overlay.atom_identity.high ||
+        structure.logical_value_count != overlay.value_count) {
+        return {binding_status_code_v1::incompatible_requirement};
+    }
+    binding->structure = &structure;
+    binding->overlay = &overlay;
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
@@ -495,5 +542,8 @@ static_assert(std::is_trivially_copyable_v<index_permutation_v1>);
 static_assert(std::is_trivially_copyable_v<
     direct_multi_extent_candidate_requirements_v1>);
 static_assert(std::is_trivially_copyable_v<direct_multi_extent_candidate_v1>);
+static_assert(std::is_trivially_copyable_v<structural_atom_v1>);
+static_assert(std::is_trivially_copyable_v<mutable_value_overlay_v1>);
+static_assert(std::is_trivially_copyable_v<bound_structural_atom_v1>);
 
 }  // namespace cellerator::execution::object_binding
