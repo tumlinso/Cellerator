@@ -127,6 +127,11 @@ struct contiguous_assembly_plan_v1 {
     std::uint64_t destination_alignment_bytes = 1u;
 };
 
+struct index_permutation_v1 {
+    const std::uint64_t *source_index_for_destination = nullptr;
+    std::uint64_t element_count = 0u;
+};
+
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
@@ -323,6 +328,80 @@ inline binding_status_v1 execute_contiguous_assembly_v1(
     return {};
 }
 
+inline binding_status_v1 validate_index_permutation_v1(
+    const index_permutation_v1 &permutation) noexcept {
+    if (permutation.element_count != 0u &&
+        permutation.source_index_for_destination == nullptr) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    for (std::uint64_t destination = 0u;
+         destination < permutation.element_count; ++destination) {
+        const auto source =
+            permutation.source_index_for_destination[destination];
+        if (source >= permutation.element_count) {
+            return {binding_status_code_v1::invalid_extent, destination};
+        }
+        for (std::uint64_t prior = 0u; prior < destination; ++prior) {
+            if (permutation.source_index_for_destination[prior] == source) {
+                return {binding_status_code_v1::duplicate_atom, destination};
+            }
+        }
+    }
+    return {};
+}
+
+inline binding_status_v1 gather_permutation_v1(
+    const void *source, void *destination, std::uint64_t element_bytes,
+    const index_permutation_v1 &permutation) noexcept {
+    const auto status = validate_index_permutation_v1(permutation);
+    if (!status) {
+        return status;
+    }
+    if (element_bytes == 0u ||
+        (permutation.element_count != 0u &&
+            (source == nullptr || destination == nullptr ||
+                source == destination))) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    const auto *source_bytes = static_cast<const unsigned char *>(source);
+    auto *destination_bytes = static_cast<unsigned char *>(destination);
+    for (std::uint64_t destination_index = 0u;
+         destination_index < permutation.element_count; ++destination_index) {
+        const auto source_index =
+            permutation.source_index_for_destination[destination_index];
+        std::memcpy(destination_bytes + destination_index * element_bytes,
+            source_bytes + source_index * element_bytes,
+            static_cast<std::size_t>(element_bytes));
+    }
+    return {};
+}
+
+inline binding_status_v1 scatter_permutation_v1(
+    const void *source, void *destination, std::uint64_t element_bytes,
+    const index_permutation_v1 &permutation) noexcept {
+    const auto status = validate_index_permutation_v1(permutation);
+    if (!status) {
+        return status;
+    }
+    if (element_bytes == 0u ||
+        (permutation.element_count != 0u &&
+            (source == nullptr || destination == nullptr ||
+                source == destination))) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    const auto *source_bytes = static_cast<const unsigned char *>(source);
+    auto *destination_bytes = static_cast<unsigned char *>(destination);
+    for (std::uint64_t source_index = 0u;
+         source_index < permutation.element_count; ++source_index) {
+        const auto destination_index =
+            permutation.source_index_for_destination[source_index];
+        std::memcpy(destination_bytes + destination_index * element_bytes,
+            source_bytes + source_index * element_bytes,
+            static_cast<std::size_t>(element_bytes));
+    }
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
@@ -334,5 +413,6 @@ static_assert(std::is_trivially_copyable_v<port_extent_requirement_v1>);
 static_assert(std::is_trivially_copyable_v<port_extent_query_result_v1>);
 static_assert(std::is_trivially_copyable_v<contiguous_assembly_segment_v1>);
 static_assert(std::is_trivially_copyable_v<contiguous_assembly_plan_v1>);
+static_assert(std::is_trivially_copyable_v<index_permutation_v1>);
 
 }  // namespace cellerator::execution::object_binding
