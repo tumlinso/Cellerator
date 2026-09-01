@@ -76,6 +76,7 @@ struct lowering_artifact_v1 {
     lowering_stage_v1 stage = lowering_stage_v1::atom_evidence;
     std::uint8_t reserved[7]{};
     stable_identity_v1 artifact_identity{};
+    stable_identity_v1 cover_identity{};
     lowering_identity_context_v1 context{};
     const void *payload = nullptr;
     std::uint64_t payload_bytes = 0u;
@@ -215,6 +216,33 @@ inline compatibility_status_v1 resume_from_semantic_atom_v1(
     if (!status) {
         *cursor = {};
         return status;
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_target_cover_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    stable_identity_v1 expected_cover_identity,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr || !valid_identity_v1(expected_cover_identity)) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::target_cover);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::target_cover, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    if (!valid_identity_v1(artifact.cover_identity) ||
+        !same_identity_v1(
+            artifact.cover_identity, expected_cover_identity)) {
+        *cursor = {};
+        return make_status_v1(compatibility_code_v1::identity_mismatch,
+            lowering_stage_v1::target_cover);
     }
     *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
         artifact.payload, artifact.payload_bytes};
