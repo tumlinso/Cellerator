@@ -88,6 +88,17 @@ struct lowering_artifact_v1 {
     std::uint64_t content_hash[4]{};
 };
 
+struct resumption_trace_v1 {
+    lowering_stage_v1 requested_stage = lowering_stage_v1::canonical_source;
+    lowering_stage_v1 selected_stage = lowering_stage_v1::canonical_source;
+    compatibility_code_v1 compatibility =
+        compatibility_code_v1::compatible;
+    bool fallback_used = false;
+    std::uint8_t bypassed_phase_count = 0u;
+    std::uint8_t replayed_phase_count = 0u;
+    std::uint8_t reserved[4]{};
+};
+
 constexpr lowering_stage_v1 earliest_stage_for_v1(
     compatibility_code_v1 code, lowering_stage_v1 inspected) noexcept {
     switch (code) {
@@ -382,10 +393,36 @@ inline compatibility_status_v1 resume_from_local_realization_v1(
     return status;
 }
 
+inline compatibility_status_v1 instrument_resumption_decision_v1(
+    lowering_stage_v1 requested_stage,
+    const compatibility_status_v1 &status,
+    resumption_trace_v1 *trace) noexcept {
+    const auto requested = static_cast<std::uint8_t>(requested_stage);
+    const auto selected = static_cast<std::uint8_t>(
+        status ? requested_stage : status.earliest_compatible_stage);
+    if (trace == nullptr || requested == 0u || selected == 0u ||
+        selected > requested) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            requested_stage);
+    }
+    *trace = {};
+    trace->requested_stage = requested_stage;
+    trace->selected_stage = status ? requested_stage :
+        status.earliest_compatible_stage;
+    trace->compatibility = status.code;
+    trace->fallback_used = !status;
+    trace->bypassed_phase_count = static_cast<std::uint8_t>(selected - 1u);
+    trace->replayed_phase_count =
+        static_cast<std::uint8_t>(requested - selected);
+    return make_status_v1(
+        compatibility_code_v1::compatible, trace->selected_stage);
+}
+
 static_assert(std::is_trivially_copyable_v<compatibility_status_v1>);
 static_assert(std::is_trivially_copyable_v<lowering_identity_context_v1>);
 static_assert(std::is_trivially_copyable_v<canonical_source_input_v1>);
 static_assert(std::is_trivially_copyable_v<resumption_cursor_v1>);
 static_assert(std::is_trivially_copyable_v<lowering_artifact_v1>);
+static_assert(std::is_trivially_copyable_v<resumption_trace_v1>);
 
 }  // namespace cellerator::execution::lowering_resumption
