@@ -70,6 +70,18 @@ struct resumption_cursor_v1 {
     std::uint64_t payload_bytes = 0u;
 };
 
+struct lowering_artifact_v1 {
+    std::uint32_t version = 1u;
+    std::uint32_t record_bytes = sizeof(lowering_artifact_v1);
+    lowering_stage_v1 stage = lowering_stage_v1::atom_evidence;
+    std::uint8_t reserved[7]{};
+    stable_identity_v1 artifact_identity{};
+    lowering_identity_context_v1 context{};
+    const void *payload = nullptr;
+    std::uint64_t payload_bytes = 0u;
+    std::uint64_t content_hash[4]{};
+};
+
 constexpr lowering_stage_v1 earliest_stage_for_v1(
     compatibility_code_v1 code, lowering_stage_v1 inspected) noexcept {
     switch (code) {
@@ -132,9 +144,61 @@ inline compatibility_status_v1 resume_from_canonical_source_v1(
         lowering_stage_v1::canonical_source);
 }
 
+constexpr bool same_identity_v1(
+    stable_identity_v1 left, stable_identity_v1 right) noexcept {
+    return left.low == right.low && left.high == right.high;
+}
+
+inline compatibility_status_v1 validate_artifact_for_stage_v1(
+    const lowering_artifact_v1 &artifact, lowering_stage_v1 expected_stage,
+    const lowering_identity_context_v1 &expected) noexcept {
+    if (artifact.version != 1u ||
+        artifact.record_bytes != sizeof(lowering_artifact_v1) ||
+        artifact.stage != expected_stage ||
+        !valid_identity_v1(artifact.artifact_identity) ||
+        artifact.payload == nullptr || artifact.payload_bytes == 0u ||
+        !valid_hash_v1(artifact.content_hash) ||
+        !valid_context_v1(artifact.context) || !valid_context_v1(expected)) {
+        return make_status_v1(compatibility_code_v1::corrupt_artifact,
+            expected_stage);
+    }
+    if (!same_identity_v1(artifact.context.structure_identity,
+            expected.structure_identity)) {
+        return make_status_v1(compatibility_code_v1::identity_mismatch,
+            expected_stage);
+    }
+    if (artifact.context.structure_epoch != expected.structure_epoch) {
+        return make_status_v1(
+            compatibility_code_v1::structure_epoch_mismatch, expected_stage,
+            artifact.context.structure_epoch);
+    }
+    return make_status_v1(
+        compatibility_code_v1::compatible, expected_stage);
+}
+
+inline compatibility_status_v1 resume_from_atom_evidence_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::atom_evidence);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::atom_evidence, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
 static_assert(std::is_trivially_copyable_v<compatibility_status_v1>);
 static_assert(std::is_trivially_copyable_v<lowering_identity_context_v1>);
 static_assert(std::is_trivially_copyable_v<canonical_source_input_v1>);
 static_assert(std::is_trivially_copyable_v<resumption_cursor_v1>);
+static_assert(std::is_trivially_copyable_v<lowering_artifact_v1>);
 
 }  // namespace cellerator::execution::lowering_resumption
