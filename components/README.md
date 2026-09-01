@@ -1,8 +1,13 @@
 # Cellerator Components
 
-`components/` contains optional framework integrations whose dependency
-boundary is useful to keep distinct. CelleraTorch is currently its only major
-inhabitant.
+`components/` contains repositories or integrations whose dependency boundary
+must remain explicit. A directory here belongs to one of two categories:
+
+1. a **framework adapter**, which translates an external framework boundary
+   into Cellerator-owned contracts; or
+2. a **privileged compiler component**, which may compose Cellerator with
+   higher-level compilation, storage, placement, or runtime services without
+   becoming part of libCellerator.
 
 A component is not automatically conceptually outside Cellerator.
 
@@ -23,7 +28,34 @@ It may provide:
 
 It must not redefine Cellerator's native math, structure ownership, planner, execution order, or parameter allocation.
 
-## Component rule
+## Privileged compiler components
 
-Components depend on Cellerator contracts. They do not create competing
-numerical ecosystems or own native planning, runtime, geometry, or math.
+`components/CellShard/` is the registered privileged compiler component.
+CellShard may own planning and runtime *above* Cellerator: global atom and
+artifact composition, durable storage, placement, sharding, transport,
+residency, distributed scheduling, and cross-worker recovery. It may embed or
+invoke libCellerator as an operation provider and local execution engine.
+
+That privilege does not reverse the ownership boundary. Cellerator continues
+to own biological relation mathematics, semantic geometry, physical projection
+meaning, local candidate capabilities, prepared native execution, and local
+complete-cost selection. CellShard must consume those contracts rather than
+redefine them. Cellerator must consume CellShard artifacts through explicit,
+versioned, non-owning or opaque-delivery boundaries rather than importing
+CellShard's global planner into its native core.
+
+## Dependency rule
+
+libCellerator is independently buildable and has no required CellShard
+dependency. The root build keeps `CELLERATOR_ENABLE_CELLSHARD=OFF` by default;
+enabling the registered source tree is an explicit combined-build choice.
+Neither the presence of the submodule nor a combined target may make CellShard
+headers, callbacks, schedulers, storage, or runtime mandatory for standalone
+Cellerator consumers.
+
+Framework adapters depend downward on Cellerator contracts. Privileged compiler
+components may orchestrate above Cellerator, but they do not create a competing
+local numerical ecosystem or absorb Cellerator's math, geometry, projections,
+or execution-session ownership. The frozen JBC charter and its exact boundary
+tests are recorded in
+[`docs/JBC/CE_JBC_B03_PRIVILEGED_COMPONENT_CHARTER.md`](../docs/JBC/CE_JBC_B03_PRIVILEGED_COMPONENT_CHARTER.md).

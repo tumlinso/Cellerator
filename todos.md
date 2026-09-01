@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `3607`
+Project revision: `3609`
 
 ## Workstreams
 - `CE-EXOP-00` | kind: epic | status: done | parent: - | objective: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
@@ -869,7 +869,7 @@ Project revision: `3607`
 - `CE-ARCH-00` | kind: epic | status: done | parent: - | objective: Coordinate migration from completed CP-BP v1 plus experimental CP-Math into a domain-aware biological execution core while preserving validated behavior and the CellShard storage boundary.
 - `CE-JBC-B01` | kind: task | status: done | parent: - | objective: Revalidate live Cellerator, submodule, and Todo cursors. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B02` | kind: task | status: done | parent: - | objective: Produce the source-backed Cellerator transition map. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
-- `CE-JBC-B03` | kind: task | status: planned | parent: - | objective: Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
+- `CE-JBC-B03` | kind: task | status: done | parent: - | objective: Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B04` | kind: task | status: planned | parent: - | objective: Record standalone and embedded build baselines. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B05` | kind: task | status: planned | parent: - | objective: Record frozen ABI and compatibility baseline. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B06` | kind: task | status: planned | parent: - | objective: Reserve Cellerator integration paths and registry ownership. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-B03: Freeze the privileged compiler-component charter
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3609`; current project revision is in `todo-status.md`.
 
 ## Objective
 Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
