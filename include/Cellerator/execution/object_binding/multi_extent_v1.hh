@@ -132,6 +132,35 @@ struct index_permutation_v1 {
     std::uint64_t element_count = 0u;
 };
 
+enum extent_residency_flag_v1 : std::uint8_t {
+    host_extent_v1 = 1u << 0u,
+    device_extent_v1 = 1u << 1u,
+    managed_extent_v1 = 1u << 2u,
+};
+
+struct direct_multi_extent_candidate_requirements_v1 {
+    std::uint64_t maximum_extent_count = 0u;
+    std::uint64_t minimum_alignment_bytes = 1u;
+    std::uint64_t element_stride_bytes = 0u;
+    std::uint8_t accepted_residencies = device_extent_v1;
+    bool accepts_mixed_value_generations = false;
+    bool preserves_logical_order = true;
+    std::uint8_t reserved[5]{};
+};
+
+using direct_multi_extent_launch_v1 = binding_status_v1 (*)(
+    const void *prepared_state,
+    const multi_extent_physical_binding_v1 &input,
+    void *output, std::uint64_t output_bytes,
+    void *caller_stream) noexcept;
+
+struct direct_multi_extent_candidate_v1 {
+    stable_identity_v1 candidate_identity{};
+    direct_multi_extent_candidate_requirements_v1 requirements{};
+    const void *prepared_state = nullptr;
+    direct_multi_extent_launch_v1 launch = nullptr;
+};
+
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
@@ -402,6 +431,55 @@ inline binding_status_v1 scatter_permutation_v1(
     return {};
 }
 
+constexpr std::uint8_t residency_flag_v1(extent_residency_v1 residency) noexcept {
+    switch (residency) {
+        case extent_residency_v1::host:
+            return host_extent_v1;
+        case extent_residency_v1::device:
+            return device_extent_v1;
+        case extent_residency_v1::managed:
+            return managed_extent_v1;
+    }
+    return 0u;
+}
+
+inline binding_status_v1 validate_direct_multi_extent_candidate_v1(
+    const direct_multi_extent_candidate_v1 &candidate,
+    const multi_extent_physical_binding_v1 &input) noexcept {
+    if (!valid_identity_v1(candidate.candidate_identity) ||
+        candidate.launch == nullptr ||
+        candidate.requirements.maximum_extent_count == 0u ||
+        !power_of_two_v1(candidate.requirements.minimum_alignment_bytes) ||
+        candidate.requirements.element_stride_bytes == 0u) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    const multi_extent_physical_binding_list_v1 input_list{&input, 1u};
+    const auto input_status =
+        validate_multi_extent_physical_bindings_v1(input_list);
+    if (!input_status) {
+        return input_status;
+    }
+    if (input.extent_count > candidate.requirements.maximum_extent_count) {
+        return {binding_status_code_v1::incompatible_requirement,
+            input.extent_count};
+    }
+    const auto generation = input.extents[0].value_generation;
+    for (std::uint64_t index = 0u; index < input.extent_count; ++index) {
+        const auto &extent = input.extents[index];
+        if (extent.alignment_bytes <
+                candidate.requirements.minimum_alignment_bytes ||
+            extent.element_stride_bytes !=
+                candidate.requirements.element_stride_bytes ||
+            (candidate.requirements.accepted_residencies &
+                residency_flag_v1(extent.residency)) == 0u ||
+            (!candidate.requirements.accepts_mixed_value_generations &&
+                extent.value_generation != generation)) {
+            return {binding_status_code_v1::incompatible_requirement, index};
+        }
+    }
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
@@ -414,5 +492,8 @@ static_assert(std::is_trivially_copyable_v<port_extent_query_result_v1>);
 static_assert(std::is_trivially_copyable_v<contiguous_assembly_segment_v1>);
 static_assert(std::is_trivially_copyable_v<contiguous_assembly_plan_v1>);
 static_assert(std::is_trivially_copyable_v<index_permutation_v1>);
+static_assert(std::is_trivially_copyable_v<
+    direct_multi_extent_candidate_requirements_v1>);
+static_assert(std::is_trivially_copyable_v<direct_multi_extent_candidate_v1>);
 
 }  // namespace cellerator::execution::object_binding
