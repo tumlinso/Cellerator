@@ -180,6 +180,22 @@ inline compatibility_status_v1 validate_artifact_for_stage_v1(
         return make_status_v1(
             compatibility_code_v1::order_mismatch, expected_stage);
     }
+    if (static_cast<std::uint8_t>(expected_stage) >=
+            static_cast<std::uint8_t>(
+                lowering_stage_v1::physical_projection) &&
+        !same_identity_v1(
+            artifact.context.target_identity, expected.target_identity)) {
+        return make_status_v1(
+            compatibility_code_v1::target_mismatch, expected_stage);
+    }
+    if (static_cast<std::uint8_t>(expected_stage) >=
+            static_cast<std::uint8_t>(
+                lowering_stage_v1::physical_projection) &&
+        !same_identity_v1(artifact.context.toolchain_identity,
+            expected.toolchain_identity)) {
+        return make_status_v1(
+            compatibility_code_v1::toolchain_mismatch, expected_stage);
+    }
     return make_status_v1(
         compatibility_code_v1::compatible, expected_stage);
 }
@@ -243,6 +259,25 @@ inline compatibility_status_v1 resume_from_target_cover_v1(
         *cursor = {};
         return make_status_v1(compatibility_code_v1::identity_mismatch,
             lowering_stage_v1::target_cover);
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_physical_projection_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::physical_projection);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::physical_projection, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
     }
     *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
         artifact.payload, artifact.payload_bytes};
