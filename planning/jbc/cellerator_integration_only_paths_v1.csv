@@ -1,0 +1,30 @@
+category,path,state,integration_owner,provider_lane_output
+root_build,CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,scoped target and source fragment
+subsystem_target_aggregation,src/compute/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,provider-owned CMake fragment or source inventory
+subsystem_target_aggregation,src/execution/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,execution target fragment
+subsystem_target_aggregation,src/geometry/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,geometry target fragment
+subsystem_target_aggregation,src/planner/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,planner target fragment
+subsystem_target_aggregation,src/runtime/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,runtime target fragment
+subsystem_target_aggregation,src/interop/CMakeLists.txt,live,CE-JBC-L-VERIFY-INTEGRATE,interop target fragment
+provider_aggregation,cmake/providers/CelleratorProviderTargets.cmake,live,CE-JBC-L-VERIFY-INTEGRATE,provider-local target manifest
+provider_aggregation,cmake/providers/CelleratorProviderPolicy.cmake,live,CE-JBC-L-VERIFY-INTEGRATE,provider policy requirement receipt
+provider_aggregation,cmake/provider_manifest/compiled_provider_manifest.hh.in,live,CE-JBC-L-VERIFY-INTEGRATE,provider manifest fragment
+provider_registry,include/Cellerator/compute/architecture/provider.hh,live,CE-JBC-L-VERIFY-INTEGRATE,versioned provider descriptor fragment
+provider_registry,src/compute/architecture/provider_registry.cc,live,CE-JBC-L-VERIFY-INTEGRATE,source-linked provider registration function
+catalog_aggregation,include/Cellerator/compute/operation/builtin_catalog.hh,live,CE-JBC-L-VERIFY-INTEGRATE,versioned catalog fragment header
+catalog_aggregation,src/compute/operation/builtin_catalog.cc,live,CE-JBC-L-VERIFY-INTEGRATE,source-linked catalog fragment
+catalog_aggregation,src/compute/operation/ce_geo_catalog_assembly.cc,live,CE-JBC-L-VERIFY-INTEGRATE,CE-GEO-compatible fragment and receipt
+catalog_aggregation,src/compute/operation/ce_exop_operation_portfolio.cc,live,CE-JBC-L-VERIFY-INTEGRATE,operation portfolio fragment and receipt
+catalog_aggregation,src/compute/operation/relation_algebra_catalog.cc,live,CE-JBC-L-VERIFY-INTEGRATE,relation-algebra catalog fragment
+catalog_aggregation,src/compute/operation/candidate_catalog/discovery_v3.cc,live,CE-JBC-L-VERIFY-INTEGRATE,candidate discovery fragment
+catalog_aggregation,src/compute/operation/candidate_catalog/inventory_v3.cc,live,CE-JBC-L-VERIFY-INTEGRATE,provider-operation inventory fragment
+public_umbrella,include/Cellerator/Cellerator.hh,live,CE-JBC-L-VERIFY-INTEGRATE,scoped public header with standalone include test
+public_umbrella,include/Cellerator/compute/operation/operation_core_v2.hh,live,CE-JBC-L-VERIFY-INTEGRATE,versioned operation extension header
+public_umbrella,include/Cellerator/execution/geometry_acquisition_v2.hh,live,CE-JBC-L-VERIFY-INTEGRATE,versioned acquisition extension header
+public_umbrella,include/Cellerator/execution/projection_value_plane/projection_value_plane_v1.hh,live,CE-JBC-L-VERIFY-INTEGRATE,versioned value-plane extension header
+public_umbrella,include/Cellerator/profiling/profiling_v1.h,live,CE-JBC-L-VERIFY-INTEGRATE,mechanism-specific profiling fragment
+package_export,cmake/CelleratorConfig.cmake.in,reserved_absent,CE-JBC-L-VERIFY-INTEGRATE,package consumer fixture and export receipt
+package_export,cmake/CelleratorConfigVersion.cmake.in,reserved_absent,CE-JBC-L-VERIFY-INTEGRATE,compatibility version proposal
+component_documentation,components/README.md,live,CE-JBC-L-VERIFY-INTEGRATE,component-boundary documentation fragment
+component_documentation,components/CelleraTorch/README.md,live,CE-JBC-L-VERIFY-INTEGRATE,adapter-impact receipt
+parent_gitlink,components/CellShard,live,CE-JBC-L-VERIFY-INTEGRATE,pushed CellShard checkpoint-bundle commit receipt
