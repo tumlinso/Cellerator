@@ -196,6 +196,13 @@ inline compatibility_status_v1 validate_artifact_for_stage_v1(
         return make_status_v1(
             compatibility_code_v1::toolchain_mismatch, expected_stage);
     }
+    if (static_cast<std::uint8_t>(expected_stage) >=
+            static_cast<std::uint8_t>(lowering_stage_v1::packed_operand) &&
+        artifact.context.value_generation != expected.value_generation) {
+        return make_status_v1(
+            compatibility_code_v1::value_generation_stale, expected_stage,
+            artifact.context.value_generation);
+    }
     return make_status_v1(
         compatibility_code_v1::compatible, expected_stage);
 }
@@ -275,6 +282,25 @@ inline compatibility_status_v1 resume_from_physical_projection_v1(
     }
     const auto status = validate_artifact_for_stage_v1(
         artifact, lowering_stage_v1::physical_projection, expected);
+    if (!status) {
+        *cursor = {};
+        return status;
+    }
+    *cursor = {artifact.stage, artifact.artifact_identity, artifact.context,
+        artifact.payload, artifact.payload_bytes};
+    return status;
+}
+
+inline compatibility_status_v1 resume_from_packed_operand_v1(
+    const lowering_artifact_v1 &artifact,
+    const lowering_identity_context_v1 &expected,
+    resumption_cursor_v1 *cursor) noexcept {
+    if (cursor == nullptr || expected.value_generation == 0u) {
+        return make_status_v1(compatibility_code_v1::invalid_argument,
+            lowering_stage_v1::packed_operand);
+    }
+    const auto status = validate_artifact_for_stage_v1(
+        artifact, lowering_stage_v1::packed_operand, expected);
     if (!status) {
         *cursor = {};
         return status;
