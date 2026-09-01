@@ -3,6 +3,7 @@
 #include <Cellerator/execution/geometry_acquisition_v2/schema.hh>
 
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 namespace cellerator::execution::object_binding {
@@ -110,6 +111,20 @@ struct port_extent_query_result_v1 {
     std::uint64_t logical_element_count = 0u;
     std::uint64_t contiguous_bytes = 0u;
     std::uint64_t required_alignment_bytes = 1u;
+};
+
+struct contiguous_assembly_segment_v1 {
+    const void *source = nullptr;
+    std::uint64_t source_bytes = 0u;
+    std::uint64_t destination_offset_bytes = 0u;
+};
+
+struct contiguous_assembly_plan_v1 {
+    stable_identity_v1 port_identity{};
+    const contiguous_assembly_segment_v1 *segments = nullptr;
+    std::uint64_t segment_count = 0u;
+    std::uint64_t destination_bytes = 0u;
+    std::uint64_t destination_alignment_bytes = 1u;
 };
 
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
@@ -255,6 +270,59 @@ inline binding_status_v1 query_port_extent_requirements_v1(
     return {};
 }
 
+inline binding_status_v1 compile_contiguous_assembly_v1(
+    const multi_extent_physical_binding_v1 &physical,
+    std::uint64_t destination_alignment_bytes,
+    contiguous_assembly_segment_v1 *segments,
+    std::uint64_t segment_capacity,
+    contiguous_assembly_plan_v1 *plan) noexcept {
+    if (plan == nullptr || !valid_identity_v1(physical.port_identity) ||
+        !power_of_two_v1(destination_alignment_bytes) ||
+        (physical.extent_count != 0u && physical.extents == nullptr)) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    *plan = {};
+    plan->port_identity = physical.port_identity;
+    plan->destination_alignment_bytes = destination_alignment_bytes;
+    plan->segment_count = physical.extent_count;
+    if (segment_capacity < physical.extent_count ||
+        (physical.extent_count != 0u && segments == nullptr)) {
+        return {binding_status_code_v1::insufficient_capacity, 0u,
+            physical.extent_count};
+    }
+    std::uint64_t offset = 0u;
+    for (std::uint64_t index = 0u; index < physical.extent_count; ++index) {
+        const auto &extent = physical.extents[index];
+        if (extent.data == nullptr || extent.byte_count == 0u ||
+            offset > UINT64_MAX - extent.byte_count) {
+            return {binding_status_code_v1::invalid_extent, index};
+        }
+        segments[index] = {extent.data, extent.byte_count, offset};
+        offset += extent.byte_count;
+    }
+    plan->segments = segments;
+    plan->destination_bytes = offset;
+    return {};
+}
+
+inline binding_status_v1 execute_contiguous_assembly_v1(
+    const contiguous_assembly_plan_v1 &plan, void *destination,
+    std::uint64_t destination_capacity) noexcept {
+    if ((plan.destination_bytes != 0u && destination == nullptr) ||
+        destination_capacity < plan.destination_bytes ||
+        (plan.segment_count != 0u && plan.segments == nullptr)) {
+        return {binding_status_code_v1::insufficient_capacity, 0u,
+            plan.destination_bytes};
+    }
+    auto *bytes = static_cast<unsigned char *>(destination);
+    for (std::uint64_t index = 0u; index < plan.segment_count; ++index) {
+        const auto &segment = plan.segments[index];
+        std::memcpy(bytes + segment.destination_offset_bytes,
+            segment.source, static_cast<std::size_t>(segment.source_bytes));
+    }
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
@@ -264,5 +332,7 @@ static_assert(
     std::is_trivially_copyable_v<multi_extent_physical_binding_list_v1>);
 static_assert(std::is_trivially_copyable_v<port_extent_requirement_v1>);
 static_assert(std::is_trivially_copyable_v<port_extent_query_result_v1>);
+static_assert(std::is_trivially_copyable_v<contiguous_assembly_segment_v1>);
+static_assert(std::is_trivially_copyable_v<contiguous_assembly_plan_v1>);
 
 }  // namespace cellerator::execution::object_binding
