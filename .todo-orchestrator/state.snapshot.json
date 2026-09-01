@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T05:47:28Z",
+  "generated_at": "2026-09-01T05:50:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 3605,
+  "project_revision": 3607,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -39214,6 +39214,26 @@
         "revision": 3605,
         "seq": 3605,
         "timestamp": "2026-09-01T05:47:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-L-BOOTSTRAP",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-JBC-L-BOOTSTRAP\", \"run_id\": \"CE-JBC-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-JBC-B02\"}",
+        "revision": 3606,
+        "seq": 3606,
+        "timestamp": "2026-09-01T05:48:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-B02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3607, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 3607,
+        "seq": 3607,
+        "timestamp": "2026-09-01T05:50:58Z"
       }
     ],
     "evidence": [
@@ -60382,6 +60402,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CELLERATOR_LIVE_PLANNER_INPUTS_READY\", \"reached_at\": \"2026-08-26T21:04:25Z\", \"state\": \"reached\"}], \"completion_commit\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\", \"completion_gates\": [{\"evidence_id\": \"347162ce-0c32-49ac-b81a-86803e800242\", \"evidence_revision\": 1753, \"id\": \"CE-LIVE-26-ARTIFACT\", \"input_fingerprint\": \"7c24529d2bc67865bbe99ac0721a8f2c2a2a13f915e21e89545aea1dcae43e2b\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}, {\"evidence_id\": \"ff5f44e5-2707-44ac-9868-6dc821fa7a50\", \"evidence_revision\": 1755, \"id\": \"CE-LIVE-26-BUILD\", \"input_fingerprint\": \"5d91c237356d8b7cf391150017a991fa6f6f657421dccb75e55516f314b67e40\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}, {\"evidence_id\": \"25021af7-5141-4547-bf10-c58dd0d66b20\", \"evidence_revision\": 1757, \"id\": \"CE-LIVE-26-CORRECTNESS\", \"input_fingerprint\": \"7aad1fa0b10172503767aa774123448fec7e16951d91855f02557cc83a3bda06\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}, {\"evidence_id\": \"6a78f8eb-8a68-4075-8b20-52f6ced87a3b\", \"evidence_revision\": 1759, \"id\": \"CE-LIVE-26-DIFF-CHECK\", \"input_fingerprint\": \"913419f2441a3080a3a0673d5a477b1b3d6c0b8ecd38f7451cf362b996880e52\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}, {\"evidence_id\": \"fbf90f66-69e0-45e5-94dd-ddb1c508cb87\", \"evidence_revision\": 1761, \"id\": \"CE-LIVE-26-NEGATIVE\", \"input_fingerprint\": \"b46e5c418a811acf8b5200721f607ca36f8a2e00a24fa354f6cab39d85e8ad5f\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}, {\"evidence_id\": \"d4a08513-12b7-4756-a9aa-5b9b9abec3e2\", \"evidence_revision\": 1763, \"id\": \"CE-LIVE-26-SCOPE-AUDIT\", \"input_fingerprint\": \"89649e2417c72757e1f9f84012710d5c22d10b8ef6e552136e78e42571ef5ffc\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\"}], \"completion_revision\": 1766, \"finalized_checkpoints\": [\"CELLERATOR_LIVE_PLANNER_INPUTS_READY\"], \"gates\": [{\"id\": \"CE-LIVE-26-ARTIFACT\", \"input_fingerprint\": \"7c24529d2bc67865bbe99ac0721a8f2c2a2a13f915e21e89545aea1dcae43e2b\", \"last_run_at\": \"2026-08-26T21:04:19Z\", \"revision\": 1753, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-BUILD\", \"input_fingerprint\": \"5d91c237356d8b7cf391150017a991fa6f6f657421dccb75e55516f314b67e40\", \"last_run_at\": \"2026-08-26T21:04:20Z\", \"revision\": 1755, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-CORRECTNESS\", \"input_fingerprint\": \"7aad1fa0b10172503767aa774123448fec7e16951d91855f02557cc83a3bda06\", \"last_run_at\": \"2026-08-26T21:04:20Z\", \"revision\": 1757, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-NEGATIVE\", \"input_fingerprint\": \"b46e5c418a811acf8b5200721f607ca36f8a2e00a24fa354f6cab39d85e8ad5f\", \"last_run_at\": \"2026-08-26T21:04:20Z\", \"revision\": 1761, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-DIFF-CHECK\", \"input_fingerprint\": \"913419f2441a3080a3a0673d5a477b1b3d6c0b8ecd38f7451cf362b996880e52\", \"last_run_at\": \"2026-08-26T21:04:20Z\", \"revision\": 1759, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-SCOPE-AUDIT\", \"input_fingerprint\": \"89649e2417c72757e1f9f84012710d5c22d10b8ef6e552136e78e42571ef5ffc\", \"last_run_at\": \"2026-08-26T21:04:20Z\", \"revision\": 1763, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-LIVE-26-HANDOFF\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 1470, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 2484 ++++++++++++++++++++++++++++----\\n todo-status.md                         |   12 +-\\n todos.md                               |   12 +-\\n todos/ce-live-20.md                    |   24 +-\\n todos/ce-live-21.md                    |    8 +-\\n todos/ce-live-22.md                    |    8 +-\\n todos/ce-live-24.md                    |    8 +-\\n todos/ce-live-26.md                    |    6 +-\\n 8 files changed, 2232 insertions(+), 330 deletions(-)\", \"git_head\": \"5cb7937f6caf05f2ff6a19ff8987cd3c57be3463\", \"interfaces\": [], \"note\": \"Derived exact live planning keys, structural/quantitative statistics, distinct structure/projection/value reuse horizons, complete phase inputs, empirical-authority guard, and invalidation tests. Source commit 5cb7937.\", \"resources\": [], \"task_id\": \"CE-LIVE-26\"}",
         "revision": 1766,
         "task_id": "CE-LIVE-26"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-01T05:50:58Z",
+        "id": "bbbcce4f-9367-4332-ae21-af4cf799539e",
+        "kind": "complete",
+        "note": "Created docs/JBC/CE_JBC_B02_TRANSITION_MAP.md. Recorded separate Git and Todo cursors; mapped support evidence, semantic geometry, optimizer portfolios, operation core, relation algebra, projection values, acquisition, programs, candidate catalog, profiling, compatibility surfaces, and CellShard adapters into the six required transition classes. Validated all named representative paths, all six classifications, map row count, and git diff --check. Documentation-only task changed no build or runtime inputs, so no compile was warranted.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"f27bddad348f9366ade2b3a9772de584b8f1f530\", \"completion_gates\": [], \"completion_revision\": 3607, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n components/CellShard                   |  2 +-\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-jbc-b02.md                    |  6 +++---\\n 5 files changed, 30 insertions(+), 20 deletions(-)\", \"git_head\": \"f27bddad348f9366ade2b3a9772de584b8f1f530\", \"interfaces\": [], \"note\": \"Created docs/JBC/CE_JBC_B02_TRANSITION_MAP.md. Recorded separate Git and Todo cursors; mapped support evidence, semantic geometry, optimizer portfolios, operation core, relation algebra, projection values, acquisition, programs, candidate catalog, profiling, compatibility surfaces, and CellShard adapters into the six required transition classes. Validated all named representative paths, all six classifications, map row count, and git diff --check. Documentation-only task changed no build or runtime inputs, so no compile was warranted.\", \"resources\": [], \"task_id\": \"CE-JBC-B02\"}",
+        "revision": 3607,
+        "task_id": "CE-JBC-B02"
       },
       {
         "claim_id": null,
@@ -133023,9 +133053,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "f27bddad348f9366ade2b3a9772de584b8f1f530",
+        "completion_git_head": "f27bddad348f9366ade2b3a9772de584b8f1f530",
+        "completion_revision": 3607,
         "created_at": "2026-08-31T19:41:45Z",
         "id": "CE-JBC-B02",
         "kind": "task",
@@ -133037,14 +133067,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 0,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 3602,
-        "status": "planned",
+        "revision": 3607,
+        "status": "done",
         "tags_json": "[]",
         "title": "Produce the source-backed Cellerator transition map",
-        "updated_at": "2026-09-01T05:43:49Z",
-        "version": 2
+        "updated_at": "2026-09-01T05:50:58Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -150078,13 +150108,13 @@
         "task_id": "CE-JBC-B01"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-01T05:48:45Z",
+        "completed_at": "2026-09-01T05:50:58Z",
         "enqueued_at": "2026-09-01T05:43:49Z",
         "lane_id": "CE-JBC-L-BOOTSTRAP",
         "position": 1,
-        "revision": 3602,
-        "state": "queued",
+        "revision": 3607,
+        "state": "completed",
         "task_id": "CE-JBC-B02"
       },
       {
@@ -152022,11 +152052,11 @@
         "created_at": "2026-09-01T05:43:49Z",
         "id": "CE-JBC-L-BOOTSTRAP",
         "parent_lane_id": null,
-        "revision": 3605,
+        "revision": 3607,
         "role": "coordinator",
         "run_id": "CE-JBC-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-01T05:47:28Z",
+        "updated_at": "2026-09-01T05:50:58Z",
         "workspace_mode": "exclusive"
       },
       {
