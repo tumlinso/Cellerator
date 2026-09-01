@@ -426,6 +426,35 @@ target_include_directories(cellerator_profiling_v1 PUBLIC
 )
 target_compile_features(cellerator_profiling_v1 PUBLIC cxx_std_17)
 
+# Source-linked JBC fragments remain independently registered by their owning
+# subsystems. This aggregate target is the integration and package-consumer
+# surface: it adds no planner authority and keeps every implementation visible
+# to ordinary linkers, sanitizers, and standalone consumers.
+file(GLOB_RECURSE CELLERATOR_JBC_V1_SOURCES CONFIGURE_DEPENDS
+    src/compute/candidate/jbc_multi_extent/*.cc
+    src/compute/decomposition/*.cc
+    src/execution/atom_fragment/*.cc
+    src/execution/atom_plane/*.cc
+    src/execution/joint_compiler/*.cc
+    src/execution/object_binding/*.cc
+    src/planner/external_cost/*.cc
+)
+add_library(cellerator_jbc_v1 STATIC ${CELLERATOR_JBC_V1_SOURCES})
+add_library(Cellerator::jbc_v1 ALIAS cellerator_jbc_v1)
+target_include_directories(cellerator_jbc_v1 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellerator_jbc_v1 PUBLIC
+    Cellerator::builtin_candidate_catalog
+    Cellerator::executable_program
+    Cellerator::geometry_acquisition
+    Cellerator::operation_core
+    Cellerator::profiling_v1
+    Cellerator::projection_value_plane_v1
+)
+target_compile_features(cellerator_jbc_v1 PUBLIC cxx_std_17)
+
 if(CELLERATOR_BUILD_TESTS)
     add_executable(cellerator_operation_core_v2_test
         src/compute/operation/operation_core_v2/operation_core_v2_test.cc)
@@ -473,6 +502,45 @@ if(CELLERATOR_BUILD_TESTS)
         target_compile_features(cellerator_jbc_cellshard_bridge_gate PRIVATE
             cxx_std_17)
     endif()
+
+    file(GLOB_RECURSE CELLERATOR_JBC_V1_TEST_SOURCES CONFIGURE_DEPENDS
+        tests/jbc/atom_plane/*.cc
+        tests/jbc/cross_operation/*.cc
+        tests/jbc/decomposition/*.cc
+        tests/jbc/external_cost/*.cc
+        tests/jbc/fragment/*.cc
+        tests/jbc/interfaces/*.cc
+        tests/jbc/multi_extent/*.cc
+        tests/jbc/resumption/*.cc
+        tests/jbc/verification/atom_fragment_verifier_v1_test.cc
+        tests/jbc/verification/numerical_verifier_v1_test.cc
+        tests/jbc/verification/profiler_manifest_v1_test.cc
+    )
+    add_custom_target(cellerator_jbc_v1_tests)
+    foreach(cellerator_jbc_test_source IN LISTS CELLERATOR_JBC_V1_TEST_SOURCES)
+        file(RELATIVE_PATH cellerator_jbc_test_relative
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/jbc"
+            "${cellerator_jbc_test_source}")
+        string(REPLACE "/" "_" cellerator_jbc_test_name
+            "${cellerator_jbc_test_relative}")
+        string(REGEX REPLACE "\\.cc$" "" cellerator_jbc_test_name
+            "${cellerator_jbc_test_name}")
+        set(cellerator_jbc_test_target
+            "cellerator_jbc_${cellerator_jbc_test_name}")
+        add_executable(${cellerator_jbc_test_target}
+            "${cellerator_jbc_test_source}")
+        target_link_libraries(${cellerator_jbc_test_target} PRIVATE
+            Cellerator::jbc_v1)
+        target_compile_features(${cellerator_jbc_test_target} PRIVATE cxx_std_17)
+        add_dependencies(cellerator_jbc_v1_tests ${cellerator_jbc_test_target})
+    endforeach()
+
+    add_executable(cellerator_jbc_multi_extent_assembly_bench
+        bench/jbc/multi_extent/assembly_vs_direct_v1.cc)
+    target_link_libraries(cellerator_jbc_multi_extent_assembly_bench PRIVATE
+        Cellerator::jbc_v1)
+    target_compile_features(cellerator_jbc_multi_extent_assembly_bench PRIVATE
+        cxx_std_17)
 endif()
 
 include(bench/CMakeLists.txt)
