@@ -86,6 +86,32 @@ struct multi_extent_physical_binding_list_v1 {
     std::uint64_t port_count = 0u;
 };
 
+enum class contiguity_requirement_v1 : std::uint8_t {
+    multi_extent_allowed = 1u,
+    contiguous_required = 2u,
+};
+
+struct port_extent_requirement_v1 {
+    stable_identity_v1 port_identity{};
+    std::uint64_t minimum_alignment_bytes = 1u;
+    std::uint64_t maximum_extent_count = UINT64_MAX;
+    contiguity_requirement_v1 contiguity =
+        contiguity_requirement_v1::multi_extent_allowed;
+    bool uniform_value_generation_required = false;
+    std::uint8_t reserved[6]{};
+};
+
+struct port_extent_query_result_v1 {
+    stable_identity_v1 port_identity{};
+    bool directly_compatible = false;
+    bool assembly_required = false;
+    std::uint8_t reserved[6]{};
+    std::uint64_t extent_count = 0u;
+    std::uint64_t logical_element_count = 0u;
+    std::uint64_t contiguous_bytes = 0u;
+    std::uint64_t required_alignment_bytes = 1u;
+};
+
 constexpr bool valid_identity_v1(stable_identity_v1 identity) noexcept {
     return identity.low != 0u || identity.high != 0u;
 }
@@ -179,6 +205,56 @@ inline binding_status_v1 validate_multi_extent_physical_bindings_v1(
     return {};
 }
 
+inline binding_status_v1 query_port_extent_requirements_v1(
+    const multi_atom_port_binding_v1 &logical,
+    const multi_extent_physical_binding_v1 &physical,
+    const port_extent_requirement_v1 &requirement,
+    port_extent_query_result_v1 *result) noexcept {
+    if (result == nullptr ||
+        logical.port_identity.low != physical.port_identity.low ||
+        logical.port_identity.high != physical.port_identity.high ||
+        logical.port_identity.low != requirement.port_identity.low ||
+        logical.port_identity.high != requirement.port_identity.high) {
+        return {binding_status_code_v1::invalid_argument};
+    }
+    *result = {};
+    result->port_identity = logical.port_identity;
+    result->extent_count = physical.extent_count;
+    result->required_alignment_bytes = requirement.minimum_alignment_bytes;
+    if (!power_of_two_v1(requirement.minimum_alignment_bytes) ||
+        logical.atom_count != physical.extent_count ||
+        physical.extents == nullptr || logical.atoms == nullptr) {
+        return {binding_status_code_v1::incompatible_requirement};
+    }
+    bool compatible = physical.extent_count <= requirement.maximum_extent_count;
+    std::uint64_t generation = physical.extent_count == 0u ? 0u :
+        physical.extents[0].value_generation;
+    for (std::uint64_t index = 0u; index < logical.atom_count; ++index) {
+        const auto &atom = logical.atoms[index];
+        const auto &extent = physical.extents[index];
+        if (atom.atom_identity.low != extent.atom_identity.low ||
+            atom.atom_identity.high != extent.atom_identity.high ||
+            atom.logical_extent != extent.element_count ||
+            extent.alignment_bytes < requirement.minimum_alignment_bytes ||
+            (requirement.uniform_value_generation_required &&
+                extent.value_generation != generation)) {
+            compatible = false;
+        }
+        if (result->logical_element_count >
+                UINT64_MAX - atom.logical_extent ||
+            result->contiguous_bytes > UINT64_MAX - extent.byte_count) {
+            return {binding_status_code_v1::invalid_extent, index};
+        }
+        result->logical_element_count += atom.logical_extent;
+        result->contiguous_bytes += extent.byte_count;
+    }
+    result->assembly_required = requirement.contiguity ==
+            contiguity_requirement_v1::contiguous_required &&
+        physical.extent_count > 1u;
+    result->directly_compatible = compatible && !result->assembly_required;
+    return {};
+}
+
 static_assert(std::is_trivially_copyable_v<atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_atom_port_binding_list_v1>);
@@ -186,5 +262,7 @@ static_assert(std::is_trivially_copyable_v<physical_extent_binding_v1>);
 static_assert(std::is_trivially_copyable_v<multi_extent_physical_binding_v1>);
 static_assert(
     std::is_trivially_copyable_v<multi_extent_physical_binding_list_v1>);
+static_assert(std::is_trivially_copyable_v<port_extent_requirement_v1>);
+static_assert(std::is_trivially_copyable_v<port_extent_query_result_v1>);
 
 }  // namespace cellerator::execution::object_binding
