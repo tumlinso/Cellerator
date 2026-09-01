@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cellerator/execution/joint_compiler/persistent_identity_v1.hh>
+#include <Cellerator/execution/joint_compiler/coverage_roles_v1.hh>
 
 #include <cstdint>
 #include <type_traits>
@@ -8,8 +8,6 @@
 namespace cellerator::execution::joint_compiler {
 
 inline constexpr std::uint32_t logical_coverage_schema_version_v1 = 1u;
-inline constexpr std::uint32_t certified_exact_coverage_role_v1 = 1u << 0u;
-
 enum class logical_coverage_kind_v1 : std::uint16_t {
     canonical_intervals = 1u,
     explicit_ids = 2u,
@@ -87,7 +85,8 @@ enum class logical_coverage_validation_code_v1 : std::uint8_t {
     duplicate_member = 20u,
     logical_count_mismatch = 21u,
     invalid_member_identity = 22u,
-    recursive_union = 23u
+    recursive_union = 23u,
+    invalid_role_combination = 24u
 };
 
 struct logical_coverage_validation_result_v1 {

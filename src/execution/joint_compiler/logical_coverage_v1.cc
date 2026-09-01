@@ -86,6 +86,9 @@ logical_coverage_validation_result_v1 validate_logical_coverage_v1(
         return failure(logical_coverage_validation_code_v1::invalid_kind);
     if ((coverage.role_flags & certified_exact_coverage_role_v1) == 0u)
         return failure(logical_coverage_validation_code_v1::missing_exact_role);
+    if (!validate_coverage_role_flags_v1(coverage.role_flags))
+        return failure(
+            logical_coverage_validation_code_v1::invalid_role_combination);
     if (!valid_identity(coverage.structure))
         return failure(logical_coverage_validation_code_v1::invalid_structure);
     if (coverage.epoch.value == 0u)
