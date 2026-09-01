@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-M01: Define multi-atom port binding list
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3765`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define multi-atom port binding list. Deliver this as one isolated, reviewable step in the Multi-atom and multi-extent Cellerator operands workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

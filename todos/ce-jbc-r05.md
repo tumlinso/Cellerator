@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-R05: Resume from target-cover artifact
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3814`; current project revision is in `todo-status.md`.
 
 ## Objective
 Resume from target-cover artifact. Deliver this as one isolated, reviewable step in the Cellerator lowering-resumption contracts workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

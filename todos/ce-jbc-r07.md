@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-R07: Resume from packed value or operand artifact
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3818`; current project revision is in `todo-status.md`.
 
 ## Objective
 Resume from packed value or operand artifact. Deliver this as one isolated, reviewable step in the Cellerator lowering-resumption contracts workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
