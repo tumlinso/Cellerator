@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `3609`
+Project revision: `3611`
 
 ## Workstreams
 - `CE-EXOP-00` | status: done | execution: closed | next: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
@@ -489,7 +489,7 @@ Project revision: `3609`
 - `CE-JBC-B01` | status: done | execution: closed | next: Revalidate live Cellerator, submodule, and Todo cursors. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B02` | status: done | execution: closed | next: Produce the source-backed Cellerator transition map. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B03` | status: done | execution: closed | next: Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
-- `CE-JBC-B04` | status: planned | execution: ready | next: Record standalone and embedded build baselines. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
+- `CE-JBC-B04` | status: done | execution: closed | next: Record standalone and embedded build baselines. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B05` | status: planned | execution: ready | next: Record frozen ABI and compatibility baseline. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B06` | status: planned | execution: ready | next: Reserve Cellerator integration paths and registry ownership. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-C01` | status: planned | execution: ready | next: Define generic external cost vector v1. Deliver this as one isolated, reviewable step in the External global costs and bounded joint compiler exchange workstream.

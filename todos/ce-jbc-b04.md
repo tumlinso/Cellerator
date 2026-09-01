@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-B04: Record standalone and embedded build baselines
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3611`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record standalone and embedded build baselines. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

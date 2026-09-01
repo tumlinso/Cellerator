@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T05:52:50Z",
+  "generated_at": "2026-09-01T05:59:11Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 3609,
+  "project_revision": 3611,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -39254,6 +39254,26 @@
         "revision": 3609,
         "seq": 3609,
         "timestamp": "2026-09-01T05:52:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-L-BOOTSTRAP",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-JBC-L-BOOTSTRAP\", \"run_id\": \"CE-JBC-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-JBC-B04\"}",
+        "revision": 3610,
+        "seq": 3610,
+        "timestamp": "2026-09-01T05:53:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-JBC-B04",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 3611, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 3611,
+        "seq": 3611,
+        "timestamp": "2026-09-01T05:59:11Z"
       }
     ],
     "evidence": [
@@ -59152,6 +59172,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"CE-ARCH-85-BUILD\", \"last_run_at\": \"2026-08-25T15:45:12Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-85-RUNTIME\", \"last_run_at\": \"2026-08-25T15:45:13Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-85-DIFF\", \"last_run_at\": \"2026-08-25T15:45:13Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 509 +++++++++++++++++++++++++--------\\n Cellerator                             |   2 +-\\n ce-arch-continuation-plan.json         |   6 +-\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/ce-arch-00.md                    |   2 +-\\n todos/ce-arch-79.md                    |   2 +-\\n todos/ce-arch-80.md                    |   2 +-\\n todos/ce-arch-81.md                    |   2 +-\\n todos/ce-arch-82.md                    |   2 +-\\n todos/ce-arch-83.md                    |   2 +-\\n todos/ce-arch-84.md                    |   2 +-\\n todos/ce-arch-85.md                    |   6 +-\\n todos/ce-arch-86.md                    |   2 +-\\n todos/ce-arch-87.md                    |   2 +-\\n todos/ce-arch-88.md                    |   2 +-\\n todos/ce-arch-89.md                    |   2 +-\\n todos/ce-arch-90.md                    |   2 +-\\n todos/ce-arch-91.md                    |   2 +-\\n todos/ce-arch-92.md                    |   2 +-\\n 20 files changed, 409 insertions(+), 150 deletions(-)\", \"git_head\": \"82da5a7d2995dc0343e72d7479ea5f9329748751\", \"interfaces\": [], \"note\": \"Cellerator 334db00; CUDA controller d36f5020-e763-49bc-a2a0-f074e2d139ee; required gate evidence build 8481465f, diff 213da8f6, runtime 2f8fdbcb.\", \"resources\": [], \"task_id\": \"CE-ARCH-85\"}",
         "revision": 1242,
         "task_id": "CE-ARCH-85"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-01T05:59:10Z",
+        "id": "72cd0cdc-591a-4cfa-9168-b5f0fff3897a",
+        "kind": "complete",
+        "note": "Recorded docs/JBC/CE_JBC_B04_BUILD_BASELINES.md. Fresh Release/sm_70 configurations passed for CELLERATOR_ENABLE_CELLSHARD=OFF and ON. Built cellerator_runtime and operation-core-v2 test in both modes; built registered cellshard_runtime and access-adapter smoke in embedded mode; all executables returned zero. Reconfigured/revalidated embedded mode at clean registered CellShard commit 96a691e4. Normalized Cellerator::runtime direct-edge manifests are identical (sha256 975e4409...), and sorted defined-symbol manifests are identical (sha256 9cfb4288...). Used -j 80. Recorded existing sm_70 future-removal and cuSPARSE deprecation warnings. git diff --check passed. No implementation or build input changed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"3559d0fe18401b76e6f674e185c42fbaf554b6f9\", \"completion_gates\": [], \"completion_revision\": 3611, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n components/CellShard                   |  2 +-\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-jbc-b04.md                    |  6 +++---\\n 5 files changed, 30 insertions(+), 20 deletions(-)\", \"git_head\": \"3559d0fe18401b76e6f674e185c42fbaf554b6f9\", \"interfaces\": [], \"note\": \"Recorded docs/JBC/CE_JBC_B04_BUILD_BASELINES.md. Fresh Release/sm_70 configurations passed for CELLERATOR_ENABLE_CELLSHARD=OFF and ON. Built cellerator_runtime and operation-core-v2 test in both modes; built registered cellshard_runtime and access-adapter smoke in embedded mode; all executables returned zero. Reconfigured/revalidated embedded mode at clean registered CellShard commit 96a691e4. Normalized Cellerator::runtime direct-edge manifests are identical (sha256 975e4409...), and sorted defined-symbol manifests are identical (sha256 9cfb4288...). Used -j 80. Recorded existing sm_70 future-removal and cuSPARSE deprecation warnings. git diff --check passed. No implementation or build input changed.\", \"resources\": [], \"task_id\": \"CE-JBC-B04\"}",
+        "revision": 3611,
+        "task_id": "CE-JBC-B04"
       },
       {
         "claim_id": null,
@@ -133133,9 +133163,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "3559d0fe18401b76e6f674e185c42fbaf554b6f9",
+        "completion_git_head": "3559d0fe18401b76e6f674e185c42fbaf554b6f9",
+        "completion_revision": 3611,
         "created_at": "2026-08-31T19:41:45Z",
         "id": "CE-JBC-B04",
         "kind": "task",
@@ -133147,14 +133177,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 0,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 3602,
-        "status": "planned",
+        "revision": 3611,
+        "status": "done",
         "tags_json": "[]",
         "title": "Record standalone and embedded build baselines",
-        "updated_at": "2026-09-01T05:43:49Z",
-        "version": 2
+        "updated_at": "2026-09-01T05:59:11Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -150158,13 +150188,13 @@
         "task_id": "CE-JBC-B03"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-01T05:53:05Z",
+        "completed_at": "2026-09-01T05:59:11Z",
         "enqueued_at": "2026-09-01T05:43:49Z",
         "lane_id": "CE-JBC-L-BOOTSTRAP",
         "position": 3,
-        "revision": 3602,
-        "state": "queued",
+        "revision": 3611,
+        "state": "completed",
         "task_id": "CE-JBC-B04"
       },
       {
@@ -152082,11 +152112,11 @@
         "created_at": "2026-09-01T05:43:49Z",
         "id": "CE-JBC-L-BOOTSTRAP",
         "parent_lane_id": null,
-        "revision": 3609,
+        "revision": 3611,
         "role": "coordinator",
         "run_id": "CE-JBC-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-01T05:52:50Z",
+        "updated_at": "2026-09-01T05:59:11Z",
         "workspace_mode": "exclusive"
       },
       {
