@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-JBC-F09: Wrap program_v2 as prepared atom fragment
 
-Task revision: `3602`; current project revision is in `todo-status.md`.
+Task revision: `3841`; current project revision is in `todo-status.md`.
 
 ## Objective
 Wrap program_v2 as prepared atom fragment. Deliver this as one isolated, reviewable step in the Atom-aware Cellerator fragment compiler workstream.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
