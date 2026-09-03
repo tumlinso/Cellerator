@@ -1,0 +1,1136 @@
+{
+  "schema_version": 1,
+  "workstreams": [
+    {
+      "id": "CE-CCP1-A01-000",
+      "code": "A01",
+      "phase": "P00",
+      "title": "Live authority, specification, and supersession baseline",
+      "objective": "Freeze the exact source, Todo, specification, schema, and historical-run observations used by the compiler program without mutating any authority.",
+      "repository": "Cellerator",
+      "subsystem": "planning/compiler_authority",
+      "suggested_lane": "CE-CCP1-L-A01",
+      "leaf_count": 9,
+      "terminal_task_id": "CE-CCP1-A01-009",
+      "exclusive_roots": [
+        "planning/cellerator-compiler-preledger-v1/evidence"
+      ],
+      "read_roots": [
+        ".todo-orchestrator",
+        "docs/language",
+        "planning/jbc-preledger-v1",
+        "ce-exop-plan.json",
+        "CMakeLists.txt",
+        "scope.md"
+      ],
+      "prerequisite_milestones": [],
+      "integration_milestone": "M00",
+      "invariants": [
+        "CE-CCP1-INV-ONE-AUTHORITY",
+        "CE-CCP1-INV-COMPILER-AUTHORITY",
+        "CE-CCP1-INV-HISTORY"
+      ]
+    },
+    {
+      "id": "CE-CCP1-A02-000",
+      "code": "A02",
+      "phase": "P00",
+      "title": "JBC implementation inventory and provenance preservation",
+      "objective": "Account for every useful Cellerator and CellShard JBC implementation, test, artifact, and branch before any code is moved.",
+      "repository": "Cellerator",
+      "subsystem": "planning/jbc_migration",
+      "suggested_lane": "CE-CCP1-L-A02",
+      "leaf_count": 12,
+      "terminal_task_id": "CE-CCP1-A02-012",
+      "exclusive_roots": [
+        "planning/cellerator-compiler-preledger-v1/inventories"
+      ],
+      "read_roots": [
+        "include/Cellerator/execution/joint_compiler",
+        "include/Cellerator/compute/decomposition",
+        "include/Cellerator/planner/external_cost",
+        "include/Cellerator/profiling/joint_compiler",
+        "tests/jbc",
+        "components/CellShard",
+        "planning/jbc-preledger-v1"
+      ],
+      "prerequisite_milestones": [],
+      "integration_milestone": "M00",
+      "invariants": [
+        "CE-CCP1-INV-PRESERVE-JBC",
+        "CE-CCP1-INV-ATOM-NAME",
+        "CE-CCP1-INV-HISTORY"
+      ]
+    },
+    {
+      "id": "CE-CCP1-A03-000",
+      "code": "A03",
+      "phase": "P00",
+      "title": "Cellerator and CellShard compiler-ownership rehoming design",
+      "objective": "Define the exact destination and adaptation of old CellShard compiler subsystems while retaining concrete storage and runtime responsibilities in CellShard.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/migration",
+      "suggested_lane": "CE-CCP1-L-A03",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-A03-014",
+      "exclusive_roots": [
+        "docs/compiler/migration",
+        "include/Cellerator/compiler/migration"
+      ],
+      "read_roots": [
+        "components/CellShard/include/CellShard/compiler",
+        "components/CellShard/src/compiler",
+        "planning/jbc-preledger-v1",
+        "include/Cellerator"
+      ],
+      "prerequisite_milestones": [],
+      "integration_milestone": "M00",
+      "invariants": [
+        "CE-CCP1-INV-COMPILER-AUTHORITY",
+        "CE-CCP1-INV-CELLSHARD-APPLICATION",
+        "CE-CCP1-INV-PRESERVE-JBC"
+      ]
+    },
+    {
+      "id": "CE-CCP1-A04-000",
+      "code": "A04",
+      "phase": "P00",
+      "title": "Proposed compiler directory and central-file ownership structure",
+      "objective": "Freeze a traditional source layout and integration ownership model before parallel implementation creates incompatible compiler trees.",
+      "repository": "Cellerator",
+      "subsystem": "repository/layout",
+      "suggested_lane": "CE-CCP1-L-A04",
+      "leaf_count": 10,
+      "terminal_task_id": "CE-CCP1-A04-010",
+      "exclusive_roots": [
+        "docs/compiler/source-layout"
+      ],
+      "read_roots": [
+        "CMakeLists.txt",
+        "include/Cellerator",
+        "src",
+        "tools",
+        "tests",
+        "bench",
+        "cmake",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [],
+      "integration_milestone": "M00",
+      "invariants": [
+        "CE-CCP1-INV-TRADITIONAL-LAYOUT",
+        "CE-CCP1-INV-CENTRAL-INTEGRATION",
+        "CE-CCP1-INV-SDK-COMPONENTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-B01-000",
+      "code": "B01",
+      "phase": "P10",
+      "title": "Host-only build partition and compiler target graph",
+      "objective": "Make the compiler, CEIR, profiles, diagnostics, and tooling independently buildable while preserving optional accelerator providers.",
+      "repository": "Cellerator",
+      "subsystem": "build/compiler",
+      "suggested_lane": "CE-CCP1-L-B01",
+      "leaf_count": 12,
+      "terminal_task_id": "CE-CCP1-B01-012",
+      "exclusive_roots": [
+        "cmake/compiler",
+        "src/compiler/CMakeLists.txt",
+        "include/Cellerator/compiler/build"
+      ],
+      "read_roots": [
+        "CMakeLists.txt",
+        "src/runtime/CMakeLists.txt",
+        "src/compute",
+        "src/geometry",
+        "cmake/providers",
+        "modules"
+      ],
+      "prerequisite_milestones": [
+        "M00"
+      ],
+      "integration_milestone": "M10",
+      "invariants": [
+        "CE-CCP1-INV-HOST-ONLY",
+        "CE-CCP1-INV-ACCELERATOR-CENTRAL",
+        "CE-CCP1-INV-CENTRAL-INTEGRATION"
+      ]
+    },
+    {
+      "id": "CE-CCP1-B02-000",
+      "code": "B02",
+      "phase": "P10",
+      "title": "Compiler driver and NVCC-like downstream toolchain selection",
+      "objective": "Deliver the reusable driver model that accepts ordinary C++ and Cellerator source, discovers overridable downstream toolchains, and emits conventional artifacts.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/driver",
+      "suggested_lane": "CE-CCP1-L-B02",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-B02-014",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/driver",
+        "src/compiler/driver",
+        "tools/cellerator"
+      ],
+      "read_roots": [
+        "CMakeLists.txt",
+        "cmake/providers",
+        "docs/language",
+        "tools",
+        "include/Cellerator/execution/lowering_resumption"
+      ],
+      "prerequisite_milestones": [
+        "M00"
+      ],
+      "integration_milestone": "M10",
+      "invariants": [
+        "CE-CCP1-INV-NO-CLANG-FORK",
+        "CE-CCP1-INV-BACKEND-AGNOSTIC",
+        "CE-CCP1-INV-ORDINARY-OBJECTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-B03-000",
+      "code": "B03",
+      "phase": "P10",
+      "title": "Source manager, preprocessing, file-local pragma, and shadow C++",
+      "objective": "Create a lossless source pipeline that recognizes Cellerator syntax only in activated files and supplies valid C++ to upstream semantic analysis.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/frontend/source",
+      "suggested_lane": "CE-CCP1-L-B03",
+      "leaf_count": 15,
+      "terminal_task_id": "CE-CCP1-B03-015",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/frontend/source",
+        "src/compiler/frontend/source",
+        "tests/compiler/source"
+      ],
+      "read_roots": [
+        "docs/language",
+        "modules",
+        "include/Cellerator",
+        "tools"
+      ],
+      "prerequisite_milestones": [
+        "M00"
+      ],
+      "integration_milestone": "M10",
+      "invariants": [
+        "CE-CCP1-INV-PRAGMA-FILE-LOCAL",
+        "CE-CCP1-INV-CXX-FALLTHROUGH",
+        "CE-CCP1-INV-NO-CLANG-FORK"
+      ]
+    },
+    {
+      "id": "CE-CCP1-B04-000",
+      "code": "B04",
+      "phase": "P10",
+      "title": "Upstream Clang semantic bridge and ordinary C++ fallthrough",
+      "objective": "Reuse upstream C++ parsing and Sema without a permanent fork, while making resolved C++ types and effects available to Cellerator.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/frontend/cxx",
+      "suggested_lane": "CE-CCP1-L-B04",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-B04-014",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/frontend/cxx",
+        "src/compiler/frontend/cxx",
+        "tests/compiler/cxx_bridge"
+      ],
+      "read_roots": [
+        "docs/language",
+        "modules",
+        "include/Cellerator/memory/compiler_hints.hh",
+        "bench/ce_ptr"
+      ],
+      "prerequisite_milestones": [
+        "M00"
+      ],
+      "integration_milestone": "M10",
+      "invariants": [
+        "CE-CCP1-INV-NO-CLANG-FORK",
+        "CE-CCP1-INV-CXX-FALLTHROUGH",
+        "CE-CCP1-INV-TYPED-OPS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-C01-000",
+      "code": "C01",
+      "phase": "P20",
+      "title": "Cellerator lexical grammar and parser",
+      "objective": "Implement the complete source grammar as a small, explicit C++ extension grammar with progressive recovery and stable parse APIs.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/frontend/parser",
+      "suggested_lane": "CE-CCP1-L-C01",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-C01-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/frontend/parser",
+        "src/compiler/frontend/parser",
+        "tests/compiler/parser"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compute/operation",
+        "include/Cellerator/execution"
+      ],
+      "prerequisite_milestones": [
+        "M10"
+      ],
+      "integration_milestone": "M20",
+      "invariants": [
+        "CE-CCP1-INV-SMALL-LANGUAGE",
+        "CE-CCP1-INV-PRAGMA-FILE-LOCAL",
+        "CE-CCP1-INV-CXX-FALLTHROUGH"
+      ]
+    },
+    {
+      "id": "CE-CCP1-C02-000",
+      "code": "C02",
+      "phase": "P20",
+      "title": "Cellerator AST, symbols, source mapping, and frontend diagnostics",
+      "objective": "Create a durable source-level AST that combines Cellerator meaning with resolved C++ captures and supports precise tooling.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/ast",
+      "suggested_lane": "CE-CCP1-L-C02",
+      "leaf_count": 12,
+      "terminal_task_id": "CE-CCP1-C02-012",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/ast",
+        "src/compiler/ast",
+        "tests/compiler/ast"
+      ],
+      "read_roots": [
+        "include/Cellerator/compiler/frontend",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M10"
+      ],
+      "integration_milestone": "M20",
+      "invariants": [
+        "CE-CCP1-INV-PROVENANCE-COLD",
+        "CE-CCP1-INV-CXX-FALLTHROUGH",
+        "CE-CCP1-INV-PERFORMANCE"
+      ]
+    },
+    {
+      "id": "CE-CCP1-C03-000",
+      "code": "C03",
+      "phase": "P20",
+      "title": "Biological semantic types, relations, and typed operation analysis",
+      "objective": "Make the frontend reason about the same domain, identity, ordering, generation, numeric, and operation contracts that drive the existing compiler.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/sema/biology",
+      "suggested_lane": "CE-CCP1-L-C03",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-C03-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/sema",
+        "src/compiler/sema",
+        "tests/compiler/sema"
+      ],
+      "read_roots": [
+        "include/Cellerator/compute/operation/operation_core_v2",
+        "include/Cellerator/compute/operation/relation_algebra_v2",
+        "include/Cellerator/execution/biological_abi.hh",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M10"
+      ],
+      "integration_milestone": "M20",
+      "invariants": [
+        "CE-CCP1-INV-BIOLOGICAL-IDENTITY",
+        "CE-CCP1-INV-TYPED-OPS",
+        "CE-CCP1-INV-LOW-LEVEL-FREEDOM"
+      ]
+    },
+    {
+      "id": "CE-CCP1-C04-000",
+      "code": "C04",
+      "phase": "P20",
+      "title": "Execution fields, effects, lifetimes, profiles, and compiler-control hierarchy",
+      "objective": "Implement the semantic programming model that opens data-aware planning while preserving explicit programmer authority.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/sema/fields",
+      "suggested_lane": "CE-CCP1-L-C04",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-C04-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/sema/field",
+        "src/compiler/sema/field",
+        "tests/compiler/fields"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/geometry/compiler/workload_profile_v2.hh",
+        "include/Cellerator/execution",
+        "include/Cellerator/planner"
+      ],
+      "prerequisite_milestones": [
+        "M10"
+      ],
+      "integration_milestone": "M20",
+      "invariants": [
+        "CE-CCP1-INV-EXPLICIT-FIELDS",
+        "CE-CCP1-INV-PROFILE-REQUIRED",
+        "CE-CCP1-INV-CONTROL-HIERARCHY"
+      ]
+    },
+    {
+      "id": "CE-CCP1-D01-000",
+      "code": "D01",
+      "phase": "P30",
+      "title": "Common CEIR object model, textual language, and standalone artifacts",
+      "objective": "Create the public writable infrastructure shared by Semantic, Planning, and Realization IR without cloning LLVM or MLIR syntax.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/ir/common",
+      "suggested_lane": "CE-CCP1-L-D01",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-D01-014",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/ir/common",
+        "include/Cellerator/compiler/ir/text",
+        "src/compiler/ir/common",
+        "src/compiler/ir/text",
+        "tests/compiler/ceir"
+      ],
+      "read_roots": [
+        "docs/language/cellerator-ir-specification.md",
+        "docs/language/cellerator-ir-programming-guide.md",
+        "include/Cellerator/execution/identity.hh"
+      ],
+      "prerequisite_milestones": [
+        "M10"
+      ],
+      "integration_milestone": "M30",
+      "invariants": [
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR",
+        "CE-CCP1-INV-CEIR-NATIVE",
+        "CE-CCP1-INV-PROVENANCE-COLD"
+      ]
+    },
+    {
+      "id": "CE-CCP1-D02-000",
+      "code": "D02",
+      "phase": "P30",
+      "title": "Semantic IR",
+      "objective": "Represent normalized biological program meaning, typed effects, profile alternatives, and execution-field scope independently of physical realization.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/ir/semantic",
+      "suggested_lane": "CE-CCP1-L-D02",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-D02-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/ir/semantic",
+        "src/compiler/ir/semantic",
+        "tests/compiler/semantic_ir"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compute/operation/operation_core_v2",
+        "include/Cellerator/compute/operation/relation_algebra_v2",
+        "include/Cellerator/execution"
+      ],
+      "prerequisite_milestones": [
+        "M20"
+      ],
+      "integration_milestone": "M30",
+      "invariants": [
+        "CE-CCP1-INV-TYPED-OPS",
+        "CE-CCP1-INV-BIOLOGICAL-IDENTITY",
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR"
+      ]
+    },
+    {
+      "id": "CE-CCP1-D03-000",
+      "code": "D03",
+      "phase": "P30",
+      "title": "Representative-data profile artifacts, inference, and multi-state propagation",
+      "objective": "Build the data-derived semantic environment that makes Cellerator compilation genuinely representative-data aware.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/profile",
+      "suggested_lane": "CE-CCP1-L-D03",
+      "leaf_count": 15,
+      "terminal_task_id": "CE-CCP1-D03-015",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/profile",
+        "src/compiler/profile",
+        "profiles",
+        "tests/compiler/profile",
+        "bench/compiler/profile"
+      ],
+      "read_roots": [
+        "include/Cellerator/geometry/compiler/workload_profile_v2.hh",
+        "include/Cellerator/geometry/support_atlas.hh",
+        "include/Cellerator/profiling",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M20"
+      ],
+      "integration_milestone": "M30",
+      "invariants": [
+        "CE-CCP1-INV-PROFILE-REQUIRED",
+        "CE-CCP1-INV-DATA-DERIVED-PROFILES",
+        "CE-CCP1-INV-PERFORMANCE"
+      ]
+    },
+    {
+      "id": "CE-CCP1-E01-000",
+      "code": "E01",
+      "phase": "P40",
+      "title": "Planning IR search-space model",
+      "objective": "Represent unresolved implementation alternatives, exact correctness conditions, complete costs, user edits, and committed selections as writable public IR.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/ir/planning",
+      "suggested_lane": "CE-CCP1-L-E01",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-E01-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/ir/planning",
+        "src/compiler/ir/planning",
+        "tests/compiler/planning_ir"
+      ],
+      "read_roots": [
+        "include/Cellerator/geometry",
+        "include/Cellerator/planner",
+        "include/Cellerator/compute/operation/candidate_catalog_v3",
+        "include/Cellerator/profiling/joint_compiler",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M30"
+      ],
+      "integration_milestone": "M40",
+      "invariants": [
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR",
+        "CE-CCP1-INV-EXACT-COVERAGE",
+        "CE-CCP1-INV-COMPLETE-COST"
+      ]
+    },
+    {
+      "id": "CE-CCP1-E02-000",
+      "code": "E02",
+      "phase": "P40",
+      "title": "JBC evidence, discovery, certification, and atom compiler rehoming",
+      "objective": "Move and adapt useful CellShard JBC compiler discovery and atom semantics into Cellerator profile/planning infrastructure without losing behavior or provenance.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/discovery",
+      "suggested_lane": "CE-CCP1-L-E02",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-E02-018",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/discovery",
+        "src/compiler/discovery",
+        "tests/compiler/discovery",
+        "docs/compiler/migration/jbc-discovery"
+      ],
+      "read_roots": [
+        "components/CellShard/include/CellShard/compiler",
+        "components/CellShard/src/compiler",
+        "components/CellShard/tests",
+        "planning/jbc-preledger-v1",
+        "include/Cellerator/geometry/support_atlas.hh"
+      ],
+      "prerequisite_milestones": [
+        "M00",
+        "M30"
+      ],
+      "integration_milestone": "M40",
+      "invariants": [
+        "CE-CCP1-INV-PRESERVE-JBC",
+        "CE-CCP1-INV-EXACT-COVERAGE",
+        "CE-CCP1-INV-ATOM-NAME"
+      ]
+    },
+    {
+      "id": "CE-CCP1-E03-000",
+      "code": "E03",
+      "phase": "P40",
+      "title": "JBC composition, grammar, basis, global program, and schedule rehoming",
+      "objective": "Rehome the old CellShard global compiler layers as Cellerator Planning IR and program-level compilation while keeping concrete storage/application work downstream.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/program_planning",
+      "suggested_lane": "CE-CCP1-L-E03",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-E03-018",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/composition",
+        "include/Cellerator/compiler/program",
+        "src/compiler/composition",
+        "src/compiler/program",
+        "tests/compiler/program_planning"
+      ],
+      "read_roots": [
+        "components/CellShard/include/CellShard/compiler/composition",
+        "components/CellShard/include/CellShard/compiler/basis",
+        "components/CellShard/include/CellShard/compiler/graph",
+        "components/CellShard/src/compiler",
+        "planning/jbc-preledger-v1"
+      ],
+      "prerequisite_milestones": [
+        "M00",
+        "M30"
+      ],
+      "integration_milestone": "M40",
+      "invariants": [
+        "CE-CCP1-INV-COMPILER-AUTHORITY",
+        "CE-CCP1-INV-PRESERVE-JBC",
+        "CE-CCP1-INV-CELLSHARD-APPLICATION"
+      ]
+    },
+    {
+      "id": "CE-CCP1-E04-000",
+      "code": "E04",
+      "phase": "P40",
+      "title": "Decomposition, candidate catalogs, complete costs, and planner integration",
+      "objective": "Unify existing Cellerator geometry/JBC/planner machinery behind writable Planning IR and explicit expert control.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/planning",
+      "suggested_lane": "CE-CCP1-L-E04",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-E04-018",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/planning",
+        "src/compiler/planning",
+        "tests/compiler/planning"
+      ],
+      "read_roots": [
+        "include/Cellerator/geometry/compiler/v2",
+        "include/Cellerator/geometry/optimizer",
+        "include/Cellerator/compute/decomposition",
+        "include/Cellerator/compute/operation/candidate_catalog_v3",
+        "include/Cellerator/planner",
+        "include/Cellerator/execution/joint_compiler"
+      ],
+      "prerequisite_milestones": [
+        "M30"
+      ],
+      "integration_milestone": "M40",
+      "invariants": [
+        "CE-CCP1-INV-EXACT-COVERAGE",
+        "CE-CCP1-INV-COMPLETE-COST",
+        "CE-CCP1-INV-CONTROL-HIERARCHY"
+      ]
+    },
+    {
+      "id": "CE-CCP1-F01-000",
+      "code": "F01",
+      "phase": "P50",
+      "title": "Realization IR, physical objects, stage graphs, and readiness",
+      "objective": "Represent committed physical execution precisely enough for backend generation, expert rewriting, resumption, and ordinary runtime binding.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/ir/realization",
+      "suggested_lane": "CE-CCP1-L-F01",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-F01-018",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/ir/realization",
+        "src/compiler/ir/realization",
+        "tests/compiler/realization_ir"
+      ],
+      "read_roots": [
+        "include/Cellerator/geometry/persistence/execution_image_v2.hh",
+        "include/Cellerator/execution/program",
+        "include/Cellerator/execution/training_program_v2",
+        "include/Cellerator/execution/lowering_resumption",
+        "include/Cellerator/execution/object_binding"
+      ],
+      "prerequisite_milestones": [
+        "M40"
+      ],
+      "integration_milestone": "M50",
+      "invariants": [
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR",
+        "CE-CCP1-INV-HOT-COLD-SEPARATION",
+        "CE-CCP1-INV-ORDINARY-OBJECTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-F02-000",
+      "code": "F02",
+      "phase": "P50",
+      "title": "Backend framework and CPU/native C++ object emission",
+      "objective": "Define a compiler-independent backend contract and deliver the first ordinary native object path without CUDA.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/backend",
+      "suggested_lane": "CE-CCP1-L-F02",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-F02-014",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/backend",
+        "src/compiler/backend",
+        "tests/compiler/backend/cpu",
+        "bench/compiler/backend/cpu"
+      ],
+      "read_roots": [
+        "include/Cellerator/compute",
+        "include/Cellerator/execution",
+        "tools/cellerator",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M10",
+        "M40"
+      ],
+      "integration_milestone": "M50",
+      "invariants": [
+        "CE-CCP1-INV-BACKEND-AGNOSTIC",
+        "CE-CCP1-INV-HOST-ONLY",
+        "CE-CCP1-INV-ORDINARY-OBJECTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-F03-000",
+      "code": "F03",
+      "phase": "P50",
+      "title": "CUDA source and NVCC backend",
+      "objective": "Use Cellerator planning to generate and assemble CUDA programs while delegating conventional CUDA compilation and device linking to NVCC.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/backend/nvcc",
+      "suggested_lane": "CE-CCP1-L-F03",
+      "leaf_count": 15,
+      "terminal_task_id": "CE-CCP1-F03-015",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/backend/nvcc",
+        "src/compiler/backend/nvcc",
+        "tests/compiler/backend/nvcc",
+        "bench/compiler/backend/nvcc"
+      ],
+      "read_roots": [
+        "cmake/providers",
+        "src/compute/architecture/providers/nvidia",
+        "include/Cellerator/runtime",
+        "include/Cellerator/geometry/persistence"
+      ],
+      "prerequisite_milestones": [
+        "M40"
+      ],
+      "integration_milestone": "M50",
+      "invariants": [
+        "CE-CCP1-INV-NO-NVCC-PARSE",
+        "CE-CCP1-INV-ACCELERATOR-CENTRAL",
+        "CE-CCP1-INV-COMPLETE-COST"
+      ]
+    },
+    {
+      "id": "CE-CCP1-F04-000",
+      "code": "F04",
+      "phase": "P50",
+      "title": "Clang CUDA, LLVM/NVPTX, and direct PTX routes",
+      "objective": "Provide alternative accelerator lowering paths and a legitimate expert-native endpoint without making them mandatory for the core compiler.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/backend/nvptx",
+      "suggested_lane": "CE-CCP1-L-F04",
+      "leaf_count": 13,
+      "terminal_task_id": "CE-CCP1-F04-013",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/backend/nvptx",
+        "src/compiler/backend/nvptx",
+        "tests/compiler/backend/nvptx",
+        "bench/compiler/backend/nvptx"
+      ],
+      "read_roots": [
+        "src/compute/architecture/providers/nvidia",
+        "include/Cellerator/geometry/persistence/execution_capability_manifest_v1.hh",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M40"
+      ],
+      "integration_milestone": "M50",
+      "invariants": [
+        "CE-CCP1-INV-BACKEND-AGNOSTIC",
+        "CE-CCP1-INV-EXPERT-CONTROL",
+        "CE-CCP1-INV-ACCELERATOR-CENTRAL"
+      ]
+    },
+    {
+      "id": "CE-CCP1-G01-000",
+      "code": "G01",
+      "phase": "P60",
+      "title": "Source reflection and inline writable CEIR",
+      "objective": "Make compiler state directly accessible and composable from ordinary Cellerator source at every public IR level.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/reflection",
+      "suggested_lane": "CE-CCP1-L-G01",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-G01-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/reflection",
+        "src/compiler/reflection",
+        "tests/compiler/reflection"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compiler/ir",
+        "include/Cellerator/compiler/ast"
+      ],
+      "prerequisite_milestones": [
+        "M30"
+      ],
+      "integration_milestone": "M60",
+      "invariants": [
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR",
+        "CE-CCP1-INV-EXPERT-CONTROL",
+        "CE-CCP1-INV-PROVENANCE-COLD"
+      ]
+    },
+    {
+      "id": "CE-CCP1-G02-000",
+      "code": "G02",
+      "phase": "P60",
+      "title": "Open pass pipeline, custom extensions, and same-compilation transforms",
+      "objective": "Permit users to insert or replace compiler stages and define extensions in the same compilation without uncontrolled recursion.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/pass",
+      "suggested_lane": "CE-CCP1-L-G02",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-G02-018",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/pass",
+        "src/compiler/pass",
+        "tests/compiler/pass"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compiler/ir",
+        "include/Cellerator/compiler/reflection"
+      ],
+      "prerequisite_milestones": [
+        "M30",
+        "M40"
+      ],
+      "integration_milestone": "M60",
+      "invariants": [
+        "CE-CCP1-INV-EXPERT-CONTROL",
+        "CE-CCP1-INV-PUBLIC-WRITABLE-IR",
+        "CE-CCP1-INV-NO-PATERNALISM"
+      ]
+    },
+    {
+      "id": "CE-CCP1-G03-000",
+      "code": "G03",
+      "phase": "P60",
+      "title": "Validation modes, diagnostics, provenance, and compiler explainability",
+      "objective": "Provide strong analysis and traceability without converting warnings into artificial barriers to expert control.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/diagnostics",
+      "suggested_lane": "CE-CCP1-L-G03",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-G03-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/diagnostics",
+        "src/compiler/diagnostics",
+        "tests/compiler/diagnostics"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compiler",
+        "include/Cellerator/profiling",
+        "include/Cellerator/execution/lowering_resumption"
+      ],
+      "prerequisite_milestones": [
+        "M20",
+        "M30"
+      ],
+      "integration_milestone": "M60",
+      "invariants": [
+        "CE-CCP1-INV-NO-PATERNALISM",
+        "CE-CCP1-INV-PROVENANCE-COLD",
+        "CE-CCP1-INV-EXPLICIT-MECHANICS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-H01-000",
+      "code": "H01",
+      "phase": "P70",
+      "title": "Cross-translation-unit CEIR, object sections, archives, and Cellerator LTO",
+      "objective": "Carry explicitly authorized biological fields and profiles across ordinary object boundaries for program-level Cellerator optimization.",
+      "repository": "Cellerator",
+      "subsystem": "compiler/lto",
+      "suggested_lane": "CE-CCP1-L-H01",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-H01-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/lto",
+        "src/compiler/lto",
+        "tests/compiler/lto"
+      ],
+      "read_roots": [
+        "include/Cellerator/compiler/ir",
+        "tools/cellerator",
+        "docs/language",
+        "CMakeLists.txt"
+      ],
+      "prerequisite_milestones": [
+        "M30",
+        "M50"
+      ],
+      "integration_milestone": "M70",
+      "invariants": [
+        "CE-CCP1-INV-ORDINARY-OBJECTS",
+        "CE-CCP1-INV-EXPLICIT-FIELDS",
+        "CE-CCP1-INV-BACKEND-AGNOSTIC"
+      ]
+    },
+    {
+      "id": "CE-CCP1-H02-000",
+      "code": "H02",
+      "phase": "P70",
+      "title": "libCellerator compiler APIs and runtime/execution SDK",
+      "objective": "Expose reusable compiler services and the existing execution substrate as coherent public components for source-language and non-language users.",
+      "repository": "Cellerator",
+      "subsystem": "sdk/libcellerator",
+      "suggested_lane": "CE-CCP1-L-H02",
+      "leaf_count": 16,
+      "terminal_task_id": "CE-CCP1-H02-016",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/api",
+        "src/compiler/api",
+        "include/Cellerator/sdk",
+        "src/sdk",
+        "tests/sdk"
+      ],
+      "read_roots": [
+        "include/Cellerator",
+        "src/runtime",
+        "src/execution",
+        "src/compute",
+        "src/planner",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M30",
+        "M50"
+      ],
+      "integration_milestone": "M70",
+      "invariants": [
+        "CE-CCP1-INV-SDK-COMPONENTS",
+        "CE-CCP1-INV-RUNTIME-ACCESS",
+        "CE-CCP1-INV-HOT-COLD-SEPARATION"
+      ]
+    },
+    {
+      "id": "CE-CCP1-H03-000",
+      "code": "H03",
+      "phase": "P70",
+      "title": "Cellerator standard library, reference profiles, installation, and package integration",
+      "objective": "Deliver an installable compiler SDK whose standard library is Cellerator source and whose test profiles are explicit low-performance resources.",
+      "repository": "Cellerator",
+      "subsystem": "sdk/package",
+      "suggested_lane": "CE-CCP1-L-H03",
+      "leaf_count": 18,
+      "terminal_task_id": "CE-CCP1-H03-018",
+      "exclusive_roots": [
+        "stdlib",
+        "profiles/reference",
+        "cmake/package",
+        "docs/sdk",
+        "tests/package"
+      ],
+      "read_roots": [
+        "CMakeLists.txt",
+        "docs/language",
+        "include/Cellerator",
+        "tools",
+        "components/CelleraTorch"
+      ],
+      "prerequisite_milestones": [
+        "M20",
+        "M30",
+        "M50"
+      ],
+      "integration_milestone": "M70",
+      "invariants": [
+        "CE-CCP1-INV-STDLIB-CELL",
+        "CE-CCP1-INV-PROFILE-REQUIRED",
+        "CE-CCP1-INV-SDK-COMPONENTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I01-000",
+      "code": "I01",
+      "phase": "P80",
+      "title": "celleratord core, clangd compatibility, and incremental compiler snapshots",
+      "objective": "Provide a real LSP server with ordinary clangd-class C++ behavior while sharing Cellerator source, AST, Sema, and IR libraries.",
+      "repository": "Cellerator",
+      "subsystem": "tools/celleratord/core",
+      "suggested_lane": "CE-CCP1-L-I01",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-I01-014",
+      "exclusive_roots": [
+        "include/Cellerator/compiler/tooling",
+        "src/compiler/tooling",
+        "tools/celleratord",
+        "tests/celleratord/core"
+      ],
+      "read_roots": [
+        "include/Cellerator/compiler/frontend",
+        "include/Cellerator/compiler/ast",
+        "include/Cellerator/compiler/api",
+        "docs/language"
+      ],
+      "prerequisite_milestones": [
+        "M10",
+        "M20"
+      ],
+      "integration_milestone": "M80",
+      "invariants": [
+        "CE-CCP1-INV-NO-CLANG-FORK",
+        "CE-CCP1-INV-SHARED-COMPILER-LIBS",
+        "CE-CCP1-INV-HOST-ONLY"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I02-000",
+      "code": "I02",
+      "phase": "P80",
+      "title": "celleratord biological semantics, profiles, IR, planning, and native navigation",
+      "objective": "Expose the compiler\u2019s data-aware reasoning interactively without coupling language-server state to hot runtime structures.",
+      "repository": "Cellerator",
+      "subsystem": "tools/celleratord/features",
+      "suggested_lane": "CE-CCP1-L-I02",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-I02-014",
+      "exclusive_roots": [
+        "src/compiler/tooling/cellerator",
+        "tests/celleratord/cellerator",
+        "docs/celleratord"
+      ],
+      "read_roots": [
+        "include/Cellerator/compiler/ir",
+        "include/Cellerator/compiler/profile",
+        "include/Cellerator/compiler/diagnostics",
+        "include/Cellerator/compiler/lto"
+      ],
+      "prerequisite_milestones": [
+        "M30",
+        "M40",
+        "M60"
+      ],
+      "integration_milestone": "M80",
+      "invariants": [
+        "CE-CCP1-INV-EXPLICIT-MECHANICS",
+        "CE-CCP1-INV-PROVENANCE-COLD",
+        "CE-CCP1-INV-SHARED-COMPILER-LIBS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-J01-000",
+      "code": "J01",
+      "phase": "P90",
+      "title": "Compiler conformance, fuzzing, differential validation, and resilience",
+      "objective": "Provide independent correctness pressure across source, CEIR, profiles, passes, LTO, backends, and language-server boundaries.",
+      "repository": "Cellerator",
+      "subsystem": "tests/compiler",
+      "suggested_lane": "CE-CCP1-L-J01",
+      "leaf_count": 12,
+      "terminal_task_id": "CE-CCP1-J01-012",
+      "exclusive_roots": [
+        "tests/compiler/conformance",
+        "tests/compiler/fuzz",
+        "tests/compiler/differential",
+        "tests/compiler/resilience"
+      ],
+      "read_roots": [
+        "docs/language",
+        "include/Cellerator/compiler",
+        "src/compiler",
+        "profiles/reference",
+        "stdlib"
+      ],
+      "prerequisite_milestones": [
+        "M20",
+        "M30"
+      ],
+      "integration_milestone": "M90",
+      "invariants": [
+        "CE-CCP1-INV-BIOLOGICAL-IDENTITY",
+        "CE-CCP1-INV-EXACT-COVERAGE",
+        "CE-CCP1-INV-NO-PATERNALISM"
+      ]
+    },
+    {
+      "id": "CE-CCP1-J02-000",
+      "code": "J02",
+      "phase": "P90",
+      "title": "Complete-cost performance program and benchmarkable vertical slices",
+      "objective": "Measure compiler and generated-program performance throughout development, with useful milestones arriving long before final closure.",
+      "repository": "Cellerator",
+      "subsystem": "bench/compiler",
+      "suggested_lane": "CE-CCP1-L-J02",
+      "leaf_count": 14,
+      "terminal_task_id": "CE-CCP1-J02-014",
+      "exclusive_roots": [
+        "bench/compiler",
+        "docs/compiler/performance"
+      ],
+      "read_roots": [
+        "bench/ce_geo",
+        "bench/ce_live",
+        "bench/ce_exop",
+        "include/Cellerator/compiler",
+        "tools/cellerator"
+      ],
+      "prerequisite_milestones": [
+        "M10",
+        "M30",
+        "M40",
+        "M50"
+      ],
+      "integration_milestone": "M90",
+      "invariants": [
+        "CE-CCP1-INV-COMPLETE-COST",
+        "CE-CCP1-INV-PERFORMANCE",
+        "CE-CCP1-INV-NEGATIVE-RESULTS"
+      ]
+    },
+    {
+      "id": "CE-CCP1-J03-000",
+      "code": "J03",
+      "phase": "P90",
+      "title": "Integration, specification reconciliation, SDK release, and Part One closure",
+      "objective": "Integrate all compiler-family surfaces, reconcile documentation with implementation, and prove the complete Part One acceptance boundary without starting Part Two.",
+      "repository": "Cellerator",
+      "subsystem": "integration/final",
+      "suggested_lane": "CE-CCP1-L-J03",
+      "leaf_count": 13,
+      "terminal_task_id": "CE-CCP1-J03-013",
+      "exclusive_roots": [
+        "CMakeLists.txt",
+        "cmake",
+        "include/Cellerator/Cellerator.hh",
+        "include/Cellerator/compiler.hh",
+        "docs/language",
+        "docs/compiler",
+        "README.md"
+      ],
+      "read_roots": [
+        "include",
+        "src",
+        "tools",
+        "stdlib",
+        "profiles",
+        "tests",
+        "bench",
+        "components/CellShard",
+        "planning/cellerator-compiler-preledger-v1"
+      ],
+      "prerequisite_milestones": [
+        "M60",
+        "M70",
+        "M80"
+      ],
+      "integration_milestone": "M90",
+      "invariants": [
+        "CE-CCP1-INV-CENTRAL-INTEGRATION",
+        "CE-CCP1-INV-PART-TWO-DEFERRED",
+        "CE-CCP1-INV-SPEC-MUTABLE"
+      ]
+    }
+  ]
+}

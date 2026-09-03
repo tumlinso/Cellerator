@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "purpose": "Non-authoritative proposed interface catalog.",
+  "snapshot": {
+    "observed_at": "2026-09-03T17:34:41+00:00",
+    "workspace": "cellerator",
+    "repository": "Cellerator",
+    "cellerator": {
+      "path": "/home/tumlinson/Cellerator",
+      "available": false
+    },
+    "cellshard": {
+      "available": false
+    },
+    "todo_snapshot_path": null,
+    "authority_fields": {},
+    "last_project_control_observation": {
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "todo_revision": 3894,
+      "todo_semantic_fingerprint": "2247877ebdb63a131bb671b82f789c34bedfe80c2a4e6b741f29a45455bc5899",
+      "source_commit": "31efdb245f41263acd4432d78fa9e228e21fd444",
+      "observed_at": "2026-09-03T16:01:23Z",
+      "note": "Retained only as a fallback if the local authority snapshot omits a field; manual bootstrap must revalidate."
+    },
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "todo_revision": 3894,
+    "todo_semantic_fingerprint": "2247877ebdb63a131bb671b82f789c34bedfe80c2a4e6b741f29a45455bc5899",
+    "workflow_revision": 3894,
+    "workflow_fingerprint": "2247877ebdb63a131bb671b82f789c34bedfe80c2a4e6b741f29a45455bc5899",
+    "main_commit": "31efdb245f41263acd4432d78fa9e228e21fd444"
+  },
+  "interfaces": [
+    {
+      "id": "CE-CCP1-I01-AUTHORITY-BASELINE",
+      "owner_task_id": "CE-CCP1-A01-009",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "planning/cellerator-compiler-preledger-v1/evidence/live_snapshot.json",
+        "docs/compiler/architecture/PART_ONE_CHARTER.md"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I02-JBC-MIGRATION-MANIFEST",
+      "owner_task_id": "CE-CCP1-A02-012",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "docs/compiler/migration/JBC_MIGRATION_MANIFEST.md",
+        "docs/compiler/migration/jbc_migration_manifest.json"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I03-COMPILER-OWNERSHIP",
+      "owner_task_id": "CE-CCP1-A03-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "docs/compiler/architecture/CELLERATOR_CELLSHARD_COMPILER_SPLIT.md"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I04-SOURCE-LAYOUT",
+      "owner_task_id": "CE-CCP1-A04-010",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "docs/compiler/source-layout/SOURCE_LAYOUT_V1.md"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I05-BUILD-GRAPH",
+      "owner_task_id": "CE-CCP1-B01-012",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cmake/compiler/CelleratorCompilerTargets.cmake",
+        "include/Cellerator/compiler/build/features_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I06-DRIVER",
+      "owner_task_id": "CE-CCP1-B02-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/driver/driver_v1.hh",
+        "include/Cellerator/compiler/driver/toolchain_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I07-SOURCE-MAP",
+      "owner_task_id": "CE-CCP1-B03-015",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/frontend/source/source_map_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I08-PRAGMA-DIALECT",
+      "owner_task_id": "CE-CCP1-B03-015",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/frontend/source/dialect_state_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I09-CXX-SEMA-BRIDGE",
+      "owner_task_id": "CE-CCP1-B04-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/frontend/cxx/cxx_sema_bridge_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I10-PARSER",
+      "owner_task_id": "CE-CCP1-C01-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/frontend/parser/parser_v1.hh",
+        "include/Cellerator/compiler/frontend/parser/token_kind_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I11-AST",
+      "owner_task_id": "CE-CCP1-C02-012",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ast/ast_v1.hh",
+        "include/Cellerator/compiler/ast/diagnostic_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I12-BIOLOGICAL-SEMA",
+      "owner_task_id": "CE-CCP1-C03-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/sema/semantic_types_v1.hh",
+        "include/Cellerator/compiler/sema/operation_resolution_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I13-FIELD-SEMANTICS",
+      "owner_task_id": "CE-CCP1-C04-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/sema/field/field_semantics_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I14-CEIR-COMMON",
+      "owner_task_id": "CE-CCP1-D01-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ir/common/ir_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I15-CEIR-TEXT",
+      "owner_task_id": "CE-CCP1-D01-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ir/text/ceir_text_v1.hh",
+        "include/Cellerator/compiler/ir/text/ceir_artifact_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I16-SEMANTIC-IR",
+      "owner_task_id": "CE-CCP1-D02-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ir/semantic/semantic_ir_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I17-PROFILE-ARTIFACT",
+      "owner_task_id": "CE-CCP1-D03-015",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/profile/profile_artifact_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I18-PROFILE-ENVIRONMENT",
+      "owner_task_id": "CE-CCP1-D03-015",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/profile/profile_environment_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I19-PLANNING-IR",
+      "owner_task_id": "CE-CCP1-E01-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ir/planning/planning_ir_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I20-DISCOVERY-ATOM",
+      "owner_task_id": "CE-CCP1-E02-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/discovery/discovery_v1.hh",
+        "include/Cellerator/compiler/discovery/atom_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I21-COMPOSITION-BASIS",
+      "owner_task_id": "CE-CCP1-E03-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/composition/grammar_v1.hh",
+        "include/Cellerator/compiler/composition/basis_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I22-PROGRAM-RULESET",
+      "owner_task_id": "CE-CCP1-E03-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/program/ruleset_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I23-PLANNER",
+      "owner_task_id": "CE-CCP1-E04-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/planning/planner_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I24-REALIZATION-IR",
+      "owner_task_id": "CE-CCP1-F01-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/ir/realization/realization_ir_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I25-BACKEND-ABI",
+      "owner_task_id": "CE-CCP1-F02-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/backend/backend_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I26-CPU-BACKEND",
+      "owner_task_id": "CE-CCP1-F02-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/backend/cpu/cpu_backend_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I27-NVCC-BACKEND",
+      "owner_task_id": "CE-CCP1-F03-015",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/backend/nvcc/nvcc_backend_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I28-NVPTX-BACKEND",
+      "owner_task_id": "CE-CCP1-F04-013",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/backend/nvptx/nvptx_backend_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I29-REFLECTION",
+      "owner_task_id": "CE-CCP1-G01-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/reflection/reflection_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I30-PASS-EXTENSION",
+      "owner_task_id": "CE-CCP1-G02-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/pass/pass_v1.hh",
+        "include/Cellerator/compiler/pass/extension_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I31-SELF-TRANSFORM",
+      "owner_task_id": "CE-CCP1-G02-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/pass/self_transform_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I32-DIAGNOSTICS-PROVENANCE",
+      "owner_task_id": "CE-CCP1-G03-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/diagnostics/diagnostics_v1.hh",
+        "include/Cellerator/compiler/diagnostics/provenance_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I33-OBJECT-CEIR",
+      "owner_task_id": "CE-CCP1-H01-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/lto/object_ceir_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I34-CELLERATOR-LTO",
+      "owner_task_id": "CE-CCP1-H01-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/lto/lto_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I35-LIBCELLERATOR-COMPILER",
+      "owner_task_id": "CE-CCP1-H02-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/api/cellerator_compiler.h",
+        "include/Cellerator/compiler/api/compiler.hpp"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I36-LIBCELLERATOR-RUNTIME",
+      "owner_task_id": "CE-CCP1-H02-016",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/sdk/runtime.hpp"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I37-STDLIB-SDK",
+      "owner_task_id": "CE-CCP1-H03-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "stdlib/manifest.json",
+        "stdlib/cellerator/core.cell"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I38-PACKAGE",
+      "owner_task_id": "CE-CCP1-H03-018",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cmake/package/CelleratorConfig.cmake.in",
+        "cmake/package/CelleratorConfigVersion.cmake.in"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I39-CELLERATORD-CORE",
+      "owner_task_id": "CE-CCP1-I01-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/tooling/language_server_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I40-CELLERATORD-SEMANTIC",
+      "owner_task_id": "CE-CCP1-I02-014",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compiler/tooling/cellerator_queries_v1.hh"
+      ]
+    },
+    {
+      "id": "CE-CCP1-I41-PART1-COMPLETE",
+      "owner_task_id": "CE-CCP1-J03-013",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "docs/compiler/PART_ONE_FINAL_AUDIT.md"
+      ]
+    }
+  ]
+}

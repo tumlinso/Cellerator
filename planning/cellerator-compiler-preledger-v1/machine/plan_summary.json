@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "program_id": "CE-CCP1-0000",
+  "run_id": "CE-CCP1-RUN-V1",
+  "workspace": "cellerator",
+  "baseline_commit": "31efdb245f41263acd4432d78fa9e228e21fd444",
+  "todo_revision_observed": 3894,
+  "apply_plan": "machine/cellerator-compiler-part1.todo-plan.json",
+  "apply_plan_schema_version": 3,
+  "counts": {
+    "total_proposed_todos": 557,
+    "leaf_todos": 502,
+    "phase_epics": 10,
+    "workstreams": 34,
+    "integration_tasks": 10,
+    "lanes": 38,
+    "interfaces": 41,
+    "barriers": 10,
+    "checkpoints": 44,
+    "dependency_edges": 765,
+    "invariants": 41,
+    "locks": 11,
+    "resource_classes": 1
+  },
+  "milestones": [
+    {
+      "id": "M00",
+      "title": "Architecture, ownership, and migration authority frozen"
+    },
+    {
+      "id": "M10",
+      "title": "Host-only build, driver, source pipeline, and C++ bridge integrated"
+    },
+    {
+      "id": "M20",
+      "title": "Source language parser, AST, Sema, and execution-field semantics integrated"
+    },
+    {
+      "id": "M30",
+      "title": "Common CEIR, Semantic IR, and representative profile environment integrated"
+    },
+    {
+      "id": "M40",
+      "title": "Planning IR and Cellerator-owned JBC compiler logic integrated"
+    },
+    {
+      "id": "M50",
+      "title": "Realization IR and CPU/NVIDIA backend foundation integrated"
+    },
+    {
+      "id": "M60",
+      "title": "Reflection, open passes, self-transforms, validation modes, and provenance integrated"
+    },
+    {
+      "id": "M70",
+      "title": "Cross-TU/LTO, libCellerator, standard library, and installable SDK integrated"
+    },
+    {
+      "id": "M80",
+      "title": "celleratord core and Cellerator-aware semantic tooling integrated"
+    },
+    {
+      "id": "M90",
+      "title": "Part One compiler family final acceptance"
+    }
+  ],
+  "part_two_deferred": [
+    "general JIT/runtime compilation",
+    "deep CellShard concrete materialization/persistence/placement/residency/transport/runtime integration"
+  ]
+}

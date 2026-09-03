@@ -1,0 +1,978 @@
+{
+  "schema_version": 1,
+  "purpose": "Non-authoritative proposed lane catalog.",
+  "run_id": "CE-CCP1-RUN-V1",
+  "lanes": [
+    {
+      "id": "CE-CCP1-L-COORD",
+      "parent_lane_id": null,
+      "role": "coordinator",
+      "tasks": [
+        "CE-CCP1-0000",
+        "CE-CCP1-P00",
+        "CE-CCP1-P10",
+        "CE-CCP1-P20",
+        "CE-CCP1-P30",
+        "CE-CCP1-P40",
+        "CE-CCP1-P50",
+        "CE-CCP1-P60",
+        "CE-CCP1-P70",
+        "CE-CCP1-P80",
+        "CE-CCP1-P90",
+        "CE-CCP1-A01-000",
+        "CE-CCP1-A02-000",
+        "CE-CCP1-A03-000",
+        "CE-CCP1-A04-000",
+        "CE-CCP1-B01-000",
+        "CE-CCP1-B02-000",
+        "CE-CCP1-B03-000",
+        "CE-CCP1-B04-000",
+        "CE-CCP1-C01-000",
+        "CE-CCP1-C02-000",
+        "CE-CCP1-C03-000",
+        "CE-CCP1-C04-000",
+        "CE-CCP1-D01-000",
+        "CE-CCP1-D02-000",
+        "CE-CCP1-D03-000",
+        "CE-CCP1-E01-000",
+        "CE-CCP1-E02-000",
+        "CE-CCP1-E03-000",
+        "CE-CCP1-E04-000",
+        "CE-CCP1-F01-000",
+        "CE-CCP1-F02-000",
+        "CE-CCP1-F03-000",
+        "CE-CCP1-F04-000",
+        "CE-CCP1-G01-000",
+        "CE-CCP1-G02-000",
+        "CE-CCP1-G03-000",
+        "CE-CCP1-H01-000",
+        "CE-CCP1-H02-000",
+        "CE-CCP1-H03-000",
+        "CE-CCP1-I01-000",
+        "CE-CCP1-I02-000",
+        "CE-CCP1-J01-000",
+        "CE-CCP1-J02-000",
+        "CE-CCP1-J03-000"
+      ],
+      "workspace": {
+        "mode": "read_shared"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-A01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-A01-001",
+        "CE-CCP1-A01-002",
+        "CE-CCP1-A01-003",
+        "CE-CCP1-A01-004",
+        "CE-CCP1-A01-005",
+        "CE-CCP1-A01-006",
+        "CE-CCP1-A01-007",
+        "CE-CCP1-A01-008",
+        "CE-CCP1-A01-009"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M00"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-A02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-A02-001",
+        "CE-CCP1-A02-002",
+        "CE-CCP1-A02-003",
+        "CE-CCP1-A02-004",
+        "CE-CCP1-A02-005",
+        "CE-CCP1-A02-006",
+        "CE-CCP1-A02-007",
+        "CE-CCP1-A02-008",
+        "CE-CCP1-A02-009",
+        "CE-CCP1-A02-010",
+        "CE-CCP1-A02-011",
+        "CE-CCP1-A02-012"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M00"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-A03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-A03-001",
+        "CE-CCP1-A03-002",
+        "CE-CCP1-A03-003",
+        "CE-CCP1-A03-004",
+        "CE-CCP1-A03-005",
+        "CE-CCP1-A03-006",
+        "CE-CCP1-A03-007",
+        "CE-CCP1-A03-008",
+        "CE-CCP1-A03-009",
+        "CE-CCP1-A03-010",
+        "CE-CCP1-A03-011",
+        "CE-CCP1-A03-012",
+        "CE-CCP1-A03-013",
+        "CE-CCP1-A03-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M00"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-A04",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-A04-001",
+        "CE-CCP1-A04-002",
+        "CE-CCP1-A04-003",
+        "CE-CCP1-A04-004",
+        "CE-CCP1-A04-005",
+        "CE-CCP1-A04-006",
+        "CE-CCP1-A04-007",
+        "CE-CCP1-A04-008",
+        "CE-CCP1-A04-009",
+        "CE-CCP1-A04-010"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M00"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-B01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-B01-001",
+        "CE-CCP1-B01-002",
+        "CE-CCP1-B01-003",
+        "CE-CCP1-B01-004",
+        "CE-CCP1-B01-005",
+        "CE-CCP1-B01-006",
+        "CE-CCP1-B01-007",
+        "CE-CCP1-B01-008",
+        "CE-CCP1-B01-009",
+        "CE-CCP1-B01-010",
+        "CE-CCP1-B01-011",
+        "CE-CCP1-B01-012"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M10"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-B02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-B02-001",
+        "CE-CCP1-B02-002",
+        "CE-CCP1-B02-003",
+        "CE-CCP1-B02-004",
+        "CE-CCP1-B02-005",
+        "CE-CCP1-B02-006",
+        "CE-CCP1-B02-007",
+        "CE-CCP1-B02-008",
+        "CE-CCP1-B02-009",
+        "CE-CCP1-B02-010",
+        "CE-CCP1-B02-011",
+        "CE-CCP1-B02-012",
+        "CE-CCP1-B02-013",
+        "CE-CCP1-B02-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M10"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-B03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-B03-001",
+        "CE-CCP1-B03-002",
+        "CE-CCP1-B03-003",
+        "CE-CCP1-B03-004",
+        "CE-CCP1-B03-005",
+        "CE-CCP1-B03-006",
+        "CE-CCP1-B03-007",
+        "CE-CCP1-B03-008",
+        "CE-CCP1-B03-009",
+        "CE-CCP1-B03-010",
+        "CE-CCP1-B03-011",
+        "CE-CCP1-B03-012",
+        "CE-CCP1-B03-013",
+        "CE-CCP1-B03-014",
+        "CE-CCP1-B03-015"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M10"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-B04",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-B04-001",
+        "CE-CCP1-B04-002",
+        "CE-CCP1-B04-003",
+        "CE-CCP1-B04-004",
+        "CE-CCP1-B04-005",
+        "CE-CCP1-B04-006",
+        "CE-CCP1-B04-007",
+        "CE-CCP1-B04-008",
+        "CE-CCP1-B04-009",
+        "CE-CCP1-B04-010",
+        "CE-CCP1-B04-011",
+        "CE-CCP1-B04-012",
+        "CE-CCP1-B04-013",
+        "CE-CCP1-B04-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M10"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-C01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-C01-001",
+        "CE-CCP1-C01-002",
+        "CE-CCP1-C01-003",
+        "CE-CCP1-C01-004",
+        "CE-CCP1-C01-005",
+        "CE-CCP1-C01-006",
+        "CE-CCP1-C01-007",
+        "CE-CCP1-C01-008",
+        "CE-CCP1-C01-009",
+        "CE-CCP1-C01-010",
+        "CE-CCP1-C01-011",
+        "CE-CCP1-C01-012",
+        "CE-CCP1-C01-013",
+        "CE-CCP1-C01-014",
+        "CE-CCP1-C01-015",
+        "CE-CCP1-C01-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M20"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-C02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-C02-001",
+        "CE-CCP1-C02-002",
+        "CE-CCP1-C02-003",
+        "CE-CCP1-C02-004",
+        "CE-CCP1-C02-005",
+        "CE-CCP1-C02-006",
+        "CE-CCP1-C02-007",
+        "CE-CCP1-C02-008",
+        "CE-CCP1-C02-009",
+        "CE-CCP1-C02-010",
+        "CE-CCP1-C02-011",
+        "CE-CCP1-C02-012"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M20"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-C03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-C03-001",
+        "CE-CCP1-C03-002",
+        "CE-CCP1-C03-003",
+        "CE-CCP1-C03-004",
+        "CE-CCP1-C03-005",
+        "CE-CCP1-C03-006",
+        "CE-CCP1-C03-007",
+        "CE-CCP1-C03-008",
+        "CE-CCP1-C03-009",
+        "CE-CCP1-C03-010",
+        "CE-CCP1-C03-011",
+        "CE-CCP1-C03-012",
+        "CE-CCP1-C03-013",
+        "CE-CCP1-C03-014",
+        "CE-CCP1-C03-015",
+        "CE-CCP1-C03-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M20"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-C04",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-C04-001",
+        "CE-CCP1-C04-002",
+        "CE-CCP1-C04-003",
+        "CE-CCP1-C04-004",
+        "CE-CCP1-C04-005",
+        "CE-CCP1-C04-006",
+        "CE-CCP1-C04-007",
+        "CE-CCP1-C04-008",
+        "CE-CCP1-C04-009",
+        "CE-CCP1-C04-010",
+        "CE-CCP1-C04-011",
+        "CE-CCP1-C04-012",
+        "CE-CCP1-C04-013",
+        "CE-CCP1-C04-014",
+        "CE-CCP1-C04-015",
+        "CE-CCP1-C04-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M20"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-D01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-D01-001",
+        "CE-CCP1-D01-002",
+        "CE-CCP1-D01-003",
+        "CE-CCP1-D01-004",
+        "CE-CCP1-D01-005",
+        "CE-CCP1-D01-006",
+        "CE-CCP1-D01-007",
+        "CE-CCP1-D01-008",
+        "CE-CCP1-D01-009",
+        "CE-CCP1-D01-010",
+        "CE-CCP1-D01-011",
+        "CE-CCP1-D01-012",
+        "CE-CCP1-D01-013",
+        "CE-CCP1-D01-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M30"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-D02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-D02-001",
+        "CE-CCP1-D02-002",
+        "CE-CCP1-D02-003",
+        "CE-CCP1-D02-004",
+        "CE-CCP1-D02-005",
+        "CE-CCP1-D02-006",
+        "CE-CCP1-D02-007",
+        "CE-CCP1-D02-008",
+        "CE-CCP1-D02-009",
+        "CE-CCP1-D02-010",
+        "CE-CCP1-D02-011",
+        "CE-CCP1-D02-012",
+        "CE-CCP1-D02-013",
+        "CE-CCP1-D02-014",
+        "CE-CCP1-D02-015",
+        "CE-CCP1-D02-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M30"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-D03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-D03-001",
+        "CE-CCP1-D03-002",
+        "CE-CCP1-D03-003",
+        "CE-CCP1-D03-004",
+        "CE-CCP1-D03-005",
+        "CE-CCP1-D03-006",
+        "CE-CCP1-D03-007",
+        "CE-CCP1-D03-008",
+        "CE-CCP1-D03-009",
+        "CE-CCP1-D03-010",
+        "CE-CCP1-D03-011",
+        "CE-CCP1-D03-012",
+        "CE-CCP1-D03-013",
+        "CE-CCP1-D03-014",
+        "CE-CCP1-D03-015"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M30"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-E01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-E01-001",
+        "CE-CCP1-E01-002",
+        "CE-CCP1-E01-003",
+        "CE-CCP1-E01-004",
+        "CE-CCP1-E01-005",
+        "CE-CCP1-E01-006",
+        "CE-CCP1-E01-007",
+        "CE-CCP1-E01-008",
+        "CE-CCP1-E01-009",
+        "CE-CCP1-E01-010",
+        "CE-CCP1-E01-011",
+        "CE-CCP1-E01-012",
+        "CE-CCP1-E01-013",
+        "CE-CCP1-E01-014",
+        "CE-CCP1-E01-015",
+        "CE-CCP1-E01-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M40"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-E02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-E02-001",
+        "CE-CCP1-E02-002",
+        "CE-CCP1-E02-003",
+        "CE-CCP1-E02-004",
+        "CE-CCP1-E02-005",
+        "CE-CCP1-E02-006",
+        "CE-CCP1-E02-007",
+        "CE-CCP1-E02-008",
+        "CE-CCP1-E02-009",
+        "CE-CCP1-E02-010",
+        "CE-CCP1-E02-011",
+        "CE-CCP1-E02-012",
+        "CE-CCP1-E02-013",
+        "CE-CCP1-E02-014",
+        "CE-CCP1-E02-015",
+        "CE-CCP1-E02-016",
+        "CE-CCP1-E02-017",
+        "CE-CCP1-E02-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M40"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-E03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-E03-001",
+        "CE-CCP1-E03-002",
+        "CE-CCP1-E03-003",
+        "CE-CCP1-E03-004",
+        "CE-CCP1-E03-005",
+        "CE-CCP1-E03-006",
+        "CE-CCP1-E03-007",
+        "CE-CCP1-E03-008",
+        "CE-CCP1-E03-009",
+        "CE-CCP1-E03-010",
+        "CE-CCP1-E03-011",
+        "CE-CCP1-E03-012",
+        "CE-CCP1-E03-013",
+        "CE-CCP1-E03-014",
+        "CE-CCP1-E03-015",
+        "CE-CCP1-E03-016",
+        "CE-CCP1-E03-017",
+        "CE-CCP1-E03-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M40"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-E04",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-E04-001",
+        "CE-CCP1-E04-002",
+        "CE-CCP1-E04-003",
+        "CE-CCP1-E04-004",
+        "CE-CCP1-E04-005",
+        "CE-CCP1-E04-006",
+        "CE-CCP1-E04-007",
+        "CE-CCP1-E04-008",
+        "CE-CCP1-E04-009",
+        "CE-CCP1-E04-010",
+        "CE-CCP1-E04-011",
+        "CE-CCP1-E04-012",
+        "CE-CCP1-E04-013",
+        "CE-CCP1-E04-014",
+        "CE-CCP1-E04-015",
+        "CE-CCP1-E04-016",
+        "CE-CCP1-E04-017",
+        "CE-CCP1-E04-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M40"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-F01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-F01-001",
+        "CE-CCP1-F01-002",
+        "CE-CCP1-F01-003",
+        "CE-CCP1-F01-004",
+        "CE-CCP1-F01-005",
+        "CE-CCP1-F01-006",
+        "CE-CCP1-F01-007",
+        "CE-CCP1-F01-008",
+        "CE-CCP1-F01-009",
+        "CE-CCP1-F01-010",
+        "CE-CCP1-F01-011",
+        "CE-CCP1-F01-012",
+        "CE-CCP1-F01-013",
+        "CE-CCP1-F01-014",
+        "CE-CCP1-F01-015",
+        "CE-CCP1-F01-016",
+        "CE-CCP1-F01-017",
+        "CE-CCP1-F01-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M50"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-F02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-F02-001",
+        "CE-CCP1-F02-002",
+        "CE-CCP1-F02-003",
+        "CE-CCP1-F02-004",
+        "CE-CCP1-F02-005",
+        "CE-CCP1-F02-006",
+        "CE-CCP1-F02-007",
+        "CE-CCP1-F02-008",
+        "CE-CCP1-F02-009",
+        "CE-CCP1-F02-010",
+        "CE-CCP1-F02-011",
+        "CE-CCP1-F02-012",
+        "CE-CCP1-F02-013",
+        "CE-CCP1-F02-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M50"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-F03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-F03-001",
+        "CE-CCP1-F03-002",
+        "CE-CCP1-F03-003",
+        "CE-CCP1-F03-004",
+        "CE-CCP1-F03-005",
+        "CE-CCP1-F03-006",
+        "CE-CCP1-F03-007",
+        "CE-CCP1-F03-008",
+        "CE-CCP1-F03-009",
+        "CE-CCP1-F03-010",
+        "CE-CCP1-F03-011",
+        "CE-CCP1-F03-012",
+        "CE-CCP1-F03-013",
+        "CE-CCP1-F03-014",
+        "CE-CCP1-F03-015"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M50"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-F04",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-F04-001",
+        "CE-CCP1-F04-002",
+        "CE-CCP1-F04-003",
+        "CE-CCP1-F04-004",
+        "CE-CCP1-F04-005",
+        "CE-CCP1-F04-006",
+        "CE-CCP1-F04-007",
+        "CE-CCP1-F04-008",
+        "CE-CCP1-F04-009",
+        "CE-CCP1-F04-010",
+        "CE-CCP1-F04-011",
+        "CE-CCP1-F04-012",
+        "CE-CCP1-F04-013"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M50"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-G01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-G01-001",
+        "CE-CCP1-G01-002",
+        "CE-CCP1-G01-003",
+        "CE-CCP1-G01-004",
+        "CE-CCP1-G01-005",
+        "CE-CCP1-G01-006",
+        "CE-CCP1-G01-007",
+        "CE-CCP1-G01-008",
+        "CE-CCP1-G01-009",
+        "CE-CCP1-G01-010",
+        "CE-CCP1-G01-011",
+        "CE-CCP1-G01-012",
+        "CE-CCP1-G01-013",
+        "CE-CCP1-G01-014",
+        "CE-CCP1-G01-015",
+        "CE-CCP1-G01-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M60"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-G02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-G02-001",
+        "CE-CCP1-G02-002",
+        "CE-CCP1-G02-003",
+        "CE-CCP1-G02-004",
+        "CE-CCP1-G02-005",
+        "CE-CCP1-G02-006",
+        "CE-CCP1-G02-007",
+        "CE-CCP1-G02-008",
+        "CE-CCP1-G02-009",
+        "CE-CCP1-G02-010",
+        "CE-CCP1-G02-011",
+        "CE-CCP1-G02-012",
+        "CE-CCP1-G02-013",
+        "CE-CCP1-G02-014",
+        "CE-CCP1-G02-015",
+        "CE-CCP1-G02-016",
+        "CE-CCP1-G02-017",
+        "CE-CCP1-G02-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M60"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-G03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-G03-001",
+        "CE-CCP1-G03-002",
+        "CE-CCP1-G03-003",
+        "CE-CCP1-G03-004",
+        "CE-CCP1-G03-005",
+        "CE-CCP1-G03-006",
+        "CE-CCP1-G03-007",
+        "CE-CCP1-G03-008",
+        "CE-CCP1-G03-009",
+        "CE-CCP1-G03-010",
+        "CE-CCP1-G03-011",
+        "CE-CCP1-G03-012",
+        "CE-CCP1-G03-013",
+        "CE-CCP1-G03-014",
+        "CE-CCP1-G03-015",
+        "CE-CCP1-G03-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M60"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-H01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-H01-001",
+        "CE-CCP1-H01-002",
+        "CE-CCP1-H01-003",
+        "CE-CCP1-H01-004",
+        "CE-CCP1-H01-005",
+        "CE-CCP1-H01-006",
+        "CE-CCP1-H01-007",
+        "CE-CCP1-H01-008",
+        "CE-CCP1-H01-009",
+        "CE-CCP1-H01-010",
+        "CE-CCP1-H01-011",
+        "CE-CCP1-H01-012",
+        "CE-CCP1-H01-013",
+        "CE-CCP1-H01-014",
+        "CE-CCP1-H01-015",
+        "CE-CCP1-H01-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M70"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-H02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-H02-001",
+        "CE-CCP1-H02-002",
+        "CE-CCP1-H02-003",
+        "CE-CCP1-H02-004",
+        "CE-CCP1-H02-005",
+        "CE-CCP1-H02-006",
+        "CE-CCP1-H02-007",
+        "CE-CCP1-H02-008",
+        "CE-CCP1-H02-009",
+        "CE-CCP1-H02-010",
+        "CE-CCP1-H02-011",
+        "CE-CCP1-H02-012",
+        "CE-CCP1-H02-013",
+        "CE-CCP1-H02-014",
+        "CE-CCP1-H02-015",
+        "CE-CCP1-H02-016"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M70"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-H03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-H03-001",
+        "CE-CCP1-H03-002",
+        "CE-CCP1-H03-003",
+        "CE-CCP1-H03-004",
+        "CE-CCP1-H03-005",
+        "CE-CCP1-H03-006",
+        "CE-CCP1-H03-007",
+        "CE-CCP1-H03-008",
+        "CE-CCP1-H03-009",
+        "CE-CCP1-H03-010",
+        "CE-CCP1-H03-011",
+        "CE-CCP1-H03-012",
+        "CE-CCP1-H03-013",
+        "CE-CCP1-H03-014",
+        "CE-CCP1-H03-015",
+        "CE-CCP1-H03-016",
+        "CE-CCP1-H03-017",
+        "CE-CCP1-H03-018"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M70"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-I01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-I01-001",
+        "CE-CCP1-I01-002",
+        "CE-CCP1-I01-003",
+        "CE-CCP1-I01-004",
+        "CE-CCP1-I01-005",
+        "CE-CCP1-I01-006",
+        "CE-CCP1-I01-007",
+        "CE-CCP1-I01-008",
+        "CE-CCP1-I01-009",
+        "CE-CCP1-I01-010",
+        "CE-CCP1-I01-011",
+        "CE-CCP1-I01-012",
+        "CE-CCP1-I01-013",
+        "CE-CCP1-I01-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M80"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-I02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-I02-001",
+        "CE-CCP1-I02-002",
+        "CE-CCP1-I02-003",
+        "CE-CCP1-I02-004",
+        "CE-CCP1-I02-005",
+        "CE-CCP1-I02-006",
+        "CE-CCP1-I02-007",
+        "CE-CCP1-I02-008",
+        "CE-CCP1-I02-009",
+        "CE-CCP1-I02-010",
+        "CE-CCP1-I02-011",
+        "CE-CCP1-I02-012",
+        "CE-CCP1-I02-013",
+        "CE-CCP1-I02-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M80"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-J01",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-J01-001",
+        "CE-CCP1-J01-002",
+        "CE-CCP1-J01-003",
+        "CE-CCP1-J01-004",
+        "CE-CCP1-J01-005",
+        "CE-CCP1-J01-006",
+        "CE-CCP1-J01-007",
+        "CE-CCP1-J01-008",
+        "CE-CCP1-J01-009",
+        "CE-CCP1-J01-010",
+        "CE-CCP1-J01-011",
+        "CE-CCP1-J01-012"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M90"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-J02",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-J02-001",
+        "CE-CCP1-J02-002",
+        "CE-CCP1-J02-003",
+        "CE-CCP1-J02-004",
+        "CE-CCP1-J02-005",
+        "CE-CCP1-J02-006",
+        "CE-CCP1-J02-007",
+        "CE-CCP1-J02-008",
+        "CE-CCP1-J02-009",
+        "CE-CCP1-J02-010",
+        "CE-CCP1-J02-011",
+        "CE-CCP1-J02-012",
+        "CE-CCP1-J02-013",
+        "CE-CCP1-J02-014"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M90"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-J03",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "implementer",
+      "tasks": [
+        "CE-CCP1-J03-001",
+        "CE-CCP1-J03-002",
+        "CE-CCP1-J03-003",
+        "CE-CCP1-J03-004",
+        "CE-CCP1-J03-005",
+        "CE-CCP1-J03-006",
+        "CE-CCP1-J03-007",
+        "CE-CCP1-J03-008",
+        "CE-CCP1-J03-009",
+        "CE-CCP1-J03-010",
+        "CE-CCP1-J03-011",
+        "CE-CCP1-J03-012",
+        "CE-CCP1-J03-013"
+      ],
+      "workspace": {
+        "mode": "isolated_merge",
+        "integration_task_id": "CE-CCP1-M90"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-INTEGRATE-FOUNDATION",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "integrator",
+      "tasks": [
+        "CE-CCP1-M00",
+        "CE-CCP1-M10",
+        "CE-CCP1-M20",
+        "CE-CCP1-M30"
+      ],
+      "workspace": {
+        "mode": "exclusive"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-INTEGRATE-COMPILER",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "integrator",
+      "tasks": [
+        "CE-CCP1-M40",
+        "CE-CCP1-M50",
+        "CE-CCP1-M60",
+        "CE-CCP1-M70"
+      ],
+      "workspace": {
+        "mode": "exclusive"
+      }
+    },
+    {
+      "id": "CE-CCP1-L-INTEGRATE-FINAL",
+      "parent_lane_id": "CE-CCP1-L-COORD",
+      "role": "validator",
+      "tasks": [
+        "CE-CCP1-M80",
+        "CE-CCP1-M90"
+      ],
+      "workspace": {
+        "mode": "exclusive"
+      }
+    }
+  ]
+}

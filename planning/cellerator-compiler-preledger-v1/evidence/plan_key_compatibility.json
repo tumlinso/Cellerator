@@ -1,0 +1,276 @@
+{
+  "precedents": [],
+  "unknown_keys_by_context": {
+    "top": [
+      "barriers",
+      "decisions",
+      "interfaces",
+      "invariants",
+      "locks",
+      "project",
+      "resource_classes",
+      "runs",
+      "schema_version",
+      "tasks"
+    ],
+    "project": [
+      "baseline_commit",
+      "name",
+      "objective",
+      "program_document",
+      "repository",
+      "workspace"
+    ],
+    "invariants": [
+      "id",
+      "rule",
+      "scope",
+      "severity"
+    ],
+    "decisions": [
+      "allowed",
+      "id",
+      "title",
+      "value"
+    ],
+    "locks": [
+      "capacity",
+      "metadata",
+      "name"
+    ],
+    "resource_classes": [
+      "id",
+      "instances",
+      "metadata",
+      "mode"
+    ],
+    "interfaces": [
+      "contract_paths",
+      "id",
+      "owner_task_id",
+      "state",
+      "version"
+    ],
+    "barriers": [
+      "id",
+      "mode",
+      "requirements",
+      "title"
+    ],
+    "tasks": [
+      "checkpoints",
+      "claim_locks",
+      "completion_contract",
+      "consumes_interfaces",
+      "depends_on",
+      "gates",
+      "id",
+      "invariants",
+      "kind",
+      "next_action",
+      "notes",
+      "objective",
+      "parallel_policy",
+      "parent_id",
+      "priority",
+      "produced_artifacts",
+      "resource_requests",
+      "result_policy",
+      "scope",
+      "status",
+      "tags",
+      "title"
+    ],
+    "runs": [
+      "charter",
+      "context_fragments",
+      "id",
+      "lanes",
+      "rendezvous",
+      "root_task_id"
+    ],
+    "task.scope": [
+      "exclusive_paths",
+      "forbidden_paths",
+      "read_paths",
+      "shared_locks"
+    ],
+    "task.depends_on": [
+      "checkpoint_id",
+      "state",
+      "task_id",
+      "type"
+    ],
+    "task.checkpoints": [
+      "id",
+      "publishes_interfaces",
+      "title"
+    ],
+    "task.gates": [
+      "argv",
+      "checkpoint_id",
+      "cwd",
+      "id",
+      "required",
+      "type"
+    ],
+    "run.charter": [
+      "acceptance_conditions",
+      "boundaries",
+      "detailed_authority",
+      "invariants",
+      "local_worker_boundary",
+      "objective"
+    ],
+    "run.lanes": [
+      "id",
+      "parent_lane_id",
+      "role",
+      "tasks",
+      "workspace"
+    ],
+    "run.rendezvous": [
+      "barrier_id",
+      "id",
+      "join_task_id",
+      "mode"
+    ]
+  },
+  "our_keys": {
+    "top": [
+      "barriers",
+      "decisions",
+      "interfaces",
+      "invariants",
+      "locks",
+      "project",
+      "resource_classes",
+      "runs",
+      "schema_version",
+      "tasks"
+    ],
+    "project": [
+      "baseline_commit",
+      "name",
+      "objective",
+      "program_document",
+      "repository",
+      "workspace"
+    ],
+    "invariants": [
+      "id",
+      "rule",
+      "scope",
+      "severity"
+    ],
+    "decisions": [
+      "allowed",
+      "id",
+      "title",
+      "value"
+    ],
+    "locks": [
+      "capacity",
+      "metadata",
+      "name"
+    ],
+    "resource_classes": [
+      "id",
+      "instances",
+      "metadata",
+      "mode"
+    ],
+    "interfaces": [
+      "contract_paths",
+      "id",
+      "owner_task_id",
+      "state",
+      "version"
+    ],
+    "barriers": [
+      "id",
+      "mode",
+      "requirements",
+      "title"
+    ],
+    "tasks": [
+      "checkpoints",
+      "claim_locks",
+      "completion_contract",
+      "consumes_interfaces",
+      "depends_on",
+      "gates",
+      "id",
+      "invariants",
+      "kind",
+      "next_action",
+      "notes",
+      "objective",
+      "parallel_policy",
+      "parent_id",
+      "priority",
+      "produced_artifacts",
+      "resource_requests",
+      "result_policy",
+      "scope",
+      "status",
+      "tags",
+      "title"
+    ],
+    "runs": [
+      "charter",
+      "context_fragments",
+      "id",
+      "lanes",
+      "rendezvous",
+      "root_task_id"
+    ],
+    "task.scope": [
+      "exclusive_paths",
+      "forbidden_paths",
+      "read_paths",
+      "shared_locks"
+    ],
+    "task.depends_on": [
+      "checkpoint_id",
+      "state",
+      "task_id",
+      "type"
+    ],
+    "task.checkpoints": [
+      "id",
+      "publishes_interfaces",
+      "title"
+    ],
+    "task.gates": [
+      "argv",
+      "checkpoint_id",
+      "cwd",
+      "id",
+      "required",
+      "type"
+    ],
+    "run.charter": [
+      "acceptance_conditions",
+      "boundaries",
+      "detailed_authority",
+      "invariants",
+      "local_worker_boundary",
+      "objective"
+    ],
+    "run.lanes": [
+      "id",
+      "parent_lane_id",
+      "role",
+      "tasks",
+      "workspace"
+    ],
+    "run.rendezvous": [
+      "barrier_id",
+      "id",
+      "join_task_id",
+      "mode"
+    ]
+  },
+  "precedent_union": {}
+}
