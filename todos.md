@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4518`
+Project revision: `4527`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -666,7 +666,7 @@ Project revision: `4518`
 - `CE-CCP1-B04-013` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Provide cancellable, thread-aware parse/Sema sessions and immutable snapshots suitable for libCellerator and celleratord rather than coupling the bridge to one command-line process.
 - `CE-CCP1-B04-014` | kind: validation_task | status: done | parent: CE-CCP1-B04-000 | objective: Publish the versioned adapter and demonstrate an activated Cellerator placeholder resolving real C++ names, templates, constexpr values, and numeric types.
 - `CE-GEO-57` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
-- `CE-CCP1-C01-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Convert the reconciled language specification into an explicit versioned grammar, token kinds, contextual keywords, precedence table, and extension points.
+- `CE-CCP1-C01-001` | kind: validation_task | status: done | parent: CE-CCP1-C01-000 | objective: Convert the reconciled language specification into an explicit versioned grammar, token kinds, contextual keywords, precedence table, and extension points.
 - `CE-CCP1-C01-002` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Build a token cursor over activated source islands with checkpoint/rollback, balanced delimiter tracking, and deterministic recovery without reparsing the whole translation unit.
 - `CE-CCP1-C01-003` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse domain, axis, state, relation, support/order, profile, field, candidate, pass, and IR-binding declarations defined by the reconciled specification.
 - `CE-CCP1-C01-004` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse typed domain endpoints, value/storage/compute/accumulation types, orientation, mutability, ordering, generation, persistence, and human biological tags without resolving them.
