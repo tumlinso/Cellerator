@@ -21,3 +21,7 @@ add_executable(ce_ccp1_g03_003 implement_advisory_semantic_validators_test.cc "$
 target_include_directories(ce_ccp1_g03_003 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_003 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_003 COMMAND ce_ccp1_g03_003)
+add_executable(ce_ccp1_g03_004 implement_exact_coverage_and_ownership_diagnostics_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_exact_coverage_and_ownership_diagnostics.cc")
+target_include_directories(ce_ccp1_g03_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_004 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_004 COMMAND ce_ccp1_g03_004)
