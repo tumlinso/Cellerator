@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5730`
+Project revision: `5731`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -880,7 +880,7 @@ Project revision: `5730`
 - `CE-CCP1-F02-001` | kind: validation_task | status: done | parent: CE-CCP1-F02-000 | objective: Define target discovery, capability query, Realization IR admissibility, code emission, object production, diagnostics, toolchain identity, and optional native-fragment protocols.
 - `CE-CCP1-F02-002` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Register built-in and external backends through source-linked fragments, match target/capability/toolchain constraints, and honor explicit force/fallback policy.
 - `CE-CCP1-F02-003` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Translate Realization IR into explicit generated files, embedded data, compile jobs, link jobs, support libraries, and source maps before invoking any toolchain.
-- `CE-CCP1-F02-004` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Emit readable modern C++ for host stubs, CPU kernels, static data, runtime bindings, stage graphs, and calls into libCellerator where profitable.
+- `CE-CCP1-F02-004` | kind: task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Emit readable modern C++ for host stubs, CPU kernels, static data, runtime bindings, stage graphs, and calls into libCellerator where profitable.
 - `CE-CCP1-F02-005` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Lower typed relation apply to exact CPU loops or library calls using canonical/projection order and numeric policy, with deterministic reference behavior.
 - `CE-CCP1-F02-006` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Lower transpose, logical-edge gradients, support contraction, and partial merges with explicit order maps and accumulation types.
 - `CE-CCP1-F02-007` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
