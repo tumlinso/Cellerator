@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6675`
+Project revision: `6677`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -115,7 +115,7 @@ Project revision: `6675`
 - `CE-CCP1-E02-000` | status: done | execution: closed | next: Claim E02-001 after milestone prerequisites are reached.
 - `CE-CCP1-E03-000` | status: done | execution: closed | next: Claim E03-001 after milestone prerequisites are reached.
 - `CE-CCP1-E04-000` | status: done | execution: closed | next: Claim E04-001 after milestone prerequisites are reached.
-- `CE-CCP1-F01-000` | status: planned | execution: ready | next: Claim F01-001 after milestone prerequisites are reached.
+- `CE-CCP1-F01-000` | status: done | execution: closed | next: Claim F01-001 after milestone prerequisites are reached.
 - `CE-CCP1-F02-000` | status: planned | execution: ready | next: Claim F02-001 after milestone prerequisites are reached.
 - `CE-CCP1-M30` | status: done | execution: closed | next: Collect isolated lane receipts for P30, verify hashes and interfaces, integrate central files, run label ce_ccp1_m30, and publish CE-CCP1-MILESTONE-M30.
 - `CE-CCP1-P50` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
