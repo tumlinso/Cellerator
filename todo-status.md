@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5071`
+Project revision: `5074`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -399,7 +399,7 @@ Project revision: `5071`
 - `CE-CCP1-D03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement semantic transfer functions in the isolated D03 lane, add the focused ce_ccp1_d03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement bounded branch alternatives and joins in the isolated D03 lane, add the focused ce_ccp1_d03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement profile-state attachment to semantic ir in the isolated D03 lane, add the focused ce_ccp1_d03_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-D03-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement expose profile inspection and diff tooling in the isolated D03 lane, add the focused ce_ccp1_d03_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-D03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement expose profile inspection and diff tooling in the isolated D03 lane, add the focused ce_ccp1_d03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first profile-aware compile benchmark in the isolated D03 lane, add the focused ce_ccp1_d03_015 gate, and publish a source-linked receipt.
 - `CE-EXOP-64` | status: done | execution: closed | next: Deliver freeze acquisition v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-64` | status: done | execution: closed | next: Build initial row-owned CSR residual in pinned physical order with stable logical-edge value maps and extensible residual descriptors.
