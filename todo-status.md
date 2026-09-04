@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4094`
+Project revision: `4095`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -204,7 +204,7 @@ Project revision: `4094`
 - `CE-CCP1-A03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of superatom promotion in the isolated A03 lane, add the focused ce_ccp1_a03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement split persistent partial semantics from partial storage in the isolated A03 lane, add the focused ce_ccp1_a03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of global operation/program ir in the isolated A03 lane, add the focused ce_ccp1_a03_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of portable schedule compilation in the isolated A03 lane, add the focused ce_ccp1_a03_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define cellerator ownership of portable schedule compilation in the isolated A03 lane, add the focused ce_ccp1_a03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement define the retained cellshard concrete application boundary in the isolated A03 lane, add the focused ce_ccp1_a03_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement define temporary compiler-to-cellshard migration adapters in the isolated A03 lane, add the focused ce_ccp1_a03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ruleset export consumed by cellshard in the isolated A03 lane, add the focused ce_ccp1_a03_012 gate, and publish a source-linked receipt.
