@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6593`
+Project revision: `6598`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1106,7 +1106,7 @@ Project revision: `6593`
 - `CE-CCP1-J03-010` | kind: validation_task | status: done | parent: CE-CCP1-J03-000 | objective: Prove full JIT/runtime compilation and deep CellShard materialization/runtime evolution are not hidden prerequisites; retain only versioned seams and explicit deferred records.
 - `CE-CCP1-J03-011` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Compare current runtime/provider baselines, compiler overhead budgets, generated execution, planning quality, object sizes, and editor latency.
 - `CE-CCP1-J03-012` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Package source revisions, profile fixtures, CEIR examples, toolchain manifests, build presets, tests, benchmark commands, SDK consumer projects, and provenance needed to reproduce acceptance.
-- `CE-CCP1-J03-013` | kind: validation_task | status: in_progress | parent: CE-CCP1-J03-000 | objective: Close only after all mandatory interfaces/checkpoints, final host and NVIDIA acceptance, documentation reconciliation, SDK installation, celleratord baseline, JBC preservation, and deferred boundary checks pass.
+- `CE-CCP1-J03-013` | kind: validation_task | status: done | parent: CE-CCP1-J03-000 | objective: Close only after all mandatory interfaces/checkpoints, final host and NVIDIA acceptance, documentation reconciliation, SDK installation, celleratord baseline, JBC preservation, and deferred boundary checks pass.
 - `CE-EXOP-83` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver independent exact evaluator and incremental state exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-84` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver multi-candidate solution and snapshot contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-85` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze geometry optimizer contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
