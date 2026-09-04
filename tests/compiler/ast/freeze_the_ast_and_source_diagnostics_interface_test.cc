@@ -1,4 +1,6 @@
 #include <Cellerator/compiler/ast/freeze_the_ast_and_source_diagnostics_interface_v1.hh>
+#include <Cellerator/compiler/ast/ast_v1.hh>
+#include <Cellerator/compiler/ast/diagnostic_v1.hh>
 
 #include <cassert>
 #include <iostream>
