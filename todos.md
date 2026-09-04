@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5378`
+Project revision: `5382`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -847,7 +847,7 @@ Project revision: `5378`
 - `CE-CCP1-E04-006` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Translate stable provider/candidate/projection/capability/operation/numeric/resource descriptors into Planning IR with source-linked preparation hooks.
 - `CE-CCP1-E04-007` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Allow source, inline IR, external libraries, and migrated providers to add candidates with partial protocol implementations and explicit opaque behavior where necessary.
 - `CE-CCP1-E04-008` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Apply source/pipeline/user edits in the defined authority hierarchy while retaining diagnostics for impossible or dominated choices.
-- `CE-CCP1-E04-009` | kind: task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Expose storage, movement, replication, invalidation, latency, throughput, and application-supplied costs through generic callbacks/IR evidence without a CellShard dependency.
+- `CE-CCP1-E04-009` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Expose storage, movement, replication, invalidation, latency, throughput, and application-supplied costs through generic callbacks/IR evidence without a CellShard dependency.
 - `CE-CCP1-E04-010` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Normalize units, distributions, confidence, recurrence, amortization horizons, and missing phases across analytical, measured, cached, and external evidence.
 - `CE-CCP1-E04-011` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Model order transforms, materialization, shared traversal, fusion, common output ownership, canonicalization, and field-boundary effects between operation alternatives.
 - `CE-CCP1-E04-012` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Allow built-in exact/heuristic planners, user replacement planners, externally selected plans, and deterministic fallback under bounded time/memory budgets.
