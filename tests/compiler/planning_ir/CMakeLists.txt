@@ -43,3 +43,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_004 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_004 COMMAND ce_ccp1_e01_004)
+
+add_executable(ce_ccp1_e01_005
+    implement_atom_requirement_and_affordance_nodes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_atom_requirement_and_affordance_nodes.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/persistent_identity_v1.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/atom_requirement_v1.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/atom_affordance_v1.cc")
+target_include_directories(ce_ccp1_e01_005 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_005 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_005 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_005 COMMAND ce_ccp1_e01_005)
