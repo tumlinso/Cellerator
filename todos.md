@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5112`
+Project revision: `5117`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -781,7 +781,7 @@ Project revision: `5112`
 - `CE-CCP1-D03-012` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Carry per-branch states up to configured complexity, merge compatible evidence, widen uncertain dimensions, retain confidence, and avoid exponential code cloning.
 - `CE-CCP1-D03-013` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Attach environments and state values by stable references, not path strings; allow embedded small evidence and external large evidence.
 - `CE-CCP1-D03-014` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Add cellerator subcommands/APIs to dump summaries, compare states, explain confidence, show expected mutations, and identify missing evidence.
-- `CE-CCP1-D03-015` | kind: validation_task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Compile the same relation field against at least two profile states and prove candidate/search inputs differ while source semantics remain identical.
+- `CE-CCP1-D03-015` | kind: validation_task | status: done | parent: CE-CCP1-D03-000 | objective: Compile the same relation field against at least two profile states and prove candidate/search inputs differ while source semantics remain identical.
 - `CE-EXOP-64` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze acquisition v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-64` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Build initial row-owned CSR residual in pinned physical order with stable logical-edge value maps and extensible residual descriptors.
 - `CE-CCP1-E01-001` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Define unresolved, offered, admissible, rejected, dominated, selected, forced, externally selected, and fallback states within one representation rather than separate opaque planner records.
