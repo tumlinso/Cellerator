@@ -17,3 +17,9 @@ add_executable(ce_ccp1_h02_002
 target_include_directories(ce_ccp1_h02_002 PRIVATE ${CELLERATOR_ROOT}/include)
 set_target_properties(ce_ccp1_h02_002 PROPERTIES LINKER_LANGUAGE CXX)
 add_test(NAME ce_ccp1_h02_002 COMMAND ce_ccp1_h02_002)
+
+add_executable(ce_ccp1_h02_003
+    ../compiler/h02/define_c_compiler_session_api_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/api/define_c_compiler_session_api.cc)
+target_include_directories(ce_ccp1_h02_003 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_h02_003 COMMAND ce_ccp1_h02_003)
