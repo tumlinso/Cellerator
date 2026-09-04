@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5623`
+Project revision: `5624`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -903,7 +903,7 @@ Project revision: `5623`
 - `CE-CCP1-F03-008` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Model device symbols, libraries, nvlink steps, registration objects, and multi-translation-unit device code as explicit driver actions.
 - `CE-CCP1-F03-009` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Capture requested backend artifacts, embed/select them where appropriate, and record toolchain/architecture identity for resumption and diagnostics.
 - `CE-CCP1-F03-010` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Select cudart, driver API, cuSPARSE, cuBLAS, CUB, NCCL, and Cellerator provider/runtime libraries only when required by the selected realization.
-- `CE-CCP1-F03-011` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Use generated `#line`, source maps, ptxas diagnostics, resource-usage reports, and keep-temps to trace source/IR to CUDA/PTX.
+- `CE-CCP1-F03-011` | kind: task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Use generated `#line`, source maps, ptxas diagnostics, resource-usage reports, and keep-temps to trace source/IR to CUDA/PTX.
 - `CE-CCP1-F03-012` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower symbolic stage dependencies to caller streams, events, same-stream elision, generation publication, and graph-compatible launch behavior using existing runtime contracts.
 - `CE-CCP1-F03-013` | kind: validation_task | status: planned | parent: CE-CCP1-F03-000 | objective: Compile a profile-bound relation program through data-aware Planning IR and Realization IR into an ordinary CUDA-capable object with NVCC, link it, and execute on sm70.
 - `CE-CCP1-F03-014` | kind: validation_task | status: planned | parent: CE-CCP1-F03-000 | objective: Measure Cellerator compile/planning, generated source, nvcc time, ptxas resources, object size, preparation, packing, transfers, launches, kernel time, and reuse.

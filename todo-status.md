@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5623`
+Project revision: `5624`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -522,7 +522,7 @@ Project revision: `5623`
 - `CE-CCP1-F03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement relocatable device code and device linking in the isolated F03 lane, add the focused ce_ccp1_f03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement ptx, cubin, and fatbinary intermediates in the isolated F03 lane, add the focused ce_ccp1_f03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate cuda runtime and library linkage in the isolated F03 lane, add the focused ce_ccp1_f03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-F03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement map cuda diagnostics and line information in the isolated F03 lane, add the focused ce_ccp1_f03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement map cuda diagnostics and line information in the isolated F03 lane, add the focused ce_ccp1_f03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement integrate asynchronous readiness and streams in the isolated F03 lane, add the focused ce_ccp1_f03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first nvcc object milestone in the isolated F03 lane, add the focused ce_ccp1_f03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark nvcc backend complete cost in the isolated F03 lane, add the focused ce_ccp1_f03_014 gate, and publish a source-linked receipt.
