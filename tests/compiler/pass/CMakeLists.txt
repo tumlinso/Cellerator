@@ -118,3 +118,10 @@ add_executable(ce_ccp1_g02_015
     ${CELLERATOR_ROOT}/src/compiler/pass/implement_transform_sandbox_policy_as_opt_in_not_authori.cc)
 target_include_directories(ce_ccp1_g02_015 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_015 COMMAND ce_ccp1_g02_015)
+
+add_executable(ce_ccp1_g02_016
+    integrate_extension_pass_provenance_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/integrate_extension_pass_provenance.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
+target_include_directories(ce_ccp1_g02_016 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_016 COMMAND ce_ccp1_g02_016)
