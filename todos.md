@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5432`
+Project revision: `5439`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -852,7 +852,7 @@ Project revision: `5432`
 - `CE-CCP1-E04-011` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Model order transforms, materialization, shared traversal, fusion, common output ownership, canonicalization, and field-boundary effects between operation alternatives.
 - `CE-CCP1-E04-012` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Allow built-in exact/heuristic planners, user replacement planners, externally selected plans, and deterministic fallback under bounded time/memory budgets.
 - `CE-CCP1-E04-013` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Select one or more plans for named profile alternatives, share compatible artifacts, and emit bounded runtime selection requirements without duplicating full semantic programs.
-- `CE-CCP1-E04-014` | kind: task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Key plans by semantic fingerprint, profile/evidence revision, structure epoch, order, target class, toolchain, constraints, and planner revision at the earliest reusable stage.
+- `CE-CCP1-E04-014` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Key plans by semantic fingerprint, profile/evidence revision, structure epoch, order, target class, toolchain, constraints, and planner revision at the earliest reusable stage.
 - `CE-CCP1-E04-015` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Report considered alternatives, exact coverage, costs, evidence freshness, rejection/dominance, selected source, forced edits, and fallback.
 - `CE-CCP1-E04-016` | kind: validation_task | status: planned | parent: CE-CCP1-E04-000 | objective: Measure time, peak memory, candidate count, exact certification, search frontier, and quality versus oracle on scalable synthetic and biological fixtures.
 - `CE-CCP1-E04-017` | kind: validation_task | status: planned | parent: CE-CCP1-E04-000 | objective: Compile a profile-bound relation and a two-operation field from source through Semantic IR, Planning IR, decomposition, candidates, complete cost, and selected portable ruleset.
