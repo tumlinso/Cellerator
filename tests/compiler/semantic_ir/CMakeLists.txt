@@ -14,3 +14,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_001 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_001 COMMAND ce_ccp1_d02_001)
+
+add_executable(ce_ccp1_d02_002
+    implement_domain_and_axis_ir_types_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc")
+target_include_directories(ce_ccp1_d02_002 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_002 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_002 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_002 COMMAND ce_ccp1_d02_002)
