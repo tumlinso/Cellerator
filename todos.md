@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6020`
+Project revision: `6028`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -940,7 +940,7 @@ Project revision: `6020`
 - `CE-CCP1-G01-013` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Support before/after/replace/wrap/inlining splices with explicit dominance, effects, identities, profiles, and result substitution.
 - `CE-CCP1-G01-014` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Preserve identity only when explicitly semantically valid; otherwise derive new IDs, update generations, and retain lineage in cold provenance.
 - `CE-CCP1-G01-015` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Report phase availability, type mismatch, stale handles, capture effects, unknown extensions, validation mode, and resulting compiler invalidations.
-- `CE-CCP1-G01-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Compile a `.
+- `CE-CCP1-G01-016` | kind: validation_task | status: done | parent: CE-CCP1-G01-000 | objective: Compile a `.
 - `CE-EXOP-73` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver generic partition/order/resource export exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-73` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
 - `CE-CCP1-G02-001` | kind: validation_task | status: done | parent: CE-CCP1-G02-000 | objective: Name stable interception points before/after source canonicalization, profile propagation, discovery, certification, decomposition, candidate enumeration, cost modeling, selection, realization, packing, stage construction, and backend emission.
