@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5866`
+Project revision: `5867`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -546,7 +546,7 @@ Project revision: `5866`
 - `CE-GEO-72` | status: done | execution: closed | next: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
 - `CE-CCP1-G01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the compile-time ir handle model in the isolated G01 lane, add the focused ce_ccp1_g01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement reflection of current and named execution fields in the isolated G01 lane, add the focused ce_ccp1_g01_002 gate, and publish a source-linked receipt.
-- `CE-CCP1-G01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of operations and relations in the isolated G01 lane, add the focused ce_ccp1_g01_003 gate, and publish a source-linked receipt.
+- `CE-CCP1-G01-003` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement reflection of operations and relations in the isolated G01 lane, add the focused ce_ccp1_g01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of profile environments in the isolated G01 lane, add the focused ce_ccp1_g01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of planning ir search spaces in the isolated G01 lane, add the focused ce_ccp1_g01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of realization ir in the isolated G01 lane, add the focused ce_ccp1_g01_006 gate, and publish a source-linked receipt.
