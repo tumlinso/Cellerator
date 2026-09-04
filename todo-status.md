@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5655`
+Project revision: `5656`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -485,7 +485,7 @@ Project revision: `5655`
 - `CE-CCP1-F01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement projection contracts in the isolated F01 lane, add the focused ce_ccp1_f01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement packed operands and invalidation in the isolated F01 lane, add the focused ce_ccp1_f01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement order transforms and persistent physical order in the isolated F01 lane, add the focused ce_ccp1_f01_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-F01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement memory, workspace, and residency requirements in the isolated F01 lane, add the focused ce_ccp1_f01_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-F01-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement memory, workspace, and residency requirements in the isolated F01 lane, add the focused ce_ccp1_f01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement prepared stage graphs in the isolated F01 lane, add the focused ce_ccp1_f01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement launch and synchronization dependencies in the isolated F01 lane, add the focused ce_ccp1_f01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement generation readiness and publication in the isolated F01 lane, add the focused ce_ccp1_f01_012 gate, and publish a source-linked receipt.

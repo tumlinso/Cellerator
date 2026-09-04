@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5655`
+Project revision: `5656`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -866,7 +866,7 @@ Project revision: `5655`
 - `CE-CCP1-F01-006` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent CSR, feature-major, row-masked, dense fragment, MMA hybrid, transpose, vendor-specific, and extension projections with payload ABI and value-position maps.
 - `CE-CCP1-F01-007` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent packed value/input/output operands, source generation, value-position maps, alignment, padding holes, pack operation, persistence horizon, and stale-generation behavior.
 - `CE-CCP1-F01-008` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus explicit gather/scatter/canonicalize stages and reuse.
-- `CE-CCP1-F01-009` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent persistent/transient/graph-stable allocations, alignment, capacity, lifetime, host/device/address-space class, and caller/session ownership without allocating during IR construction.
+- `CE-CCP1-F01-009` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Represent persistent/transient/graph-stable allocations, alignment, capacity, lifetime, host/device/address-space class, and caller/session ownership without allocating during IR construction.
 - `CE-CCP1-F01-010` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent stage identity/kind, candidate, dependencies, bindings, resources, input/output order, structure epoch, value generations, global/local ranges, and profiler indices.
 - `CE-CCP1-F01-011` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent streams as symbolic classes, events/readiness tokens, same-stream elision, cross-stream waits, transfers, device links, and host synchronization only when explicit.
 - `CE-CCP1-F01-012` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent preparing/ready components, pending/current generation, complete publication, no partial publication, retained order, and canonicalization request.
