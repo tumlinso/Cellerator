@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4707`
+Project revision: `4720`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -680,7 +680,7 @@ Project revision: `4707`
 - `CE-CCP1-C01-012` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse IR reflection, pass declarations, pipeline insertion/replacement, compiler preludes, same-compilation transform application, and compile-time IR construction.
 - `CE-CCP1-C01-013` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse typed generated-C++, CUDA, PTX, and raw-native blocks with explicit target, inputs, outputs, clobbers/effects, and fallback requirements.
 - `CE-CCP1-C01-014` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Recover at field, declaration, operation, qualifier, and inline-IR boundaries; emit one primary diagnostic and bounded notes rather than cascades.
-- `CE-CCP1-C01-015` | kind: task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
+- `CE-CCP1-C01-015` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
 - `CE-CCP1-C01-016` | kind: validation_task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse every normative and provisional syntax example in docs/language, mark intentionally changed examples, and produce a grammar coverage matrix.
 - `CE-GEO-58` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
 - `CE-CCP1-C02-001` | kind: validation_task | status: planned | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
@@ -727,9 +727,9 @@ Project revision: `4707`
 - `CE-CCP1-C04-010` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Carry bounded branch-conditioned alternatives and explicit joins without generating uncontrolled decision-tree specialization.
 - `CE-CCP1-C04-011` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Apply non-binding facts/objectives for reuse, memory, latency, throughput, compilation budget, target preference, graph capture, and canonical output without changing mathematical meaning.
 - `CE-CCP1-C04-012` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Restrict legal plans for determinism, numerical tolerance, exactness, memory bounds, target capabilities, candidate families, order, and synchronization.
-- `CE-CCP1-C04-013` | kind: task | status: in_progress | parent: CE-CCP1-C04-000 | objective: Bind source declarations that offer a custom candidate to the planner or force an exact candidate/decomposition/realization, including explicit unsafe modes.
-- `CE-CCP1-C04-014` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Fail activated biological compilation when no representative semantic profile is bound, while allowing pure C++ fallthrough, CEIR-only structural work, and explicitly selected generic reference profiles.
-- `CE-CCP1-C04-015` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Assign stable field handles accessible to later reflection, cross-TU export, provenance, and celleratord without embedding runtime metadata.
+- `CE-CCP1-C04-013` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Bind source declarations that offer a custom candidate to the planner or force an exact candidate/decomposition/realization, including explicit unsafe modes.
+- `CE-CCP1-C04-014` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Fail activated biological compilation when no representative semantic profile is bound, while allowing pure C++ fallthrough, CEIR-only structural work, and explicitly selected generic reference profiles.
+- `CE-CCP1-C04-015` | kind: task | status: in_progress | parent: CE-CCP1-C04-000 | objective: Assign stable field handles accessible to later reflection, cross-TU export, provenance, and celleratord without embedding runtime metadata.
 - `CE-CCP1-C04-016` | kind: validation_task | status: planned | parent: CE-CCP1-C04-000 | objective: Compile a typed relation field through source, C++ resolution, biological Sema, profile binding, effect/lifetime analysis, and a semantic operation problem without selecting physical execution yet.
 - `CE-EXOP-61` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver default registry, provider, catalog, and planner assembly exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-61` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Define pointer-free groups, tiles, 256-bit masks, compact slots, width-tagged edge IDs, residual descriptors, schedules, and value maps for architecture_specific projection.
