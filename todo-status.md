@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4353`
+Project revision: `4364`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -276,7 +276,7 @@ Project revision: `4353`
 - `CE-CCP1-B04-004` | status: done | execution: closed | next: Inspect the cited read scope, implement bind source captures to c++ declarations and expressions in the isolated B04 lane, add the focused ce_ccp1_b04_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-005` | status: done | execution: closed | next: Inspect the cited read scope, implement extract canonical and spelled c++ types in the isolated B04 lane, add the focused ce_ccp1_b04_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-006` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate template instantiation with typed biological operations in the isolated B04 lane, add the focused ce_ccp1_b04_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-B04-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement integrate overload resolution and cellerator semantic candidates in the isolated B04 lane, add the focused ce_ccp1_b04_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-B04-007` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate overload resolution and cellerator semantic candidates in the isolated B04 lane, add the focused ce_ccp1_b04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose constexpr and constant-evaluation results in the isolated B04 lane, add the focused ce_ccp1_b04_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement model opaque native calls in the isolated B04 lane, add the focused ce_ccp1_b04_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement bind native effect contracts in the isolated B04 lane, add the focused ce_ccp1_b04_010 gate, and publish a source-linked receipt.

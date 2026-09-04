@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4353`
+Project revision: `4364`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -657,7 +657,7 @@ Project revision: `4353`
 - `CE-CCP1-B04-004` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Resolve every Cellerator domain, state, relation, qualifier expression, native call, and inline-IR capture to a typed Clang AST handle plus source provenance.
 - `CE-CCP1-B04-005` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Preserve both canonical type identity for planning and user spelling for diagnostics, including __half, bf16 wrappers, vectors, pointers, references, address spaces, and user-defined numeric types.
 - `CE-CCP1-B04-006` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Instantiate source templates before final operation selection while retaining dependent biological constraints until substitution resolves numeric and domain types.
-- `CE-CCP1-B04-007` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Allow C++ overloads/concepts to choose declarations while Cellerator Sema validates biological compatibility and operation semantics after C++ resolution.
+- `CE-CCP1-B04-007` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Allow C++ overloads/concepts to choose declarations while Cellerator Sema validates biological compatibility and operation semantics after C++ resolution.
 - `CE-CCP1-B04-008` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Import compile-time extents, policies, profile names, reuse counts, and user constants into Cellerator Sema without duplicating a C++ evaluator.
 - `CE-CCP1-B04-009` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Treat unresolved or uncontracted C/C++ calls inside fields as explicit semantic barriers with conservative read/write/escape effects, not as invisible operations.
 - `CE-CCP1-B04-010` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Associate source-level contracts with resolved functions and validate reads, writes, topology/order/support/value effects, determinism, purity, and aliasing claims.
