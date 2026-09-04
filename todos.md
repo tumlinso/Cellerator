@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6273`
+Project revision: `6281`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1012,8 +1012,8 @@ Project revision: `6273`
 - `CE-CCP1-H02-012` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Keep biological ABI, operation core, relation algebra, geometry, candidates, planner, prepared programs, sessions, readiness, and providers available to users who never compile `.
 - `CE-CCP1-H02-013` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Add stable umbrella/facade contracts over currently broad internal dependency closures without deleting existing lower-level expert headers.
 - `CE-CCP1-H02-014` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Expose source-language revision, CEIR levels, compiler API ABI, backend/provider versions, optional features, and compatibility checks.
-- `CE-CCP1-H02-015` | kind: task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Provide plain runtime API, source compiler embedding, CEIR editing, custom candidate, custom pass, and backend examples that build outside the source tree.
-- `CE-CCP1-H02-016` | kind: validation_task | status: planned | parent: CE-CCP1-H02-000 | objective: Publish component libraries and umbrellas, build C/C++ external consumers, preserve current execution functionality, and verify compiler APIs do not leak Clang/LLVM internals.
+- `CE-CCP1-H02-015` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Provide plain runtime API, source compiler embedding, CEIR editing, custom candidate, custom pass, and backend examples that build outside the source tree.
+- `CE-CCP1-H02-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Publish component libraries and umbrellas, build C/C++ external consumers, preserve current execution functionality, and verify compiler APIs do not leak Clang/LLVM internals.
 - `CE-GEO-77` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.
 - `CE-CCP1-H03-001` | kind: validation_task | status: done | parent: CE-CCP1-H03-000 | objective: Audit every proposed convenience abstraction: only compiler-reasoned semantic facts remain base language; containers, algorithms, biological constructions, policies, and helpers are `.
 - `CE-CCP1-H03-002` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Organize `.
