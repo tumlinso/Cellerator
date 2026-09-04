@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6504`
+Project revision: `6505`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -709,7 +709,7 @@ Project revision: `6504`
 - `CE-CCP1-J02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark generated cpu execution in the isolated J02 lane, add the focused ce_ccp1_j02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark generated nvidia execution in the isolated J02 lane, add the focused ce_ccp1_j02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark cross-tu/lto in the isolated J02 lane, add the focused ce_ccp1_j02_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-J02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark libcellerator and celleratord in the isolated J02 lane, add the focused ce_ccp1_j02_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-J02-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark libcellerator and celleratord in the isolated J02 lane, add the focused ce_ccp1_j02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement execute progressive vertical milestone campaign in the isolated J02 lane, add the focused ce_ccp1_j02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the part one performance and milestone receipt in the isolated J02 lane, add the focused ce_ccp1_j02_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-82` | status: done | execution: closed | next: Deliver semantic and target-cover strategy registries exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
