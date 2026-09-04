@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P20: Source language frontend
 
-Task revision: `6625`; current project revision is in `todo-status.md`.
+Task revision: `6626`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate source language frontend and publish milestone M20.

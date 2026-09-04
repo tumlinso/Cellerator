@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M50: Realization IR and CPU/NVIDIA backend foundation integrated
 
-Task revision: `6625`; current project revision is in `todo-status.md`.
+Task revision: `6626`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P50 workstreams, freeze shared interfaces, and publish milestone M50.
