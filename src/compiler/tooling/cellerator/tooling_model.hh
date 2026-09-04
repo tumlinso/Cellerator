@@ -37,5 +37,7 @@ struct realization_view {std::vector<std::string> atoms,extents,projections,orde
 [[nodiscard]] std::string render_realization_json(const realization_view&);
 struct candidate_explanation {double complete_cost=0,transition_cost=0;std::string evidence_kind,freshness,uncertainty,constraints,reuse,alternatives,dominance,user_edits,fallback;};
 [[nodiscard]] candidate_explanation explain_candidate(std::string_view evidence_kind,bool forced);
+struct optimization_action {std::string cause,detail,fix_it;double canonicalization_cost=0;bool safe=false;};
+[[nodiscard]] std::vector<optimization_action> missed_optimization_actions(std::string_view source);
 
 }  // namespace cellerator::compiler::tooling::v1
