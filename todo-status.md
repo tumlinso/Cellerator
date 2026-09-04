@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6683`
+Project revision: `6685`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -118,7 +118,7 @@ Project revision: `6683`
 - `CE-CCP1-F01-000` | status: done | execution: closed | next: Claim F01-001 after milestone prerequisites are reached.
 - `CE-CCP1-F02-000` | status: done | execution: closed | next: Claim F02-001 after milestone prerequisites are reached.
 - `CE-CCP1-M30` | status: done | execution: closed | next: Collect isolated lane receipts for P30, verify hashes and interfaces, integrate central files, run label ce_ccp1_m30, and publish CE-CCP1-MILESTONE-M30.
-- `CE-CCP1-P50` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
+- `CE-CCP1-P50` | status: done | execution: closed | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-20` | status: done | execution: closed | next: Deliver hierarchical index-space contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-30` | status: done | execution: closed | next: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
 - `CE-CCP1-F03-000` | status: done | execution: closed | next: Claim F03-001 after milestone prerequisites are reached.

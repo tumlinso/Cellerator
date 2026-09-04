@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6683`
+Project revision: `6685`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -499,7 +499,7 @@ Project revision: `6683`
 - `CE-CCP1-F01-000` | kind: workstream | status: done | parent: CE-CCP1-P50 | objective: Represent committed physical execution precisely enough for backend generation, expert rewriting, resumption, and ordinary runtime binding.
 - `CE-CCP1-F02-000` | kind: workstream | status: done | parent: CE-CCP1-P50 | objective: Define a compiler-independent backend contract and deliver the first ordinary native object path without CUDA.
 - `CE-CCP1-M30` | kind: validation_task | status: done | parent: CE-CCP1-P30 | objective: Integrate and validate all P30 workstreams, freeze shared interfaces, and publish milestone M30.
-- `CE-CCP1-P50` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate realization ir and native backends and publish milestone M50.
+- `CE-CCP1-P50` | kind: epic | status: done | parent: CE-CCP1-0000 | objective: Coordinate realization ir and native backends and publish milestone M50.
 - `CE-EXOP-20` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver hierarchical index-space contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-30` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
 - `CE-CCP1-F03-000` | kind: workstream | status: done | parent: CE-CCP1-P50 | objective: Use Cellerator planning to generate and assemble CUDA programs while delegating conventional CUDA compilation and device linking to NVCC.
