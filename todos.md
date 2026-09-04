@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5763`
+Project revision: `5766`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -886,7 +886,7 @@ Project revision: `5763`
 - `CE-CCP1-F02-007` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
 - `CE-CCP1-F02-008` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Lower selected physical projections and explicit pack/gather/scatter/canonicalization stages while retaining conventional unpacked fallback.
 - `CE-CCP1-F02-009` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Invoke discovered GCC or Clang with tracked source maps, depfiles, ABI flags, support libraries, and reproducible output paths.
-- `CE-CCP1-F02-010` | kind: task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Bind typed operand slots, workspace, generated constants, prepared stages, and error returns through libCellerator without requiring Cellerator source at runtime.
+- `CE-CCP1-F02-010` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Bind typed operand slots, workspace, generated constants, prepared stages, and error returns through libCellerator without requiring Cellerator source at runtime.
 - `CE-CCP1-F02-011` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Translate generated-source compiler errors and warnings through Realization/Semantic/source provenance with optional generated-code notes.
 - `CE-CCP1-F02-012` | kind: validation_task | status: planned | parent: CE-CCP1-F02-000 | objective: Measure compile time, generated-source size, object size, preparation, projection/packing, execution, and warm reuse against direct C++ baselines.
 - `CE-CCP1-F02-013` | kind: validation_task | status: planned | parent: CE-CCP1-F02-000 | objective: Compile a profile-bound Cellerator relation program from `.
