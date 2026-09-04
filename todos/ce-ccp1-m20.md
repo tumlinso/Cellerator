@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M20: Source language parser, AST, Sema, and execution-field semantics integrated
 
-Task revision: `4123`; current project revision is in `todo-status.md`.
+Task revision: `4920`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P20 workstreams, freeze shared interfaces, and publish milestone M20.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Collect isolated lane receipts for P20, verify hashes and interfaces, integrate central files, run label ce_ccp1_m20, and publish CE-CCP1-MILESTONE-M20.
