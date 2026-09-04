@@ -158,3 +158,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_015 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_015 COMMAND ce_ccp1_e04_015)
+
+add_executable(ce_ccp1_e04_016
+    benchmark_planning_scalability_and_boundedness_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/benchmark_planning_scalability_and_boundedness.cc")
+target_include_directories(ce_ccp1_e04_016 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_016 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_016 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_016 COMMAND ce_ccp1_e04_016)
