@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6667`
+Project revision: `6669`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -112,7 +112,7 @@ Project revision: `6667`
 - `CE-CCP1-E01-000` | status: done | execution: closed | next: Claim E01-001 after milestone prerequisites are reached.
 - `CE-EXOP-15` | status: done | execution: closed | next: Deliver freeze provider-build interface exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-25` | status: done | execution: closed | next: Prove existing enumeration/execution and planner selection, fake-provider extension without program.cc edits, and atomic duplicate/capability rejection.
-- `CE-CCP1-E02-000` | status: planned | execution: ready | next: Claim E02-001 after milestone prerequisites are reached.
+- `CE-CCP1-E02-000` | status: done | execution: closed | next: Claim E02-001 after milestone prerequisites are reached.
 - `CE-CCP1-E03-000` | status: planned | execution: ready | next: Claim E03-001 after milestone prerequisites are reached.
 - `CE-CCP1-E04-000` | status: planned | execution: ready | next: Claim E04-001 after milestone prerequisites are reached.
 - `CE-CCP1-F01-000` | status: planned | execution: ready | next: Claim F01-001 after milestone prerequisites are reached.
