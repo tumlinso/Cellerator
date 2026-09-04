@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5699`
+Project revision: `5706`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -872,7 +872,7 @@ Project revision: `5699`
 - `CE-CCP1-F01-012` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent preparing/ready components, pending/current generation, complete publication, no partial publication, retained order, and canonicalization request.
 - `CE-CCP1-F01-013` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent capture compatibility, fixed versus rebindable pointers/streams/generations, graph-stable addresses, update policy ownership, and replay variants.
 - `CE-CCP1-F01-014` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent input/output/value/workspace/native-symbol bindings by typed slots; live pointers, streams, handles, events, and leases enter only at prepared/runtime binding.
-- `CE-CCP1-F01-015` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
+- `CE-CCP1-F01-015` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
 - `CE-CCP1-F01-016` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Add compact syntax for targets, covers, planes, projections, packing, stages, readiness, bindings, and native fragments with unknown extension preservation.
 - `CE-CCP1-F01-017` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Separate structural parseability, semantic consistency, exact coverage, resource/capability checks, and unsafe continuation.
 - `CE-CCP1-F01-018` | kind: validation_task | status: planned | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
@@ -920,8 +920,8 @@ Project revision: `5699`
 - `CE-CCP1-F04-008` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Validate compute capability, WMMA/MMA shapes, collective scope, layouts, sparsity, memory interfaces, and numeric tuples against current capability manifests.
 - `CE-CCP1-F04-009` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Map source field/operation, Semantic/Planning/Realization nodes, generated PTX lines, and assembled resource reports through cold sidecars.
 - `CE-CCP1-F04-010` | kind: validation_task | status: done | parent: CE-CCP1-F04-000 | objective: Lower one narrowly scoped, exact, target-specific relation or packing microkernel directly to PTX and execute it without NVCC parsing generated device code.
-- `CE-CCP1-F04-011` | kind: task | status: in_progress | parent: CE-CCP1-F04-000 | objective: Measure compile time, object size, resource usage, launch/execution, diagnostics, and maintainability for matched realizations.
-- `CE-CCP1-F04-012` | kind: validation_task | status: planned | parent: CE-CCP1-F04-000 | objective: Allow one program to use prelinked providers, generated NVCC code, and direct PTX stages when ABI/order/generation contracts permit; fall back cleanly when an optional route is unavailable.
+- `CE-CCP1-F04-011` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Measure compile time, object size, resource usage, launch/execution, diagnostics, and maintainability for matched realizations.
+- `CE-CCP1-F04-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-F04-000 | objective: Allow one program to use prelinked providers, generated NVCC code, and direct PTX stages when ABI/order/generation contracts permit; fall back cleanly when an optional route is unavailable.
 - `CE-CCP1-F04-013` | kind: validation_task | status: planned | parent: CE-CCP1-F04-000 | objective: Publish supported subsets, capability contracts, diagnostics, provenance, and evaluated promotion status without making LLVM or direct PTX mandatory for host/NVCC builds.
 - `CE-EXOP-72` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver optional static profiling markers and unique kernel names exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-72` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
