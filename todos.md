@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5077`
+Project revision: `5088`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -761,7 +761,7 @@ Project revision: `5077`
 - `CE-CCP1-D02-010` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Represent forward/transpose/value-gradient closure, generation publication, canonicalization, and caller-owned update-policy boundaries without importing model/loss semantics.
 - `CE-CCP1-D02-011` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Represent resolved symbol, typed operands/results, effect contract or conservative barrier, exceptions, determinism, and provenance.
 - `CE-CCP1-D02-012` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Use structured regions plus explicit branches/loops where possible, carry bounded profile alternatives, and preserve opaque C++ control when semantic extraction is unavailable.
-- `CE-CCP1-D02-013` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Make structure/value/support/order invalidation, publication, cloning, assertion, and epoch boundary explicit operations rather than hidden metadata changes.
+- `CE-CCP1-D02-013` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Make structure/value/support/order invalidation, publication, cloning, assertion, and epoch boundary explicit operations rather than hidden metadata changes.
 - `CE-CCP1-D02-014` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Inline functions, operations, and fields with capture substitution, identity policy, profile-state substitution, generation repair, and provenance retention.
 - `CE-CCP1-D02-015` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Normalize source spellings to meaning while preserving relevant type, effect, identity, numerical, and field boundaries.
 - `CE-CCP1-D02-016` | kind: validation_task | status: planned | parent: CE-CCP1-D02-000 | objective: Lower a profile-bound relation field and a mixed multi-operation field from `.
@@ -1045,8 +1045,8 @@ Project revision: `5077`
 - `CE-CCP1-I01-009` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Pass through ordinary C++ features with source mapping and merge Cellerator symbol results without changing normal C++ behavior.
 - `CE-CCP1-I01-010` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Index C++ and Cellerator domains, relations, fields, profiles, passes, IR symbols, and cross-TU exports using compiler fingerprints.
 - `CE-CCP1-I01-011` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Allow syntax, C++ semantics, AST, and structural CEIR features without CUDA or loaded profile, while marking profile-dependent analysis unavailable rather than pretending it exists.
-- `CE-CCP1-I01-012` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Publish immutable query snapshots, source-position lookup, diagnostic streams, cancellation tokens, and background compilation hooks through libCellerator.
-- `CE-CCP1-I01-013` | kind: validation_task | status: planned | parent: CE-CCP1-I01-000 | objective: Measure startup, first diagnostics, incremental edit, completion, hover, navigation, memory, and clangd-proxy overhead on plain C++ and `.
+- `CE-CCP1-I01-012` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Publish immutable query snapshots, source-position lookup, diagnostic streams, cancellation tokens, and background compilation hooks through libCellerator.
+- `CE-CCP1-I01-013` | kind: validation_task | status: done | parent: CE-CCP1-I01-000 | objective: Measure startup, first diagnostics, incremental edit, completion, hover, navigation, memory, and clangd-proxy overhead on plain C++ and `.
 - `CE-CCP1-I01-014` | kind: validation_task | status: planned | parent: CE-CCP1-I01-000 | objective: Build bin/celleratord, open mixed ordinary C++/Cellerator workspaces, provide normal C++ diagnostics/navigation/completion plus Cellerator syntax diagnostics, and run without CUDA.
 - `CE-GEO-79` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Consume complete-cost forward evidence, record implemented/evaluated-not-promoted/failed disposition, keep nonwinning code optional and outside normal promotion, and freeze the implemented provider contract.
 - `CE-CCP1-I02-001` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Complete semantic declarations, field constructs, relations, operation families, effects, persistence/profile controls, reflection, passes, inline CEIR, and native blocks from parser context.

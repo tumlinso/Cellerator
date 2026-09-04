@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5077`
+Project revision: `5088`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -380,7 +380,7 @@ Project revision: `5077`
 - `CE-CCP1-D02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement gradient and publication operations in the isolated D02 lane, add the focused ce_ccp1_d02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement native and opaque c++ call operations in the isolated D02 lane, add the focused ce_ccp1_d02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement control flow and loop semantics in the isolated D02 lane, add the focused ce_ccp1_d02_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-D02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement generation and epoch transition operations in the isolated D02 lane, add the focused ce_ccp1_d02_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-D02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generation and epoch transition operations in the isolated D02 lane, add the focused ce_ccp1_d02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic ir inlining and composition in the isolated D02 lane, add the focused ce_ccp1_d02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic canonicalization and equivalence in the isolated D02 lane, add the focused ce_ccp1_d02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver source-to-semantic-ir vertical slice in the isolated D02 lane, add the focused ce_ccp1_d02_016 gate, and publish a source-linked receipt.
@@ -664,8 +664,8 @@ Project revision: `5077`
 - `CE-CCP1-I01-009` | status: done | execution: closed | next: Inspect the cited read scope, implement forward completion, hover, navigation, and rename in the isolated I01 lane, add the focused ce_ccp1_i01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-I01-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement workspace symbol and indexing foundations in the isolated I01 lane, add the focused ce_ccp1_i01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-I01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement host-only/no-profile editing behavior in the isolated I01 lane, add the focused ce_ccp1_i01_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-I01-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement expose reusable tooling snapshot apis in the isolated I01 lane, add the focused ce_ccp1_i01_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-I01-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark baseline editor latency in the isolated I01 lane, add the focused ce_ccp1_i01_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-I01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement expose reusable tooling snapshot apis in the isolated I01 lane, add the focused ce_ccp1_i01_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-I01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark baseline editor latency in the isolated I01 lane, add the focused ce_ccp1_i01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-I01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver celleratord c++-parity milestone in the isolated I01 lane, add the focused ce_ccp1_i01_014 gate, and publish a source-linked receipt.
 - `CE-GEO-79` | status: done | execution: closed | next: Consume complete-cost forward evidence, record implemented/evaluated-not-promoted/failed disposition, keep nonwinning code optional and outside normal promotion, and freeze the implemented provider contract.
 - `CE-CCP1-I02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cellerator syntax completion in the isolated I02 lane, add the focused ce_ccp1_i02_001 gate, and publish a source-linked receipt.
