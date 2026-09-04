@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6019`
+Project revision: `6034`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -940,7 +940,7 @@ Project revision: `6019`
 - `CE-CCP1-G01-013` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Support before/after/replace/wrap/inlining splices with explicit dominance, effects, identities, profiles, and result substitution.
 - `CE-CCP1-G01-014` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Preserve identity only when explicitly semantically valid; otherwise derive new IDs, update generations, and retain lineage in cold provenance.
 - `CE-CCP1-G01-015` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Report phase availability, type mismatch, stale handles, capture effects, unknown extensions, validation mode, and resulting compiler invalidations.
-- `CE-CCP1-G01-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Compile a `.
+- `CE-CCP1-G01-016` | kind: validation_task | status: done | parent: CE-CCP1-G01-000 | objective: Compile a `.
 - `CE-EXOP-73` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver generic partition/order/resource export exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-73` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
 - `CE-CCP1-G02-001` | kind: validation_task | status: done | parent: CE-CCP1-G02-000 | objective: Name stable interception points before/after source canonicalization, profile propagation, discovery, certification, decomposition, candidate enumeration, cost modeling, selection, realization, packing, stage construction, and backend emission.
@@ -955,7 +955,7 @@ Project revision: `6019`
 - `CE-CCP1-G02-010` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Record required protocols and backend capabilities; allow inspect-only, preserve-only, external-lowered, and fully understood modes.
 - `CE-CCP1-G02-011` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Define source regions parsed and semantically resolved before the main compilation graph for transform declarations, extension schemas, and pipeline configuration.
 - `CE-CCP1-G02-012` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Use the selected host toolchain to compile prelude transform code into a temporary compiler extension artifact, keyed by content/toolchain/API identity, without requiring the deferred general JIT.
-- `CE-CCP1-G02-013` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Allow a transform generation to affect later phases of the same compilation, cap recursive self-generation by explicit policy, and provide deterministic cycle/phase diagnostics.
+- `CE-CCP1-G02-013` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Allow a transform generation to affect later phases of the same compilation, cap recursive self-generation by explicit policy, and provide deterministic cycle/phase diagnostics.
 - `CE-CCP1-G02-014` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Cache prelude extension artifacts by source, compiler API, ABI, toolchain, target-host, dependencies, and trust policy; invalidate precisely and support keep-temps.
 - `CE-CCP1-G02-015` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Offer subprocess isolation, time/memory limits, and verified modes while allowing trusted in-process transforms and unsafe continuation for experts.
 - `CE-CCP1-G02-016` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Record extension identity, binary/source hash, pipeline location, inputs, outputs, invalidated analyses, diagnostics, and trust mode in cold provenance.
@@ -978,7 +978,7 @@ Project revision: `6019`
 - `CE-CCP1-G03-013` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Attribute failures to compiler phase/pass/backend, preserve temporary artifacts, and isolate optional custom passes when configured.
 - `CE-CCP1-G03-014` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Publish C/C++ callbacks, JSON/LSP records, stable IDs, related-information links, and cancellation-safe streaming for cellerator, libCellerator, and celleratord.
 - `CE-CCP1-G03-015` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Measure disabled, minimal, and full provenance compile-time/RSS/object-size overhead; keep hot runtime overhead zero.
-- `CE-CCP1-G03-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
+- `CE-CCP1-G03-016` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
 - `CE-EXOP-75` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-75` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
 - `CE-CCP1-H01-001` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
