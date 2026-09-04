@@ -31,3 +31,11 @@ The temporary header-only `cellshard::compiler::compatibility_v1` aliases are
 deprecated. They may retire only after all preserved consumers are migrated,
 the replacement schema is available, and the replacement interface is frozen;
 `CE-CCP1-E02-018` audits those gates.
+
+The E02-016 fixture inventory reconciles 131 legacy test and evidence files
+across 12 source families at the pinned commit. Each family records its source
+tree SHA-256, focused Cellerator gate, retained expected-result coverage, and
+any intentional consolidation or semantic clarification. Property, malformed,
+benchmark, and legitimate negative-result cases remain explicit acceptance
+categories; the cold manifest does not copy legacy fixture storage into a hot
+compiler ABI.
