@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4260`
+Project revision: `4261`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -229,7 +229,7 @@ Project revision: `4260`
 - `CE-CCP1-B01-003` | status: done | execution: closed | next: Inspect the cited read scope, implement create compiler component target boundaries in the isolated B01 lane, add the focused ce_ccp1_b01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-004` | status: done | execution: closed | next: Inspect the cited read scope, implement set modern compiler/tooling language standards in the isolated B01 lane, add the focused ce_ccp1_b01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement isolate legacy cuda target requirements in the isolated B01 lane, add the focused ce_ccp1_b01_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-B01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement define optional llvm and clang library discovery in the isolated B01 lane, add the focused ce_ccp1_b01_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-B01-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define optional llvm and clang library discovery in the isolated B01 lane, add the focused ce_ccp1_b01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement define backend resource discovery manifests in the isolated B01 lane, add the focused ce_ccp1_b01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement define build-tree generated header ownership in the isolated B01 lane, add the focused ce_ccp1_b01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement create host-only compiler smoke targets in the isolated B01 lane, add the focused ce_ccp1_b01_009 gate, and publish a source-linked receipt.
