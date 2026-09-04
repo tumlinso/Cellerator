@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/program/import_typed_composition_production_contracts_v1.hh>
+#include <cassert>
+using namespace Cellerator::compiler::composition;
+int main(){typed_production_contract_v1 p{"compose.relation",{{"lhs","relation",production_value_role_v1::input,"genes","canonical",1},{"rhs","relation",production_value_role_v1::input,"genes","canonical",1},{"out","relation",production_value_role_v1::output,"genes","packed",2},{"threshold","f32",production_value_role_v1::parameter,"scalar","scalar",0}},{{"out",{{"lhs",1},{"rhs",1}},true}},{production_effect_v1::reads_state},{0,4096,1,1200.0},"derived(lhs,rhs)","packed(lhs,rhs)","max(inputs)+1","verify_exact_cover_v1"};std::string e;assert(validate_typed_production_contract_v1(p,&e));auto invalid=p;invalid.verifier.clear();assert(!validate_typed_production_contract_v1(invalid,&e));auto missing=p;missing.values[0].order_identity.clear();assert(!validate_typed_production_contract_v1(missing,&e));}

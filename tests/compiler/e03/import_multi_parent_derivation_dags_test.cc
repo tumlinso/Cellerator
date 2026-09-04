@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/program/import_multi_parent_derivation_dags_v1.hh>
+#include <cassert>
+using namespace Cellerator::compiler::composition;
+int main(){derivation_dag_v1 g{{{"a","atom","source:a","",{}},{"b","atom","source:b","",{}},{"c","relation","derived:c","exact_union(a,b)",{{"a","compose",false},{"b","compose",true}}}}};auto ok=validate_derivation_dag_v1(g);assert(ok.valid&&ok.topological_order.back()=="c");auto dup=g;dup.nodes.push_back(g.nodes[0]);assert(!validate_derivation_dag_v1(dup).valid);derivation_dag_v1 cyc{{{"a","atom","l","rebuild(b)",{{"b","p",false}}},{"b","atom","l","rebuild(a)",{{"a","p",false}}}}};auto bad=validate_derivation_dag_v1(cyc);assert(!bad.valid&&bad.diagnostic=="cycle -> a -> b -> a");auto missing=g;missing.nodes[2].parents[0].node="z";assert(!validate_derivation_dag_v1(missing).valid);}
