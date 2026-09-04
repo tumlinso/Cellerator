@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/program/deliver_the_profile_to_portable_ruleset_slice_v1.hh>
+#include <cassert>
+using namespace Cellerator::compiler::composition;
+int main(){workload_family_v1 f{"semantic.pbmc","profile.pbmc","sm70",16,mutation_horizon_v1::per_generation,{{"latency",1}}};profile_ruleset_request_v1 q{f,{"relation_apply","normalize","publish"},{"module.a","module.b","module.c"},2,8,10};auto r=compile_profile_to_ruleset_v1(q);assert(r.valid&&!r.no_basis&&r.metrics.candidates_considered==2&&r.metrics.exactly_certified==2&&r.schedule.operation_order.size()==3);q.discovered_atoms.clear();auto fallback=compile_profile_to_ruleset_v1(q);assert(fallback.valid&&fallback.no_basis&&fallback.schedule.atom_requirements[0]=="unsplit.fallback");q.candidate_bound=0;assert(!compile_profile_to_ruleset_v1(q).valid);}
