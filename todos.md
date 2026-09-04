@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4941`
+Project revision: `4949`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -750,7 +750,7 @@ Project revision: `4941`
 - `CE-EXOP-62` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver multiple projections, chunking, and explicit fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-62` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement checked offsets, alignment, identities, counts, index widths, checksums, corruption rejection, and CPE2 embedding.
 - `CE-CCP1-D02-001` | kind: validation_task | status: done | parent: CE-CCP1-D02-000 | objective: Define program, module, translation-unit, function, named field, anonymous field, and imported semantic symbol ownership with explicit cross-TU export authorization.
-- `CE-CCP1-D02-002` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Represent domain/tag, extent knowledge, order, geometry, partition, local/global identity, and recovery contracts as distinct typed entities.
+- `CE-CCP1-D02-002` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Represent domain/tag, extent knowledge, order, geometry, partition, local/global identity, and recovery contracts as distinct typed entities.
 - `CE-CCP1-D02-003` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Represent axis, width, storage/compute/accumulation/output types, order, generation, mutability, address/residency intent, and alias class.
 - `CE-CCP1-D02-004` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Represent source/destination axes, structure identity/epoch, logical edge identity/order/count, support, value plane/generation, active-support generation, orientation, and mutation policy.
 - `CE-CCP1-D02-005` | kind: task | status: planned | parent: CE-CCP1-D02-000 | objective: Represent field boundaries, captures, results, profile environment, facts, constraints, observable effects, and explicit nested-field semantics.
@@ -1035,8 +1035,8 @@ Project revision: `4941`
 - `CE-CCP1-H03-018` | kind: validation_task | status: planned | parent: CE-CCP1-H03-000 | objective: Install from a clean checkout, compile ordinary C++, `.
 - `CE-GEO-78` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.
 - `CE-CCP1-I01-001` | kind: validation_task | status: done | parent: CE-CCP1-I01-000 | objective: Define an LSP server over shared libCellerator snapshots with an upstream clangd worker/proxy or reusable upstream components for ordinary C++ features, without a permanent fork.
-- `CE-CCP1-I01-002` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Support stdio, framing, request IDs, notifications, cancellation, progress, initialization, capabilities, graceful shutdown, and structured logging.
-- `CE-CCP1-I01-003` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Discover an overridable compatible clangd, launch/manage it when proxy mode is used, forward initialization/configuration, restart safely, and expose version diagnostics.
+- `CE-CCP1-I01-002` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Support stdio, framing, request IDs, notifications, cancellation, progress, initialization, capabilities, graceful shutdown, and structured logging.
+- `CE-CCP1-I01-003` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Discover an overridable compatible clangd, launch/manage it when proxy mode is used, forward initialization/configuration, restart safely, and expose version diagnostics.
 - `CE-CCP1-I01-004` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Consume compile_commands, cellerator toolchain/profile/backend flags, resource directories, response files, and per-file activation state.
 - `CE-CCP1-I01-005` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Maintain transformed C++ documents for clangd while mapping positions, edits, diagnostics, symbols, and fix-its to original `.
 - `CE-CCP1-I01-006` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Reuse source tokens, include state, shadow C++, C++ AST bridge, Cellerator AST, and Semantic IR for unchanged regions with dependency-aware invalidation.
