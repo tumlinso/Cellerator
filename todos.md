@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4825`
+Project revision: `4829`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -687,7 +687,7 @@ Project revision: `4825`
 - `CE-CCP1-C02-002` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Represent declarations, fields, operations, policies, effects, profile bindings, inline IR, reflection, passes, and native fragments without mirroring parser productions mechanically.
 - `CE-CCP1-C02-003` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Store adapter-owned stable references to resolved C++ declarations, expressions, types, templates, and constants without exporting raw Clang pointers through public APIs.
 - `CE-CCP1-C02-004` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Resolve domains, axes, relations, fields, profiles, candidates, passes, IR names, and imported program symbols with C++ namespace context where appropriate.
-- `CE-CCP1-C02-005` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Derive compilation-local stable IDs from semantic owner, canonical source location, declaration identity, and revision, while separating persistent user identities from transient AST handles.
+- `CE-CCP1-C02-005` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Derive compilation-local stable IDs from semantic owner, canonical source location, declaration identity, and revision, while separating persistent user identities from transient AST handles.
 - `CE-CCP1-C02-006` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Attach definition, expansion, physical file, shadow placeholder, and generated-source mappings as cold sidecars.
 - `CE-CCP1-C02-007` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Provide allocation-free iteration views and indexed lookup for fields, relations, operations, effects, and source positions.
 - `CE-CCP1-C02-008` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Represent severity, category, source ranges, notes, fix-its, related symbols, compiler phase, and stable diagnostic ID independently of terminal rendering.
