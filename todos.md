@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4778`
+Project revision: `4784`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -704,7 +704,7 @@ Project revision: `4778`
 - `CE-CCP1-C03-007` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Model forward, transpose/backward, and orientation-specific output axes as semantic operation choices over shared logical edges, not pointer reinterpretations.
 - `CE-CCP1-C03-008` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Carry storage, dense input, compute, accumulation, output, nonfinite, precision, and approximation contracts before candidate selection.
 - `CE-CCP1-C03-009` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Resolve relation apply, transpose, support contraction, segment statistics, normalization, edge map/gate, sparse update, bundle, chain, moments, hierarchy, exchange, gradient, and publication kinds.
-- `CE-CCP1-C03-010` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Distinguish assign, add, subtract, multiply, maximum, shared-destination accumulation, partial outputs, canonicalization, and epilogues with explicit alias legality.
+- `CE-CCP1-C03-010` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Distinguish assign, add, subtract, multiply, maximum, shared-destination accumulation, partial outputs, canonicalization, and epilogues with explicit alias legality.
 - `CE-CCP1-C03-011` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Track structure epoch, value generation, active-support generation, order generation, and publication state separately in Sema.
 - `CE-CCP1-C03-012` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Distinguish inferred identity, declared persistent identity, user-forced identity, cloned identity, and ephemeral compiler handles.
 - `CE-CCP1-C03-013` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Expose concepts/traits for semantic categories while ensuring final Cellerator operation selection sees instantiated C++ numeric and layout types.
