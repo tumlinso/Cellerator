@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6512`
+Project revision: `6513`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1091,7 +1091,7 @@ Project revision: `6512`
 - `CE-CCP1-J02-010` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure preparation, allocation, packing, transfer, synchronization, launches, kernel time, canonicalization, graph replay, and amortized reuse on sm70.
 - `CE-CCP1-J02-011` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure object CEIR size, extraction, merge, incremental cache, replanning, re-emission, link time, binary size, and runtime benefit for authorized field chains.
 - `CE-CCP1-J02-012` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure API session startup, concurrent parses, cancellation, editor startup, diagnostics, completion, hover, IR/candidate queries, and memory.
-- `CE-CCP1-J02-013` | kind: task | status: planned | parent: CE-CCP1-J02-000 | objective: Record driver passthrough, pragma parse, first Semantic IR, profile-aware compile, Planning IR candidate, CPU object, NVCC object, inline rewrite, custom pass, cross-TU import, and celleratord hover as separately reproducible milestones.
+- `CE-CCP1-J02-013` | kind: task | status: in_progress | parent: CE-CCP1-J02-000 | objective: Record driver passthrough, pragma parse, first Semantic IR, profile-aware compile, Planning IR candidate, CPU object, NVCC object, inline rewrite, custom pass, cross-TU import, and celleratord hover as separately reproducible milestones.
 - `CE-CCP1-J02-014` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Aggregate complete-cost evidence, regression budgets, promotion/non-promotion decisions, source/toolchain/profile identities, and milestone reproducibility.
 - `CE-EXOP-82` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver semantic and target-cover strategy registries exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J03-001` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: Merge isolated source fragments into root/subsystem CMake, grammar/dialect/backend/pass registries, umbrellas, generated manifests, standard-library resources, and package exports under one integration owner.
