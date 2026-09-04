@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4324`
+Project revision: `4325`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -616,7 +616,7 @@ Project revision: `4324`
 - `CE-CCP1-B01-009` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add planned smoke targets for CEIR parser/printer, profile loader, source manager, diagnostics, and celleratord protocol code without CUDA linkage.
 - `CE-CCP1-B01-010` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add conditional linkage tests that bind Realization IR and backend adapters to existing Cellerator CUDA provider/runtime targets.
 - `CE-CCP1-B01-011` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Specify presets for host-only Clang, host-only GCC, CUDA+NVCC sm70, CUDA+Clang where available, installed-consumer, sanitizer, and language-server builds.
-- `CE-CCP1-B01-012` | kind: validation_task | status: planned | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
+- `CE-CCP1-B01-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
 - `CE-EXOP-54` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver planner correctness and scale tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-54` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the replaceable portable source/destination community strategy and rectangular-support semantic components.
 - `CE-CCP1-B02-001` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
