@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:07:10Z",
+  "generated_at": "2026-09-04T08:15:32Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4498,
+  "project_revision": 4500,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -49241,6 +49241,26 @@
         "revision": 4498,
         "seq": 4498,
         "timestamp": "2026-09-04T08:07:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-M10-INTEGRATION-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-M10-INTEGRATION-GATE\"}",
+        "revision": 4499,
+        "seq": 4499,
+        "timestamp": "2026-09-04T08:15:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-M10-INTEGRATION-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b463b922-4839-4cc6-a3e8-d52934969208\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4500,
+        "seq": 4500,
+        "timestamp": "2026-09-04T08:15:32Z"
       }
     ],
     "evidence": [
@@ -57549,6 +57569,19 @@
         "metadata_json": "{\"argv\": [\"c++\", \"-std=c++17\", \"-O2\", \"-Wall\", \"-Wextra\", \"-Werror\", \"-pedantic\", \"-I\", \"Cellerator/components/CellPack/include\", \"-I\", \"Cellerator/include\", \"-c\", \"Cellerator/components/CellPack/src/persistence/execution_image_v2_cpk1.cc\", \"-o\", \"Cellerator/build-ce-arch/execution_image_v2_cpk1.o\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"c++\", \"-std=c++17\", \"-O2\", \"-Wall\", \"-Wextra\", \"-Werror\", \"-pedantic\", \"-I\", \"Cellerator/components/CellPack/include\", \"-I\", \"Cellerator/include\", \"-c\", \"Cellerator/components/CellPack/src/persistence/execution_image_v2_cpk1.cc\", \"-o\", \"Cellerator/build-ce-arch/execution_image_v2_cpk1.o\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"ed8bd670dceb2bae95a8d6d66d0be3b893f9059796f2526564a66999808f7483\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"architecture-recovery-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/baseplane-dna2-benchmark.md\", \"todos/baseplane-dna2-explicit-widths.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-01.md\", \"todos/ce-arch-02.md\", \"todos/ce-arch-10.md\", \"todos/ce-arch-11.md\", \"todos/ce-arch-12.md\", \"todos/ce-arch-20.md\", \"todos/ce-arch-21.md\", \"todos/ce-arch-22.md\", \"todos/ce-arch-30.md\", \"todos/ce-arch-31.md\", \"todos/ce-arch-40.md\", \"todos/ce-arch-50.md\", \"todos/ce-arch-60.md\", \"todos/cellerator-hierarchy-reset.md\", \"todos/cellerator-runtime-autotune.md\", \"todos/cellerator-sparse-ml-layout.md\", \"todos/cellpack-packing-plan-cuda-evaluator.md\", \"todos/cellpack-packing-plan-evaluator.md\", \"todos/cp-bp-00.md\", \"todos/cp-bp-01.md\", \"todos/cp-bp-02.md\", \"todos/cp-bp-03.md\", \"todos/cp-bp-04.md\", \"todos/cp-bp-05.md\", \"todos/cp-bp-06.md\", \"todos/cp-bp-07.md\", \"todos/cp-bp-08.md\", \"todos/cp-bp-09.md\", \"todos/cp-bp-10.md\", \"todos/cp-bp-11.md\", \"todos/cp-bp-12.md\", \"todos/cp-bp-13.md\", \"todos/cp-math-00.md\", \"todos/cp-math-06.md\", \"todos/cp-math-08.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\", \"todos/sequence-bits-dna2.md\"], \"files\": [{\"path\": \"Cellerator/components/CellPack/include/CellPack/persistence/execution_image_v2.hh\", \"sha256\": \"665d74b8eaa76786d5a37af1323ee0cfdf15f2a23dcc729137d2c2df951df237\"}, {\"path\": \"Cellerator/components/CellPack/include/CellPack/persistent_packing_payload.hh\", \"sha256\": \"0c49bb9956e3e02cd66e4cff117b62b72e0238c83e6b4c1ca04f4fb11d28ed92\"}, {\"path\": \"Cellerator/components/CellPack/src/persistence/execution_image_v2_cpk1.cc\", \"sha256\": \"57a47a677d55cea3e7370eb6b00522e03504b2f5c593e4a79c0071df65f34df8\"}], \"interfaces\": [], \"recorded_git_head\": \"a32ff9c82b4b006a751d62b943942c106f38e639\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 599}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/b4443bfa-3ac2-4dab-afd4-dda22e97243e",
         "revision": 600,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:15:32Z",
+        "gate_id": "CE-CCP1-M10-INTEGRATION-GATE",
+        "id": "b463b922-4839-4cc6-a3e8-d52934969208",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-L\", \"ce_ccp1_m10\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e2635dc9a36ad83c822ccef94ad404b22ab1b0a3f3a9759b15cf8640469f0e13\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-L\", \"ce_ccp1_m10\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"a19dc09025f9bf18fc521d8f2d813f86a00f08aa\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"53b378a771ef8702576c5b4df64bdabdb9ab7d217eefd9ba2ed7c5e8679b63f1\", \"started_revision\": 4499, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-integrate-foundation\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/b463b922-4839-4cc6-a3e8-d52934969208",
+        "revision": 4500,
         "status": "passed"
       },
       {
@@ -69687,9 +69720,9 @@
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-L\", \"ce_ccp1_m10\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-M10-INTEGRATION-GATE",
         "input_fingerprint": "e2635dc9a36ad83c822ccef94ad404b22ab1b0a3f3a9759b15cf8640469f0e13",
-        "last_run_at": "2026-09-04T08:07:10Z",
+        "last_run_at": "2026-09-04T08:15:32Z",
         "required": 1,
-        "revision": 4498,
+        "revision": 4500,
         "status": "passed",
         "task_id": "CE-CCP1-M10",
         "type": "command",
