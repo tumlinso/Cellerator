@@ -69,3 +69,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_006 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_006 COMMAND ce_ccp1_d02_006)
+
+add_executable(ce_ccp1_d02_007
+    implement_contraction_segment_and_normalization_operatio_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc")
+target_include_directories(ce_ccp1_d02_007 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_007 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_007 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_007 COMMAND ce_ccp1_d02_007)
