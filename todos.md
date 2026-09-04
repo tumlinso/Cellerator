@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4220`
+Project revision: `4228`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -606,7 +606,7 @@ Project revision: `4220`
 - `CE-EXOP-53` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver layout, value-mode, reuse, and connected-operation economics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-53` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
 - `CE-CCP1-B01-001` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Change the planned root-language contract from unconditional CXX+CUDA to CXX with explicit optional accelerator enablement.
-- `CE-CCP1-B01-002` | kind: task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Specify CELLERATOR_ENABLE_CUDA=AUTO|ON|OFF, check_language(CUDA), explicit failure for ON without a toolchain, and non-failure for AUTO/OFF.
+- `CE-CCP1-B01-002` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Specify CELLERATOR_ENABLE_CUDA=AUTO|ON|OFF, check_language(CUDA), explicit failure for ON without a toolchain, and non-failure for AUTO/OFF.
 - `CE-CCP1-B01-003` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Define Cellerator::CompilerCore, Frontend, CEIR, Profiles, Planning, Realization, Backends, Tooling, and Diagnostics targets with acyclic link directions.
 - `CE-CCP1-B01-004` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Build compiler and tooling implementation with a modern C++ baseline, initially C++23 where supported, while retaining explicit C++17/CUDA17 compatibility islands for existing runtime/provider code.
 - `CE-CCP1-B01-005` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Move CUDA language properties, CUDAToolkit discovery, architecture flags, and provider manifests behind CUDA-enabled target functions rather than root-global requirements.
@@ -619,8 +619,8 @@ Project revision: `4220`
 - `CE-CCP1-B01-012` | kind: validation_task | status: planned | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
 - `CE-EXOP-54` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver planner correctness and scale tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-54` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the replaceable portable source/destination community strategy and rectangular-support semantic components.
-- `CE-CCP1-B02-001` | kind: task | status: in_progress | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
-- `CE-CCP1-B02-002` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Specify deterministic response-file expansion, quoting, environment capture, path normalization, and forwarding groups so very large downstream command lines remain reproducible.
+- `CE-CCP1-B02-001` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
+- `CE-CCP1-B02-002` | kind: task | status: in_progress | parent: CE-CCP1-B02-000 | objective: Specify deterministic response-file expansion, quoting, environment capture, path normalization, and forwarding groups so very large downstream command lines remain reproducible.
 - `CE-CCP1-B02-003` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Search explicit overrides, environment, configured resources, PATH, and platform defaults in a documented precedence order.
 - `CE-CCP1-B02-004` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Resolve g++, gcc, linker, include search, target triple, libstdc++ ABI mode, and version identity independently of the Clang semantic-library dependency.
 - `CE-CCP1-B02-005` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Resolve nvcc, host compiler compatibility, CUDA toolkit root, ptxas, nvlink, fatbinary, architecture support, and version identity with explicit overrides.
