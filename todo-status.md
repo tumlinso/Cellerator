@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4042`
+Project revision: `4043`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -197,7 +197,7 @@ Project revision: `4042`
 - `CE-EXOP-51` | status: done | execution: closed | next: Deliver resource, mechanism, and stage-aware planning exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-51` | status: done | execution: closed | next: Reuse compatible sampled-support machinery, add bounded high-degree pair sampling, deterministic provenance and seed, and avoid all-pairs expansion.
 - `CE-CCP1-A03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of evidence and proposal discovery in the isolated A03 lane, add the focused ce_ccp1_a03_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of exact certification in the isolated A03 lane, add the focused ce_ccp1_a03_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define cellerator ownership of exact certification in the isolated A03 lane, add the focused ce_ccp1_a03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of atom semantics in the isolated A03 lane, add the focused ce_ccp1_a03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of typed composition and grammar in the isolated A03 lane, add the focused ce_ccp1_a03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of basis selection in the isolated A03 lane, add the focused ce_ccp1_a03_005 gate, and publish a source-linked receipt.
