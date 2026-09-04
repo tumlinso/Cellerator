@@ -5,6 +5,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/set_modern_compiler_tooli
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/isolate_legacy_cuda_target_requirements.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_optional_llvm_and_clang_library_discovery.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_backend_resource_discovery_manifests.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_tree_generated_header_ownership.cmake)
 
 # This directory is intentionally safe to include from a project declared with
 # `project(... LANGUAGES CXX)`. CUDA is considered only by the accelerator
@@ -15,3 +16,5 @@ cellerator_create_compiler_component_targets()
 cellerator_discover_llvm_clang()
 cellerator_generate_backend_resource_manifest(
     "${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator/backend-resources.txt")
+cellerator_generate_compiler_build_header(
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/compiler/build/features_v1.hh")
