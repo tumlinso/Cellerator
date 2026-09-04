@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T06:11:24Z",
+  "generated_at": "2026-09-04T06:11:39Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4117,
+  "project_revision": 4118,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -45431,6 +45431,16 @@
         "revision": 4117,
         "seq": 4117,
         "timestamp": "2026-09-04T06:11:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-A03",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-A03\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-A03-013\"}",
+        "revision": 4118,
+        "seq": 4118,
+        "timestamp": "2026-09-04T06:11:39Z"
       }
     ],
     "evidence": [
@@ -226480,12 +226490,12 @@
         "priority": 848,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4015,
-        "status": "planned",
+        "revision": 4118,
+        "status": "in_progress",
         "tags_json": "[\"a03\", \"compiler-migration\", \"leaf\"]",
         "title": "Reconcile old JBC documentation and active-run status",
-        "updated_at": "2026-09-04T05:43:47Z",
-        "version": 2
+        "updated_at": "2026-09-04T06:11:39Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -270775,13 +270785,13 @@
         "task_id": "CE-CCP1-A03-012"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T06:11:39Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-A03",
         "position": 12,
-        "revision": 4015,
-        "state": "queued",
+        "revision": 4118,
+        "state": "active",
         "task_id": "CE-CCP1-A03-013"
       },
       {
@@ -280221,11 +280231,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-A03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4117,
+        "revision": 4118,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T06:11:24Z",
+        "state": "active",
+        "updated_at": "2026-09-04T06:11:39Z",
         "workspace_mode": "isolated_merge"
       },
       {
