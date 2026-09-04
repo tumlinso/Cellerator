@@ -1,0 +1,72 @@
+#pragma once
+
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
+
+namespace cellerator::compiler::tooling::v1 {
+
+struct completion_item {
+    std::string spelling;
+    std::string category;
+};
+
+[[nodiscard]] std::vector<completion_item>
+complete_cellerator_syntax(std::string_view source, std::size_t cursor);
+
+struct biological_hover {
+    std::string domain, tag, source_axis, destination_axis, support, orientation;
+    std::string numeric_tuple, mutability, structure_identity, value_generation, source_link;
+};
+[[nodiscard]] biological_hover describe_biological_relation(std::string_view declaration);
+struct field_effect_view {std::string field,boundary,profile;std::vector<std::string> captures,reads,writes,effects,barriers;bool optimization_visible=false;};
+[[nodiscard]] field_effect_view describe_field_effects(std::string_view source,std::size_t cursor);
+struct profile_state_view {std::string selected;std::vector<std::string> evidence,alternatives,unknown_dimensions,missing_hints;double confidence=0;std::string support_state,value_state,mutation_state;};
+[[nodiscard]] profile_state_view profile_state_at_cursor(std::string_view source,std::size_t cursor);
+struct generation_view {std::size_t structure=1,value=1,support=1,order=1;std::vector<std::string> stale_artifacts;};
+[[nodiscard]] generation_view query_generations(std::string_view statement);
+struct semantic_ir_view {std::string normalized,source_map;std::vector<std::string> effects,profiles,extensions;};
+[[nodiscard]] semantic_ir_view semantic_ir_at_cursor(std::string_view source,std::size_t cursor);
+[[nodiscard]] std::string apply_semantic_ir_edit(std::string_view source,const semantic_ir_view& edit);
+struct candidate_view {std::string name,decomposition,evidence,rejected_reason;double cost=0;std::size_t resources=0;bool certified=false,selected=false,forced=false;};
+struct planning_ir_view {std::string problem,exact_cover;std::vector<std::string> atom_proposals;std::vector<candidate_view> candidates;};
+[[nodiscard]] planning_ir_view planning_ir_at_cursor(bool force_reference);
+struct realization_view {std::vector<std::string> atoms,extents,projections,orders,partial_tree,stages,dependencies;std::size_t workspace_bytes=0;std::string target,readiness;bool graph_capture=false;};
+[[nodiscard]] realization_view realization_at_cursor();
+[[nodiscard]] std::string render_realization_json(const realization_view&);
+struct candidate_explanation {double complete_cost=0,transition_cost=0;std::string evidence_kind,freshness,uncertainty,constraints,reuse,alternatives,dominance,user_edits,fallback;};
+[[nodiscard]] candidate_explanation explain_candidate(std::string_view evidence_kind,bool forced);
+struct optimization_action {std::string cause,detail,fix_it;double canonicalization_cost=0;bool safe=false;};
+[[nodiscard]] std::vector<optimization_action> missed_optimization_actions(std::string_view source);
+struct native_navigation {std::string semantic,planning,realization,generated,native_symbol,resource_report,source_location;};
+[[nodiscard]] native_navigation navigate_to_native(std::string_view artifact);
+[[nodiscard]] std::string reverse_map_native_diagnostic(std::string_view diagnostic,const native_navigation&);
+struct inline_ceir_assist {std::string level;std::vector<std::string> operations,types,attributes,captures,profiles,candidates,instructions,namespaces,validation_modes,diagnostics;};
+[[nodiscard]] inline_ceir_assist assist_inline_ceir(std::string_view level,std::string_view source);
+struct semantic_query_benchmark {
+    std::string query;
+    std::string cache_state;
+    std::size_t sample_count = 0;
+    std::size_t rss_bytes = 0;
+    std::size_t background_budget_ns = 0;
+    std::size_t p50_latency_ns = 0;
+    std::size_t p95_latency_ns = 0;
+    bool cancellation_observed = false;
+    bool cpp_editing_responsive = false;
+};
+[[nodiscard]] std::vector<semantic_query_benchmark> benchmark_advanced_semantic_queries();
+struct celleratord_acceptance {
+    std::vector<std::string> baseline_queries;
+    std::vector<std::string> installed_profiles;
+    std::string semantic_ir;
+    std::string candidate_cost;
+    std::string mutation_staleness;
+    std::string decomposition;
+    std::string native_location;
+    bool lsp_integration = false;
+    bool snapshots_stable = false;
+};
+[[nodiscard]] celleratord_acceptance freeze_celleratord_acceptance();
+
+}  // namespace cellerator::compiler::tooling::v1
