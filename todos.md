@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6245`
+Project revision: `6246`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -994,7 +994,7 @@ Project revision: `6245`
 - `CE-CCP1-H01-011` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Intercept link invocations, build the program CEIR graph, run authorized Cellerator LTO, produce replacement/additional objects, then invoke the selected conventional linker.
 - `CE-CCP1-H01-012` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Merge field graphs, cross-function calls, profile families, external effects, program constraints, and shared artifacts without changing unexported semantics.
 - `CE-CCP1-H01-013` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Inline semantic fields/functions and optimize persistent orders, shared decompositions, candidates, and transitions where authorization and effects permit.
-- `CE-CCP1-H01-014` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Cache per-object summaries and full CEIR, invalidate by semantic/profile/toolchain/pass identity, and replan only affected program regions.
+- `CE-CCP1-H01-014` | kind: task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Cache per-object summaries and full CEIR, invalidate by semantic/profile/toolchain/pass identity, and replan only affected program regions.
 - `CE-CCP1-H01-015` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Regenerate CPU/CUDA/native objects for changed program regions while retaining untouched conventional objects and valid backend artifacts.
 - `CE-CCP1-H01-016` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Compile two `.
 - `CE-GEO-76` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement practical one-warp N=16 grouping and disjoint column panels above 64 while preserving sparse fallback below profitable widths and specialized N=1.

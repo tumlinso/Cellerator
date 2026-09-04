@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6245`
+Project revision: `6246`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -613,7 +613,7 @@ Project revision: `6245`
 - `CE-CCP1-H01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cellerator link-driver mode in the isolated H01 lane, add the focused ce_ccp1_h01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement program-level semantic/planning ir in the isolated H01 lane, add the focused ce_ccp1_h01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cross-tu inlining and connected planning in the isolated H01 lane, add the focused ce_ccp1_h01_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-H01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement incremental and thin-summary lto in the isolated H01 lane, add the focused ce_ccp1_h01_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-H01-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement incremental and thin-summary lto in the isolated H01 lane, add the focused ce_ccp1_h01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement mixed-backend re-emission in the isolated H01 lane, add the focused ce_ccp1_h01_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cross-tu and lto vertical acceptance in the isolated H01 lane, add the focused ce_ccp1_h01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-76` | status: done | execution: closed | next: Implement practical one-warp N=16 grouping and disjoint column panels above 64 while preserving sparse fallback below profitable widths and specialized N=1.
