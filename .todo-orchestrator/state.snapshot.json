@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:25:48Z",
+  "generated_at": "2026-09-04T08:26:20Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4527,
+  "project_revision": 4531,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -49531,6 +49531,46 @@
         "revision": 4527,
         "seq": 4527,
         "timestamp": "2026-09-04T08:25:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C04-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-C04-001-GATE\"}",
+        "revision": 4528,
+        "seq": 4528,
+        "timestamp": "2026-09-04T08:26:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C04-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6200bbeb-3630-4157-800a-29fb5946a3ec\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 4529,
+        "seq": 4529,
+        "timestamp": "2026-09-04T08:26:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C04",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C04\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-C04-001\"}",
+        "revision": 4530,
+        "seq": 4530,
+        "timestamp": "2026-09-04T08:26:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-C01-002\"}",
+        "revision": 4531,
+        "seq": 4531,
+        "timestamp": "2026-09-04T08:26:20Z"
       }
     ],
     "evidence": [
@@ -54213,6 +54253,19 @@
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6140a21b-ad18-41dc-b502-449425e053db",
         "revision": 1622,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:26:04Z",
+        "gate_id": "CE-CCP1-C04-001-GATE",
+        "id": "6200bbeb-3630-4157-800a-29fb5946a3ec",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"de314c7ea49e028aa4efe78a0dc1b7fe8e881521\"}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"source_identity\": \"063c46ed76373d96b3f788775c7d724eb9cd8bdc847fa64fa1f0f6465de0b358\", \"started_revision\": 4528, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-c04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6200bbeb-3630-4157-800a-29fb5946a3ec",
+        "revision": 4529,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -65361,11 +65414,11 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-C04-001-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910",
+        "last_run_at": "2026-09-04T08:26:04Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4529,
+        "status": "failed",
         "task_id": "CE-CCP1-C04-001",
         "type": "command",
         "valid": 0
@@ -235055,12 +235108,12 @@
         "priority": 842,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4531,
+        "status": "in_progress",
         "tags_json": "[\"c01\", \"compiler-frontend-parser\", \"leaf\"]",
         "title": "Implement parser cursor and bounded lookahead",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T08:26:20Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -278258,13 +278311,13 @@
         "task_id": "CE-CCP1-C01-001"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T08:26:20Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-C01",
         "position": 1,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4531,
+        "state": "active",
         "task_id": "CE-CCP1-C01-002"
       },
       {
@@ -287096,11 +287149,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-C01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4527,
+        "revision": 4531,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T08:25:48Z",
+        "state": "active",
+        "updated_at": "2026-09-04T08:26:20Z",
         "workspace_mode": "isolated_merge"
       },
       {

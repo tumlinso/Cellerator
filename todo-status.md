@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4527`
+Project revision: `4531`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -286,7 +286,7 @@ Project revision: `4527`
 - `CE-CCP1-B04-014` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the c++ semantic bridge milestone in the isolated B04 lane, add the focused ce_ccp1_b04_014 gate, and publish a source-linked receipt.
 - `CE-GEO-57` | status: done | execution: closed | next: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
 - `CE-CCP1-C01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the executable grammar revision and token vocabulary in the isolated C01 lane, add the focused ce_ccp1_c01_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-C01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement parser cursor and bounded lookahead in the isolated C01 lane, add the focused ce_ccp1_c01_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-C01-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement parser cursor and bounded lookahead in the isolated C01 lane, add the focused ce_ccp1_c01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse compiler-semantic declarations in the isolated C01 lane, add the focused ce_ccp1_c01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse biological type constructors and qualifiers in the isolated C01 lane, add the focused ce_ccp1_c01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse anonymous execution fields in the isolated C01 lane, add the focused ce_ccp1_c01_005 gate, and publish a source-linked receipt.
