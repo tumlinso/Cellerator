@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6149`
+Project revision: `6153`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -606,7 +606,7 @@ Project revision: `6149`
 - `CE-CCP1-H01-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement portable sidecar fallback in the isolated H01 lane, add the focused ce_ccp1_h01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement assign cross-tu field and symbol identities in the isolated H01 lane, add the focused ce_ccp1_h01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement template instantiation deduplication in the isolated H01 lane, add the focused ce_ccp1_h01_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-H01-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement profile environment merge in the isolated H01 lane, add the focused ce_ccp1_h01_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-H01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement profile environment merge in the isolated H01 lane, add the focused ce_ccp1_h01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cross-tu semantic imports in the isolated H01 lane, add the focused ce_ccp1_h01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement explicit program-planning authorization in the isolated H01 lane, add the focused ce_ccp1_h01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement object and archive ceir extraction in the isolated H01 lane, add the focused ce_ccp1_h01_010 gate, and publish a source-linked receipt.
@@ -638,7 +638,7 @@ Project revision: `6149`
 - `CE-CCP1-H03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement define standard-library package structure in the isolated H03 lane, add the focused ce_ccp1_h03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement the minimal core `.cell` library in the isolated H03 lane, add the focused ce_ccp1_h03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement relation and state construction helpers in the isolated H03 lane, add the focused ce_ccp1_h03_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-H03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement operation wrappers in cellerator source in the isolated H03 lane, add the focused ce_ccp1_h03_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-H03-005` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement operation wrappers in cellerator source in the isolated H03 lane, add the focused ce_ccp1_h03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement profile and persistence helpers in the isolated H03 lane, add the focused ce_ccp1_h03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planning and expert-control helpers in the isolated H03 lane, add the focused ce_ccp1_h03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection and inline-ir helper library in the isolated H03 lane, add the focused ce_ccp1_h03_008 gate, and publish a source-linked receipt.
