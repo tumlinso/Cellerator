@@ -118,3 +118,18 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f04_009 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f04_009 COMMAND ce_ccp1_f04_009)
+
+find_library(CUDA_DRIVER_LIBRARY cuda REQUIRED)
+add_executable(ce_ccp1_f04_010
+    deliver_a_direct_ptx_hot_path_demonstration_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/deliver_a_direct_ptx_hot_path_demonstration.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/implement_ptx_emission_and_ptxas_assembly.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/define_direct_ptx_typed_operation_model.cc")
+target_include_directories(ce_ccp1_f04_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f04_010 PRIVATE cxx_std_17)
+target_link_libraries(ce_ccp1_f04_010 PRIVATE "${CUDA_DRIVER_LIBRARY}")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f04_010 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f04_010 COMMAND ce_ccp1_f04_010
+    "${PTXAS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/f04_010")
