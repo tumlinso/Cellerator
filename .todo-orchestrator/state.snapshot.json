@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:00:37Z",
+  "generated_at": "2026-09-04T07:01:48Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4256,
+  "project_revision": 4264,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -46821,6 +46821,86 @@
         "revision": 4256,
         "seq": 4256,
         "timestamp": "2026-09-04T07:00:37Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B02",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B02\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B02-006\"}",
+        "revision": 4257,
+        "seq": 4257,
+        "timestamp": "2026-09-04T07:01:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B01-005-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B01-005-GATE\"}",
+        "revision": 4258,
+        "seq": 4258,
+        "timestamp": "2026-09-04T07:01:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B01-005-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"8d5360e1-e2d6-4989-a23a-6e5082be8772\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4259,
+        "seq": 4259,
+        "timestamp": "2026-09-04T07:01:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B01-005",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4260, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4260,
+        "seq": 4260,
+        "timestamp": "2026-09-04T07:01:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B01-006\"}",
+        "revision": 4261,
+        "seq": 4261,
+        "timestamp": "2026-09-04T07:01:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-006-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B02-006-GATE\"}",
+        "revision": 4262,
+        "seq": 4262,
+        "timestamp": "2026-09-04T07:01:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-006-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"19de9570-df20-4246-8238-92654204281d\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4263,
+        "seq": 4263,
+        "timestamp": "2026-09-04T07:01:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-006",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4264, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4264,
+        "seq": 4264,
+        "timestamp": "2026-09-04T07:01:48Z"
       }
     ],
     "evidence": [
@@ -47836,6 +47916,19 @@
         "metadata_json": "{\"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\", \"-ccbin=/usr/bin/g++-12\", \"-std=c++17\", \"-arch=sm_70\", \"-I\", \"Cellerator/include\", \"-I\", \"Cellerator/components/CellPack/include\", \"Cellerator/src/runtime/runtime.cu\", \"Cellerator/src/compute/math/runtime/device_context.cu\", \"Cellerator/src/compute/math/runtime/workspace_pool.cu\", \"Cellerator/src/compute/math/operation.cc\", \"Cellerator/src/compute/math/operation_signature.cc\", \"Cellerator/src/compute/math/epilogue.cu\", \"Cellerator/src/compute/math/backends/cusparse_bell.cu\", \"Cellerator/tests/math_cusparse_bell_test.cu\", \"-lcublas\", \"-lcusparse\", \"-o\", \"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\", \"-ccbin=/usr/bin/g++-12\", \"-std=c++17\", \"-arch=sm_70\", \"-I\", \"Cellerator/include\", \"-I\", \"Cellerator/components/CellPack/include\", \"Cellerator/src/runtime/runtime.cu\", \"Cellerator/src/compute/math/runtime/device_context.cu\", \"Cellerator/src/compute/math/runtime/workspace_pool.cu\", \"Cellerator/src/compute/math/operation.cc\", \"Cellerator/src/compute/math/operation_signature.cc\", \"Cellerator/src/compute/math/epilogue.cu\", \"Cellerator/src/compute/math/backends/cusparse_bell.cu\", \"Cellerator/tests/math_cusparse_bell_test.cu\", \"-lcublas\", \"-lcusparse\", \"-o\", \"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"b86490530d5bc9b7a7aaa7b550461725b1cfd0c5893924efc4f6ec6150457898\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Cellerator\", \"cp-math-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/cp-math-00.md\", \"todos/cp-math-00a.md\", \"todos/cp-math-01.md\", \"todos/cp-math-02.md\", \"todos/cp-math-02a.md\", \"todos/cp-math-03.md\", \"todos/cp-math-04.md\", \"todos/cp-math-05.md\", \"todos/cp-math-06.md\", \"todos/cp-math-07.md\", \"todos/cp-math-08.md\", \"todos/cp-math-08a.md\", \"todos/cp-math-09.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\"], \"files\": [{\"path\": \"Cellerator/src/compute/math/backends/cusparse_bell.cu\", \"sha256\": \"9225c35b68cb1e0825163fcf9776eb4131fa65128674ba29e612eb8d69a07968\"}, {\"path\": \"Cellerator/src/compute/math/backends/cusparse_bell.hh\", \"sha256\": \"4d77b6f9f99d074a86b1b96321751275b870dddff87bff650f5e22ce9dad5e1d\"}, {\"path\": \"Cellerator/tests/math_cusparse_bell_test.cu\", \"sha256\": \"e73b5c587bd9cc48c29446a4eaad4577b9f7ad0b52d4ca64ee951c1a95b99ca6\"}], \"git_head\": \"d3f51dcfc0fe4196e17368861598c25354104c62\", \"interfaces\": [], \"recorded_git_head\": \"d3f51dcfc0fe4196e17368861598c25354104c62\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 326}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/194ee0a9-99a6-4815-85b1-922c27d7785f",
         "revision": 327,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T07:01:48Z",
+        "gate_id": "CE-CCP1-B02-006-GATE",
+        "id": "19de9570-df20-4246-8238-92654204281d",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_006$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_006$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"136878b4b8b199bad5aba227a74fd69258f2db809cfe8952eda845cb06059bd4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"include/Cellerator/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains_v1.hh\", \"src/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\", \"tests/compiler/b02/discover_clang_cuda_and_llvm_nvptx_toolchains_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-b02-006.md\", \"tools/cellerator/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f33f61162b681ec60b4619c70bdef02496ae6a69\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"576186dfdb9dc7c753e46683078b0552a109cde97d03163cde5b468e3043bd09\", \"started_revision\": 4262, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b02\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/19de9570-df20-4246-8238-92654204281d",
+        "revision": 4263,
         "status": "passed"
       },
       {
@@ -52932,6 +53025,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"plan\", \"validate\", \"--repo-root\", \".\", \"--json\", \"--file\", \"ce-live-plan.json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"a29aeae238146c3958cc8cec47893bc3918424e85c94c80585cc72a0b0fd24e8\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py\", \"plan\", \"validate\", \"--repo-root\", \".\", \"--json\", \"--file\", \"ce-live-plan.json\"], \"cwd\": \".\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"1de3b0025a9e4f7b851d96578302b63eeb8482f4a04ca4a693c9c80d4ae3082e\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"ce-live-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-live-00.md\", \"todos/ce-live-01.md\", \"todos/ce-live-10.md\", \"todos/ce-live-11.md\", \"todos/ce-live-12.md\", \"todos/ce-live-13.md\", \"todos/ce-live-14.md\", \"todos/ce-live-15.md\", \"todos/ce-live-16.md\", \"todos/ce-live-19.md\", \"todos/ce-live-20.md\", \"todos/ce-live-21.md\", \"todos/ce-live-22.md\", \"todos/ce-live-23.md\", \"todos/ce-live-24.md\", \"todos/ce-live-25.md\", \"todos/ce-live-26.md\", \"todos/ce-live-29.md\", \"todos/ce-live-30.md\", \"todos/ce-live-31.md\", \"todos/ce-live-32.md\", \"todos/ce-live-33.md\", \"todos/ce-live-34.md\", \"todos/ce-live-35.md\", \"todos/ce-live-36.md\", \"todos/ce-live-37.md\", \"todos/ce-live-40.md\", \"todos/ce-live-41.md\", \"todos/ce-live-42.md\", \"todos/ce-live-43.md\", \"todos/ce-live-44.md\", \"todos/ce-live-45.md\"], \"files\": [], \"git_head\": \"0062596dce9fee4d7c39f34f682ad848a0ca6c68\", \"interfaces\": [], \"recorded_git_head\": \"0062596dce9fee4d7c39f34f682ad848a0ca6c68\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 1436}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/8d2bce29-449f-4721-b3ff-e00abd54299e",
         "revision": 1437,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T07:01:17Z",
+        "gate_id": "CE-CCP1-B01-005-GATE",
+        "id": "8d5360e1-e2d6-4989-a23a-6e5082be8772",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b01_005$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b01_005$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"525690c036a723b37f0bfca8b461793efaa5a92a\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"31223ace7d4cd6c2e3237fc39e8af8ad9a44c5cdccb3a75c421c25758da9edc9\", \"started_revision\": 4258, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b01\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/8d5360e1-e2d6-4989-a23a-6e5082be8772",
+        "revision": 4259,
         "status": "passed"
       },
       {
@@ -60584,14 +60690,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b01_005$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B01-005-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161",
+        "last_run_at": "2026-09-04T07:01:17Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4259,
+        "status": "passed",
         "task_id": "CE-CCP1-B01-005",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -60753,14 +60859,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_006$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B02-006-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4",
+        "last_run_at": "2026-09-04T07:01:48Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4263,
+        "status": "passed",
         "task_id": "CE-CCP1-B02-006",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -73337,6 +73443,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-09-04T07:01:48Z",
+        "id": "1839965d-6d67-4aae-9651-cb9c86ee1562",
+        "kind": "complete",
+        "note": "Implemented optional Clang CUDA and LLVM/NVPTX discovery with independent host, CUDA resource/libdevice/ptxas, and target availability. Unavailable accelerator routes preserve host compilation. Exact gate passes.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains_v1.hh\", \"src/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\", \"tests/compiler/b02/discover_clang_cuda_and_llvm_nvptx_toolchains_test.cc\", \"tools/cellerator/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\"], \"checkpoints\": [], \"completion_commit\": \"f33f61162b681ec60b4619c70bdef02496ae6a69\", \"completion_gates\": [{\"evidence_id\": \"19de9570-df20-4246-8238-92654204281d\", \"evidence_revision\": 4263, \"id\": \"CE-CCP1-B02-006-GATE\", \"input_fingerprint\": \"1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"f33f61162b681ec60b4619c70bdef02496ae6a69\"}], \"completion_revision\": 4264, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-B02-006-GATE\", \"input_fingerprint\": \"1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4\", \"last_run_at\": \"2026-09-04T07:01:48Z\", \"revision\": 4263, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-ccp1-b02-006.md               |  8 +++++---\\n 4 files changed, 31 insertions(+), 19 deletions(-)\", \"git_head\": \"f33f61162b681ec60b4619c70bdef02496ae6a69\", \"interfaces\": [], \"note\": \"Implemented optional Clang CUDA and LLVM/NVPTX discovery with independent host, CUDA resource/libdevice/ptxas, and target availability. Unavailable accelerator routes preserve host compilation. Exact gate passes.\", \"resources\": [], \"task_id\": \"CE-CCP1-B02-006\"}",
+        "revision": 4264,
+        "task_id": "CE-CCP1-B02-006"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-09-01T06:38:54Z",
         "id": "18d0049f-35f2-4ac7-af67-9517e10aa8a9",
         "kind": "complete",
@@ -73924,6 +74040,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"bbcaed96e0acf33e115243cee9ba4e44a6970d62\", \"completion_gates\": [], \"completion_revision\": 3597, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 17383 ++++++++++++++++++++++++-------\\n todo-status.md                         |   334 +-\\n todos.md                               |   334 +-\\n todos/ce-amp-00.md                     |     2 +-\\n todos/ce-amp-01.md                     |     2 +-\\n todos/ce-amp-02.md                     |     2 +-\\n todos/ce-amp-03.md                     |     2 +-\\n todos/ce-amp-04.md                     |     2 +-\\n todos/ce-amp-05.md                     |     2 +-\\n todos/ce-amp-06.md                     |     2 +-\\n todos/ce-amp-07.md                     |     2 +-\\n todos/ce-amp-08.md                     |     2 +-\\n todos/ce-amp-09.md                     |     2 +-\\n todos/ce-exop-00.md                    |     2 +-\\n todos/ce-exop-01.md                    |     2 +-\\n todos/ce-exop-02.md                    |     2 +-\\n todos/ce-exop-03.md                    |     2 +-\\n todos/ce-exop-10.md                    |     8 +-\\n todos/ce-exop-100.md                   |     8 +-\\n todos/ce-exop-101.md                   |     8 +-\\n todos/ce-exop-102.md                   |     8 +-\\n todos/ce-exop-103.md                   |     8 +-\\n todos/ce-exop-104.md                   |     8 +-\\n todos/ce-exop-11.md                    |     8 +-\\n todos/ce-exop-110.md                   |     8 +-\\n todos/ce-exop-111.md                   |     8 +-\\n todos/ce-exop-112.md                   |     8 +-\\n todos/ce-exop-113.md                   |     8 +-\\n todos/ce-exop-114.md                   |     8 +-\\n todos/ce-exop-12.md                    |     8 +-\\n todos/ce-exop-120.md                   |     8 +-\\n todos/ce-exop-121.md                   |     8 +-\\n todos/ce-exop-122.md                   |     8 +-\\n todos/ce-exop-123.md                   |     8 +-\\n todos/ce-exop-124.md                   |     9 +-\\n todos/ce-exop-13.md                    |     8 +-\\n todos/ce-exop-130.md                   |     8 +-\\n todos/ce-exop-131.md                   |     8 +-\\n todos/ce-exop-132.md                   |     8 +-\\n todos/ce-exop-133.md                   |     8 +-\\n todos/ce-exop-14.md                    |     8 +-\\n todos/ce-exop-140.md                   |     8 +-\\n todos/ce-exop-141.md                   |     8 +-\\n todos/ce-exop-142.md                   |     8 +-\\n todos/ce-exop-143.md                   |     8 +-\\n todos/ce-exop-144.md                   |     8 +-\\n todos/ce-exop-145.md                   |     8 +-\\n todos/ce-exop-15.md                    |     8 +-\\n todos/ce-exop-150.md                   |     8 +-\\n todos/ce-exop-151.md                   |     8 +-\\n todos/ce-exop-152.md                   |     8 +-\\n todos/ce-exop-153.md                   |     8 +-\\n todos/ce-exop-154.md                   |     8 +-\\n todos/ce-exop-155.md                   |     8 +-\\n todos/ce-exop-156.md                   |     8 +-\\n todos/ce-exop-160.md                   |     8 +-\\n todos/ce-exop-161.md                   |     8 +-\\n todos/ce-exop-162.md                   |     8 +-\\n todos/ce-exop-163.md                   |     8 +-\\n todos/ce-exop-164.md                   |     8 +-\\n todos/ce-exop-165.md                   |     8 +-\\n todos/ce-exop-170.md                   |     8 +-\\n todos/ce-exop-171.md                   |     8 +-\\n todos/ce-exop-172.md                   |     8 +-\\n todos/ce-exop-173.md                   |     8 +-\\n todos/ce-exop-174.md                   |     8 +-\\n todos/ce-exop-180.md                   |     8 +-\\n todos/ce-exop-181.md                   |     8 +-\\n todos/ce-exop-182.md                   |     8 +-\\n todos/ce-exop-183.md                   |     8 +-\\n todos/ce-exop-184.md                   |     8 +-\\n todos/ce-exop-190.md                   |     8 +-\\n todos/ce-exop-191.md                   |     8 +-\\n todos/ce-exop-192.md                   |     8 +-\\n todos/ce-exop-193.md                   |     8 +-\\n todos/ce-exop-194.md                   |     8 +-\\n todos/ce-exop-195.md                   |     8 +-\\n todos/ce-exop-20.md                    |     8 +-\\n todos/ce-exop-200.md                   |     8 +-\\n todos/ce-exop-201.md                   |     8 +-\\n todos/ce-exop-202.md                   |     8 +-\\n todos/ce-exop-203.md                   |     8 +-\\n todos/ce-exop-204.md                   |     8 +-\\n todos/ce-exop-21.md                    |     8 +-\\n todos/ce-exop-210.md                   |     8 +-\\n todos/ce-exop-211.md                   |     8 +-\\n todos/ce-exop-212.md                   |     8 +-\\n todos/ce-exop-213.md                   |     8 +-\\n todos/ce-exop-214.md                   |     8 +-\\n todos/ce-exop-215.md                   |     8 +-\\n todos/ce-exop-22.md                    |     8 +-\\n todos/ce-exop-220.md                   |     8 +-\\n todos/ce-exop-221.md                   |     8 +-\\n todos/ce-exop-222.md                   |     8 +-\\n todos/ce-exop-223.md                   |     8 +-\\n todos/ce-exop-224.md                   |     8 +-\\n todos/ce-exop-225.md                   |     8 +-\\n todos/ce-exop-226.md                   |     8 +-\\n todos/ce-exop-23.md                    |     8 +-\\n todos/ce-exop-230.md                   |     8 +-\\n todos/ce-exop-231.md                   |     8 +-\\n todos/ce-exop-232.md                   |     8 +-\\n todos/ce-exop-233.md                   |     8 +-\\n todos/ce-exop-234.md                   |     8 +-\\n todos/ce-exop-235.md                   |     8 +-\\n todos/ce-exop-24.md                    |     8 +-\\n todos/ce-exop-240.md                   |     8 +-\\n todos/ce-exop-241.md                   |     8 +-\\n todos/ce-exop-242.md                   |     8 +-\\n todos/ce-exop-243.md                   |     8 +-\\n todos/ce-exop-244.md                   |     8 +-\\n todos/ce-exop-245.md                   |     8 +-\\n todos/ce-exop-25.md                    |     8 +-\\n todos/ce-exop-250.md                   |     8 +-\\n todos/ce-exop-251.md                   |     8 +-\\n todos/ce-exop-252.md                   |     8 +-\\n todos/ce-exop-253.md                   |     8 +-\\n todos/ce-exop-254.md                   |     8 +-\\n todos/ce-exop-255.md                   |     8 +-\\n todos/ce-exop-26.md                    |     8 +-\\n todos/ce-exop-260.md                   |     8 +-\\n todos/ce-exop-261.md                   |     8 +-\\n todos/ce-exop-262.md                   |     8 +-\\n todos/ce-exop-263.md                   |     8 +-\\n todos/ce-exop-264.md                   |     8 +-\\n todos/ce-exop-265.md                   |     8 +-\\n todos/ce-exop-270.md                   |     8 +-\\n todos/ce-exop-271.md                   |     8 +-\\n todos/ce-exop-272.md                   |     8 +-\\n todos/ce-exop-273.md                   |     8 +-\\n todos/ce-exop-274.md                   |     8 +-\\n todos/ce-exop-275.md                   |     8 +-\\n todos/ce-exop-276.md                   |     8 +-\\n todos/ce-exop-277.md                   |     8 +-\\n todos/ce-exop-278.md                   |     8 +-\\n todos/ce-exop-279.md                   |     8 +-\\n todos/ce-exop-280.md                   |    19 +-\\n todos/ce-exop-281.md                   |     8 +-\\n todos/ce-exop-282.md                   |     8 +-\\n todos/ce-exop-286.md                   |     8 +-\\n todos/ce-exop-287.md                   |     8 +-\\n todos/ce-exop-288.md                   |     8 +-\\n todos/ce-exop-289.md                   |     6 +-\\n todos/ce-exop-290.md                   |     2 +-\\n todos/ce-exop-30.md                    |     8 +-\\n todos/ce-exop-31.md                    |     8 +-\\n todos/ce-exop-32.md                    |     8 +-\\n todos/ce-exop-33.md                    |     8 +-\\n todos/ce-exop-34.md                    |     8 +-\\n todos/ce-exop-35.md                    |     8 +-\\n todos/ce-exop-40.md                    |     8 +-\\n todos/ce-exop-41.md                    |     8 +-\\n todos/ce-exop-42.md                    |     8 +-\\n todos/ce-exop-43.md                    |     8 +-\\n todos/ce-exop-44.md                    |     8 +-\\n todos/ce-exop-45.md                    |     8 +-\\n todos/ce-exop-50.md                    |     8 +-\\n todos/ce-exop-51.md                    |     8 +-\\n todos/ce-exop-52.md                    |     8 +-\\n todos/ce-exop-53.md                    |     8 +-\\n todos/ce-exop-54.md                    |     8 +-\\n todos/ce-exop-55.md                    |     8 +-\\n todos/ce-exop-60.md                    |     8 +-\\n todos/ce-exop-61.md                    |     8 +-\\n todos/ce-exop-62.md                    |     8 +-\\n todos/ce-exop-63.md                    |     8 +-\\n todos/ce-exop-64.md                    |     8 +-\\n todos/ce-exop-70.md                    |     8 +-\\n todos/ce-exop-71.md                    |     8 +-\\n todos/ce-exop-72.md                    |     8 +-\\n todos/ce-exop-73.md                    |     8 +-\\n todos/ce-exop-74.md                    |     8 +-\\n todos/ce-exop-75.md                    |     8 +-\\n todos/ce-exop-80.md                    |     8 +-\\n todos/ce-exop-81.md                    |     8 +-\\n todos/ce-exop-82.md                    |     8 +-\\n todos/ce-exop-83.md                    |     8 +-\\n todos/ce-exop-84.md                    |     8 +-\\n todos/ce-exop-85.md                    |     8 +-\\n todos/ce-exop-90.md                    |     8 +-\\n todos/ce-exop-91.md                    |     8 +-\\n todos/ce-exop-92.md                    |     8 +-\\n todos/ce-exop-93.md                    |     8 +-\\n todos/ce-exop-94.md                    |     8 +-\\n todos/ce-exop-ptr-baseline.md          |     2 +-\\n todos/ce-geo-00.md                     |     2 +-\\n todos/ce-geo-01.md                     |     2 +-\\n todos/ce-geo-02.md                     |     2 +-\\n todos/ce-geo-03.md                     |     2 +-\\n todos/ce-geo-10.md                     |     2 +-\\n todos/ce-geo-100.md                    |     2 +-\\n todos/ce-geo-101.md                    |     2 +-\\n todos/ce-geo-102.md                    |     2 +-\\n todos/ce-geo-103.md                    |     2 +-\\n todos/ce-geo-104.md                    |     2 +-\\n todos/ce-geo-105.md                    |     2 +-\\n todos/ce-geo-106.md                    |     2 +-\\n todos/ce-geo-107.md                    |     2 +-\\n todos/ce-geo-108.md                    |     2 +-\\n todos/ce-geo-109.md                    |     2 +-\\n todos/ce-geo-11.md                     |     2 +-\\n todos/ce-geo-110.md                    |     2 +-\\n todos/ce-geo-111.md                    |     2 +-\\n todos/ce-geo-112.md                    |     2 +-\\n todos/ce-geo-113.md                    |     2 +-\\n todos/ce-geo-114.md                    |     2 +-\\n todos/ce-geo-115.md                    |     2 +-\\n todos/ce-geo-116.md                    |     2 +-\\n todos/ce-geo-117.md                    |     2 +-\\n todos/ce-geo-118.md                    |     2 +-\\n todos/ce-geo-119.md                    |     2 +-\\n todos/ce-geo-12.md                     |     2 +-\\n todos/ce-geo-120.md                    |     2 +-\\n todos/ce-geo-121.md                    |     2 +-\\n todos/ce-geo-122.md                    |     2 +-\\n todos/ce-geo-123.md                    |     2 +-\\n todos/ce-geo-124.md                    |     2 +-\\n todos/ce-geo-125.md                    |     2 +-\\n todos/ce-geo-126.md                    |     2 +-\\n todos/ce-geo-127.md                    |     2 +-\\n todos/ce-geo-13.md                     |     2 +-\\n todos/ce-geo-14.md                     |     2 +-\\n todos/ce-geo-20.md                     |     2 +-\\n todos/ce-geo-21.md                     |     2 +-\\n todos/ce-geo-22.md                     |     2 +-\\n todos/ce-geo-23.md                     |     2 +-\\n todos/ce-geo-24.md                     |     2 +-\\n todos/ce-geo-25.md                     |     2 +-\\n todos/ce-geo-30.md                     |     2 +-\\n todos/ce-geo-31.md                     |     2 +-\\n todos/ce-geo-32.md                     |     2 +-\\n todos/ce-geo-33.md                     |     2 +-\\n todos/ce-geo-34.md                     |     2 +-\\n todos/ce-geo-35.md                     |     2 +-\\n todos/ce-geo-36.md                     |     2 +-\\n todos/ce-geo-37.md                     |     2 +-\\n todos/ce-geo-38.md                     |     2 +-\\n todos/ce-geo-39.md                     |     2 +-\\n todos/ce-geo-40.md                     |     2 +-\\n todos/ce-geo-41.md                     |     2 +-\\n todos/ce-geo-42.md                     |     2 +-\\n todos/ce-geo-43.md                     |     2 +-\\n todos/ce-geo-44.md                     |     2 +-\\n todos/ce-geo-45.md                     |     2 +-\\n todos/ce-geo-46.md                     |     2 +-\\n todos/ce-geo-47.md                     |     2 +-\\n todos/ce-geo-50.md                     |     2 +-\\n todos/ce-geo-51.md                     |     2 +-\\n todos/ce-geo-52.md                     |     2 +-\\n todos/ce-geo-53.md                     |     2 +-\\n todos/ce-geo-54.md                     |     2 +-\\n todos/ce-geo-55.md                     |     2 +-\\n todos/ce-geo-56.md                     |     2 +-\\n todos/ce-geo-57.md                     |     2 +-\\n todos/ce-geo-58.md                     |     2 +-\\n todos/ce-geo-60.md                     |     2 +-\\n todos/ce-geo-61.md                     |     2 +-\\n todos/ce-geo-62.md                     |     2 +-\\n todos/ce-geo-63.md                     |     2 +-\\n todos/ce-geo-64.md                     |     2 +-\\n todos/ce-geo-65.md                     |     2 +-\\n todos/ce-geo-66.md                     |     2 +-\\n todos/ce-geo-67.md                     |     2 +-\\n todos/ce-geo-68.md                     |     2 +-\\n todos/ce-geo-69.md                     |     2 +-\\n todos/ce-geo-70.md                     |     2 +-\\n todos/ce-geo-71.md                     |     2 +-\\n todos/ce-geo-72.md                     |     2 +-\\n todos/ce-geo-73.md                     |     2 +-\\n todos/ce-geo-74.md                     |     2 +-\\n todos/ce-geo-75.md                     |     2 +-\\n todos/ce-geo-76.md                     |     2 +-\\n todos/ce-geo-77.md                     |     2 +-\\n todos/ce-geo-78.md                     |     2 +-\\n todos/ce-geo-79.md                     |     2 +-\\n todos/ce-geo-80.md                     |     2 +-\\n todos/ce-geo-81.md                     |     2 +-\\n todos/ce-geo-82.md                     |     2 +-\\n todos/ce-geo-83.md                     |     2 +-\\n todos/ce-geo-84.md                     |     2 +-\\n todos/ce-geo-85.md                     |     2 +-\\n todos/ce-geo-86.md                     |     2 +-\\n todos/ce-geo-87.md                     |     2 +-\\n todos/ce-geo-88.md                     |     2 +-\\n todos/ce-geo-90.md                     |     2 +-\\n todos/ce-geo-91.md                     |     2 +-\\n todos/ce-geo-92.md                     |     2 +-\\n todos/ce-geo-93.md                     |     2 +-\\n todos/ce-geo-94.md                     |     2 +-\\n todos/ce-geo-95.md                     |     2 +-\\n todos/ce-geo-96.md                     |     2 +-\\n todos/ce-geo-97.md                     |     2 +-\\n todos/ce-geo-98.md                     |     2 +-\\n todos/ce-geo-99.md                     |     2 +-\\n 294 files changed, 14685 insertions(+), 4954 deletions(-)\", \"git_head\": \"bbcaed96e0acf33e115243cee9ba4e44a6970d62\", \"interfaces\": [], \"note\": \"CE-AMP interlock audit published at bbcaed9; artifact SHA256 76f4a95d82e7b4d8c6a3bd39d7368a749e7e43d0a80beb4118cfec1818af8ebc. Authority rev3596: permission not_granted rev3281; 10 tasks all planned/result null/rev3281, 0 claims/resource leases/lock leases/workspaces/interfaces/checkpoints/artifacts. Preconfigured run rev2377 and 7 ready lanes rev2379 predate CE-EXOP and did not advance. Git has no CE-AMP campaign commits/source/docs/evidence/runtime artifacts; preexisting CE-GEO interlock audit is explicitly classified. Ten dirty CE-AMP todo files are generated unstaged projections only. No CE-AMP runtime/profiling/data/promotion/preprint work. JSON/content/diff checks passed.\", \"resources\": [], \"task_id\": \"CE-EXOP-289\"}",
         "revision": 3597,
         "task_id": "CE-EXOP-289"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T07:01:17Z",
+        "id": "374f7da0-9675-4492-8b8b-2f57293f7887",
+        "kind": "complete",
+        "note": "Implemented/pushed 210acbf. C++17 isolation contract passed; host-only configure/build with invalid CUDACXX and CUDA=OFF performed no CheckCUDA probe. Exact ctest selector exited successfully with no registered match.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"525690c036a723b37f0bfca8b461793efaa5a92a\", \"completion_gates\": [{\"evidence_id\": \"8d5360e1-e2d6-4989-a23a-6e5082be8772\", \"evidence_revision\": 4259, \"id\": \"CE-CCP1-B01-005-GATE\", \"input_fingerprint\": \"0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"525690c036a723b37f0bfca8b461793efaa5a92a\"}], \"completion_revision\": 4260, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-B01-005-GATE\", \"input_fingerprint\": \"0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161\", \"last_run_at\": \"2026-09-04T07:01:17Z\", \"revision\": 4259, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"525690c036a723b37f0bfca8b461793efaa5a92a\", \"interfaces\": [], \"note\": \"Implemented/pushed 210acbf. C++17 isolation contract passed; host-only configure/build with invalid CUDACXX and CUDA=OFF performed no CheckCUDA probe. Exact ctest selector exited successfully with no registered match.\", \"resources\": [], \"task_id\": \"CE-CCP1-B01-005\"}",
+        "revision": 4260,
+        "task_id": "CE-CCP1-B01-005"
       },
       {
         "claim_id": null,
@@ -170850,6 +170976,19 @@
         "validation_git_head": "814805bd783f2d065c578dedfadc7397346b0a1f"
       },
       {
+        "completion_git_head": "525690c036a723b37f0bfca8b461793efaa5a92a",
+        "completion_revision": 4260,
+        "evidence_id": "8d5360e1-e2d6-4989-a23a-6e5082be8772",
+        "evidence_revision": 4259,
+        "gate_id": "CE-CCP1-B01-005-GATE",
+        "input_fingerprint": "0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161",
+        "provenance_json": "{\"claim_id\": \"2e338990-f0b9-4712-8c6d-b5eaea0bc25f\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b01_005$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0356e5a82b232fcb74b543ac1a0a5d9c6faa949509c3ee690e407f1bbfca0161\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b01_005$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"525690c036a723b37f0bfca8b461793efaa5a92a\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"31223ace7d4cd6c2e3237fc39e8af8ad9a44c5cdccb3a75c421c25758da9edc9\", \"started_revision\": 4258, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b01\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/8d5360e1-e2d6-4989-a23a-6e5082be8772\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-B01-005",
+        "valid": 1,
+        "validation_git_head": "525690c036a723b37f0bfca8b461793efaa5a92a"
+      },
+      {
         "completion_git_head": "b50c0affcd2eb9b61dae69270f371221b4ad720b",
         "completion_revision": 4223,
         "evidence_id": "5ec32236-99a7-4cfd-be0d-280c36d31288",
@@ -170913,6 +171052,19 @@
         "task_id": "CE-CCP1-B02-005",
         "valid": 1,
         "validation_git_head": "5bc863dcbcc7b0fe84f562507ac3fbb12032814a"
+      },
+      {
+        "completion_git_head": "f33f61162b681ec60b4619c70bdef02496ae6a69",
+        "completion_revision": 4264,
+        "evidence_id": "19de9570-df20-4246-8238-92654204281d",
+        "evidence_revision": 4263,
+        "gate_id": "CE-CCP1-B02-006-GATE",
+        "input_fingerprint": "1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4",
+        "provenance_json": "{\"claim_id\": \"31fd0e2a-e9f9-4bdb-a74c-1d6ead8cc1e5\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_006$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1063ad61882bc5cd093f9b13f6729a0d403d204f4b854467f3ba8c5c9f2667b4\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_006$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"136878b4b8b199bad5aba227a74fd69258f2db809cfe8952eda845cb06059bd4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"include/Cellerator/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains_v1.hh\", \"src/compiler/driver/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\", \"tests/compiler/b02/discover_clang_cuda_and_llvm_nvptx_toolchains_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-b02-006.md\", \"tools/cellerator/discover_clang_cuda_and_llvm_nvptx_toolchains.cc\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f33f61162b681ec60b4619c70bdef02496ae6a69\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"576186dfdb9dc7c753e46683078b0552a109cde97d03163cde5b468e3043bd09\", \"started_revision\": 4262, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b02\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/19de9570-df20-4246-8238-92654204281d\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-B02-006",
+        "valid": 1,
+        "validation_git_head": "f33f61162b681ec60b4619c70bdef02496ae6a69"
       },
       {
         "completion_git_head": "14e672794affe0ca3cca3504434931da5c0df890",
@@ -229016,9 +229168,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "525690c036a723b37f0bfca8b461793efaa5a92a",
+        "completion_git_head": "525690c036a723b37f0bfca8b461793efaa5a92a",
+        "completion_revision": 4260,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-B01-005",
         "kind": "task",
@@ -229030,14 +229182,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-B01-000",
         "priority": 846,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4253,
-        "status": "in_progress",
+        "revision": 4260,
+        "status": "done",
         "tags_json": "[\"b01\", \"build-compiler\", \"leaf\"]",
         "title": "Isolate legacy CUDA target requirements",
-        "updated_at": "2026-09-04T07:00:21Z",
-        "version": 4
+        "updated_at": "2026-09-04T07:01:17Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -229057,12 +229209,12 @@
         "priority": 846,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4261,
+        "status": "in_progress",
         "tags_json": "[\"b01\", \"build-compiler\", \"leaf\"]",
         "title": "Define optional LLVM and Clang library discovery",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:01:36Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -229366,9 +229518,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "f33f61162b681ec60b4619c70bdef02496ae6a69",
+        "completion_git_head": "f33f61162b681ec60b4619c70bdef02496ae6a69",
+        "completion_revision": 4264,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-B02-006",
         "kind": "task",
@@ -229380,14 +229532,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-B02-000",
         "priority": 845,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4264,
+        "status": "done",
         "tags_json": "[\"b02\", \"compiler-driver\", \"leaf\"]",
         "title": "Discover Clang CUDA and LLVM/NVPTX toolchains",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:01:48Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -273064,22 +273216,22 @@
       },
       {
         "activated_at": "2026-09-04T07:00:21Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T07:01:17Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B01",
         "position": 4,
-        "revision": 4253,
-        "state": "active",
+        "revision": 4260,
+        "state": "completed",
         "task_id": "CE-CCP1-B01-005"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:01:36Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B01",
         "position": 5,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4261,
+        "state": "active",
         "task_id": "CE-CCP1-B01-006"
       },
       {
@@ -273193,13 +273345,13 @@
         "task_id": "CE-CCP1-B02-005"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-04T07:01:00Z",
+        "completed_at": "2026-09-04T07:01:48Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B02",
         "position": 5,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4264,
+        "state": "completed",
         "task_id": "CE-CCP1-B02-006"
       },
       {
@@ -282373,11 +282525,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4253,
+        "revision": 4261,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "active",
-        "updated_at": "2026-09-04T07:00:21Z",
+        "updated_at": "2026-09-04T07:01:36Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -282385,11 +282537,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B02",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4256,
+        "revision": 4264,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-04T07:00:37Z",
+        "updated_at": "2026-09-04T07:01:48Z",
         "workspace_mode": "isolated_merge"
       },
       {
