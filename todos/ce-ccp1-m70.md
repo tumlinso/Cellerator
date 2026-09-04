@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M70: Cross-TU/LTO, libCellerator, standard library, and installable SDK integrated
 
-Task revision: `5493`; current project revision is in `todo-status.md`.
+Task revision: `6300`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P70 workstreams, freeze shared interfaces, and publish milestone M70.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
