@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5861`
+Project revision: `5863`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -944,7 +944,7 @@ Project revision: `5861`
 - `CE-EXOP-73` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver generic partition/order/resource export exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-73` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
 - `CE-CCP1-G02-001` | kind: validation_task | status: done | parent: CE-CCP1-G02-000 | objective: Name stable interception points before/after source canonicalization, profile propagation, discovery, certification, decomposition, candidate enumeration, cost modeling, selection, realization, packing, stage construction, and backend emission.
-- `CE-CCP1-G02-002` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Provide ordered pipelines, nested scopes, required/preserved analyses, explicit invalidation, cancellation, timing, diagnostics, and deterministic replay.
+- `CE-CCP1-G02-002` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Provide ordered pipelines, nested scopes, required/preserved analyses, explicit invalidation, cancellation, timing, diagnostics, and deterministic replay.
 - `CE-CCP1-G02-003` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Accept source directives, inline Planning IR, command-line pipeline text, C++ API builders, and profile-specific pipelines with one normalized representation.
 - `CE-CCP1-G02-004` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose Semantic IR read/write access, profiles, source mappings, diagnostics, and analysis cache while allowing semantics-changing transformations under declared validation mode.
 - `CE-CCP1-G02-005` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose search spaces, evidence, atoms, decomposition, candidates, costs, selection, and planner services for additions or full replacement.
@@ -964,7 +964,7 @@ Project revision: `5861`
 - `CE-EXOP-74` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver prove disabled profiling does not alter the hot path exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-74` | kind: integration_task | status: done | parent: CE-GEO-00 | objective: Combine prepared value pack, output-owned MMA, exact row-owned residual, one epilogue, persistent order, planner visibility, and pure-sparse fallback.
 - `CE-CCP1-G03-001` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Define verified, checked, trusted, unsafe, and unchecked behavior separately for parsing, semantic invariants, exact coverage, numerical claims, resources, native bindings, and backend support.
-- `CE-CCP1-G03-002` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Fail only for malformed graphs, missing required operands, impossible references, uninterpretable text, or backend states that cannot be represented/continued.
+- `CE-CCP1-G03-002` | kind: task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Fail only for malformed graphs, missing required operands, impossible references, uninterpretable text, or backend states that cannot be represented/continued.
 - `CE-CCP1-G03-003` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Detect domain/order/generation/effect/numerical/identity inconsistencies and permit explicit trusted/unsafe continuation where the IR remains representable.
 - `CE-CCP1-G03-004` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain omissions, duplicates, wrong roles, incompatible partial algebra, halo/contributor confusion, and canonical recovery failure with member-level evidence.
 - `CE-CCP1-G03-005` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain unsupported instructions, capability ranges, clobbers, alignment, address spaces, collectives, ABI, graph capture, and fallback availability.
