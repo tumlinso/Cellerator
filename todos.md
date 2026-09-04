@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4760`
+Project revision: `4766`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -700,7 +700,7 @@ Project revision: `4760`
 - `CE-CCP1-C03-003` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Bind domain, global extent, logical order, geometry, partition, local extent, and recovery identity as distinct properties.
 - `CE-CCP1-C03-004` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Type state by axis/domain, element/storage type, feature width, order, residency intent, mutability, and generation class while retaining ordinary pointer/view interoperability.
 - `CE-CCP1-C03-005` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Bind source and destination axes/domains, stable relation/structure identity, logical edge identity, support, order, orientation, value plane, and mutation policy.
-- `CE-CCP1-C03-006` | kind: task | status: in_progress | parent: CE-CCP1-C03-000 | objective: Keep support membership, logical edge IDs, physical slots, holes, masks, and active-support generations distinct.
+- `CE-CCP1-C03-006` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Keep support membership, logical edge IDs, physical slots, holes, masks, and active-support generations distinct.
 - `CE-CCP1-C03-007` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Model forward, transpose/backward, and orientation-specific output axes as semantic operation choices over shared logical edges, not pointer reinterpretations.
 - `CE-CCP1-C03-008` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Carry storage, dense input, compute, accumulation, output, nonfinite, precision, and approximation contracts before candidate selection.
 - `CE-CCP1-C03-009` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Resolve relation apply, transpose, support contraction, segment statistics, normalization, edge map/gate, sparse update, bundle, chain, moments, hierarchy, exchange, gradient, and publication kinds.

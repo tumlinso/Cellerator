@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4760`
+Project revision: `4766`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -319,7 +319,7 @@ Project revision: `4760`
 - `CE-CCP1-C03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement axis semantics in the isolated C03 lane, add the focused ce_ccp1_c03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement state semantics in the isolated C03 lane, add the focused ce_ccp1_c03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement relation endpoint semantics in the isolated C03 lane, add the focused ce_ccp1_c03_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-C03-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement support and logical edge identity semantics in the isolated C03 lane, add the focused ce_ccp1_c03_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-C03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement support and logical edge identity semantics in the isolated C03 lane, add the focused ce_ccp1_c03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement orientation and transpose semantics in the isolated C03 lane, add the focused ce_ccp1_c03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement numerical tuple semantics in the isolated C03 lane, add the focused ce_ccp1_c03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement operation-kind resolution in the isolated C03 lane, add the focused ce_ccp1_c03_009 gate, and publish a source-linked receipt.
