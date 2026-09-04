@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5142`
+Project revision: `5160`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -403,7 +403,7 @@ Project revision: `5142`
 - `CE-CCP1-D03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the first profile-aware compile benchmark in the isolated D03 lane, add the focused ce_ccp1_d03_015 gate, and publish a source-linked receipt.
 - `CE-EXOP-64` | status: done | execution: closed | next: Deliver freeze acquisition v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-64` | status: done | execution: closed | next: Build initial row-owned CSR residual in pinned physical order with stable logical-edge value maps and extensible residual descriptors.
-- `CE-CCP1-E01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze planning ir module and decision-state model in the isolated E01 lane, add the focused ce_ccp1_e01_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze planning ir module and decision-state model in the isolated E01 lane, add the focused ce_ccp1_e01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planning problems and operation scopes in the isolated E01 lane, add the focused ce_ccp1_e01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement candidate-family and provider nodes in the isolated E01 lane, add the focused ce_ccp1_e01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement exact logical coverage nodes in the isolated E01 lane, add the focused ce_ccp1_e01_004 gate, and publish a source-linked receipt.
@@ -420,7 +420,7 @@ Project revision: `5142`
 - `CE-CCP1-E01-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic-to-planning lowering in the isolated E01 lane, add the focused ce_ccp1_e01_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first inspectable candidate search space in the isolated E01 lane, add the focused ce_ccp1_e01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-65` | status: done | execution: closed | next: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
-- `CE-CCP1-E02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement import the common jbc atom identity adapters in the isolated E02 lane, add the focused ce_ccp1_e02_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-E02-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement import the common jbc atom identity adapters in the isolated E02 lane, add the focused ce_ccp1_e02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement import the overlapping evidence-atlas core in the isolated E02 lane, add the focused ce_ccp1_e02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement import support-signature discovery in the isolated E02 lane, add the focused ce_ccp1_e02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement import co-support and overlap discovery in the isolated E02 lane, add the focused ce_ccp1_e02_004 gate, and publish a source-linked receipt.
@@ -439,7 +439,7 @@ Project revision: `5142`
 - `CE-CCP1-E02-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement validate no compiler discovery remains authoritative in cellshard in the isolated E02 lane, add the focused ce_ccp1_e02_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the migrated discovery and atom compiler slice in the isolated E02 lane, add the focused ce_ccp1_e02_018 gate, and publish a source-linked receipt.
 - `CE-GEO-66` | status: done | execution: closed | next: Perform exact O(E) rectangle census and exact disjoint MMA/residual physical contribution assignment.
-- `CE-CCP1-E03-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement import typed composition production contracts in the isolated E03 lane, add the focused ce_ccp1_e03_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-E03-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement import typed composition production contracts in the isolated E03 lane, add the focused ce_ccp1_e03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement import multi-parent derivation dags in the isolated E03 lane, add the focused ce_ccp1_e03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement import explicit grammar compilation in the isolated E03 lane, add the focused ce_ccp1_e03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement import induced grammar as experimental search in the isolated E03 lane, add the focused ce_ccp1_e03_004 gate, and publish a source-linked receipt.
@@ -458,7 +458,7 @@ Project revision: `5142`
 - `CE-CCP1-E03-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the profile-to-portable-ruleset slice in the isolated E03 lane, add the focused ce_ccp1_e03_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cellerator-owned global compiler migration in the isolated E03 lane, add the focused ce_ccp1_e03_018 gate, and publish a source-linked receipt.
 - `CE-GEO-67` | status: done | execution: closed | next: Use complete target-calibrated marginal cost and bounded moves, swaps, splits, merges, rectangle toggles, and admissible exchanges; always emit pure sparse, conservative hybrid, and aggressive hybrid covers.
-- `CE-CCP1-E04-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement adapt semantic geometry acquisition to planning ir in the isolated E04 lane, add the focused ce_ccp1_e04_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-E04-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement adapt semantic geometry acquisition to planning ir in the isolated E04 lane, add the focused ce_ccp1_e04_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement adapt decomposition portfolios to planning ir in the isolated E04 lane, add the focused ce_ccp1_e04_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent split axes, fragments, halos, and replicas in the isolated E04 lane, add the focused ce_ccp1_e04_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent partial-result trees and algebra selection in the isolated E04 lane, add the focused ce_ccp1_e04_004 gate, and publish a source-linked receipt.
