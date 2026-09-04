@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6632`
+Project revision: `6634`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -84,7 +84,7 @@ Project revision: `6632`
 - `CE-CCP1-A03-000` | status: done | execution: closed | next: Claim A03-001 after milestone prerequisites are reached.
 - `CE-EXOP-02` | status: done | execution: closed | next: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-12` | status: done | execution: closed | next: Implement fixed-capacity explicit provider registration, active-device filtering, and a generated compiled-provider manifest with no constructors or dynamic loader.
-- `CE-CCP1-A04-000` | status: planned | execution: ready | next: Claim A04-001 after milestone prerequisites are reached.
+- `CE-CCP1-A04-000` | status: done | execution: closed | next: Claim A04-001 after milestone prerequisites are reached.
 - `CE-EXOP-03` | status: done | execution: closed | next: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-13` | status: done | execution: closed | next: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
 - `CE-CCP1-B01-000` | status: planned | execution: ready | next: Claim B01-001 after milestone prerequisites are reached.
