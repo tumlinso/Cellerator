@@ -163,3 +163,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f04_012 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f04_012 COMMAND ce_ccp1_f04_012)
+
+add_executable(ce_ccp1_f04_013
+    freeze_optional_nvidia_backend_routes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/freeze_optional_nvidia_backend_routes.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/freeze_clang_cuda_and_nvptx_backend_contracts.cc")
+target_include_directories(ce_ccp1_f04_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f04_013 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f04_013 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f04_013 COMMAND ce_ccp1_f04_013)
