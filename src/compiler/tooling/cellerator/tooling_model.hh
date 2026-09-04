@@ -29,5 +29,8 @@ struct generation_view {std::size_t structure=1,value=1,support=1,order=1;std::v
 struct semantic_ir_view {std::string normalized,source_map;std::vector<std::string> effects,profiles,extensions;};
 [[nodiscard]] semantic_ir_view semantic_ir_at_cursor(std::string_view source,std::size_t cursor);
 [[nodiscard]] std::string apply_semantic_ir_edit(std::string_view source,const semantic_ir_view& edit);
+struct candidate_view {std::string name,decomposition,evidence,rejected_reason;double cost=0;std::size_t resources=0;bool certified=false,selected=false,forced=false;};
+struct planning_ir_view {std::string problem,exact_cover;std::vector<std::string> atom_proposals;std::vector<candidate_view> candidates;};
+[[nodiscard]] planning_ir_view planning_ir_at_cursor(bool force_reference);
 
 }  // namespace cellerator::compiler::tooling::v1
