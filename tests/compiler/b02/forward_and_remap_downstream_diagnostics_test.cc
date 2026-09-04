@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/driver/forward_and_remap_downstream_diagnostics_v1.hh>
+#include <cstdlib>
+#include <iostream>
+using namespace cellerator::compiler::driver;
+int main() { const downstream_diagnostic_v1 input{downstream_severity_v1::error, {"generated.cc", 42, 7}, {"generated.cc", 44, 9}, "unknown biological domain", "replace with gene", 2}; const auto out = remap_downstream_diagnostic_v1(input, {{"generated.cc", "input.cell", 40, 50, 100}}); if (out.severity != input.severity || out.begin.file != "input.cell" || out.begin.line != 102 || out.begin.column != 7 || out.end.line != 104 || out.end.column != 9 || out.message != input.message || out.fix_it != input.fix_it || out.downstream_exit_code != 2) return EXIT_FAILURE; const auto native = remap_downstream_diagnostic_v1(input, {}); if (native.begin.file != "generated.cc" || native.begin.line != 42 || native.downstream_exit_code != 2) return EXIT_FAILURE; std::cout << "validated diagnostic severity/range/fix-it/exit preservation and source-map remapping\n"; }

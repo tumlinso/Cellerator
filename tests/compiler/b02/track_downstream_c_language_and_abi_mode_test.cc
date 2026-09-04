@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/driver/track_downstream_c_language_and_abi_mode_v1.hh>
+#include <cstdlib>
+#include <iostream>
+using namespace cellerator::compiler::driver;
+int main() { const std::vector<std::string> args{"-std=c++17", "--target=x86_64-linux-gnu", "-fno-exceptions", "-frtti", "-fsanitize=address", "-fvisibility=hidden", "-fabi-version=11", "-Iinc", "-DVALUE=1", "-Wl,--as-needed", "-Llib", "-lfoo", "source.cc"}; const auto out = track_downstream_language_and_abi_v1(args); if (out.implementation_standard != "c++23" || out.language_standard != "c++17" || out.target != "x86_64-linux-gnu" || out.compiler_flags.size() != 7 || out.preprocessor_flags.size() != 2 || out.linker_flags.size() != 3 || out.unclassified != std::vector<std::string>{"source.cc"}) return EXIT_FAILURE; const auto abi0 = track_downstream_language_and_abi_v1({"-std=c++17", "-D_GLIBCXX_USE_CXX11_ABI=0"}); const auto abi1 = track_downstream_language_and_abi_v1({"-std=c++17", "-D_GLIBCXX_USE_CXX11_ABI=1"}); if (abi0.compiler_flags.back() == abi1.compiler_flags.back()) return EXIT_FAILURE; std::cout << "validated independent implementation standard and downstream ABI forwarding\n"; }
