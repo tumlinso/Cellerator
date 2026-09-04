@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5226`
+Project revision: `5230`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -408,7 +408,7 @@ Project revision: `5226`
 - `CE-CCP1-E01-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement candidate-family and provider nodes in the isolated E01 lane, add the focused ce_ccp1_e01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement exact logical coverage nodes in the isolated E01 lane, add the focused ce_ccp1_e01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement atom requirement and affordance nodes in the isolated E01 lane, add the focused ce_ccp1_e01_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-E01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement decomposition-alternative nodes in the isolated E01 lane, add the focused ce_ccp1_e01_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement decomposition-alternative nodes in the isolated E01 lane, add the focused ce_ccp1_e01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement partial-result algebra nodes in the isolated E01 lane, add the focused ce_ccp1_e01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement persistent-order, projection, and packing alternatives in the isolated E01 lane, add the focused ce_ccp1_e01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement resource and stage-inventory alternatives in the isolated E01 lane, add the focused ce_ccp1_e01_009 gate, and publish a source-linked receipt.
@@ -444,7 +444,7 @@ Project revision: `5226`
 - `CE-CCP1-E03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement import explicit grammar compilation in the isolated E03 lane, add the focused ce_ccp1_e03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement import induced grammar as experimental search in the isolated E03 lane, add the focused ce_ccp1_e03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement import workload-family representation in the isolated E03 lane, add the focused ce_ccp1_e03_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-E03-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement import basis manifest semantics in the isolated E03 lane, add the focused ce_ccp1_e03_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-E03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement import basis manifest semantics in the isolated E03 lane, add the focused ce_ccp1_e03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement no-basis and multiple-basis outcomes in the isolated E03 lane, add the focused ce_ccp1_e03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement import superatom promotion in the isolated E03 lane, add the focused ce_ccp1_e03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement import persistent-partial compiler semantics in the isolated E03 lane, add the focused ce_ccp1_e03_009 gate, and publish a source-linked receipt.
