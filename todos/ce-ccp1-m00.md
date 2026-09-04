@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M00: Architecture, ownership, and migration authority frozen
 
-Task revision: `3895`; current project revision is in `todo-status.md`.
+Task revision: `4143`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P00 workstreams, freeze shared interfaces, and publish milestone M00.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
