@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5014`
+Project revision: `5015`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -775,7 +775,7 @@ Project revision: `5014`
 - `CE-CCP1-D03-006` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Store observed structure/value/support/order change rates, mutation half-lives, reuse horizons, recurrence, field frequency, loop counts, and confidence intervals.
 - `CE-CCP1-D03-007` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Track dataset/source identity, sampling method, time window, transformation stage, producer/tool version, confidence, revision, and validity predicates independently of semantic identity.
 - `CE-CCP1-D03-008` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Accept caller-provided relation/support/value/trace observations without owning workflow file formats.
-- `CE-CCP1-D03-009` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Use count/scan/fill, sketches, bounded top-L summaries, histograms, and exact small-instance modes to derive profiles with explicit memory budgets.
+- `CE-CCP1-D03-009` | kind: task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Use count/scan/fill, sketches, bounded top-L summaries, histograms, and exact small-instance modes to derive profiles with explicit memory budgets.
 - `CE-CCP1-D03-010` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Resolve command-line/build-provided profile artifacts to source symbols and fields, validate biological identities, and reject complete absence for activated semantic compilation.
 - `CE-CCP1-D03-011` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Describe how known operations and native effect contracts transform profile state: values only, support, structure, order, generation, or unknown.
 - `CE-CCP1-D03-012` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Carry per-branch states up to configured complexity, merge compatible evidence, widen uncertain dimensions, retain confidence, and avoid exponential code cloning.
