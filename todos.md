@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6661`
+Project revision: `6663`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -487,7 +487,7 @@ Project revision: `6661`
 - `CE-CCP1-D02-000` | kind: workstream | status: done | parent: CE-CCP1-P30 | objective: Represent normalized biological program meaning, typed effects, profile alternatives, and execution-field scope independently of physical realization.
 - `CE-EXOP-13` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver implement precise, experimental, and profiling build policy exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-23` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Move typed preparation dispatch behind each catalog entry while preserving existing bridges and eliminating central physical-projection knowledge.
-- `CE-CCP1-D03-000` | kind: workstream | status: planned | parent: CE-CCP1-P30 | objective: Build the data-derived semantic environment that makes Cellerator compilation genuinely representative-data aware.
+- `CE-CCP1-D03-000` | kind: workstream | status: done | parent: CE-CCP1-P30 | objective: Build the data-derived semantic environment that makes Cellerator compilation genuinely representative-data aware.
 - `CE-EXOP-14` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver validate build and packaging matrix exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-24` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Create one v2 program engine without five-entry pointer closure or central projection switch and retain v1 as a compatibility wrapper.
 - `CE-CCP1-E01-000` | kind: workstream | status: planned | parent: CE-CCP1-P40 | objective: Represent unresolved implementation alternatives, exact correctness conditions, complete costs, user edits, and committed selections as writable public IR.
