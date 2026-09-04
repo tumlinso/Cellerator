@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5548`
+Project revision: `5551`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -512,7 +512,7 @@ Project revision: `5548`
 - `CE-CCP1-F02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the cpu/backend thin waist in the isolated F02 lane, add the focused ce_ccp1_f02_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-70` | status: done | execution: closed | next: Deliver mechanism and prepared-stage manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-70` | status: done | execution: closed | next: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
-- `CE-CCP1-F03-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the nvcc backend contract in the isolated F03 lane, add the focused ce_ccp1_f03_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the nvcc backend contract in the isolated F03 lane, add the focused ce_ccp1_f03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cuda source emission in the isolated F03 lane, add the focused ce_ccp1_f03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement bind existing cellerator cuda providers in the isolated F03 lane, add the focused ce_ccp1_f03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement generate custom relation kernels where selected in the isolated F03 lane, add the focused ce_ccp1_f03_004 gate, and publish a source-linked receipt.

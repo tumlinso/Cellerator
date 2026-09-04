@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5548`
+Project revision: `5551`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -893,7 +893,7 @@ Project revision: `5548`
 - `CE-CCP1-F02-014` | kind: validation_task | status: planned | parent: CE-CCP1-F02-000 | objective: Publish backend ABI, registry, generated C++ contract, CPU fallbacks, object emission, and diagnostics for downstream backends.
 - `CE-EXOP-70` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver mechanism and prepared-stage manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-70` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
-- `CE-CCP1-F03-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-F03-000 | objective: State that NVCC never parses Cellerator syntax; it receives generated CUDA/C++ plus explicit device/host/link jobs, target architectures, support libraries, and source maps.
+- `CE-CCP1-F03-001` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: State that NVCC never parses Cellerator syntax; it receives generated CUDA/C++ plus explicit device/host/link jobs, target architectures, support libraries, and source maps.
 - `CE-CCP1-F03-002` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Emit typed kernels, device helpers, host stubs, constants, projection views, stage launchers, and runtime bindings from Realization IR with deterministic formatting.
 - `CE-CCP1-F03-003` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Map candidate/provider identities and prepared-state contracts to source-linked existing sm70 and generic implementations rather than regenerating every kernel.
 - `CE-CCP1-F03-004` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower exact cover, projection, numeric tuple, width, order, partial algebra, and epilogue into specialized CUDA code when no prelinked provider is chosen.
