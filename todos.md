@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4413`
+Project revision: `4420`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -642,7 +642,7 @@ Project revision: `4413`
 - `CE-CCP1-B03-005` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Specify activation inside #if branches, inactive directives, include replay, precompiled headers, and modules.
 - `CE-CCP1-B03-006` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Capture spelling, trivia, source span, macro origin, activated dialect state, and preprocessor condition for every token needed by Cellerator parsing and source reconstruction.
 - `CE-CCP1-B03-007` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Parse Cellerator constructs after preprocessing while preserving definition and expansion provenance.
-- `CE-CCP1-B03-008` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Detect balanced <[ .
+- `CE-CCP1-B03-008` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Detect balanced <[ .
 - `CE-CCP1-B03-009` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Identify -[relation]-> and other language-spec operation families without assigning semantics during the raw source pass.
 - `CE-CCP1-B03-010` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Replace Cellerator constructs with valid generated C++ expressions/declarations carrying stable placeholder IDs, typed capture slots, and source-map anchors while retaining unaffected C++ verbatim.
 - `CE-CCP1-B03-011` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Maintain one-to-one or explicit many-to-one mappings from placeholder declarations/calls to Cellerator parse nodes and source captures.
@@ -662,8 +662,8 @@ Project revision: `4413`
 - `CE-CCP1-B04-009` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Treat unresolved or uncontracted C/C++ calls inside fields as explicit semantic barriers with conservative read/write/escape effects, not as invisible operations.
 - `CE-CCP1-B04-010` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Associate source-level contracts with resolved functions and validate reads, writes, topology/order/support/value effects, determinism, purity, and aliasing claims.
 - `CE-CCP1-B04-011` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: When GCC is the downstream compiler, compare Clang-derived semantic assumptions with GCC target, standard library, ABI macros, and calling conventions; diagnose unsupported mismatches.
-- `CE-CCP1-B04-012` | kind: task | status: in_progress | parent: CE-CCP1-B04-000 | objective: Skip Cellerator AST/IR construction for unactivated source and preserve compilation, diagnostics, depfiles, modules, and link semantics through the driver.
-- `CE-CCP1-B04-013` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Provide cancellable, thread-aware parse/Sema sessions and immutable snapshots suitable for libCellerator and celleratord rather than coupling the bridge to one command-line process.
+- `CE-CCP1-B04-012` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Skip Cellerator AST/IR construction for unactivated source and preserve compilation, diagnostics, depfiles, modules, and link semantics through the driver.
+- `CE-CCP1-B04-013` | kind: task | status: in_progress | parent: CE-CCP1-B04-000 | objective: Provide cancellable, thread-aware parse/Sema sessions and immutable snapshots suitable for libCellerator and celleratord rather than coupling the bridge to one command-line process.
 - `CE-CCP1-B04-014` | kind: validation_task | status: planned | parent: CE-CCP1-B04-000 | objective: Publish the versioned adapter and demonstrate an activated Cellerator placeholder resolving real C++ names, templates, constexpr values, and numeric types.
 - `CE-GEO-57` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
 - `CE-CCP1-C01-001` | kind: validation_task | status: planned | parent: CE-CCP1-C01-000 | objective: Convert the reconciled language specification into an explicit versioned grammar, token kinds, contextual keywords, precedence table, and extension points.
