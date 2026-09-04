@@ -41,3 +41,7 @@ add_executable(ce_ccp1_g03_008 implement_what_changed_and_staleness_explanations
 target_include_directories(ce_ccp1_g03_008 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_008 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_008 COMMAND ce_ccp1_g03_008)
+add_executable(ce_ccp1_g03_009 implement_planning_barrier_explanations_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_planning_barrier_explanations.cc")
+target_include_directories(ce_ccp1_g03_009 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_009 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_009 COMMAND ce_ccp1_g03_009)
