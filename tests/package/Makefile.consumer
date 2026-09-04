@@ -1,0 +1,5 @@
+CXX ?= c++
+CXXFLAGS += $(shell pkg-config --cflags cellerator)
+LDLIBS += $(shell pkg-config --libs cellerator)
+consumer: consumer.cc
+	$(CXX) $(CXXFLAGS) $< $(LDLIBS) -o $@

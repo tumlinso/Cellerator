@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/lto/implement_mach_o_and_coff_strategies_v1.hh>
+namespace cellerator::compiler::lto::v1 {
+platform_ceir_strategy_v1 select_platform_ceir_strategy_v1(object_format_v1 f,bool available){platform_ceir_strategy_v1 r;r.format=f;r.toolchain_available=available;r.sidecar_suffix=".ceir";r.use_sidecar=!available;if(f==object_format_v1::mach_o){r.segment="__CELLERATOR";r.section="__ceir";r.symbol="_cellerator_ceir";}else if(f==object_format_v1::coff){r.section=".cellerator$ceir";r.symbol="__cellerator_ceir";}else r.use_sidecar=true;return r;}
+bool equivalent_platform_content_v1(const ceir_companion_artifact_v1&a,const ceir_companion_artifact_v1&b)noexcept{return a.version==b.version&&a.semantic_summary.high==b.semantic_summary.high&&a.semantic_summary.low==b.semantic_summary.low&&a.planning_summary.high==b.planning_summary.high&&a.planning_summary.low==b.planning_summary.low&&a.profile_reference.high==b.profile_reference.high&&a.profile_reference.low==b.profile_reference.low&&a.content_hash==b.content_hash;}
+}

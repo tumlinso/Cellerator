@@ -1,0 +1,6 @@
+set(CELLERATOR_RESOURCE_TREE_PATTERN "share/cellerator/<compiler-major>.<ceir-major>")
+function(cellerator_require_resource_pair compiler_major ceir_major resource_compiler resource_ceir)
+  if(NOT compiler_major STREQUAL resource_compiler OR NOT ceir_major STREQUAL resource_ceir)
+    message(FATAL_ERROR "Cellerator compiler/resource version mismatch: compiler ${compiler_major}.${ceir_major}, resources ${resource_compiler}.${resource_ceir}")
+  endif()
+endfunction()

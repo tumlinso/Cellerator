@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/backend/nvcc/generate_custom_relation_kernels_where_selected_v1.hh>
+#include <sstream>
+namespace cellerator::compiler::backend::nvcc::v1 {
+std::optional<realized_cuda_entity> generate_custom_relation_kernel(const custom_relation_kernel_request&r,custom_kernel_status*s) noexcept{auto set=[&](auto v){if(s)*s=v;};if(r.prelinked_provider_selected){set(custom_kernel_status::provider_already_selected);return{};}if(r.name.empty()||!r.exact_members||!r.exact_edges){set(custom_kernel_status::invalid_coverage);return{};}if(!r.structure_epoch||!r.value_generation){set(custom_kernel_status::invalid_generation);return{};}if(!r.width){set(custom_kernel_status::invalid_width);return{};}std::ostringstream o;o<<"extern \"C\" __global__ void "<<r.name<<"(const float* values, float* output) {\n"<<"    const unsigned i = blockIdx.x * blockDim.x + threadIdx.x;\n"<<"    if (i < "<<r.exact_members<<"ULL) output[i] "<<(r.additive_partial?"+=":"=")<<" values[i % "<<r.exact_edges<<"ULL]"<<(r.affine_epilogue?" * 1.0f + 0.0f":"")<<";\n"<<"}\n";set(custom_kernel_status::ok);return realized_cuda_entity{cuda_entity_kind::kernel,r.name,o.str(),1u};}
+}

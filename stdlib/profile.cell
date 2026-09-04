@@ -1,0 +1,9 @@
+#pragma cellerator
+namespace cellerator::stdlib {
+struct typed_name { const char* text; unsigned long long identity; };
+struct lifetime_facts { unsigned long long structure_epoch; unsigned long long value_generation; bool reusable; };
+enum class mutation_kind : unsigned { none, values, structure };
+struct mutation_contract { mutation_kind kind; unsigned long long expected_generation; };
+struct profile_selection { typed_name name; bool explicit_selection; };
+constexpr profile_selection select_profile(typed_name name) noexcept { return {name, true}; }
+} // namespace cellerator::stdlib

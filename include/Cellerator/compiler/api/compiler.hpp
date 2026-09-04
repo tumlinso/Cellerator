@@ -1,0 +1,12 @@
+#pragma once
+#include <Cellerator/compiler/api/create_installed_sdk_examples_v1.hh>
+#include <Cellerator/compiler/api/define_abi_version_and_feature_queries_v1.hh>
+#include <Cellerator/compiler/api/define_cpp_compiler_session_api_v1.hh>
+#include <Cellerator/compiler/api/define_thread_safety_and_context_isolation_v1.hh>
+#include <Cellerator/compiler/api/expose_ceir_ownership_and_mutation_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_parse_and_semantic_analysis_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_pass_reflection_and_extension_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_planning_and_candidate_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_profile_build_load_query_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_realization_and_backend_apis_v1.hh>
+#include <Cellerator/compiler/api/expose_structured_diagnostics_and_explainability_apis_v1.hh>

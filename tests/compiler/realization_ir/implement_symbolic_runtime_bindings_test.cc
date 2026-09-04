@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/ir/realization/implement_symbolic_runtime_bindings_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::ir::realization::v1;
+int main(){symbolic_binding_table_v1 t{{1,1},{{{2,1},binding_slot_kind_v1::input,{},64,16},{{2,2},binding_slot_kind_v1::stream,{},0,1},{{2,3},binding_slot_kind_v1::lease,{},0,1}}};int x=0;std::vector<live_runtime_binding_v1>a={{{2,1},&x,nullptr,0},{{2,2},nullptr,&x,0},{{2,3},nullptr,nullptr,9}};auto before=serialize_symbolic_bindings_v1(t);assert(bind_symbolic_runtime_v1(t,a)==symbolic_binding_status_v1::valid);a[0].address=reinterpret_cast<void*>(0x12345678);auto after=serialize_symbolic_bindings_v1(t);assert(before==after);a[1].stream=nullptr;assert(bind_symbolic_runtime_v1(t,a)==symbolic_binding_status_v1::null_live_resource);}

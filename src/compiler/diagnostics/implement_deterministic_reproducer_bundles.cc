@@ -1,0 +1,3 @@
+#include <Cellerator/compiler/diagnostics/implement_deterministic_reproducer_bundles_v1.hh>
+#include <algorithm>
+namespace cellerator::compiler::diagnostics::v1 {reproducer_bundle make_reproducer_bundle(std::vector<bundle_entry> e){std::sort(e.begin(),e.end(),[](auto&a,auto&b){return a.kind<b.kind||(a.kind==b.kind&&a.content<b.content);});std::uint64_t h=1469598103934665603ULL;for(auto&x:e){h^=static_cast<unsigned>(x.kind);h*=1099511628211ULL;for(unsigned char c:x.content){h^=c;h*=1099511628211ULL;}}return{std::move(e),h,false};}bool replay_matches(const reproducer_bundle&b,std::uint64_t expected) noexcept{return !b.contains_dataset_payload&&b.digest&&b.digest==expected;}}

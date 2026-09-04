@@ -1,0 +1,5 @@
+include(GNUInstallDirs)
+set(CELLERATOR_SDK_RESOURCE_VERSION "${PROJECT_VERSION_MAJOR}.1")
+set(CELLERATOR_SDK_RESOURCE_DIR "${CMAKE_INSTALL_DATADIR}/cellerator/${CELLERATOR_SDK_RESOURCE_VERSION}")
+set(CELLERATOR_SDK_PROFILE_REQUIRED ON)
+set(CELLERATOR_SDK_ACCEPTANCE_MODES ordinary_cxx cell standalone_ceir direct_libcellerator custom_pass cpu conditional_nvcc)

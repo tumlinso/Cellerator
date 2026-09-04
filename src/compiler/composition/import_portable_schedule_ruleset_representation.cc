@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/composition/import_portable_schedule_ruleset_representation_v1.hh>
+namespace Cellerator::compiler::composition {
+bool validate_portable_schedule_v1(const portable_schedule_v1&s,std::string*e){if(s.operation_order.empty()){if(e)*e="operation order required";return false;}for(const auto*xs:{&s.operation_order,&s.atom_requirements,&s.partial_tree,&s.canonical_recovery})for(const auto&x:*xs)if(x.empty()||x.find('/')!=std::string::npos||x.find("0x")!=std::string::npos||x.find("lease")!=std::string::npos||x.find("topology")!=std::string::npos){if(e)*e="runtime-specific schedule field";return false;}return true;}
+std::uint64_t portable_schedule_identity_v1(const portable_schedule_v1&s){std::string e;if(!validate_portable_schedule_v1(s,&e))return 0;std::uint64_t h=1469598103934665603ULL;auto add=[&](const std::string&x){for(unsigned char c:x){h^=c;h*=1099511628211ULL;}h^=0xff;h*=1099511628211ULL;};for(const auto*xs:{&s.operation_order,&s.atom_requirements,&s.partial_tree,&s.canonical_recovery})for(const auto&x:*xs)add(x);h^=static_cast<std::uint8_t>(s.replay);return h;}
+}

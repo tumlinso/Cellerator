@@ -1,0 +1,2 @@
+#include <Cellerator/compiler/diagnostics/implement_source_to_native_maps_and_removable_sections_v1.hh>
+namespace cellerator::compiler::diagnostics::v1 {bool valid_source_native_map(const provenance_image&i) noexcept{if(!i.hot_bytes)return false;for(auto&e:i.cold_map)if(!e.source_id||!e.native_symbol)return false;return true;}provenance_image strip_provenance(provenance_image i) noexcept{i.cold_map.clear();return i;}}
