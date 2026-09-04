@@ -61,3 +61,8 @@ add_executable(ce_ccp1_d03_006 ../d03/represent_mutability_recurrence_and_reuse_
 target_include_directories(ce_ccp1_d03_006 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_006 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_006 COMMAND ce_ccp1_d03_006)
+add_executable(ce_ccp1_d03_007 ../d03/represent_evidence_provenance_and_revision_test.cc
+ "${CELLERATOR_ROOT}/src/compiler/profile/represent_evidence_provenance_and_revision.cc")
+target_include_directories(ce_ccp1_d03_007 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_007 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_007 COMMAND ce_ccp1_d03_007)
