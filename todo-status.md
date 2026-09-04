@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4370`
+Project revision: `4371`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -255,7 +255,7 @@ Project revision: `4370`
 - `CE-EXOP-55` | status: done | execution: closed | next: Deliver freeze planner portfolio exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-55` | status: done | execution: closed | next: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
 - `CE-CCP1-B03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement define the unified source-location model in the isolated B03 lane, add the focused ce_ccp1_b03_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement classify source inputs independently of extension in the isolated B03 lane, add the focused ce_ccp1_b03_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement classify source inputs independently of extension in the isolated B03 lane, add the focused ce_ccp1_b03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement register the #pragma cellerator preprocessor contract in the isolated B03 lane, add the focused ce_ccp1_b03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement file-local dialect state in the isolated B03 lane, add the focused ce_ccp1_b03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement define pragma interaction with preprocessing conditionals in the isolated B03 lane, add the focused ce_ccp1_b03_005 gate, and publish a source-linked receipt.
