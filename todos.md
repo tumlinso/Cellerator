@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5795`
+Project revision: `5800`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -907,7 +907,7 @@ Project revision: `5795`
 - `CE-CCP1-F03-012` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Lower symbolic stage dependencies to caller streams, events, same-stream elision, generation publication, and graph-compatible launch behavior using existing runtime contracts.
 - `CE-CCP1-F03-013` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: Compile a profile-bound relation program through data-aware Planning IR and Realization IR into an ordinary CUDA-capable object with NVCC, link it, and execute on sm70.
 - `CE-CCP1-F03-014` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: Measure Cellerator compile/planning, generated source, nvcc time, ptxas resources, object size, preparation, packing, transfers, launches, kernel time, and reuse.
-- `CE-CCP1-F03-015` | kind: validation_task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Publish source emission, provider binding, action graph, object/fatbinary behavior, diagnostics, readiness, and performance receipts.
+- `CE-CCP1-F03-015` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: Publish source emission, provider binding, action graph, object/fatbinary behavior, diagnostics, readiness, and performance receipts.
 - `CE-EXOP-71` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver resource receipts and stable profiling identities exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-71` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add the source-linked nvidia_sm70 provider advertising only implemented FP16 relation/input, FP32 accumulate/output 16x16x16 WMMA.
 - `CE-CCP1-F04-001` | kind: validation_task | status: done | parent: CE-CCP1-F04-000 | objective: Define optional routes from Realization IR through generated CUDA parsed by Clang or through LLVM/NVPTX lowering, sharing the backend ABI and source maps.
