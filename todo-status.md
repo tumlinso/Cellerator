@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5835`
+Project revision: `5838`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -330,7 +330,7 @@ Project revision: `5835`
 - `CE-CCP1-C03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement explicit low-level casts and escape hatches in the isolated C03 lane, add the focused ce_ccp1_c03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement create semantic validation and explanation apis in the isolated C03 lane, add the focused ce_ccp1_c03_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-016` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze biological sema conformance in the isolated C03 lane, add the focused ce_ccp1_c03_016 gate, and publish a source-linked receipt.
-- `CE-CCP1-M50` | status: in_progress | execution: claimed | next: Collect isolated lane receipts for P50, verify hashes and interfaces, integrate central files, run label ce_ccp1_m50, and publish CE-CCP1-MILESTONE-M50.
+- `CE-CCP1-M50` | status: done | execution: closed | next: Collect isolated lane receipts for P50, verify hashes and interfaces, integrate central files, run label ce_ccp1_m50, and publish CE-CCP1-MILESTONE-M50.
 - `CE-CCP1-P70` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-60` | status: done | execution: closed | next: Deliver requirements-query acquisition facade exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-60` | status: done | execution: closed | next: Define a data-only target-specific refinement seam distinct from the semantic strategy contract.

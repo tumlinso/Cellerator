@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5835`
+Project revision: `5838`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -711,7 +711,7 @@ Project revision: `5835`
 - `CE-CCP1-C03-014` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Provide checked, trusted, and unsafe conversions between ordinary C++ views and compiler-semantic objects, with explicit effect/identity contracts.
 - `CE-CCP1-C03-015` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Return structured compatibility results explaining domains, orders, generations, numerical policies, and operation resolution.
 - `CE-CCP1-C03-016` | kind: validation_task | status: done | parent: CE-CCP1-C03-000 | objective: Lower all current operation-problem and relation-algebra fixtures through frontend Sema and prove no semantic information needed by planning is lost.
-- `CE-CCP1-M50` | kind: validation_task | status: in_progress | parent: CE-CCP1-P50 | objective: Integrate and validate all P50 workstreams, freeze shared interfaces, and publish milestone M50.
+- `CE-CCP1-M50` | kind: validation_task | status: done | parent: CE-CCP1-P50 | objective: Integrate and validate all P50 workstreams, freeze shared interfaces, and publish milestone M50.
 - `CE-CCP1-P70` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate cross-tu compilation, libcellerator, standard library, and sdk and publish milestone M70.
 - `CE-EXOP-60` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver requirements-query acquisition facade exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-60` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Define a data-only target-specific refinement seam distinct from the semantic strategy contract.
