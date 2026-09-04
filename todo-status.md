@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6636`
+Project revision: `6639`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -87,7 +87,7 @@ Project revision: `6636`
 - `CE-CCP1-A04-000` | status: done | execution: closed | next: Claim A04-001 after milestone prerequisites are reached.
 - `CE-EXOP-03` | status: done | execution: closed | next: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-13` | status: done | execution: closed | next: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
-- `CE-CCP1-B01-000` | status: planned | execution: ready | next: Claim B01-001 after milestone prerequisites are reached.
+- `CE-CCP1-B01-000` | status: done | execution: closed | next: Claim B01-001 after milestone prerequisites are reached.
 - `CE-GEO-14` | status: done | execution: closed | next: Prove a fake source-linked provider and candidate can be added without central runtime modification; validate descriptor, capability, memory-interface, registry, manifest, and sealed-session contracts.
 - `CE-CCP1-B02-000` | status: planned | execution: ready | next: Claim B02-001 after milestone prerequisites are reached.
 - `CE-CCP1-B03-000` | status: planned | execution: ready | next: Claim B03-001 after milestone prerequisites are reached.

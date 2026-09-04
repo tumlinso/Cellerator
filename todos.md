@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6636`
+Project revision: `6639`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -468,7 +468,7 @@ Project revision: `6636`
 - `CE-CCP1-A04-000` | kind: workstream | status: done | parent: CE-CCP1-P00 | objective: Freeze a traditional source layout and integration ownership model before parallel implementation creates incompatible compiler trees.
 - `CE-EXOP-03` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver freeze source and behavioral baseline exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-13` | kind: integration_task | status: done | parent: CE-GEO-00 | objective: Implement provider inclusion and tuning options, compatibility aliases, and precise provider performance helpers without implicit fast math, cache forcing, register caps, or launch bounds.
-- `CE-CCP1-B01-000` | kind: workstream | status: planned | parent: CE-CCP1-P10 | objective: Make the compiler, CEIR, profiles, diagnostics, and tooling independently buildable while preserving optional accelerator providers.
+- `CE-CCP1-B01-000` | kind: workstream | status: done | parent: CE-CCP1-P10 | objective: Make the compiler, CEIR, profiles, diagnostics, and tooling independently buildable while preserving optional accelerator providers.
 - `CE-GEO-14` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove a fake source-linked provider and candidate can be added without central runtime modification; validate descriptor, capability, memory-interface, registry, manifest, and sealed-session contracts.
 - `CE-CCP1-B02-000` | kind: workstream | status: planned | parent: CE-CCP1-P10 | objective: Deliver the reusable driver model that accepts ordinary C++ and Cellerator source, discovers overridable downstream toolchains, and emits conventional artifacts.
 - `CE-CCP1-B03-000` | kind: workstream | status: planned | parent: CE-CCP1-P10 | objective: Create a lossless source pipeline that recognizes Cellerator syntax only in activated files and supplies valid C++ to upstream semantic analysis.
