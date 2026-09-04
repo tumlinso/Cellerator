@@ -47,3 +47,7 @@ add_executable(ce_ccp1_f03_009 implement_ptx_cubin_and_fatbinary_intermediates_t
 target_include_directories(ce_ccp1_f03_009 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_009 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_009 COMMAND ce_ccp1_f03_009)
+add_executable(ce_ccp1_f03_010 integrate_cuda_runtime_and_library_linkage_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/integrate_cuda_runtime_and_library_linkage.cc")
+target_include_directories(ce_ccp1_f03_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_010 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_010 COMMAND ce_ccp1_f03_010)
