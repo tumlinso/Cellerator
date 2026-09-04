@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4201`
+Project revision: `4223`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -605,8 +605,8 @@ Project revision: `4201`
 - `CE-CCP1-A04-010` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Publish current-to-proposed path mappings, central file locks, lane write scopes, and dependency rules.
 - `CE-EXOP-53` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver layout, value-mode, reuse, and connected-operation economics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-53` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
-- `CE-CCP1-B01-001` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Change the planned root-language contract from unconditional CXX+CUDA to CXX with explicit optional accelerator enablement.
-- `CE-CCP1-B01-002` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Specify CELLERATOR_ENABLE_CUDA=AUTO|ON|OFF, check_language(CUDA), explicit failure for ON without a toolchain, and non-failure for AUTO/OFF.
+- `CE-CCP1-B01-001` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Change the planned root-language contract from unconditional CXX+CUDA to CXX with explicit optional accelerator enablement.
+- `CE-CCP1-B01-002` | kind: task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Specify CELLERATOR_ENABLE_CUDA=AUTO|ON|OFF, check_language(CUDA), explicit failure for ON without a toolchain, and non-failure for AUTO/OFF.
 - `CE-CCP1-B01-003` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Define Cellerator::CompilerCore, Frontend, CEIR, Profiles, Planning, Realization, Backends, Tooling, and Diagnostics targets with acyclic link directions.
 - `CE-CCP1-B01-004` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Build compiler and tooling implementation with a modern C++ baseline, initially C++23 where supported, while retaining explicit C++17/CUDA17 compatibility islands for existing runtime/provider code.
 - `CE-CCP1-B01-005` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Move CUDA language properties, CUDAToolkit discovery, architecture flags, and provider manifests behind CUDA-enabled target functions rather than root-global requirements.
@@ -619,7 +619,7 @@ Project revision: `4201`
 - `CE-CCP1-B01-012` | kind: validation_task | status: planned | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
 - `CE-EXOP-54` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver planner correctness and scale tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-54` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the replaceable portable source/destination community strategy and rectangular-support semantic components.
-- `CE-CCP1-B02-001` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
+- `CE-CCP1-B02-001` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
 - `CE-CCP1-B02-002` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Specify deterministic response-file expansion, quoting, environment capture, path normalization, and forwarding groups so very large downstream command lines remain reproducible.
 - `CE-CCP1-B02-003` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Search explicit overrides, environment, configured resources, PATH, and platform defaults in a documented precedence order.
 - `CE-CCP1-B02-004` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Resolve g++, gcc, linker, include search, target triple, libstdc++ ABI mode, and version identity independently of the Clang semantic-library dependency.
@@ -651,7 +651,7 @@ Project revision: `4201`
 - `CE-CCP1-B03-014` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Provide token, activation-map, shadow-source, and source-map dumps without making them required hot-path artifacts.
 - `CE-CCP1-B03-015` | kind: validation_task | status: planned | parent: CE-CCP1-B03-000 | objective: Compile a mixed translation unit containing ordinary C++, activated Cellerator syntax, inactive includes, and an activated header through source transformation into a valid Clang parse.
 - `CE-GEO-56` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Persist or reference optional support-atlas sections without making them mandatory for core CSG1 validity or semantic identity beyond actual semantic content.
-- `CE-CCP1-B04-001` | kind: validation_task | status: planned | parent: CE-CCP1-B04-000 | objective: Hide Clang-version-specific AST, Sema, Preprocessor, diagnostics, and tooling APIs behind a versioned Cellerator adapter so the public compiler API does not expose unstable Clang internals.
+- `CE-CCP1-B04-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-B04-000 | objective: Hide Clang-version-specific AST, Sema, Preprocessor, diagnostics, and tooling APIs behind a versioned Cellerator adapter so the public compiler API does not expose unstable Clang internals.
 - `CE-CCP1-B04-002` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Construct Clang CompilerInvocation state from normalized cellerator driver arguments, target, sysroot, includes, macros, modules, and language mode.
 - `CE-CCP1-B04-003` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Run preprocessing, parsing, lookup, overload resolution, template instantiation, constexpr evaluation, and diagnostics over the generated shadow source.
 - `CE-CCP1-B04-004` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Resolve every Cellerator domain, state, relation, qualifier expression, native call, and inline-IR capture to a typed Clang AST handle plus source provenance.
