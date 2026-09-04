@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5475`
+Project revision: `5484`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -437,7 +437,7 @@ Project revision: `5475`
 - `CE-CCP1-E02-015` | status: done | execution: closed | next: Inspect the cited read scope, implement create temporary cellshard compiler compatibility adapters in the isolated E02 lane, add the focused ce_ccp1_e02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-016` | status: done | execution: closed | next: Inspect the cited read scope, implement port discovery tests and evidence fixtures in the isolated E02 lane, add the focused ce_ccp1_e02_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-017` | status: done | execution: closed | next: Inspect the cited read scope, implement validate no compiler discovery remains authoritative in cellshard in the isolated E02 lane, add the focused ce_ccp1_e02_017 gate, and publish a source-linked receipt.
-- `CE-CCP1-E02-018` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the migrated discovery and atom compiler slice in the isolated E02 lane, add the focused ce_ccp1_e02_018 gate, and publish a source-linked receipt.
+- `CE-CCP1-E02-018` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the migrated discovery and atom compiler slice in the isolated E02 lane, add the focused ce_ccp1_e02_018 gate, and publish a source-linked receipt.
 - `CE-GEO-66` | status: done | execution: closed | next: Perform exact O(E) rectangle census and exact disjoint MMA/residual physical contribution assignment.
 - `CE-CCP1-E03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement import typed composition production contracts in the isolated E03 lane, add the focused ce_ccp1_e03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement import multi-parent derivation dags in the isolated E03 lane, add the focused ce_ccp1_e03_002 gate, and publish a source-linked receipt.

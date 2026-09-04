@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5475`
+Project revision: `5484`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -818,7 +818,7 @@ Project revision: `5475`
 - `CE-CCP1-E02-015` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Forward old compiler-facing CellShard includes to Cellerator contracts where required for preserved tests, with deprecation and explicit retirement gates.
 - `CE-CCP1-E02-016` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move or adapt all relevant unit/property/malformed/benchmark fixtures, retaining original expected results and documenting intentional semantic changes.
 - `CE-CCP1-E02-017` | kind: validation_task | status: done | parent: CE-CCP1-E02-000 | objective: Audit CellShard main and JBC branches after planned migration: concrete storage/runtime may consume rules, but no retained API may select biological proposals, grammar, basis, or schedules.
-- `CE-CCP1-E02-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Publish Cellerator-owned discovery providers, exact certification, atom Planning IR, compatibility adapters, provenance, and differential evidence.
+- `CE-CCP1-E02-018` | kind: validation_task | status: done | parent: CE-CCP1-E02-000 | objective: Publish Cellerator-owned discovery providers, exact certification, atom Planning IR, compatibility adapters, provenance, and differential evidence.
 - `CE-GEO-66` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Perform exact O(E) rectangle census and exact disjoint MMA/residual physical contribution assignment.
 - `CE-CCP1-E03-001` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move production inputs/outputs, parameters, exact coverage equations, identity/order/generation rules, effects, costs, and verifier references into Planning IR extensions.
 - `CE-CCP1-E03-002` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent atom and operation derivations as typed acyclic graphs with lineage, exact reconstruction, alternative parents, and canonical cycle diagnostics.
