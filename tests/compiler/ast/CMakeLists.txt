@@ -49,3 +49,10 @@ add_executable(ce_ccp1_c02_005
 target_include_directories(ce_ccp1_c02_005 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_005 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_005 COMMAND ce_ccp1_c02_005)
+
+add_executable(ce_ccp1_c02_006
+    preserve_token_and_macro_provenance_test.cc
+    ../../../src/compiler/ast/preserve_token_and_macro_provenance.cc)
+target_include_directories(ce_ccp1_c02_006 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_006 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_006 COMMAND ce_ccp1_c02_006)
