@@ -56,3 +56,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_005 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_005 COMMAND ce_ccp1_d02_005)
+
+add_executable(ce_ccp1_d02_006
+    implement_relation_apply_and_transpose_operations_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_relation_ir_types.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc")
+target_include_directories(ce_ccp1_d02_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_006 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_006 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_006 COMMAND ce_ccp1_d02_006)
