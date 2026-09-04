@@ -1,5 +1,11 @@
 # Cellerator Programming Language: Proposed Specification
 
+> **Part One conformance status.** The syntax, nesting, profile, effect, control,
+> C++ interoperability, diagnostic, and implementation-defined rules in this
+> document match the frozen Part One compiler interfaces. “Proposed” identifies
+> the specification's revisable governance status, not an unimplemented feature
+> set. General JIT execution remains outside Part One.
+
 **Status:** First serious language-design proposal
 **Proposed language revision:** 0.1
 **Research baseline:** Cellerator `main` at `8a56e78a367450d67f6b06bf450279de8379793f`, inspected on 2026-09-01
