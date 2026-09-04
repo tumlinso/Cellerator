@@ -19,3 +19,12 @@ target_include_directories(ce_ccp1_g02_002 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_g02_002 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_g02_002 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_g02_002 COMMAND ce_ccp1_g02_002)
+
+add_executable(ce_ccp1_g02_003
+  implement_pipeline_configuration_syntax_and_apis_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/implement_pipeline_configuration_syntax_and_apis.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
+target_include_directories(ce_ccp1_g02_003 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_g02_003 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_g02_003 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_g02_003 COMMAND ce_ccp1_g02_003)
