@@ -35,5 +35,7 @@ struct planning_ir_view {std::string problem,exact_cover;std::vector<std::string
 struct realization_view {std::vector<std::string> atoms,extents,projections,orders,partial_tree,stages,dependencies;std::size_t workspace_bytes=0;std::string target,readiness;bool graph_capture=false;};
 [[nodiscard]] realization_view realization_at_cursor();
 [[nodiscard]] std::string render_realization_json(const realization_view&);
+struct candidate_explanation {double complete_cost=0,transition_cost=0;std::string evidence_kind,freshness,uncertainty,constraints,reuse,alternatives,dominance,user_edits,fallback;};
+[[nodiscard]] candidate_explanation explain_candidate(std::string_view evidence_kind,bool forced);
 
 }  // namespace cellerator::compiler::tooling::v1
