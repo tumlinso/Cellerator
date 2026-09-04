@@ -69,3 +69,13 @@ add_executable(ce_ccp1_g03_015 benchmark_diagnostics_and_provenance_overhead_tes
 target_include_directories(ce_ccp1_g03_015 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_015 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_015 COMMAND ce_ccp1_g03_015)
+add_executable(ce_ccp1_g03_016 freeze_explainability_and_unsafe_control_behavior_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/freeze_explainability_and_unsafe_control_behavior.cc"
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_structural_impossibility_checks.cc"
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_advisory_semantic_validators.cc"
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_target_native_diagnostics.cc"
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_candidate_decision_reports.cc"
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_source_to_native_maps_and_removable_sections.cc")
+target_include_directories(ce_ccp1_g03_016 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_016 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_016 COMMAND ce_ccp1_g03_016)
