@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {inline_ceir_assist assist_inline_ceir(std::string_view l,std::string_view s){inline_ceir_assist a{std::string(l),{"relation.apply"},{"axis","relation"},{"order","support"},{"weights"},{"p1"},{"native"},{l=="realization"?"mma.sync":"operation"},{"core","ext"},{"strict","diagnostic"},{}};if(s.find("missing_type")!=s.npos)a.diagnostics={"structural error: operand type is required"};return a;}}

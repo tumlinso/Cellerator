@@ -42,5 +42,7 @@ struct optimization_action {std::string cause,detail,fix_it;double canonicalizat
 struct native_navigation {std::string semantic,planning,realization,generated,native_symbol,resource_report,source_location;};
 [[nodiscard]] native_navigation navigate_to_native(std::string_view artifact);
 [[nodiscard]] std::string reverse_map_native_diagnostic(std::string_view diagnostic,const native_navigation&);
+struct inline_ceir_assist {std::string level;std::vector<std::string> operations,types,attributes,captures,profiles,candidates,instructions,namespaces,validation_modes,diagnostics;};
+[[nodiscard]] inline_ceir_assist assist_inline_ceir(std::string_view level,std::string_view source);
 
 }  // namespace cellerator::compiler::tooling::v1
