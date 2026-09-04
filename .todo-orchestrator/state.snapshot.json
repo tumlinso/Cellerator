@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:06:57Z",
+  "generated_at": "2026-09-04T07:07:21Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4300,
+  "project_revision": 4304,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -47261,6 +47261,46 @@
         "revision": 4300,
         "seq": 4300,
         "timestamp": "2026-09-04T07:06:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-010-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B02-010-GATE\"}",
+        "revision": 4301,
+        "seq": 4301,
+        "timestamp": "2026-09-04T07:07:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-010-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a083e71e-e7ed-467f-9a72-c719f45fbdc3\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4302,
+        "seq": 4302,
+        "timestamp": "2026-09-04T07:07:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B02-010",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4303, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4303,
+        "seq": 4303,
+        "timestamp": "2026-09-04T07:07:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B01-010\"}",
+        "revision": 4304,
+        "seq": 4304,
+        "timestamp": "2026-09-04T07:07:21Z"
       }
     ],
     "evidence": [
@@ -54353,6 +54393,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-04T07:07:06Z",
+        "gate_id": "CE-CCP1-B02-010-GATE",
+        "id": "a083e71e-e7ed-467f-9a72-c719f45fbdc3",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_010$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_010$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"08f43354397a10b3732bcf1ba9fdfc3953cb1e6c07a57b97526414ffb4f64a27\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"include/Cellerator/compiler/driver/define_compilation_database_and_dependency_file_behavior_v1.hh\", \"src/compiler/driver/define_compilation_database_and_dependency_file_behavior.cc\", \"tests/compiler/b02/define_compilation_database_and_dependency_file_behavior_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-b02-010.md\", \"tools/cellerator/define_compilation_database_and_dependency_file_behavior.cc\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"0212afe8f8571f6695cff2eb775b06ea0e150817\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"88c3c924d9ff05a9b1f9d2001847f04acbc2e966ce00377b42ba59ae2ed223c7\", \"started_revision\": 4301, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b02\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/a083e71e-e7ed-467f-9a72-c719f45fbdc3",
+        "revision": 4302,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-26T21:10:00Z",
         "gate_id": "CE-LIVE-23-CORRECTNESS",
         "id": "a08c0b6a-066b-40bc-b2f5-0d1653e99ee3",
@@ -61388,14 +61441,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_010$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B02-010-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85",
+        "last_run_at": "2026-09-04T07:07:06Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4302,
+        "status": "passed",
         "task_id": "CE-CCP1-B02-010",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -73737,6 +73790,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"814805bd783f2d065c578dedfadc7397346b0a1f\", \"completion_gates\": [{\"evidence_id\": \"c34c57ab-ed9f-446a-8eaf-106a09f9f684\", \"evidence_revision\": 4251, \"id\": \"CE-CCP1-B01-004-GATE\", \"input_fingerprint\": \"5d13e6a0494c812dbfddbc8befd6554f8ddc55ae214892c0e4650b1e28f93a4f\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"814805bd783f2d065c578dedfadc7397346b0a1f\"}], \"completion_revision\": 4252, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-B01-004-GATE\", \"input_fingerprint\": \"5d13e6a0494c812dbfddbc8befd6554f8ddc55ae214892c0e4650b1e28f93a4f\", \"last_run_at\": \"2026-09-04T07:00:01Z\", \"revision\": 4251, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"814805bd783f2d065c578dedfadc7397346b0a1f\", \"interfaces\": [], \"note\": \"Implemented/pushed ee31eb3. Contract compiled under GCC 13 and Clang 18 in C++23 mode; public and legacy compatibility islands remain C++17/CUDA17 and implementation standard is target-private. Exact ctest selector exited successfully with no registered match.\", \"resources\": [], \"task_id\": \"CE-CCP1-B01-004\"}",
         "revision": 4252,
         "task_id": "CE-CCP1-B01-004"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T07:07:06Z",
+        "id": "116fb6f2-b1c9-4f8b-961b-801504b510d0",
+        "kind": "complete",
+        "note": "Implemented deterministic compile_commands JSON entries, depfile/module dependency flags, and source-to-output mappings for build tools and celleratord. Exact gate passes.",
+        "payload_json": "{\"changed_owned_paths\": [\"include/Cellerator/compiler/driver/define_compilation_database_and_dependency_file_behavior_v1.hh\", \"src/compiler/driver/define_compilation_database_and_dependency_file_behavior.cc\", \"tests/compiler/b02/define_compilation_database_and_dependency_file_behavior_test.cc\", \"tools/cellerator/define_compilation_database_and_dependency_file_behavior.cc\"], \"checkpoints\": [], \"completion_commit\": \"0212afe8f8571f6695cff2eb775b06ea0e150817\", \"completion_gates\": [{\"evidence_id\": \"a083e71e-e7ed-467f-9a72-c719f45fbdc3\", \"evidence_revision\": 4302, \"id\": \"CE-CCP1-B02-010-GATE\", \"input_fingerprint\": \"1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"0212afe8f8571f6695cff2eb775b06ea0e150817\"}], \"completion_revision\": 4303, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-B02-010-GATE\", \"input_fingerprint\": \"1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85\", \"last_run_at\": \"2026-09-04T07:07:06Z\", \"revision\": 4302, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-ccp1-b02-010.md               |  8 +++++---\\n 4 files changed, 31 insertions(+), 19 deletions(-)\", \"git_head\": \"0212afe8f8571f6695cff2eb775b06ea0e150817\", \"interfaces\": [], \"note\": \"Implemented deterministic compile_commands JSON entries, depfile/module dependency flags, and source-to-output mappings for build tools and celleratord. Exact gate passes.\", \"resources\": [], \"task_id\": \"CE-CCP1-B02-010\"}",
+        "revision": 4303,
+        "task_id": "CE-CCP1-B02-010"
       },
       {
         "claim_id": null,
@@ -171725,6 +171788,19 @@
         "validation_git_head": "0c8253e5c5de9dc8bebf118b8ca5b3a789856b79"
       },
       {
+        "completion_git_head": "0212afe8f8571f6695cff2eb775b06ea0e150817",
+        "completion_revision": 4303,
+        "evidence_id": "a083e71e-e7ed-467f-9a72-c719f45fbdc3",
+        "evidence_revision": 4302,
+        "gate_id": "CE-CCP1-B02-010-GATE",
+        "input_fingerprint": "1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85",
+        "provenance_json": "{\"claim_id\": \"8a185b2f-ad17-46ce-b6d3-b2abcaf71dad\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_010$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1e5b4aff99683f84dc520e18a13ccb6378b73adc9b46d942b909b04cc684bd85\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b02_010$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"08f43354397a10b3732bcf1ba9fdfc3953cb1e6c07a57b97526414ffb4f64a27\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"include/Cellerator/compiler/driver/define_compilation_database_and_dependency_file_behavior_v1.hh\", \"src/compiler/driver/define_compilation_database_and_dependency_file_behavior.cc\", \"tests/compiler/b02/define_compilation_database_and_dependency_file_behavior_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-b02-010.md\", \"tools/cellerator/define_compilation_database_and_dependency_file_behavior.cc\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"0212afe8f8571f6695cff2eb775b06ea0e150817\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"88c3c924d9ff05a9b1f9d2001847f04acbc2e966ce00377b42ba59ae2ed223c7\", \"started_revision\": 4301, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b02\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/a083e71e-e7ed-467f-9a72-c719f45fbdc3\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-B02-010",
+        "valid": 1,
+        "validation_git_head": "0212afe8f8571f6695cff2eb775b06ea0e150817"
+      },
+      {
         "completion_git_head": "14e672794affe0ca3cca3504434931da5c0df890",
         "completion_revision": 4235,
         "evidence_id": "72ef7bff-8eb3-4d1d-a1ee-ed16d4c20c69",
@@ -229993,12 +230069,12 @@
         "priority": 846,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4304,
+        "status": "in_progress",
         "tags_json": "[\"b01\", \"build-compiler\", \"leaf\"]",
         "title": "Create accelerator-enabled compiler smoke targets",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:07:21Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -230302,9 +230378,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "0212afe8f8571f6695cff2eb775b06ea0e150817",
+        "completion_git_head": "0212afe8f8571f6695cff2eb775b06ea0e150817",
+        "completion_revision": 4303,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-B02-010",
         "kind": "task",
@@ -230316,14 +230392,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-B02-000",
         "priority": 845,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4297,
-        "status": "in_progress",
+        "revision": 4303,
+        "status": "done",
         "tags_json": "[\"b02\", \"compiler-driver\", \"leaf\"]",
         "title": "Define compilation database and dependency-file behavior",
-        "updated_at": "2026-09-04T07:06:15Z",
-        "version": 4
+        "updated_at": "2026-09-04T07:07:06Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -273949,13 +274025,13 @@
         "task_id": "CE-CCP1-B01-009"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:07:21Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B01",
         "position": 9,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4304,
+        "state": "active",
         "task_id": "CE-CCP1-B01-010"
       },
       {
@@ -274070,12 +274146,12 @@
       },
       {
         "activated_at": "2026-09-04T07:06:15Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T07:07:06Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B02",
         "position": 9,
-        "revision": 4297,
-        "state": "active",
+        "revision": 4303,
+        "state": "completed",
         "task_id": "CE-CCP1-B02-010"
       },
       {
@@ -283209,11 +283285,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4300,
+        "revision": 4304,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:06:57Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:07:21Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -283221,11 +283297,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B02",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4297,
+        "revision": 4303,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T07:06:15Z",
+        "state": "ready",
+        "updated_at": "2026-09-04T07:07:06Z",
         "workspace_mode": "isolated_merge"
       },
       {
