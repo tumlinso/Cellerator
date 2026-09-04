@@ -11,3 +11,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_g03_001 PRIVATE -Wall -Wextra -Werror -pedantic)
 endif()
 add_test(NAME ce_ccp1_g03_001 COMMAND ce_ccp1_g03_001)
+
+add_executable(ce_ccp1_g03_002 implement_structural_impossibility_checks_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_structural_impossibility_checks.cc")
+target_include_directories(ce_ccp1_g03_002 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_002 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_002 COMMAND ce_ccp1_g03_002)
