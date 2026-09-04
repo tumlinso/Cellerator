@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6628`
+Project revision: `6630`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -78,7 +78,7 @@ Project revision: `6628`
 - `CE-CCP1-M20` | status: done | execution: closed | next: Collect isolated lane receipts for P20, verify hashes and interfaces, integrate central files, run label ce_ccp1_m20, and publish CE-CCP1-MILESTONE-M20.
 - `CE-CCP1-P40` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-GEO-10` | status: done | execution: closed | next: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
-- `CE-CCP1-A02-000` | status: planned | execution: ready | next: Claim A02-001 after milestone prerequisites are reached.
+- `CE-CCP1-A02-000` | status: done | execution: closed | next: Claim A02-001 after milestone prerequisites are reached.
 - `CE-EXOP-01` | status: done | execution: closed | next: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-11` | status: done | execution: closed | next: Implement architecture-neutral source-linked matrix-engine capabilities and separate versioned memory-interface restrictions without exposing WMMA types.
 - `CE-CCP1-A03-000` | status: planned | execution: ready | next: Claim A03-001 after milestone prerequisites are reached.
