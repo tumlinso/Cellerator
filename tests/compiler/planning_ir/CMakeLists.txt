@@ -33,3 +33,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_003 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_003 COMMAND ce_ccp1_e01_003)
+
+add_executable(ce_ccp1_e01_004
+    implement_exact_logical_coverage_nodes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_exact_logical_coverage_nodes.cc")
+target_include_directories(ce_ccp1_e01_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_004 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_004 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_004 COMMAND ce_ccp1_e01_004)
