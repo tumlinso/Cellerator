@@ -74,3 +74,9 @@ add_executable(ce_ccp1_g02_008
     ${CELLERATOR_ROOT}/src/compiler/pass/define_extensible_operation_type_and_attribute_registrat.cc)
 target_include_directories(ce_ccp1_g02_008 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_008 COMMAND ce_ccp1_g02_008)
+
+add_executable(ce_ccp1_g02_009
+    implement_unknown_extension_preservation_and_forwarding_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
+target_include_directories(ce_ccp1_g02_009 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_009 COMMAND ce_ccp1_g02_009)
