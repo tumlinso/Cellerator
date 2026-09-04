@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5850`
+Project revision: `5854`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -925,7 +925,7 @@ Project revision: `5850`
 - `CE-CCP1-F04-013` | kind: validation_task | status: done | parent: CE-CCP1-F04-000 | objective: Publish supported subsets, capability contracts, diagnostics, provenance, and evaluated promotion status without making LLVM or direct PTX mandatory for host/NVCC builds.
 - `CE-EXOP-72` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver optional static profiling markers and unique kernel names exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-72` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
-- `CE-CCP1-G01-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Define typed handles for source declarations, fields, operations, relations, profile states, Planning alternatives, selected realizations, and provenance with explicit availability phase and lifetime.
+- `CE-CCP1-G01-001` | kind: validation_task | status: done | parent: CE-CCP1-G01-000 | objective: Define typed handles for source declarations, fields, operations, relations, profile states, Planning alternatives, selected realizations, and provenance with explicit availability phase and lifetime.
 - `CE-CCP1-G01-002` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow source code to acquire the current field or a named/exported field as Semantic IR during the valid compiler phase.
 - `CE-CCP1-G01-003` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Expose normalized operation kind, typed operands/results, relation/domain/order/generation semantics, effects, and source provenance.
 - `CE-CCP1-G01-004` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Expose named states, attached evidence summaries, confidence, mutation expectations, joins, unknown dimensions, and selected state at a source location.
@@ -963,7 +963,7 @@ Project revision: `5850`
 - `CE-CCP1-G02-018` | kind: validation_task | status: planned | parent: CE-CCP1-G02-000 | objective: Publish pass, pipeline, extension, staging, cache, trust, and provenance contracts for libCellerator and celleratord.
 - `CE-EXOP-74` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver prove disabled profiling does not alter the hot path exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-74` | kind: integration_task | status: done | parent: CE-GEO-00 | objective: Combine prepared value pack, output-owned MMA, exact row-owned residual, one epilogue, persistent order, planner visibility, and pure-sparse fallback.
-- `CE-CCP1-G03-001` | kind: validation_task | status: planned | parent: CE-CCP1-G03-000 | objective: Define verified, checked, trusted, unsafe, and unchecked behavior separately for parsing, semantic invariants, exact coverage, numerical claims, resources, native bindings, and backend support.
+- `CE-CCP1-G03-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Define verified, checked, trusted, unsafe, and unchecked behavior separately for parsing, semantic invariants, exact coverage, numerical claims, resources, native bindings, and backend support.
 - `CE-CCP1-G03-002` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Fail only for malformed graphs, missing required operands, impossible references, uninterpretable text, or backend states that cannot be represented/continued.
 - `CE-CCP1-G03-003` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Detect domain/order/generation/effect/numerical/identity inconsistencies and permit explicit trusted/unsafe continuation where the IR remains representable.
 - `CE-CCP1-G03-004` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain omissions, duplicates, wrong roles, incompatible partial algebra, halo/contributor confusion, and canonical recovery failure with member-level evidence.
