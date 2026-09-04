@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4966`
+Project revision: `4967`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -389,7 +389,7 @@ Project revision: `4966`
 - `CE-CCP1-D03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the profile artifact charter and name in the isolated D03 lane, add the focused ce_ccp1_d03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement sectioned binary profile storage in the isolated D03 lane, add the focused ce_ccp1_d03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement define named profile environments and alternatives in the isolated D03 lane, add the focused ce_ccp1_d03_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-D03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent domain, axis, relation, and support evidence in the isolated D03 lane, add the focused ce_ccp1_d03_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-D03-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement represent domain, axis, relation, and support evidence in the isolated D03 lane, add the focused ce_ccp1_d03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent value and numerical evidence in the isolated D03 lane, add the focused ce_ccp1_d03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent mutability, recurrence, and reuse evidence in the isolated D03 lane, add the focused ce_ccp1_d03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement represent evidence provenance and revision in the isolated D03 lane, add the focused ce_ccp1_d03_007 gate, and publish a source-linked receipt.
