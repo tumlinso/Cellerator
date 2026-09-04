@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P80: celleratord
 
-Task revision: `6626`; current project revision is in `todo-status.md`.
+Task revision: `6707`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate celleratord and publish milestone M80.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `inactive`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Dispatch only the workstream lanes whose explicit dependencies are satisfied.
