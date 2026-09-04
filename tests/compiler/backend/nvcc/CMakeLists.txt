@@ -55,3 +55,7 @@ add_executable(ce_ccp1_f03_011 map_cuda_diagnostics_and_line_information_test.cc
 target_include_directories(ce_ccp1_f03_011 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_011 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_011 COMMAND ce_ccp1_f03_011)
+add_executable(ce_ccp1_f03_012 integrate_asynchronous_readiness_and_streams_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/integrate_asynchronous_readiness_and_streams.cc")
+target_include_directories(ce_ccp1_f03_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_012 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_012 COMMAND ce_ccp1_f03_012)
