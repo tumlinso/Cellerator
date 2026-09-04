@@ -1,5 +1,4 @@
-#include <Cellerator/compiler/frontend/cxx/expose_reusable_frontend_sessions_v1.hh>
-#include <Cellerator/compiler/frontend/cxx/freeze_the_c_semantic_bridge_milestone_v1.hh>
+#include <Cellerator/compiler/frontend/cxx/cxx_sema_bridge_v1.hh>
 
 #include <iostream>
 #include <set>
