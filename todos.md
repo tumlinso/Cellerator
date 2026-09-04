@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4500`
+Project revision: `4503`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -453,7 +453,7 @@ Project revision: `4500`
 - `CE-CCP1-P10` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate compiler build and driver foundation and publish milestone M10.
 - `CE-CCP1-M00` | kind: validation_task | status: done | parent: CE-CCP1-P00 | objective: Integrate and validate all P00 workstreams, freeze shared interfaces, and publish milestone M00.
 - `CE-CCP1-P20` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate source language frontend and publish milestone M20.
-- `CE-CCP1-M10` | kind: validation_task | status: in_progress | parent: CE-CCP1-P10 | objective: Integrate and validate all P10 workstreams, freeze shared interfaces, and publish milestone M10.
+- `CE-CCP1-M10` | kind: validation_task | status: done | parent: CE-CCP1-P10 | objective: Integrate and validate all P10 workstreams, freeze shared interfaces, and publish milestone M10.
 - `CE-CCP1-P30` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate semantic ir and representative profiles and publish milestone M30.
 - `CE-CCP1-A01-000` | kind: workstream | status: planned | parent: CE-CCP1-P00 | objective: Freeze the exact source, Todo, specification, schema, and historical-run observations used by the compiler program without mutating any authority.
 - `CE-CCP1-M20` | kind: validation_task | status: planned | parent: CE-CCP1-P20 | objective: Integrate and validate all P20 workstreams, freeze shared interfaces, and publish milestone M20.
