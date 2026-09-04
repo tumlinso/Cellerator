@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6488`
+Project revision: `6489`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -707,7 +707,7 @@ Project revision: `6488`
 - `CE-CCP1-J02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark planning and complete costs in the isolated J02 lane, add the focused ce_ccp1_j02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark realization ir and backend generation in the isolated J02 lane, add the focused ce_ccp1_j02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark generated cpu execution in the isolated J02 lane, add the focused ce_ccp1_j02_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-J02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark generated nvidia execution in the isolated J02 lane, add the focused ce_ccp1_j02_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-J02-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark generated nvidia execution in the isolated J02 lane, add the focused ce_ccp1_j02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark cross-tu/lto in the isolated J02 lane, add the focused ce_ccp1_j02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark libcellerator and celleratord in the isolated J02 lane, add the focused ce_ccp1_j02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement execute progressive vertical milestone campaign in the isolated J02 lane, add the focused ce_ccp1_j02_013 gate, and publish a source-linked receipt.
