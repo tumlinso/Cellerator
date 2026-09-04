@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6459`
+Project revision: `6461`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1070,7 +1070,7 @@ Project revision: `6459`
 - `CE-CCP1-J01-002` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Generate C++ token streams, includes, macros, templates, comments, and Cellerator delimiters to find activation leaks, hangs, and source-map corruption.
 - `CE-CCP1-J01-003` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Mutate declarations, fields, relation syntax, controls, inline IR, reflection, passes, and native fragments while enforcing bounded diagnostics and no crashes.
 - `CE-CCP1-J01-004` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Compile broad C++ corpora through cellerator and direct Clang/GCC, comparing success, diagnostics categories, object symbols, depfiles, and runtime output.
-- `CE-CCP1-J01-005` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Cover shape-only equivalence, wrong endpoints/orders/generations/orientation, stale values, invalid effects, unsupported numeric tuples, and unsafe override behavior.
+- `CE-CCP1-J01-005` | kind: task | status: in_progress | parent: CE-CCP1-J01-000 | objective: Cover shape-only equivalence, wrong endpoints/orders/generations/orientation, stale values, invalid effects, unsupported numeric tuples, and unsafe override behavior.
 - `CE-CCP1-J01-006` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Mutate all three IR levels, unknown extensions, identities, regions, use-def chains, native payloads, directories, hashes, and versions.
 - `CE-CCP1-J01-007` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Corrupt profile sections/evidence, generate branch/state graphs, and compare transfer/join/widen results with small exact models.
 - `CE-CCP1-J01-008` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Generate decompositions, halos, replicas, contributors, merge trees, and canonical maps; independently prove reconstruction or detect error.
@@ -1084,7 +1084,7 @@ Project revision: `6459`
 - `CE-CCP1-J02-003` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure preprocessing, activated-token analysis, shadow generation, Clang Sema, AST construction, incremental reuse, and source-map memory.
 - `CE-CCP1-J02-004` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure node construction, canonicalization, text parse/print, binary load/store, memory mapping, unknown extensions, and provenance stripping across all levels.
 - `CE-CCP1-J02-005` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure profile build, exact scans, sketches, load, mapped queries, state transfer, branch joins, multi-state alternatives, and memory.
-- `CE-CCP1-J02-006` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure each migrated JBC proposal mechanism, candidate counts, exact rescans, certification, memory, no-basis cases, and matched generic/null baselines.
+- `CE-CCP1-J02-006` | kind: validation_task | status: in_progress | parent: CE-CCP1-J02-000 | objective: Measure each migrated JBC proposal mechanism, candidate counts, exact rescans, certification, memory, no-basis cases, and matched generic/null baselines.
 - `CE-CCP1-J02-007` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure decomposition portfolios, candidate enumeration, transition costs, planner quality versus oracle, external costs, cache/resumption, and profile variants.
 - `CE-CCP1-J02-008` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure realization, projection/packing planning, stage construction, generated source, downstream compiler time, ptxas resources, object/fatbinary size, and provenance.
 - `CE-CCP1-J02-009` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure preparation, transforms, packing, execution, reuse, memory, and output recovery against direct C++ and existing Cellerator runtime paths.
