@@ -96,3 +96,7 @@ add_executable(ce_ccp1_e01_010 implement_complete_cost_vectors_test.cc "${CELLER
 target_include_directories(ce_ccp1_e01_010 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_e01_010 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_e01_010 COMMAND ce_ccp1_e01_010)
+add_executable(ce_ccp1_e01_011 implement_analytical_measured_and_external_evidence_test.cc "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_analytical_measured_and_external_evidence.cc")
+target_include_directories(ce_ccp1_e01_011 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_011 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_e01_011 COMMAND ce_ccp1_e01_011)
