@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4398`
+Project revision: `4399`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -259,7 +259,7 @@ Project revision: `4398`
 - `CE-CCP1-B03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement register the #pragma cellerator preprocessor contract in the isolated B03 lane, add the focused ce_ccp1_b03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement file-local dialect state in the isolated B03 lane, add the focused ce_ccp1_b03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement define pragma interaction with preprocessing conditionals in the isolated B03 lane, add the focused ce_ccp1_b03_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement build a lossless raw-token stream in the isolated B03 lane, add the focused ce_ccp1_b03_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement build a lossless raw-token stream in the isolated B03 lane, add the focused ce_ccp1_b03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement define macro expansion semantics for cellerator tokens in the isolated B03 lane, add the focused ce_ccp1_b03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement recognize cellerator execution-field token islands in the isolated B03 lane, add the focused ce_ccp1_b03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement recognize relation and operation token forms in the isolated B03 lane, add the focused ce_ccp1_b03_009 gate, and publish a source-linked receipt.
