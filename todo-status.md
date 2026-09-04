@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4431`
+Project revision: `4432`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -264,7 +264,7 @@ Project revision: `4431`
 - `CE-CCP1-B03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement recognize cellerator execution-field token islands in the isolated B03 lane, add the focused ce_ccp1_b03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement recognize relation and operation token forms in the isolated B03 lane, add the focused ce_ccp1_b03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement construct shadow c++ placeholders in the isolated B03 lane, add the focused ce_ccp1_b03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement map shadow ast nodes back to cellerator syntax in the isolated B03 lane, add the focused ce_ccp1_b03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement map shadow ast nodes back to cellerator syntax in the isolated B03 lane, add the focused ce_ccp1_b03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement define generated identifier hygiene in the isolated B03 lane, add the focused ce_ccp1_b03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement cache preprocessed activated headers safely in the isolated B03 lane, add the focused ce_ccp1_b03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose source-pipeline diagnostics and dumps in the isolated B03 lane, add the focused ce_ccp1_b03_014 gate, and publish a source-linked receipt.
