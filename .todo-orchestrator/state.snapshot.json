@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:42:14Z",
+  "generated_at": "2026-09-04T07:43:27Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4436,
+  "project_revision": 4439,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48621,6 +48621,36 @@
         "revision": 4436,
         "seq": 4436,
         "timestamp": "2026-09-04T07:42:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B03-012-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B03-012-GATE\"}",
+        "revision": 4437,
+        "seq": 4437,
+        "timestamp": "2026-09-04T07:43:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B03-012-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a287711c-1f8a-409d-b48d-797855effab0\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4438,
+        "seq": 4438,
+        "timestamp": "2026-09-04T07:43:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B03-012",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4439, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4439,
+        "seq": 4439,
+        "timestamp": "2026-09-04T07:43:27Z"
       }
     ],
     "evidence": [
@@ -56103,6 +56133,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-04T07:43:26Z",
+        "gate_id": "CE-CCP1-B03-012-GATE",
+        "id": "a287711c-1f8a-409d-b48d-797855effab0",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_012$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_012$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"568977ad2379651c15e1094f701619870b90a953\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"4248e881c780cef1e5dd8b13257745202559f26e009256442c0b8d81d140c1a9\", \"started_revision\": 4437, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b03\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/a287711c-1f8a-409d-b48d-797855effab0",
+        "revision": 4438,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-19T14:23:06Z",
         "gate_id": "CPMATH-07-TEST",
         "id": "a315aa8a-9e38-4db4-bc85-e93df6537eca",
@@ -63411,14 +63454,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_012$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B03-012-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9",
+        "last_run_at": "2026-09-04T07:43:26Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4438,
+        "status": "passed",
         "task_id": "CE-CCP1-B03-012",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -80542,6 +80585,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-ARCH-70-BASEPLANE-ABI-READY\", \"reached_at\": \"2026-08-21T18:31:50Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CE-ARCH-70A-BASEPLANE-BUILD\", \"last_run_at\": \"2026-08-21T18:31:28Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-BASEPLANE-TEST\", \"last_run_at\": \"2026-08-21T18:31:28Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-VALIDITY-TEST\", \"last_run_at\": \"2026-08-21T18:31:34Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-CELLERATOR-BUILD\", \"last_run_at\": \"2026-08-21T18:31:31Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-CELLERATOR-HOST\", \"last_run_at\": \"2026-08-21T18:31:31Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-CELLERATOR-RUNTIME\", \"last_run_at\": \"2026-08-21T18:31:33Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CE-ARCH-70A-CTX\", \"last_run_at\": \"2026-08-21T18:31:34Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1920 ++++++++++++++++++++++++++++++--\\n Baseplane                              |    0\\n Cellerator                             |    0\\n todo-status.md                         |   19 +-\\n todos.md                               |   19 +-\\n todos/ce-arch-00.md                    |    2 +-\\n 6 files changed, 1845 insertions(+), 115 deletions(-)\", \"git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\", \"interfaces\": [{\"content_hash\": \"a3163b7ef056312f99075a9e238b29520d8bf471ec8759dcb9d339b50beef83e\", \"id\": \"BASEPLANE_SEQUENCE_PREDICATE_ABI_V1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated the pre-existing local Baseplane predicate-plan/validity implementation rather than duplicating it. Added sequence_predicate_abi_version=1, exported Baseplane::seq ABI target metadata/compile definition, Cellerator configure-time required-header and exact target-version failures, Cellerator compile-time static_asserts, and a wired validity test target. Required gates passed: Baseplane predicate and validity build/tests; Cellerator biological ABI host build/test; CUDA compile and sequence runtime through cuda_controller; Baseplane ctxpp lint. Additional evidence: incompatible source checkout configure failed early with 'Baseplane sequence predicate ABI incompatibility'; standalone Baseplane CPU consumer configured, built, and ran. Existing integration runtime proves missing validity rejection, invalid N-in-motif rejection, and stale predicate semantic hash rejection. Cellerator full ctxpp refresh/lint remains tool-limited by stale retired CP-Math entries and unrelated nccl local_context parse errors; canonical compiler/tests pass.\", \"resources\": [], \"task_id\": \"CE-ARCH-70A\"}",
         "revision": 805,
         "task_id": "CE-ARCH-70A"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T07:43:26Z",
+        "id": "e4323e38-71a8-4c88-8629-8183a806f54f",
+        "kind": "complete",
+        "note": "Implemented implementation-reserved, post-preprocessing, content-derived identifiers partitioned by symbol/type/module/link domain; adversarial identifier and macro fixtures passed at 568977a and pushed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"568977ad2379651c15e1094f701619870b90a953\", \"completion_gates\": [{\"evidence_id\": \"a287711c-1f8a-409d-b48d-797855effab0\", \"evidence_revision\": 4438, \"id\": \"CE-CCP1-B03-012-GATE\", \"input_fingerprint\": \"5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"568977ad2379651c15e1094f701619870b90a953\"}], \"completion_revision\": 4439, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-B03-012-GATE\", \"input_fingerprint\": \"5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9\", \"last_run_at\": \"2026-09-04T07:43:26Z\", \"revision\": 4438, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"568977ad2379651c15e1094f701619870b90a953\", \"interfaces\": [], \"note\": \"Implemented implementation-reserved, post-preprocessing, content-derived identifiers partitioned by symbol/type/module/link domain; adversarial identifier and macro fixtures passed at 568977a and pushed.\", \"resources\": [], \"task_id\": \"CE-CCP1-B03-012\"}",
+        "revision": 4439,
+        "task_id": "CE-CCP1-B03-012"
       },
       {
         "claim_id": null,
@@ -174077,6 +174130,19 @@
         "validation_git_head": "a854d2630e9df380e78e1501d2de12944eb5b495"
       },
       {
+        "completion_git_head": "568977ad2379651c15e1094f701619870b90a953",
+        "completion_revision": 4439,
+        "evidence_id": "a287711c-1f8a-409d-b48d-797855effab0",
+        "evidence_revision": 4438,
+        "gate_id": "CE-CCP1-B03-012-GATE",
+        "input_fingerprint": "5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9",
+        "provenance_json": "{\"claim_id\": \"47e803bd-4053-46a8-bd01-5a2c3c322c1e\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_012$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5b85304d9bf8779f729237c41973a2129e1cd65ec3420ef9c433e1e73afb68d9\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_012$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"568977ad2379651c15e1094f701619870b90a953\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"4248e881c780cef1e5dd8b13257745202559f26e009256442c0b8d81d140c1a9\", \"started_revision\": 4437, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b03\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/a287711c-1f8a-409d-b48d-797855effab0\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-B03-012",
+        "valid": 1,
+        "validation_git_head": "568977ad2379651c15e1094f701619870b90a953"
+      },
+      {
         "completion_git_head": "14e672794affe0ca3cca3504434931da5c0df890",
         "completion_revision": 4235,
         "evidence_id": "72ef7bff-8eb3-4d1d-a1ee-ed16d4c20c69",
@@ -233209,9 +233275,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "568977ad2379651c15e1094f701619870b90a953",
+        "completion_git_head": "568977ad2379651c15e1094f701619870b90a953",
+        "completion_revision": 4439,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-B03-012",
         "kind": "task",
@@ -233223,14 +233289,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-B03-000",
         "priority": 844,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4436,
-        "status": "in_progress",
+        "revision": 4439,
+        "status": "done",
         "tags_json": "[\"b03\", \"compiler-frontend-source\", \"leaf\"]",
         "title": "Define generated identifier hygiene",
-        "updated_at": "2026-09-04T07:42:14Z",
-        "version": 4
+        "updated_at": "2026-09-04T07:43:26Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -276738,12 +276804,12 @@
       },
       {
         "activated_at": "2026-09-04T07:42:14Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T07:43:26Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B03",
         "position": 11,
-        "revision": 4436,
-        "state": "active",
+        "revision": 4439,
+        "state": "completed",
         "task_id": "CE-CCP1-B03-012"
       },
       {
@@ -285741,11 +285807,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4436,
+        "revision": 4439,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T07:42:14Z",
+        "state": "ready",
+        "updated_at": "2026-09-04T07:43:26Z",
         "workspace_mode": "isolated_merge"
       },
       {
