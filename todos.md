@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5736`
+Project revision: `5755`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -875,16 +875,16 @@ Project revision: `5736`
 - `CE-CCP1-F01-015` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
 - `CE-CCP1-F01-016` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Add compact syntax for targets, covers, planes, projections, packing, stages, readiness, bindings, and native fragments with unknown extension preservation.
 - `CE-CCP1-F01-017` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Separate structural parseability, semantic consistency, exact coverage, resource/capability checks, and unsafe continuation.
-- `CE-CCP1-F01-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
+- `CE-CCP1-F01-018` | kind: validation_task | status: done | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
 - `CE-GEO-69` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
 - `CE-CCP1-F02-001` | kind: validation_task | status: done | parent: CE-CCP1-F02-000 | objective: Define target discovery, capability query, Realization IR admissibility, code emission, object production, diagnostics, toolchain identity, and optional native-fragment protocols.
 - `CE-CCP1-F02-002` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Register built-in and external backends through source-linked fragments, match target/capability/toolchain constraints, and honor explicit force/fallback policy.
 - `CE-CCP1-F02-003` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Translate Realization IR into explicit generated files, embedded data, compile jobs, link jobs, support libraries, and source maps before invoking any toolchain.
 - `CE-CCP1-F02-004` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Emit readable modern C++ for host stubs, CPU kernels, static data, runtime bindings, stage graphs, and calls into libCellerator where profitable.
-- `CE-CCP1-F02-005` | kind: task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Lower typed relation apply to exact CPU loops or library calls using canonical/projection order and numeric policy, with deterministic reference behavior.
-- `CE-CCP1-F02-006` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Lower transpose, logical-edge gradients, support contraction, and partial merges with explicit order maps and accumulation types.
-- `CE-CCP1-F02-007` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
-- `CE-CCP1-F02-008` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Lower selected physical projections and explicit pack/gather/scatter/canonicalization stages while retaining conventional unpacked fallback.
+- `CE-CCP1-F02-005` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Lower typed relation apply to exact CPU loops or library calls using canonical/projection order and numeric policy, with deterministic reference behavior.
+- `CE-CCP1-F02-006` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Lower transpose, logical-edge gradients, support contraction, and partial merges with explicit order maps and accumulation types.
+- `CE-CCP1-F02-007` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
+- `CE-CCP1-F02-008` | kind: task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Lower selected physical projections and explicit pack/gather/scatter/canonicalization stages while retaining conventional unpacked fallback.
 - `CE-CCP1-F02-009` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Invoke discovered GCC or Clang with tracked source maps, depfiles, ABI flags, support libraries, and reproducible output paths.
 - `CE-CCP1-F02-010` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Bind typed operand slots, workspace, generated constants, prepared stages, and error returns through libCellerator without requiring Cellerator source at runtime.
 - `CE-CCP1-F02-011` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Translate generated-source compiler errors and warnings through Realization/Semantic/source provenance with optional generated-code notes.
