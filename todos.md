@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4043`
+Project revision: `4050`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -578,7 +578,7 @@ Project revision: `4043`
 - `CE-EXOP-51` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver resource, mechanism, and stage-aware planning exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-51` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Reuse compatible sampled-support machinery, add bounded high-degree pair sampling, deterministic provenance and seed, and avoid all-pairs expansion.
 - `CE-CCP1-A03-001` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Map CellShard evidence-atlas and discovery APIs into Cellerator profile/planning namespaces.
-- `CE-CCP1-A03-002` | kind: task | status: in_progress | parent: CE-CCP1-A03-000 | objective: Move exact coverage, ownership, duplicate/omission proof, and canonical recovery semantics into Cellerator Planning IR and validators.
+- `CE-CCP1-A03-002` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Move exact coverage, ownership, duplicate/omission proof, and canonical recovery semantics into Cellerator Planning IR and validators.
 - `CE-CCP1-A03-003` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Retain the term atom and map candidate, certified, basis, super, physical, replica, partial, and resident states to explicit Cellerator compiler levels.
 - `CE-CCP1-A03-004` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Map production rules, multi-parent derivations, exact coverage equations, ports, generations, and operation compatibility into Planning IR extension contracts.
 - `CE-CCP1-A03-005` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Move workload-family basis search, redundant bases, no-basis outcome, and basis cost reasoning into the Cellerator planner.
@@ -594,8 +594,8 @@ Project revision: `4043`
 - `CE-EXOP-52` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver pareto portfolio and experimental selection policy exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-52` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Produce prevalence, raw and weighted support, normalized association, and bounded sparse top-L source affinity near O(E + S log L).
 - `CE-CCP1-A04-001` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Define include/Cellerator/compiler subtrees for driver, frontend, AST, Sema, IR common/semantic/planning/realization/text, profiles, passes, reflection, LTO, backends, diagnostics, and tooling.
-- `CE-CCP1-A04-002` | kind: validation_task | status: in_progress | parent: CE-CCP1-A04-000 | objective: Mirror public areas under src/compiler while allowing private support directories.
-- `CE-CCP1-A04-003` | kind: validation_task | status: planned | parent: CE-CCP1-A04-000 | objective: Place cellerator and celleratord entrypoints under tools/cellerator and tools/celleratord, with thin mains over shared libraries.
+- `CE-CCP1-A04-002` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Mirror public areas under src/compiler while allowing private support directories.
+- `CE-CCP1-A04-003` | kind: validation_task | status: in_progress | parent: CE-CCP1-A04-000 | objective: Place cellerator and celleratord entrypoints under tools/cellerator and tools/celleratord, with thin mains over shared libraries.
 - `CE-CCP1-A04-004` | kind: validation_task | status: planned | parent: CE-CCP1-A04-000 | objective: Use stdlib for .
 - `CE-CCP1-A04-005` | kind: validation_task | status: planned | parent: CE-CCP1-A04-000 | objective: Define tests/compiler and bench/compiler subtrees by frontend, IR, profile, planning, realization, backends, LTO, SDK, and language server.
 - `CE-CCP1-A04-006` | kind: task | status: planned | parent: CE-CCP1-A04-000 | objective: Reserve root CMake, compiler target aggregation, grammar registries, CEIR dialect manifests, backend registry, package exports, stdlib manifest, and parent submodule pointer for integration lanes.
