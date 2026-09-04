@@ -29,3 +29,7 @@ add_executable(ce_ccp1_g03_005 implement_target_native_diagnostics_test.cc "${CE
 target_include_directories(ce_ccp1_g03_005 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_005 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_005 COMMAND ce_ccp1_g03_005)
+add_executable(ce_ccp1_g03_006 build_the_provenance_graph_model_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/build_the_provenance_graph_model.cc")
+target_include_directories(ce_ccp1_g03_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_006 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_006 COMMAND ce_ccp1_g03_006)
