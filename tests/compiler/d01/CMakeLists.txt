@@ -44,3 +44,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d01_004 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d01_004 COMMAND ce_ccp1_d01_004)
+
+add_executable(ce_ccp1_d01_005
+    implement_common_operation_and_extension_records_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/implement_common_operation_and_extension_records.cc")
+target_include_directories(ce_ccp1_d01_005 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d01_005 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d01_005 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d01_005 COMMAND ce_ccp1_d01_005)
