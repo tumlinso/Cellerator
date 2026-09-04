@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6392`
+Project revision: `6393`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -681,7 +681,7 @@ Project revision: `6392`
 - `CE-CCP1-I02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement source-to-native navigation in the isolated I02 lane, add the focused ce_ccp1_i02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement inline ceir diagnostics and completion in the isolated I02 lane, add the focused ce_ccp1_i02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark advanced semantic queries in the isolated I02 lane, add the focused ce_ccp1_i02_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-I02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cellerator-aware celleratord acceptance in the isolated I02 lane, add the focused ce_ccp1_i02_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-I02-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze cellerator-aware celleratord acceptance in the isolated I02 lane, add the focused ce_ccp1_i02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-M60` | status: done | execution: closed | next: Collect isolated lane receipts for P60, verify hashes and interfaces, integrate central files, run label ce_ccp1_m60, and publish CE-CCP1-MILESTONE-M60.
 - `CE-CCP1-P80` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-80` | status: done | execution: closed | next: Deliver workload profile v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
