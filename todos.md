@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5970`
+Project revision: `5971`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -951,7 +951,7 @@ Project revision: `5970`
 - `CE-CCP1-G02-006` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose physical covers, projections, packs, stages, bindings, target operations, and native fragments before backend emission.
 - `CE-CCP1-G02-007` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Allow profile propagation, discovery, certification, decomposition, candidate enumeration, cost model, planner, realization, and backend lowering to be replaced rather than merely decorated.
 - `CE-CCP1-G02-008` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Register custom namespaces, text syntax, types, attributes, effects, reflection, state transfer, verification, cost, and lowering protocols independently so extensions implement only what they need.
-- `CE-CCP1-G02-009` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Parse, print, serialize, clone, inline, import, and pass through unknown extension nodes at levels where opaque continuation is technically possible.
+- `CE-CCP1-G02-009` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Parse, print, serialize, clone, inline, import, and pass through unknown extension nodes at levels where opaque continuation is technically possible.
 - `CE-CCP1-G02-010` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Record required protocols and backend capabilities; allow inspect-only, preserve-only, external-lowered, and fully understood modes.
 - `CE-CCP1-G02-011` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Define source regions parsed and semantically resolved before the main compilation graph for transform declarations, extension schemas, and pipeline configuration.
 - `CE-CCP1-G02-012` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Use the selected host toolchain to compile prelude transform code into a temporary compiler extension artifact, keyed by content/toolchain/API identity, without requiring the deferred general JIT.

@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5970`
+Project revision: `5971`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -570,7 +570,7 @@ Project revision: `5970`
 - `CE-CCP1-G02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement custom realization pass api in the isolated G02 lane, add the focused ce_ccp1_g02_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement complete built-in stage replacement in the isolated G02 lane, add the focused ce_ccp1_g02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement define extensible operation, type, and attribute registration in the isolated G02 lane, add the focused ce_ccp1_g02_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-G02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement unknown extension preservation and forwarding in the isolated G02 lane, add the focused ce_ccp1_g02_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-G02-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement unknown extension preservation and forwarding in the isolated G02 lane, add the focused ce_ccp1_g02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement extension capability negotiation in the isolated G02 lane, add the focused ce_ccp1_g02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement compiler prelude regions in the isolated G02 lane, add the focused ce_ccp1_g02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement compile same-translation-unit transforms in an early host stage in the isolated G02 lane, add the focused ce_ccp1_g02_012 gate, and publish a source-linked receipt.
