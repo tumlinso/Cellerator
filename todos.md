@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6691`
+Project revision: `6693`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -537,7 +537,7 @@ Project revision: `6691`
 - `CE-EXOP-34` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver add v1 adapters and migrate persistent problem identity exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-35` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze operation-core v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-M40` | kind: validation_task | status: done | parent: CE-CCP1-P40 | objective: Integrate and validate all P40 workstreams, freeze shared interfaces, and publish milestone M40.
-- `CE-CCP1-P60` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate programmable compiler, reflection, and diagnostics and publish milestone M60.
+- `CE-CCP1-P60` | kind: epic | status: done | parent: CE-CCP1-0000 | objective: Coordinate programmable compiler, reflection, and diagnostics and publish milestone M60.
 - `CE-EXOP-40` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver candidate catalog v3 contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-40` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use the existing capability_section hook for a typed device-specific manifest without changing CPE2 record sizes.
 - `CE-EXOP-41` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver assemble broad provider and relation-operation inventory exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

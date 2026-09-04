@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6691`
+Project revision: `6693`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -156,7 +156,7 @@ Project revision: `6691`
 - `CE-EXOP-34` | status: done | execution: closed | next: Deliver add v1 adapters and migrate persistent problem identity exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-35` | status: done | execution: closed | next: Deliver freeze operation-core v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-M40` | status: done | execution: closed | next: Collect isolated lane receipts for P40, verify hashes and interfaces, integrate central files, run label ce_ccp1_m40, and publish CE-CCP1-MILESTONE-M40.
-- `CE-CCP1-P60` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
+- `CE-CCP1-P60` | status: done | execution: closed | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-40` | status: done | execution: closed | next: Deliver candidate catalog v3 contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-40` | status: done | execution: closed | next: Use the existing capability_section hook for a typed device-specific manifest without changing CPE2 record sizes.
 - `CE-EXOP-41` | status: done | execution: closed | next: Deliver assemble broad provider and relation-operation inventory exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
