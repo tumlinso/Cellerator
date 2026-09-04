@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4933`
+Project revision: `4934`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1035,7 +1035,7 @@ Project revision: `4933`
 - `CE-CCP1-H03-018` | kind: validation_task | status: planned | parent: CE-CCP1-H03-000 | objective: Install from a clean checkout, compile ordinary C++, `.
 - `CE-GEO-78` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.
 - `CE-CCP1-I01-001` | kind: validation_task | status: done | parent: CE-CCP1-I01-000 | objective: Define an LSP server over shared libCellerator snapshots with an upstream clangd worker/proxy or reusable upstream components for ordinary C++ features, without a permanent fork.
-- `CE-CCP1-I01-002` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Support stdio, framing, request IDs, notifications, cancellation, progress, initialization, capabilities, graceful shutdown, and structured logging.
+- `CE-CCP1-I01-002` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Support stdio, framing, request IDs, notifications, cancellation, progress, initialization, capabilities, graceful shutdown, and structured logging.
 - `CE-CCP1-I01-003` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Discover an overridable compatible clangd, launch/manage it when proxy mode is used, forward initialization/configuration, restart safely, and expose version diagnostics.
 - `CE-CCP1-I01-004` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Consume compile_commands, cellerator toolchain/profile/backend flags, resource directories, response files, and per-file activation state.
 - `CE-CCP1-I01-005` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Maintain transformed C++ documents for clangd while mapping positions, edits, diagnostics, symbols, and fix-its to original `.
