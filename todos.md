@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4328`
+Project revision: `4345`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -616,7 +616,7 @@ Project revision: `4328`
 - `CE-CCP1-B01-009` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add planned smoke targets for CEIR parser/printer, profile loader, source manager, diagnostics, and celleratord protocol code without CUDA linkage.
 - `CE-CCP1-B01-010` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add conditional linkage tests that bind Realization IR and backend adapters to existing Cellerator CUDA provider/runtime targets.
 - `CE-CCP1-B01-011` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Specify presets for host-only Clang, host-only GCC, CUDA+NVCC sm70, CUDA+Clang where available, installed-consumer, sanitizer, and language-server builds.
-- `CE-CCP1-B01-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
+- `CE-CCP1-B01-012` | kind: validation_task | status: done | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
 - `CE-EXOP-54` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver planner correctness and scale tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-54` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the replaceable portable source/destination community strategy and rectangular-support semantic components.
 - `CE-CCP1-B02-001` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
@@ -632,10 +632,10 @@ Project revision: `4328`
 - `CE-CCP1-B02-011` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Use deterministic per-action temporary directories, explicit keep-temps modes, content-addressed cold caches, and cleanup that never hides artifacts requested for diagnostics.
 - `CE-CCP1-B02-012` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Preserve severity, source ranges, fix-its, and exit codes from downstream compilers while allowing Cellerator source maps to remap generated/shadow locations.
 - `CE-CCP1-B02-013` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Create a stable toolchain identity from executable content/version, target, resource directory, critical flags, runtime/driver identity, and backend plugin revision.
-- `CE-CCP1-B02-014` | kind: validation_task | status: planned | parent: CE-CCP1-B02-000 | objective: Build bin/cellerator as a thin main over the shared driver library and compile/link ordinary C++ through Clang and GCC without Cellerator semantics.
+- `CE-CCP1-B02-014` | kind: validation_task | status: in_progress | parent: CE-CCP1-B02-000 | objective: Build bin/cellerator as a thin main over the shared driver library and compile/link ordinary C++ through Clang and GCC without Cellerator semantics.
 - `CE-EXOP-55` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze planner portfolio exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-55` | kind: workstream | status: done | parent: CE-GEO-00 | objective: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
-- `CE-CCP1-B03-001` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Represent physical files, include instances, macro expansions, transformed buffers, CEIR nodes, and backend output with stable source spans and reversible mapping edges.
+- `CE-CCP1-B03-001` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Represent physical files, include instances, macro expansions, transformed buffers, CEIR nodes, and backend output with stable source spans and reversible mapping edges.
 - `CE-CCP1-B03-002` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Treat .
 - `CE-CCP1-B03-003` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Recognize the pragma through an upstream-compatible preprocessor hook, record activation source location and revision options, and diagnose malformed forms.
 - `CE-CCP1-B03-004` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Associate activation with the current physical FileID/include instance so mode begins at the pragma, ends at that file boundary, and never leaks to includers or included files.
@@ -655,8 +655,8 @@ Project revision: `4328`
 - `CE-CCP1-B04-002` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Construct Clang CompilerInvocation state from normalized cellerator driver arguments, target, sysroot, includes, macros, modules, and language mode.
 - `CE-CCP1-B04-003` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Run preprocessing, parsing, lookup, overload resolution, template instantiation, constexpr evaluation, and diagnostics over the generated shadow source.
 - `CE-CCP1-B04-004` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Resolve every Cellerator domain, state, relation, qualifier expression, native call, and inline-IR capture to a typed Clang AST handle plus source provenance.
-- `CE-CCP1-B04-005` | kind: task | status: in_progress | parent: CE-CCP1-B04-000 | objective: Preserve both canonical type identity for planning and user spelling for diagnostics, including __half, bf16 wrappers, vectors, pointers, references, address spaces, and user-defined numeric types.
-- `CE-CCP1-B04-006` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Instantiate source templates before final operation selection while retaining dependent biological constraints until substitution resolves numeric and domain types.
+- `CE-CCP1-B04-005` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Preserve both canonical type identity for planning and user spelling for diagnostics, including __half, bf16 wrappers, vectors, pointers, references, address spaces, and user-defined numeric types.
+- `CE-CCP1-B04-006` | kind: task | status: in_progress | parent: CE-CCP1-B04-000 | objective: Instantiate source templates before final operation selection while retaining dependent biological constraints until substitution resolves numeric and domain types.
 - `CE-CCP1-B04-007` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Allow C++ overloads/concepts to choose declarations while Cellerator Sema validates biological compatibility and operation semantics after C++ resolution.
 - `CE-CCP1-B04-008` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Import compile-time extents, policies, profile names, reuse counts, and user constants into Cellerator Sema without duplicating a C++ evaluator.
 - `CE-CCP1-B04-009` | kind: task | status: planned | parent: CE-CCP1-B04-000 | objective: Treat unresolved or uncontracted C/C++ calls inside fields as explicit semantic barriers with conservative read/write/escape effects, not as invisible operations.
