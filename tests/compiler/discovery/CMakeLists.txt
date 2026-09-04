@@ -168,3 +168,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_016 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_016 COMMAND ce_ccp1_e02_016)
+
+add_executable(ce_ccp1_e02_017
+    validate_no_compiler_discovery_remains_authoritative_in_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/validate_no_compiler_discovery_remains_authoritative_in.cc")
+target_include_directories(ce_ccp1_e02_017 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_017 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_017 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_017 COMMAND ce_ccp1_e02_017)
