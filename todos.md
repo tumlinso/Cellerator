@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5572`
+Project revision: `5587`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -859,8 +859,8 @@ Project revision: `5572`
 - `CE-CCP1-E04-018` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Publish provider, planner, cache, report, custom candidate, external cost, and force-control contracts used by Realization IR.
 - `CE-GEO-68` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-CCP1-F01-001` | kind: validation_task | status: done | parent: CE-CCP1-F01-000 | objective: Define target-specific modules, functions, kernels, host stubs, data artifacts, stages, bindings, and native fragments while retaining source/semantic/planning lineage in cold metadata.
-- `CE-CCP1-F01-002` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Represent architecture class, compute capability, instruction families, collective scope, memory interfaces, numeric support, graph capture, toolchain, runtime, and backend requirements.
-- `CE-CCP1-F01-003` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Materialize the selected atom/decomposition cover, owners, halos, replicas, partial contributors, canonical recovery, and certification receipt.
+- `CE-CCP1-F01-002` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent architecture class, compute capability, instruction families, collective scope, memory interfaces, numeric support, graph capture, toolchain, runtime, and backend requirements.
+- `CE-CCP1-F01-003` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Materialize the selected atom/decomposition cover, owners, halos, replicas, partial contributors, canonical recovery, and certification receipt.
 - `CE-CCP1-F01-004` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent stable atom identity, physical instance role, global/local extents, local index width, multi-extent slices, alignment, address-space class, and recovery maps without requiring live addresses.
 - `CE-CCP1-F01-005` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Separate structure, values, active support, gradients, partials, workspace, metadata, and generated constants with independent lifetimes, generations, and residency requirements.
 - `CE-CCP1-F01-006` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent CSR, feature-major, row-masked, dense fragment, MMA hybrid, transpose, vendor-specific, and extension projections with payload ABI and value-position maps.
@@ -896,9 +896,9 @@ Project revision: `5572`
 - `CE-CCP1-F03-001` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: State that NVCC never parses Cellerator syntax; it receives generated CUDA/C++ plus explicit device/host/link jobs, target architectures, support libraries, and source maps.
 - `CE-CCP1-F03-002` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Emit typed kernels, device helpers, host stubs, constants, projection views, stage launchers, and runtime bindings from Realization IR with deterministic formatting.
 - `CE-CCP1-F03-003` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Map candidate/provider identities and prepared-state contracts to source-linked existing sm70 and generic implementations rather than regenerating every kernel.
-- `CE-CCP1-F03-004` | kind: task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Lower exact cover, projection, numeric tuple, width, order, partial algebra, and epilogue into specialized CUDA code when no prelinked provider is chosen.
-- `CE-CCP1-F03-005` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower transpose, contraction, segment, normalization, gates, sparse updates, bundles, chains, moments, exchange, and publication stages required by selected plans.
-- `CE-CCP1-F03-006` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Translate target classes, real/virtual architecture sets, host compiler, language mode, optimization, debug/line info, RDC, libraries, and user overrides deterministically.
+- `CE-CCP1-F03-004` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Lower exact cover, projection, numeric tuple, width, order, partial algebra, and epilogue into specialized CUDA code when no prelinked provider is chosen.
+- `CE-CCP1-F03-005` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Lower transpose, contraction, segment, normalization, gates, sparse updates, bundles, chains, moments, exchange, and publication stages required by selected plans.
+- `CE-CCP1-F03-006` | kind: task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Translate target classes, real/virtual architecture sets, host compiler, language mode, optimization, debug/line info, RDC, libraries, and user overrides deterministically.
 - `CE-CCP1-F03-007` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Support whole `.
 - `CE-CCP1-F03-008` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Model device symbols, libraries, nvlink steps, registration objects, and multi-translation-unit device code as explicit driver actions.
 - `CE-CCP1-F03-009` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Capture requested backend artifacts, embed/select them where appropriate, and record toolchain/architecture identity for resumption and diagnostics.
@@ -912,7 +912,7 @@ Project revision: `5572`
 - `CE-GEO-71` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add the source-linked nvidia_sm70 provider advertising only implemented FP16 relation/input, FP32 accumulate/output 16x16x16 WMMA.
 - `CE-CCP1-F04-001` | kind: validation_task | status: done | parent: CE-CCP1-F04-000 | objective: Define optional routes from Realization IR through generated CUDA parsed by Clang or through LLVM/NVPTX lowering, sharing the backend ABI and source maps.
 - `CE-CCP1-F04-002` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Translate host/device compilation, target architecture, libdevice, CUDA includes/libraries, offload bundling, and linker steps to the discovered Clang toolchain.
-- `CE-CCP1-F04-003` | kind: task | status: in_progress | parent: CE-CCP1-F04-000 | objective: Lower a constrained Realization IR subset to LLVM IR/NVPTX through an internal adapter while keeping LLVM types out of public Cellerator IR APIs.
+- `CE-CCP1-F04-003` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Lower a constrained Realization IR subset to LLVM IR/NVPTX through an internal adapter while keeping LLVM types out of public Cellerator IR APIs.
 - `CE-CCP1-F04-004` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Represent PTX types, registers, address spaces, predicates, labels, parameters, memory effects, barriers, collectives, and instruction requirements as Realization IR extension nodes.
 - `CE-CCP1-F04-005` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Bind typed inputs, outputs, clobbers, memory/order/effect contracts, target predicates, fallback, and source provenance for expert inline blocks.
 - `CE-CCP1-F04-006` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Emit deterministic PTX, invoke ptxas when available, capture cubin/resource diagnostics, and support retained PTX for driver-JIT loading without defining the full Part Two JIT system.
