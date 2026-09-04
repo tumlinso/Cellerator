@@ -67,4 +67,20 @@ inline constexpr std::array<deferred_seam, 2> deferred_part_two = {{
     {"deep-cellshard-runtime", "versioned opaque materialization request", false},
 }};
 
+struct performance_review_item {
+    std::string_view subject;
+    std::string_view baseline;
+    std::string_view identity;
+    std::string_view disposition;
+};
+
+inline constexpr std::array<performance_review_item, 6> performance_review = {{
+    {"runtime-provider", "CE-GEO V100 strongest legal provider", "Tesla V100 sm_70", "retained"},
+    {"compiler-overhead", "bounded compiler gates", "CCP1 build identity", "accepted"},
+    {"generated-execution", "native and compatibility matrix", "CE-GEO evidence", "retained"},
+    {"planning-quality", "complete-cost exact coverage", "Planning IR v1", "accepted"},
+    {"object-size", "AOT compiler object baseline", "Part One toolchain manifest", "accepted"},
+    {"editor-latency", "10 ms semantic background budget", "celleratord I40 v1", "accepted"},
+}};
+
 }  // namespace cellerator::compiler::acceptance::v1
