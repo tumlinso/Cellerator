@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5042`
+Project revision: `5046`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -777,7 +777,7 @@ Project revision: `5042`
 - `CE-CCP1-D03-008` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Accept caller-provided relation/support/value/trace observations without owning workflow file formats.
 - `CE-CCP1-D03-009` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Use count/scan/fill, sketches, bounded top-L summaries, histograms, and exact small-instance modes to derive profiles with explicit memory budgets.
 - `CE-CCP1-D03-010` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Resolve command-line/build-provided profile artifacts to source symbols and fields, validate biological identities, and reject complete absence for activated semantic compilation.
-- `CE-CCP1-D03-011` | kind: task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Describe how known operations and native effect contracts transform profile state: values only, support, structure, order, generation, or unknown.
+- `CE-CCP1-D03-011` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Describe how known operations and native effect contracts transform profile state: values only, support, structure, order, generation, or unknown.
 - `CE-CCP1-D03-012` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Carry per-branch states up to configured complexity, merge compatible evidence, widen uncertain dimensions, retain confidence, and avoid exponential code cloning.
 - `CE-CCP1-D03-013` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Attach environments and state values by stable references, not path strings; allow embedded small evidence and external large evidence.
 - `CE-CCP1-D03-014` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Add cellerator subcommands/APIs to dump summaries, compare states, explain confidence, show expected mutations, and identify missing evidence.
@@ -1043,7 +1043,7 @@ Project revision: `5042`
 - `CE-CCP1-I01-007` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Prioritize active files, debounce edits, cancel stale parses/plans, bound background work, and isolate slow profile/planning requests from basic editing.
 - `CE-CCP1-I01-008` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Deduplicate/remap clangd and Cellerator diagnostics, preserve severities/fix-its/related information, and identify their originating phase.
 - `CE-CCP1-I01-009` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Pass through ordinary C++ features with source mapping and merge Cellerator symbol results without changing normal C++ behavior.
-- `CE-CCP1-I01-010` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Index C++ and Cellerator domains, relations, fields, profiles, passes, IR symbols, and cross-TU exports using compiler fingerprints.
+- `CE-CCP1-I01-010` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Index C++ and Cellerator domains, relations, fields, profiles, passes, IR symbols, and cross-TU exports using compiler fingerprints.
 - `CE-CCP1-I01-011` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Allow syntax, C++ semantics, AST, and structural CEIR features without CUDA or loaded profile, while marking profile-dependent analysis unavailable rather than pretending it exists.
 - `CE-CCP1-I01-012` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Publish immutable query snapshots, source-position lookup, diagnostic streams, cancellation tokens, and background compilation hooks through libCellerator.
 - `CE-CCP1-I01-013` | kind: validation_task | status: planned | parent: CE-CCP1-I01-000 | objective: Measure startup, first diagnostics, incremental edit, completion, hover, navigation, memory, and clangd-proxy overhead on plain C++ and `.
