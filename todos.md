@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5171`
+Project revision: `5175`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -802,7 +802,7 @@ Project revision: `5171`
 - `CE-CCP1-E01-016` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
 - `CE-GEO-65` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
 - `CE-CCP1-E02-001` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome namespace-qualified persistent identity and atom species/state contracts, adapting CellShard 64-bit strong IDs to Cellerator persistent identity without pointer hashing or content conflation.
-- `CE-CCP1-E02-002` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move proposal membership, provenance, confidence, stability, negative evidence, and exact-rescan status into Cellerator discovery.
+- `CE-CCP1-E02-002` | kind: task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Move proposal membership, provenance, confidence, stability, negative evidence, and exact-rescan status into Cellerator discovery.
 - `CE-CCP1-E02-003` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Rehome repeated support/degree/signature proposal logic with bounded sketches/top-L candidates and biological-stratum provenance.
 - `CE-CCP1-E02-004` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Rehome co-support source groups, destination convergence/divergence, overlap handling, and null-baseline statistics as proposal generators.
 - `CE-CCP1-E02-005` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move repeated typed relation motifs, operation sequences, field traces, and cross-operation recurrence discovery into compiler profile evidence.
@@ -821,7 +821,7 @@ Project revision: `5171`
 - `CE-CCP1-E02-018` | kind: validation_task | status: planned | parent: CE-CCP1-E02-000 | objective: Publish Cellerator-owned discovery providers, exact certification, atom Planning IR, compatibility adapters, provenance, and differential evidence.
 - `CE-GEO-66` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Perform exact O(E) rectangle census and exact disjoint MMA/residual physical contribution assignment.
 - `CE-CCP1-E03-001` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move production inputs/outputs, parameters, exact coverage equations, identity/order/generation rules, effects, costs, and verifier references into Planning IR extensions.
-- `CE-CCP1-E03-002` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Represent atom and operation derivations as typed acyclic graphs with lineage, exact reconstruction, alternative parents, and canonical cycle diagnostics.
+- `CE-CCP1-E03-002` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent atom and operation derivations as typed acyclic graphs with lineage, exact reconstruction, alternative parents, and canonical cycle diagnostics.
 - `CE-CCP1-E03-003` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move hand-specified typed productions and grammar validation into Cellerator compiler passes over discovered/certified atoms and operations.
 - `CE-CCP1-E03-004` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Preserve induced-production discovery with bounded candidate growth, evidence/confidence, exact verification, complete cost, and valid no-promotion outcome.
 - `CE-CCP1-E03-005` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Map operation/profile recurrence families, mutation horizons, target classes, and objectives into Cellerator program-planning inputs.
