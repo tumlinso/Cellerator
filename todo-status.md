@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4687`
+Project revision: `4688`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -298,7 +298,7 @@ Project revision: `4687`
 - `CE-CCP1-C01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement parse inline ceir blocks in the isolated C01 lane, add the focused ce_ccp1_c01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement parse reflection and compiler-transform constructs in the isolated C01 lane, add the focused ce_ccp1_c01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement parse native/backend fragments in the isolated C01 lane, add the focused ce_ccp1_c01_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-C01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement structured parser recovery in the isolated C01 lane, add the focused ce_ccp1_c01_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-C01-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement structured parser recovery in the isolated C01 lane, add the focused ce_ccp1_c01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose parser library and parse-tree dump apis in the isolated C01 lane, add the focused ce_ccp1_c01_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver full grammar conformance in the isolated C01 lane, add the focused ce_ccp1_c01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-58` | status: done | execution: closed | next: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
