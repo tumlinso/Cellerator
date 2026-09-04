@@ -75,3 +75,7 @@ add_executable(ce_ccp1_d03_009 ../d03/implement_streaming_profile_builders_test.
 target_include_directories(ce_ccp1_d03_009 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_009 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_009 COMMAND ce_ccp1_d03_009)
+add_executable(ce_ccp1_d03_010 ../d03/implement_profile_selection_and_binding_test.cc "${CELLERATOR_ROOT}/src/compiler/profile/implement_profile_selection_and_binding.cc" "${CELLERATOR_ROOT}/src/compiler/profile/define_named_profile_environments_and_alternatives.cc")
+target_include_directories(ce_ccp1_d03_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_010 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_010 COMMAND ce_ccp1_d03_010)
