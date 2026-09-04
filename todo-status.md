@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5355`
+Project revision: `5358`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -455,7 +455,7 @@ Project revision: `5355`
 - `CE-CCP1-E03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement port composition, basis, graph, and schedule tests in the isolated E03 lane, add the focused ce_ccp1_e03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement create semantic differential adapters in the isolated E03 lane, add the focused ce_ccp1_e03_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-016` | status: done | execution: closed | next: Inspect the cited read scope, implement retire cellshard compiler authority in documentation and namespaces in the isolated E03 lane, add the focused ce_ccp1_e03_016 gate, and publish a source-linked receipt.
-- `CE-CCP1-E03-017` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver the profile-to-portable-ruleset slice in the isolated E03 lane, add the focused ce_ccp1_e03_017 gate, and publish a source-linked receipt.
+- `CE-CCP1-E03-017` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the profile-to-portable-ruleset slice in the isolated E03 lane, add the focused ce_ccp1_e03_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cellerator-owned global compiler migration in the isolated E03 lane, add the focused ce_ccp1_e03_018 gate, and publish a source-linked receipt.
 - `CE-GEO-67` | status: done | execution: closed | next: Use complete target-calibrated marginal cost and bounded moves, swaps, splits, merges, rectangle toggles, and admissible exchanges; always emit pure sparse, conservative hybrid, and aggressive hybrid covers.
 - `CE-CCP1-E04-001` | status: done | execution: closed | next: Inspect the cited read scope, implement adapt semantic geometry acquisition to planning ir in the isolated E04 lane, add the focused ce_ccp1_e04_001 gate, and publish a source-linked receipt.
