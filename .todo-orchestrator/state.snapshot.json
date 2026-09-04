@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:20:13Z",
+  "generated_at": "2026-09-04T08:24:34Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4514,
+  "project_revision": 4522,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -49401,6 +49401,86 @@
         "revision": 4514,
         "seq": 4514,
         "timestamp": "2026-09-04T08:20:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-C01-001\"}",
+        "revision": 4515,
+        "seq": 4515,
+        "timestamp": "2026-09-04T08:20:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-D01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-D01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-D01-001\"}",
+        "revision": 4516,
+        "seq": 4516,
+        "timestamp": "2026-09-04T08:22:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-D01-001",
+        "entity_type": "task",
+        "event_type": "workflow.task.release",
+        "payload_json": "{\"reason\": \"Accidental cross-lane claim while diagnosing C02 task-specific no_actionable_work; no implementation begun.\"}",
+        "revision": 4517,
+        "seq": 4517,
+        "timestamp": "2026-09-04T08:22:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-C01-001\"}",
+        "revision": 4518,
+        "seq": 4518,
+        "timestamp": "2026-09-04T08:23:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-C01-001\"}",
+        "revision": 4519,
+        "seq": 4519,
+        "timestamp": "2026-09-04T08:24:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C01-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-C01-001-GATE\"}",
+        "revision": 4520,
+        "seq": 4520,
+        "timestamp": "2026-09-04T08:24:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C01-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a1ad165c-94c2-4f84-83da-6bbbb5325812\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 4521,
+        "seq": 4521,
+        "timestamp": "2026-09-04T08:24:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C04",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C04\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-C04-001\"}",
+        "revision": 4522,
+        "seq": 4522,
+        "timestamp": "2026-09-04T08:24:34Z"
       }
     ],
     "evidence": [
@@ -56955,6 +57035,19 @@
         "metadata_json": "{\"argv\": [\"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"Cellerator/build-cp-math-context/cpMathCusparseBellTest\"], \"cwd\": \".\", \"resources\": [\"gpu:any\"]}, \"diff_fingerprint\": \"cc70045e0fc5b1ac788b213c88bf75bdbf79da2c54469fdf1388347fa56cc41a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Cellerator\", \"todo-status.md\", \"todos.md\", \"todos/cp-math-07.md\"], \"files\": [{\"path\": \"Cellerator/tests/math_cusparse_bell_test.cu\", \"sha256\": \"74f683f508a63bc729394ae09c2c0e3d06554b8fa8f68442f8c95258a6de561d\"}], \"interfaces\": [], \"recorded_git_head\": \"d3f51dcfc0fe4196e17368861598c25354104c62\"}, \"locks\": [], \"resources\": [{\"class_id\": \"gpu\", \"expires_at\": \"2026-08-19T13:51:35Z\", \"instance_id\": \"gpu:0\", \"lease_id\": \"b797d8b6-fa9f-4ced-a97c-a3bf2b8981e8\", \"metadata\": {\"memory_mib\": 16384, \"model\": \"Tesla V100-SXM2-16GB\"}}], \"returncode\": 1, \"started_revision\": 278}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/a1917543-2694-4020-9c14-5188f233e6bc",
         "revision": 279,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:24:24Z",
+        "gate_id": "CE-CCP1-C01-001-GATE",
+        "id": "a1ad165c-94c2-4f84-83da-6bbbb5325812",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c01_001$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9741be7fede366971033a52fdf32206ed9deff9fbffbb9f9a779e28157c3516d\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c01_001$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"a09762f4198d60eb959cdfb171eadf1ef03693822c74346b6f25b0074ff7f487\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"b590424df6872765164eb6a09fa7ec20ebba31d9\"}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"source_identity\": \"6ac97846117abc092ee479f3a1b411f6c580d8a30fa3b01957e7df781c27958f\", \"started_revision\": 4520, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-c01\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/a1ad165c-94c2-4f84-83da-6bbbb5325812",
+        "revision": 4521,
         "status": "failed"
       },
       {
@@ -64633,11 +64726,11 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c01_001$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-C01-001-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "9741be7fede366971033a52fdf32206ed9deff9fbffbb9f9a779e28157c3516d",
+        "last_run_at": "2026-09-04T08:24:24Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4521,
+        "status": "failed",
         "task_id": "CE-CCP1-C01-001",
         "type": "command",
         "valid": 0
@@ -234851,12 +234944,12 @@
         "priority": 842,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4515,
+        "status": "in_progress",
         "tags_json": "[\"c01\", \"compiler-frontend-parser\", \"leaf\"]",
         "title": "Freeze the executable grammar revision and token vocabulary",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T08:20:15Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -236434,7 +236527,7 @@
         "version": 3
       },
       {
-        "attention_reason": null,
+        "attention_reason": "Accidental cross-lane claim while diagnosing C02 task-specific no_actionable_work; no implementation begun.",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -236451,12 +236544,12 @@
         "priority": 838,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4516,
+        "status": "in_progress",
         "tags_json": "[\"d01\", \"compiler-ir-common\", \"leaf\"]",
         "title": "Freeze CEIR common lexical conventions",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T08:22:51Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -278069,13 +278162,13 @@
         "task_id": "CE-CCP1-B04-014"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T08:20:15Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-C01",
         "position": 0,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4515,
+        "state": "active",
         "task_id": "CE-CCP1-C01-001"
       },
       {
@@ -279124,7 +279217,7 @@
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-D01",
         "position": 0,
-        "revision": 4123,
+        "revision": 4517,
         "state": "queued",
         "task_id": "CE-CCP1-D01-001"
       },
@@ -286917,11 +287010,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-C01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4123,
+        "revision": 4515,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T06:14:25Z",
+        "state": "active",
+        "updated_at": "2026-09-04T08:20:15Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -286977,11 +287070,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-D01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4123,
+        "revision": 4517,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-04T06:14:25Z",
+        "updated_at": "2026-09-04T08:22:51Z",
         "workspace_mode": "isolated_merge"
       },
       {
