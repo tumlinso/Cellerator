@@ -108,3 +108,7 @@ add_executable(ce_ccp1_e01_013 implement_user_edits_and_authority_hierarchy_test
 target_include_directories(ce_ccp1_e01_013 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_e01_013 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_e01_013 COMMAND ce_ccp1_e01_013)
+add_executable(ce_ccp1_e01_014 implement_planning_ir_parser_printer_and_validator_test.cc "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_planning_ir_parser_printer_and_validator.cc")
+target_include_directories(ce_ccp1_e01_014 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_014 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_e01_014 COMMAND ce_ccp1_e01_014)
