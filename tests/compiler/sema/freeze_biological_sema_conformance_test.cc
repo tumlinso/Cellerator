@@ -1,4 +1,5 @@
-#include <Cellerator/compiler/sema/freeze_biological_sema_conformance_v1.hh>
+#include <Cellerator/compiler/sema/operation_resolution_v1.hh>
+#include <Cellerator/compiler/sema/semantic_types_v1.hh>
 
 #include <array>
 #include <cassert>
