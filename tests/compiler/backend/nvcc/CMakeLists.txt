@@ -65,3 +65,7 @@ add_executable(ce_ccp1_f03_013 deliver_the_first_nvcc_object_milestone_test.cc
 target_include_directories(ce_ccp1_f03_013 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_013 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_013 COMMAND ce_ccp1_f03_013)
+add_executable(ce_ccp1_f03_014 benchmark_nvcc_backend_complete_cost_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/benchmark_nvcc_backend_complete_cost.cc")
+target_include_directories(ce_ccp1_f03_014 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_014 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_014 COMMAND ce_ccp1_f03_014)
