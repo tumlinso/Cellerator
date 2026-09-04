@@ -1,4 +1,4 @@
-#include <Cellerator/compiler/ir/planning/deliver_the_first_inspectable_candidate_search_space_v1.hh>
+#include <Cellerator/compiler/ir/planning/planning_ir_v1.hh>
 
 #include <array>
 #include <cassert>
@@ -20,6 +20,7 @@ planning::complete_cost_vector_v1 cost(double preparation, double execution,
 }
 
 int main() {
+    static_assert(planning::planning_ir_contract_version_v1 == 1u);
     std::array<planning::semantic_operation_scope_v1, 1> operations{{
         {{11u, 12u}, {21u, 0u}, 0u, 0u}}};
     planning::planning_problem_v1 problem;
