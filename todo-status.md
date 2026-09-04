@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5596`
+Project revision: `5599`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -518,7 +518,7 @@ Project revision: `5596`
 - `CE-CCP1-F03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement generate custom relation kernels where selected in the isolated F03 lane, add the focused ce_ccp1_f03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement generate non-relation cuda operations in the isolated F03 lane, add the focused ce_ccp1_f03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement nvcc option and architecture mapping in the isolated F03 lane, add the focused ce_ccp1_f03_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-F03-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement host/device split compilation in the isolated F03 lane, add the focused ce_ccp1_f03_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement host/device split compilation in the isolated F03 lane, add the focused ce_ccp1_f03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement relocatable device code and device linking in the isolated F03 lane, add the focused ce_ccp1_f03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement ptx, cubin, and fatbinary intermediates in the isolated F03 lane, add the focused ce_ccp1_f03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement integrate cuda runtime and library linkage in the isolated F03 lane, add the focused ce_ccp1_f03_010 gate, and publish a source-linked receipt.
