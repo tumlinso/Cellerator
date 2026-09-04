@@ -34,4 +34,8 @@ inline constexpr std::array<std::string_view, 10> guide_examples = {
     "minimal", "profiles", "planning", "realization", "custom-pass",
     "unsafe-native", "lto", "sdk", "celleratord", "ordinary-cxx"};
 
+inline constexpr std::array<std::string_view, 8> architecture_records = {
+    "directory-layout", "ownership", "jbc-provenance", "superseded-charters",
+    "interfaces", "build-modes", "backends", "part-two-seam"};
+
 }  // namespace cellerator::compiler::acceptance::v1
