@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6420`
+Project revision: `6423`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -765,7 +765,7 @@ Project revision: `6420`
 - `CE-EXOP-112` | status: done | execution: closed | next: Deliver exact logical maps, values, and gradient reconciliation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-113` | status: done | execution: closed | next: Deliver work-window behavior and disjoint fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-114` | status: done | execution: closed | next: Deliver overlap strategy validation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-M80` | status: in_progress | execution: claimed | next: Collect isolated lane receipts for P80, verify hashes and interfaces, integrate central files, run label ce_ccp1_m80, and publish CE-CCP1-MILESTONE-M80.
+- `CE-CCP1-M80` | status: done | execution: closed | next: Collect isolated lane receipts for P80, verify hashes and interfaces, integrate central files, run label ce_ccp1_m80, and publish CE-CCP1-MILESTONE-M80.
 - `CE-EXOP-120` | status: done | execution: closed | next: Deliver exact small-problem optimizer oracle exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-100` | status: done | execution: closed | next: Independently rerun frozen CPK1, CPE2, session, program, catalog, sparse, transpose, and experimental WMMA baselines and compare exact golden evidence.
 - `CE-EXOP-121` | status: done | execution: closed | next: Deliver branch-and-bound/exhaustive objective validation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
