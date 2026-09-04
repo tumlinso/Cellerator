@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6237`
+Project revision: `6238`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -629,7 +629,7 @@ Project revision: `6237`
 - `CE-CCP1-H02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement expose structured diagnostics and explainability apis in the isolated H02 lane, add the focused ce_ccp1_h02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement define thread safety and context isolation in the isolated H02 lane, add the focused ce_ccp1_h02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement preserve direct runtime/execution access in the isolated H02 lane, add the focused ce_ccp1_h02_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-H02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement create narrow public runtime facades in the isolated H02 lane, add the focused ce_ccp1_h02_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-H02-013` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement create narrow public runtime facades in the isolated H02 lane, add the focused ce_ccp1_h02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement define abi/version and feature queries in the isolated H02 lane, add the focused ce_ccp1_h02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement create installed sdk examples in the isolated H02 lane, add the focused ce_ccp1_h02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze libcellerator sdk acceptance in the isolated H02 lane, add the focused ce_ccp1_h02_016 gate, and publish a source-linked receipt.
