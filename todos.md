@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6194`
+Project revision: `6205`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -990,7 +990,7 @@ Project revision: `6194`
 - `CE-CCP1-H01-007` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Merge named states and evidence references by stable identity/revision, diagnose conflicting biological semantics, and retain bounded alternatives.
 - `CE-CCP1-H01-008` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Import exported Semantic IR summaries or full field bodies on demand with source/provenance references and extension negotiation.
 - `CE-CCP1-H01-009` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Require exported/named fields, source policy, or driver LTO flags before crossing ordinary field/TU boundaries; never absorb arbitrary plain C++ globally.
-- `CE-CCP1-H01-010` | kind: task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Scan individual objects, static archives, shared-library metadata, and linker inputs without loading code; index fields/profiles by identity.
+- `CE-CCP1-H01-010` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Scan individual objects, static archives, shared-library metadata, and linker inputs without loading code; index fields/profiles by identity.
 - `CE-CCP1-H01-011` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Intercept link invocations, build the program CEIR graph, run authorized Cellerator LTO, produce replacement/additional objects, then invoke the selected conventional linker.
 - `CE-CCP1-H01-012` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Merge field graphs, cross-function calls, profile families, external effects, program constraints, and shared artifacts without changing unexported semantics.
 - `CE-CCP1-H01-013` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Inline semantic fields/functions and optimize persistent orders, shared decompositions, candidates, and transitions where authorization and effects permit.
@@ -1023,9 +1023,9 @@ Project revision: `6194`
 - `CE-CCP1-H03-006` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide typed names/state selectors, reuse/lifetime facts, generation helpers, mutation contracts, and explicit generic reference-profile selection.
 - `CE-CCP1-H03-007` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide source conveniences for preferences, constraints, candidate offers, forced plans, cost records, decomposition builders, and unsafe modes while leaving full CEIR accessible.
 - `CE-CCP1-H03-008` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide concepts, visitors, pattern helpers, builders, and pass adapters in `.
-- `CE-CCP1-H03-009` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Ship explicitly named, low-performance, testing-oriented profiles for a small audited set such as Homo sapiens, Mus musculus, and a rat reference.
-- `CE-CCP1-H03-010` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Generate compact relation/domain/statistical placeholders sufficient for parser, Sema, IR, planning fallback, examples, and CI, not claims of realistic optimized biology.
-- `CE-CCP1-H03-011` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Locate standard library, reference profiles, backend manifests, schemas, and support binaries relative to the installed executable with explicit override flags.
+- `CE-CCP1-H03-009` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Ship explicitly named, low-performance, testing-oriented profiles for a small audited set such as Homo sapiens, Mus musculus, and a rat reference.
+- `CE-CCP1-H03-010` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Generate compact relation/domain/statistical placeholders sufficient for parser, Sema, IR, planning fallback, examples, and CI, not claims of realistic optimized biology.
+- `CE-CCP1-H03-011` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Locate standard library, reference profiles, backend manifests, schemas, and support binaries relative to the installed executable with explicit override flags.
 - `CE-CCP1-H03-012` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Install component targets, CelleratorConfig, version config, compiler helpers, backend/provider targets, feature variables, and dependency discovery without source-tree paths.
 - `CE-CCP1-H03-013` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide functions/toolchain guidance for `.
 - `CE-CCP1-H03-014` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Install bin/cellerator, bin/celleratord, component libraries, headers, stdlib, profiles, schemas, backends, docs/examples, and debug metadata in relocatable platform-appropriate locations.
