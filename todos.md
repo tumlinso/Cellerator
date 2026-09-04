@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6294`
+Project revision: `6299`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1032,7 +1032,7 @@ Project revision: `6294`
 - `CE-CCP1-H03-015` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Expose libCellerator compiler/runtime compile and link flags for non-CMake consumers where platform conventions support it.
 - `CE-CCP1-H03-016` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Generate installed-file manifests, CEIR/profile/schema revisions, backend identities, standard-library hashes, and reproducibility metadata.
 - `CE-CCP1-H03-017` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Install two versioned resource trees, test selected compiler/resource pairing, plugin compatibility diagnostics, and no accidental cross-version profile/IR loading.
-- `CE-CCP1-H03-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Install from a clean checkout, compile ordinary C++, `.
+- `CE-CCP1-H03-018` | kind: validation_task | status: done | parent: CE-CCP1-H03-000 | objective: Install from a clean checkout, compile ordinary C++, `.
 - `CE-GEO-78` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.
 - `CE-CCP1-I01-001` | kind: validation_task | status: done | parent: CE-CCP1-I01-000 | objective: Define an LSP server over shared libCellerator snapshots with an upstream clangd worker/proxy or reusable upstream components for ordinary C++ features, without a permanent fork.
 - `CE-CCP1-I01-002` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Support stdio, framing, request IDs, notifications, cancellation, progress, initialization, capabilities, graceful shutdown, and structured logging.
