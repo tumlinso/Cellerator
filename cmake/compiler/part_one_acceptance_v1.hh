@@ -38,4 +38,8 @@ inline constexpr std::array<std::string_view, 8> architecture_records = {
     "directory-layout", "ownership", "jbc-provenance", "superseded-charters",
     "interfaces", "build-modes", "backends", "part-two-seam"};
 
+inline constexpr std::array<std::string_view, 8> host_sdk_artifacts = {
+    "cellerator", "libCellerator", "celleratord", "stdlib", "profiles",
+    "cmake-package", "ordinary-cxx", "ceir"};
+
 }  // namespace cellerator::compiler::acceptance::v1
