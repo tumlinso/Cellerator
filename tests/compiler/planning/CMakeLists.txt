@@ -118,3 +118,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_011 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_011 COMMAND ce_ccp1_e04_011)
+
+add_executable(ce_ccp1_e04_012
+    implement_planner_portfolio_dispatch_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/implement_planner_portfolio_dispatch.cc")
+target_include_directories(ce_ccp1_e04_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_012 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_012 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_012 COMMAND ce_ccp1_e04_012)
