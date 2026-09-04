@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6630`
+Project revision: `6632`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -81,7 +81,7 @@ Project revision: `6630`
 - `CE-CCP1-A02-000` | status: done | execution: closed | next: Claim A02-001 after milestone prerequisites are reached.
 - `CE-EXOP-01` | status: done | execution: closed | next: Deliver live preflight and coordination cleanup exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-11` | status: done | execution: closed | next: Implement architecture-neutral source-linked matrix-engine capabilities and separate versioned memory-interface restrictions without exposing WMMA types.
-- `CE-CCP1-A03-000` | status: planned | execution: ready | next: Claim A03-001 after milestone prerequisites are reached.
+- `CE-CCP1-A03-000` | status: done | execution: closed | next: Claim A03-001 after milestone prerequisites are reached.
 - `CE-EXOP-02` | status: done | execution: closed | next: Deliver freeze ce-exop program architecture exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-12` | status: done | execution: closed | next: Implement fixed-capacity explicit provider registration, active-device filtering, and a generated compiled-provider manifest with no constructors or dynamic loader.
 - `CE-CCP1-A04-000` | status: planned | execution: ready | next: Claim A04-001 after milestone prerequisites are reached.
