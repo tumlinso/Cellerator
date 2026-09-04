@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6448`
+Project revision: `6449`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1069,7 +1069,7 @@ Project revision: `6448`
 - `CE-CCP1-J01-001` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Turn every normative syntax/semantic example and rejected design into positive/negative tests with specification section references.
 - `CE-CCP1-J01-002` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Generate C++ token streams, includes, macros, templates, comments, and Cellerator delimiters to find activation leaks, hangs, and source-map corruption.
 - `CE-CCP1-J01-003` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Mutate declarations, fields, relation syntax, controls, inline IR, reflection, passes, and native fragments while enforcing bounded diagnostics and no crashes.
-- `CE-CCP1-J01-004` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Compile broad C++ corpora through cellerator and direct Clang/GCC, comparing success, diagnostics categories, object symbols, depfiles, and runtime output.
+- `CE-CCP1-J01-004` | kind: task | status: in_progress | parent: CE-CCP1-J01-000 | objective: Compile broad C++ corpora through cellerator and direct Clang/GCC, comparing success, diagnostics categories, object symbols, depfiles, and runtime output.
 - `CE-CCP1-J01-005` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Cover shape-only equivalence, wrong endpoints/orders/generations/orientation, stale values, invalid effects, unsupported numeric tuples, and unsafe override behavior.
 - `CE-CCP1-J01-006` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Mutate all three IR levels, unknown extensions, identities, regions, use-def chains, native payloads, directories, hashes, and versions.
 - `CE-CCP1-J01-007` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Corrupt profile sections/evidence, generate branch/state graphs, and compare transfer/join/widen results with small exact models.
