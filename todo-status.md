@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4325`
+Project revision: `4329`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -250,7 +250,7 @@ Project revision: `4325`
 - `CE-CCP1-B02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement define compilation database and dependency-file behavior in the isolated B02 lane, add the focused ce_ccp1_b02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement define temporary artifact and cache policy in the isolated B02 lane, add the focused ce_ccp1_b02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement forward and remap downstream diagnostics in the isolated B02 lane, add the focused ce_ccp1_b02_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-B02-013` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement fingerprint toolchains for artifacts and resumption in the isolated B02 lane, add the focused ce_ccp1_b02_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-B02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement fingerprint toolchains for artifacts and resumption in the isolated B02 lane, add the focused ce_ccp1_b02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the driver passthrough milestone in the isolated B02 lane, add the focused ce_ccp1_b02_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-55` | status: done | execution: closed | next: Deliver freeze planner portfolio exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-55` | status: done | execution: closed | next: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
