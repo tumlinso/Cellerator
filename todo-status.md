@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4280`
+Project revision: `4284`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -231,7 +231,7 @@ Project revision: `4280`
 - `CE-CCP1-B01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement isolate legacy cuda target requirements in the isolated B01 lane, add the focused ce_ccp1_b01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement define optional llvm and clang library discovery in the isolated B01 lane, add the focused ce_ccp1_b01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement define backend resource discovery manifests in the isolated B01 lane, add the focused ce_ccp1_b01_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-B01-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement define build-tree generated header ownership in the isolated B01 lane, add the focused ce_ccp1_b01_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-B01-008` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define build-tree generated header ownership in the isolated B01 lane, add the focused ce_ccp1_b01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement create host-only compiler smoke targets in the isolated B01 lane, add the focused ce_ccp1_b01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement create accelerator-enabled compiler smoke targets in the isolated B01 lane, add the focused ce_ccp1_b01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement define build presets and ci matrix in the isolated B01 lane, add the focused ce_ccp1_b01_011 gate, and publish a source-linked receipt.
@@ -245,7 +245,7 @@ Project revision: `4280`
 - `CE-CCP1-B02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement discover nvcc toolchains in the isolated B02 lane, add the focused ce_ccp1_b02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement discover clang cuda and llvm/nvptx toolchains in the isolated B02 lane, add the focused ce_ccp1_b02_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement define toolchain override precedence in the isolated B02 lane, add the focused ce_ccp1_b02_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-B02-008` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement track downstream c++ language and abi mode in the isolated B02 lane, add the focused ce_ccp1_b02_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-B02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement track downstream c++ language and abi mode in the isolated B02 lane, add the focused ce_ccp1_b02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement plain c++ passthrough planning in the isolated B02 lane, add the focused ce_ccp1_b02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement define compilation database and dependency-file behavior in the isolated B02 lane, add the focused ce_ccp1_b02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement define temporary artifact and cache policy in the isolated B02 lane, add the focused ce_ccp1_b02_011 gate, and publish a source-linked receipt.
