@@ -42,3 +42,10 @@ add_executable(ce_ccp1_c02_004
 target_include_directories(ce_ccp1_c02_004 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_004 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_004 COMMAND ce_ccp1_c02_004)
+
+add_executable(ce_ccp1_c02_005
+    assign_deterministic_source_identities_test.cc
+    ../../../src/compiler/ast/assign_deterministic_source_identities.cc)
+target_include_directories(ce_ccp1_c02_005 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_005 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_005 COMMAND ce_ccp1_c02_005)
