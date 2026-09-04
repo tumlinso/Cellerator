@@ -39,3 +39,13 @@ add_test(NAME ce_ccp1_i02_011 COMMAND ce_ccp1_i02_011)
 add_executable(ce_ccp1_i02_012 implement_inline_ceir_diagnostics_and_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_inline_ceir_diagnostics_and_completion.cc)
 target_include_directories(ce_ccp1_i02_012 PRIVATE ${CELLERATOR_ROOT})
 add_test(NAME ce_ccp1_i02_012 COMMAND ce_ccp1_i02_012)
+add_executable(ce_ccp1_i02_013 benchmark_advanced_semantic_queries_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/benchmark_advanced_semantic_queries.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_profile_state_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_why_did_this_candidate_win.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_semantic_ir_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_realization_and_decomposition_visualization.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
+target_include_directories(ce_ccp1_i02_013 PRIVATE ${CELLERATOR_ROOT})
+add_test(NAME ce_ccp1_i02_013 COMMAND ce_ccp1_i02_013)

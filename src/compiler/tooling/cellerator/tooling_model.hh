@@ -44,5 +44,17 @@ struct native_navigation {std::string semantic,planning,realization,generated,na
 [[nodiscard]] std::string reverse_map_native_diagnostic(std::string_view diagnostic,const native_navigation&);
 struct inline_ceir_assist {std::string level;std::vector<std::string> operations,types,attributes,captures,profiles,candidates,instructions,namespaces,validation_modes,diagnostics;};
 [[nodiscard]] inline_ceir_assist assist_inline_ceir(std::string_view level,std::string_view source);
+struct semantic_query_benchmark {
+    std::string query;
+    std::string cache_state;
+    std::size_t sample_count = 0;
+    std::size_t rss_bytes = 0;
+    std::size_t background_budget_ns = 0;
+    std::size_t p50_latency_ns = 0;
+    std::size_t p95_latency_ns = 0;
+    bool cancellation_observed = false;
+    bool cpp_editing_responsive = false;
+};
+[[nodiscard]] std::vector<semantic_query_benchmark> benchmark_advanced_semantic_queries();
 
 }  // namespace cellerator::compiler::tooling::v1
