@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6627`
+Project revision: `6628`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -74,7 +74,7 @@ Project revision: `6627`
 - `CE-CCP1-P20` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-CCP1-M10` | status: done | execution: closed | next: Collect isolated lane receipts for P10, verify hashes and interfaces, integrate central files, run label ce_ccp1_m10, and publish CE-CCP1-MILESTONE-M10.
 - `CE-CCP1-P30` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
-- `CE-CCP1-A01-000` | status: in_progress | execution: claimed | next: Claim A01-001 after milestone prerequisites are reached.
+- `CE-CCP1-A01-000` | status: done | execution: closed | next: Claim A01-001 after milestone prerequisites are reached.
 - `CE-CCP1-M20` | status: done | execution: closed | next: Collect isolated lane receipts for P20, verify hashes and interfaces, integrate central files, run label ce_ccp1_m20, and publish CE-CCP1-MILESTONE-M20.
 - `CE-CCP1-P40` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-GEO-10` | status: done | execution: closed | next: Implement runtime::device_descriptor_v1 as the single cold hardware truth, derive existing compatibility views, and prove no query after session sealing.
