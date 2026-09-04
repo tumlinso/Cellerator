@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:05:28Z",
+  "generated_at": "2026-09-04T07:05:53Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4291,
+  "project_revision": 4293,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -47171,6 +47171,26 @@
         "revision": 4291,
         "seq": 4291,
         "timestamp": "2026-09-04T07:05:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B04",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B04\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B04-004\"}",
+        "revision": 4292,
+        "seq": 4292,
+        "timestamp": "2026-09-04T07:05:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B01-009\"}",
+        "revision": 4293,
+        "seq": 4293,
+        "timestamp": "2026-09-04T07:05:53Z"
       }
     ],
     "evidence": [
@@ -229806,12 +229826,12 @@
         "priority": 846,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4293,
+        "status": "in_progress",
         "tags_json": "[\"b01\", \"build-compiler\", \"leaf\"]",
         "title": "Create host-only compiler smoke targets",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:05:53Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -230781,12 +230801,12 @@
         "priority": 843,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4292,
+        "status": "in_progress",
         "tags_json": "[\"b04\", \"compiler-frontend-cxx\", \"leaf\"]",
         "title": "Bind source captures to C++ declarations and expressions",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:05:30Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -273777,13 +273797,13 @@
         "task_id": "CE-CCP1-B01-008"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:05:53Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B01",
         "position": 8,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4293,
+        "state": "active",
         "task_id": "CE-CCP1-B01-009"
       },
       {
@@ -274137,13 +274157,13 @@
         "task_id": "CE-CCP1-B04-003"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:05:30Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B04",
         "position": 3,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4292,
+        "state": "active",
         "task_id": "CE-CCP1-B04-004"
       },
       {
@@ -283047,11 +283067,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4291,
+        "revision": 4293,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:05:28Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:05:53Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -283083,11 +283103,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B04",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4288,
+        "revision": 4292,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:05:10Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:05:30Z",
         "workspace_mode": "isolated_merge"
       },
       {
