@@ -153,3 +153,13 @@ add_test(NAME ce_ccp1_f04_011 COMMAND ce_ccp1_f04_011
     "${NVCC_EXECUTABLE}" "${CLANG_CUDA_EXECUTABLE}" "${PTXAS_MODERN_EXECUTABLE}"
     "${CELLERATOR_ROOT}/bench/compiler/backend/nvptx/matched_unit_degree_relation.cu"
     "${CMAKE_CURRENT_BINARY_DIR}/f04_011" "/usr/lib/gcc/x86_64-linux-gnu/12")
+
+add_executable(ce_ccp1_f04_012
+    validate_backend_fallback_and_mixed_routes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/validate_backend_fallback_and_mixed_routes.cc")
+target_include_directories(ce_ccp1_f04_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f04_012 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f04_012 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f04_012 COMMAND ce_ccp1_f04_012)
