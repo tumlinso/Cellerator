@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4811`
+Project revision: `4864`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -304,16 +304,16 @@ Project revision: `4811`
 - `CE-GEO-58` | status: done | execution: closed | next: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
 - `CE-CCP1-C02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze ast node ownership and lifetime in the isolated C02 lane, add the focused ce_ccp1_c02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-002` | status: done | execution: closed | next: Inspect the cited read scope, implement define source-level ast node families in the isolated C02 lane, add the focused ce_ccp1_c02_002 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement bind c++ ast references safely in the isolated C02 lane, add the focused ce_ccp1_c02_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cellerator symbol tables and scopes in the isolated C02 lane, add the focused ce_ccp1_c02_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement assign deterministic source identities in the isolated C02 lane, add the focused ce_ccp1_c02_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement preserve token and macro provenance in the isolated C02 lane, add the focused ce_ccp1_c02_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement ast visitors, matchers, and queries in the isolated C02 lane, add the focused ce_ccp1_c02_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement create structured frontend diagnostic records in the isolated C02 lane, add the focused ce_ccp1_c02_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement source-aware fix-its in the isolated C02 lane, add the focused ce_ccp1_c02_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement create deterministic ast dump and snapshot formats in the isolated C02 lane, add the focused ce_ccp1_c02_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement support incremental ast identity reuse in the isolated C02 lane, add the focused ce_ccp1_c02_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the ast and source-diagnostics interface in the isolated C02 lane, add the focused ce_ccp1_c02_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-003` | status: done | execution: closed | next: Inspect the cited read scope, implement bind c++ ast references safely in the isolated C02 lane, add the focused ce_ccp1_c02_003 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cellerator symbol tables and scopes in the isolated C02 lane, add the focused ce_ccp1_c02_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement assign deterministic source identities in the isolated C02 lane, add the focused ce_ccp1_c02_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement preserve token and macro provenance in the isolated C02 lane, add the focused ce_ccp1_c02_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement ast visitors, matchers, and queries in the isolated C02 lane, add the focused ce_ccp1_c02_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement create structured frontend diagnostic records in the isolated C02 lane, add the focused ce_ccp1_c02_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement source-aware fix-its in the isolated C02 lane, add the focused ce_ccp1_c02_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement create deterministic ast dump and snapshot formats in the isolated C02 lane, add the focused ce_ccp1_c02_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement support incremental ast identity reuse in the isolated C02 lane, add the focused ce_ccp1_c02_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the ast and source-diagnostics interface in the isolated C02 lane, add the focused ce_ccp1_c02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze compiler-semantic type categories in the isolated C03 lane, add the focused ce_ccp1_c03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement domain and human biological tag semantics in the isolated C03 lane, add the focused ce_ccp1_c03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement axis semantics in the isolated C03 lane, add the focused ce_ccp1_c03_003 gate, and publish a source-linked receipt.
@@ -329,7 +329,7 @@ Project revision: `4811`
 - `CE-CCP1-C03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate c++ templates and concepts with biological constraints in the isolated C03 lane, add the focused ce_ccp1_c03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement explicit low-level casts and escape hatches in the isolated C03 lane, add the focused ce_ccp1_c03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement create semantic validation and explanation apis in the isolated C03 lane, add the focused ce_ccp1_c03_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-C03-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze biological sema conformance in the isolated C03 lane, add the focused ce_ccp1_c03_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-C03-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze biological sema conformance in the isolated C03 lane, add the focused ce_ccp1_c03_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-M50` | status: planned | execution: ready | next: Collect isolated lane receipts for P50, verify hashes and interfaces, integrate central files, run label ce_ccp1_m50, and publish CE-CCP1-MILESTONE-M50.
 - `CE-CCP1-P70` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-60` | status: done | execution: closed | next: Deliver requirements-query acquisition facade exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
