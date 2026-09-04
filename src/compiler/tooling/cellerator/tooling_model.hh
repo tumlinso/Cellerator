@@ -39,5 +39,8 @@ struct candidate_explanation {double complete_cost=0,transition_cost=0;std::stri
 [[nodiscard]] candidate_explanation explain_candidate(std::string_view evidence_kind,bool forced);
 struct optimization_action {std::string cause,detail,fix_it;double canonicalization_cost=0;bool safe=false;};
 [[nodiscard]] std::vector<optimization_action> missed_optimization_actions(std::string_view source);
+struct native_navigation {std::string semantic,planning,realization,generated,native_symbol,resource_report,source_location;};
+[[nodiscard]] native_navigation navigate_to_native(std::string_view artifact);
+[[nodiscard]] std::string reverse_map_native_diagnostic(std::string_view diagnostic,const native_navigation&);
 
 }  // namespace cellerator::compiler::tooling::v1
