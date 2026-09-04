@@ -55,3 +55,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d03_005 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d03_005 COMMAND ce_ccp1_d03_005)
+
+add_executable(ce_ccp1_d03_006 ../d03/represent_mutability_recurrence_and_reuse_evidence_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/profile/represent_mutability_recurrence_and_reuse_evidence.cc")
+target_include_directories(ce_ccp1_d03_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_006 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_006 COMMAND ce_ccp1_d03_006)
