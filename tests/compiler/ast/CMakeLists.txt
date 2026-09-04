@@ -63,3 +63,10 @@ add_executable(ce_ccp1_c02_007
 target_include_directories(ce_ccp1_c02_007 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_007 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_007 COMMAND ce_ccp1_c02_007)
+
+add_executable(ce_ccp1_c02_008
+    create_structured_frontend_diagnostic_records_test.cc
+    ../../../src/compiler/ast/create_structured_frontend_diagnostic_records.cc)
+target_include_directories(ce_ccp1_c02_008 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_008 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_008 COMMAND ce_ccp1_c02_008)
