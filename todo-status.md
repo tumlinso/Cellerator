@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5587`
+Project revision: `5588`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -532,7 +532,7 @@ Project revision: `5587`
 - `CE-CCP1-F04-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze clang cuda and nvptx backend contracts in the isolated F04 lane, add the focused ce_ccp1_f04_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement clang cuda action mapping in the isolated F04 lane, add the focused ce_ccp1_f04_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement llvm/nvptx module boundary in the isolated F04 lane, add the focused ce_ccp1_f04_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-F04-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement define direct ptx typed operation model in the isolated F04 lane, add the focused ce_ccp1_f04_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-F04-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define direct ptx typed operation model in the isolated F04 lane, add the focused ce_ccp1_f04_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement inline ptx/native block binding in the isolated F04 lane, add the focused ce_ccp1_f04_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement ptx emission and ptxas assembly in the isolated F04 lane, add the focused ce_ccp1_f04_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement fatbinary/object embedding for direct ptx in the isolated F04 lane, add the focused ce_ccp1_f04_007 gate, and publish a source-linked receipt.
