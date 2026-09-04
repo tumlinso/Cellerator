@@ -43,3 +43,7 @@ add_executable(ce_ccp1_f03_008 implement_relocatable_device_code_and_device_link
 target_include_directories(ce_ccp1_f03_008 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_008 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_008 COMMAND ce_ccp1_f03_008)
+add_executable(ce_ccp1_f03_009 implement_ptx_cubin_and_fatbinary_intermediates_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/implement_ptx_cubin_and_fatbinary_intermediates.cc")
+target_include_directories(ce_ccp1_f03_009 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_009 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_009 COMMAND ce_ccp1_f03_009)
