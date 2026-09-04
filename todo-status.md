@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5775`
+Project revision: `5778`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -508,7 +508,7 @@ Project revision: `5775`
 - `CE-CCP1-F02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement host runtime binding abi in the isolated F02 lane, add the focused ce_ccp1_f02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement map backend diagnostics to source and ceir in the isolated F02 lane, add the focused ce_ccp1_f02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark cpu backend complete cost in the isolated F02 lane, add the focused ce_ccp1_f02_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-013` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver the first cpu object milestone in the isolated F02 lane, add the focused ce_ccp1_f02_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the first cpu object milestone in the isolated F02 lane, add the focused ce_ccp1_f02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the cpu/backend thin waist in the isolated F02 lane, add the focused ce_ccp1_f02_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-70` | status: done | execution: closed | next: Deliver mechanism and prepared-stage manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-70` | status: done | execution: closed | next: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
