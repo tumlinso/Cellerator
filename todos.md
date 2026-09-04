@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5338`
+Project revision: `5339`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -798,7 +798,7 @@ Project revision: `5338`
 - `CE-CCP1-E01-012` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Record correctness, capability, resource, numerical, profile, stale-evidence, cost, and user-policy reasons for every removed alternative.
 - `CE-CCP1-E01-013` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
 - `CE-CCP1-E01-014` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
-- `CE-CCP1-E01-015` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
+- `CE-CCP1-E01-015` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
 - `CE-CCP1-E01-016` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
 - `CE-GEO-65` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
 - `CE-CCP1-E02-001` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome namespace-qualified persistent identity and atom species/state contracts, adapting CellShard 64-bit strong IDs to Cellerator persistent identity without pointer hashing or content conflation.
