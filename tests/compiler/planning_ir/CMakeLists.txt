@@ -124,3 +124,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_015 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_015 COMMAND ce_ccp1_e01_015)
+
+add_executable(ce_ccp1_e01_016
+    deliver_the_first_inspectable_candidate_search_space_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/deliver_the_first_inspectable_candidate_search_space.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_complete_cost_vectors.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_planning_problems_and_operation_scopes.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/freeze_planning_ir_module_and_decision_state_model.cc")
+target_include_directories(ce_ccp1_e01_016 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_016 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_016 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_016 COMMAND ce_ccp1_e01_016)
