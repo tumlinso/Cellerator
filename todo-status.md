@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6711`
+Project revision: `6713`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -151,7 +151,7 @@ Project revision: `6711`
 - `CE-EXOP-31` | status: done | execution: closed | next: Deliver encode complete relation algebra and bindings exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J02-000` | status: done | execution: closed | next: Claim J02-001 after milestone prerequisites are reached.
 - `CE-EXOP-32` | status: done | execution: closed | next: Deliver encode output, order, numerical, and determinism contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-J03-000` | status: planned | execution: ready | next: Claim J03-001 after milestone prerequisites are reached.
+- `CE-CCP1-J03-000` | status: done | execution: closed | next: Claim J03-001 after milestone prerequisites are reached.
 - `CE-EXOP-33` | status: done | execution: closed | next: Deliver add sparse-axis update and composition descriptors exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-34` | status: done | execution: closed | next: Deliver add v1 adapters and migrate persistent problem identity exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-35` | status: done | execution: closed | next: Deliver freeze operation-core v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
