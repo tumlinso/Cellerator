@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6582`
+Project revision: `6583`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -723,7 +723,7 @@ Project revision: `6582`
 - `CE-CCP1-J03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement run clean nvidia sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement validate all final part one capabilities in the isolated J03 lane, add the focused ce_ccp1_j03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement audit deferred part two separation in the isolated J03 lane, add the focused ce_ccp1_j03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement run final performance and regression review in the isolated J03 lane, add the focused ce_ccp1_j03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement run final performance and regression review in the isolated J03 lane, add the focused ce_ccp1_j03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement create release and bootstrap reproducibility bundle in the isolated J03 lane, add the focused ce_ccp1_j03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze part one completion checkpoint in the isolated J03 lane, add the focused ce_ccp1_j03_013 gate, and publish a source-linked receipt.
 - `CE-EXOP-83` | status: done | execution: closed | next: Deliver independent exact evaluator and incremental state exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
