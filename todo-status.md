@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6469`
+Project revision: `6472`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -704,7 +704,7 @@ Project revision: `6469`
 - `CE-CCP1-J02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark ceir construction and serialization in the isolated J02 lane, add the focused ce_ccp1_j02_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark representative profiles in the isolated J02 lane, add the focused ce_ccp1_j02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark discovery and certification in the isolated J02 lane, add the focused ce_ccp1_j02_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-J02-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark planning and complete costs in the isolated J02 lane, add the focused ce_ccp1_j02_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-J02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark planning and complete costs in the isolated J02 lane, add the focused ce_ccp1_j02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark realization ir and backend generation in the isolated J02 lane, add the focused ce_ccp1_j02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark generated cpu execution in the isolated J02 lane, add the focused ce_ccp1_j02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark generated nvidia execution in the isolated J02 lane, add the focused ce_ccp1_j02_010 gate, and publish a source-linked receipt.
