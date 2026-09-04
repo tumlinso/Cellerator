@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6168`
+Project revision: `6172`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1004,7 +1004,7 @@ Project revision: `6168`
 - `CE-CCP1-H02-004` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Allow clients to parse, inspect, incrementally update, and semantically analyze source without running planning or code generation.
 - `CE-CCP1-H02-005` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Provide contexts, immutable snapshots, builders, cloning, parsing/printing, validation modes, provenance, and serialization for all three IR levels.
 - `CE-CCP1-H02-006` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Provide pointer-plus-count ingestion, binary/text load, named-state lookup, diff, transfer functions, and profile environment binding.
-- `CE-CCP1-H02-007` | kind: task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Provide provider registration, discovery, decomposition, costs/evidence, planner replacement, force controls, reports, and selected rulesets.
+- `CE-CCP1-H02-007` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Provide provider registration, discovery, decomposition, costs/evidence, planner replacement, force controls, reports, and selected rulesets.
 - `CE-CCP1-H02-008` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide target description, physical IR editing, backend registry, generated artifact access, source maps, native fragment hooks, and object emission.
 - `CE-CCP1-H02-009` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide pass registration/pipelines, extension schemas/protocols, reflection handles/builders, same-compilation transform ABI, and trust modes.
 - `CE-CCP1-H02-010` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide stable diagnostic records, planning reports, provenance queries, reproducer creation, progress, timing, and cancellation.
@@ -1021,7 +1021,7 @@ Project revision: `6168`
 - `CE-CCP1-H03-004` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide explicit low-level constructors/builders from pointers, extents, identities, orders, support, generations, and numeric types without hiding costs.
 - `CE-CCP1-H03-005` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Express relation, transpose, contraction, segment, gate, update, bundle, chain, moments, hierarchy, and exchange constructions as inlineable `.
 - `CE-CCP1-H03-006` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide typed names/state selectors, reuse/lifetime facts, generation helpers, mutation contracts, and explicit generic reference-profile selection.
-- `CE-CCP1-H03-007` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide source conveniences for preferences, constraints, candidate offers, forced plans, cost records, decomposition builders, and unsafe modes while leaving full CEIR accessible.
+- `CE-CCP1-H03-007` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Provide source conveniences for preferences, constraints, candidate offers, forced plans, cost records, decomposition builders, and unsafe modes while leaving full CEIR accessible.
 - `CE-CCP1-H03-008` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide concepts, visitors, pattern helpers, builders, and pass adapters in `.
 - `CE-CCP1-H03-009` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Ship explicitly named, low-performance, testing-oriented profiles for a small audited set such as Homo sapiens, Mus musculus, and a rat reference.
 - `CE-CCP1-H03-010` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Generate compact relation/domain/statistical placeholders sufficient for parser, Sema, IR, planning fallback, examples, and CI, not claims of realistic optimized biology.
