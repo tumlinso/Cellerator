@@ -78,3 +78,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_007 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_007 COMMAND ce_ccp1_e01_007)
+
+add_executable(ce_ccp1_e01_008
+    implement_persistent_order_projection_and_packing_altern_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_persistent_order_projection_and_packing_altern.cc")
+target_include_directories(ce_ccp1_e01_008 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_008 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_008 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_008 COMMAND ce_ccp1_e01_008)
