@@ -112,3 +112,9 @@ add_executable(ce_ccp1_g02_014
     ${CELLERATOR_ROOT}/src/compiler/pass/cache_compiled_transforms_safely.cc)
 target_include_directories(ce_ccp1_g02_014 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_014 COMMAND ce_ccp1_g02_014)
+
+add_executable(ce_ccp1_g02_015
+    implement_transform_sandbox_policy_as_opt_in_not_authori_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_transform_sandbox_policy_as_opt_in_not_authori.cc)
+target_include_directories(ce_ccp1_g02_015 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_015 COMMAND ce_ccp1_g02_015)
