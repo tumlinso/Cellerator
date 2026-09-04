@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6086`
+Project revision: `6089`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -981,7 +981,7 @@ Project revision: `6086`
 - `CE-CCP1-G03-016` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
 - `CE-EXOP-75` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-75` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
-- `CE-CCP1-H01-001` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
+- `CE-CCP1-H01-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
 - `CE-CCP1-H01-002` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Emit deterministic non-loadable sections, symbols/notes, compression policy, strip behavior, and extraction without affecting runtime ABI.
 - `CE-CCP1-H01-003` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Define platform sections or sidecar fallback with identical semantic content and deterministic naming where platform toolchains are available.
 - `CE-CCP1-H01-004` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Emit content-addressed `.
@@ -998,7 +998,7 @@ Project revision: `6086`
 - `CE-CCP1-H01-015` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Regenerate CPU/CUDA/native objects for changed program regions while retaining untouched conventional objects and valid backend artifacts.
 - `CE-CCP1-H01-016` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Compile two `.
 - `CE-GEO-76` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement practical one-warp N=16 grouping and disjoint column panels above 64 while preserving sparse fallback below profitable widths and specialized N=1.
-- `CE-CCP1-H02-001` | kind: validation_task | status: planned | parent: CE-CCP1-H02-000 | objective: Define separately linkable compiler, IR, profile, planning, realization, backend, diagnostics, and runtime/execution components plus a convenience libCellerator umbrella.
+- `CE-CCP1-H02-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Define separately linkable compiler, IR, profile, planning, realization, backend, diagnostics, and runtime/execution components plus a convenience libCellerator umbrella.
 - `CE-CCP1-H02-002` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Expose driver configuration, source buffers/files, profiles, target/toolchain, diagnostics callbacks, cancellation, outputs, and lifecycle through opaque handles and versioned records.
 - `CE-CCP1-H02-003` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Expose RAII contexts, source manager, AST/Sema snapshots, CEIR builders/readers, profiles, pass pipelines, backends, diagnostics, and compilation results.
 - `CE-CCP1-H02-004` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Allow clients to parse, inspect, incrementally update, and semantically analyze source without running planning or code generation.
