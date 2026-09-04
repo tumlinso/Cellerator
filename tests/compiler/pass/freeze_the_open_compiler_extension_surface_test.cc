@@ -22,7 +22,10 @@ int main() {
     const auto source = directory / "external_plugin.cc";
     const auto library = directory / "external_plugin.so";
     { std::ofstream output(source); output
-        << "#include <Cellerator/compiler/pass/freeze_the_open_compiler_extension_surface_v1.hh>\n"
+        << "#include <Cellerator/compiler/pass/pass_v1.hh>\n"
+           "#include <Cellerator/compiler/pass/extension_v1.hh>\n"
+           "#include <Cellerator/compiler/pass/self_transform_v1.hh>\n"
+           "#include <Cellerator/compiler/pass/freeze_the_open_compiler_extension_surface_v1.hh>\n"
            "extern \"C\" unsigned plugin_abi() { return cellerator::compiler::pass::v1::open_compiler_extension_abi_version_v1; }\n"; }
     const std::string command = "g++ -std=c++17 -shared -fPIC -I" + install.string()
         + " " + source.string() + " -o " + library.string();

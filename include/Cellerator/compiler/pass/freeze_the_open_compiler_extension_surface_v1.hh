@@ -1,22 +1,8 @@
 #pragma once
 
-#include <Cellerator/compiler/pass/cache_compiled_transforms_safely_v1.hh>
-#include <Cellerator/compiler/pass/compile_same_translation_unit_transforms_in_an_early_hos_v1.hh>
-#include <Cellerator/compiler/pass/define_extensible_operation_type_and_attribute_registrat_v1.hh>
-#include <Cellerator/compiler/pass/deliver_same_compilation_self_transformation_v1.hh>
-#include <Cellerator/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy_v1.hh>
-#include <Cellerator/compiler/pass/implement_bounded_meta_generation_and_staging_v1.hh>
-#include <Cellerator/compiler/pass/implement_complete_built_in_stage_replacement_v1.hh>
-#include <Cellerator/compiler/pass/implement_compiler_prelude_regions_v1.hh>
-#include <Cellerator/compiler/pass/implement_custom_planning_pass_api_v1.hh>
-#include <Cellerator/compiler/pass/implement_custom_realization_pass_api_v1.hh>
-#include <Cellerator/compiler/pass/implement_custom_semantic_pass_api_v1.hh>
-#include <Cellerator/compiler/pass/implement_extension_capability_negotiation_v1.hh>
-#include <Cellerator/compiler/pass/implement_pass_manager_and_analysis_invalidation_v1.hh>
-#include <Cellerator/compiler/pass/implement_pipeline_configuration_syntax_and_apis_v1.hh>
-#include <Cellerator/compiler/pass/implement_transform_sandbox_policy_as_opt_in_not_authori_v1.hh>
-#include <Cellerator/compiler/pass/implement_unknown_extension_preservation_and_forwarding_v1.hh>
-#include <Cellerator/compiler/pass/integrate_extension_pass_provenance_v1.hh>
+#include <Cellerator/compiler/pass/extension_v1.hh>
+#include <Cellerator/compiler/pass/pass_v1.hh>
+#include <Cellerator/compiler/pass/self_transform_v1.hh>
 
 #include <cstdint>
 
