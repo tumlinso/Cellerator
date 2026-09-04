@@ -55,3 +55,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_005 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_005 COMMAND ce_ccp1_e04_005)
+
+add_executable(ce_ccp1_e04_006
+    adapt_candidate_catalog_v3_providers_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/adapt_candidate_catalog_v3_providers.cc"
+    "${CELLERATOR_ROOT}/src/compute/operation/candidate_catalog/catalog_v3.cc"
+    "${CELLERATOR_ROOT}/src/compute/operation/candidate_catalog/inventory_v3.cc")
+target_include_directories(ce_ccp1_e04_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_006 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_006 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_006 COMMAND ce_ccp1_e04_006)
