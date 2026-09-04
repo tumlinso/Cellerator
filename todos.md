@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4754`
+Project revision: `4756`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -683,7 +683,7 @@ Project revision: `4754`
 - `CE-CCP1-C01-015` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
 - `CE-CCP1-C01-016` | kind: validation_task | status: done | parent: CE-CCP1-C01-000 | objective: Parse every normative and provisional syntax example in docs/language, mark intentionally changed examples, and produce a grammar coverage matrix.
 - `CE-GEO-58` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
-- `CE-CCP1-C02-001` | kind: validation_task | status: planned | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
+- `CE-CCP1-C02-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
 - `CE-CCP1-C02-002` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Represent declarations, fields, operations, policies, effects, profile bindings, inline IR, reflection, passes, and native fragments without mirroring parser productions mechanically.
 - `CE-CCP1-C02-003` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Store adapter-owned stable references to resolved C++ declarations, expressions, types, templates, and constants without exporting raw Clang pointers through public APIs.
 - `CE-CCP1-C02-004` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Resolve domains, axes, relations, fields, profiles, candidates, passes, IR names, and imported program symbols with C++ namespace context where appropriate.
@@ -699,7 +699,7 @@ Project revision: `4754`
 - `CE-CCP1-C03-002` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Separate abstract domain identity from optional tags such as gene, cell, locus, enhancer, read, chromosome, population, and trajectory.
 - `CE-CCP1-C03-003` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Bind domain, global extent, logical order, geometry, partition, local extent, and recovery identity as distinct properties.
 - `CE-CCP1-C03-004` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Type state by axis/domain, element/storage type, feature width, order, residency intent, mutability, and generation class while retaining ordinary pointer/view interoperability.
-- `CE-CCP1-C03-005` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Bind source and destination axes/domains, stable relation/structure identity, logical edge identity, support, order, orientation, value plane, and mutation policy.
+- `CE-CCP1-C03-005` | kind: task | status: in_progress | parent: CE-CCP1-C03-000 | objective: Bind source and destination axes/domains, stable relation/structure identity, logical edge identity, support, order, orientation, value plane, and mutation policy.
 - `CE-CCP1-C03-006` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Keep support membership, logical edge IDs, physical slots, holes, masks, and active-support generations distinct.
 - `CE-CCP1-C03-007` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Model forward, transpose/backward, and orientation-specific output axes as semantic operation choices over shared logical edges, not pointer reinterpretations.
 - `CE-CCP1-C03-008` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Carry storage, dense input, compute, accumulation, output, nonfinite, precision, and approximation contracts before candidate selection.
