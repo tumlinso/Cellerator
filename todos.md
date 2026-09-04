@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4788`
+Project revision: `4796`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -683,8 +683,8 @@ Project revision: `4788`
 - `CE-CCP1-C01-015` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
 - `CE-CCP1-C01-016` | kind: validation_task | status: done | parent: CE-CCP1-C01-000 | objective: Parse every normative and provisional syntax example in docs/language, mark intentionally changed examples, and produce a grammar coverage matrix.
 - `CE-GEO-58` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
-- `CE-CCP1-C02-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
-- `CE-CCP1-C02-002` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Represent declarations, fields, operations, policies, effects, profile bindings, inline IR, reflection, passes, and native fragments without mirroring parser productions mechanically.
+- `CE-CCP1-C02-001` | kind: validation_task | status: done | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
+- `CE-CCP1-C02-002` | kind: task | status: in_progress | parent: CE-CCP1-C02-000 | objective: Represent declarations, fields, operations, policies, effects, profile bindings, inline IR, reflection, passes, and native fragments without mirroring parser productions mechanically.
 - `CE-CCP1-C02-003` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Store adapter-owned stable references to resolved C++ declarations, expressions, types, templates, and constants without exporting raw Clang pointers through public APIs.
 - `CE-CCP1-C02-004` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Resolve domains, axes, relations, fields, profiles, candidates, passes, IR names, and imported program symbols with C++ namespace context where appropriate.
 - `CE-CCP1-C02-005` | kind: task | status: planned | parent: CE-CCP1-C02-000 | objective: Derive compilation-local stable IDs from semantic owner, canonical source location, declaration identity, and revision, while separating persistent user identities from transient AST handles.
@@ -706,7 +706,7 @@ Project revision: `4788`
 - `CE-CCP1-C03-009` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Resolve relation apply, transpose, support contraction, segment statistics, normalization, edge map/gate, sparse update, bundle, chain, moments, hierarchy, exchange, gradient, and publication kinds.
 - `CE-CCP1-C03-010` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Distinguish assign, add, subtract, multiply, maximum, shared-destination accumulation, partial outputs, canonicalization, and epilogues with explicit alias legality.
 - `CE-CCP1-C03-011` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Track structure epoch, value generation, active-support generation, order generation, and publication state separately in Sema.
-- `CE-CCP1-C03-012` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Distinguish inferred identity, declared persistent identity, user-forced identity, cloned identity, and ephemeral compiler handles.
+- `CE-CCP1-C03-012` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Distinguish inferred identity, declared persistent identity, user-forced identity, cloned identity, and ephemeral compiler handles.
 - `CE-CCP1-C03-013` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Expose concepts/traits for semantic categories while ensuring final Cellerator operation selection sees instantiated C++ numeric and layout types.
 - `CE-CCP1-C03-014` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Provide checked, trusted, and unsafe conversions between ordinary C++ views and compiler-semantic objects, with explicit effect/identity contracts.
 - `CE-CCP1-C03-015` | kind: task | status: planned | parent: CE-CCP1-C03-000 | objective: Return structured compatibility results explaining domains, orders, generations, numerical policies, and operation resolution.
