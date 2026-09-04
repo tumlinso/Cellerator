@@ -7,6 +7,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_optional_llvm_and_
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_backend_resource_discovery_manifests.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_tree_generated_header_ownership.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_host_only_compiler_smoke_targets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_accelerator_enabled_compiler_smoke_targets.cmake)
 
 get_filename_component(CELLERATOR_COMPILER_REPOSITORY_ROOT
     "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -23,3 +24,4 @@ cellerator_generate_backend_resource_manifest(
 cellerator_generate_compiler_build_header(
     "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/compiler/build/features_v1.hh")
 cellerator_create_host_only_compiler_smoke_targets()
+cellerator_create_accelerator_compiler_smoke_target()
