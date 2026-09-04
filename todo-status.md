@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5647`
+Project revision: `5655`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -484,7 +484,7 @@ Project revision: `5647`
 - `CE-CCP1-F01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement physical plane representation in the isolated F01 lane, add the focused ce_ccp1_f01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement projection contracts in the isolated F01 lane, add the focused ce_ccp1_f01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement packed operands and invalidation in the isolated F01 lane, add the focused ce_ccp1_f01_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-F01-008` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement order transforms and persistent physical order in the isolated F01 lane, add the focused ce_ccp1_f01_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-F01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement order transforms and persistent physical order in the isolated F01 lane, add the focused ce_ccp1_f01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement memory, workspace, and residency requirements in the isolated F01 lane, add the focused ce_ccp1_f01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement prepared stage graphs in the isolated F01 lane, add the focused ce_ccp1_f01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement launch and synchronization dependencies in the isolated F01 lane, add the focused ce_ccp1_f01_011 gate, and publish a source-linked receipt.
@@ -524,8 +524,8 @@ Project revision: `5647`
 - `CE-CCP1-F03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate cuda runtime and library linkage in the isolated F03 lane, add the focused ce_ccp1_f03_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement map cuda diagnostics and line information in the isolated F03 lane, add the focused ce_ccp1_f03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate asynchronous readiness and streams in the isolated F03 lane, add the focused ce_ccp1_f03_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-F03-013` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver the first nvcc object milestone in the isolated F03 lane, add the focused ce_ccp1_f03_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-F03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark nvcc backend complete cost in the isolated F03 lane, add the focused ce_ccp1_f03_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the first nvcc object milestone in the isolated F03 lane, add the focused ce_ccp1_f03_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark nvcc backend complete cost in the isolated F03 lane, add the focused ce_ccp1_f03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the nvcc backend in the isolated F03 lane, add the focused ce_ccp1_f03_015 gate, and publish a source-linked receipt.
 - `CE-EXOP-71` | status: done | execution: closed | next: Deliver resource receipts and stable profiling identities exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-71` | status: done | execution: closed | next: Add the source-linked nvidia_sm70 provider advertising only implemented FP16 relation/input, FP32 accumulate/output 16x16x16 WMMA.
@@ -535,7 +535,7 @@ Project revision: `5647`
 - `CE-CCP1-F04-004` | status: done | execution: closed | next: Inspect the cited read scope, implement define direct ptx typed operation model in the isolated F04 lane, add the focused ce_ccp1_f04_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement inline ptx/native block binding in the isolated F04 lane, add the focused ce_ccp1_f04_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement ptx emission and ptxas assembly in the isolated F04 lane, add the focused ce_ccp1_f04_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-F04-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement fatbinary/object embedding for direct ptx in the isolated F04 lane, add the focused ce_ccp1_f04_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-F04-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement fatbinary/object embedding for direct ptx in the isolated F04 lane, add the focused ce_ccp1_f04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement map target capabilities and instruction families in the isolated F04 lane, add the focused ce_ccp1_f04_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement source-to-ptx provenance in the isolated F04 lane, add the focused ce_ccp1_f04_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver a direct-ptx hot-path demonstration in the isolated F04 lane, add the focused ce_ccp1_f04_010 gate, and publish a source-linked receipt.
