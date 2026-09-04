@@ -121,3 +121,12 @@ target_include_directories(ce_ccp1_f02_012 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_012 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_012 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_012 COMMAND ce_ccp1_f02_012)
+
+add_executable(ce_ccp1_f02_013
+  deliver_the_first_cpu_object_milestone_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/deliver_the_first_cpu_object_milestone.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/compile_generated_c_into_ordinary_objects.cc)
+target_include_directories(ce_ccp1_f02_013 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_013 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_013 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_013 COMMAND ce_ccp1_f02_013)
