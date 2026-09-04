@@ -144,3 +144,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_014 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_014 COMMAND ce_ccp1_e02_014)
+
+add_executable(ce_ccp1_e02_015
+    create_temporary_cellshard_compiler_compatibility_adapte_test.cc
+    create_temporary_cellshard_compiler_compatibility_adapte_old_consumer.cc
+    create_temporary_cellshard_compiler_compatibility_adapte_new_consumer.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/create_temporary_cellshard_compiler_compatibility_adapte.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_envelope_and_typed_ports.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_the_common_jbc_atom_identity_adapters.cc")
+target_include_directories(ce_ccp1_e02_015 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_015 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_015 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_015 COMMAND ce_ccp1_e02_015)

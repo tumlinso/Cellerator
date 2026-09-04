@@ -26,3 +26,8 @@ co_support,overlap,motif,operation_trace,trajectory,multimodal,factor_topic,
 bicluster}` provider trees. Cellerator owns the migrated compiler behavior;
 CellShard remains the recorded historical source and a runtime/storage
 consumer.
+
+The temporary header-only `cellshard::compiler::compatibility_v1` aliases are
+deprecated. They may retire only after all preserved consumers are migrated,
+the replacement schema is available, and the replacement interface is frozen;
+`CE-CCP1-E02-018` audits those gates.
