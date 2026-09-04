@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5252`
+Project revision: `5256`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -827,7 +827,7 @@ Project revision: `5252`
 - `CE-CCP1-E03-005` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Map operation/profile recurrence families, mutation horizons, target classes, and objectives into Cellerator program-planning inputs.
 - `CE-CCP1-E03-006` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move selected atoms/productions, redundancy, membership, budgets, validity, evidence freshness, and objective vectors into Planning IR.
 - `CE-CCP1-E03-007` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Allow empty/no-benefit basis, several profile-specific bases, and externally offered bases without forcing a universal decomposition.
-- `CE-CCP1-E03-008` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Move composed-unit promotion into the Cellerator planner with exact derivation, deconstruction, profile specificity, complete cost, and experimental status.
+- `CE-CCP1-E03-008` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move composed-unit promotion into the Cellerator planner with exact derivation, deconstruction, profile specificity, complete cost, and experimental status.
 - `CE-CCP1-E03-009` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move dependency closure, contribution coverage, merge/finalize algebra, generation legality, numerical contract, and amortization decision into Cellerator.
 - `CE-CCP1-E03-010` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Recast provider-neutral typed operations, effects, atom flow, graph families, rewrites, local fragments, and profile variants as Cellerator program Planning IR.
 - `CE-CCP1-E03-011` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move graph rewrites, shared traversals, persistent orders, common outputs, partial trees, and field-authorized fusion into connected-operation planning.
@@ -843,7 +843,7 @@ Project revision: `5252`
 - `CE-CCP1-E04-002` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Import greedy, multilevel, oracle, overlap, device-assisted, and user-provided decompositions as bounded providers rather than hidden global choices.
 - `CE-CCP1-E04-003` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Map decomposition_v1 exact input/output/contribution coverage, replication, halo read roles, orders, and extent bounds into Planning IR.
 - `CE-CCP1-E04-004` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Choose legal merge/finalize structures under numerical, determinism, order, resource, and reuse constraints.
-- `CE-CCP1-E04-005` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Offer direct multi-extent execution where candidates support it and explicit profiler-visible assembly as the complete fallback.
+- `CE-CCP1-E04-005` | kind: task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Offer direct multi-extent execution where candidates support it and explicit profiler-visible assembly as the complete fallback.
 - `CE-CCP1-E04-006` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Translate stable provider/candidate/projection/capability/operation/numeric/resource descriptors into Planning IR with source-linked preparation hooks.
 - `CE-CCP1-E04-007` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Allow source, inline IR, external libraries, and migrated providers to add candidates with partial protocol implementations and explicit opaque behavior where necessary.
 - `CE-CCP1-E04-008` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Apply source/pipeline/user edits in the defined authority hierarchy while retaining diagnostics for impossible or dominated choices.
