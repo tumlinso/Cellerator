@@ -134,3 +134,11 @@ add_executable(ce_ccp1_g02_017
 target_include_directories(ce_ccp1_g02_017 PRIVATE ${CELLERATOR_ROOT}/include)
 target_link_libraries(ce_ccp1_g02_017 PRIVATE dl)
 add_test(NAME ce_ccp1_g02_017 COMMAND ce_ccp1_g02_017)
+
+add_executable(ce_ccp1_g02_018
+    freeze_the_open_compiler_extension_surface_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_open_compiler_extension_surface.cc)
+target_include_directories(ce_ccp1_g02_018 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_definitions(ce_ccp1_g02_018 PRIVATE
+    CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
+add_test(NAME ce_ccp1_g02_018 COMMAND ce_ccp1_g02_018)
