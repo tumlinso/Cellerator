@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6689`
+Project revision: `6691`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -514,7 +514,7 @@ Project revision: `6689`
 - `CE-CCP1-G02-000` | kind: workstream | status: done | parent: CE-CCP1-P60 | objective: Permit users to insert or replace compiler stages and define extensions in the same compilation without uncontrolled recursion.
 - `CE-EXOP-24` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver chunked gpu dispatch and local-index execution exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-34` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Define hardware-neutral two-axis component membership and portable references to support statistics without tile semantics.
-- `CE-CCP1-G03-000` | kind: workstream | status: planned | parent: CE-CCP1-P60 | objective: Provide strong analysis and traceability without converting warnings into artificial barriers to expert control.
+- `CE-CCP1-G03-000` | kind: workstream | status: done | parent: CE-CCP1-P60 | objective: Provide strong analysis and traceability without converting warnings into artificial barriers to expert control.
 - `CE-EXOP-25` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver migrate central ce-geo scale limitations exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-35` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement source-linked replaceable strategy scaffolding, instant/bounded/offline/external tiers, and caller-owned requirements, workspace, and output buffers.
 - `CE-CCP1-H01-000` | kind: workstream | status: planned | parent: CE-CCP1-P70 | objective: Carry explicitly authorized biological fields and profiles across ordinary object boundaries for program-level Cellerator optimization.

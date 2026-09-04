@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6689`
+Project revision: `6691`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -133,7 +133,7 @@ Project revision: `6689`
 - `CE-CCP1-G02-000` | status: done | execution: closed | next: Claim G02-001 after milestone prerequisites are reached.
 - `CE-EXOP-24` | status: done | execution: closed | next: Deliver chunked gpu dispatch and local-index execution exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-34` | status: done | execution: closed | next: Define hardware-neutral two-axis component membership and portable references to support statistics without tile semantics.
-- `CE-CCP1-G03-000` | status: planned | execution: ready | next: Claim G03-001 after milestone prerequisites are reached.
+- `CE-CCP1-G03-000` | status: done | execution: closed | next: Claim G03-001 after milestone prerequisites are reached.
 - `CE-EXOP-25` | status: done | execution: closed | next: Deliver migrate central ce-geo scale limitations exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-35` | status: done | execution: closed | next: Implement source-linked replaceable strategy scaffolding, instant/bounded/offline/external tiers, and caller-owned requirements, workspace, and output buffers.
 - `CE-CCP1-H01-000` | status: planned | execution: ready | next: Claim H01-001 after milestone prerequisites are reached.
