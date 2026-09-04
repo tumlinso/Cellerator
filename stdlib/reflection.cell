@@ -1,0 +1,7 @@
+#pragma cellerator
+namespace cellerator::stdlib {
+template<class T> struct is_operation { static constexpr bool value = false; };
+template<class Pattern, class Rewrite> struct rewrite_rule { Pattern pattern; Rewrite rewrite; };
+template<class Node, class Visitor> constexpr auto visit(Node node, Visitor visitor) { return visitor(node); }
+template<class Pattern, class Rewrite> constexpr rewrite_rule<Pattern, Rewrite> make_rewrite(Pattern p, Rewrite r) { return {p,r}; }
+} // namespace cellerator::stdlib

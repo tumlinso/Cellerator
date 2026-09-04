@@ -1,0 +1,6 @@
+#include <Cellerator/compiler/lto/assign_cross_tu_field_and_symbol_identities_v1.hh>
+#include <functional>
+#include <map>
+namespace cellerator::compiler::lto::v1 {
+cross_tu_identity_status_v1 assign_cross_tu_identities_v1(const std::vector<cross_tu_symbol_v1>&s,std::vector<resolved_cross_tu_symbol_v1>*o)noexcept{if(!o)return cross_tu_identity_status_v1::invalid_symbol;o->clear();std::map<std::string,cross_tu_symbol_v1>seen;for(const auto&x:s){if(x.name.empty()||x.module.empty()||!(x.semantic_fingerprint.high||x.semantic_fingerprint.low))return cross_tu_identity_status_v1::invalid_symbol;std::string scope=(x.linkage==linkage_v1::external||x.linkage==linkage_v1::weak)?"global":x.module;std::string key=scope+":"+std::to_string(static_cast<unsigned>(x.kind))+":"+x.name;auto it=seen.find(key);if(it!=seen.end()){if(it->second.semantic_fingerprint.high!=x.semantic_fingerprint.high||it->second.semantic_fingerprint.low!=x.semantic_fingerprint.low)return cross_tu_identity_status_v1::odr_conflict;if(x.linkage==linkage_v1::external&&it->second.linkage==linkage_v1::external)return cross_tu_identity_status_v1::duplicate_strong;}else seen.emplace(key,x);std::hash<std::string>h;o->push_back({x,{h(key),h(key+":"+std::to_string(x.semantic_fingerprint.low))}});}return cross_tu_identity_status_v1::valid;}
+}
