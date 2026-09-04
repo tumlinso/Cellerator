@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4853`
+Project revision: `4855`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -313,7 +313,7 @@ Project revision: `4853`
 - `CE-CCP1-C02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement source-aware fix-its in the isolated C02 lane, add the focused ce_ccp1_c02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement create deterministic ast dump and snapshot formats in the isolated C02 lane, add the focused ce_ccp1_c02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement support incremental ast identity reuse in the isolated C02 lane, add the focused ce_ccp1_c02_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the ast and source-diagnostics interface in the isolated C02 lane, add the focused ce_ccp1_c02_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the ast and source-diagnostics interface in the isolated C02 lane, add the focused ce_ccp1_c02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze compiler-semantic type categories in the isolated C03 lane, add the focused ce_ccp1_c03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement domain and human biological tag semantics in the isolated C03 lane, add the focused ce_ccp1_c03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement axis semantics in the isolated C03 lane, add the focused ce_ccp1_c03_003 gate, and publish a source-linked receipt.
