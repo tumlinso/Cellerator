@@ -53,3 +53,6 @@ add_executable(ce_ccp1_h02_011 ../compiler/h02/define_thread_safety_and_context_
 target_include_directories(ce_ccp1_h02_011 PRIVATE ${CELLERATOR_ROOT}/include)
 target_link_libraries(ce_ccp1_h02_011 PRIVATE Threads::Threads)
 add_test(NAME ce_ccp1_h02_011 COMMAND ce_ccp1_h02_011)
+add_executable(ce_ccp1_h02_012 ../compiler/h02/preserve_direct_runtime_execution_access_test.cc ${CELLERATOR_ROOT}/src/compiler/api/preserve_direct_runtime_execution_access.cc)
+target_include_directories(ce_ccp1_h02_012 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_h02_012 COMMAND ce_ccp1_h02_012)
