@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P20: Source language frontend
 
-Task revision: `6626`; current project revision is in `todo-status.md`.
+Task revision: `6657`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate source language frontend and publish milestone M20.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `inactive`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Dispatch only the workstream lanes whose explicit dependencies are satisfied.
