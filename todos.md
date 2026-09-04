@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5205`
+Project revision: `5213`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -787,8 +787,8 @@ Project revision: `5205`
 - `CE-CCP1-E01-001` | kind: validation_task | status: done | parent: CE-CCP1-E01-000 | objective: Define unresolved, offered, admissible, rejected, dominated, selected, forced, externally selected, and fallback states within one representation rather than separate opaque planner records.
 - `CE-CCP1-E01-002` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent field, operation, bundle, chain, program, and profile-family planning problems with explicit semantic fingerprints, constraints, objectives, and target classes.
 - `CE-CCP1-E01-003` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent provider identity, operation/numeric support, target capabilities, projection contracts, preparation entrypoints, experimental status, and source-linked extension identity.
-- `CE-CCP1-E01-004` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Represent member/edge coverage, ownership roles, canonical maps, certification receipts, and exact equations separately from approximate proposal evidence.
-- `CE-CCP1-E01-005` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent required/available planes, coverage, order, numeric/index types, alignment, extent rules, graph stability, generation, target ABI, and transform routes.
+- `CE-CCP1-E01-004` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent member/edge coverage, ownership roles, canonical maps, certification receipts, and exact equations separately from approximate proposal evidence.
+- `CE-CCP1-E01-005` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Represent required/available planes, coverage, order, numeric/index types, alignment, extent rules, graph stability, generation, target ABI, and transform routes.
 - `CE-CCP1-E01-006` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent legal split dimensions, fragments, halos, replicas, exact input/output/contribution coverage, partial algebra, order constraints, and unsplit fallback.
 - `CE-CCP1-E01-007` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent state schema, neutral element, merge/finalize operations, algebraic laws, determinism/order requirements, numeric policy, and implementation identity.
 - `CE-CCP1-E01-008` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus conversion routes, projection schemas, value maps, and packing invalidation.
@@ -804,7 +804,7 @@ Project revision: `5205`
 - `CE-CCP1-E02-001` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome namespace-qualified persistent identity and atom species/state contracts, adapting CellShard 64-bit strong IDs to Cellerator persistent identity without pointer hashing or content conflation.
 - `CE-CCP1-E02-002` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move proposal membership, provenance, confidence, stability, negative evidence, and exact-rescan status into Cellerator discovery.
 - `CE-CCP1-E02-003` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome repeated support/degree/signature proposal logic with bounded sketches/top-L candidates and biological-stratum provenance.
-- `CE-CCP1-E02-004` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Rehome co-support source groups, destination convergence/divergence, overlap handling, and null-baseline statistics as proposal generators.
+- `CE-CCP1-E02-004` | kind: task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Rehome co-support source groups, destination convergence/divergence, overlap handling, and null-baseline statistics as proposal generators.
 - `CE-CCP1-E02-005` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move repeated typed relation motifs, operation sequences, field traces, and cross-operation recurrence discovery into compiler profile evidence.
 - `CE-CCP1-E02-006` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move recurring trajectory prefixes, branch-local deltas, state neighborhoods, and mutation-horizon evidence without importing model or causal interpretation.
 - `CE-CCP1-E02-007` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move shared identity spine plus modality-specific overlay and cross-modal relation proposal logic into Cellerator discovery extensions.
@@ -824,7 +824,7 @@ Project revision: `5205`
 - `CE-CCP1-E03-002` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent atom and operation derivations as typed acyclic graphs with lineage, exact reconstruction, alternative parents, and canonical cycle diagnostics.
 - `CE-CCP1-E03-003` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move hand-specified typed productions and grammar validation into Cellerator compiler passes over discovered/certified atoms and operations.
 - `CE-CCP1-E03-004` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Preserve induced-production discovery with bounded candidate growth, evidence/confidence, exact verification, complete cost, and valid no-promotion outcome.
-- `CE-CCP1-E03-005` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Map operation/profile recurrence families, mutation horizons, target classes, and objectives into Cellerator program-planning inputs.
+- `CE-CCP1-E03-005` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Map operation/profile recurrence families, mutation horizons, target classes, and objectives into Cellerator program-planning inputs.
 - `CE-CCP1-E03-006` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move selected atoms/productions, redundancy, membership, budgets, validity, evidence freshness, and objective vectors into Planning IR.
 - `CE-CCP1-E03-007` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Allow empty/no-benefit basis, several profile-specific bases, and externally offered bases without forcing a universal decomposition.
 - `CE-CCP1-E03-008` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move composed-unit promotion into the Cellerator planner with exact derivation, deconstruction, profile specificity, complete cost, and experimental status.
