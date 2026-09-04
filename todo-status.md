@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6681`
+Project revision: `6683`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -124,7 +124,7 @@ Project revision: `6681`
 - `CE-CCP1-F03-000` | status: done | execution: closed | next: Claim F03-001 after milestone prerequisites are reached.
 - `CE-EXOP-21` | status: done | execution: closed | next: Deliver scalable work, support, cover, and map views exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-31` | status: done | execution: closed | next: Implement cheap permissive defaults and cold axis-qualified fixed-position, membership, linkage, exclusion, precedence, partition, and exchange-window constraints.
-- `CE-CCP1-F04-000` | status: planned | execution: ready | next: Claim F04-001 after milestone prerequisites are reached.
+- `CE-CCP1-F04-000` | status: done | execution: closed | next: Claim F04-001 after milestone prerequisites are reached.
 - `CE-EXOP-22` | status: done | execution: closed | next: Deliver linear validation and construction substrate exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-32` | status: done | execution: closed | next: Implement exact invertible real-item permutations with independent validation and no physical padding.
 - `CE-CCP1-G01-000` | status: planned | execution: ready | next: Claim G01-001 after milestone prerequisites are reached.
