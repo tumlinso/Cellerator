@@ -51,3 +51,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_005 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_005 COMMAND ce_ccp1_e02_005)
+
+add_executable(ce_ccp1_e02_006
+    import_trajectory_and_lineage_pattern_discovery_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_trajectory_and_lineage_pattern_discovery.cc")
+target_include_directories(ce_ccp1_e02_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_006 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_006 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_006 COMMAND ce_ccp1_e02_006)
