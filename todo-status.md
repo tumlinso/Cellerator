@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4720`
+Project revision: `4725`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -300,7 +300,7 @@ Project revision: `4720`
 - `CE-CCP1-C01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement parse native/backend fragments in the isolated C01 lane, add the focused ce_ccp1_c01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement structured parser recovery in the isolated C01 lane, add the focused ce_ccp1_c01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-015` | status: done | execution: closed | next: Inspect the cited read scope, implement expose parser library and parse-tree dump apis in the isolated C01 lane, add the focused ce_ccp1_c01_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-C01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver full grammar conformance in the isolated C01 lane, add the focused ce_ccp1_c01_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-C01-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver full grammar conformance in the isolated C01 lane, add the focused ce_ccp1_c01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-58` | status: done | execution: closed | next: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
 - `CE-CCP1-C02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze ast node ownership and lifetime in the isolated C02 lane, add the focused ce_ccp1_c02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement define source-level ast node families in the isolated C02 lane, add the focused ce_ccp1_c02_002 gate, and publish a source-linked receipt.
@@ -348,7 +348,7 @@ Project revision: `4720`
 - `CE-CCP1-C04-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement hard semantic and execution constraints in the isolated C04 lane, add the focused ce_ccp1_c04_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement custom candidate and forced realization controls in the isolated C04 lane, add the focused ce_ccp1_c04_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement missing-profile failure policy in the isolated C04 lane, add the focused ce_ccp1_c04_014 gate, and publish a source-linked receipt.
-- `CE-CCP1-C04-015` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement field-level reflection identity in the isolated C04 lane, add the focused ce_ccp1_c04_015 gate, and publish a source-linked receipt.
+- `CE-CCP1-C04-015` | status: done | execution: closed | next: Inspect the cited read scope, implement implement field-level reflection identity in the isolated C04 lane, add the focused ce_ccp1_c04_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first profile-required semantic field slice in the isolated C04 lane, add the focused ce_ccp1_c04_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-61` | status: done | execution: closed | next: Deliver default registry, provider, catalog, and planner assembly exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-61` | status: done | execution: closed | next: Define pointer-free groups, tiles, 256-bit masks, compact slots, width-tagged edge IDs, residual descriptors, schedules, and value maps for architecture_specific projection.
