@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T06:00:19Z",
+  "generated_at": "2026-09-04T06:01:55Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4062,
+  "project_revision": 4069,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -44881,6 +44881,76 @@
         "revision": 4062,
         "seq": 4062,
         "timestamp": "2026-09-04T06:00:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-A04",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-A04\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-A04-005\"}",
+        "revision": 4063,
+        "seq": 4063,
+        "timestamp": "2026-09-04T06:00:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-004-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-A03-004-GATE\"}",
+        "revision": 4064,
+        "seq": 4064,
+        "timestamp": "2026-09-04T06:01:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-004-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"744f6657-a44c-48ae-80cb-6b608a9f5faa\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4065,
+        "seq": 4065,
+        "timestamp": "2026-09-04T06:01:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-004",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4066, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4066,
+        "seq": 4066,
+        "timestamp": "2026-09-04T06:01:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A04-005-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-A04-005-GATE\"}",
+        "revision": 4067,
+        "seq": 4067,
+        "timestamp": "2026-09-04T06:01:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A04-005-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"565ee809-3a62-4c1f-bfc7-c6a2af919a7c\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4068,
+        "seq": 4068,
+        "timestamp": "2026-09-04T06:01:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A04-005",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4069, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4069,
+        "seq": 4069,
+        "timestamp": "2026-09-04T06:01:55Z"
       }
     ],
     "evidence": [
@@ -48476,6 +48546,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-04T06:01:54Z",
+        "gate_id": "CE-CCP1-A04-005-GATE",
+        "id": "565ee809-3a62-4c1f-bfc7-c6a2af919a7c",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a04_005$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a04_005$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"35e5380ca8b7063ab3c01676f39a4403449e96af6dab975a0c9f586b00f88b4d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"tests/compiler/a04/freeze_compiler_test_and_benchmark_locations_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-a04-005.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"89625e89d3ca605dd734b8c0b0057e101459d643\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"e165b6c572cd110dc9a8ae3c45bcc593427ad9ad4edda35717f017f9c8e7fb0d\", \"started_revision\": 4067, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/565ee809-3a62-4c1f-bfc7-c6a2af919a7c",
+        "revision": 4068,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T08:28:49Z",
         "gate_id": "CE-LIVE-31-ARTIFACT",
         "id": "56bee5fc-42c2-4e92-b8c3-9070326ff7de",
@@ -49614,6 +49697,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-c-runtime.json\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-c-runtime.json\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"72963fd6795f81699d65189040021dbdf7ca14822551fa1865f1e5d5198c613a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"ce-arch-70-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-70.md\", \"todos/ce-arch-70a.md\", \"todos/ce-arch-70b.md\", \"todos/ce-arch-70c.md\", \"todos/ce-arch-70d.md\", \"todos/ce-arch-70e.md\", \"todos/ce-arch-70f.md\", \"todos/ce-arch-70g.md\", \"todos/ce-arch-71.md\", \"todos/ce-arch-72.md\", \"todos/ce-arch-73.md\", \"todos/ce-arch-74.md\", \"todos/ce-arch-75.md\", \"todos/ce-arch-76.md\", \"todos/ce-arch-77.md\", \"todos/ce-arch-78.md\", \"todos/ce-arch-79.md\"], \"files\": [{\"path\": \"Cellerator/include/Cellerator/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/execution\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/math/operation_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/sequence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/tests/sequence\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 855}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/744898b9-32ff-49f4-b915-4962444e2ab2",
         "revision": 856,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T06:01:43Z",
+        "gate_id": "CE-CCP1-A03-004-GATE",
+        "id": "744f6657-a44c-48ae-80cb-6b608a9f5faa",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_004$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_004$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"c79f8e90bf450789d67637ed2e588c15a2bf62e4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"818e01756a8f64932d782dd940abbde23fb1f0446813cad18fcfb306c5a829e4\", \"started_revision\": 4064, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a03\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/744f6657-a44c-48ae-80cb-6b608a9f5faa",
+        "revision": 4065,
         "status": "passed"
       },
       {
@@ -57747,14 +57843,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_004$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-A03-004-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd",
+        "last_run_at": "2026-09-04T06:01:43Z",
         "required": 1,
-        "revision": 4015,
-        "status": "pending",
+        "revision": 4065,
+        "status": "passed",
         "task_id": "CE-CCP1-A03-004",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -57942,14 +58038,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a04_005$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-A04-005-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c",
+        "last_run_at": "2026-09-04T06:01:54Z",
         "required": 1,
-        "revision": 4015,
-        "status": "pending",
+        "revision": 4068,
+        "status": "passed",
         "task_id": "CE-CCP1-A04-005",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -71455,6 +71551,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-09-04T06:01:43Z",
+        "id": "383dbb76-ab92-40a5-bac8-b566fe66d71c",
+        "kind": "complete",
+        "note": "Defined six typed composition/grammar extension families and fail-closed validation across typed symbols, DAG, exact coverage, ports, generations, and operation compatibility. Focused C++17 gate passed; ctest selector succeeded with no registered tests. Commit pushed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"c79f8e90bf450789d67637ed2e588c15a2bf62e4\", \"completion_gates\": [{\"evidence_id\": \"744f6657-a44c-48ae-80cb-6b608a9f5faa\", \"evidence_revision\": 4065, \"id\": \"CE-CCP1-A03-004-GATE\", \"input_fingerprint\": \"dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"c79f8e90bf450789d67637ed2e588c15a2bf62e4\"}], \"completion_revision\": 4066, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-A03-004-GATE\", \"input_fingerprint\": \"dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd\", \"last_run_at\": \"2026-09-04T06:01:43Z\", \"revision\": 4065, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"c79f8e90bf450789d67637ed2e588c15a2bf62e4\", \"interfaces\": [], \"note\": \"Defined six typed composition/grammar extension families and fail-closed validation across typed symbols, DAG, exact coverage, ports, generations, and operation compatibility. Focused C++17 gate passed; ctest selector succeeded with no registered tests. Commit pushed.\", \"resources\": [], \"task_id\": \"CE-CCP1-A03-004\"}",
+        "revision": 4066,
+        "task_id": "CE-CCP1-A03-004"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-09-01T07:04:11Z",
         "id": "384300f3-cb57-4bad-bd28-6edbf022668a",
         "kind": "complete",
@@ -75612,6 +75718,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"63d42b77653bf37a2108bfbb7de1a539b4369dd3\", \"completion_gates\": [], \"completion_revision\": 3836, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 5737 +++++++++++++++++++++++++-------\\n todo-status.md                         |  186 +-\\n todos.md                               |  186 +-\\n todos/ce-jbc-c01.md                    |    8 +-\\n todos/ce-jbc-c02.md                    |    8 +-\\n todos/ce-jbc-c03.md                    |    8 +-\\n todos/ce-jbc-c04.md                    |    8 +-\\n todos/ce-jbc-c05.md                    |    8 +-\\n todos/ce-jbc-c06.md                    |    8 +-\\n todos/ce-jbc-f14.md                    |    8 +-\\n todos/ce-jbc-m01.md                    |    8 +-\\n todos/ce-jbc-m02.md                    |    8 +-\\n todos/ce-jbc-m03.md                    |    8 +-\\n todos/ce-jbc-m04.md                    |    8 +-\\n todos/ce-jbc-m05.md                    |    8 +-\\n todos/ce-jbc-m06.md                    |    8 +-\\n todos/ce-jbc-m07.md                    |    8 +-\\n todos/ce-jbc-m08.md                    |    8 +-\\n todos/ce-jbc-m09.md                    |    8 +-\\n todos/ce-jbc-m10.md                    |    8 +-\\n todos/ce-jbc-r01.md                    |    8 +-\\n todos/ce-jbc-r02.md                    |    8 +-\\n todos/ce-jbc-r03.md                    |    8 +-\\n todos/ce-jbc-r04.md                    |    8 +-\\n todos/ce-jbc-r05.md                    |    8 +-\\n todos/ce-jbc-r06.md                    |    8 +-\\n todos/ce-jbc-r07.md                    |    8 +-\\n todos/ce-jbc-r08.md                    |    8 +-\\n todos/ce-jbc-r09.md                    |    8 +-\\n todos/ce-jbc-r10.md                    |    8 +-\\n todos/ce-jbc-v01.md                    |    8 +-\\n todos/ce-jbc-v02.md                    |    8 +-\\n todos/ce-jbc-v03.md                    |    8 +-\\n todos/ce-jbc-v04.md                    |    8 +-\\n todos/ce-jbc-x01.md                    |    8 +-\\n todos/ce-jbc-x02.md                    |    8 +-\\n todos/ce-jbc-x03.md                    |    8 +-\\n todos/ce-jbc-x04.md                    |    8 +-\\n todos/ce-jbc-x05.md                    |    8 +-\\n todos/ce-jbc-x06.md                    |    8 +-\\n todos/ce-jbc-x07.md                    |    8 +-\\n todos/ce-jbc-x08.md                    |    8 +-\\n 42 files changed, 4947 insertions(+), 1474 deletions(-)\", \"git_head\": \"63d42b77653bf37a2108bfbb7de1a539b4369dd3\", \"interfaces\": [], \"note\": \"Implemented and pushed the combined-build-only privileged CellShard bridge gate at 7890abb9a0d83bbaf1afc5ae38e545003ca50b9b. The gate links CellShard::inspect to Cellerator::opaque_execution_artifact and exercises the real non-owning execution-payload adapter. Verified embedded CMake configure/build/run against frozen CellShard 7762a5925fe18b2ca45ab8a436f3461804ed2ad9, strict warning-clean focused compile, ASan/UBSan combined build/run, standalone OFF build/run, and absence of the bridge target from standalone target help. Worktree clean and origin synchronized.\", \"resources\": [], \"task_id\": \"CE-JBC-V05\"}",
         "revision": 3836,
         "task_id": "CE-JBC-V05"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T06:01:55Z",
+        "id": "fe7d0e01-b9d0-4f6b-a5b5-9d832232d4c3",
+        "kind": "complete",
+        "note": "Frozen unique tests/compiler and bench/compiler owner paths for frontend, IR, profile, planning, realization, backends, LTO, SDK, and language-server families. The C++17 mapping gate compiled cleanly and passed the exact ctest selector.",
+        "payload_json": "{\"changed_owned_paths\": [\"tests/compiler/a04/freeze_compiler_test_and_benchmark_locations_test.cc\"], \"checkpoints\": [], \"completion_commit\": \"89625e89d3ca605dd734b8c0b0057e101459d643\", \"completion_gates\": [{\"evidence_id\": \"565ee809-3a62-4c1f-bfc7-c6a2af919a7c\", \"evidence_revision\": 4068, \"id\": \"CE-CCP1-A04-005-GATE\", \"input_fingerprint\": \"605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"89625e89d3ca605dd734b8c0b0057e101459d643\"}], \"completion_revision\": 4069, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-A04-005-GATE\", \"input_fingerprint\": \"605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c\", \"last_run_at\": \"2026-09-04T06:01:54Z\", \"revision\": 4068, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-ccp1-a04-005.md               |  8 +++++---\\n 4 files changed, 31 insertions(+), 19 deletions(-)\", \"git_head\": \"89625e89d3ca605dd734b8c0b0057e101459d643\", \"interfaces\": [], \"note\": \"Frozen unique tests/compiler and bench/compiler owner paths for frontend, IR, profile, planning, realization, backends, LTO, SDK, and language-server families. The C++17 mapping gate compiled cleanly and passed the exact ctest selector.\", \"resources\": [], \"task_id\": \"CE-CCP1-A04-005\"}",
+        "revision": 4069,
+        "task_id": "CE-CCP1-A04-005"
       },
       {
         "claim_id": null,
@@ -167733,6 +167849,19 @@
         "validation_git_head": "0d76afd1eca18620baaf2952b569c9b443ec95e2"
       },
       {
+        "completion_git_head": "c79f8e90bf450789d67637ed2e588c15a2bf62e4",
+        "completion_revision": 4066,
+        "evidence_id": "744f6657-a44c-48ae-80cb-6b608a9f5faa",
+        "evidence_revision": 4065,
+        "gate_id": "CE-CCP1-A03-004-GATE",
+        "input_fingerprint": "dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd",
+        "provenance_json": "{\"claim_id\": \"29615d21-80fd-4041-9748-858cfad09f8c\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_004$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd4f780bc5b0d062fcb016431f5a38e09e30d221a3007f6060e19c65ea3053fd\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_004$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"c79f8e90bf450789d67637ed2e588c15a2bf62e4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"818e01756a8f64932d782dd940abbde23fb1f0446813cad18fcfb306c5a829e4\", \"started_revision\": 4064, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a03\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/744f6657-a44c-48ae-80cb-6b608a9f5faa\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-A03-004",
+        "valid": 1,
+        "validation_git_head": "c79f8e90bf450789d67637ed2e588c15a2bf62e4"
+      },
+      {
         "completion_git_head": "31e491ed29de0fcde70259cbeab8c5c7ad353485",
         "completion_revision": 4036,
         "evidence_id": "fd2d645b-a297-43b4-a5af-1e16419230fa",
@@ -167783,6 +167912,19 @@
         "task_id": "CE-CCP1-A04-004",
         "valid": 1,
         "validation_git_head": "f99c198fa0a168c2986c27bc20df98e6576a799b"
+      },
+      {
+        "completion_git_head": "89625e89d3ca605dd734b8c0b0057e101459d643",
+        "completion_revision": 4069,
+        "evidence_id": "565ee809-3a62-4c1f-bfc7-c6a2af919a7c",
+        "evidence_revision": 4068,
+        "gate_id": "CE-CCP1-A04-005-GATE",
+        "input_fingerprint": "605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c",
+        "provenance_json": "{\"claim_id\": \"d284a0f4-5803-4521-b1a6-d4e9e6151d4a\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a04_005$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"605ab9455f0b74bb34c72d09e1de7f87f5e4cac6ced9fdb172930de526b9635c\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a04_005$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"35e5380ca8b7063ab3c01676f39a4403449e96af6dab975a0c9f586b00f88b4d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"tests/compiler/a04/freeze_compiler_test_and_benchmark_locations_test.cc\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-a04-005.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"89625e89d3ca605dd734b8c0b0057e101459d643\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"e165b6c572cd110dc9a8ae3c45bcc593427ad9ad4edda35717f017f9c8e7fb0d\", \"started_revision\": 4067, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a04\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/565ee809-3a62-4c1f-bfc7-c6a2af919a7c\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-A04-005",
+        "valid": 1,
+        "validation_git_head": "89625e89d3ca605dd734b8c0b0057e101459d643"
       },
       {
         "completion_git_head": "887cfd3845a7a377e6c5a2f6e4e5d4e68bed65d0",
@@ -225185,9 +225327,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "c79f8e90bf450789d67637ed2e588c15a2bf62e4",
+        "completion_git_head": "c79f8e90bf450789d67637ed2e588c15a2bf62e4",
+        "completion_revision": 4066,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-A03-004",
         "kind": "task",
@@ -225199,14 +225341,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-A03-000",
         "priority": 848,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4059,
-        "status": "in_progress",
+        "revision": 4066,
+        "status": "done",
         "tags_json": "[\"a03\", \"compiler-migration\", \"leaf\"]",
         "title": "Define Cellerator ownership of typed composition and grammar",
-        "updated_at": "2026-09-04T06:00:17Z",
-        "version": 3
+        "updated_at": "2026-09-04T06:01:43Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -225585,9 +225727,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "89625e89d3ca605dd734b8c0b0057e101459d643",
+        "completion_git_head": "89625e89d3ca605dd734b8c0b0057e101459d643",
+        "completion_revision": 4069,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-A04-005",
         "kind": "validation_task",
@@ -225599,14 +225741,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-A04-000",
         "priority": 847,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4015,
-        "status": "planned",
+        "revision": 4069,
+        "status": "done",
         "tags_json": "[\"a04\", \"repository-layout\", \"leaf\"]",
         "title": "Freeze compiler test and benchmark locations",
-        "updated_at": "2026-09-04T05:43:47Z",
-        "version": 2
+        "updated_at": "2026-09-04T06:01:55Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -269632,12 +269774,12 @@
       },
       {
         "activated_at": "2026-09-04T06:00:17Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T06:01:43Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-A03",
         "position": 3,
-        "revision": 4059,
-        "state": "active",
+        "revision": 4066,
+        "state": "completed",
         "task_id": "CE-CCP1-A03-004"
       },
       {
@@ -269781,13 +269923,13 @@
         "task_id": "CE-CCP1-A04-004"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-04T06:00:41Z",
+        "completed_at": "2026-09-04T06:01:55Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-A04",
         "position": 4,
-        "revision": 4015,
-        "state": "queued",
+        "revision": 4069,
+        "state": "completed",
         "task_id": "CE-CCP1-A04-005"
       },
       {
@@ -279167,11 +279309,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-A03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4059,
+        "revision": 4066,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T06:00:17Z",
+        "state": "ready",
+        "updated_at": "2026-09-04T06:01:43Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -279179,11 +279321,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-A04",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4062,
+        "revision": 4069,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-04T06:00:19Z",
+        "updated_at": "2026-09-04T06:01:55Z",
         "workspace_mode": "isolated_merge"
       },
       {
