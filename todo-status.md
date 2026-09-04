@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4387`
+Project revision: `4393`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -257,7 +257,7 @@ Project revision: `4387`
 - `CE-CCP1-B03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement define the unified source-location model in the isolated B03 lane, add the focused ce_ccp1_b03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement classify source inputs independently of extension in the isolated B03 lane, add the focused ce_ccp1_b03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement register the #pragma cellerator preprocessor contract in the isolated B03 lane, add the focused ce_ccp1_b03_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement file-local dialect state in the isolated B03 lane, add the focused ce_ccp1_b03_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement file-local dialect state in the isolated B03 lane, add the focused ce_ccp1_b03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement define pragma interaction with preprocessing conditionals in the isolated B03 lane, add the focused ce_ccp1_b03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement build a lossless raw-token stream in the isolated B03 lane, add the focused ce_ccp1_b03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement define macro expansion semantics for cellerator tokens in the isolated B03 lane, add the focused ce_ccp1_b03_007 gate, and publish a source-linked receipt.
@@ -279,7 +279,7 @@ Project revision: `4387`
 - `CE-CCP1-B04-007` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate overload resolution and cellerator semantic candidates in the isolated B04 lane, add the focused ce_ccp1_b04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-008` | status: done | execution: closed | next: Inspect the cited read scope, implement expose constexpr and constant-evaluation results in the isolated B04 lane, add the focused ce_ccp1_b04_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-009` | status: done | execution: closed | next: Inspect the cited read scope, implement model opaque native calls in the isolated B04 lane, add the focused ce_ccp1_b04_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-B04-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement bind native effect contracts in the isolated B04 lane, add the focused ce_ccp1_b04_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-B04-010` | status: done | execution: closed | next: Inspect the cited read scope, implement bind native effect contracts in the isolated B04 lane, add the focused ce_ccp1_b04_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile gcc-hosted abi and library semantics in the isolated B04 lane, add the focused ce_ccp1_b04_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement preserve pure c++ fallthrough exactly in the isolated B04 lane, add the focused ce_ccp1_b04_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose reusable frontend sessions in the isolated B04 lane, add the focused ce_ccp1_b04_013 gate, and publish a source-linked receipt.
