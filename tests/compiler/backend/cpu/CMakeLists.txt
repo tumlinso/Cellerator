@@ -66,3 +66,11 @@ target_include_directories(ce_ccp1_f02_006 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_006 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_006 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_006 COMMAND ce_ccp1_f02_006)
+
+add_executable(ce_ccp1_f02_007
+  implement_cpu_segment_gate_update_bundle_and_chain_paths_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_cpu_segment_gate_update_bundle_and_chain_paths.cc)
+target_include_directories(ce_ccp1_f02_007 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_007 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_007 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_007 COMMAND ce_ccp1_f02_007)
