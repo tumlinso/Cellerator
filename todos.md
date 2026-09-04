@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4143`
+Project revision: `4201`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -451,7 +451,7 @@ Project revision: `4143`
 - `CE-GEO-03` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
 - `CE-CCP1-P00` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate architecture and ownership reconciliation and publish milestone M00.
 - `CE-CCP1-P10` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate compiler build and driver foundation and publish milestone M10.
-- `CE-CCP1-M00` | kind: validation_task | status: in_progress | parent: CE-CCP1-P00 | objective: Integrate and validate all P00 workstreams, freeze shared interfaces, and publish milestone M00.
+- `CE-CCP1-M00` | kind: validation_task | status: done | parent: CE-CCP1-P00 | objective: Integrate and validate all P00 workstreams, freeze shared interfaces, and publish milestone M00.
 - `CE-CCP1-P20` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate source language frontend and publish milestone M20.
 - `CE-CCP1-M10` | kind: validation_task | status: planned | parent: CE-CCP1-P10 | objective: Integrate and validate all P10 workstreams, freeze shared interfaces, and publish milestone M10.
 - `CE-CCP1-P30` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate semantic ir and representative profiles and publish milestone M30.

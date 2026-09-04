@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4143`
+Project revision: `4201`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -70,7 +70,7 @@ Project revision: `4143`
 - `CE-GEO-03` | status: done | execution: closed | next: Record CPK1 and CPE2 bytes and fixtures, catalog/program/session behavior, exact regression commands, PBMC3K Tensor Core non-promotion, and the untouched historical dense-fragment path.
 - `CE-CCP1-P00` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-CCP1-P10` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
-- `CE-CCP1-M00` | status: in_progress | execution: claimed | next: Collect isolated lane receipts for P00, verify hashes and interfaces, integrate central files, run label ce_ccp1_m00, and publish CE-CCP1-MILESTONE-M00.
+- `CE-CCP1-M00` | status: done | execution: closed | next: Collect isolated lane receipts for P00, verify hashes and interfaces, integrate central files, run label ce_ccp1_m00, and publish CE-CCP1-MILESTONE-M00.
 - `CE-CCP1-P20` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-CCP1-M10` | status: planned | execution: ready | next: Collect isolated lane receipts for P10, verify hashes and interfaces, integrate central files, run label ce_ccp1_m10, and publish CE-CCP1-MILESTONE-M10.
 - `CE-CCP1-P30` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
