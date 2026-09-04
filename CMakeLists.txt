@@ -45,10 +45,16 @@ project(Cellerator LANGUAGES CXX)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+set(CELLERATOR_ENABLE_CUDA "AUTO" CACHE STRING
+    "Build compiler NVIDIA support: AUTO, ON, or OFF")
+set_property(CACHE CELLERATOR_ENABLE_CUDA PROPERTY STRINGS AUTO ON OFF)
+
 # Host-only module proof infrastructure is independent of native CUDA targets.
 add_subdirectory(modules)
 
-find_package(CUDAToolkit REQUIRED)
+if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    find_package(CUDAToolkit REQUIRED)
+endif()
 find_package(PkgConfig QUIET)
 
 # Native Cellerator is the default build. CelleraTorch remains an explicit
@@ -63,6 +69,10 @@ option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the 
 # The compiler is host-first. Its target graph decides whether CUDA is enabled
 # before the legacy runtime targets below are declared.
 include(src/compiler/CMakeLists.txt)
+include(cmake/compiler/CelleratorHostSdk.cmake)
+if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    return()
+endif()
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING
     "CUDA optimization mode: generic, native, or native-extreme")
 set_property(CACHE CELLERATOR_CUDA_MODE PROPERTY STRINGS generic native native-extreme)
@@ -552,6 +562,7 @@ if(CELLERATOR_BUILD_TESTS)
     include(tests/CMakeLists.txt)
 
     enable_testing()
+    include(cmake/compiler/CelleratorPartOneAcceptance.cmake)
     foreach(cellerator_compiler_smoke IN ITEMS
             ceir profile source diagnostics daemon_protocol)
         set(cellerator_compiler_smoke_target

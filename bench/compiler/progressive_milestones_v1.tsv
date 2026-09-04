@@ -1,0 +1,12 @@
+milestone	command	artifact
+driver_passthrough	cellerator -c fixtures/plain.cc -o out/plain.o	out/plain.o
+pragma_parse	cellerator --emit-ast fixtures/opt_in.cell -o out/opt_in.ast	out/opt_in.ast
+semantic_ir	cellerator --emit-ceir=semantic fixtures/field.cell -o out/field.semantic.ceir	out/field.semantic.ceir
+profile_compile	cellerator --profile fixtures/test.ceprofile -c fixtures/field.cell -o out/field.o	out/field.o
+planning_candidate	cellerator --emit-ceir=planning --profile fixtures/test.ceprofile fixtures/field.cell -o out/field.planning.ceir	out/field.planning.ceir
+cpu_object	cellerator --backend=cpu --profile fixtures/test.ceprofile -c fixtures/field.cell -o out/field.cpu.o	out/field.cpu.o
+nvcc_object	cellerator --backend=nvcc --profile fixtures/test.ceprofile -c fixtures/field.cell -o out/field.cuda.o	out/field.cuda.o
+inline_rewrite	cellerator --emit-ceir=semantic fixtures/rewrite.cell -o out/rewrite.ceir	out/rewrite.ceir
+custom_pass	cellerator --load-pass fixtures/pass.so --emit-ceir=semantic fixtures/field.cell -o out/pass.ceir	out/pass.ceir
+cross_tu_import	cellerator-lto out/a.o out/b.o -o out/linked.o	out/linked.o
+celleratord_hover	celleratord --batch-hover fixtures/hover.json -o out/hover.json	out/hover.json

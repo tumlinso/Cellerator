@@ -1,8 +1,9 @@
 # Programming Cellerator
 
-**Status:** Developer-facing guide for the proposed Cellerator 0.1 language
-**Research baseline:** Cellerator `main` at `8a56e78a367450d67f6b06bf450279de8379793f`, inspected on 2026-09-01
-**Important:** The frontend described here is a language-design proposal. The current repository contains the semantic compiler substrate, not this complete syntax.
+**Status:** Part One developer guide for the installed Cellerator AOT compiler
+**Acceptance baseline:** Part One M80 integration; final reconciliation on 2026-09-04
+**Important:** Examples cover the validated AOT compiler, SDK, profiles, standard
+library, and celleratord surface. General JIT execution remains deferred.
 
 **Companion document:** [cellerator-language-specification.md](cellerator-language-specification.md)
 

@@ -1,0 +1,31 @@
+{
+  "schema": "CELLERATOR-COMPILER-PART1-PERFORMANCE/1",
+  "task": "CE-CCP1-J02-014",
+  "methodology": "docs/compiler/performance/freeze_compiler_benchmark_methodology.md",
+  "campaigns": [
+    "plain_cxx_passthrough",
+    "source_frontend_and_c_bridge",
+    "ceir_construction_and_serialization",
+    "representative_profiles",
+    "discovery_and_certification",
+    "planning_and_complete_costs",
+    "realization_and_backend_generation",
+    "generated_cpu_execution",
+    "generated_nvidia_execution",
+    "cross_tu_lto",
+    "libcellerator_and_celleratord",
+    "progressive_vertical_milestones"
+  ],
+  "required_identities": ["source", "toolchain", "hardware", "profile", "input", "benchmark_binary"],
+  "regression_policy": {
+    "kernel_only_claims": "reject",
+    "unexplained_regressions": "reject",
+    "contaminated_runs": "retain_but_reject_for_comparison"
+  },
+  "promotion": {
+    "contract_only_results": "not_promoted",
+    "negative_results": "retain",
+    "requires_complete_cost_and_correctness": true
+  },
+  "milestone_manifest": "bench/compiler/progressive_milestones_v1.tsv"
+}

@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M90: Part One compiler family final acceptance
 
-Task revision: `6394`; current project revision is in `todo-status.md`.
+Task revision: `6599`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P90 workstreams, freeze shared interfaces, and publish milestone M90.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
