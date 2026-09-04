@@ -90,3 +90,18 @@ target_include_directories(ce_ccp1_f02_009 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_009 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_009 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_009 COMMAND ce_ccp1_f02_009)
+
+add_executable(ce_ccp1_f02_010
+  implement_host_runtime_binding_abi_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_host_runtime_binding_abi.cc)
+target_include_directories(ce_ccp1_f02_010 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_010 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_010 PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(ce_ccp1_f02_010 PRIVATE
+  CELLERATOR_TEST_INCLUDE_DIR="${CELLERATOR_ROOT}/include"
+  CELLERATOR_TEST_BINDING_OBJECT="$<TARGET_OBJECTS:ce_ccp1_f02_010_object>")
+add_library(ce_ccp1_f02_010_object OBJECT
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_host_runtime_binding_abi.cc)
+target_include_directories(ce_ccp1_f02_010_object PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_010_object PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f02_010 COMMAND ce_ccp1_f02_010)
