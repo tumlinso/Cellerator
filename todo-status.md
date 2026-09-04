@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4463`
+Project revision: `4471`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -283,7 +283,7 @@ Project revision: `4463`
 - `CE-CCP1-B04-011` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile gcc-hosted abi and library semantics in the isolated B04 lane, add the focused ce_ccp1_b04_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-012` | status: done | execution: closed | next: Inspect the cited read scope, implement preserve pure c++ fallthrough exactly in the isolated B04 lane, add the focused ce_ccp1_b04_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-013` | status: done | execution: closed | next: Inspect the cited read scope, implement expose reusable frontend sessions in the isolated B04 lane, add the focused ce_ccp1_b04_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-B04-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the c++ semantic bridge milestone in the isolated B04 lane, add the focused ce_ccp1_b04_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-B04-014` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the c++ semantic bridge milestone in the isolated B04 lane, add the focused ce_ccp1_b04_014 gate, and publish a source-linked receipt.
 - `CE-GEO-57` | status: done | execution: closed | next: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
 - `CE-CCP1-C01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the executable grammar revision and token vocabulary in the isolated C01 lane, add the focused ce_ccp1_c01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement parser cursor and bounded lookahead in the isolated C01 lane, add the focused ce_ccp1_c01_002 gate, and publish a source-linked receipt.

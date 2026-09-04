@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:00:31Z",
+  "generated_at": "2026-09-04T08:05:42Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4463,
+  "project_revision": 4471,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -1369,12 +1369,12 @@
         "title": "Architecture, ownership, and migration authority frozen"
       },
       {
-        "explanation": "0/2 requirements satisfied; target=2",
+        "explanation": "1/2 requirements satisfied; target=2",
         "id": "CE-CCP1-B-M10",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 4123,
+        "revision": 4471,
         "state": "closed",
         "title": "Host-only build, driver, source pipeline, and C++ bridge integrated"
       },
@@ -2821,10 +2821,10 @@
       {
         "id": "CE-CCP1-CP-B04",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 4123,
+        "reached_at": "2026-09-04T08:05:41Z",
+        "revision": 4471,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CE-CCP1-B04-014",
         "title": "Upstream Clang semantic bridge and ordinary C++ fallthrough complete"
       },
@@ -48891,6 +48891,86 @@
         "revision": 4463,
         "seq": 4463,
         "timestamp": "2026-09-04T08:00:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B04-014-GATE\"}",
+        "revision": 4464,
+        "seq": 4464,
+        "timestamp": "2026-09-04T08:00:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"fde64f3d-f3ff-4657-87fb-7033fac998bb\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4465,
+        "seq": 4465,
+        "timestamp": "2026-09-04T08:00:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B04-014-GATE\"}",
+        "revision": 4466,
+        "seq": 4466,
+        "timestamp": "2026-09-04T08:04:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5911220d-e211-4bab-961b-5035bbcdf4dd\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4467,
+        "seq": 4467,
+        "timestamp": "2026-09-04T08:04:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B04-014-GATE\"}",
+        "revision": 4468,
+        "seq": 4468,
+        "timestamp": "2026-09-04T08:05:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"bdb479e5-85cd-405f-8f84-f81f06533c70\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4469,
+        "seq": 4469,
+        "timestamp": "2026-09-04T08:05:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "e0d238b7-8a21-4052-935d-4fa874bb2765",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow.patch_artifact.refreshed",
+        "payload_json": "{\"queue_id\": \"ea7527de-6759-44f1-9f24-8d8f84319c15\", \"supersedes\": \"d4104926-6ed3-4940-bf70-ae4ee7b30960\"}",
+        "revision": 4470,
+        "seq": 4470,
+        "timestamp": "2026-09-04T08:05:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4471, \"disposition\": \"validated\", \"reached_checkpoints\": [\"CE-CCP1-CP-B04\"]}",
+        "revision": 4471,
+        "seq": 4471,
+        "timestamp": "2026-09-04T08:05:42Z"
       }
     ],
     "evidence": [
@@ -53195,6 +53275,19 @@
         "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_005$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2cf7f56d11779b96a11a19c8b29fd12bab1ed24c055a4dd22a18030564525426\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b03_005$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"129dae9179414a53150730d88fffe59b8fb6e68a\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"ea260379d17efa872d94622982e2c78c1eaaf980f401eafd22f6c52fa7b99d7a\", \"started_revision\": 4396, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b03\"}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/58e3faab-5744-4b4e-92fe-77c0d35ee43f",
         "revision": 4397,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:04:28Z",
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "id": "5911220d-e211-4bab-961b-5035bbcdf4dd",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c35f20b4ceec35319a4ac9b70aba6180141ccf09d4fce10b39f0988ce28c00c2\", \"started_revision\": 4466, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/5911220d-e211-4bab-961b-5035bbcdf4dd",
+        "revision": 4467,
         "status": "passed"
       },
       {
@@ -57556,6 +57649,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-04T08:05:41Z",
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "id": "bdb479e5-85cd-405f-8f84-f81f06533c70",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c35f20b4ceec35319a4ac9b70aba6180141ccf09d4fce10b39f0988ce28c00c2\", \"started_revision\": 4468, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/bdb479e5-85cd-405f-8f84-f81f06533c70",
+        "revision": 4469,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-21T19:14:53Z",
         "gate_id": "CE-ARCH-70G-ABI-MISMATCH",
         "id": "be224142-8206-46bc-ae5f-d5dc68516713",
@@ -60489,6 +60595,19 @@
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/fd8057f9-aeec-4f60-93e2-f18c3786c036",
         "revision": 561,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:00:58Z",
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "id": "fde64f3d-f3ff-4657-87fb-7033fac998bb",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c35f20b4ceec35319a4ac9b70aba6180141ccf09d4fce10b39f0988ce28c00c2\", \"started_revision\": 4464, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/fde64f3d-f3ff-4657-87fb-7033fac998bb",
+        "revision": 4465,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -63981,9 +64100,9 @@
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B04-014-GATE",
         "input_fingerprint": "50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5",
-        "last_run_at": "2026-09-04T07:58:32Z",
+        "last_run_at": "2026-09-04T08:05:41Z",
         "required": 1,
-        "revision": 4460,
+        "revision": 4469,
         "status": "passed",
         "task_id": "CE-CCP1-B04-014",
         "type": "command",
@@ -78253,6 +78372,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-09-04T08:05:41Z",
+        "id": "74586adc-8723-43ee-b9f4-63896bf1b647",
+        "kind": "complete",
+        "note": "Published and froze I09 C++ Sema bridge v1. The composite contract resolves an activated placeholder to a real Clang declaration, canonical float ABI type, template specializations, and constexpr values. Build-tree Clang and GCC consumers and a staged-header/static-library installed-style consumer passed; declared ctest selector passed with no registered tests.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CE-CCP1-CP-B04\", \"reached_at\": \"2026-09-04T08:05:41Z\", \"state\": \"reached\"}], \"completion_commit\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\", \"completion_gates\": [{\"evidence_id\": \"bdb479e5-85cd-405f-8f84-f81f06533c70\", \"evidence_revision\": 4469, \"id\": \"CE-CCP1-B04-014-GATE\", \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}], \"completion_revision\": 4471, \"finalized_checkpoints\": [\"CE-CCP1-CP-B04\"], \"gates\": [{\"id\": \"CE-CCP1-B04-014-GATE\", \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"last_run_at\": \"2026-09-04T08:05:41Z\", \"revision\": 4469, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 140 ++++++++++++++++++++++++++++++---\\n todo-status.md                         |   2 +-\\n todos.md                               |   2 +-\\n 3 files changed, 132 insertions(+), 12 deletions(-)\", \"git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\", \"interfaces\": [{\"content_hash\": \"43151d264bc6c6e9f155f724017d84c66276eaed493c7c0da9c583c3963c7920\", \"id\": \"CE-CCP1-I09-CXX-SEMA-BRIDGE\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Published and froze I09 C++ Sema bridge v1. The composite contract resolves an activated placeholder to a real Clang declaration, canonical float ABI type, template specializations, and constexpr values. Build-tree Clang and GCC consumers and a staged-header/static-library installed-style consumer passed; declared ctest selector passed with no registered tests.\", \"resources\": [], \"task_id\": \"CE-CCP1-B04-014\"}",
+        "revision": 4471,
+        "task_id": "CE-CCP1-B04-014"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-31T10:27:14Z",
         "id": "75b6f4bc-08fc-4e14-bde9-dcdfe3f3c131",
         "kind": "complete",
@@ -82523,11 +82652,11 @@
       {
         "content_hash": "43151d264bc6c6e9f155f724017d84c66276eaed493c7c0da9c583c3963c7920",
         "contract_paths_json": "[\"include/Cellerator/compiler/frontend/cxx/cxx_sema_bridge_v1.hh\"]",
-        "frozen_at": "2026-09-04T08:00:31Z",
+        "frozen_at": "2026-09-04T08:05:41Z",
         "id": "CE-CCP1-I09-CXX-SEMA-BRIDGE",
         "owner_task_id": "CE-CCP1-B04-014",
         "revised_at": null,
-        "revision": 4463,
+        "revision": 4471,
         "state": "frozen",
         "version": "1"
       },
@@ -174686,6 +174815,19 @@
         "validation_git_head": "f2889334bfc756c5eb943346b94a8bd316da7b3b"
       },
       {
+        "completion_git_head": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
+        "completion_revision": 4471,
+        "evidence_id": "bdb479e5-85cd-405f-8f84-f81f06533c70",
+        "evidence_revision": 4469,
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "input_fingerprint": "50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5",
+        "provenance_json": "{\"claim_id\": \"cf76f44f-5f85-49c9-895c-65f0cf47ba5d\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c35f20b4ceec35319a4ac9b70aba6180141ccf09d4fce10b39f0988ce28c00c2\", \"started_revision\": 4468, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/bdb479e5-85cd-405f-8f84-f81f06533c70\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-B04-014",
+        "valid": 1,
+        "validation_git_head": "a6f79ea4df148c934f1775e61c4e33ca86a3c948"
+      },
+      {
         "completion_git_head": "76a6cd50f8f81e2eb9af14a58ae5ccd5db1c12e5",
         "completion_revision": 4201,
         "evidence_id": "48ff3da6-2135-438b-a856-64fbcf6135d6",
@@ -234099,9 +234241,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
+        "completion_git_head": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
+        "completion_revision": 4471,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-B04-014",
         "kind": "validation_task",
@@ -234113,14 +234255,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-B04-000",
         "priority": 843,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4456,
-        "status": "in_progress",
+        "revision": 4471,
+        "status": "done",
         "tags_json": "[\"b04\", \"compiler-frontend-cxx\", \"leaf\"]",
         "title": "Freeze the C++ semantic bridge milestone",
-        "updated_at": "2026-09-04T07:52:34Z",
-        "version": 4
+        "updated_at": "2026-09-04T08:05:42Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -276199,11 +276341,11 @@
         "integration_task_id": "CE-CCP1-M10",
         "integrator_lane_id": "CE-CCP1-L-INTEGRATE-FOUNDATION",
         "merge_result_json": "{}",
-        "patch_artifact_id": "d4104926-6ed3-4940-bf70-ae4ee7b30960",
+        "patch_artifact_id": "e0d238b7-8a21-4052-935d-4fa874bb2765",
         "position": 3,
         "run_id": "CE-CCP1-RUN-V1",
         "state": "queued",
-        "updated_at": "2026-09-04T07:58:33Z"
+        "updated_at": "2026-09-04T08:05:41Z"
       },
       {
         "conflict_json": "{}",
@@ -277374,12 +277516,12 @@
       },
       {
         "activated_at": "2026-09-04T07:52:34Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T08:05:42Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B04",
         "position": 13,
-        "revision": 4456,
-        "state": "active",
+        "revision": 4471,
+        "state": "completed",
         "task_id": "CE-CCP1-B04-014"
       },
       {
@@ -286219,11 +286361,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B04",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4456,
+        "revision": 4471,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T07:52:34Z",
+        "state": "closed",
+        "updated_at": "2026-09-04T08:05:42Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -287711,6 +287853,11 @@
         "recipient_type": "task"
       },
       {
+        "message_id": "157bebd4-58b5-4d2e-a90e-0bff36a6f176",
+        "recipient_id": "CE-CCP1-RUN-V1",
+        "recipient_type": "run"
+      },
+      {
         "message_id": "1d328c8d-cdaf-41be-b9f8-c0d0da797a17",
         "recipient_id": "CE-EXOP-RUN-V1",
         "recipient_type": "run"
@@ -287971,6 +288118,21 @@
         "run_id": "CE-GEO-RUN-V1",
         "state": "open",
         "task_id": "CE-GEO-81"
+      },
+      {
+        "author_lane_id": "CE-CCP1-L-B04",
+        "blocking": 0,
+        "created_at": "2026-09-04T08:05:42Z",
+        "id": "157bebd4-58b5-4d2e-a90e-0bff36a6f176",
+        "kind": "rendezvous_arrival",
+        "linked_message_id": null,
+        "payload_json": "{\"condition\":{\"achieved\":4,\"arrived\":[\"CE-CCP1-L-B01\",\"CE-CCP1-L-B02\",\"CE-CCP1-L-B03\",\"CE-CCP1-L-B04\"],\"arrived_roles\":[\"implementer\"],\"barrier_changes\":[{\"affected_active_tasks\":[],\"barrier_id\":\"CE-CCP1-B-M10\",\"explanation\":\"1/2 requirements satisfied; target=2\",\"state\":\"closed\"}],\"join_ready\":false,\"join_task_id\":\"CE-CCP1-M10\",\"required_roles\":[],\"satisfied\":true,\"state\":\"satisfied\",\"target\":4},\"rendezvous_id\":\"CE-CCP1-RV-M10\",\"summary\":\"Published and froze I09 C++ Sema bridge v1. The composite contract resolves an activated placeholder to a real Clang declaration, canonical float ABI type, template specializations, and constexpr values. Build-tree Clang and GCC consumers and a staged-header/static-library installed-style consumer passed; declared ctest selector passed with no registered tests.\"}",
+        "references_json": "[{\"id\":\"CE-CCP1-RV-M10\",\"type\":\"rendezvous\"}]",
+        "resolved_at": null,
+        "revision": 4471,
+        "run_id": "CE-CCP1-RUN-V1",
+        "state": "open",
+        "task_id": "CE-CCP1-B04-014"
       },
       {
         "author_lane_id": "CE-EXOP-L-OPT-ORACLE",
@@ -289130,7 +289292,7 @@
         "created_at": "2026-09-04T07:58:33Z",
         "id": "d4104926-6ed3-4940-bf70-ae4ee7b30960",
         "kind": "commit",
-        "state": "queued",
+        "state": "superseded",
         "task_id": "CE-CCP1-B04-014",
         "workspace_id": "adf5c82e-381b-4c6a-a8ad-469e8d5bafa5"
       },
@@ -289144,6 +289306,17 @@
         "state": "integrated",
         "task_id": "CE-EXOP-265",
         "workspace_id": "1ed54db9-17d5-47fe-8701-f52ae580dabd"
+      },
+      {
+        "artifact_ref": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
+        "base_commit": "b50c0affcd2eb9b61dae69270f371221b4ad720b",
+        "content_hash": "54aa7947729e5bf0d892e520c2b0a80bbf685cbf30367471ce96abceedbc9772",
+        "created_at": "2026-09-04T08:05:41Z",
+        "id": "e0d238b7-8a21-4052-935d-4fa874bb2765",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "CE-CCP1-B04-014",
+        "workspace_id": "adf5c82e-381b-4c6a-a8ad-469e8d5bafa5"
       },
       {
         "artifact_ref": "4dca9f16641178208469cd7c4592dd4e1cf6bda1",
@@ -289259,12 +289432,12 @@
         "id": "CE-CCP1-RV-M10",
         "join_task_id": "CE-CCP1-M10",
         "mode": "all",
-        "opened_at": null,
+        "opened_at": "2026-09-04T08:05:42Z",
         "quorum": null,
         "required_roles_json": "[]",
-        "revision": 4455,
+        "revision": 4471,
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "open"
+        "state": "satisfied"
       },
       {
         "barrier_id": "CE-CCP1-B-M20",
@@ -289521,6 +289694,22 @@
         "state": "valid",
         "summary": "Delivered mixed ordinary/activated source and header transformation into valid shadow C++; full 15-test B03 suite passed, host and CUDA-enabled Clang parses passed, I07/I08 frozen at fe1e017 and pushed.",
         "task_id": "CE-CCP1-B03-015",
+        "warnings_json": "[]"
+      },
+      {
+        "arrived_at": "2026-09-04T08:05:42Z",
+        "artifact_json": "{\"kind\":\"commit\",\"ref\":\"a6f79ea4df148c934f1775e61c4e33ca86a3c948\"}",
+        "base_source_identity": "a84cdcbfdd6eff704763cc81a20356e2c33f1cbf",
+        "context_version": 1,
+        "evidence_json": "[{\"id\":\"CE-CCP1-B04-014\",\"type\":\"handoff\"}]",
+        "final_source_identity": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
+        "interfaces_json": "{}",
+        "lane_id": "CE-CCP1-L-B04",
+        "rendezvous_id": "CE-CCP1-RV-M10",
+        "revision": 4471,
+        "state": "valid",
+        "summary": "Published and froze I09 C++ Sema bridge v1. The composite contract resolves an activated placeholder to a real Clang declaration, canonical float ABI type, template specializations, and constexpr values. Build-tree Clang and GCC consumers and a staged-header/static-library installed-style consumer passed; declared ctest selector passed with no registered tests.",
+        "task_id": "CE-CCP1-B04-014",
         "warnings_json": "[]"
       },
       {
@@ -291127,12 +291316,12 @@
       },
       {
         "artifact_kind": "commit",
-        "artifact_ref": "2538a82a170d7fb05194ac664703056c56975a2a",
+        "artifact_ref": "a6f79ea4df148c934f1775e61c4e33ca86a3c948",
         "base_commit": "b50c0affcd2eb9b61dae69270f371221b4ad720b",
         "branch": "codex/ce-ccp1-l-b04",
         "cleanup_eligible": 0,
         "created_at": "2026-09-04T06:50:22Z",
-        "diff_hash": "86a6427fed370000e463311eedfe32604986c79f0cfb578005cc354b7acd42e2",
+        "diff_hash": "54aa7947729e5bf0d892e520c2b0a80bbf685cbf30367471ce96abceedbc9772",
         "id": "adf5c82e-381b-4c6a-a8ad-469e8d5bafa5",
         "integration_task_id": "CE-CCP1-M10",
         "lane_id": "CE-CCP1-L-B04",
@@ -291141,7 +291330,7 @@
         "repository_identity": "d79d49b73227d23d9fb3f3b4dd4af973e8a3c8118442d378fafda99257ace30c",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "queued",
-        "updated_at": "2026-09-04T07:58:33Z",
+        "updated_at": "2026-09-04T08:05:41Z",
         "worktree_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04"
       },
       {
