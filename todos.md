@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5442`
+Project revision: `5475`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -799,7 +799,7 @@ Project revision: `5442`
 - `CE-CCP1-E01-013` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
 - `CE-CCP1-E01-014` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
 - `CE-CCP1-E01-015` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
-- `CE-CCP1-E01-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
+- `CE-CCP1-E01-016` | kind: validation_task | status: done | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
 - `CE-GEO-65` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
 - `CE-CCP1-E02-001` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome namespace-qualified persistent identity and atom species/state contracts, adapting CellShard 64-bit strong IDs to Cellerator persistent identity without pointer hashing or content conflation.
 - `CE-CCP1-E02-002` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move proposal membership, provenance, confidence, stability, negative evidence, and exact-rescan status into Cellerator discovery.
@@ -818,7 +818,7 @@ Project revision: `5442`
 - `CE-CCP1-E02-015` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Forward old compiler-facing CellShard includes to Cellerator contracts where required for preserved tests, with deprecation and explicit retirement gates.
 - `CE-CCP1-E02-016` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move or adapt all relevant unit/property/malformed/benchmark fixtures, retaining original expected results and documenting intentional semantic changes.
 - `CE-CCP1-E02-017` | kind: validation_task | status: done | parent: CE-CCP1-E02-000 | objective: Audit CellShard main and JBC branches after planned migration: concrete storage/runtime may consume rules, but no retained API may select biological proposals, grammar, basis, or schedules.
-- `CE-CCP1-E02-018` | kind: validation_task | status: planned | parent: CE-CCP1-E02-000 | objective: Publish Cellerator-owned discovery providers, exact certification, atom Planning IR, compatibility adapters, provenance, and differential evidence.
+- `CE-CCP1-E02-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Publish Cellerator-owned discovery providers, exact certification, atom Planning IR, compatibility adapters, provenance, and differential evidence.
 - `CE-GEO-66` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Perform exact O(E) rectangle census and exact disjoint MMA/residual physical contribution assignment.
 - `CE-CCP1-E03-001` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move production inputs/outputs, parameters, exact coverage equations, identity/order/generation rules, effects, costs, and verifier references into Planning IR extensions.
 - `CE-CCP1-E03-002` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent atom and operation derivations as typed acyclic graphs with lineage, exact reconstruction, alternative parents, and canonical cycle diagnostics.
@@ -853,9 +853,9 @@ Project revision: `5442`
 - `CE-CCP1-E04-012` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Allow built-in exact/heuristic planners, user replacement planners, externally selected plans, and deterministic fallback under bounded time/memory budgets.
 - `CE-CCP1-E04-013` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Select one or more plans for named profile alternatives, share compatible artifacts, and emit bounded runtime selection requirements without duplicating full semantic programs.
 - `CE-CCP1-E04-014` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Key plans by semantic fingerprint, profile/evidence revision, structure epoch, order, target class, toolchain, constraints, and planner revision at the earliest reusable stage.
-- `CE-CCP1-E04-015` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Report considered alternatives, exact coverage, costs, evidence freshness, rejection/dominance, selected source, forced edits, and fallback.
-- `CE-CCP1-E04-016` | kind: validation_task | status: planned | parent: CE-CCP1-E04-000 | objective: Measure time, peak memory, candidate count, exact certification, search frontier, and quality versus oracle on scalable synthetic and biological fixtures.
-- `CE-CCP1-E04-017` | kind: validation_task | status: planned | parent: CE-CCP1-E04-000 | objective: Compile a profile-bound relation and a two-operation field from source through Semantic IR, Planning IR, decomposition, candidates, complete cost, and selected portable ruleset.
+- `CE-CCP1-E04-015` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Report considered alternatives, exact coverage, costs, evidence freshness, rejection/dominance, selected source, forced edits, and fallback.
+- `CE-CCP1-E04-016` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Measure time, peak memory, candidate count, exact certification, search frontier, and quality versus oracle on scalable synthetic and biological fixtures.
+- `CE-CCP1-E04-017` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Compile a profile-bound relation and a two-operation field from source through Semantic IR, Planning IR, decomposition, candidates, complete cost, and selected portable ruleset.
 - `CE-CCP1-E04-018` | kind: validation_task | status: planned | parent: CE-CCP1-E04-000 | objective: Publish provider, planner, cache, report, custom candidate, external cost, and force-control contracts used by Realization IR.
 - `CE-GEO-68` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-CCP1-F01-001` | kind: validation_task | status: planned | parent: CE-CCP1-F01-000 | objective: Define target-specific modules, functions, kernels, host stubs, data artifacts, stages, bindings, and native fragments while retaining source/semantic/planning lineage in cold metadata.
