@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6492`
+Project revision: `6493`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -693,7 +693,7 @@ Project revision: `6492`
 - `CE-CCP1-J01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement fuzz ceir text and binary artifacts in the isolated J01 lane, add the focused ce_ccp1_j01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement fuzz profile artifacts and state propagation in the isolated J01 lane, add the focused ce_ccp1_j01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement property-test exact coverage and partial algebra in the isolated J01 lane, add the focused ce_ccp1_j01_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-J01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement test pass and extension isolation in the isolated J01 lane, add the focused ce_ccp1_j01_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-J01-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement test pass and extension isolation in the isolated J01 lane, add the focused ce_ccp1_j01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement test cross-tu/lto and object corruption in the isolated J01 lane, add the focused ce_ccp1_j01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement run sanitizers and resource-bound tests in the isolated J01 lane, add the focused ce_ccp1_j01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze independent conformance and resilience acceptance in the isolated J01 lane, add the focused ce_ccp1_j01_012 gate, and publish a source-linked receipt.
