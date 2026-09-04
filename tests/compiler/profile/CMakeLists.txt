@@ -91,3 +91,7 @@ add_executable(ce_ccp1_d03_013 ../d03/implement_profile_state_attachment_to_sema
 target_include_directories(ce_ccp1_d03_013 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_013 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_013 COMMAND ce_ccp1_d03_013)
+add_executable(ce_ccp1_d03_014 ../d03/expose_profile_inspection_and_diff_tooling_test.cc "${CELLERATOR_ROOT}/src/compiler/profile/expose_profile_inspection_and_diff_tooling.cc")
+target_include_directories(ce_ccp1_d03_014 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_014 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_014 COMMAND ce_ccp1_d03_014)
