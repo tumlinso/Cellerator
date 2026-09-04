@@ -49,3 +49,7 @@ add_executable(ce_ccp1_h02_010 ../compiler/h02/expose_structured_diagnostics_and
 target_include_directories(ce_ccp1_h02_010 PRIVATE ${CELLERATOR_ROOT}/include)
 target_link_libraries(ce_ccp1_h02_010 PRIVATE Threads::Threads)
 add_test(NAME ce_ccp1_h02_010 COMMAND ce_ccp1_h02_010)
+add_executable(ce_ccp1_h02_011 ../compiler/h02/define_thread_safety_and_context_isolation_test.cc ${CELLERATOR_ROOT}/src/compiler/api/define_thread_safety_and_context_isolation.cc)
+target_include_directories(ce_ccp1_h02_011 PRIVATE ${CELLERATOR_ROOT}/include)
+target_link_libraries(ce_ccp1_h02_011 PRIVATE Threads::Threads)
+add_test(NAME ce_ccp1_h02_011 COMMAND ce_ccp1_h02_011)
