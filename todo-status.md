@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6373`
+Project revision: `6376`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -676,7 +676,7 @@ Project revision: `6373`
 - `CE-CCP1-I02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement semantic ir at cursor in the isolated I02 lane, add the focused ce_ccp1_i02_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement planning ir and candidate views in the isolated I02 lane, add the focused ce_ccp1_i02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement realization and decomposition visualization in the isolated I02 lane, add the focused ce_ccp1_i02_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-I02-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement 'why did this candidate win?' in the isolated I02 lane, add the focused ce_ccp1_i02_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-I02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement 'why did this candidate win?' in the isolated I02 lane, add the focused ce_ccp1_i02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement opaque-barrier and missed-optimization actions in the isolated I02 lane, add the focused ce_ccp1_i02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement source-to-native navigation in the isolated I02 lane, add the focused ce_ccp1_i02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement inline ceir diagnostics and completion in the isolated I02 lane, add the focused ce_ccp1_i02_012 gate, and publish a source-linked receipt.
