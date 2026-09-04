@@ -49,3 +49,15 @@ add_executable(ce_ccp1_i02_013 benchmark_advanced_semantic_queries_test.cc
   ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
 target_include_directories(ce_ccp1_i02_013 PRIVATE ${CELLERATOR_ROOT})
 add_test(NAME ce_ccp1_i02_013 COMMAND ce_ccp1_i02_013)
+add_executable(ce_ccp1_i02_014 freeze_cellerator_aware_celleratord_acceptance_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/freeze_cellerator_aware_celleratord_acceptance.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_biological_type_and_relation_hover.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_profile_state_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_generation_and_staleness_queries.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_semantic_ir_at_cursor.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_why_did_this_candidate_win.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_realization_and_decomposition_visualization.cc
+  ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_source_to_native_navigation.cc)
+target_include_directories(ce_ccp1_i02_014 PRIVATE ${CELLERATOR_ROOT} ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_i02_014 COMMAND ce_ccp1_i02_014)

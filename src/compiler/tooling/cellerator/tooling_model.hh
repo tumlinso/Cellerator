@@ -56,5 +56,17 @@ struct semantic_query_benchmark {
     bool cpp_editing_responsive = false;
 };
 [[nodiscard]] std::vector<semantic_query_benchmark> benchmark_advanced_semantic_queries();
+struct celleratord_acceptance {
+    std::vector<std::string> baseline_queries;
+    std::vector<std::string> installed_profiles;
+    std::string semantic_ir;
+    std::string candidate_cost;
+    std::string mutation_staleness;
+    std::string decomposition;
+    std::string native_location;
+    bool lsp_integration = false;
+    bool snapshots_stable = false;
+};
+[[nodiscard]] celleratord_acceptance freeze_celleratord_acceptance();
 
 }  // namespace cellerator::compiler::tooling::v1
