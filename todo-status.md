@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6089`
+Project revision: `6096`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -600,7 +600,7 @@ Project revision: `6089`
 - `CE-CCP1-G03-016` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze explainability and unsafe-control behavior in the isolated G03 lane, add the focused ce_ccp1_g03_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-75` | status: done | execution: closed | next: Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-75` | status: done | execution: closed | next: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
-- `CE-CCP1-H01-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the ceir companion object-artifact contract in the isolated H01 lane, add the focused ce_ccp1_h01_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-H01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the ceir companion object-artifact contract in the isolated H01 lane, add the focused ce_ccp1_h01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement elf ceir sections in the isolated H01 lane, add the focused ce_ccp1_h01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement mach-o and coff strategies in the isolated H01 lane, add the focused ce_ccp1_h01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement portable sidecar fallback in the isolated H01 lane, add the focused ce_ccp1_h01_004 gate, and publish a source-linked receipt.
@@ -617,7 +617,7 @@ Project revision: `6089`
 - `CE-CCP1-H01-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement mixed-backend re-emission in the isolated H01 lane, add the focused ce_ccp1_h01_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cross-tu and lto vertical acceptance in the isolated H01 lane, add the focused ce_ccp1_h01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-76` | status: done | execution: closed | next: Implement practical one-warp N=16 grouping and disjoint column panels above 64 while preserving sparse fallback below profitable widths and specialized N=1.
-- `CE-CCP1-H02-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze libcellerator component architecture in the isolated H02 lane, add the focused ce_ccp1_h02_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-H02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze libcellerator component architecture in the isolated H02 lane, add the focused ce_ccp1_h02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement define c compiler session api in the isolated H02 lane, add the focused ce_ccp1_h02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement define c++ compiler session api in the isolated H02 lane, add the focused ce_ccp1_h02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose parse and semantic-analysis apis in the isolated H02 lane, add the focused ce_ccp1_h02_004 gate, and publish a source-linked receipt.
@@ -634,7 +634,7 @@ Project revision: `6089`
 - `CE-CCP1-H02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement create installed sdk examples in the isolated H02 lane, add the focused ce_ccp1_h02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-H02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze libcellerator sdk acceptance in the isolated H02 lane, add the focused ce_ccp1_h02_016 gate, and publish a source-linked receipt.
 - `CE-GEO-77` | status: done | execution: closed | next: Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.
-- `CE-CCP1-H03-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the language versus standard-library boundary in the isolated H03 lane, add the focused ce_ccp1_h03_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-H03-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the language versus standard-library boundary in the isolated H03 lane, add the focused ce_ccp1_h03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement define standard-library package structure in the isolated H03 lane, add the focused ce_ccp1_h03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement the minimal core `.cell` library in the isolated H03 lane, add the focused ce_ccp1_h03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-H03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement relation and state construction helpers in the isolated H03 lane, add the focused ce_ccp1_h03_004 gate, and publish a source-linked receipt.
