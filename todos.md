@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4320`
+Project revision: `4328`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -615,8 +615,8 @@ Project revision: `4320`
 - `CE-CCP1-B01-008` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Generate compiler version, language revision, CEIR revision, backend capability, and install-resource path headers into the build tree.
 - `CE-CCP1-B01-009` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add planned smoke targets for CEIR parser/printer, profile loader, source manager, diagnostics, and celleratord protocol code without CUDA linkage.
 - `CE-CCP1-B01-010` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add conditional linkage tests that bind Realization IR and backend adapters to existing Cellerator CUDA provider/runtime targets.
-- `CE-CCP1-B01-011` | kind: task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Specify presets for host-only Clang, host-only GCC, CUDA+NVCC sm70, CUDA+Clang where available, installed-consumer, sanitizer, and language-server builds.
-- `CE-CCP1-B01-012` | kind: validation_task | status: planned | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
+- `CE-CCP1-B01-011` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Specify presets for host-only Clang, host-only GCC, CUDA+NVCC sm70, CUDA+Clang where available, installed-consumer, sanitizer, and language-server builds.
+- `CE-CCP1-B01-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
 - `CE-EXOP-54` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver planner correctness and scale tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-54` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the replaceable portable source/destination community strategy and rectangular-support semantic components.
 - `CE-CCP1-B02-001` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Model preprocess, analyze, emit CEIR, compile, assemble, device-link, host-link, and inspect actions as explicit driver jobs with stable diagnostics and no backend-specific assumptions in semantic stages.
@@ -631,7 +631,7 @@ Project revision: `4320`
 - `CE-CCP1-B02-010` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Emit or preserve compile_commands entries, depfiles, module dependencies, and source-to-output mappings suitable for CMake, Ninja, and celleratord.
 - `CE-CCP1-B02-011` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Use deterministic per-action temporary directories, explicit keep-temps modes, content-addressed cold caches, and cleanup that never hides artifacts requested for diagnostics.
 - `CE-CCP1-B02-012` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Preserve severity, source ranges, fix-its, and exit codes from downstream compilers while allowing Cellerator source maps to remap generated/shadow locations.
-- `CE-CCP1-B02-013` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Create a stable toolchain identity from executable content/version, target, resource directory, critical flags, runtime/driver identity, and backend plugin revision.
+- `CE-CCP1-B02-013` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Create a stable toolchain identity from executable content/version, target, resource directory, critical flags, runtime/driver identity, and backend plugin revision.
 - `CE-CCP1-B02-014` | kind: validation_task | status: planned | parent: CE-CCP1-B02-000 | objective: Build bin/cellerator as a thin main over the shared driver library and compile/link ordinary C++ through Clang and GCC without Cellerator semantics.
 - `CE-EXOP-55` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze planner portfolio exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-55` | kind: workstream | status: done | parent: CE-GEO-00 | objective: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
