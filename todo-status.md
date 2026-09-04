@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5376`
+Project revision: `5378`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -433,7 +433,7 @@ Project revision: `5376`
 - `CE-CCP1-E02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement import atom plane separation in the isolated E02 lane, add the focused ce_ccp1_e02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement import atom requirement/affordance matching in the isolated E02 lane, add the focused ce_ccp1_e02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement import scalable certification indexes in the isolated E02 lane, add the focused ce_ccp1_e02_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-E02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement preserve migration provenance in source and artifacts in the isolated E02 lane, add the focused ce_ccp1_e02_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-E02-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement preserve migration provenance in source and artifacts in the isolated E02 lane, add the focused ce_ccp1_e02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement create temporary cellshard compiler compatibility adapters in the isolated E02 lane, add the focused ce_ccp1_e02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement port discovery tests and evidence fixtures in the isolated E02 lane, add the focused ce_ccp1_e02_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement validate no compiler discovery remains authoritative in cellshard in the isolated E02 lane, add the focused ce_ccp1_e02_017 gate, and publish a source-linked receipt.
@@ -466,7 +466,7 @@ Project revision: `5376`
 - `CE-CCP1-E04-006` | status: done | execution: closed | next: Inspect the cited read scope, implement adapt candidate catalog v3 providers in the isolated E04 lane, add the focused ce_ccp1_e04_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement custom candidate registration in the isolated E04 lane, add the focused ce_ccp1_e04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement candidate inclusion, exclusion, and forcing in the isolated E04 lane, add the focused ce_ccp1_e04_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-E04-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement adapt external global cost exchange in the isolated E04 lane, add the focused ce_ccp1_e04_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-E04-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement adapt external global cost exchange in the isolated E04 lane, add the focused ce_ccp1_e04_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement complete-cost normalization in the isolated E04 lane, add the focused ce_ccp1_e04_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement adapt transition and connected-operation costs in the isolated E04 lane, add the focused ce_ccp1_e04_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planner portfolio dispatch in the isolated E04 lane, add the focused ce_ccp1_e04_012 gate, and publish a source-linked receipt.
