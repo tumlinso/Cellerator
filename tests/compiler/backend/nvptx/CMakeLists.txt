@@ -133,3 +133,23 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 add_test(NAME ce_ccp1_f04_010 COMMAND ce_ccp1_f04_010
     "${PTXAS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/f04_010")
+
+find_program(NVCC_EXECUTABLE nvcc REQUIRED)
+find_program(CLANG_CUDA_EXECUTABLE clang++-18 REQUIRED)
+find_program(PTXAS_MODERN_EXECUTABLE ptxas
+    PATHS "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin"
+    NO_DEFAULT_PATH REQUIRED)
+add_executable(ce_ccp1_f04_011
+    compare_nvcc_clang_cuda_and_direct_ptx_routes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/compare_nvcc_clang_cuda_and_direct_ptx_routes.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/deliver_a_direct_ptx_hot_path_demonstration.cc")
+target_include_directories(ce_ccp1_f04_011 PRIVATE "${CELLERATOR_ROOT}/include" "${CELLERATOR_ROOT}")
+target_compile_features(ce_ccp1_f04_011 PRIVATE cxx_std_17)
+target_link_libraries(ce_ccp1_f04_011 PRIVATE "${CUDA_DRIVER_LIBRARY}")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f04_011 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f04_011 COMMAND ce_ccp1_f04_011
+    "${NVCC_EXECUTABLE}" "${CLANG_CUDA_EXECUTABLE}" "${PTXAS_MODERN_EXECUTABLE}"
+    "${CELLERATOR_ROOT}/bench/compiler/backend/nvptx/matched_unit_degree_relation.cu"
+    "${CMAKE_CURRENT_BINARY_DIR}/f04_011" "/usr/lib/gcc/x86_64-linux-gnu/12")
