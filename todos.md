@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6647`
+Project revision: `6649`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -473,7 +473,7 @@ Project revision: `6647`
 - `CE-CCP1-B02-000` | kind: workstream | status: done | parent: CE-CCP1-P10 | objective: Deliver the reusable driver model that accepts ordinary C++ and Cellerator source, discovers overridable downstream toolchains, and emits conventional artifacts.
 - `CE-CCP1-B03-000` | kind: workstream | status: done | parent: CE-CCP1-P10 | objective: Create a lossless source pipeline that recognizes Cellerator syntax only in activated files and supplies valid C++ to upstream semantic analysis.
 - `CE-CCP1-B04-000` | kind: workstream | status: done | parent: CE-CCP1-P10 | objective: Reuse upstream C++ parsing and Sema without a permanent fork, while making resolved C++ types and effects available to Cellerator.
-- `CE-CCP1-C01-000` | kind: workstream | status: planned | parent: CE-CCP1-P20 | objective: Implement the complete source grammar as a small, explicit C++ extension grammar with progressive recovery and stable parse APIs.
+- `CE-CCP1-C01-000` | kind: workstream | status: done | parent: CE-CCP1-P20 | objective: Implement the complete source grammar as a small, explicit C++ extension grammar with progressive recovery and stable parse APIs.
 - `CE-CCP1-C02-000` | kind: workstream | status: planned | parent: CE-CCP1-P20 | objective: Create a durable source-level AST that combines Cellerator meaning with resolved C++ captures and supports precise tooling.
 - `CE-CCP1-C03-000` | kind: workstream | status: planned | parent: CE-CCP1-P20 | objective: Make the frontend reason about the same domain, identity, ordering, generation, numeric, and operation contracts that drive the existing compiler.
 - `CE-EXOP-10` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver audit provider and cuda build topology exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

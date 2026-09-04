@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6647`
+Project revision: `6649`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -92,7 +92,7 @@ Project revision: `6647`
 - `CE-CCP1-B02-000` | status: done | execution: closed | next: Claim B02-001 after milestone prerequisites are reached.
 - `CE-CCP1-B03-000` | status: done | execution: closed | next: Claim B03-001 after milestone prerequisites are reached.
 - `CE-CCP1-B04-000` | status: done | execution: closed | next: Claim B04-001 after milestone prerequisites are reached.
-- `CE-CCP1-C01-000` | status: planned | execution: ready | next: Claim C01-001 after milestone prerequisites are reached.
+- `CE-CCP1-C01-000` | status: done | execution: closed | next: Claim C01-001 after milestone prerequisites are reached.
 - `CE-CCP1-C02-000` | status: planned | execution: ready | next: Claim C02-001 after milestone prerequisites are reached.
 - `CE-CCP1-C03-000` | status: planned | execution: ready | next: Claim C03-001 after milestone prerequisites are reached.
 - `CE-EXOP-10` | status: done | execution: closed | next: Deliver audit provider and cuda build topology exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
