@@ -552,6 +552,7 @@ if(CELLERATOR_BUILD_TESTS)
     include(tests/CMakeLists.txt)
 
     enable_testing()
+    include(cmake/compiler/CelleratorPartOneAcceptance.cmake)
     foreach(cellerator_compiler_smoke IN ITEMS
             ceir profile source diagnostics daemon_protocol)
         set(cellerator_compiler_smoke_target
