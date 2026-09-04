@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6436`
+Project revision: `6440`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1067,7 +1067,7 @@ Project revision: `6436`
 - `CE-CCP1-P80` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate celleratord and publish milestone M80.
 - `CE-EXOP-80` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver workload profile v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J01-001` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Turn every normative syntax/semantic example and rejected design into positive/negative tests with specification section references.
-- `CE-CCP1-J01-002` | kind: task | status: in_progress | parent: CE-CCP1-J01-000 | objective: Generate C++ token streams, includes, macros, templates, comments, and Cellerator delimiters to find activation leaks, hangs, and source-map corruption.
+- `CE-CCP1-J01-002` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Generate C++ token streams, includes, macros, templates, comments, and Cellerator delimiters to find activation leaks, hangs, and source-map corruption.
 - `CE-CCP1-J01-003` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Mutate declarations, fields, relation syntax, controls, inline IR, reflection, passes, and native fragments while enforcing bounded diagnostics and no crashes.
 - `CE-CCP1-J01-004` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Compile broad C++ corpora through cellerator and direct Clang/GCC, comparing success, diagnostics categories, object symbols, depfiles, and runtime output.
 - `CE-CCP1-J01-005` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Cover shape-only equivalence, wrong endpoints/orders/generations/orientation, stale values, invalid effects, unsupported numeric tuples, and unsafe override behavior.
@@ -1081,7 +1081,7 @@ Project revision: `6436`
 - `CE-EXOP-81` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver original-group and incremental work-window semantics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J02-001` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Define hardware/toolchain/profile/source identities, cold/warm modes, repetitions/statistics, contamination, peak memory, generated artifact sizes, and exact baselines.
 - `CE-CCP1-J02-002` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure driver overhead, preprocess/compile/link wall time, peak RSS, depfiles, object size, and diagnostics against direct Clang/GCC.
-- `CE-CCP1-J02-003` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure preprocessing, activated-token analysis, shadow generation, Clang Sema, AST construction, incremental reuse, and source-map memory.
+- `CE-CCP1-J02-003` | kind: validation_task | status: in_progress | parent: CE-CCP1-J02-000 | objective: Measure preprocessing, activated-token analysis, shadow generation, Clang Sema, AST construction, incremental reuse, and source-map memory.
 - `CE-CCP1-J02-004` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure node construction, canonicalization, text parse/print, binary load/store, memory mapping, unknown extensions, and provenance stripping across all levels.
 - `CE-CCP1-J02-005` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure profile build, exact scans, sketches, load, mapped queries, state transfer, branch joins, multi-state alternatives, and memory.
 - `CE-CCP1-J02-006` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure each migrated JBC proposal mechanism, candidate counts, exact rescans, certification, memory, no-basis cases, and matched generic/null baselines.
