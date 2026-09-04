@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6703`
+Project revision: `6705`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -526,7 +526,7 @@ Project revision: `6703`
 - `CE-GEO-38` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixed-width little-endian pointer-free checksummed aligned sectioned semantic-image build, validation, identity, relocation, and optional extensions.
 - `CE-CCP1-I01-000` | kind: workstream | status: done | parent: CE-CCP1-P80 | objective: Provide a real LSP server with ordinary clangd-class C++ behavior while sharing Cellerator source, AST, Sema, and IR libraries.
 - `CE-GEO-39` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Run property, corruption, round-trip, relocation, identity, order, exact-cover, permissive-window, and CP-BP compatibility tests and freeze both interfaces.
-- `CE-CCP1-I02-000` | kind: workstream | status: planned | parent: CE-CCP1-P80 | objective: Expose the compiler’s data-aware reasoning interactively without coupling language-server state to hot runtime structures.
+- `CE-CCP1-I02-000` | kind: workstream | status: done | parent: CE-CCP1-P80 | objective: Expose the compiler’s data-aware reasoning interactively without coupling language-server state to hot runtime structures.
 - `CE-EXOP-30` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver define operation-core schema v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J01-000` | kind: workstream | status: planned | parent: CE-CCP1-P90 | objective: Provide independent correctness pressure across source, CEIR, profiles, passes, LTO, backends, and language-server boundaries.
 - `CE-EXOP-31` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver encode complete relation algebra and bindings exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
