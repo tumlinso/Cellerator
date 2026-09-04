@@ -29,3 +29,6 @@ add_executable(ce_ccp1_h02_004
     ${CELLERATOR_ROOT}/src/compiler/api/expose_parse_and_semantic_analysis_apis.cc)
 target_include_directories(ce_ccp1_h02_004 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_h02_004 COMMAND ce_ccp1_h02_004)
+add_executable(ce_ccp1_h02_005 ../compiler/h02/expose_ceir_ownership_and_mutation_apis_test.cc ${CELLERATOR_ROOT}/src/compiler/api/expose_ceir_ownership_and_mutation_apis.cc)
+target_include_directories(ce_ccp1_h02_005 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_h02_005 COMMAND ce_ccp1_h02_005)
