@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6709`
+Project revision: `6711`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -530,7 +530,7 @@ Project revision: `6709`
 - `CE-EXOP-30` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver define operation-core schema v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J01-000` | kind: workstream | status: done | parent: CE-CCP1-P90 | objective: Provide independent correctness pressure across source, CEIR, profiles, passes, LTO, backends, and language-server boundaries.
 - `CE-EXOP-31` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver encode complete relation algebra and bindings exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-J02-000` | kind: workstream | status: planned | parent: CE-CCP1-P90 | objective: Measure compiler and generated-program performance throughout development, with useful milestones arriving long before final closure.
+- `CE-CCP1-J02-000` | kind: workstream | status: done | parent: CE-CCP1-P90 | objective: Measure compiler and generated-program performance throughout development, with useful milestones arriving long before final closure.
 - `CE-EXOP-32` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver encode output, order, numerical, and determinism contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J03-000` | kind: workstream | status: planned | parent: CE-CCP1-P90 | objective: Integrate all compiler-family surfaces, reconcile documentation with implementation, and prove the complete Part One acceptance boundary without starting Part Two.
 - `CE-EXOP-33` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver add sparse-axis update and composition descriptors exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
