@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/driver/define_temporary_artifact_and_cache_policy_v1.hh>
+#include <cstdlib>
+#include <iostream>
+using namespace cellerator::compiler::driver;
+int main() { const std::string hash(64, 'a'); auto make = [&](keep_temps_v1 keep, bool failed, bool inspect){ return define_artifact_policy_v1({"/tmp/cellerator", "/cold", "emit-7", hash, keep, failed, inspect}); }; const auto base = make(keep_temps_v1::never, false, false); if (base.action_directory != "/tmp/cellerator/action-emit-7" || base.cold_cache_path != "/cold/sha256/aa/" + hash || base.retain_temporary || !base.cleanup_safe) return EXIT_FAILURE; if (!make(keep_temps_v1::on_failure, true, false).retain_temporary || make(keep_temps_v1::on_failure, false, false).retain_temporary || !make(keep_temps_v1::diagnostics, false, true).retain_temporary || !make(keep_temps_v1::always, false, false).retain_temporary) return EXIT_FAILURE; if (make(keep_temps_v1::on_failure, true, false).action_directory != base.action_directory) return EXIT_FAILURE; std::cout << "validated crash cleanup and reproducible retained/cache artifact paths\n"; }

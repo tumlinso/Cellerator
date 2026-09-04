@@ -1,0 +1,12 @@
+include_guard(GLOBAL)
+
+function(cellerator_create_host_only_compiler_smoke_targets)
+    set(smoke_source "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../tests/compiler/b01/create_host_only_compiler_smoke_targets_test.cc")
+    foreach(component IN ITEMS ceir profile source diagnostics daemon_protocol)
+        set(target "cellerator_compiler_smoke_${component}")
+        add_executable(${target} "${smoke_source}")
+        target_compile_definitions(${target} PRIVATE CELLERATOR_SMOKE_COMPONENT="${component}")
+        target_link_libraries(${target} PRIVATE Cellerator::CompilerTooling)
+        cellerator_set_compiler_implementation_standard(${target})
+    endforeach()
+endfunction()
