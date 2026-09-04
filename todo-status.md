@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6550`
+Project revision: `6625`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -715,17 +715,17 @@ Project revision: `6550`
 - `CE-EXOP-82` | status: done | execution: closed | next: Deliver semantic and target-cover strategy registries exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate central compiler targets and registries in the isolated J03 lane, add the focused ce_ccp1_j03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate jbc migration and cellshard compatibility in the isolated J03 lane, add the focused ce_ccp1_j03_002 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-003` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement reconcile language specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile ir specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile programming guides and examples in the isolated J03 lane, add the focused ce_ccp1_j03_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement publish architecture and migration completion records in the isolated J03 lane, add the focused ce_ccp1_j03_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement run clean host-only sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement run clean nvidia sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement validate all final part one capabilities in the isolated J03 lane, add the focused ce_ccp1_j03_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement audit deferred part two separation in the isolated J03 lane, add the focused ce_ccp1_j03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement run final performance and regression review in the isolated J03 lane, add the focused ce_ccp1_j03_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement create release and bootstrap reproducibility bundle in the isolated J03 lane, add the focused ce_ccp1_j03_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze part one completion checkpoint in the isolated J03 lane, add the focused ce_ccp1_j03_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile language specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_003 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile ir specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile programming guides and examples in the isolated J03 lane, add the focused ce_ccp1_j03_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement publish architecture and migration completion records in the isolated J03 lane, add the focused ce_ccp1_j03_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement run clean host-only sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement run clean nvidia sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement validate all final part one capabilities in the isolated J03 lane, add the focused ce_ccp1_j03_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement audit deferred part two separation in the isolated J03 lane, add the focused ce_ccp1_j03_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement run final performance and regression review in the isolated J03 lane, add the focused ce_ccp1_j03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement create release and bootstrap reproducibility bundle in the isolated J03 lane, add the focused ce_ccp1_j03_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze part one completion checkpoint in the isolated J03 lane, add the focused ce_ccp1_j03_013 gate, and publish a source-linked receipt.
 - `CE-EXOP-83` | status: done | execution: closed | next: Deliver independent exact evaluator and incremental state exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-84` | status: done | execution: closed | next: Deliver multi-candidate solution and snapshot contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-85` | status: done | execution: closed | next: Deliver freeze geometry optimizer contracts exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
@@ -786,7 +786,7 @@ Project revision: `6550`
 - `CE-EXOP-131` | status: done | execution: closed | next: Deliver gpu exact-census and local-delta primitive exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-132` | status: done | execution: closed | next: Deliver cpu/gpu parity, asynchronous use, and resource receipt exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-133` | status: done | execution: closed | next: Deliver device-assisted optimizer disposition exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-M90` | status: planned | execution: ready | next: Collect isolated lane receipts for P90, verify hashes and interfaces, integrate central files, run label ce_ccp1_m90, and publish CE-CCP1-MILESTONE-M90.
+- `CE-CCP1-M90` | status: done | execution: closed | next: Collect isolated lane receipts for P90, verify hashes and interfaces, integrate central files, run label ce_ccp1_m90, and publish CE-CCP1-MILESTONE-M90.
 - `CE-EXOP-140` | status: done | execution: closed | next: Deliver common logical/projection value-plane contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-111` | status: done | execution: closed | next: Calibrate standalone value pack, dense input layout, residual, epilogue, and output remap across sizes and reuse with exact complete-phase evidence.
 - `CE-EXOP-141` | status: done | execution: closed | next: Deliver composite projection-primary trainable values exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
