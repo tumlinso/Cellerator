@@ -49,3 +49,7 @@ add_executable(ce_ccp1_g03_010 implement_candidate_decision_reports_test.cc "${C
 target_include_directories(ce_ccp1_g03_010 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_010 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_010 COMMAND ce_ccp1_g03_010)
+add_executable(ce_ccp1_g03_011 implement_optimization_remarks_and_missed_opportunity_di_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_optimization_remarks_and_missed_opportunity_di.cc")
+target_include_directories(ce_ccp1_g03_011 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_011 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_011 COMMAND ce_ccp1_g03_011)
