@@ -5,7 +5,7 @@ function(cellerator_add_compiler_component target alias)
         add_library(${target} INTERFACE)
         add_library(Cellerator::${alias} ALIAS ${target})
         target_include_directories(${target} INTERFACE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${CELLERATOR_COMPILER_REPOSITORY_ROOT}/include>
             $<INSTALL_INTERFACE:include>)
     endif()
 endfunction()
