@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5977`
+Project revision: `5979`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -937,7 +937,7 @@ Project revision: `5977`
 - `CE-CCP1-G01-010` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow additions, removals, cost changes, decompositions, candidate offers, force directives, and planner replacement fragments at explicit planning points.
 - `CE-CCP1-G01-011` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow explicit projections, packs, stages, target operations, and native fragments with typed bindings and chosen validation mode.
 - `CE-CCP1-G01-012` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Bind source variables, C++ expressions, CEIR values, profile states, runtime slots, and generated symbols without hidden copies or ambiguous lifetimes.
-- `CE-CCP1-G01-013` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Support before/after/replace/wrap/inlining splices with explicit dominance, effects, identities, profiles, and result substitution.
+- `CE-CCP1-G01-013` | kind: task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Support before/after/replace/wrap/inlining splices with explicit dominance, effects, identities, profiles, and result substitution.
 - `CE-CCP1-G01-014` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Preserve identity only when explicitly semantically valid; otherwise derive new IDs, update generations, and retain lineage in cold provenance.
 - `CE-CCP1-G01-015` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Report phase availability, type mismatch, stale handles, capture effects, unknown extensions, validation mode, and resulting compiler invalidations.
 - `CE-CCP1-G01-016` | kind: validation_task | status: planned | parent: CE-CCP1-G01-000 | objective: Compile a `.
@@ -975,7 +975,7 @@ Project revision: `5977`
 - `CE-CCP1-G03-010` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Explain legal candidates, rejected reasons, complete costs, evidence freshness/uncertainty, user edits, selected source, forced choices, and fallback.
 - `CE-CCP1-G03-011` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Provide opt-in remarks for persistence assumptions, missing profile hints, expensive canonicalization, avoidable packing, unshared orders, and uncertain branches.
 - `CE-CCP1-G03-012` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Capture source subset, profiles, CEIR checkpoints, toolchain manifest, pipeline, extensions, diagnostics, and commands needed to reproduce compiler failures without runtime dataset payloads.
-- `CE-CCP1-G03-013` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Attribute failures to compiler phase/pass/backend, preserve temporary artifacts, and isolate optional custom passes when configured.
+- `CE-CCP1-G03-013` | kind: task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Attribute failures to compiler phase/pass/backend, preserve temporary artifacts, and isolate optional custom passes when configured.
 - `CE-CCP1-G03-014` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Publish C/C++ callbacks, JSON/LSP records, stable IDs, related-information links, and cancellation-safe streaming for cellerator, libCellerator, and celleratord.
 - `CE-CCP1-G03-015` | kind: validation_task | status: planned | parent: CE-CCP1-G03-000 | objective: Measure disabled, minimal, and full provenance compile-time/RSS/object-size overhead; keep hot runtime overhead zero.
 - `CE-CCP1-G03-016` | kind: validation_task | status: planned | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
