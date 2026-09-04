@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5942`
+Project revision: `5956`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -934,7 +934,7 @@ Project revision: `5942`
 - `CE-CCP1-G01-007` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow compile-time branching, concepts, and type/value construction over stable reflection queries without requiring standardized C++ reflection.
 - `CE-CCP1-G01-008` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Provide source-accessible builders for typed CEIR nodes, attributes, regions, alternatives, candidates, and native fragments with deterministic allocation and diagnostics.
 - `CE-CCP1-G01-009` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Splice typed source captures/results into Semantic IR, validate domain/effect/generation contracts, and retain surrounding field/profile context.
-- `CE-CCP1-G01-010` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow additions, removals, cost changes, decompositions, candidate offers, force directives, and planner replacement fragments at explicit planning points.
+- `CE-CCP1-G01-010` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow additions, removals, cost changes, decompositions, candidate offers, force directives, and planner replacement fragments at explicit planning points.
 - `CE-CCP1-G01-011` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow explicit projections, packs, stages, target operations, and native fragments with typed bindings and chosen validation mode.
 - `CE-CCP1-G01-012` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Bind source variables, C++ expressions, CEIR values, profile states, runtime slots, and generated symbols without hidden copies or ambiguous lifetimes.
 - `CE-CCP1-G01-013` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Support before/after/replace/wrap/inlining splices with explicit dominance, effects, identities, profiles, and result substitution.
@@ -949,7 +949,7 @@ Project revision: `5942`
 - `CE-CCP1-G02-004` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose Semantic IR read/write access, profiles, source mappings, diagnostics, and analysis cache while allowing semantics-changing transformations under declared validation mode.
 - `CE-CCP1-G02-005` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose search spaces, evidence, atoms, decomposition, candidates, costs, selection, and planner services for additions or full replacement.
 - `CE-CCP1-G02-006` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose physical covers, projections, packs, stages, bindings, target operations, and native fragments before backend emission.
-- `CE-CCP1-G02-007` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Allow profile propagation, discovery, certification, decomposition, candidate enumeration, cost model, planner, realization, and backend lowering to be replaced rather than merely decorated.
+- `CE-CCP1-G02-007` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Allow profile propagation, discovery, certification, decomposition, candidate enumeration, cost model, planner, realization, and backend lowering to be replaced rather than merely decorated.
 - `CE-CCP1-G02-008` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Register custom namespaces, text syntax, types, attributes, effects, reflection, state transfer, verification, cost, and lowering protocols independently so extensions implement only what they need.
 - `CE-CCP1-G02-009` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Parse, print, serialize, clone, inline, import, and pass through unknown extension nodes at levels where opaque continuation is technically possible.
 - `CE-CCP1-G02-010` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Record required protocols and backend capabilities; allow inspect-only, preserve-only, external-lowered, and fully understood modes.
@@ -971,8 +971,8 @@ Project revision: `5942`
 - `CE-CCP1-G03-006` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Trace source, AST, Semantic IR, profile evidence, passes, Planning alternatives, selection, Realization stages, generated source, backend objects, and native symbols through cold IDs and edges.
 - `CE-CCP1-G03-007` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Emit sidecars or debug/object sections for provenance without adding hot runtime fields; support strip and separate-debug workflows.
 - `CE-CCP1-G03-008` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Explain structure/value/support/order/profile generations changed by each statement or pass, which artifacts became stale, and earliest lowering resumption point.
-- `CE-CCP1-G03-009` | kind: task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Identify opaque C++ calls, field boundaries, unknown extensions, effects, alias uncertainty, profile widening, and hard constraints that stop fusion or movement.
-- `CE-CCP1-G03-010` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain legal candidates, rejected reasons, complete costs, evidence freshness/uncertainty, user edits, selected source, forced choices, and fallback.
+- `CE-CCP1-G03-009` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Identify opaque C++ calls, field boundaries, unknown extensions, effects, alias uncertainty, profile widening, and hard constraints that stop fusion or movement.
+- `CE-CCP1-G03-010` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Explain legal candidates, rejected reasons, complete costs, evidence freshness/uncertainty, user edits, selected source, forced choices, and fallback.
 - `CE-CCP1-G03-011` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Provide opt-in remarks for persistence assumptions, missing profile hints, expensive canonicalization, avoidable packing, unshared orders, and uncertain branches.
 - `CE-CCP1-G03-012` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Capture source subset, profiles, CEIR checkpoints, toolchain manifest, pipeline, extensions, diagnostics, and commands needed to reproduce compiler failures without runtime dataset payloads.
 - `CE-CCP1-G03-013` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Attribute failures to compiler phase/pass/backend, preserve temporary artifacts, and isolate optional custom passes when configured.
