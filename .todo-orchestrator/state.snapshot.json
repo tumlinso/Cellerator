@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:28:23Z",
+  "generated_at": "2026-09-04T07:28:42Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4378,
+  "project_revision": 4379,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48041,6 +48041,16 @@
         "revision": 4378,
         "seq": 4378,
         "timestamp": "2026-09-04T07:28:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B03",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B03\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B03-003\"}",
+        "revision": 4379,
+        "seq": 4379,
+        "timestamp": "2026-09-04T07:28:42Z"
       }
     ],
     "evidence": [
@@ -231903,12 +231913,12 @@
         "priority": 844,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4379,
+        "status": "in_progress",
         "tags_json": "[\"b03\", \"compiler-frontend-source\", \"leaf\"]",
         "title": "Register the #pragma cellerator preprocessor contract",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:28:42Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -275550,13 +275560,13 @@
         "task_id": "CE-CCP1-B03-002"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:28:42Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B03",
         "position": 2,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4379,
+        "state": "active",
         "task_id": "CE-CCP1-B03-003"
       },
       {
@@ -284644,11 +284654,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4378,
+        "revision": 4379,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:28:23Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:28:42Z",
         "workspace_mode": "isolated_merge"
       },
       {

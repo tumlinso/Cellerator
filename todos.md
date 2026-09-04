@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4378`
+Project revision: `4379`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -637,7 +637,7 @@ Project revision: `4378`
 - `CE-GEO-55` | kind: workstream | status: done | parent: CE-GEO-00 | objective: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
 - `CE-CCP1-B03-001` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Represent physical files, include instances, macro expansions, transformed buffers, CEIR nodes, and backend output with stable source spans and reversible mapping edges.
 - `CE-CCP1-B03-002` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Treat .
-- `CE-CCP1-B03-003` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Recognize the pragma through an upstream-compatible preprocessor hook, record activation source location and revision options, and diagnose malformed forms.
+- `CE-CCP1-B03-003` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Recognize the pragma through an upstream-compatible preprocessor hook, record activation source location and revision options, and diagnose malformed forms.
 - `CE-CCP1-B03-004` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Associate activation with the current physical FileID/include instance so mode begins at the pragma, ends at that file boundary, and never leaks to includers or included files.
 - `CE-CCP1-B03-005` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Specify activation inside #if branches, inactive directives, include replay, precompiled headers, and modules.
 - `CE-CCP1-B03-006` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Capture spelling, trivia, source span, macro origin, activated dialect state, and preprocessor condition for every token needed by Cellerator parsing and source reconstruction.
