@@ -58,3 +58,11 @@ target_include_directories(ce_ccp1_f02_005 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_005 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_005 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_005 COMMAND ce_ccp1_f02_005)
+
+add_executable(ce_ccp1_f02_006
+  implement_cpu_transpose_and_contraction_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_cpu_transpose_and_contraction.cc)
+target_include_directories(ce_ccp1_f02_006 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_006 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_006 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_006 COMMAND ce_ccp1_f02_006)
