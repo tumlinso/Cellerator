@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4416`
+Project revision: `4428`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -261,9 +261,9 @@ Project revision: `4416`
 - `CE-CCP1-B03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement define pragma interaction with preprocessing conditionals in the isolated B03 lane, add the focused ce_ccp1_b03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement build a lossless raw-token stream in the isolated B03 lane, add the focused ce_ccp1_b03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement define macro expansion semantics for cellerator tokens in the isolated B03 lane, add the focused ce_ccp1_b03_007 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-008` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement recognize cellerator execution-field token islands in the isolated B03 lane, add the focused ce_ccp1_b03_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement recognize relation and operation token forms in the isolated B03 lane, add the focused ce_ccp1_b03_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement construct shadow c++ placeholders in the isolated B03 lane, add the focused ce_ccp1_b03_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement recognize cellerator execution-field token islands in the isolated B03 lane, add the focused ce_ccp1_b03_008 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement recognize relation and operation token forms in the isolated B03 lane, add the focused ce_ccp1_b03_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement construct shadow c++ placeholders in the isolated B03 lane, add the focused ce_ccp1_b03_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement map shadow ast nodes back to cellerator syntax in the isolated B03 lane, add the focused ce_ccp1_b03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement define generated identifier hygiene in the isolated B03 lane, add the focused ce_ccp1_b03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement cache preprocessed activated headers safely in the isolated B03 lane, add the focused ce_ccp1_b03_013 gate, and publish a source-linked receipt.
@@ -282,7 +282,7 @@ Project revision: `4416`
 - `CE-CCP1-B04-010` | status: done | execution: closed | next: Inspect the cited read scope, implement bind native effect contracts in the isolated B04 lane, add the focused ce_ccp1_b04_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-011` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile gcc-hosted abi and library semantics in the isolated B04 lane, add the focused ce_ccp1_b04_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-012` | status: done | execution: closed | next: Inspect the cited read scope, implement preserve pure c++ fallthrough exactly in the isolated B04 lane, add the focused ce_ccp1_b04_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-B04-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose reusable frontend sessions in the isolated B04 lane, add the focused ce_ccp1_b04_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-B04-013` | status: done | execution: closed | next: Inspect the cited read scope, implement expose reusable frontend sessions in the isolated B04 lane, add the focused ce_ccp1_b04_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the c++ semantic bridge milestone in the isolated B04 lane, add the focused ce_ccp1_b04_014 gate, and publish a source-linked receipt.
 - `CE-GEO-57` | status: done | execution: closed | next: Prove identical input/seed gives byte-identical evidence, exact rescans own all edges, and architecture/tile widths do not enter portable identity.
 - `CE-CCP1-C01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the executable grammar revision and token vocabulary in the isolated C01 lane, add the focused ce_ccp1_c01_001 gate, and publish a source-linked receipt.
