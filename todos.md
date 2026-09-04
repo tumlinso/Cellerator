@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6555`
+Project revision: `6558`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1097,7 +1097,7 @@ Project revision: `6555`
 - `CE-CCP1-J03-001` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Merge isolated source fragments into root/subsystem CMake, grammar/dialect/backend/pass registries, umbrellas, generated manifests, standard-library resources, and package exports under one integration owner.
 - `CE-CCP1-J03-002` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Advance the embedded CellShard gitlink only after source/provenance receipts, compile compatibility adapters, and prove all compiler semantics are Cellerator-owned while concrete storage/runtime remains usable.
 - `CE-CCP1-J03-003` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Update normative syntax, nesting, profiles, effects, control hierarchy, C++ integration, errors, and implementation-defined behavior to match validated compiler behavior and governing philosophy.
-- `CE-CCP1-J03-004` | kind: task | status: in_progress | parent: CE-CCP1-J03-000 | objective: Update Semantic/Planning/Realization IR, reflection, inline IR, passes, staging, extensions, trust modes, native boundary, round-trip, and LTO rules.
+- `CE-CCP1-J03-004` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Update Semantic/Planning/Realization IR, reflection, inline IR, passes, staging, extensions, trust modes, native boundary, round-trip, and LTO rules.
 - `CE-CCP1-J03-005` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: Update developer-facing source and IR guides from minimal programs through profiles, planning, realization, custom passes, unsafe native paths, LTO, SDK, and celleratord.
 - `CE-CCP1-J03-006` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: Document final directory layout, Cellerator/CellShard ownership, preserved JBC provenance, superseded charters, interfaces, build modes, backends, and Part Two seam.
 - `CE-CCP1-J03-007` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: From a clean checkout with CUDA disabled, build/install cellerator, libCellerator, celleratord, stdlib, profiles, and package metadata; compile ordinary C++, `.

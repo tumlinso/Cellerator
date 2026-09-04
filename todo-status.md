@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6555`
+Project revision: `6558`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -716,7 +716,7 @@ Project revision: `6555`
 - `CE-CCP1-J03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate central compiler targets and registries in the isolated J03 lane, add the focused ce_ccp1_j03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate jbc migration and cellshard compatibility in the isolated J03 lane, add the focused ce_ccp1_j03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile language specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-J03-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement reconcile ir specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-J03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile ir specification with implementation in the isolated J03 lane, add the focused ce_ccp1_j03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile programming guides and examples in the isolated J03 lane, add the focused ce_ccp1_j03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement publish architecture and migration completion records in the isolated J03 lane, add the focused ce_ccp1_j03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-J03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement run clean host-only sdk acceptance in the isolated J03 lane, add the focused ce_ccp1_j03_007 gate, and publish a source-linked receipt.
