@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6162`
+Project revision: `6168`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -988,7 +988,7 @@ Project revision: `6162`
 - `CE-CCP1-H01-005` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Resolve exported domains, relations, fields, profiles, passes, native symbols, and template instantiations using semantic fingerprints plus linkage/module identity.
 - `CE-CCP1-H01-006` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Deduplicate equivalent C++/Cellerator template specializations while preserving distinct numeric/domain/profile semantics and backend variants.
 - `CE-CCP1-H01-007` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Merge named states and evidence references by stable identity/revision, diagnose conflicting biological semantics, and retain bounded alternatives.
-- `CE-CCP1-H01-008` | kind: task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Import exported Semantic IR summaries or full field bodies on demand with source/provenance references and extension negotiation.
+- `CE-CCP1-H01-008` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Import exported Semantic IR summaries or full field bodies on demand with source/provenance references and extension negotiation.
 - `CE-CCP1-H01-009` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Require exported/named fields, source policy, or driver LTO flags before crossing ordinary field/TU boundaries; never absorb arbitrary plain C++ globally.
 - `CE-CCP1-H01-010` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Scan individual objects, static archives, shared-library metadata, and linker inputs without loading code; index fields/profiles by identity.
 - `CE-CCP1-H01-011` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Intercept link invocations, build the program CEIR graph, run authorized Cellerator LTO, produce replacement/additional objects, then invoke the selected conventional linker.
@@ -1020,7 +1020,7 @@ Project revision: `6162`
 - `CE-CCP1-H03-003` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide compiler-recognized bridge declarations, concepts, traits, low-level views, span-like pointer/count types, result/status helpers, and no-allocation facilities needed by examples.
 - `CE-CCP1-H03-004` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide explicit low-level constructors/builders from pointers, extents, identities, orders, support, generations, and numeric types without hiding costs.
 - `CE-CCP1-H03-005` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Express relation, transpose, contraction, segment, gate, update, bundle, chain, moments, hierarchy, and exchange constructions as inlineable `.
-- `CE-CCP1-H03-006` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Provide typed names/state selectors, reuse/lifetime facts, generation helpers, mutation contracts, and explicit generic reference-profile selection.
+- `CE-CCP1-H03-006` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide typed names/state selectors, reuse/lifetime facts, generation helpers, mutation contracts, and explicit generic reference-profile selection.
 - `CE-CCP1-H03-007` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide source conveniences for preferences, constraints, candidate offers, forced plans, cost records, decomposition builders, and unsafe modes while leaving full CEIR accessible.
 - `CE-CCP1-H03-008` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide concepts, visitors, pattern helpers, builders, and pass adapters in `.
 - `CE-CCP1-H03-009` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Ship explicitly named, low-performance, testing-oriented profiles for a small audited set such as Homo sapiens, Mus musculus, and a rat reference.
