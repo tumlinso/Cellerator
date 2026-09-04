@@ -83,3 +83,7 @@ add_executable(ce_ccp1_d03_011 ../d03/implement_semantic_transfer_functions_test
 target_include_directories(ce_ccp1_d03_011 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_011 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_011 COMMAND ce_ccp1_d03_011)
+add_executable(ce_ccp1_d03_012 ../d03/implement_bounded_branch_alternatives_and_joins_test.cc "${CELLERATOR_ROOT}/src/compiler/profile/implement_bounded_branch_alternatives_and_joins.cc")
+target_include_directories(ce_ccp1_d03_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_012 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_012 COMMAND ce_ccp1_d03_012)
