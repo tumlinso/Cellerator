@@ -33,3 +33,7 @@ add_executable(ce_ccp1_g03_006 build_the_provenance_graph_model_test.cc "${CELLE
 target_include_directories(ce_ccp1_g03_006 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_006 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_006 COMMAND ce_ccp1_g03_006)
+add_executable(ce_ccp1_g03_007 implement_source_to_native_maps_and_removable_sections_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_source_to_native_maps_and_removable_sections.cc")
+target_include_directories(ce_ccp1_g03_007 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_007 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_007 COMMAND ce_ccp1_g03_007)
