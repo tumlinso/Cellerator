@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/profile/implement_semantic_transfer_functions_v1.hh>
+#include <array>
+#include <cassert>
+int main(){using namespace cellerator;using K=compute::operation::v2::operation_kind;using T=compiler::profile::v1::profile_state_transfer_v1;constexpr std::array<K,8>k={K::relation_apply,K::relation_apply_transpose,K::contract_on_support,K::segment_reduce,K::segment_normalize,K::edge_map_or_gate,K::relation_bundle_apply,K::sparse_axis_update};for(auto x:k){auto t=compiler::profile::v1::semantic_transfer_for_operation_v1(x);assert(t.values==T::derive&&t.generation==T::derive);}auto n=compiler::profile::v1::semantic_transfer_for_native_effect_v1(compiler::profile::v1::native_publishes_structure_v1,false);assert(n.structure==T::invalidate&&n.values==T::preserve);assert(compiler::profile::v1::semantic_transfer_for_native_effect_v1(0,true).order==T::unknown);}
