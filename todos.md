@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6621`
+Project revision: `6624`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1167,7 +1167,7 @@ Project revision: `6621`
 - `CE-EXOP-131` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver gpu exact-census and local-delta primitive exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-132` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver cpu/gpu parity, asynchronous use, and resource receipt exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-133` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver device-assisted optimizer disposition exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-M90` | kind: validation_task | status: in_progress | parent: CE-CCP1-P90 | objective: Integrate and validate all P90 workstreams, freeze shared interfaces, and publish milestone M90.
+- `CE-CCP1-M90` | kind: validation_task | status: done | parent: CE-CCP1-P90 | objective: Integrate and validate all P90 workstreams, freeze shared interfaces, and publish milestone M90.
 - `CE-EXOP-140` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver common logical/projection value-plane contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-111` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Calibrate standalone value pack, dense input layout, residual, epilogue, and output remap across sizes and reuse with exact complete-phase evidence.
 - `CE-EXOP-141` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver composite projection-primary trainable values exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

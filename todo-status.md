@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6621`
+Project revision: `6624`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -786,7 +786,7 @@ Project revision: `6621`
 - `CE-EXOP-131` | status: done | execution: closed | next: Deliver gpu exact-census and local-delta primitive exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-132` | status: done | execution: closed | next: Deliver cpu/gpu parity, asynchronous use, and resource receipt exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-133` | status: done | execution: closed | next: Deliver device-assisted optimizer disposition exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-M90` | status: in_progress | execution: claimed | next: Collect isolated lane receipts for P90, verify hashes and interfaces, integrate central files, run label ce_ccp1_m90, and publish CE-CCP1-MILESTONE-M90.
+- `CE-CCP1-M90` | status: done | execution: closed | next: Collect isolated lane receipts for P90, verify hashes and interfaces, integrate central files, run label ce_ccp1_m90, and publish CE-CCP1-MILESTONE-M90.
 - `CE-EXOP-140` | status: done | execution: closed | next: Deliver common logical/projection value-plane contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-111` | status: done | execution: closed | next: Calibrate standalone value pack, dense input layout, residual, epilogue, and output remap across sizes and reuse with exact complete-phase evidence.
 - `CE-EXOP-141` | status: done | execution: closed | next: Deliver composite projection-primary trainable values exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
