@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5698`
+Project revision: `5699`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -872,7 +872,7 @@ Project revision: `5698`
 - `CE-CCP1-F01-012` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent preparing/ready components, pending/current generation, complete publication, no partial publication, retained order, and canonicalization request.
 - `CE-CCP1-F01-013` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent capture compatibility, fixed versus rebindable pointers/streams/generations, graph-stable addresses, update policy ownership, and replay variants.
 - `CE-CCP1-F01-014` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent input/output/value/workspace/native-symbol bindings by typed slots; live pointers, streams, handles, events, and leases enter only at prepared/runtime binding.
-- `CE-CCP1-F01-015` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
+- `CE-CCP1-F01-015` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
 - `CE-CCP1-F01-016` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Add compact syntax for targets, covers, planes, projections, packing, stages, readiness, bindings, and native fragments with unknown extension preservation.
 - `CE-CCP1-F01-017` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Separate structural parseability, semantic consistency, exact coverage, resource/capability checks, and unsafe continuation.
 - `CE-CCP1-F01-018` | kind: validation_task | status: planned | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
