@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4058`
+Project revision: `4059`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -580,7 +580,7 @@ Project revision: `4058`
 - `CE-CCP1-A03-001` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Map CellShard evidence-atlas and discovery APIs into Cellerator profile/planning namespaces.
 - `CE-CCP1-A03-002` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Move exact coverage, ownership, duplicate/omission proof, and canonical recovery semantics into Cellerator Planning IR and validators.
 - `CE-CCP1-A03-003` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Retain the term atom and map candidate, certified, basis, super, physical, replica, partial, and resident states to explicit Cellerator compiler levels.
-- `CE-CCP1-A03-004` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Map production rules, multi-parent derivations, exact coverage equations, ports, generations, and operation compatibility into Planning IR extension contracts.
+- `CE-CCP1-A03-004` | kind: task | status: in_progress | parent: CE-CCP1-A03-000 | objective: Map production rules, multi-parent derivations, exact coverage equations, ports, generations, and operation compatibility into Planning IR extension contracts.
 - `CE-CCP1-A03-005` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Move workload-family basis search, redundant bases, no-basis outcome, and basis cost reasoning into the Cellerator planner.
 - `CE-CCP1-A03-006` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Treat superatoms as optional compiler-selected composed units with exact derivation and measured benefit, not storage shards.
 - `CE-CCP1-A03-007` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Place partial-result algebra, dependency closure, numerical policy, and persistence legality in Cellerator; leave concrete partial payload persistence, replication, and recovery in CellShard.
