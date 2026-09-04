@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6353`
+Project revision: `6356`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1052,7 +1052,7 @@ Project revision: `6353`
 - `CE-CCP1-I02-001` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Complete semantic declarations, field constructs, relations, operation families, effects, persistence/profile controls, reflection, passes, inline CEIR, and native blocks from parser context.
 - `CE-CCP1-I02-002` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Show domains/tags, axes/orders, relation endpoints, support, orientation, numerical tuple, mutability, identities, and current generations with source links.
 - `CE-CCP1-I02-003` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Show enclosing field, nested boundary, captured values, native barriers, reads/writes, observable effects, profile environment, and optimization visibility.
-- `CE-CCP1-I02-004` | kind: task | status: in_progress | parent: CE-CCP1-I02-000 | objective: Show selected/named states, inferred evidence, confidence, alternatives, joined/unknown dimensions, expected support/value/mutation state, and missing hints.
+- `CE-CCP1-I02-004` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Show selected/named states, inferred evidence, confidence, alternatives, joined/unknown dimensions, expected support/value/mutation state, and missing hints.
 - `CE-CCP1-I02-005` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Answer what structure/value/support/order generations are live, what changes after a statement, and which cached/planned artifacts become stale.
 - `CE-CCP1-I02-006` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Render or open the normalized field/operation Semantic IR, source mapping, effects, profiles, and extensions with navigation back to source.
 - `CE-CCP1-I02-007` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Show planning problem, exact cover, atom proposals/certification, decompositions, candidates, resources, costs, evidence, rejected reasons, and selected/forced state.
