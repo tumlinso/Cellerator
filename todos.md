@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4420`
+Project revision: `4421`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -643,7 +643,7 @@ Project revision: `4420`
 - `CE-CCP1-B03-006` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Capture spelling, trivia, source span, macro origin, activated dialect state, and preprocessor condition for every token needed by Cellerator parsing and source reconstruction.
 - `CE-CCP1-B03-007` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Parse Cellerator constructs after preprocessing while preserving definition and expansion provenance.
 - `CE-CCP1-B03-008` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Detect balanced <[ .
-- `CE-CCP1-B03-009` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Identify -[relation]-> and other language-spec operation families without assigning semantics during the raw source pass.
+- `CE-CCP1-B03-009` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Identify -[relation]-> and other language-spec operation families without assigning semantics during the raw source pass.
 - `CE-CCP1-B03-010` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Replace Cellerator constructs with valid generated C++ expressions/declarations carrying stable placeholder IDs, typed capture slots, and source-map anchors while retaining unaffected C++ verbatim.
 - `CE-CCP1-B03-011` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Maintain one-to-one or explicit many-to-one mappings from placeholder declarations/calls to Cellerator parse nodes and source captures.
 - `CE-CCP1-B03-012` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Use reserved internal namespaces and content-derived identifiers that cannot collide with user macros, symbols, modules, or link names.
