@@ -100,3 +100,9 @@ add_executable(ce_ccp1_g02_012
 target_include_directories(ce_ccp1_g02_012 PRIVATE ${CELLERATOR_ROOT}/include)
 target_link_libraries(ce_ccp1_g02_012 PRIVATE dl)
 add_test(NAME ce_ccp1_g02_012 COMMAND ce_ccp1_g02_012)
+
+add_executable(ce_ccp1_g02_013
+    implement_bounded_meta_generation_and_staging_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_bounded_meta_generation_and_staging.cc)
+target_include_directories(ce_ccp1_g02_013 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_013 COMMAND ce_ccp1_g02_013)
