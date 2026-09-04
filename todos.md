@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4296`
+Project revision: `4303`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -613,7 +613,7 @@ Project revision: `4296`
 - `CE-CCP1-B01-006` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Discover compatible upstream LLVM/Clang development packages for frontend integration without pinning a fork.
 - `CE-CCP1-B01-007` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Generate a cold compiler resource manifest naming available host compilers, nvcc, clang CUDA, LLVM/NVPTX, ptxas, linkers, and support directories without probing devices in hot paths.
 - `CE-CCP1-B01-008` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Generate compiler version, language revision, CEIR revision, backend capability, and install-resource path headers into the build tree.
-- `CE-CCP1-B01-009` | kind: task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Add planned smoke targets for CEIR parser/printer, profile loader, source manager, diagnostics, and celleratord protocol code without CUDA linkage.
+- `CE-CCP1-B01-009` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Add planned smoke targets for CEIR parser/printer, profile loader, source manager, diagnostics, and celleratord protocol code without CUDA linkage.
 - `CE-CCP1-B01-010` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Add conditional linkage tests that bind Realization IR and backend adapters to existing Cellerator CUDA provider/runtime targets.
 - `CE-CCP1-B01-011` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Specify presets for host-only Clang, host-only GCC, CUDA+NVCC sm70, CUDA+Clang where available, installed-consumer, sanitizer, and language-server builds.
 - `CE-CCP1-B01-012` | kind: validation_task | status: planned | parent: CE-CCP1-B01-000 | objective: Publish the target dependency graph, feature options, standards, generated headers, and configure behavior as the build thin waist.
@@ -628,7 +628,7 @@ Project revision: `4296`
 - `CE-CCP1-B02-007` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Support command-line, response file, environment, build configuration, installed resource manifest, and system discovery in one deterministic policy analogous to nvcc.
 - `CE-CCP1-B02-008` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Parse and forward -std, target, exception, RTTI, sanitizer, visibility, ABI, include, macro, and linker flags while separately selecting the compiler's own implementation standard.
 - `CE-CCP1-B02-009` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: When no activated Cellerator syntax exists, construct a zero-semantic-work driver plan that invokes the downstream compiler with equivalent arguments and exit behavior.
-- `CE-CCP1-B02-010` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Emit or preserve compile_commands entries, depfiles, module dependencies, and source-to-output mappings suitable for CMake, Ninja, and celleratord.
+- `CE-CCP1-B02-010` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Emit or preserve compile_commands entries, depfiles, module dependencies, and source-to-output mappings suitable for CMake, Ninja, and celleratord.
 - `CE-CCP1-B02-011` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Use deterministic per-action temporary directories, explicit keep-temps modes, content-addressed cold caches, and cleanup that never hides artifacts requested for diagnostics.
 - `CE-CCP1-B02-012` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Preserve severity, source ranges, fix-its, and exit codes from downstream compilers while allowing Cellerator source maps to remap generated/shadow locations.
 - `CE-CCP1-B02-013` | kind: task | status: planned | parent: CE-CCP1-B02-000 | objective: Create a stable toolchain identity from executable content/version, target, resource directory, critical flags, runtime/driver identity, and backend plugin revision.
