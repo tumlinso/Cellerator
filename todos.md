@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5726`
+Project revision: `5727`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -875,7 +875,7 @@ Project revision: `5726`
 - `CE-CCP1-F01-015` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Map canonical source, atom evidence, semantic atom, target cover, physical projection, packed operand, executable recipe, and local realization artifacts to CEIR facets with exact invalidation rules.
 - `CE-CCP1-F01-016` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Add compact syntax for targets, covers, planes, projections, packing, stages, readiness, bindings, and native fragments with unknown extension preservation.
 - `CE-CCP1-F01-017` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Separate structural parseability, semantic consistency, exact coverage, resource/capability checks, and unsafe continuation.
-- `CE-CCP1-F01-018` | kind: validation_task | status: planned | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
+- `CE-CCP1-F01-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Lower a selected Planning IR relation plan into writable Realization IR, prepare existing program_v2-compatible stages, bind runtime operands, and execute through a reference backend.
 - `CE-GEO-69` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
 - `CE-CCP1-F02-001` | kind: validation_task | status: done | parent: CE-CCP1-F02-000 | objective: Define target discovery, capability query, Realization IR admissibility, code emission, object production, diagnostics, toolchain identity, and optional native-fragment protocols.
 - `CE-CCP1-F02-002` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Register built-in and external backends through source-linked fragments, match target/capability/toolchain constraints, and honor explicit force/fallback policy.
