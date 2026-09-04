@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6501`
+Project revision: `6508`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -694,7 +694,7 @@ Project revision: `6501`
 - `CE-CCP1-J01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement fuzz profile artifacts and state propagation in the isolated J01 lane, add the focused ce_ccp1_j01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement property-test exact coverage and partial algebra in the isolated J01 lane, add the focused ce_ccp1_j01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-009` | status: done | execution: closed | next: Inspect the cited read scope, implement test pass and extension isolation in the isolated J01 lane, add the focused ce_ccp1_j01_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-J01-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement test cross-tu/lto and object corruption in the isolated J01 lane, add the focused ce_ccp1_j01_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-J01-010` | status: done | execution: closed | next: Inspect the cited read scope, implement test cross-tu/lto and object corruption in the isolated J01 lane, add the focused ce_ccp1_j01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement run sanitizers and resource-bound tests in the isolated J01 lane, add the focused ce_ccp1_j01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-J01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze independent conformance and resilience acceptance in the isolated J01 lane, add the focused ce_ccp1_j01_012 gate, and publish a source-linked receipt.
 - `CE-EXOP-81` | status: done | execution: closed | next: Deliver original-group and incremental work-window semantics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
@@ -708,8 +708,8 @@ Project revision: `6501`
 - `CE-CCP1-J02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark realization ir and backend generation in the isolated J02 lane, add the focused ce_ccp1_j02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark generated cpu execution in the isolated J02 lane, add the focused ce_ccp1_j02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark generated nvidia execution in the isolated J02 lane, add the focused ce_ccp1_j02_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-J02-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark cross-tu/lto in the isolated J02 lane, add the focused ce_ccp1_j02_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-J02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark libcellerator and celleratord in the isolated J02 lane, add the focused ce_ccp1_j02_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-J02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark cross-tu/lto in the isolated J02 lane, add the focused ce_ccp1_j02_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-J02-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement benchmark libcellerator and celleratord in the isolated J02 lane, add the focused ce_ccp1_j02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement execute progressive vertical milestone campaign in the isolated J02 lane, add the focused ce_ccp1_j02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-J02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the part one performance and milestone receipt in the isolated J02 lane, add the focused ce_ccp1_j02_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-82` | status: done | execution: closed | next: Deliver semantic and target-cover strategy registries exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
