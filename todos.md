@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4634`
+Project revision: `4638`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -674,7 +674,7 @@ Project revision: `4634`
 - `CE-CCP1-C01-006` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse named field declarations, calls/references, explicit export/import intent, and field-level policy blocks needed for reflection and cross-TU authorization.
 - `CE-CCP1-C01-007` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse source -[relation]-> destination with typed captures, orientation modifiers, result/update forms, and composable expression placement without lowering it to a storage primitive.
 - `CE-CCP1-C01-008` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse transpose, support contraction, segmented reductions/normalization, edge map/gate, sparse axis update, bundles, chains, moments, hierarchy pool/broadcast, and exchange through coherent operation syntax selected by the language spec.
-- `CE-CCP1-C01-009` | kind: task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Parse field-local and operation-local facts for profiles, reuse, persistence, budgets, objectives, target classes, candidate inclusion/exclusion, and forced realization while preserving hierarchy of authority.
+- `CE-CCP1-C01-009` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse field-local and operation-local facts for profiles, reuse, persistence, budgets, objectives, target classes, candidate inclusion/exclusion, and forced realization while preserving hierarchy of authority.
 - `CE-CCP1-C01-010` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse native effect contracts, structure/value/support/order mutations, publication, epoch boundaries, generation assertions, and expert identity manipulation.
 - `CE-CCP1-C01-011` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse semantic, planning, and realization inline IR regions with typed captures, results, nesting, validation mode, and abstraction transitions.
 - `CE-CCP1-C01-012` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse IR reflection, pass declarations, pipeline insertion/replacement, compiler preludes, same-compilation transform application, and compile-time IR construction.
@@ -723,7 +723,7 @@ Project revision: `4634`
 - `CE-CCP1-C04-006` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Propagate structure/value/support/order generations through known operations, loops, native contracts, and field exits; materialize explicit transitions in semantic state.
 - `CE-CCP1-C04-007` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Represent stable topology, mutable values, slowly evolving support, stable order, reuse horizon, recurrence, loop invariance, epoch boundary, and invalidation as source-level planning facts.
 - `CE-CCP1-C04-008` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Bind one or more compile-supplied profile states to fields and operations, support explicit state selection/aliasing, and keep data paths outside language semantics.
-- `CE-CCP1-C04-009` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Allow operations/native calls to state or select expected post-transform profile states, support inferred transfer functions, and warn when costly widening is required.
+- `CE-CCP1-C04-009` | kind: task | status: in_progress | parent: CE-CCP1-C04-000 | objective: Allow operations/native calls to state or select expected post-transform profile states, support inferred transfer functions, and warn when costly widening is required.
 - `CE-CCP1-C04-010` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Carry bounded branch-conditioned alternatives and explicit joins without generating uncontrolled decision-tree specialization.
 - `CE-CCP1-C04-011` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Apply non-binding facts/objectives for reuse, memory, latency, throughput, compilation budget, target preference, graph capture, and canonical output without changing mathematical meaning.
 - `CE-CCP1-C04-012` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Restrict legal plans for determinism, numerical tolerance, exactness, memory bounds, target capabilities, candidate families, order, and synchronization.
