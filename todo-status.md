@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6357`
+Project revision: `6360`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -672,7 +672,7 @@ Project revision: `6357`
 - `CE-CCP1-I02-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement biological type and relation hover in the isolated I02 lane, add the focused ce_ccp1_i02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement field ownership and effect views in the isolated I02 lane, add the focused ce_ccp1_i02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement profile-state-at-cursor in the isolated I02 lane, add the focused ce_ccp1_i02_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-I02-005` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement generation and staleness queries in the isolated I02 lane, add the focused ce_ccp1_i02_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-I02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generation and staleness queries in the isolated I02 lane, add the focused ce_ccp1_i02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic ir at cursor in the isolated I02 lane, add the focused ce_ccp1_i02_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planning ir and candidate views in the isolated I02 lane, add the focused ce_ccp1_i02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement realization and decomposition visualization in the isolated I02 lane, add the focused ce_ccp1_i02_008 gate, and publish a source-linked receipt.
