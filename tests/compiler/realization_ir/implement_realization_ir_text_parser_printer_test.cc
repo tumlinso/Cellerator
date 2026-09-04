@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/ir/realization/implement_realization_ir_text_parser_printer_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::ir::realization::v1;
+int main(){realization_text_document_v1 d{{1,1},{{"target",{2,1},"sm70 pbmc"},{"cover",{2,2},"exact"},{"plane",{2,3},"values"},{"projection",{2,4},"row-masked"},{"packing",{2,5},"generation=7"},{"stage",{2,6},"forward"},{"readiness",{2,7},"ready"},{"binding",{2,8},"input"},{"native-fragment",{2,9},"warp tile"},{"x-future",{2,10},"unknown bytes: \x01"}}};auto text=print_realization_text_v1(d);auto parsed=parse_realization_text_v1(text);assert(parsed&&equivalent_realization_text_v1(d,*parsed));for(unsigned i=0;i<128;++i){d.records.back().payload.assign(i%17,static_cast<char>(i));text=print_realization_text_v1(d);parsed=parse_realization_text_v1(text);assert(parsed&&print_realization_text_v1(*parsed)==text);}assert(!parse_realization_text_v1("bad header"));}
