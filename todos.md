@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4937`
+Project revision: `4938`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -768,7 +768,7 @@ Project revision: `4937`
 - `CE-EXOP-63` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver generic external-consumer boundary and tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-63` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement provider-specific work layouts with invalid-sentinel padding that never enters semantic work identity.
 - `CE-CCP1-D03-001` | kind: validation_task | status: done | parent: CE-CCP1-D03-000 | objective: Define a collision-free, versioned, pointer-free profile container distinct from CSG1/CPE2/CEIR.
-- `CE-CCP1-D03-002` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Use aligned directories, checksums, stable identities, optional compression, memory mapping, and skip-unknown sections for fast loading and extension.
+- `CE-CCP1-D03-002` | kind: task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Use aligned directories, checksums, stable identities, optional compression, memory mapping, and skip-unknown sections for fast loading and extension.
 - `CE-CCP1-D03-003` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Represent one compilation environment containing multiple named semantic states, aliases, priors/weights, branch conditions, and explicit default selection without duplicating program IR.
 - `CE-CCP1-D03-004` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Store extents, support counts, degree/occupancy distributions, strata, co-support summaries, ordering stability, hierarchy summaries, and confidence with exact source identities.
 - `CE-CCP1-D03-005` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Store type-relevant ranges, sparsity/zero/nonfinite rates, moments/quantiles, update magnitudes, dynamic range, and approximation risk without treating distributions as guarantees.
