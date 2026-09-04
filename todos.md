@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5918`
+Project revision: `5922`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -932,7 +932,7 @@ Project revision: `5918`
 - `CE-CCP1-G01-005` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Expose alternatives, exact coverage, atoms, decompositions, candidates, costs, rejection reasons, and selection state after planning becomes available.
 - `CE-CCP1-G01-006` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Expose selected cover, extents, projections, packing, stage graph, resources, generations, and native/backend fragments after realization.
 - `CE-CCP1-G01-007` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow compile-time branching, concepts, and type/value construction over stable reflection queries without requiring standardized C++ reflection.
-- `CE-CCP1-G01-008` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Provide source-accessible builders for typed CEIR nodes, attributes, regions, alternatives, candidates, and native fragments with deterministic allocation and diagnostics.
+- `CE-CCP1-G01-008` | kind: task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Provide source-accessible builders for typed CEIR nodes, attributes, regions, alternatives, candidates, and native fragments with deterministic allocation and diagnostics.
 - `CE-CCP1-G01-009` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Splice typed source captures/results into Semantic IR, validate domain/effect/generation contracts, and retain surrounding field/profile context.
 - `CE-CCP1-G01-010` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow additions, removals, cost changes, decompositions, candidate offers, force directives, and planner replacement fragments at explicit planning points.
 - `CE-CCP1-G01-011` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow explicit projections, packs, stages, target operations, and native fragments with typed bindings and chosen validation mode.
@@ -947,7 +947,7 @@ Project revision: `5918`
 - `CE-CCP1-G02-002` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Provide ordered pipelines, nested scopes, required/preserved analyses, explicit invalidation, cancellation, timing, diagnostics, and deterministic replay.
 - `CE-CCP1-G02-003` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Accept source directives, inline Planning IR, command-line pipeline text, C++ API builders, and profile-specific pipelines with one normalized representation.
 - `CE-CCP1-G02-004` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose Semantic IR read/write access, profiles, source mappings, diagnostics, and analysis cache while allowing semantics-changing transformations under declared validation mode.
-- `CE-CCP1-G02-005` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Expose search spaces, evidence, atoms, decomposition, candidates, costs, selection, and planner services for additions or full replacement.
+- `CE-CCP1-G02-005` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Expose search spaces, evidence, atoms, decomposition, candidates, costs, selection, and planner services for additions or full replacement.
 - `CE-CCP1-G02-006` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose physical covers, projections, packs, stages, bindings, target operations, and native fragments before backend emission.
 - `CE-CCP1-G02-007` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Allow profile propagation, discovery, certification, decomposition, candidate enumeration, cost model, planner, realization, and backend lowering to be replaced rather than merely decorated.
 - `CE-CCP1-G02-008` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Register custom namespaces, text syntax, types, attributes, effects, reflection, state transfer, verification, cost, and lowering protocols independently so extensions implement only what they need.
