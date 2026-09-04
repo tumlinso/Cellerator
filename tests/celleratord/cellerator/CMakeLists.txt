@@ -6,3 +6,6 @@ get_filename_component(CELLERATOR_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSO
 add_executable(ce_ccp1_i02_001 implement_cellerator_syntax_completion_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_cellerator_syntax_completion.cc)
 target_include_directories(ce_ccp1_i02_001 PRIVATE ${CELLERATOR_ROOT})
 add_test(NAME ce_ccp1_i02_001 COMMAND ce_ccp1_i02_001)
+add_executable(ce_ccp1_i02_002 implement_biological_type_and_relation_hover_test.cc ${CELLERATOR_ROOT}/src/compiler/tooling/cellerator/implement_biological_type_and_relation_hover.cc)
+target_include_directories(ce_ccp1_i02_002 PRIVATE ${CELLERATOR_ROOT})
+add_test(NAME ce_ccp1_i02_002 COMMAND ce_ccp1_i02_002)
