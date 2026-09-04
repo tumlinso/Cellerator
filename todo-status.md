@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4228`
+Project revision: `4229`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -226,7 +226,7 @@ Project revision: `4228`
 - `CE-GEO-53` | status: done | execution: closed | next: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
 - `CE-CCP1-B01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement define the host-only root project contract in the isolated B01 lane, add the focused ce_ccp1_b01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-002` | status: done | execution: closed | next: Inspect the cited read scope, implement define tri-state cuda backend configuration in the isolated B01 lane, add the focused ce_ccp1_b01_002 gate, and publish a source-linked receipt.
-- `CE-CCP1-B01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement create compiler component target boundaries in the isolated B01 lane, add the focused ce_ccp1_b01_003 gate, and publish a source-linked receipt.
+- `CE-CCP1-B01-003` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement create compiler component target boundaries in the isolated B01 lane, add the focused ce_ccp1_b01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement set modern compiler/tooling language standards in the isolated B01 lane, add the focused ce_ccp1_b01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement isolate legacy cuda target requirements in the isolated B01 lane, add the focused ce_ccp1_b01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-B01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement define optional llvm and clang library discovery in the isolated B01 lane, add the focused ce_ccp1_b01_006 gate, and publish a source-linked receipt.
