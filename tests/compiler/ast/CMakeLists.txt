@@ -70,3 +70,10 @@ add_executable(ce_ccp1_c02_008
 target_include_directories(ce_ccp1_c02_008 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_008 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_008 COMMAND ce_ccp1_c02_008)
+
+add_executable(ce_ccp1_c02_009
+    implement_source_aware_fix_its_test.cc
+    ../../../src/compiler/ast/implement_source_aware_fix_its.cc)
+target_include_directories(ce_ccp1_c02_009 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_009 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_009 COMMAND ce_ccp1_c02_009)
