@@ -25,3 +25,7 @@ add_executable(ce_ccp1_g03_004 implement_exact_coverage_and_ownership_diagnostic
 target_include_directories(ce_ccp1_g03_004 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_004 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_004 COMMAND ce_ccp1_g03_004)
+add_executable(ce_ccp1_g03_005 implement_target_native_diagnostics_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_target_native_diagnostics.cc")
+target_include_directories(ce_ccp1_g03_005 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_005 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_005 COMMAND ce_ccp1_g03_005)
