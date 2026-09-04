@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5325`
+Project revision: `5327`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -797,7 +797,7 @@ Project revision: `5325`
 - `CE-CCP1-E01-011` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Attach distributions, sample counts, uncertainty, contamination, target/toolchain/build/profile identity, revision, validity, and external evidence references.
 - `CE-CCP1-E01-012` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Record correctness, capability, resource, numerical, profile, stale-evidence, cost, and user-policy reasons for every removed alternative.
 - `CE-CCP1-E01-013` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
-- `CE-CCP1-E01-014` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
+- `CE-CCP1-E01-014` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
 - `CE-CCP1-E01-015` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
 - `CE-CCP1-E01-016` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
 - `CE-GEO-65` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
@@ -845,7 +845,7 @@ Project revision: `5325`
 - `CE-CCP1-E04-004` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Choose legal merge/finalize structures under numerical, determinism, order, resource, and reuse constraints.
 - `CE-CCP1-E04-005` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Offer direct multi-extent execution where candidates support it and explicit profiler-visible assembly as the complete fallback.
 - `CE-CCP1-E04-006` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Translate stable provider/candidate/projection/capability/operation/numeric/resource descriptors into Planning IR with source-linked preparation hooks.
-- `CE-CCP1-E04-007` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Allow source, inline IR, external libraries, and migrated providers to add candidates with partial protocol implementations and explicit opaque behavior where necessary.
+- `CE-CCP1-E04-007` | kind: task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Allow source, inline IR, external libraries, and migrated providers to add candidates with partial protocol implementations and explicit opaque behavior where necessary.
 - `CE-CCP1-E04-008` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Apply source/pipeline/user edits in the defined authority hierarchy while retaining diagnostics for impossible or dominated choices.
 - `CE-CCP1-E04-009` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Expose storage, movement, replication, invalidation, latency, throughput, and application-supplied costs through generic callbacks/IR evidence without a CellShard dependency.
 - `CE-CCP1-E04-010` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Normalize units, distributions, confidence, recurrence, amortization horizons, and missing phases across analytical, measured, cached, and external evidence.
