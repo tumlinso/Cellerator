@@ -39,3 +39,7 @@ add_executable(ce_ccp1_f03_007 implement_host_device_split_compilation_test.cc "
 target_include_directories(ce_ccp1_f03_007 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_007 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_007 COMMAND ce_ccp1_f03_007)
+add_executable(ce_ccp1_f03_008 implement_relocatable_device_code_and_device_linking_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/implement_relocatable_device_code_and_device_linking.cc")
+target_include_directories(ce_ccp1_f03_008 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_008 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_008 COMMAND ce_ccp1_f03_008)
