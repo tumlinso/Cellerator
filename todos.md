@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5554`
+Project revision: `5556`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -894,7 +894,7 @@ Project revision: `5554`
 - `CE-EXOP-70` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver mechanism and prepared-stage manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-70` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
 - `CE-CCP1-F03-001` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: State that NVCC never parses Cellerator syntax; it receives generated CUDA/C++ plus explicit device/host/link jobs, target architectures, support libraries, and source maps.
-- `CE-CCP1-F03-002` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Emit typed kernels, device helpers, host stubs, constants, projection views, stage launchers, and runtime bindings from Realization IR with deterministic formatting.
+- `CE-CCP1-F03-002` | kind: task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Emit typed kernels, device helpers, host stubs, constants, projection views, stage launchers, and runtime bindings from Realization IR with deterministic formatting.
 - `CE-CCP1-F03-003` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Map candidate/provider identities and prepared-state contracts to source-linked existing sm70 and generic implementations rather than regenerating every kernel.
 - `CE-CCP1-F03-004` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower exact cover, projection, numeric tuple, width, order, partial algebra, and epilogue into specialized CUDA code when no prelinked provider is chosen.
 - `CE-CCP1-F03-005` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower transpose, contraction, segment, normalization, gates, sparse updates, bundles, chains, moments, exchange, and publication stages required by selected plans.
@@ -911,7 +911,7 @@ Project revision: `5554`
 - `CE-EXOP-71` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver resource receipts and stable profiling identities exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-71` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add the source-linked nvidia_sm70 provider advertising only implemented FP16 relation/input, FP32 accumulate/output 16x16x16 WMMA.
 - `CE-CCP1-F04-001` | kind: validation_task | status: done | parent: CE-CCP1-F04-000 | objective: Define optional routes from Realization IR through generated CUDA parsed by Clang or through LLVM/NVPTX lowering, sharing the backend ABI and source maps.
-- `CE-CCP1-F04-002` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Translate host/device compilation, target architecture, libdevice, CUDA includes/libraries, offload bundling, and linker steps to the discovered Clang toolchain.
+- `CE-CCP1-F04-002` | kind: task | status: in_progress | parent: CE-CCP1-F04-000 | objective: Translate host/device compilation, target architecture, libdevice, CUDA includes/libraries, offload bundling, and linker steps to the discovered Clang toolchain.
 - `CE-CCP1-F04-003` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Lower a constrained Realization IR subset to LLVM IR/NVPTX through an internal adapter while keeping LLVM types out of public Cellerator IR APIs.
 - `CE-CCP1-F04-004` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Represent PTX types, registers, address spaces, predicates, labels, parameters, memory effects, barriers, collectives, and instruction requirements as Realization IR extension nodes.
 - `CE-CCP1-F04-005` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Bind typed inputs, outputs, clobbers, memory/order/effect contracts, target predicates, fallback, and source provenance for expert inline blocks.
