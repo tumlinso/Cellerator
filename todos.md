@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6489`
+Project revision: `6496`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1073,8 +1073,8 @@ Project revision: `6489`
 - `CE-CCP1-J01-005` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Cover shape-only equivalence, wrong endpoints/orders/generations/orientation, stale values, invalid effects, unsupported numeric tuples, and unsafe override behavior.
 - `CE-CCP1-J01-006` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Mutate all three IR levels, unknown extensions, identities, regions, use-def chains, native payloads, directories, hashes, and versions.
 - `CE-CCP1-J01-007` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Corrupt profile sections/evidence, generate branch/state graphs, and compare transfer/join/widen results with small exact models.
-- `CE-CCP1-J01-008` | kind: task | status: in_progress | parent: CE-CCP1-J01-000 | objective: Generate decompositions, halos, replicas, contributors, merge trees, and canonical maps; independently prove reconstruction or detect error.
-- `CE-CCP1-J01-009` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Inject invalid IR, unknown extensions, crashes, timeouts, recursive self-transforms, stale plugins, and false preservation claims in every trust mode.
+- `CE-CCP1-J01-008` | kind: task | status: done | parent: CE-CCP1-J01-000 | objective: Generate decompositions, halos, replicas, contributors, merge trees, and canonical maps; independently prove reconstruction or detect error.
+- `CE-CCP1-J01-009` | kind: task | status: in_progress | parent: CE-CCP1-J01-000 | objective: Inject invalid IR, unknown extensions, crashes, timeouts, recursive self-transforms, stale plugins, and false preservation claims in every trust mode.
 - `CE-CCP1-J01-010` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Mutate embedded/sidecar CEIR, duplicate symbols, conflicting profiles, archives, stripped sections, and mixed plain objects.
 - `CE-CCP1-J01-011` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Exercise ASan, UBSan, TSan where supported, leak checks, file descriptor/process cleanup, timeout, memory capacity, and candidate explosion controls.
 - `CE-CCP1-J01-012` | kind: validation_task | status: planned | parent: CE-CCP1-J01-000 | objective: Aggregate source, CEIR, profile, planner, realization, backend, LTO, extension, SDK, and celleratord test receipts with no unexplained regressions.
@@ -1088,7 +1088,7 @@ Project revision: `6489`
 - `CE-CCP1-J02-007` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure decomposition portfolios, candidate enumeration, transition costs, planner quality versus oracle, external costs, cache/resumption, and profile variants.
 - `CE-CCP1-J02-008` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure realization, projection/packing planning, stage construction, generated source, downstream compiler time, ptxas resources, object/fatbinary size, and provenance.
 - `CE-CCP1-J02-009` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure preparation, transforms, packing, execution, reuse, memory, and output recovery against direct C++ and existing Cellerator runtime paths.
-- `CE-CCP1-J02-010` | kind: validation_task | status: in_progress | parent: CE-CCP1-J02-000 | objective: Measure preparation, allocation, packing, transfer, synchronization, launches, kernel time, canonicalization, graph replay, and amortized reuse on sm70.
+- `CE-CCP1-J02-010` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure preparation, allocation, packing, transfer, synchronization, launches, kernel time, canonicalization, graph replay, and amortized reuse on sm70.
 - `CE-CCP1-J02-011` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure object CEIR size, extraction, merge, incremental cache, replanning, re-emission, link time, binary size, and runtime benefit for authorized field chains.
 - `CE-CCP1-J02-012` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure API session startup, concurrent parses, cancellation, editor startup, diagnostics, completion, hover, IR/candidate queries, and memory.
 - `CE-CCP1-J02-013` | kind: task | status: planned | parent: CE-CCP1-J02-000 | objective: Record driver passthrough, pragma parse, first Semantic IR, profile-aware compile, Planning IR candidate, CPU object, NVCC object, inline rewrite, custom pass, cross-TU import, and celleratord hover as separately reproducible milestones.
