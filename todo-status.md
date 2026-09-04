@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5706`
+Project revision: `5710`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -492,7 +492,7 @@ Project revision: `5706`
 - `CE-CCP1-F01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement graph-capture and rebind contracts in the isolated F01 lane, add the focused ce_ccp1_f01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement symbolic runtime bindings in the isolated F01 lane, add the focused ce_ccp1_f01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-015` | status: done | execution: closed | next: Inspect the cited read scope, implement implement lowering-resumption checkpoints in the isolated F01 lane, add the focused ce_ccp1_f01_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-F01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement realization ir text/parser/printer in the isolated F01 lane, add the focused ce_ccp1_f01_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-F01-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement realization ir text/parser/printer in the isolated F01 lane, add the focused ce_ccp1_f01_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement realization ir validators and referees in the isolated F01 lane, add the focused ce_ccp1_f01_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver selected-plan-to-prepared-program slice in the isolated F01 lane, add the focused ce_ccp1_f01_018 gate, and publish a source-linked receipt.
 - `CE-GEO-69` | status: done | execution: closed | next: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
@@ -540,7 +540,7 @@ Project revision: `5706`
 - `CE-CCP1-F04-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement source-to-ptx provenance in the isolated F04 lane, add the focused ce_ccp1_f04_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-010` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver a direct-ptx hot-path demonstration in the isolated F04 lane, add the focused ce_ccp1_f04_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-011` | status: done | execution: closed | next: Inspect the cited read scope, implement compare nvcc, clang cuda, and direct ptx routes in the isolated F04 lane, add the focused ce_ccp1_f04_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-F04-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement validate backend fallback and mixed routes in the isolated F04 lane, add the focused ce_ccp1_f04_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-F04-012` | status: done | execution: closed | next: Inspect the cited read scope, implement validate backend fallback and mixed routes in the isolated F04 lane, add the focused ce_ccp1_f04_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-F04-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze optional nvidia backend routes in the isolated F04 lane, add the focused ce_ccp1_f04_013 gate, and publish a source-linked receipt.
 - `CE-EXOP-72` | status: done | execution: closed | next: Deliver optional static profiling markers and unique kernel names exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-72` | status: done | execution: closed | next: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
