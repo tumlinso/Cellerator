@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:02:50Z",
+  "generated_at": "2026-09-04T07:03:12Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4275,
+  "project_revision": 4277,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -47011,6 +47011,26 @@
         "revision": 4275,
         "seq": 4275,
         "timestamp": "2026-09-04T07:02:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B02",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B02\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B02-008\"}",
+        "revision": 4276,
+        "seq": 4276,
+        "timestamp": "2026-09-04T07:03:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B01-007\"}",
+        "revision": 4277,
+        "seq": 4277,
+        "timestamp": "2026-09-04T07:03:12Z"
       }
     ],
     "evidence": [
@@ -229452,12 +229472,12 @@
         "priority": 846,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4277,
+        "status": "in_progress",
         "tags_json": "[\"b01\", \"build-compiler\", \"leaf\"]",
         "title": "Define backend resource discovery manifests",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:03:12Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -229802,12 +229822,12 @@
         "priority": 845,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4276,
+        "status": "in_progress",
         "tags_json": "[\"b02\", \"compiler-driver\", \"leaf\"]",
         "title": "Track downstream C++ language and ABI mode",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:03:08Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -273453,13 +273473,13 @@
         "task_id": "CE-CCP1-B01-006"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:03:12Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B01",
         "position": 6,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4277,
+        "state": "active",
         "task_id": "CE-CCP1-B01-007"
       },
       {
@@ -273583,13 +273603,13 @@
         "task_id": "CE-CCP1-B02-007"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:03:08Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B02",
         "position": 7,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4276,
+        "state": "active",
         "task_id": "CE-CCP1-B02-008"
       },
       {
@@ -282743,11 +282763,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4275,
+        "revision": 4277,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:02:50Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:03:12Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -282755,11 +282775,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B02",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4272,
+        "revision": 4276,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:02:48Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:03:08Z",
         "workspace_mode": "isolated_merge"
       },
       {
