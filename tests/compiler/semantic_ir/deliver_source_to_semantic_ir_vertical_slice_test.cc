@@ -1,4 +1,4 @@
-#include <Cellerator/compiler/ir/semantic/deliver_source_to_semantic_ir_vertical_slice_v1.hh>
+#include <Cellerator/compiler/ir/semantic/semantic_ir_v1.hh>
 
 #include <cassert>
 #include <cmath>
@@ -6,6 +6,7 @@
 using namespace Cellerator::compiler::ir::semantic;
 
 int main() {
+    static_assert(semantic_ir_schema_version_v1 == 1);
     const std::string relation_source = R"cell(#pragma cellerator
 field void propagate() <[
     given ce::profile(activated_fibroblast);
