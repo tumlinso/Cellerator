@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:46:33Z",
+  "generated_at": "2026-09-04T07:49:15Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4448,
+  "project_revision": 4450,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48741,6 +48741,26 @@
         "revision": 4448,
         "seq": 4448,
         "timestamp": "2026-09-04T07:46:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-I07-SOURCE-MAP",
+        "entity_type": "interface",
+        "event_type": "workflow.interface.published",
+        "payload_json": "{\"version\": \"1\"}",
+        "revision": 4449,
+        "seq": 4449,
+        "timestamp": "2026-09-04T07:49:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-I08-PRAGMA-DIALECT",
+        "entity_type": "interface",
+        "event_type": "workflow.interface.published",
+        "payload_json": "{\"version\": \"1\"}",
+        "revision": 4450,
+        "seq": 4450,
+        "timestamp": "2026-09-04T07:49:15Z"
       }
     ],
     "evidence": [
@@ -82300,25 +82320,25 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "4113e627544f1b55813ab939c28f3fc7ef35040e1a0eebf250a92abe84df6967",
         "contract_paths_json": "[\"include/Cellerator/compiler/frontend/source/source_map_v1.hh\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-09-04T07:49:13Z",
         "id": "CE-CCP1-I07-SOURCE-MAP",
         "owner_task_id": "CE-CCP1-B03-015",
         "revised_at": null,
-        "revision": 4123,
-        "state": "draft",
+        "revision": 4449,
+        "state": "frozen",
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "2fbfe0626e0b8dc278f64dc9ca87752899a090e8779cd4aabdf9f7d3c80d1809",
         "contract_paths_json": "[\"include/Cellerator/compiler/frontend/source/dialect_state_v1.hh\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-09-04T07:49:15Z",
         "id": "CE-CCP1-I08-PRAGMA-DIALECT",
         "owner_task_id": "CE-CCP1-B03-015",
         "revised_at": null,
-        "revision": 4123,
-        "state": "draft",
+        "revision": 4450,
+        "state": "frozen",
         "version": "1"
       },
       {
