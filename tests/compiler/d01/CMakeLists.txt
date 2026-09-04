@@ -125,3 +125,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d01_012 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d01_012 COMMAND ce_ccp1_d01_012)
+
+add_executable(ce_ccp1_d01_013
+    expose_the_public_ceir_c_api_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/expose_the_public_ceir_c_api.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/implement_common_operation_and_extension_records.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/implement_deterministic_canonical_printing.cc")
+target_include_directories(ce_ccp1_d01_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d01_013 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d01_013 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d01_013 COMMAND ce_ccp1_d01_013)
