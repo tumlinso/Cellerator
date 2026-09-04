@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4023`
+Project revision: `4030`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -193,7 +193,7 @@ Project revision: `4023`
 - `CE-CCP1-A02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement choose the cross-repository provenance method in the isolated A02 lane, add the focused ce_ccp1_a02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-A02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement audit licenses, generated files, and repository-local assumptions in the isolated A02 lane, add the focused ce_ccp1_a02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-A02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement create the no-code-loss migration matrix in the isolated A02 lane, add the focused ce_ccp1_a02_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-A02-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the jbc provenance and migration inventory in the isolated A02 lane, add the focused ce_ccp1_a02_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-A02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the jbc provenance and migration inventory in the isolated A02 lane, add the focused ce_ccp1_a02_012 gate, and publish a source-linked receipt.
 - `CE-EXOP-51` | status: done | execution: closed | next: Deliver resource, mechanism, and stage-aware planning exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-51` | status: done | execution: closed | next: Reuse compatible sampled-support machinery, add bounded high-degree pair sampling, deterministic provenance and seed, and avoid all-pairs expansion.
 - `CE-CCP1-A03-001` | status: in_progress | execution: idle | next: Inspect the cited read scope, implement define cellerator ownership of evidence and proposal discovery in the isolated A03 lane, add the focused ce_ccp1_a03_001 gate, and publish a source-linked receipt.

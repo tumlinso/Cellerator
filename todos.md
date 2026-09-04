@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4023`
+Project revision: `4030`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -574,7 +574,7 @@ Project revision: `4023`
 - `CE-CCP1-A02-009` | kind: task | status: done | parent: CE-CCP1-A02-000 | objective: Specify patch/export and commit-trailer rules that preserve source repository, branch, commit, path, implementing Todo, and test evidence for every moved implementation.
 - `CE-CCP1-A02-010` | kind: validation_task | status: done | parent: CE-CCP1-A02-000 | objective: Check migrated sources for licenses, generated headers, build-generated manifests, relative includes, AGENTS instructions, and repository-root assumptions that cannot be copied unchanged.
 - `CE-CCP1-A02-011` | kind: task | status: done | parent: CE-CCP1-A02-000 | objective: For every inventoried source and test, record preserve in place, move, adapt, split, wrap temporarily, retain as compatibility, or retire after replacement proof.
-- `CE-CCP1-A02-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-A02-000 | objective: Publish machine-readable CSV/JSON and a human map linking each reusable implementation to its proposed Cellerator destination and required migration gate.
+- `CE-CCP1-A02-012` | kind: validation_task | status: done | parent: CE-CCP1-A02-000 | objective: Publish machine-readable CSV/JSON and a human map linking each reusable implementation to its proposed Cellerator destination and required migration gate.
 - `CE-EXOP-51` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver resource, mechanism, and stage-aware planning exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-51` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Reuse compatible sampled-support machinery, add bounded high-degree pair sampling, deterministic provenance and seed, and avoid all-pairs expansion.
 - `CE-CCP1-A03-001` | kind: task | status: in_progress | parent: CE-CCP1-A03-000 | objective: Map CellShard evidence-atlas and discovery APIs into Cellerator profile/planning namespaces.
