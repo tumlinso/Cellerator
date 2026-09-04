@@ -21,4 +21,9 @@ inline constexpr migration_boundary jbc_migration = {
     "Cellerator", "CellShard", "tumlinso/CellShard",
     "b9749ad3e5146a04f847533d8c6f1a54146aed20", true};
 
+inline constexpr std::array<std::string_view, 8> language_conformance = {
+    "file-local pragma", "nested fields", "profile required", "explicit effects",
+    "control hierarchy", "ordinary C++ preserved", "structured diagnostics",
+    "implementation-defined target costs"};
+
 }  // namespace cellerator::compiler::acceptance::v1
