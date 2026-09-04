@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5727`
+Project revision: `5736`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -498,9 +498,9 @@ Project revision: `5727`
 - `CE-GEO-69` | status: done | execution: closed | next: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
 - `CE-CCP1-F02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the backend provider abi in the isolated F02 lane, add the focused ce_ccp1_f02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement backend registry and selection in the isolated F02 lane, add the focused ce_ccp1_f02_002 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-003` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement backend code-generation plans in the isolated F02 lane, add the focused ce_ccp1_f02_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement generated c++ representation in the isolated F02 lane, add the focused ce_ccp1_f02_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement generic cpu relation apply in the isolated F02 lane, add the focused ce_ccp1_f02_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement backend code-generation plans in the isolated F02 lane, add the focused ce_ccp1_f02_003 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generated c++ representation in the isolated F02 lane, add the focused ce_ccp1_f02_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-005` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement generic cpu relation apply in the isolated F02 lane, add the focused ce_ccp1_f02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cpu transpose and contraction in the isolated F02 lane, add the focused ce_ccp1_f02_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cpu segment, gate, update, bundle, and chain paths in the isolated F02 lane, add the focused ce_ccp1_f02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cpu projection, packing, and order transforms in the isolated F02 lane, add the focused ce_ccp1_f02_008 gate, and publish a source-linked receipt.
