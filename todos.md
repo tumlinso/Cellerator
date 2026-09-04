@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5914`
+Project revision: `5915`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -969,7 +969,7 @@ Project revision: `5914`
 - `CE-CCP1-G03-004` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Explain omissions, duplicates, wrong roles, incompatible partial algebra, halo/contributor confusion, and canonical recovery failure with member-level evidence.
 - `CE-CCP1-G03-005` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Explain unsupported instructions, capability ranges, clobbers, alignment, address spaces, collectives, ABI, graph capture, and fallback availability.
 - `CE-CCP1-G03-006` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Trace source, AST, Semantic IR, profile evidence, passes, Planning alternatives, selection, Realization stages, generated source, backend objects, and native symbols through cold IDs and edges.
-- `CE-CCP1-G03-007` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Emit sidecars or debug/object sections for provenance without adding hot runtime fields; support strip and separate-debug workflows.
+- `CE-CCP1-G03-007` | kind: task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Emit sidecars or debug/object sections for provenance without adding hot runtime fields; support strip and separate-debug workflows.
 - `CE-CCP1-G03-008` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain structure/value/support/order/profile generations changed by each statement or pass, which artifacts became stale, and earliest lowering resumption point.
 - `CE-CCP1-G03-009` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Identify opaque C++ calls, field boundaries, unknown extensions, effects, alias uncertainty, profile widening, and hard constraints that stop fusion or movement.
 - `CE-CCP1-G03-010` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain legal candidates, rejected reasons, complete costs, evidence freshness/uncertainty, user edits, selected source, forced choices, and fallback.

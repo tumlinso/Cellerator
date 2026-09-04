@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5914`
+Project revision: `5915`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -588,7 +588,7 @@ Project revision: `5914`
 - `CE-CCP1-G03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement exact-coverage and ownership diagnostics in the isolated G03 lane, add the focused ce_ccp1_g03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement target/native diagnostics in the isolated G03 lane, add the focused ce_ccp1_g03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-006` | status: done | execution: closed | next: Inspect the cited read scope, implement build the provenance graph model in the isolated G03 lane, add the focused ce_ccp1_g03_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-G03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement source-to-native maps and removable sections in the isolated G03 lane, add the focused ce_ccp1_g03_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-G03-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement source-to-native maps and removable sections in the isolated G03 lane, add the focused ce_ccp1_g03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement 'what changed' and staleness explanations in the isolated G03 lane, add the focused ce_ccp1_g03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planning barrier explanations in the isolated G03 lane, add the focused ce_ccp1_g03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement candidate decision reports in the isolated G03 lane, add the focused ce_ccp1_g03_010 gate, and publish a source-linked receipt.
