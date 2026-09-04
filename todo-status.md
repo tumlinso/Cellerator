@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5026`
+Project revision: `5027`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -395,7 +395,7 @@ Project revision: `5026`
 - `CE-CCP1-D03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement represent evidence provenance and revision in the isolated D03 lane, add the focused ce_ccp1_d03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement build pointer-plus-count profile ingestion apis in the isolated D03 lane, add the focused ce_ccp1_d03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement streaming profile builders in the isolated D03 lane, add the focused ce_ccp1_d03_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-D03-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement profile selection and binding in the isolated D03 lane, add the focused ce_ccp1_d03_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-D03-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement profile selection and binding in the isolated D03 lane, add the focused ce_ccp1_d03_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic transfer functions in the isolated D03 lane, add the focused ce_ccp1_d03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement bounded branch alternatives and joins in the isolated D03 lane, add the focused ce_ccp1_d03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-D03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement profile-state attachment to semantic ir in the isolated D03 lane, add the focused ce_ccp1_d03_013 gate, and publish a source-linked receipt.
