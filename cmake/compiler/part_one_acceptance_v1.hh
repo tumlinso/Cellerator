@@ -49,4 +49,11 @@ inline constexpr std::array<std::string_view, 9> nvidia_acceptance = {
 inline constexpr std::size_t nvidia_sm = 70;
 inline constexpr std::size_t nvidia_complete_cost_components = 6;
 
+inline constexpr std::array<std::string_view, 20> final_capabilities = {
+    "driver", "pragma-parser", "profiles", "semantic-ir", "planning-ir",
+    "realization-ir", "ceir-round-trip", "ceir-input", "reflection", "passes",
+    "self-transform", "unsafe-native", "cpu-object", "nvidia-object",
+    "toolchain-overrides", "jbc-migration", "lto", "sdk-stdlib", "celleratord",
+    "provenance"};
+
 }  // namespace cellerator::compiler::acceptance::v1
