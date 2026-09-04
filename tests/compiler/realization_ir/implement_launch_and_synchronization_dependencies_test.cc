@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/ir/realization/implement_launch_and_synchronization_dependencies_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::ir::realization::v1;
+int main(){launch_dependency_graph_v1 g{4,{{0,1,stream_class_v1::compute,stream_class_v1::compute,synchronization_kind_v1::event_wait,{1,1},0,0,false},{1,2,stream_class_v1::compute,stream_class_v1::transfer,synchronization_kind_v1::event_wait,{1,2},0,0,false},{2,3,stream_class_v1::transfer,stream_class_v1::compute,synchronization_kind_v1::host_synchronize,{},0,0,true}},0};auto e=elide_same_stream_waits_v1(g);assert(e.same_stream_elisions==1&&e.dependencies.size()==2);assert(validate_launch_dependency_graph_v1(e)==launch_dependency_status_v1::valid);e.dependencies.back().explicit_host_sync=false;assert(validate_launch_dependency_graph_v1(e)==launch_dependency_status_v1::implicit_host_sync);}

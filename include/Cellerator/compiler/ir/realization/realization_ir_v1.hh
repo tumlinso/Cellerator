@@ -1,0 +1,20 @@
+#pragma once
+
+#include <Cellerator/compiler/ir/realization/commit_selected_exact_cover_and_contribution_ownership_v1.hh>
+#include <Cellerator/compiler/ir/realization/deliver_selected_plan_to_prepared_program_slice_v1.hh>
+#include <Cellerator/compiler/ir/realization/freeze_realization_ir_module_and_target_scopes_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_atom_and_extent_bindings_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_generation_readiness_and_publication_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_graph_capture_and_rebind_contracts_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_launch_and_synchronization_dependencies_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_lowering_resumption_checkpoints_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_memory_workspace_and_residency_requirements_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_order_transforms_and_persistent_physical_order_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_packed_operands_and_invalidation_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_physical_plane_representation_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_prepared_stage_graphs_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_projection_contracts_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_realization_ir_text_parser_printer_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_realization_ir_validators_and_referees_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_symbolic_runtime_bindings_v1.hh>
+#include <Cellerator/compiler/ir/realization/implement_target_and_capability_descriptions_v1.hh>

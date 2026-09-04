@@ -1,0 +1,3 @@
+#include <Cellerator/compiler/diagnostics/implement_what_changed_and_staleness_explanations_v1.hh>
+#include <cassert>
+int main(){using namespace cellerator::compiler::diagnostics::v1;using S=cellerator::execution::lowering_resumption::lowering_stage_v1;assert(explain_staleness({generation_kind::structure,1,2,9}).resume_from==S::atom_evidence);assert(explain_staleness({generation_kind::value,1,2,9}).resume_from==S::packed_operand);assert(explain_staleness({generation_kind::order,1,2,9}).resume_from==S::semantic_atom);assert(explain_staleness({generation_kind::profile,1,2,9}).resume_from==S::target_cover);assert(!explain_staleness({generation_kind::support,2,2,9}).changed);}

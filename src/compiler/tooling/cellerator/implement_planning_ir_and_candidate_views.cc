@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {planning_ir_view planning_ir_at_cursor(bool force){return {"relation_apply genes->cells","exact-cover [0,1024)",{"atom rows[0,512) certified","atom rows[512,1024) certified"},{{"native-tiles","two-stage","profile:p1",force?"forced reference":"",120,4096,true,!force,false},{"reference","single","baseline",force?"":"dominated",300,1024,true,force,force}}};}}

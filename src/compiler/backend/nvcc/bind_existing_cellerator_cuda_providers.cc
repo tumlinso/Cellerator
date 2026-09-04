@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/backend/nvcc/bind_existing_cellerator_cuda_providers_v1.hh>
+namespace cellerator::compiler::backend::nvcc::v1 {
+std::optional<source_linked_provider_binding> bind_existing_provider(const provider_binding_request&r,provider_binding_status*s) noexcept{auto set=[&](auto v){if(s)*s=v;};if(!r.candidate||!r.provider||!r.prepared_contract){set(provider_binding_status::invalid_identity);return{};}if(r.architecture!=0&&r.architecture<70){set(provider_binding_status::unsupported_architecture);return{};}source_linked_provider_binding out{r.candidate,r.provider,r.prepared_contract};if(r.provider==70){out.target="Cellerator::provider_sm70";out.entrypoint="register_sm70_provider_v1";}else if(r.provider==1){out.target="Cellerator::provider_generic";out.entrypoint="register_generic_provider_v1";}else{set(provider_binding_status::unknown_provider);return{};}out.generated_kernel=false;set(provider_binding_status::ok);return out;}
+}

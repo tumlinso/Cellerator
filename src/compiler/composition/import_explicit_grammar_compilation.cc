@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/composition/import_explicit_grammar_compilation_v1.hh>
+#include <algorithm>
+namespace Cellerator::compiler::composition {
+grammar_compilation_v1 compile_explicit_grammar_v1(const std::vector<typed_production_contract_v1>&ps,const std::vector<grammar_atom_v1>&atoms){grammar_compilation_v1 r;for(const auto&a:atoms)if(!a.certified){r.diagnostics.push_back("uncertified atom: "+a.name);return r;}for(const auto&p:ps){std::string e;if(!validate_typed_production_contract_v1(p,&e)){r.diagnostics.push_back(p.stable_name+": "+e);continue;}grammar_derivation_v1 d;d.production=p.stable_name;bool applicable=true;for(const auto&v:p.values){if(v.role==production_value_role_v1::input){auto a=std::find_if(atoms.begin(),atoms.end(),[&](const auto&x){return x.type==v.type;});if(a==atoms.end()){applicable=false;break;}d.inputs.push_back(a->name);}else if(v.role==production_value_role_v1::output)d.output_type=v.type;}if(applicable)r.derivations.push_back(std::move(d));}r.valid=r.diagnostics.empty();return r;}
+}

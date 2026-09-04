@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M20: Source language parser, AST, Sema, and execution-field semantics integrated
 
-Task revision: `4920`; current project revision is in `todo-status.md`.
+Task revision: `6394`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P20 workstreams, freeze shared interfaces, and publish milestone M20.

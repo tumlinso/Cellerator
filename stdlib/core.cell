@@ -1,0 +1,28 @@
+#pragma cellerator
+
+namespace cellerator::stdlib {
+
+using size_type = __SIZE_TYPE__;
+
+template <class T>
+struct view {
+    T* data;
+    size_type count;
+    constexpr T& operator[](size_type index) const noexcept { return data[index]; }
+};
+
+enum class status_code : unsigned { ok, invalid_argument, out_of_capacity };
+
+template <class T>
+struct result {
+    T value;
+    status_code status;
+    constexpr explicit operator bool() const noexcept { return status == status_code::ok; }
+};
+
+template <class T>
+struct traits {
+    static constexpr bool no_allocation = true;
+};
+
+} // namespace cellerator::stdlib

@@ -1,0 +1,9 @@
+#pragma cellerator
+namespace cellerator::stdlib {
+struct cost_record { double preparation; double execution; double conversion; double synchronization; };
+struct constraints { unsigned long long workspace_bytes; bool require_determinism; };
+struct candidate_offer { const char* backend; cost_record cost; };
+struct forced_plan { const char* candidate; bool explicit_unsafe; };
+constexpr double total_cost(cost_record c) noexcept { return c.preparation + c.execution + c.conversion + c.synchronization; }
+constexpr forced_plan force_unsafe(const char* candidate) noexcept { return {candidate, true}; }
+} // namespace cellerator::stdlib

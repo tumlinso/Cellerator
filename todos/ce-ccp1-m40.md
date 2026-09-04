@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M40: Planning IR and Cellerator-owned JBC compiler logic integrated
 
-Task revision: `4123`; current project revision is in `todo-status.md`.
+Task revision: `6394`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P40 workstreams, freeze shared interfaces, and publish milestone M40.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Collect isolated lane receipts for P40, verify hashes and interfaces, integrate central files, run label ce_ccp1_m40, and publish CE-CCP1-MILESTONE-M40.

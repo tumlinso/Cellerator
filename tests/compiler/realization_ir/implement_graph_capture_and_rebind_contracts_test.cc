@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/ir/realization/implement_graph_capture_and_rebind_contracts_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::ir::realization::v1;
+int main(){graph_capture_contract_v1 c{{1,1},true,rebind_input_v1|rebind_output_v1|rebind_stream_v1|rebind_generation_v1,{{{2,1},{3,1},false},{{2,2},{3,2},true}},update_policy_owner_v1::caller,replay_variant_v1::parameter_update};graph_rebind_request_v1 r{rebind_input_v1|rebind_stream_v1,{{4,1},{3,2}}};assert(validate_graph_rebind_v1(c,r)==graph_capture_status_v1::valid);r.changed_fields|=rebind_values_v1;assert(validate_graph_rebind_v1(c,r)==graph_capture_status_v1::field_not_rebindable);r.changed_fields=rebind_input_v1;r.address_identities[1]={4,2};assert(validate_graph_rebind_v1(c,r)==graph_capture_status_v1::fixed_binding_changed);}

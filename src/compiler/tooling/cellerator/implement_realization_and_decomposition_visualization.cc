@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {realization_view realization_at_cursor(){return {{"atom0","atom1"},{"0:512","512:1024"},{"packed-rows"},{"gene:packed","cell:sample"},{"root","left","right"},{"pack","execute","epilogue"},{"pack->execute","execute->epilogue"},8192,"sm_70","value-generation-ready",true};}std::string render_realization_json(const realization_view& v){return "{\"atoms\":2,\"workspace_bytes\":"+std::to_string(v.workspace_bytes)+",\"target\":\""+v.target+"\",\"graph_capture\":"+(v.graph_capture?"true":"false")+"}";}}

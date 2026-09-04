@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {semantic_ir_view semantic_ir_at_cursor(std::string_view s,std::size_t p){return {"semantic.field @cell { operation.apply }","model.cell:"+std::to_string(p),{"read","write"},{s.find("profile")!=s.npos?"named":"default"},{"core"}};}std::string apply_semantic_ir_edit(std::string_view s,const semantic_ir_view& e){return std::string(s)+"\n// "+e.normalized;}}
