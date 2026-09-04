@@ -61,3 +61,7 @@ add_executable(ce_ccp1_g03_013 implement_crash_and_timeout_diagnostics_test.cc "
 target_include_directories(ce_ccp1_g03_013 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_013 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_013 COMMAND ce_ccp1_g03_013)
+add_executable(ce_ccp1_g03_014 expose_structured_diagnostic_and_query_apis_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/expose_structured_diagnostic_and_query_apis.cc")
+target_include_directories(ce_ccp1_g03_014 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_014 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_014 COMMAND ce_ccp1_g03_014)
