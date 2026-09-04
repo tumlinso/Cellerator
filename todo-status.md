@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4624`
+Project revision: `4625`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -293,7 +293,7 @@ Project revision: `4624`
 - `CE-CCP1-C01-006` | status: done | execution: closed | next: Inspect the cited read scope, implement parse named execution fields and references in the isolated C01 lane, add the focused ce_ccp1_c01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement parse relation application in the isolated C01 lane, add the focused ce_ccp1_c01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement parse non-relation operation families in the isolated C01 lane, add the focused ce_ccp1_c01_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-C01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse planning facts, preferences, and hard constraints in the isolated C01 lane, add the focused ce_ccp1_c01_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-C01-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement parse planning facts, preferences, and hard constraints in the isolated C01 lane, add the focused ce_ccp1_c01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse effects, mutation, generations, and epochs in the isolated C01 lane, add the focused ce_ccp1_c01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse inline ceir blocks in the isolated C01 lane, add the focused ce_ccp1_c01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse reflection and compiler-transform constructs in the isolated C01 lane, add the focused ce_ccp1_c01_012 gate, and publish a source-linked receipt.
