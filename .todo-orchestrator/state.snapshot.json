@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:31:11Z",
+  "generated_at": "2026-09-04T07:31:29Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4393,
+  "project_revision": 4395,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48191,6 +48191,26 @@
         "revision": 4393,
         "seq": 4393,
         "timestamp": "2026-09-04T07:31:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B04",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B04\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B04-011\"}",
+        "revision": 4394,
+        "seq": 4394,
+        "timestamp": "2026-09-04T07:31:25Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B03",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B03\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B03-005\"}",
+        "revision": 4395,
+        "seq": 4395,
+        "timestamp": "2026-09-04T07:31:29Z"
       }
     ],
     "evidence": [
@@ -232247,12 +232267,12 @@
         "priority": 844,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4395,
+        "status": "in_progress",
         "tags_json": "[\"b03\", \"compiler-frontend-source\", \"leaf\"]",
         "title": "Define pragma interaction with preprocessing conditionals",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:31:29Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -232797,12 +232817,12 @@
         "priority": 843,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4394,
+        "status": "in_progress",
         "tags_json": "[\"b04\", \"compiler-frontend-cxx\", \"leaf\"]",
         "title": "Reconcile GCC-hosted ABI and library semantics",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:31:25Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -275864,13 +275884,13 @@
         "task_id": "CE-CCP1-B03-004"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:31:29Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B03",
         "position": 4,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4395,
+        "state": "active",
         "task_id": "CE-CCP1-B03-005"
       },
       {
@@ -276074,13 +276094,13 @@
         "task_id": "CE-CCP1-B04-010"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:31:25Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B04",
         "position": 10,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4394,
+        "state": "active",
         "task_id": "CE-CCP1-B04-011"
       },
       {
@@ -284938,11 +284958,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4393,
+        "revision": 4395,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:31:11Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:31:29Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -284950,11 +284970,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B04",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4390,
+        "revision": 4394,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:30:59Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:31:25Z",
         "workspace_mode": "isolated_merge"
       },
       {
