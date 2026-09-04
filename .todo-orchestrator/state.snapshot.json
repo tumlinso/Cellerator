@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:28:09Z",
+  "generated_at": "2026-09-04T08:28:27Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4538,
+  "project_revision": 4542,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -49641,6 +49641,46 @@
         "revision": 4538,
         "seq": 4538,
         "timestamp": "2026-09-04T08:28:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C04-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-C04-001-GATE\"}",
+        "revision": 4539,
+        "seq": 4539,
+        "timestamp": "2026-09-04T08:28:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C04-001-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"4eb3f0df-74af-49fe-826c-a960ed2ec9c6\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4540,
+        "seq": 4540,
+        "timestamp": "2026-09-04T08:28:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-C04-001",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4541, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4541,
+        "seq": 4541,
+        "timestamp": "2026-09-04T08:28:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-C01-003\"}",
+        "revision": 4542,
+        "seq": 4542,
+        "timestamp": "2026-09-04T08:28:27Z"
       }
     ],
     "evidence": [
@@ -53399,6 +53439,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"-c\", \"import subprocess; bins=['celleratorOperationCoreTest','celleratorPlannerV1Test','cellPackSemanticGeometryAdapterTest','cellPackExecutionImageV2Test','cpMathOperationContractTest','cpMathRefereeFoundationTest','cpMathNativeTileAdapterTest','cpMathBellLoweringTest']; [subprocess.run(['Cellerator/build-ce-arch/'+b],check=True) for b in bins]\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-c\", \"import subprocess; bins=['celleratorOperationCoreTest','celleratorPlannerV1Test','cellPackSemanticGeometryAdapterTest','cellPackExecutionImageV2Test','cpMathOperationContractTest','cpMathRefereeFoundationTest','cpMathNativeTileAdapterTest','cpMathBellLoweringTest']; [subprocess.run(['Cellerator/build-ce-arch/'+b],check=True) for b in bins]\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"b22a44649b6d9fd1c158c0aeef7738c338de147cc1b5c2f6bc5cae7f839daf0b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"architecture-recovery-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/baseplane-dna2-benchmark.md\", \"todos/baseplane-dna2-explicit-widths.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-01.md\", \"todos/ce-arch-02.md\", \"todos/ce-arch-10.md\", \"todos/ce-arch-11.md\", \"todos/ce-arch-12.md\", \"todos/ce-arch-20.md\", \"todos/ce-arch-21.md\", \"todos/ce-arch-22.md\", \"todos/ce-arch-30.md\", \"todos/ce-arch-31.md\", \"todos/ce-arch-40.md\", \"todos/ce-arch-50.md\", \"todos/ce-arch-60.md\", \"todos/cellerator-hierarchy-reset.md\", \"todos/cellerator-runtime-autotune.md\", \"todos/cellerator-sparse-ml-layout.md\", \"todos/cellpack-packing-plan-cuda-evaluator.md\", \"todos/cellpack-packing-plan-evaluator.md\", \"todos/cp-bp-00.md\", \"todos/cp-bp-01.md\", \"todos/cp-bp-02.md\", \"todos/cp-bp-03.md\", \"todos/cp-bp-04.md\", \"todos/cp-bp-05.md\", \"todos/cp-bp-06.md\", \"todos/cp-bp-07.md\", \"todos/cp-bp-08.md\", \"todos/cp-bp-09.md\", \"todos/cp-bp-10.md\", \"todos/cp-bp-11.md\", \"todos/cp-bp-12.md\", \"todos/cp-bp-13.md\", \"todos/cp-math-00.md\", \"todos/cp-math-06.md\", \"todos/cp-math-08.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\", \"todos/sequence-bits-dna2.md\"], \"files\": [{\"path\": \"Cellerator/components/CellPack\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/compute/math\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/include/Cellerator/planner\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/compute/math\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/src/planner\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/tests/math_core\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/tests/planner\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"dde2c8a7639a6828a22deb02a9944d80bb51ef17\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 736}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/4ea79c1b-0aad-4656-967f-86615a2182a8",
         "revision": 737,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T08:28:20Z",
+        "gate_id": "CE-CCP1-C04-001-GATE",
+        "id": "4eb3f0df-74af-49fe-826c-a960ed2ec9c6",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f94615fa4a847121dcb39aa168ba737401b855e4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"063c46ed76373d96b3f788775c7d724eb9cd8bdc847fa64fa1f0f6465de0b358\", \"started_revision\": 4539, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-c04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/4eb3f0df-74af-49fe-826c-a960ed2ec9c6",
+        "revision": 4540,
         "status": "passed"
       },
       {
@@ -65511,13 +65564,13 @@
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-C04-001-GATE",
         "input_fingerprint": "5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910",
-        "last_run_at": "2026-09-04T08:26:04Z",
+        "last_run_at": "2026-09-04T08:28:20Z",
         "required": 1,
-        "revision": 4529,
-        "status": "failed",
+        "revision": 4540,
+        "status": "passed",
         "task_id": "CE-CCP1-C04-001",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -79675,6 +79728,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"31e491ed29de0fcde70259cbeab8c5c7ad353485\", \"completion_gates\": [{\"evidence_id\": \"ff8f62d1-bcb3-4d3d-b995-342c0e5f9908\", \"evidence_revision\": 3992, \"id\": \"CE-CCP1-A02-007-GATE\", \"input_fingerprint\": \"39384c95e9f140a8b9ee36d14cd0e30ab174e6b9c1157caf86d9b421c07c9b42\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"4ca537f4cdcc0c586fe9882ff9dc91967d6f9fa5\"}], \"completion_revision\": 3993, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-A02-007-GATE\", \"input_fingerprint\": \"39384c95e9f140a8b9ee36d14cd0e30ab174e6b9c1157caf86d9b421c07c9b42\", \"last_run_at\": \"2026-09-04T05:17:17Z\", \"revision\": 3992, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 2320 ++++++++++++++++++++++++++++----\\n todo-status.md                         |   34 +-\\n todos.md                               |   34 +-\\n todos/ce-ccp1-0000.md                  |    2 +\\n todos/ce-ccp1-a01-000.md               |    2 +\\n todos/ce-ccp1-a01-001.md               |   10 +-\\n todos/ce-ccp1-a01-002.md               |   10 +-\\n todos/ce-ccp1-a01-003.md               |   10 +-\\n todos/ce-ccp1-a01-004.md               |   10 +-\\n todos/ce-ccp1-a01-005.md               |   10 +-\\n todos/ce-ccp1-a01-006.md               |   10 +-\\n todos/ce-ccp1-a01-007.md               |   10 +-\\n todos/ce-ccp1-a01-008.md               |   10 +-\\n todos/ce-ccp1-a01-009.md               |   10 +-\\n todos/ce-ccp1-a02-000.md               |    2 +\\n todos/ce-ccp1-a02-001.md               |   10 +-\\n todos/ce-ccp1-a02-002.md               |   10 +-\\n todos/ce-ccp1-a02-003.md               |   10 +-\\n todos/ce-ccp1-a02-004.md               |   10 +-\\n todos/ce-ccp1-a02-005.md               |   10 +-\\n todos/ce-ccp1-a02-006.md               |   10 +-\\n todos/ce-ccp1-a02-007.md               |    8 +-\\n todos/ce-ccp1-a02-008.md               |    2 +\\n todos/ce-ccp1-a02-009.md               |    2 +\\n todos/ce-ccp1-a02-010.md               |    2 +\\n todos/ce-ccp1-a02-011.md               |    2 +\\n todos/ce-ccp1-a02-012.md               |    2 +\\n todos/ce-ccp1-a03-000.md               |    2 +\\n todos/ce-ccp1-a03-001.md               |    2 +\\n todos/ce-ccp1-a03-002.md               |    2 +\\n todos/ce-ccp1-a03-003.md               |    2 +\\n todos/ce-ccp1-a03-004.md               |    2 +\\n todos/ce-ccp1-a03-005.md               |    2 +\\n todos/ce-ccp1-a03-006.md               |    2 +\\n todos/ce-ccp1-a03-007.md               |    2 +\\n todos/ce-ccp1-a03-008.md               |    2 +\\n todos/ce-ccp1-a03-009.md               |    2 +\\n todos/ce-ccp1-a03-010.md               |    2 +\\n todos/ce-ccp1-a03-011.md               |    2 +\\n todos/ce-ccp1-a03-012.md               |    2 +\\n todos/ce-ccp1-a03-013.md               |    2 +\\n todos/ce-ccp1-a03-014.md               |    2 +\\n todos/ce-ccp1-a04-000.md               |    2 +\\n todos/ce-ccp1-a04-001.md               |    2 +\\n todos/ce-ccp1-a04-002.md               |    2 +\\n todos/ce-ccp1-a04-003.md               |    2 +\\n todos/ce-ccp1-a04-004.md               |    2 +\\n todos/ce-ccp1-a04-005.md               |    2 +\\n todos/ce-ccp1-a04-006.md               |    2 +\\n todos/ce-ccp1-a04-007.md               |    2 +\\n todos/ce-ccp1-a04-008.md               |    2 +\\n todos/ce-ccp1-a04-009.md               |    2 +\\n todos/ce-ccp1-a04-010.md               |    2 +\\n todos/ce-ccp1-b01-000.md               |    2 +\\n todos/ce-ccp1-b01-001.md               |    2 +\\n todos/ce-ccp1-b01-002.md               |    2 +\\n todos/ce-ccp1-b01-003.md               |    2 +\\n todos/ce-ccp1-b01-004.md               |    2 +\\n todos/ce-ccp1-b01-005.md               |    2 +\\n todos/ce-ccp1-b01-006.md               |    2 +\\n todos/ce-ccp1-b01-007.md               |    2 +\\n todos/ce-ccp1-b01-008.md               |    2 +\\n todos/ce-ccp1-b01-009.md               |    2 +\\n todos/ce-ccp1-b01-010.md               |    2 +\\n todos/ce-ccp1-b01-011.md               |    2 +\\n todos/ce-ccp1-b01-012.md               |    2 +\\n todos/ce-ccp1-b02-000.md               |    2 +\\n todos/ce-ccp1-b02-001.md               |    2 +\\n todos/ce-ccp1-b02-002.md               |    2 +\\n todos/ce-ccp1-b02-003.md               |    2 +\\n todos/ce-ccp1-b02-004.md               |    2 +\\n todos/ce-ccp1-b02-005.md               |    2 +\\n todos/ce-ccp1-b02-006.md               |    2 +\\n todos/ce-ccp1-b02-007.md               |    2 +\\n todos/ce-ccp1-b02-008.md               |    2 +\\n todos/ce-ccp1-b02-009.md               |    2 +\\n todos/ce-ccp1-b02-010.md               |    2 +\\n todos/ce-ccp1-b02-011.md               |    2 +\\n todos/ce-ccp1-b02-012.md               |    2 +\\n todos/ce-ccp1-b02-013.md               |    2 +\\n todos/ce-ccp1-b02-014.md               |    2 +\\n todos/ce-ccp1-b03-000.md               |    2 +\\n todos/ce-ccp1-b03-001.md               |    2 +\\n todos/ce-ccp1-b03-002.md               |    2 +\\n todos/ce-ccp1-b03-003.md               |    2 +\\n todos/ce-ccp1-b03-004.md               |    2 +\\n todos/ce-ccp1-b03-005.md               |    2 +\\n todos/ce-ccp1-b03-006.md               |    2 +\\n todos/ce-ccp1-b03-007.md               |    2 +\\n todos/ce-ccp1-b03-008.md               |    2 +\\n todos/ce-ccp1-b03-009.md               |    2 +\\n todos/ce-ccp1-b03-010.md               |    2 +\\n todos/ce-ccp1-b03-011.md               |    2 +\\n todos/ce-ccp1-b03-012.md               |    2 +\\n todos/ce-ccp1-b03-013.md               |    2 +\\n todos/ce-ccp1-b03-014.md               |    2 +\\n todos/ce-ccp1-b03-015.md               |    2 +\\n todos/ce-ccp1-b04-000.md               |    2 +\\n todos/ce-ccp1-b04-001.md               |    2 +\\n todos/ce-ccp1-b04-002.md               |    2 +\\n todos/ce-ccp1-b04-003.md               |    2 +\\n todos/ce-ccp1-b04-004.md               |    2 +\\n todos/ce-ccp1-b04-005.md               |    2 +\\n todos/ce-ccp1-b04-006.md               |    2 +\\n todos/ce-ccp1-b04-007.md               |    2 +\\n todos/ce-ccp1-b04-008.md               |    2 +\\n todos/ce-ccp1-b04-009.md               |    2 +\\n todos/ce-ccp1-b04-010.md               |    2 +\\n todos/ce-ccp1-b04-011.md               |    2 +\\n todos/ce-ccp1-b04-012.md               |    2 +\\n todos/ce-ccp1-b04-013.md               |    2 +\\n todos/ce-ccp1-b04-014.md               |    2 +\\n todos/ce-ccp1-c01-000.md               |    2 +\\n todos/ce-ccp1-c01-001.md               |    2 +\\n todos/ce-ccp1-c01-002.md               |    2 +\\n todos/ce-ccp1-c01-003.md               |    2 +\\n todos/ce-ccp1-c01-004.md               |    2 +\\n todos/ce-ccp1-c01-005.md               |    2 +\\n todos/ce-ccp1-c01-006.md               |    2 +\\n todos/ce-ccp1-c01-007.md               |    2 +\\n todos/ce-ccp1-c01-008.md               |    2 +\\n todos/ce-ccp1-c01-009.md               |    2 +\\n todos/ce-ccp1-c01-010.md               |    2 +\\n todos/ce-ccp1-c01-011.md               |    2 +\\n todos/ce-ccp1-c01-012.md               |    2 +\\n todos/ce-ccp1-c01-013.md               |    2 +\\n todos/ce-ccp1-c01-014.md               |    2 +\\n todos/ce-ccp1-c01-015.md               |    2 +\\n todos/ce-ccp1-c01-016.md               |    2 +\\n todos/ce-ccp1-c02-000.md               |    2 +\\n todos/ce-ccp1-c02-001.md               |    2 +\\n todos/ce-ccp1-c02-002.md               |    2 +\\n todos/ce-ccp1-c02-003.md               |    2 +\\n todos/ce-ccp1-c02-004.md               |    2 +\\n todos/ce-ccp1-c02-005.md               |    2 +\\n todos/ce-ccp1-c02-006.md               |    2 +\\n todos/ce-ccp1-c02-007.md               |    2 +\\n todos/ce-ccp1-c02-008.md               |    2 +\\n todos/ce-ccp1-c02-009.md               |    2 +\\n todos/ce-ccp1-c02-010.md               |    2 +\\n todos/ce-ccp1-c02-011.md               |    2 +\\n todos/ce-ccp1-c02-012.md               |    2 +\\n todos/ce-ccp1-c03-000.md               |    2 +\\n todos/ce-ccp1-c03-001.md               |    2 +\\n todos/ce-ccp1-c03-002.md               |    2 +\\n todos/ce-ccp1-c03-003.md               |    2 +\\n todos/ce-ccp1-c03-004.md               |    2 +\\n todos/ce-ccp1-c03-005.md               |    2 +\\n todos/ce-ccp1-c03-006.md               |    2 +\\n todos/ce-ccp1-c03-007.md               |    2 +\\n todos/ce-ccp1-c03-008.md               |    2 +\\n todos/ce-ccp1-c03-009.md               |    2 +\\n todos/ce-ccp1-c03-010.md               |    2 +\\n todos/ce-ccp1-c03-011.md               |    2 +\\n todos/ce-ccp1-c03-012.md               |    2 +\\n todos/ce-ccp1-c03-013.md               |    2 +\\n todos/ce-ccp1-c03-014.md               |    2 +\\n todos/ce-ccp1-c03-015.md               |    2 +\\n todos/ce-ccp1-c03-016.md               |    2 +\\n todos/ce-ccp1-c04-000.md               |    2 +\\n todos/ce-ccp1-c04-001.md               |    2 +\\n todos/ce-ccp1-c04-002.md               |    2 +\\n todos/ce-ccp1-c04-003.md               |    2 +\\n todos/ce-ccp1-c04-004.md               |    2 +\\n todos/ce-ccp1-c04-005.md               |    2 +\\n todos/ce-ccp1-c04-006.md               |    2 +\\n todos/ce-ccp1-c04-007.md               |    2 +\\n todos/ce-ccp1-c04-008.md               |    2 +\\n todos/ce-ccp1-c04-009.md               |    2 +\\n todos/ce-ccp1-c04-010.md               |    2 +\\n todos/ce-ccp1-c04-011.md               |    2 +\\n todos/ce-ccp1-c04-012.md               |    2 +\\n todos/ce-ccp1-c04-013.md               |    2 +\\n todos/ce-ccp1-c04-014.md               |    2 +\\n todos/ce-ccp1-c04-015.md               |    2 +\\n todos/ce-ccp1-c04-016.md               |    2 +\\n todos/ce-ccp1-d01-000.md               |    2 +\\n todos/ce-ccp1-d01-001.md               |    2 +\\n todos/ce-ccp1-d01-002.md               |    2 +\\n todos/ce-ccp1-d01-003.md               |    2 +\\n todos/ce-ccp1-d01-004.md               |    2 +\\n todos/ce-ccp1-d01-005.md               |    2 +\\n todos/ce-ccp1-d01-006.md               |    2 +\\n todos/ce-ccp1-d01-007.md               |    2 +\\n todos/ce-ccp1-d01-008.md               |    2 +\\n todos/ce-ccp1-d01-009.md               |    2 +\\n todos/ce-ccp1-d01-010.md               |    2 +\\n todos/ce-ccp1-d01-011.md               |    2 +\\n todos/ce-ccp1-d01-012.md               |    2 +\\n todos/ce-ccp1-d01-013.md               |    2 +\\n todos/ce-ccp1-d01-014.md               |    2 +\\n todos/ce-ccp1-d02-000.md               |    2 +\\n todos/ce-ccp1-d02-001.md               |    2 +\\n todos/ce-ccp1-d02-002.md               |    2 +\\n todos/ce-ccp1-d02-003.md               |    2 +\\n todos/ce-ccp1-d02-004.md               |    2 +\\n todos/ce-ccp1-d02-005.md               |    2 +\\n todos/ce-ccp1-d02-006.md               |    2 +\\n todos/ce-ccp1-d02-007.md               |    2 +\\n todos/ce-ccp1-d02-008.md               |    2 +\\n todos/ce-ccp1-d02-009.md               |    2 +\\n todos/ce-ccp1-d02-010.md               |    2 +\\n todos/ce-ccp1-d02-011.md               |    2 +\\n todos/ce-ccp1-d02-012.md               |    2 +\\n todos/ce-ccp1-d02-013.md               |    2 +\\n todos/ce-ccp1-d02-014.md               |    2 +\\n todos/ce-ccp1-d02-015.md               |    2 +\\n todos/ce-ccp1-d02-016.md               |    2 +\\n todos/ce-ccp1-d03-000.md               |    2 +\\n todos/ce-ccp1-d03-001.md               |    2 +\\n todos/ce-ccp1-d03-002.md               |    2 +\\n todos/ce-ccp1-d03-003.md               |    2 +\\n todos/ce-ccp1-d03-004.md               |    2 +\\n todos/ce-ccp1-d03-005.md               |    2 +\\n todos/ce-ccp1-d03-006.md               |    2 +\\n todos/ce-ccp1-d03-007.md               |    2 +\\n todos/ce-ccp1-d03-008.md               |    2 +\\n todos/ce-ccp1-d03-009.md               |    2 +\\n todos/ce-ccp1-d03-010.md               |    2 +\\n todos/ce-ccp1-d03-011.md               |    2 +\\n todos/ce-ccp1-d03-012.md               |    2 +\\n todos/ce-ccp1-d03-013.md               |    2 +\\n todos/ce-ccp1-d03-014.md               |    2 +\\n todos/ce-ccp1-d03-015.md               |    2 +\\n todos/ce-ccp1-e01-000.md               |    2 +\\n todos/ce-ccp1-e01-001.md               |    2 +\\n todos/ce-ccp1-e01-002.md               |    2 +\\n todos/ce-ccp1-e01-003.md               |    2 +\\n todos/ce-ccp1-e01-004.md               |    2 +\\n todos/ce-ccp1-e01-005.md               |    2 +\\n todos/ce-ccp1-e01-006.md               |    2 +\\n todos/ce-ccp1-e01-007.md               |    2 +\\n todos/ce-ccp1-e01-008.md               |    2 +\\n todos/ce-ccp1-e01-009.md               |    2 +\\n todos/ce-ccp1-e01-010.md               |    2 +\\n todos/ce-ccp1-e01-011.md               |    2 +\\n todos/ce-ccp1-e01-012.md               |    2 +\\n todos/ce-ccp1-e01-013.md               |    2 +\\n todos/ce-ccp1-e01-014.md               |    2 +\\n todos/ce-ccp1-e01-015.md               |    2 +\\n todos/ce-ccp1-e01-016.md               |    2 +\\n todos/ce-ccp1-e02-000.md               |    2 +\\n todos/ce-ccp1-e02-001.md               |    2 +\\n todos/ce-ccp1-e02-002.md               |    2 +\\n todos/ce-ccp1-e02-003.md               |    2 +\\n todos/ce-ccp1-e02-004.md               |    2 +\\n todos/ce-ccp1-e02-005.md               |    2 +\\n todos/ce-ccp1-e02-006.md               |    2 +\\n todos/ce-ccp1-e02-007.md               |    2 +\\n todos/ce-ccp1-e02-008.md               |    2 +\\n todos/ce-ccp1-e02-009.md               |    2 +\\n todos/ce-ccp1-e02-010.md               |    2 +\\n todos/ce-ccp1-e02-011.md               |    2 +\\n todos/ce-ccp1-e02-012.md               |    2 +\\n todos/ce-ccp1-e02-013.md               |    2 +\\n todos/ce-ccp1-e02-014.md               |    2 +\\n todos/ce-ccp1-e02-015.md               |    2 +\\n todos/ce-ccp1-e02-016.md               |    2 +\\n todos/ce-ccp1-e02-017.md               |    2 +\\n todos/ce-ccp1-e02-018.md               |    2 +\\n todos/ce-ccp1-e03-000.md               |    2 +\\n todos/ce-ccp1-e03-001.md               |    2 +\\n todos/ce-ccp1-e03-002.md               |    2 +\\n todos/ce-ccp1-e03-003.md               |    2 +\\n todos/ce-ccp1-e03-004.md               |    2 +\\n todos/ce-ccp1-e03-005.md               |    2 +\\n todos/ce-ccp1-e03-006.md               |    2 +\\n todos/ce-ccp1-e03-007.md               |    2 +\\n todos/ce-ccp1-e03-008.md               |    2 +\\n todos/ce-ccp1-e03-009.md               |    2 +\\n todos/ce-ccp1-e03-010.md               |    2 +\\n todos/ce-ccp1-e03-011.md               |    2 +\\n todos/ce-ccp1-e03-012.md               |    2 +\\n todos/ce-ccp1-e03-013.md               |    2 +\\n todos/ce-ccp1-e03-014.md               |    2 +\\n todos/ce-ccp1-e03-015.md               |    2 +\\n todos/ce-ccp1-e03-016.md               |    2 +\\n todos/ce-ccp1-e03-017.md               |    2 +\\n todos/ce-ccp1-e03-018.md               |    2 +\\n todos/ce-ccp1-e04-000.md               |    2 +\\n todos/ce-ccp1-e04-001.md               |    2 +\\n todos/ce-ccp1-e04-002.md               |    2 +\\n todos/ce-ccp1-e04-003.md               |    2 +\\n todos/ce-ccp1-e04-004.md               |    2 +\\n todos/ce-ccp1-e04-005.md               |    2 +\\n todos/ce-ccp1-e04-006.md               |    2 +\\n todos/ce-ccp1-e04-007.md               |    2 +\\n todos/ce-ccp1-e04-008.md               |    2 +\\n todos/ce-ccp1-e04-009.md               |    2 +\\n todos/ce-ccp1-e04-010.md               |    2 +\\n todos/ce-ccp1-e04-011.md               |    2 +\\n todos/ce-ccp1-e04-012.md               |    2 +\\n todos/ce-ccp1-e04-013.md               |    2 +\\n todos/ce-ccp1-e04-014.md               |    2 +\\n todos/ce-ccp1-e04-015.md               |    2 +\\n todos/ce-ccp1-e04-016.md               |    2 +\\n todos/ce-ccp1-e04-017.md               |    2 +\\n todos/ce-ccp1-e04-018.md               |    2 +\\n todos/ce-ccp1-f01-000.md               |    2 +\\n todos/ce-ccp1-f01-001.md               |    2 +\\n todos/ce-ccp1-f01-002.md               |    2 +\\n todos/ce-ccp1-f01-003.md               |    2 +\\n todos/ce-ccp1-f01-004.md               |    2 +\\n todos/ce-ccp1-f01-005.md               |    2 +\\n todos/ce-ccp1-f01-006.md               |    2 +\\n todos/ce-ccp1-f01-007.md               |    2 +\\n todos/ce-ccp1-f01-008.md               |    2 +\\n todos/ce-ccp1-f01-009.md               |    2 +\\n todos/ce-ccp1-f01-010.md               |    2 +\\n todos/ce-ccp1-f01-011.md               |    2 +\\n todos/ce-ccp1-f01-012.md               |    2 +\\n todos/ce-ccp1-f01-013.md               |    2 +\\n todos/ce-ccp1-f01-014.md               |    2 +\\n todos/ce-ccp1-f01-015.md               |    2 +\\n todos/ce-ccp1-f01-016.md               |    2 +\\n todos/ce-ccp1-f01-017.md               |    2 +\\n todos/ce-ccp1-f01-018.md               |    2 +\\n todos/ce-ccp1-f02-000.md               |    2 +\\n todos/ce-ccp1-f02-001.md               |    2 +\\n todos/ce-ccp1-f02-002.md               |    2 +\\n todos/ce-ccp1-f02-003.md               |    2 +\\n todos/ce-ccp1-f02-004.md               |    2 +\\n todos/ce-ccp1-f02-005.md               |    2 +\\n todos/ce-ccp1-f02-006.md               |    2 +\\n todos/ce-ccp1-f02-007.md               |    2 +\\n todos/ce-ccp1-f02-008.md               |    2 +\\n todos/ce-ccp1-f02-009.md               |    2 +\\n todos/ce-ccp1-f02-010.md               |    2 +\\n todos/ce-ccp1-f02-011.md               |    2 +\\n todos/ce-ccp1-f02-012.md               |    2 +\\n todos/ce-ccp1-f02-013.md               |    2 +\\n todos/ce-ccp1-f02-014.md               |    2 +\\n todos/ce-ccp1-f03-000.md               |    2 +\\n todos/ce-ccp1-f03-001.md               |    2 +\\n todos/ce-ccp1-f03-002.md               |    2 +\\n todos/ce-ccp1-f03-003.md               |    2 +\\n todos/ce-ccp1-f03-004.md               |    2 +\\n todos/ce-ccp1-f03-005.md               |    2 +\\n todos/ce-ccp1-f03-006.md               |    2 +\\n todos/ce-ccp1-f03-007.md               |    2 +\\n todos/ce-ccp1-f03-008.md               |    2 +\\n todos/ce-ccp1-f03-009.md               |    2 +\\n todos/ce-ccp1-f03-010.md               |    2 +\\n todos/ce-ccp1-f03-011.md               |    2 +\\n todos/ce-ccp1-f03-012.md               |    2 +\\n todos/ce-ccp1-f03-013.md               |    2 +\\n todos/ce-ccp1-f03-014.md               |    2 +\\n todos/ce-ccp1-f03-015.md               |    2 +\\n todos/ce-ccp1-f04-000.md               |    2 +\\n todos/ce-ccp1-f04-001.md               |    2 +\\n todos/ce-ccp1-f04-002.md               |    2 +\\n todos/ce-ccp1-f04-003.md               |    2 +\\n todos/ce-ccp1-f04-004.md               |    2 +\\n todos/ce-ccp1-f04-005.md               |    2 +\\n todos/ce-ccp1-f04-006.md               |    2 +\\n todos/ce-ccp1-f04-007.md               |    2 +\\n todos/ce-ccp1-f04-008.md               |    2 +\\n todos/ce-ccp1-f04-009.md               |    2 +\\n todos/ce-ccp1-f04-010.md               |    2 +\\n todos/ce-ccp1-f04-011.md               |    2 +\\n todos/ce-ccp1-f04-012.md               |    2 +\\n todos/ce-ccp1-f04-013.md               |    2 +\\n todos/ce-ccp1-g01-000.md               |    2 +\\n todos/ce-ccp1-g01-001.md               |    2 +\\n todos/ce-ccp1-g01-002.md               |    2 +\\n todos/ce-ccp1-g01-003.md               |    2 +\\n todos/ce-ccp1-g01-004.md               |    2 +\\n todos/ce-ccp1-g01-005.md               |    2 +\\n todos/ce-ccp1-g01-006.md               |    2 +\\n todos/ce-ccp1-g01-007.md               |    2 +\\n todos/ce-ccp1-g01-008.md               |    2 +\\n todos/ce-ccp1-g01-009.md               |    2 +\\n todos/ce-ccp1-g01-010.md               |    2 +\\n todos/ce-ccp1-g01-011.md               |    2 +\\n todos/ce-ccp1-g01-012.md               |    2 +\\n todos/ce-ccp1-g01-013.md               |    2 +\\n todos/ce-ccp1-g01-014.md               |    2 +\\n todos/ce-ccp1-g01-015.md               |    2 +\\n todos/ce-ccp1-g01-016.md               |    2 +\\n todos/ce-ccp1-g02-000.md               |    2 +\\n todos/ce-ccp1-g02-001.md               |    2 +\\n todos/ce-ccp1-g02-002.md               |    2 +\\n todos/ce-ccp1-g02-003.md               |    2 +\\n todos/ce-ccp1-g02-004.md               |    2 +\\n todos/ce-ccp1-g02-005.md               |    2 +\\n todos/ce-ccp1-g02-006.md               |    2 +\\n todos/ce-ccp1-g02-007.md               |    2 +\\n todos/ce-ccp1-g02-008.md               |    2 +\\n todos/ce-ccp1-g02-009.md               |    2 +\\n todos/ce-ccp1-g02-010.md               |    2 +\\n todos/ce-ccp1-g02-011.md               |    2 +\\n todos/ce-ccp1-g02-012.md               |    2 +\\n todos/ce-ccp1-g02-013.md               |    2 +\\n todos/ce-ccp1-g02-014.md               |    2 +\\n todos/ce-ccp1-g02-015.md               |    2 +\\n todos/ce-ccp1-g02-016.md               |    2 +\\n todos/ce-ccp1-g02-017.md               |    2 +\\n todos/ce-ccp1-g02-018.md               |    2 +\\n todos/ce-ccp1-g03-000.md               |    2 +\\n todos/ce-ccp1-g03-001.md               |    2 +\\n todos/ce-ccp1-g03-002.md               |    2 +\\n todos/ce-ccp1-g03-003.md               |    2 +\\n todos/ce-ccp1-g03-004.md               |    2 +\\n todos/ce-ccp1-g03-005.md               |    2 +\\n todos/ce-ccp1-g03-006.md               |    2 +\\n todos/ce-ccp1-g03-007.md               |    2 +\\n todos/ce-ccp1-g03-008.md               |    2 +\\n todos/ce-ccp1-g03-009.md               |    2 +\\n todos/ce-ccp1-g03-010.md               |    2 +\\n todos/ce-ccp1-g03-011.md               |    2 +\\n todos/ce-ccp1-g03-012.md               |    2 +\\n todos/ce-ccp1-g03-013.md               |    2 +\\n todos/ce-ccp1-g03-014.md               |    2 +\\n todos/ce-ccp1-g03-015.md               |    2 +\\n todos/ce-ccp1-g03-016.md               |    2 +\\n todos/ce-ccp1-h01-000.md               |    2 +\\n todos/ce-ccp1-h01-001.md               |    2 +\\n todos/ce-ccp1-h01-002.md               |    2 +\\n todos/ce-ccp1-h01-003.md               |    2 +\\n todos/ce-ccp1-h01-004.md               |    2 +\\n todos/ce-ccp1-h01-005.md               |    2 +\\n todos/ce-ccp1-h01-006.md               |    2 +\\n todos/ce-ccp1-h01-007.md               |    2 +\\n todos/ce-ccp1-h01-008.md               |    2 +\\n todos/ce-ccp1-h01-009.md               |    2 +\\n todos/ce-ccp1-h01-010.md               |    2 +\\n todos/ce-ccp1-h01-011.md               |    2 +\\n todos/ce-ccp1-h01-012.md               |    2 +\\n todos/ce-ccp1-h01-013.md               |    2 +\\n todos/ce-ccp1-h01-014.md               |    2 +\\n todos/ce-ccp1-h01-015.md               |    2 +\\n todos/ce-ccp1-h01-016.md               |    2 +\\n todos/ce-ccp1-h02-000.md               |    2 +\\n todos/ce-ccp1-h02-001.md               |    2 +\\n todos/ce-ccp1-h02-002.md               |    2 +\\n todos/ce-ccp1-h02-003.md               |    2 +\\n todos/ce-ccp1-h02-004.md               |    2 +\\n todos/ce-ccp1-h02-005.md               |    2 +\\n todos/ce-ccp1-h02-006.md               |    2 +\\n todos/ce-ccp1-h02-007.md               |    2 +\\n todos/ce-ccp1-h02-008.md               |    2 +\\n todos/ce-ccp1-h02-009.md               |    2 +\\n todos/ce-ccp1-h02-010.md               |    2 +\\n todos/ce-ccp1-h02-011.md               |    2 +\\n todos/ce-ccp1-h02-012.md               |    2 +\\n todos/ce-ccp1-h02-013.md               |    2 +\\n todos/ce-ccp1-h02-014.md               |    2 +\\n todos/ce-ccp1-h02-015.md               |    2 +\\n todos/ce-ccp1-h02-016.md               |    2 +\\n todos/ce-ccp1-h03-000.md               |    2 +\\n todos/ce-ccp1-h03-001.md               |    2 +\\n todos/ce-ccp1-h03-002.md               |    2 +\\n todos/ce-ccp1-h03-003.md               |    2 +\\n todos/ce-ccp1-h03-004.md               |    2 +\\n todos/ce-ccp1-h03-005.md               |    2 +\\n todos/ce-ccp1-h03-006.md               |    2 +\\n todos/ce-ccp1-h03-007.md               |    2 +\\n todos/ce-ccp1-h03-008.md               |    2 +\\n todos/ce-ccp1-h03-009.md               |    2 +\\n todos/ce-ccp1-h03-010.md               |    2 +\\n todos/ce-ccp1-h03-011.md               |    2 +\\n todos/ce-ccp1-h03-012.md               |    2 +\\n todos/ce-ccp1-h03-013.md               |    2 +\\n todos/ce-ccp1-h03-014.md               |    2 +\\n todos/ce-ccp1-h03-015.md               |    2 +\\n todos/ce-ccp1-h03-016.md               |    2 +\\n todos/ce-ccp1-h03-017.md               |    2 +\\n todos/ce-ccp1-h03-018.md               |    2 +\\n todos/ce-ccp1-i01-000.md               |    2 +\\n todos/ce-ccp1-i01-001.md               |    2 +\\n todos/ce-ccp1-i01-002.md               |    2 +\\n todos/ce-ccp1-i01-003.md               |    2 +\\n todos/ce-ccp1-i01-004.md               |    2 +\\n todos/ce-ccp1-i01-005.md               |    2 +\\n todos/ce-ccp1-i01-006.md               |    2 +\\n todos/ce-ccp1-i01-007.md               |    2 +\\n todos/ce-ccp1-i01-008.md               |    2 +\\n todos/ce-ccp1-i01-009.md               |    2 +\\n todos/ce-ccp1-i01-010.md               |    2 +\\n todos/ce-ccp1-i01-011.md               |    2 +\\n todos/ce-ccp1-i01-012.md               |    2 +\\n todos/ce-ccp1-i01-013.md               |    2 +\\n todos/ce-ccp1-i01-014.md               |    2 +\\n todos/ce-ccp1-i02-000.md               |    2 +\\n todos/ce-ccp1-i02-001.md               |    2 +\\n todos/ce-ccp1-i02-002.md               |    2 +\\n todos/ce-ccp1-i02-003.md               |    2 +\\n todos/ce-ccp1-i02-004.md               |    2 +\\n todos/ce-ccp1-i02-005.md               |    2 +\\n todos/ce-ccp1-i02-006.md               |    2 +\\n todos/ce-ccp1-i02-007.md               |    2 +\\n todos/ce-ccp1-i02-008.md               |    2 +\\n todos/ce-ccp1-i02-009.md               |    2 +\\n todos/ce-ccp1-i02-010.md               |    2 +\\n todos/ce-ccp1-i02-011.md               |    2 +\\n todos/ce-ccp1-i02-012.md               |    2 +\\n todos/ce-ccp1-i02-013.md               |    2 +\\n todos/ce-ccp1-i02-014.md               |    2 +\\n todos/ce-ccp1-j01-000.md               |    2 +\\n todos/ce-ccp1-j01-001.md               |    2 +\\n todos/ce-ccp1-j01-002.md               |    2 +\\n todos/ce-ccp1-j01-003.md               |    2 +\\n todos/ce-ccp1-j01-004.md               |    2 +\\n todos/ce-ccp1-j01-005.md               |    2 +\\n todos/ce-ccp1-j01-006.md               |    2 +\\n todos/ce-ccp1-j01-007.md               |    2 +\\n todos/ce-ccp1-j01-008.md               |    2 +\\n todos/ce-ccp1-j01-009.md               |    2 +\\n todos/ce-ccp1-j01-010.md               |    2 +\\n todos/ce-ccp1-j01-011.md               |    2 +\\n todos/ce-ccp1-j01-012.md               |    2 +\\n todos/ce-ccp1-j02-000.md               |    2 +\\n todos/ce-ccp1-j02-001.md               |    2 +\\n todos/ce-ccp1-j02-002.md               |    2 +\\n todos/ce-ccp1-j02-003.md               |    2 +\\n todos/ce-ccp1-j02-004.md               |    2 +\\n todos/ce-ccp1-j02-005.md               |    2 +\\n todos/ce-ccp1-j02-006.md               |    2 +\\n todos/ce-ccp1-j02-007.md               |    2 +\\n todos/ce-ccp1-j02-008.md               |    2 +\\n todos/ce-ccp1-j02-009.md               |    2 +\\n todos/ce-ccp1-j02-010.md               |    2 +\\n todos/ce-ccp1-j02-011.md               |    2 +\\n todos/ce-ccp1-j02-012.md               |    2 +\\n todos/ce-ccp1-j02-013.md               |    2 +\\n todos/ce-ccp1-j02-014.md               |    2 +\\n todos/ce-ccp1-j03-000.md               |    2 +\\n todos/ce-ccp1-j03-001.md               |    2 +\\n todos/ce-ccp1-j03-002.md               |    2 +\\n todos/ce-ccp1-j03-003.md               |    2 +\\n todos/ce-ccp1-j03-004.md               |    2 +\\n todos/ce-ccp1-j03-005.md               |    2 +\\n todos/ce-ccp1-j03-006.md               |    2 +\\n todos/ce-ccp1-j03-007.md               |    2 +\\n todos/ce-ccp1-j03-008.md               |    2 +\\n todos/ce-ccp1-j03-009.md               |    2 +\\n todos/ce-ccp1-j03-010.md               |    2 +\\n todos/ce-ccp1-j03-011.md               |    2 +\\n todos/ce-ccp1-j03-012.md               |    2 +\\n todos/ce-ccp1-j03-013.md               |    2 +\\n todos/ce-ccp1-m00.md                   |    2 +\\n todos/ce-ccp1-m10.md                   |    2 +\\n todos/ce-ccp1-m20.md                   |    2 +\\n todos/ce-ccp1-m30.md                   |    2 +\\n todos/ce-ccp1-m40.md                   |    2 +\\n todos/ce-ccp1-m50.md                   |    2 +\\n todos/ce-ccp1-m60.md                   |    2 +\\n todos/ce-ccp1-m70.md                   |    2 +\\n todos/ce-ccp1-m80.md                   |    2 +\\n todos/ce-ccp1-m90.md                   |    2 +\\n todos/ce-ccp1-p00.md                   |    2 +\\n todos/ce-ccp1-p10.md                   |    2 +\\n todos/ce-ccp1-p20.md                   |    2 +\\n todos/ce-ccp1-p30.md                   |    2 +\\n todos/ce-ccp1-p40.md                   |    2 +\\n todos/ce-ccp1-p50.md                   |    2 +\\n todos/ce-ccp1-p60.md                   |    2 +\\n todos/ce-ccp1-p70.md                   |    2 +\\n todos/ce-ccp1-p80.md                   |    2 +\\n todos/ce-ccp1-p90.md                   |    2 +\\n 560 files changed, 3252 insertions(+), 376 deletions(-)\", \"git_head\": \"31e491ed29de0fcde70259cbeab8c5c7ad353485\", \"interfaces\": [], \"note\": \"Catalogued 16 cross-repository or adjacent duplicate compiler mechanisms, with an explicit MERGE-CELLERATOR, ADAPT-CELLSHARD, or RETAIN-DISTINCT decision for each and a blind-copy prohibition. Focused source-evidence test passed; declared ctest selector completed successfully with no registered test in this lane build. Commit 4ca537f pushed.\", \"resources\": [], \"task_id\": \"CE-CCP1-A02-007\"}",
         "revision": 3993,
         "task_id": "CE-CCP1-A02-007"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T08:28:20Z",
+        "id": "869eec63-76a4-4ff0-aad1-f4c9405db082",
+        "kind": "complete",
+        "note": "Defined deterministic, inspectable execution-field semantic ownership with captured values, profile binding, observable boundaries, effect summary, and strict lexical ownership. Direct GCC C++23 warnings-as-errors test passed; outside, cross-exit, and other-file operations are rejected. Declared ctest gate executed in configured lane build; central registration remains M20-owned.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"f94615fa4a847121dcb39aa168ba737401b855e4\", \"completion_gates\": [{\"evidence_id\": \"4eb3f0df-74af-49fe-826c-a960ed2ec9c6\", \"evidence_revision\": 4540, \"id\": \"CE-CCP1-C04-001-GATE\", \"input_fingerprint\": \"5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"f94615fa4a847121dcb39aa168ba737401b855e4\"}], \"completion_revision\": 4541, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-C04-001-GATE\", \"input_fingerprint\": \"5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910\", \"last_run_at\": \"2026-09-04T08:28:20Z\", \"revision\": 4540, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"f94615fa4a847121dcb39aa168ba737401b855e4\", \"interfaces\": [], \"note\": \"Defined deterministic, inspectable execution-field semantic ownership with captured values, profile binding, observable boundaries, effect summary, and strict lexical ownership. Direct GCC C++23 warnings-as-errors test passed; outside, cross-exit, and other-file operations are rejected. Declared ctest gate executed in configured lane build; central registration remains M20-owned.\", \"resources\": [], \"task_id\": \"CE-CCP1-C04-001\"}",
+        "revision": 4541,
+        "task_id": "CE-CCP1-C04-001"
       },
       {
         "claim_id": null,
@@ -175720,6 +175783,19 @@
         "validation_git_head": "b2552606e29c4d4a906bc825145e21efb169b648"
       },
       {
+        "completion_git_head": "f94615fa4a847121dcb39aa168ba737401b855e4",
+        "completion_revision": 4541,
+        "evidence_id": "4eb3f0df-74af-49fe-826c-a960ed2ec9c6",
+        "evidence_revision": 4540,
+        "gate_id": "CE-CCP1-C04-001-GATE",
+        "input_fingerprint": "5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910",
+        "provenance_json": "{\"claim_id\": \"58ccfcf6-1b29-44ff-8fcb-ef8bbc91066b\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5c98d953821c1127cadee1a4fd4cec729ade18575b13f73991777b7661814910\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_c04_001$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f94615fa4a847121dcb39aa168ba737401b855e4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"063c46ed76373d96b3f788775c7d724eb9cd8bdc847fa64fa1f0f6465de0b358\", \"started_revision\": 4539, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-c04\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/4eb3f0df-74af-49fe-826c-a960ed2ec9c6\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-C04-001",
+        "valid": 1,
+        "validation_git_head": "f94615fa4a847121dcb39aa168ba737401b855e4"
+      },
+      {
         "completion_git_head": "e56a88f5e528981b677562eccf323fee56e49df5",
         "completion_revision": 4534,
         "evidence_id": "1b60dcaf-08e5-4c5e-874a-67f5f42463ef",
@@ -235275,12 +235351,12 @@
         "priority": 842,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4542,
+        "status": "in_progress",
         "tags_json": "[\"c01\", \"compiler-frontend-parser\", \"leaf\"]",
         "title": "Parse compiler-semantic declarations",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T08:28:27Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -236384,9 +236460,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "f94615fa4a847121dcb39aa168ba737401b855e4",
+        "completion_git_head": "f94615fa4a847121dcb39aa168ba737401b855e4",
+        "completion_revision": 4541,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-C04-001",
         "kind": "task",
@@ -236398,14 +236474,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-C04-000",
         "priority": 839,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4514,
-        "status": "in_progress",
+        "revision": 4541,
+        "status": "done",
         "tags_json": "[\"c04\", \"compiler-sema-fields\", \"leaf\"]",
         "title": "Define execution-field semantic ownership",
-        "updated_at": "2026-09-04T08:20:13Z",
-        "version": 4
+        "updated_at": "2026-09-04T08:28:20Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -278463,13 +278539,13 @@
         "task_id": "CE-CCP1-C01-002"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T08:28:27Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-C01",
         "position": 2,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4542,
+        "state": "active",
         "task_id": "CE-CCP1-C01-003"
       },
       {
@@ -278884,12 +278960,12 @@
       },
       {
         "activated_at": "2026-09-04T08:20:13Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T08:28:20Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-C04",
         "position": 0,
-        "revision": 4514,
-        "state": "active",
+        "revision": 4541,
+        "state": "completed",
         "task_id": "CE-CCP1-C04-001"
       },
       {
@@ -287291,11 +287367,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-C01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4538,
+        "revision": 4542,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T08:28:09Z",
+        "state": "active",
+        "updated_at": "2026-09-04T08:28:27Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -287327,11 +287403,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-C04",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4514,
+        "revision": 4541,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T08:20:13Z",
+        "state": "ready",
+        "updated_at": "2026-09-04T08:28:20Z",
         "workspace_mode": "isolated_merge"
       },
       {
