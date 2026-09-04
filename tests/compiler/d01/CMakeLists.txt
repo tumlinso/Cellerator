@@ -34,3 +34,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d01_003 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d01_003 COMMAND ce_ccp1_d01_003)
+
+add_executable(ce_ccp1_d01_004
+    implement_regions_blocks_values_and_use_def_chains_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/common/implement_regions_blocks_values_and_use_def_chains.cc")
+target_include_directories(ce_ccp1_d01_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d01_004 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d01_004 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d01_004 COMMAND ce_ccp1_d01_004)
