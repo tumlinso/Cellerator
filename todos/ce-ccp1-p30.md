@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P30: Semantic IR and representative profiles
 
-Task revision: `5467`; current project revision is in `todo-status.md`.
+Task revision: `5493`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate semantic ir and representative profiles and publish milestone M30.
