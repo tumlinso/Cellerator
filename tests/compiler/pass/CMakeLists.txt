@@ -68,3 +68,9 @@ add_executable(ce_ccp1_g02_007
     ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
 target_include_directories(ce_ccp1_g02_007 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_007 COMMAND ce_ccp1_g02_007)
+
+add_executable(ce_ccp1_g02_008
+    define_extensible_operation_type_and_attribute_registrat_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/define_extensible_operation_type_and_attribute_registrat.cc)
+target_include_directories(ce_ccp1_g02_008 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_008 COMMAND ce_ccp1_g02_008)
