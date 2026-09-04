@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6394`
+Project revision: `6423`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -681,7 +681,7 @@ Project revision: `6394`
 - `CE-CCP1-I02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement source-to-native navigation in the isolated I02 lane, add the focused ce_ccp1_i02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement inline ceir diagnostics and completion in the isolated I02 lane, add the focused ce_ccp1_i02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark advanced semantic queries in the isolated I02 lane, add the focused ce_ccp1_i02_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-I02-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze cellerator-aware celleratord acceptance in the isolated I02 lane, add the focused ce_ccp1_i02_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-I02-014` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze cellerator-aware celleratord acceptance in the isolated I02 lane, add the focused ce_ccp1_i02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-M60` | status: done | execution: closed | next: Collect isolated lane receipts for P60, verify hashes and interfaces, integrate central files, run label ce_ccp1_m60, and publish CE-CCP1-MILESTONE-M60.
 - `CE-CCP1-P80` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-80` | status: done | execution: closed | next: Deliver workload profile v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
@@ -765,7 +765,7 @@ Project revision: `6394`
 - `CE-EXOP-112` | status: done | execution: closed | next: Deliver exact logical maps, values, and gradient reconciliation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-113` | status: done | execution: closed | next: Deliver work-window behavior and disjoint fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-EXOP-114` | status: done | execution: closed | next: Deliver overlap strategy validation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
-- `CE-CCP1-M80` | status: planned | execution: ready | next: Collect isolated lane receipts for P80, verify hashes and interfaces, integrate central files, run label ce_ccp1_m80, and publish CE-CCP1-MILESTONE-M80.
+- `CE-CCP1-M80` | status: done | execution: closed | next: Collect isolated lane receipts for P80, verify hashes and interfaces, integrate central files, run label ce_ccp1_m80, and publish CE-CCP1-MILESTONE-M80.
 - `CE-EXOP-120` | status: done | execution: closed | next: Deliver exact small-problem optimizer oracle exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-100` | status: done | execution: closed | next: Independently rerun frozen CPK1, CPE2, session, program, catalog, sparse, transpose, and experimental WMMA baselines and compare exact golden evidence.
 - `CE-EXOP-121` | status: done | execution: closed | next: Deliver branch-and-bound/exhaustive objective validation exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.

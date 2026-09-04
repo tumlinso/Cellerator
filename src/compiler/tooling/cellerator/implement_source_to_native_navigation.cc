@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {native_navigation navigate_to_native(std::string_view a){return {"semantic:op7","planning:candidate2","realization:stage1",std::string(a)+":generated:42","_cellerator_relation_apply","registers=32,shared=4096","model.cell:12"};}std::string reverse_map_native_diagnostic(std::string_view d,const native_navigation& n){return n.source_location+": "+std::string(d)+" ["+n.native_symbol+"]";}}
