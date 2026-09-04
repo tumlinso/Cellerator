@@ -37,3 +37,7 @@ add_executable(ce_ccp1_g03_007 implement_source_to_native_maps_and_removable_sec
 target_include_directories(ce_ccp1_g03_007 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_007 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_007 COMMAND ce_ccp1_g03_007)
+add_executable(ce_ccp1_g03_008 implement_what_changed_and_staleness_explanations_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_what_changed_and_staleness_explanations.cc")
+target_include_directories(ce_ccp1_g03_008 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_008 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_008 COMMAND ce_ccp1_g03_008)
