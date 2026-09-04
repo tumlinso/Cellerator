@@ -59,3 +59,9 @@ add_executable(ce_ccp1_f03_012 integrate_asynchronous_readiness_and_streams_test
 target_include_directories(ce_ccp1_f03_012 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_012 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_012 COMMAND ce_ccp1_f03_012)
+add_executable(ce_ccp1_f03_013 deliver_the_first_nvcc_object_milestone_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/deliver_the_first_nvcc_object_milestone.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/generate_custom_relation_kernels_where_selected.cc")
+target_include_directories(ce_ccp1_f03_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_013 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_013 COMMAND ce_ccp1_f03_013)
