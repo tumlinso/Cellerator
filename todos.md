@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4075`
+Project revision: `4081`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -582,7 +582,7 @@ Project revision: `4075`
 - `CE-CCP1-A03-003` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Retain the term atom and map candidate, certified, basis, super, physical, replica, partial, and resident states to explicit Cellerator compiler levels.
 - `CE-CCP1-A03-004` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Map production rules, multi-parent derivations, exact coverage equations, ports, generations, and operation compatibility into Planning IR extension contracts.
 - `CE-CCP1-A03-005` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Move workload-family basis search, redundant bases, no-basis outcome, and basis cost reasoning into the Cellerator planner.
-- `CE-CCP1-A03-006` | kind: task | status: in_progress | parent: CE-CCP1-A03-000 | objective: Treat superatoms as optional compiler-selected composed units with exact derivation and measured benefit, not storage shards.
+- `CE-CCP1-A03-006` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Treat superatoms as optional compiler-selected composed units with exact derivation and measured benefit, not storage shards.
 - `CE-CCP1-A03-007` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Place partial-result algebra, dependency closure, numerical policy, and persistence legality in Cellerator; leave concrete partial payload persistence, replication, and recovery in CellShard.
 - `CE-CCP1-A03-008` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Recast CellShard global graph IR as Cellerator program-level Semantic/Planning IR over fields, operations, atom flows, and profile families.
 - `CE-CCP1-A03-009` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Move machine-independent schedule and ruleset selection into Cellerator Planning/Realization IR.
@@ -598,7 +598,7 @@ Project revision: `4075`
 - `CE-CCP1-A04-003` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Place cellerator and celleratord entrypoints under tools/cellerator and tools/celleratord, with thin mains over shared libraries.
 - `CE-CCP1-A04-004` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Use stdlib for .
 - `CE-CCP1-A04-005` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Define tests/compiler and bench/compiler subtrees by frontend, IR, profile, planning, realization, backends, LTO, SDK, and language server.
-- `CE-CCP1-A04-006` | kind: task | status: in_progress | parent: CE-CCP1-A04-000 | objective: Reserve root CMake, compiler target aggregation, grammar registries, CEIR dialect manifests, backend registry, package exports, stdlib manifest, and parent submodule pointer for integration lanes.
+- `CE-CCP1-A04-006` | kind: task | status: done | parent: CE-CCP1-A04-000 | objective: Reserve root CMake, compiler target aggregation, grammar registries, CEIR dialect manifests, backend registry, package exports, stdlib manifest, and parent submodule pointer for integration lanes.
 - `CE-CCP1-A04-007` | kind: task | status: planned | parent: CE-CCP1-A04-000 | objective: Plan a small compiler umbrella, runtime umbrella, and full Cellerator umbrella rather than expanding the current all-in-one Cellerator.
 - `CE-CCP1-A04-008` | kind: task | status: planned | parent: CE-CCP1-A04-000 | objective: Place generated parser tables, dialect manifests, version headers, and embedded resources under build/generated with stable source schemas checked in separately.
 - `CE-CCP1-A04-009` | kind: task | status: planned | parent: CE-CCP1-A04-000 | objective: Specify directory-local implementation instructions for compiler, IR, backends, tooling, and migration paths without changing source in this planning turn.
