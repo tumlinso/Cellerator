@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5312`
+Project revision: `5314`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -796,7 +796,7 @@ Project revision: `5312`
 - `CE-CCP1-E01-010` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent preparation, conversion, transfer, pack, order, execution, residual, epilogue, synchronization, canonicalization, memory, compile time, and reuse amortization as named dimensions.
 - `CE-CCP1-E01-011` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Attach distributions, sample counts, uncertainty, contamination, target/toolchain/build/profile identity, revision, validity, and external evidence references.
 - `CE-CCP1-E01-012` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Record correctness, capability, resource, numerical, profile, stale-evidence, cost, and user-policy reasons for every removed alternative.
-- `CE-CCP1-E01-013` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
+- `CE-CCP1-E01-013` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
 - `CE-CCP1-E01-014` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
 - `CE-CCP1-E01-015` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
 - `CE-CCP1-E01-016` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
@@ -809,7 +809,7 @@ Project revision: `5312`
 - `CE-CCP1-E02-006` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move recurring trajectory prefixes, branch-local deltas, state neighborhoods, and mutation-horizon evidence without importing model or causal interpretation.
 - `CE-CCP1-E02-007` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move shared identity spine plus modality-specific overlay and cross-modal relation proposal logic into Cellerator discovery extensions.
 - `CE-CCP1-E02-008` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome experimental factorization/bicluster/signature providers as proposal mechanisms with explicit approximation, confidence, bounded work, and no self-promotion.
-- `CE-CCP1-E02-009` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move independent exact scans that turn proposals into certified logical coverage, canonical maps, and omission/duplicate receipts.
+- `CE-CCP1-E02-009` | kind: task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Move independent exact scans that turn proposals into certified logical coverage, canonical maps, and omission/duplicate receipts.
 - `CE-CCP1-E02-010` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Represent candidate/certified atom identity, species, exact coverage, typed inputs/outputs, planes, dependencies, effects, and lineage in Planning IR extensions.
 - `CE-CCP1-E02-011` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Preserve structure, mutable values, active support, gradients, partials, physical views, evidence, and lineage as distinct planes with independent generations.
 - `CE-CCP1-E02-012` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Bind migrated atom records to existing Cellerator requirements, affordances, extents, orders, projections, and target capabilities.
