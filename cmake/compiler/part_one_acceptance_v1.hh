@@ -83,4 +83,8 @@ inline constexpr std::array<performance_review_item, 6> performance_review = {{
     {"editor-latency", "10 ms semantic background budget", "celleratord I40 v1", "accepted"},
 }};
 
+inline constexpr std::array<std::string_view, 9> reproducibility_bundle = {
+    "source-revision", "profile-fixture", "ceir-example", "toolchain-manifest",
+    "build-matrix", "focused-tests", "benchmark-contract", "sdk-consumer", "provenance"};
+
 }  // namespace cellerator::compiler::acceptance::v1
