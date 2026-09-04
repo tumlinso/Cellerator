@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6713`
+Project revision: `6715`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -744,7 +744,7 @@ Project revision: `6713`
 - `CE-GEO-87` | status: done | execution: closed | next: Add public-only examples for sparse state embedding, regulatory propagation, transition/transport, hierarchy incidence, multimodal relations, and perturbation delta propagation.
 - `CE-GEO-88` | status: done | execution: closed | next: Prove exact semantics, examples using only public Cellerator APIs, compatibility, segments, bundles, and absence of model/trainer/autograd ownership.
 - `CE-CCP1-M70` | status: done | execution: closed | next: Collect isolated lane receipts for P70, verify hashes and interfaces, integrate central files, run label ce_ccp1_m70, and publish CE-CCP1-MILESTONE-M70.
-- `CE-CCP1-P90` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
+- `CE-CCP1-P90` | status: done | execution: closed | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-100` | status: done | execution: closed | next: Deliver affinity coarsening and hierarchy construction exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-90` | status: done | execution: closed | next: Build a separate target-specific forward/transpose physical geometry while preserving shared logical-edge identity.
 - `CE-EXOP-101` | status: done | execution: closed | next: Deliver coarse solve, uncoarsening, and local refinement exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
