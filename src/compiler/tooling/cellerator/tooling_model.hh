@@ -26,5 +26,8 @@ struct profile_state_view {std::string selected;std::vector<std::string> evidenc
 [[nodiscard]] profile_state_view profile_state_at_cursor(std::string_view source,std::size_t cursor);
 struct generation_view {std::size_t structure=1,value=1,support=1,order=1;std::vector<std::string> stale_artifacts;};
 [[nodiscard]] generation_view query_generations(std::string_view statement);
+struct semantic_ir_view {std::string normalized,source_map;std::vector<std::string> effects,profiles,extensions;};
+[[nodiscard]] semantic_ir_view semantic_ir_at_cursor(std::string_view source,std::size_t cursor);
+[[nodiscard]] std::string apply_semantic_ir_edit(std::string_view source,const semantic_ir_view& edit);
 
 }  // namespace cellerator::compiler::tooling::v1
