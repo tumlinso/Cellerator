@@ -141,3 +141,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_013 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_013 COMMAND ce_ccp1_d02_013)
+
+add_executable(ce_ccp1_d02_014
+    implement_semantic_ir_inlining_and_composition_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_semantic_ir_inlining_and_composition.cc")
+target_include_directories(ce_ccp1_d02_014 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_014 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_014 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_014 COMMAND ce_ccp1_d02_014)
