@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5334`
+Project revision: `5342`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -416,8 +416,8 @@ Project revision: `5334`
 - `CE-CCP1-E01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement analytical, measured, and external evidence in the isolated E01 lane, add the focused ce_ccp1_e01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement rejection and dominance explanations in the isolated E01 lane, add the focused ce_ccp1_e01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement user edits and authority hierarchy in the isolated E01 lane, add the focused ce_ccp1_e01_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-E01-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement planning ir parser, printer, and validator in the isolated E01 lane, add the focused ce_ccp1_e01_014 gate, and publish a source-linked receipt.
-- `CE-CCP1-E01-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic-to-planning lowering in the isolated E01 lane, add the focused ce_ccp1_e01_015 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement planning ir parser, printer, and validator in the isolated E01 lane, add the focused ce_ccp1_e01_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-015` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement semantic-to-planning lowering in the isolated E01 lane, add the focused ce_ccp1_e01_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first inspectable candidate search space in the isolated E01 lane, add the focused ce_ccp1_e01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-65` | status: done | execution: closed | next: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
 - `CE-CCP1-E02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement import the common jbc atom identity adapters in the isolated E02 lane, add the focused ce_ccp1_e02_001 gate, and publish a source-linked receipt.
@@ -429,7 +429,7 @@ Project revision: `5334`
 - `CE-CCP1-E02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement import multimodal and identity-spine discovery in the isolated E02 lane, add the focused ce_ccp1_e02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement import factor, bicluster, and signature proposal strategies in the isolated E02 lane, add the focused ce_ccp1_e02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement import exact rescan and proposal certification in the isolated E02 lane, add the focused ce_ccp1_e02_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-E02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement import atom envelope and typed ports in the isolated E02 lane, add the focused ce_ccp1_e02_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-E02-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement import atom envelope and typed ports in the isolated E02 lane, add the focused ce_ccp1_e02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement import atom plane separation in the isolated E02 lane, add the focused ce_ccp1_e02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement import atom requirement/affordance matching in the isolated E02 lane, add the focused ce_ccp1_e02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement import scalable certification indexes in the isolated E02 lane, add the focused ce_ccp1_e02_013 gate, and publish a source-linked receipt.
@@ -453,7 +453,7 @@ Project revision: `5334`
 - `CE-CCP1-E03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement import portable schedule/ruleset representation in the isolated E03 lane, add the focused ce_ccp1_e03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement define the concrete cellshard materialization request seam in the isolated E03 lane, add the focused ce_ccp1_e03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement port composition, basis, graph, and schedule tests in the isolated E03 lane, add the focused ce_ccp1_e03_014 gate, and publish a source-linked receipt.
-- `CE-CCP1-E03-015` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement create semantic differential adapters in the isolated E03 lane, add the focused ce_ccp1_e03_015 gate, and publish a source-linked receipt.
+- `CE-CCP1-E03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement create semantic differential adapters in the isolated E03 lane, add the focused ce_ccp1_e03_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement retire cellshard compiler authority in documentation and namespaces in the isolated E03 lane, add the focused ce_ccp1_e03_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the profile-to-portable-ruleset slice in the isolated E03 lane, add the focused ce_ccp1_e03_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-E03-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze cellerator-owned global compiler migration in the isolated E03 lane, add the focused ce_ccp1_e03_018 gate, and publish a source-linked receipt.
