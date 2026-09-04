@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:46:14Z",
+  "generated_at": "2026-09-04T07:46:33Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4447,
+  "project_revision": 4448,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48731,6 +48731,16 @@
         "revision": 4447,
         "seq": 4447,
         "timestamp": "2026-09-04T07:46:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-B03",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-B03\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-B03-015\"}",
+        "revision": 4448,
+        "seq": 4448,
+        "timestamp": "2026-09-04T07:46:33Z"
       }
     ],
     "evidence": [
@@ -233518,12 +233528,12 @@
         "priority": 844,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4448,
+        "status": "in_progress",
         "tags_json": "[\"b03\", \"compiler-frontend-source\", \"leaf\"]",
         "title": "Deliver the pragma-aware source milestone",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T07:46:33Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -276985,13 +276995,13 @@
         "task_id": "CE-CCP1-B03-014"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-04T07:46:33Z",
         "completed_at": null,
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-B03",
         "position": 14,
-        "revision": 4123,
-        "state": "queued",
+        "revision": 4448,
+        "state": "active",
         "task_id": "CE-CCP1-B03-015"
       },
       {
@@ -285959,11 +285969,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-B03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4447,
+        "revision": 4448,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-04T07:46:14Z",
+        "state": "active",
+        "updated_at": "2026-09-04T07:46:33Z",
         "workspace_mode": "isolated_merge"
       },
       {
