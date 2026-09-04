@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/lto/implement_mach_o_and_coff_strategies_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::lto::v1;
+int main(){auto m=select_platform_ceir_strategy_v1(object_format_v1::mach_o,true),c=select_platform_ceir_strategy_v1(object_format_v1::coff,true),fallback=select_platform_ceir_strategy_v1(object_format_v1::coff,false);assert(m.segment=="__CELLERATOR"&&m.section=="__ceir"&&!m.use_sidecar);assert(c.section==".cellerator$ceir"&&!c.use_sidecar);assert(fallback.use_sidecar&&fallback.sidecar_suffix==".ceir");ceir_companion_artifact_v1 a,b;a.semantic_summary=b.semantic_summary={1,1};a.planning_summary=b.planning_summary={1,2};a.profile_reference=b.profile_reference={1,3};a.content_hash=b.content_hash={1};a.format=object_format_v1::mach_o;b.format=object_format_v1::coff;assert(equivalent_platform_content_v1(a,b));}

@@ -1,0 +1,4 @@
+#ifndef CELLERATOR_COMPILER_API_CELLERATOR_COMPILER_H
+#define CELLERATOR_COMPILER_API_CELLERATOR_COMPILER_H
+#include <Cellerator/compiler/api/define_c_compiler_session_api_v1.hh>
+#endif

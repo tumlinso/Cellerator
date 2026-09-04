@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+set(Cellerator_VERSION "@PROJECT_VERSION@")
+set(Cellerator_RESOURCE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/cellerator/@PROJECT_VERSION_MAJOR@.1")
+set(Cellerator_STDLIB_DIR "${Cellerator_RESOURCE_DIR}/stdlib")
+set(Cellerator_PROFILE_DIR "${Cellerator_RESOURCE_DIR}/profiles")
+set(Cellerator_CEIR_VERSION 1)
+set(Cellerator_PROFILE_REQUIRED TRUE)
+include("${CMAKE_CURRENT_LIST_DIR}/CelleratorTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/CelleratorCompilerIntegration.cmake")
+check_required_components(Cellerator)

@@ -1,0 +1,9 @@
+#pragma cellerator
+namespace cellerator::stdlib {
+enum class operation_kind : unsigned { relation, transpose, contraction, segment, gate, update, bundle, chain, moments, hierarchy, exchange };
+struct operation { operation_kind kind; unsigned input_count; unsigned output_count; };
+constexpr operation make_operation(operation_kind kind, unsigned inputs, unsigned outputs) noexcept { return {kind, inputs, outputs}; }
+constexpr operation relation() noexcept { return make_operation(operation_kind::relation, 2, 1); }
+constexpr operation transpose() noexcept { return make_operation(operation_kind::transpose, 1, 1); }
+constexpr operation contraction() noexcept { return make_operation(operation_kind::contraction, 2, 1); }
+} // namespace cellerator::stdlib

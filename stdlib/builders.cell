@@ -1,0 +1,20 @@
+#pragma cellerator
+
+namespace cellerator::stdlib {
+using size_type = __SIZE_TYPE__;
+struct identity { unsigned long long value; };
+struct generation { unsigned long long value; };
+template <class T> struct state_view {
+    T* data;
+    size_type extent;
+    identity domain;
+    identity order;
+    generation values;
+};
+template <class T>
+constexpr state_view<T> make_state_view(T* data, size_type extent,
+                                        identity domain, identity order,
+                                        generation values) noexcept {
+    return {data, extent, domain, order, values};
+}
+} // namespace cellerator::stdlib
