@@ -121,3 +121,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_011 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_011 COMMAND ce_ccp1_d02_011)
+
+add_executable(ce_ccp1_d02_012
+    implement_control_flow_and_loop_semantics_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_control_flow_and_loop_semantics.cc")
+target_include_directories(ce_ccp1_d02_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_012 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_012 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_012 COMMAND ce_ccp1_d02_012)
