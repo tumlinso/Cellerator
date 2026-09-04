@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4977`
+Project revision: `4978`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -771,7 +771,7 @@ Project revision: `4977`
 - `CE-CCP1-D03-002` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Use aligned directories, checksums, stable identities, optional compression, memory mapping, and skip-unknown sections for fast loading and extension.
 - `CE-CCP1-D03-003` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Represent one compilation environment containing multiple named semantic states, aliases, priors/weights, branch conditions, and explicit default selection without duplicating program IR.
 - `CE-CCP1-D03-004` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Store extents, support counts, degree/occupancy distributions, strata, co-support summaries, ordering stability, hierarchy summaries, and confidence with exact source identities.
-- `CE-CCP1-D03-005` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Store type-relevant ranges, sparsity/zero/nonfinite rates, moments/quantiles, update magnitudes, dynamic range, and approximation risk without treating distributions as guarantees.
+- `CE-CCP1-D03-005` | kind: task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Store type-relevant ranges, sparsity/zero/nonfinite rates, moments/quantiles, update magnitudes, dynamic range, and approximation risk without treating distributions as guarantees.
 - `CE-CCP1-D03-006` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Store observed structure/value/support/order change rates, mutation half-lives, reuse horizons, recurrence, field frequency, loop counts, and confidence intervals.
 - `CE-CCP1-D03-007` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Track dataset/source identity, sampling method, time window, transformation stage, producer/tool version, confidence, revision, and validity predicates independently of semantic identity.
 - `CE-CCP1-D03-008` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Accept caller-provided relation/support/value/trace observations without owning workflow file formats.
