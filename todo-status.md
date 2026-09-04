@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5281`
+Project revision: `5284`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -412,7 +412,7 @@ Project revision: `5281`
 - `CE-CCP1-E01-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement partial-result algebra nodes in the isolated E01 lane, add the focused ce_ccp1_e01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement persistent-order, projection, and packing alternatives in the isolated E01 lane, add the focused ce_ccp1_e01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement resource and stage-inventory alternatives in the isolated E01 lane, add the focused ce_ccp1_e01_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-E01-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement complete cost vectors in the isolated E01 lane, add the focused ce_ccp1_e01_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement complete cost vectors in the isolated E01 lane, add the focused ce_ccp1_e01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement analytical, measured, and external evidence in the isolated E01 lane, add the focused ce_ccp1_e01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement rejection and dominance explanations in the isolated E01 lane, add the focused ce_ccp1_e01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement user edits and authority hierarchy in the isolated E01 lane, add the focused ce_ccp1_e01_013 gate, and publish a source-linked receipt.
