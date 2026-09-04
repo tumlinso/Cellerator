@@ -50,3 +50,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f02_004 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f02_004 COMMAND ce_ccp1_f02_004)
+
+add_executable(ce_ccp1_f02_005
+  implement_generic_cpu_relation_apply_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_generic_cpu_relation_apply.cc)
+target_include_directories(ce_ccp1_f02_005 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_005 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_005 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_005 COMMAND ce_ccp1_f02_005)
