@@ -25,3 +25,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d03_002 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d03_002 COMMAND ce_ccp1_d03_002)
+
+add_executable(ce_ccp1_d03_003
+    ../d03/define_named_profile_environments_and_alternatives_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/profile/define_named_profile_environments_and_alternatives.cc")
+target_include_directories(ce_ccp1_d03_003 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_003 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d03_003 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d03_003 COMMAND ce_ccp1_d03_003)
