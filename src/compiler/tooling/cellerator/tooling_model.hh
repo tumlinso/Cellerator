@@ -24,5 +24,7 @@ struct field_effect_view {std::string field,boundary,profile;std::vector<std::st
 [[nodiscard]] field_effect_view describe_field_effects(std::string_view source,std::size_t cursor);
 struct profile_state_view {std::string selected;std::vector<std::string> evidence,alternatives,unknown_dimensions,missing_hints;double confidence=0;std::string support_state,value_state,mutation_state;};
 [[nodiscard]] profile_state_view profile_state_at_cursor(std::string_view source,std::size_t cursor);
+struct generation_view {std::size_t structure=1,value=1,support=1,order=1;std::vector<std::string> stale_artifacts;};
+[[nodiscard]] generation_view query_generations(std::string_view statement);
 
 }  // namespace cellerator::compiler::tooling::v1
