@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M30: Common CEIR, Semantic IR, and representative profile environment integrated
 
-Task revision: `4123`; current project revision is in `todo-status.md`.
+Task revision: `5118`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P30 workstreams, freeze shared interfaces, and publish milestone M30.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
