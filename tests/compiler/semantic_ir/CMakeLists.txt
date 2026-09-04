@@ -79,3 +79,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_007 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_007 COMMAND ce_ccp1_d02_007)
+
+add_executable(ce_ccp1_d02_008
+    implement_edge_map_gate_support_mask_and_sparse_update_o_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_edge_map_gate_support_mask_and_sparse_update_o.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc")
+target_include_directories(ce_ccp1_d02_008 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_008 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_008 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_008 COMMAND ce_ccp1_d02_008)
