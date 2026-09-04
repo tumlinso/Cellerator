@@ -81,3 +81,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_008 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_008 COMMAND ce_ccp1_e02_008)
+
+add_executable(ce_ccp1_e02_009
+    import_exact_rescan_and_proposal_certification_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_exact_rescan_and_proposal_certification.cc")
+target_include_directories(ce_ccp1_e02_009 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_009 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_009 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_009 COMMAND ce_ccp1_e02_009)
