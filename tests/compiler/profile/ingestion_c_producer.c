@@ -1,0 +1,2 @@
+#include <Cellerator/compiler/profile/build_pointer_plus_count_profile_ingestion_apis_v1.hh>
+ce_profile_ingestion_batch_v1 ce_test_c_profile_batch(void){static const uint64_t r[]={1,2};static const uint32_t s[]={3};static const double v[]={4,5,6};static const uint64_t t[]={7};ce_profile_ingestion_batch_v1 b={{r,2,sizeof(*r),CE_PROFILE_RELATION_V1},{s,1,sizeof(*s),CE_PROFILE_SUPPORT_V1},{v,3,sizeof(*v),CE_PROFILE_VALUE_V1},{t,1,sizeof(*t),CE_PROFILE_TRACE_V1}};return b;}
