@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T06:17:14Z",
+  "generated_at": "2026-09-04T06:18:02Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4125,
+  "project_revision": 4128,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -45511,6 +45511,36 @@
         "revision": 4125,
         "seq": 4125,
         "timestamp": "2026-09-04T06:17:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-A03-014-GATE\"}",
+        "revision": 4126,
+        "seq": 4126,
+        "timestamp": "2026-09-04T06:17:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e0954e97-1611-46a2-a3bb-af84d6c7432d\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4127,
+        "seq": 4127,
+        "timestamp": "2026-09-04T06:17:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-A03",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-A03\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-A03-014\"}",
+        "revision": 4128,
+        "seq": 4128,
+        "timestamp": "2026-09-04T06:18:02Z"
       }
     ],
     "evidence": [
@@ -54787,6 +54817,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-04T06:17:35Z",
+        "gate_id": "CE-CCP1-A03-014-GATE",
+        "id": "e0954e97-1611-46a2-a3bb-af84d6c7432d",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"75507ca92c8111d9e9f90657cb01bd435d001c437799e18b472c9c17815ebe65\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"8a7bd93b960a35810c775afb05d43fb08cb2d55c7a250511a7efdbfefc488439\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-a03-014.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"d93138ff45681ec9bc164caf7f8b85e6460d1854\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"e208023b4ea1fcbe0410414d12f7354391430eca54bbff26a8ffc367e0692b1a\", \"started_revision\": 4126, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a03\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/e0954e97-1611-46a2-a3bb-af84d6c7432d",
+        "revision": 4127,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-30T03:39:12Z",
         "gate_id": "CE-GEO-123-NATIVE",
         "id": "e0a0dbbc-f41a-4388-ba7f-4f1e2e5f3b0e",
@@ -58702,14 +58745,14 @@
         "checkpoint_id": "CE-CCP1-CP-A03",
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_014$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-A03-014-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "75507ca92c8111d9e9f90657cb01bd435d001c437799e18b472c9c17815ebe65",
+        "last_run_at": "2026-09-04T06:17:35Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4127,
+        "status": "passed",
         "task_id": "CE-CCP1-A03-014",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
