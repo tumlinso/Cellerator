@@ -66,3 +66,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_006 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_006 COMMAND ce_ccp1_e01_006)
+
+add_executable(ce_ccp1_e01_007
+    implement_partial_result_algebra_nodes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_partial_result_algebra_nodes.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/persistent_identity_v1.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/partial_result_algebra_v1.cc")
+target_include_directories(ce_ccp1_e01_007 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_007 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_007 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_007 COMMAND ce_ccp1_e01_007)
