@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6105`
+Project revision: `6117`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -983,8 +983,8 @@ Project revision: `6105`
 - `CE-GEO-75` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
 - `CE-CCP1-H01-001` | kind: validation_task | status: done | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
 - `CE-CCP1-H01-002` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Emit deterministic non-loadable sections, symbols/notes, compression policy, strip behavior, and extraction without affecting runtime ABI.
-- `CE-CCP1-H01-003` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Define platform sections or sidecar fallback with identical semantic content and deterministic naming where platform toolchains are available.
-- `CE-CCP1-H01-004` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Emit content-addressed `.
+- `CE-CCP1-H01-003` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Define platform sections or sidecar fallback with identical semantic content and deterministic naming where platform toolchains are available.
+- `CE-CCP1-H01-004` | kind: task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Emit content-addressed `.
 - `CE-CCP1-H01-005` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Resolve exported domains, relations, fields, profiles, passes, native symbols, and template instantiations using semantic fingerprints plus linkage/module identity.
 - `CE-CCP1-H01-006` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Deduplicate equivalent C++/Cellerator template specializations while preserving distinct numeric/domain/profile semantics and backend variants.
 - `CE-CCP1-H01-007` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Merge named states and evidence references by stable identity/revision, diagnose conflicting biological semantics, and retain bounded alternatives.
@@ -999,8 +999,8 @@ Project revision: `6105`
 - `CE-CCP1-H01-016` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Compile two `.
 - `CE-GEO-76` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement practical one-warp N=16 grouping and disjoint column panels above 64 while preserving sparse fallback below profitable widths and specialized N=1.
 - `CE-CCP1-H02-001` | kind: validation_task | status: done | parent: CE-CCP1-H02-000 | objective: Define separately linkable compiler, IR, profile, planning, realization, backend, diagnostics, and runtime/execution components plus a convenience libCellerator umbrella.
-- `CE-CCP1-H02-002` | kind: task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Expose driver configuration, source buffers/files, profiles, target/toolchain, diagnostics callbacks, cancellation, outputs, and lifecycle through opaque handles and versioned records.
-- `CE-CCP1-H02-003` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Expose RAII contexts, source manager, AST/Sema snapshots, CEIR builders/readers, profiles, pass pipelines, backends, diagnostics, and compilation results.
+- `CE-CCP1-H02-002` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Expose driver configuration, source buffers/files, profiles, target/toolchain, diagnostics callbacks, cancellation, outputs, and lifecycle through opaque handles and versioned records.
+- `CE-CCP1-H02-003` | kind: task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Expose RAII contexts, source manager, AST/Sema snapshots, CEIR builders/readers, profiles, pass pipelines, backends, diagnostics, and compilation results.
 - `CE-CCP1-H02-004` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Allow clients to parse, inspect, incrementally update, and semantically analyze source without running planning or code generation.
 - `CE-CCP1-H02-005` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide contexts, immutable snapshots, builders, cloning, parsing/printing, validation modes, provenance, and serialization for all three IR levels.
 - `CE-CCP1-H02-006` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide pointer-plus-count ingestion, binary/text load, named-state lookup, diff, transfer functions, and profile environment binding.
@@ -1016,7 +1016,7 @@ Project revision: `6105`
 - `CE-CCP1-H02-016` | kind: validation_task | status: planned | parent: CE-CCP1-H02-000 | objective: Publish component libraries and umbrellas, build C/C++ external consumers, preserve current execution functionality, and verify compiler APIs do not leak Clang/LLVM internals.
 - `CE-GEO-77` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.
 - `CE-CCP1-H03-001` | kind: validation_task | status: done | parent: CE-CCP1-H03-000 | objective: Audit every proposed convenience abstraction: only compiler-reasoned semantic facts remain base language; containers, algorithms, biological constructions, policies, and helpers are `.
-- `CE-CCP1-H03-002` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Organize `.
+- `CE-CCP1-H03-002` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Organize `.
 - `CE-CCP1-H03-003` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide compiler-recognized bridge declarations, concepts, traits, low-level views, span-like pointer/count types, result/status helpers, and no-allocation facilities needed by examples.
 - `CE-CCP1-H03-004` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide explicit low-level constructors/builders from pointers, extents, identities, orders, support, generations, and numeric types without hiding costs.
 - `CE-CCP1-H03-005` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Express relation, transpose, contraction, segment, gate, update, bundle, chain, moments, hierarchy, and exchange constructions as inlineable `.
