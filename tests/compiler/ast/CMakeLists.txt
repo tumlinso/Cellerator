@@ -84,3 +84,10 @@ add_executable(ce_ccp1_c02_010
 target_include_directories(ce_ccp1_c02_010 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_010 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_010 COMMAND ce_ccp1_c02_010)
+
+add_executable(ce_ccp1_c02_011
+    support_incremental_ast_identity_reuse_test.cc
+    ../../../src/compiler/ast/support_incremental_ast_identity_reuse.cc)
+target_include_directories(ce_ccp1_c02_011 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_011 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_011 COMMAND ce_ccp1_c02_011)
