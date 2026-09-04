@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/ir/realization/implement_lowering_resumption_checkpoints_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::ir::realization::v1;
+int main(){std::vector<lowering_checkpoint_v1> c;for(std::uint8_t i=0;i<8;++i){auto n=static_cast<std::uint64_t>(i)+1u;c.push_back({static_cast<ceir_facet_v1>(i),{1,n},{2,n},{3,n},7,9});}lowering_resumption_plan_v1 p;assert(plan_lowering_resumption_v1(c,c,&p)==lowering_checkpoint_status_v1::valid);for(bool reusable:p.reusable)assert(reusable);auto corrupt=c;corrupt[4].content_hash.low=99;assert(plan_lowering_resumption_v1(c,corrupt,&p)==lowering_checkpoint_status_v1::content_corrupt);for(std::size_t i=0;i<4;++i)assert(p.reusable[i]);for(std::size_t i=4;i<8;++i)assert(!p.reusable[i]);assert(p.resume_at==ceir_facet_v1::physical_projection);}
