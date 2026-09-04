@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(cellerator_j02_tests LANGUAGES CXX)
+enable_testing()
+add_executable(ce_ccp1_j02_001 freeze_compiler_benchmark_methodology_test.cc)
+target_compile_features(ce_ccp1_j02_001 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_j02_001 COMMAND ce_ccp1_j02_001)
