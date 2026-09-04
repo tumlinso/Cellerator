@@ -93,3 +93,10 @@ add_executable(ce_ccp1_g02_011
     ${CELLERATOR_ROOT}/src/compiler/pass/implement_compiler_prelude_regions.cc)
 target_include_directories(ce_ccp1_g02_011 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_011 COMMAND ce_ccp1_g02_011)
+
+add_executable(ce_ccp1_g02_012
+    compile_same_translation_unit_transforms_in_an_early_hos_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/compile_same_translation_unit_transforms_in_an_early_hos.cc)
+target_include_directories(ce_ccp1_g02_012 PRIVATE ${CELLERATOR_ROOT}/include)
+target_link_libraries(ce_ccp1_g02_012 PRIVATE dl)
+add_test(NAME ce_ccp1_g02_012 COMMAND ce_ccp1_g02_012)
