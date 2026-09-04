@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4135`
+Project revision: `4142`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -602,7 +602,7 @@ Project revision: `4135`
 - `CE-CCP1-A04-007` | kind: task | status: done | parent: CE-CCP1-A04-000 | objective: Plan a small compiler umbrella, runtime umbrella, and full Cellerator umbrella rather than expanding the current all-in-one Cellerator.
 - `CE-CCP1-A04-008` | kind: task | status: done | parent: CE-CCP1-A04-000 | objective: Place generated parser tables, dialect manifests, version headers, and embedded resources under build/generated with stable source schemas checked in separately.
 - `CE-CCP1-A04-009` | kind: task | status: done | parent: CE-CCP1-A04-000 | objective: Specify directory-local implementation instructions for compiler, IR, backends, tooling, and migration paths without changing source in this planning turn.
-- `CE-CCP1-A04-010` | kind: validation_task | status: in_progress | parent: CE-CCP1-A04-000 | objective: Publish current-to-proposed path mappings, central file locks, lane write scopes, and dependency rules.
+- `CE-CCP1-A04-010` | kind: validation_task | status: done | parent: CE-CCP1-A04-000 | objective: Publish current-to-proposed path mappings, central file locks, lane write scopes, and dependency rules.
 - `CE-EXOP-53` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver layout, value-mode, reuse, and connected-operation economics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-53` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
 - `CE-CCP1-B01-001` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Change the planned root-language contract from unconditional CXX+CUDA to CXX with explicit optional accelerator enablement.
