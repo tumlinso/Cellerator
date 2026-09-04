@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4106`
+Project revision: `4135`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -205,11 +205,11 @@ Project revision: `4106`
 - `CE-CCP1-A03-007` | status: done | execution: closed | next: Inspect the cited read scope, implement split persistent partial semantics from partial storage in the isolated A03 lane, add the focused ce_ccp1_a03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of global operation/program ir in the isolated A03 lane, add the focused ce_ccp1_a03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of portable schedule compilation in the isolated A03 lane, add the focused ce_ccp1_a03_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define the retained cellshard concrete application boundary in the isolated A03 lane, add the focused ce_ccp1_a03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement define temporary compiler-to-cellshard migration adapters in the isolated A03 lane, add the focused ce_ccp1_a03_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ruleset export consumed by cellshard in the isolated A03 lane, add the focused ce_ccp1_a03_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile old jbc documentation and active-run status in the isolated A03 lane, add the focused ce_ccp1_a03_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the compiler-ownership rehoming contract in the isolated A03 lane, add the focused ce_ccp1_a03_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement define the retained cellshard concrete application boundary in the isolated A03 lane, add the focused ce_ccp1_a03_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement define temporary compiler-to-cellshard migration adapters in the isolated A03 lane, add the focused ce_ccp1_a03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ruleset export consumed by cellshard in the isolated A03 lane, add the focused ce_ccp1_a03_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement reconcile old jbc documentation and active-run status in the isolated A03 lane, add the focused ce_ccp1_a03_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the compiler-ownership rehoming contract in the isolated A03 lane, add the focused ce_ccp1_a03_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-52` | status: done | execution: closed | next: Deliver pareto portfolio and experimental selection policy exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-52` | status: done | execution: closed | next: Produce prevalence, raw and weighted support, normalized association, and bounded sparse top-L source affinity near O(E + S log L).
 - `CE-CCP1-A04-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the public compiler header tree in the isolated A04 lane, add the focused ce_ccp1_a04_001 gate, and publish a source-linked receipt.
@@ -221,7 +221,7 @@ Project revision: `4106`
 - `CE-CCP1-A04-007` | status: done | execution: closed | next: Inspect the cited read scope, implement split umbrella headers and public component imports in the isolated A04 lane, add the focused ce_ccp1_a04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-008` | status: done | execution: closed | next: Inspect the cited read scope, implement define generated-source and build-tree boundaries in the isolated A04 lane, add the focused ce_ccp1_a04_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-009` | status: done | execution: closed | next: Inspect the cited read scope, implement define agents and ownership inheritance in the isolated A04 lane, add the focused ce_ccp1_a04_009 gate, and publish a source-linked receipt.
-- `CE-CCP1-A04-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the source layout and ownership map in the isolated A04 lane, add the focused ce_ccp1_a04_010 gate, and publish a source-linked receipt.
+- `CE-CCP1-A04-010` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the source layout and ownership map in the isolated A04 lane, add the focused ce_ccp1_a04_010 gate, and publish a source-linked receipt.
 - `CE-EXOP-53` | status: done | execution: closed | next: Deliver layout, value-mode, reuse, and connected-operation economics exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-53` | status: done | execution: closed | next: Add optional communities, donor/condition/stage/cohort strata, resampling stability, and work signatures without causal claims.
 - `CE-CCP1-B01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement define the host-only root project contract in the isolated B01 lane, add the focused ce_ccp1_b01_001 gate, and publish a source-linked receipt.
