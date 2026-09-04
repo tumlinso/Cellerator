@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4650`
+Project revision: `4659`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -295,7 +295,7 @@ Project revision: `4650`
 - `CE-CCP1-C01-008` | status: done | execution: closed | next: Inspect the cited read scope, implement parse non-relation operation families in the isolated C01 lane, add the focused ce_ccp1_c01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-009` | status: done | execution: closed | next: Inspect the cited read scope, implement parse planning facts, preferences, and hard constraints in the isolated C01 lane, add the focused ce_ccp1_c01_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-010` | status: done | execution: closed | next: Inspect the cited read scope, implement parse effects, mutation, generations, and epochs in the isolated C01 lane, add the focused ce_ccp1_c01_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-C01-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement parse inline ceir blocks in the isolated C01 lane, add the focused ce_ccp1_c01_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-C01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement parse inline ceir blocks in the isolated C01 lane, add the focused ce_ccp1_c01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse reflection and compiler-transform constructs in the isolated C01 lane, add the focused ce_ccp1_c01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement parse native/backend fragments in the isolated C01 lane, add the focused ce_ccp1_c01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-C01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement structured parser recovery in the isolated C01 lane, add the focused ce_ccp1_c01_014 gate, and publish a source-linked receipt.
@@ -342,7 +342,7 @@ Project revision: `4650`
 - `CE-CCP1-C04-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement automatic lifetime and generation transfer in the isolated C04 lane, add the focused ce_ccp1_c04_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement persistence and reuse facts in the isolated C04 lane, add the focused ce_ccp1_c04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement named representative-profile binding in the isolated C04 lane, add the focused ce_ccp1_c04_008 gate, and publish a source-linked receipt.
-- `CE-CCP1-C04-009` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement expected data-state transformation hints in the isolated C04 lane, add the focused ce_ccp1_c04_009 gate, and publish a source-linked receipt.
+- `CE-CCP1-C04-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement expected data-state transformation hints in the isolated C04 lane, add the focused ce_ccp1_c04_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement conditional profile alternatives and joins in the isolated C04 lane, add the focused ce_ccp1_c04_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement planning facts and preferences in the isolated C04 lane, add the focused ce_ccp1_c04_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-C04-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement hard semantic and execution constraints in the isolated C04 lane, add the focused ce_ccp1_c04_012 gate, and publish a source-linked receipt.
@@ -365,7 +365,7 @@ Project revision: `4650`
 - `CE-CCP1-D01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement standalone ceir compiler input detection in the isolated D01 lane, add the focused ce_ccp1_d01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement validation-mode plumbing in the isolated D01 lane, add the focused ce_ccp1_d01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement expose the public ceir c++ api in the isolated D01 lane, add the focused ce_ccp1_d01_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-D01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze ceir common round-trip and artifact compatibility in the isolated D01 lane, add the focused ce_ccp1_d01_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-D01-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze ceir common round-trip and artifact compatibility in the isolated D01 lane, add the focused ce_ccp1_d01_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-62` | status: done | execution: closed | next: Deliver multiple projections, chunking, and explicit fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-62` | status: done | execution: closed | next: Implement checked offsets, alignment, identities, counts, index widths, checksums, corruption rejection, and CPE2 embedding.
 - `CE-CCP1-D02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze semantic ir module and symbol scopes in the isolated D02 lane, add the focused ce_ccp1_d02_001 gate, and publish a source-linked receipt.
