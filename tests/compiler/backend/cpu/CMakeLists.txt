@@ -113,3 +113,11 @@ target_include_directories(ce_ccp1_f02_011 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_011 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_011 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_011 COMMAND ce_ccp1_f02_011)
+
+add_executable(ce_ccp1_f02_012
+  benchmark_cpu_backend_complete_cost_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/benchmark_cpu_backend_complete_cost.cc)
+target_include_directories(ce_ccp1_f02_012 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_012 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_012 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_012 COMMAND ce_ccp1_f02_012)
