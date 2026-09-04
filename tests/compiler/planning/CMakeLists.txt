@@ -168,3 +168,30 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_016 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_016 COMMAND ce_ccp1_e04_016)
+
+set(CELLERATOR_COMPILER_INTERFACE_ROOT "" CACHE PATH
+    "Root containing frozen compiler interface headers from a contract-split lane")
+if(EXISTS "${CELLERATOR_ROOT}/include/Cellerator/compiler/ir/planning/planning_ir_v1.hh")
+    set(CELLERATOR_PLANNING_INTERFACE_INCLUDE "${CELLERATOR_ROOT}/include")
+elseif(CELLERATOR_COMPILER_INTERFACE_ROOT AND
+       EXISTS "${CELLERATOR_COMPILER_INTERFACE_ROOT}/include/Cellerator/compiler/ir/planning/planning_ir_v1.hh")
+    set(CELLERATOR_PLANNING_INTERFACE_INCLUDE
+        "${CELLERATOR_COMPILER_INTERFACE_ROOT}/include")
+else()
+    message(FATAL_ERROR
+        "CE-CCP1-I19 planning_ir_v1.hh is required; set CELLERATOR_COMPILER_INTERFACE_ROOT for a contract-split lane build")
+endif()
+
+add_executable(ce_ccp1_e04_017
+    deliver_source_to_selected_plan_vertical_slice_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/deliver_source_to_selected_plan_vertical_slice.cc"
+    "${CELLERATOR_ROOT}/src/compiler/planning/adapt_decomposition_portfolios_to_planning_ir.cc"
+    "${CELLERATOR_ROOT}/src/compiler/planning/implement_complete_cost_normalization.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/deliver_source_to_semantic_ir_vertical_slice.cc")
+target_include_directories(ce_ccp1_e04_017 PRIVATE
+    "${CELLERATOR_ROOT}/include" "${CELLERATOR_PLANNING_INTERFACE_INCLUDE}")
+target_compile_features(ce_ccp1_e04_017 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_017 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_017 COMMAND ce_ccp1_e04_017)
