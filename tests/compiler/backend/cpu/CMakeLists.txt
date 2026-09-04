@@ -30,3 +30,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f02_002 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f02_002 COMMAND ce_ccp1_f02_002)
+
+add_executable(ce_ccp1_f02_003
+    implement_backend_code_generation_plans_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/implement_backend_code_generation_plans.cc")
+target_include_directories(ce_ccp1_f02_003 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f02_003 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f02_003 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f02_003 COMMAND ce_ccp1_f02_003)
