@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6697`
+Project revision: `6699`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -522,7 +522,7 @@ Project revision: `6697`
 - `CE-GEO-36` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the full-relation identity strategy and public compile pipeline; prove malformed strategy output cannot certify itself.
 - `CE-CCP1-H02-000` | kind: workstream | status: done | parent: CE-CCP1-P70 | objective: Expose reusable compiler services and the existing execution substrate as coherent public components for source-language and non-language users.
 - `CE-GEO-37` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Expose existing CP-BP semantic information through new geometry contracts without modifying, thawing, reconstructing, or reinterpreting CPK1.
-- `CE-CCP1-H03-000` | kind: workstream | status: planned | parent: CE-CCP1-P70 | objective: Deliver an installable compiler SDK whose standard library is Cellerator source and whose test profiles are explicit low-performance resources.
+- `CE-CCP1-H03-000` | kind: workstream | status: done | parent: CE-CCP1-P70 | objective: Deliver an installable compiler SDK whose standard library is Cellerator source and whose test profiles are explicit low-performance resources.
 - `CE-GEO-38` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixed-width little-endian pointer-free checksummed aligned sectioned semantic-image build, validation, identity, relocation, and optional extensions.
 - `CE-CCP1-I01-000` | kind: workstream | status: planned | parent: CE-CCP1-P80 | objective: Provide a real LSP server with ordinary clangd-class C++ behavior while sharing Cellerator source, AST, Sema, and IR libraries.
 - `CE-GEO-39` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Run property, corruption, round-trip, relocation, identity, order, exact-cover, permissive-window, and CP-BP compatibility tests and freeze both interfaces.
