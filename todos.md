@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4565`
+Project revision: `4570`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -670,7 +670,7 @@ Project revision: `4565`
 - `CE-CCP1-C01-002` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Build a token cursor over activated source islands with checkpoint/rollback, balanced delimiter tracking, and deterministic recovery without reparsing the whole translation unit.
 - `CE-CCP1-C01-003` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse domain, axis, state, relation, support/order, profile, field, candidate, pass, and IR-binding declarations defined by the reconciled specification.
 - `CE-CCP1-C01-004` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse typed domain endpoints, value/storage/compute/accumulation types, orientation, mutability, ordering, generation, persistence, and human biological tags without resolving them.
-- `CE-CCP1-C01-005` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse <[ .
+- `CE-CCP1-C01-005` | kind: task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Parse <[ .
 - `CE-CCP1-C01-006` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse named field declarations, calls/references, explicit export/import intent, and field-level policy blocks needed for reflection and cross-TU authorization.
 - `CE-CCP1-C01-007` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse source -[relation]-> destination with typed captures, orientation modifiers, result/update forms, and composable expression placement without lowering it to a storage primitive.
 - `CE-CCP1-C01-008` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse transpose, support contraction, segmented reductions/normalization, edge map/gate, sparse axis update, bundles, chains, moments, hierarchy pool/broadcast, and exchange through coherent operation syntax selected by the language spec.
@@ -717,7 +717,7 @@ Project revision: `4565`
 - `CE-GEO-60` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Define a data-only target-specific refinement seam distinct from the semantic strategy contract.
 - `CE-CCP1-C04-001` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Treat a field as one explicit semantic optimization and planning region with captured values, observable boundaries, profile environment, effect summary, and stable inspectable identity.
 - `CE-CCP1-C04-002` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Use nested fields as separately nameable subregions whose constraints overlay inherited facts; the inner field is a planning subproblem and an optimization boundary unless explicitly inlined by the programmer.
-- `CE-CCP1-C04-003` | kind: task | status: in_progress | parent: CE-CCP1-C04-000 | objective: Permit reordering/fusion only when data dependencies, C++ observable effects, generations, numerical contracts, and field constraints prove equivalence.
+- `CE-CCP1-C04-003` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Permit reordering/fusion only when data dependencies, C++ observable effects, generations, numerical contracts, and field constraints prove equivalence.
 - `CE-CCP1-C04-004` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Convert uncontracted C/C++ calls into explicit field barriers that conservatively invalidate affected profile/generation state and stop cross-call planning.
 - `CE-CCP1-C04-005` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Attach reads, writes, topology/order/support/value mutation, purity, determinism, alias, publication, and target behavior to resolved C++ functions.
 - `CE-CCP1-C04-006` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Propagate structure/value/support/order generations through known operations, loops, native contracts, and field exits; materialize explicit transitions in semantic state.
@@ -737,7 +737,7 @@ Project revision: `4565`
 - `CE-CCP1-D01-002` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Provide mutable builders, immutable snapshots, copy-on-write editing, explicit contexts, and allocation-free traversal views for all public IR levels.
 - `CE-CCP1-D01-003` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Intern structural types and attributes by canonical content while allowing opaque extension payloads and user-controlled identity assertions.
 - `CE-CCP1-D01-004` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Provide typed values, regions, blocks, explicit control edges, use lists, mutation APIs, and stable handles suitable for source reflection and pass rewriting.
-- `CE-CCP1-D01-005` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Represent operation name, dialect/namespace, operands, results, regions, attributes, effects, source provenance, validation mode, and unknown opaque payloads.
+- `CE-CCP1-D01-005` | kind: task | status: in_progress | parent: CE-CCP1-D01-000 | objective: Represent operation name, dialect/namespace, operands, results, regions, attributes, effects, source provenance, validation mode, and unknown opaque payloads.
 - `CE-CCP1-D01-006` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Separate semantic/persistent IDs, artifact/content IDs, compiler-local handles, and optional provenance IDs; allow identities to be stripped from hot lowerings when not required.
 - `CE-CCP1-D01-007` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Store source spans, transform lineage, profile evidence, planner decisions, and backend mappings in cold sidecars or removable artifact sections.
 - `CE-CCP1-D01-008` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Build reusable error-recovering parsing with dialect dispatch, source includes/imports, inline block support, and precise byte ranges.
