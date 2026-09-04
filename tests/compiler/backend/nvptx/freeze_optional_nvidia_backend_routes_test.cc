@@ -1,4 +1,4 @@
-#include <Cellerator/compiler/backend/nvptx/freeze_optional_nvidia_backend_routes_v1.hh>
+#include <Cellerator/compiler/backend/nvptx/nvptx_backend_v1.hh>
 
 #include <cassert>
 #include <iostream>
@@ -83,6 +83,7 @@ nvptx_route_comparison_v1 negative_direct_evidence() {
 }  // namespace
 
 int main() {
+    static_assert(nvptx_backend_interface_version_v1 == 1u);
     optional_nvidia_backend_freeze_request_v1 host_only;
     host_only.realization_ir_interface_identity = 24u;
     host_only.backend_abi_interface_identity = 25u;
