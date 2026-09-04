@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5774`
+Project revision: `5775`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -889,7 +889,7 @@ Project revision: `5774`
 - `CE-CCP1-F02-010` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Bind typed operand slots, workspace, generated constants, prepared stages, and error returns through libCellerator without requiring Cellerator source at runtime.
 - `CE-CCP1-F02-011` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Translate generated-source compiler errors and warnings through Realization/Semantic/source provenance with optional generated-code notes.
 - `CE-CCP1-F02-012` | kind: validation_task | status: done | parent: CE-CCP1-F02-000 | objective: Measure compile time, generated-source size, object size, preparation, projection/packing, execution, and warm reuse against direct C++ baselines.
-- `CE-CCP1-F02-013` | kind: validation_task | status: planned | parent: CE-CCP1-F02-000 | objective: Compile a profile-bound Cellerator relation program from `.
+- `CE-CCP1-F02-013` | kind: validation_task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Compile a profile-bound Cellerator relation program from `.
 - `CE-CCP1-F02-014` | kind: validation_task | status: planned | parent: CE-CCP1-F02-000 | objective: Publish backend ABI, registry, generated C++ contract, CPU fallbacks, object emission, and diagnostics for downstream backends.
 - `CE-EXOP-70` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver mechanism and prepared-stage manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-70` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
