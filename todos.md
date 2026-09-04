@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6562`
+Project revision: `6563`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1099,7 +1099,7 @@ Project revision: `6562`
 - `CE-CCP1-J03-003` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Update normative syntax, nesting, profiles, effects, control hierarchy, C++ integration, errors, and implementation-defined behavior to match validated compiler behavior and governing philosophy.
 - `CE-CCP1-J03-004` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Update Semantic/Planning/Realization IR, reflection, inline IR, passes, staging, extensions, trust modes, native boundary, round-trip, and LTO rules.
 - `CE-CCP1-J03-005` | kind: task | status: done | parent: CE-CCP1-J03-000 | objective: Update developer-facing source and IR guides from minimal programs through profiles, planning, realization, custom passes, unsafe native paths, LTO, SDK, and celleratord.
-- `CE-CCP1-J03-006` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: Document final directory layout, Cellerator/CellShard ownership, preserved JBC provenance, superseded charters, interfaces, build modes, backends, and Part Two seam.
+- `CE-CCP1-J03-006` | kind: task | status: in_progress | parent: CE-CCP1-J03-000 | objective: Document final directory layout, Cellerator/CellShard ownership, preserved JBC provenance, superseded charters, interfaces, build modes, backends, and Part Two seam.
 - `CE-CCP1-J03-007` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: From a clean checkout with CUDA disabled, build/install cellerator, libCellerator, celleratord, stdlib, profiles, and package metadata; compile ordinary C++, `.
 - `CE-CCP1-J03-008` | kind: task | status: planned | parent: CE-CCP1-J03-000 | objective: Build/install with NVCC on sm70, compile and execute profile-aware relation programs, generated/prelinked candidates, inline IR, custom pass, graph/readiness, direct PTX experiment, and mixed LTO.
 - `CE-CCP1-J03-009` | kind: validation_task | status: planned | parent: CE-CCP1-J03-000 | objective: Check every acceptance condition: real driver, pragma parsing, profiles, all IR levels writable, CEIR round-trip/input, reflection, passes, self-transform, unsafe paths, CPU/NVIDIA objects, toolchain overrides, JBC migration, LTO, SDK, stdlib, celleratord, provenance.
