@@ -56,4 +56,15 @@ inline constexpr std::array<std::string_view, 20> final_capabilities = {
     "toolchain-overrides", "jbc-migration", "lto", "sdk-stdlib", "celleratord",
     "provenance"};
 
+struct deferred_seam {
+    std::string_view name;
+    std::string_view retained_interface;
+    bool part_one_prerequisite;
+};
+
+inline constexpr std::array<deferred_seam, 2> deferred_part_two = {{
+    {"general-jit", "AOT object and writable CEIR contracts", false},
+    {"deep-cellshard-runtime", "versioned opaque materialization request", false},
+}};
+
 }  // namespace cellerator::compiler::acceptance::v1
