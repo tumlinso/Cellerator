@@ -10,3 +10,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f03_001 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f03_001 COMMAND ce_ccp1_f03_001)
+
+add_executable(ce_ccp1_f03_002 implement_cuda_source_emission_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/implement_cuda_source_emission.cc")
+target_include_directories(ce_ccp1_f03_002 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_002 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f03_002 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f03_002 COMMAND ce_ccp1_f03_002)
