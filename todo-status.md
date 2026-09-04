@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4642`
+Project revision: `4646`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -364,7 +364,7 @@ Project revision: `4642`
 - `CE-CCP1-D01-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement sectioned binary ceir serialization in the isolated D01 lane, add the focused ce_ccp1_d01_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement standalone ceir compiler input detection in the isolated D01 lane, add the focused ce_ccp1_d01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement validation-mode plumbing in the isolated D01 lane, add the focused ce_ccp1_d01_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-D01-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement expose the public ceir c++ api in the isolated D01 lane, add the focused ce_ccp1_d01_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-D01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement expose the public ceir c++ api in the isolated D01 lane, add the focused ce_ccp1_d01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze ceir common round-trip and artifact compatibility in the isolated D01 lane, add the focused ce_ccp1_d01_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-62` | status: done | execution: closed | next: Deliver multiple projections, chunking, and explicit fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-62` | status: done | execution: closed | next: Implement checked offsets, alignment, identities, counts, index widths, checksums, corruption rejection, and CPE2 embedding.

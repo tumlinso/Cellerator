@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4642`
+Project revision: `4646`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -745,7 +745,7 @@ Project revision: `4642`
 - `CE-CCP1-D01-010` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Design a versioned, checksummed, pointer-free, memory-mappable container for large IR modules and cold metadata, with textual form remaining authoritative for hand programming.
 - `CE-CCP1-D01-011` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Allow cellerator to accept semantic, planning, or realization `.
 - `CE-CCP1-D01-012` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Carry verified, checked, trusted, unsafe, and unchecked modes through parser, builder, pass, serializer, and backend handoff without conflating structural parseability with semantic trust.
-- `CE-CCP1-D01-013` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Publish contexts, builders, readers, writers, iterators, diagnostics, extension hooks, and ownership rules without exposing Clang/LLVM implementation objects.
+- `CE-CCP1-D01-013` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Publish contexts, builders, readers, writers, iterators, diagnostics, extension hooks, and ownership rules without exposing Clang/LLVM implementation objects.
 - `CE-CCP1-D01-014` | kind: validation_task | status: planned | parent: CE-CCP1-D01-000 | objective: Demonstrate text and binary round-trip, unknown extension preservation, standalone input, and source-inline parsing through one common interface.
 - `CE-EXOP-62` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver multiple projections, chunking, and explicit fallback exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-62` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement checked offsets, alignment, identities, counts, index widths, checksums, corruption rejection, and CPE2 embedding.
