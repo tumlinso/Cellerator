@@ -90,3 +90,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_008 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_008 COMMAND ce_ccp1_d02_008)
+
+add_executable(ce_ccp1_d02_009
+    implement_bundle_chain_moments_hierarchy_and_exchange_op_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc")
+target_include_directories(ce_ccp1_d02_009 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_009 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_009 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_009 COMMAND ce_ccp1_d02_009)
