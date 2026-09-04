@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4855`
+Project revision: `4862`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -694,7 +694,7 @@ Project revision: `4855`
 - `CE-CCP1-C02-009` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Generate edits for missing pragma, malformed field delimiters, relation endpoint mismatches, absent profile bindings, effect-contract omissions, and deprecated syntax.
 - `CE-CCP1-C02-010` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Provide human text and machine JSON snapshots that include semantics and source identities but omit unstable raw addresses.
 - `CE-CCP1-C02-011` | kind: task | status: done | parent: CE-CCP1-C02-000 | objective: Reuse unchanged file/field/subtree identities across celleratord reparses using content and dependency hashes, with conservative invalidation across macros/templates.
-- `CE-CCP1-C02-012` | kind: validation_task | status: in_progress | parent: CE-CCP1-C02-000 | objective: Publish the public AST/query/diagnostic contracts and demonstrate original source to parse tree to resolved C++ capture mapping.
+- `CE-CCP1-C02-012` | kind: validation_task | status: done | parent: CE-CCP1-C02-000 | objective: Publish the public AST/query/diagnostic contracts and demonstrate original source to parse tree to resolved C++ capture mapping.
 - `CE-CCP1-C03-001` | kind: validation_task | status: done | parent: CE-CCP1-C03-000 | objective: Define language-level domain, axis, state, relation, support, order, structure, value plane, profile state, field, candidate, and IR handle types only where the compiler performs intrinsic reasoning.
 - `CE-CCP1-C03-002` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Separate abstract domain identity from optional tags such as gene, cell, locus, enhancer, read, chromosome, population, and trajectory.
 - `CE-CCP1-C03-003` | kind: task | status: done | parent: CE-CCP1-C03-000 | objective: Bind domain, global extent, logical order, geometry, partition, local extent, and recovery identity as distinct properties.
