@@ -23,3 +23,7 @@ add_executable(ce_ccp1_f03_003 bind_existing_cellerator_cuda_providers_test.cc "
 target_include_directories(ce_ccp1_f03_003 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_003 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_003 COMMAND ce_ccp1_f03_003)
+add_executable(ce_ccp1_f03_004 generate_custom_relation_kernels_where_selected_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/generate_custom_relation_kernels_where_selected.cc")
+target_include_directories(ce_ccp1_f03_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_004 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_004 COMMAND ce_ccp1_f03_004)
