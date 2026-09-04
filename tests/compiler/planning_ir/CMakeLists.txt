@@ -112,3 +112,15 @@ add_executable(ce_ccp1_e01_014 implement_planning_ir_parser_printer_and_validato
 target_include_directories(ce_ccp1_e01_014 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_e01_014 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_e01_014 COMMAND ce_ccp1_e01_014)
+
+add_executable(ce_ccp1_e01_015
+    implement_semantic_to_planning_lowering_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_semantic_to_planning_lowering.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_planning_problems_and_operation_scopes.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc")
+target_include_directories(ce_ccp1_e01_015 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_015 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_015 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_015 COMMAND ce_ccp1_e01_015)
