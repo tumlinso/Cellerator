@@ -69,8 +69,8 @@ option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the 
 # The compiler is host-first. Its target graph decides whether CUDA is enabled
 # before the legacy runtime targets below are declared.
 include(src/compiler/CMakeLists.txt)
+include(cmake/compiler/CelleratorHostSdk.cmake)
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
-    include(cmake/compiler/CelleratorHostSdk.cmake)
     return()
 endif()
 set(CELLERATOR_CUDA_MODE "generic" CACHE STRING

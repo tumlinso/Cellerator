@@ -42,4 +42,11 @@ inline constexpr std::array<std::string_view, 8> host_sdk_artifacts = {
     "cellerator", "libCellerator", "celleratord", "stdlib", "profiles",
     "cmake-package", "ordinary-cxx", "ceir"};
 
+inline constexpr std::array<std::string_view, 9> nvidia_acceptance = {
+    "profile-relation", "generated-candidate", "prelinked-candidate", "inline-ir",
+    "custom-pass", "graph-readiness", "direct-ptx-experiment", "mixed-lto", "exact-output"};
+
+inline constexpr std::size_t nvidia_sm = 70;
+inline constexpr std::size_t nvidia_complete_cost_components = 6;
+
 }  // namespace cellerator::compiler::acceptance::v1
