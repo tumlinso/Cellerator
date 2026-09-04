@@ -1,0 +1,3 @@
+#pragma once
+#include <cstdint>
+namespace cellerator::compiler::diagnostics::v1 {enum class failure_kind:std::uint8_t{crash=0,timeout};enum class failure_owner:std::uint8_t{compiler_phase=0,pass,backend};enum class extension_mode:std::uint8_t{builtin=0,custom_in_process,custom_isolated};struct failure_event{failure_kind kind=failure_kind::crash;failure_owner owner=failure_owner::compiler_phase;std::uint64_t component=0;extension_mode extension=extension_mode::builtin;bool isolation_configured=false;};struct failure_diagnostic{bool valid=false,preserve_temporaries=true,isolated=false;failure_owner owner=failure_owner::compiler_phase;std::uint64_t component=0;};[[nodiscard]] failure_diagnostic diagnose_failure(const failure_event&) noexcept;}

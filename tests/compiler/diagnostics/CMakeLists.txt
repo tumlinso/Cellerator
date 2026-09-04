@@ -57,3 +57,7 @@ add_executable(ce_ccp1_g03_012 implement_deterministic_reproducer_bundles_test.c
 target_include_directories(ce_ccp1_g03_012 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_012 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_012 COMMAND ce_ccp1_g03_012)
+add_executable(ce_ccp1_g03_013 implement_crash_and_timeout_diagnostics_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_crash_and_timeout_diagnostics.cc")
+target_include_directories(ce_ccp1_g03_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_013 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_013 COMMAND ce_ccp1_g03_013)
