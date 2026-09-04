@@ -31,3 +31,7 @@ add_executable(ce_ccp1_f03_005 generate_non_relation_cuda_operations_test.cc "${
 target_include_directories(ce_ccp1_f03_005 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_f03_005 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f03_005 COMMAND ce_ccp1_f03_005)
+add_executable(ce_ccp1_f03_006 implement_nvcc_option_and_architecture_mapping_test.cc "${CELLERATOR_ROOT}/src/compiler/backend/nvcc/implement_nvcc_option_and_architecture_mapping.cc")
+target_include_directories(ce_ccp1_f03_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f03_006 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_f03_006 COMMAND ce_ccp1_f03_006)
