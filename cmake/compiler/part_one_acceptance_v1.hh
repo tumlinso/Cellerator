@@ -87,4 +87,23 @@ inline constexpr std::array<std::string_view, 9> reproducibility_bundle = {
     "source-revision", "profile-fixture", "ceir-example", "toolchain-manifest",
     "build-matrix", "focused-tests", "benchmark-contract", "sdk-consumer", "provenance"};
 
+struct completion_checkpoint {
+    std::string_view interface_id;
+    std::string_view checkpoint_id;
+    std::string_view rendezvous_id;
+    std::string_view integration_task_id;
+    bool host_sdk_validated;
+    bool nvidia_sdk_validated;
+    bool jbc_preserved;
+    bool part_two_deferred;
+};
+
+inline constexpr completion_checkpoint part_one_completion = {
+    "CE-CCP1-I41-PART1-COMPLETE", "CE-CCP1-CP-J03", "CE-CCP1-RV-M90",
+    "CE-CCP1-M90", true, true, true, true};
+
+inline constexpr std::array<std::string_view, 4> completion_inputs = {
+    "CE-CCP1-I38-PACKAGE", "CE-CCP1-I40-CELLERATORD-SEMANTIC",
+    "CE-CCP1-I34-CELLERATOR-LTO", "CE-CCP1-I32-DIAGNOSTICS-PROVENANCE"};
+
 }  // namespace cellerator::compiler::acceptance::v1
