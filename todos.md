@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6320`
+Project revision: `6323`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1124,7 +1124,7 @@ Project revision: `6320`
 - `CE-GEO-86` | kind: integration_task | status: done | parent: CE-GEO-00 | objective: Add explicit versioned operation kinds and catalog fragments through reviewed transition without reinterpreting frozen v1 meanings.
 - `CE-GEO-87` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Add public-only examples for sparse state embedding, regulatory propagation, transition/transport, hierarchy incidence, multimodal relations, and perturbation delta propagation.
 - `CE-GEO-88` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove exact semantics, examples using only public Cellerator APIs, compatibility, segments, bundles, and absence of model/trainer/autograd ownership.
-- `CE-CCP1-M70` | kind: validation_task | status: in_progress | parent: CE-CCP1-P70 | objective: Integrate and validate all P70 workstreams, freeze shared interfaces, and publish milestone M70.
+- `CE-CCP1-M70` | kind: validation_task | status: done | parent: CE-CCP1-P70 | objective: Integrate and validate all P70 workstreams, freeze shared interfaces, and publish milestone M70.
 - `CE-CCP1-P90` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate validation, performance, and final acceptance and publish milestone M90.
 - `CE-EXOP-100` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver affinity coarsening and hierarchy construction exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-90` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Build a separate target-specific forward/transpose physical geometry while preserving shared logical-edge identity.
