@@ -54,3 +54,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f04_005 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f04_005 COMMAND ce_ccp1_f04_005)
+
+find_program(PTXAS_EXECUTABLE ptxas REQUIRED)
+add_executable(ce_ccp1_f04_006
+    implement_ptx_emission_and_ptxas_assembly_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/implement_ptx_emission_and_ptxas_assembly.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/nvptx/define_direct_ptx_typed_operation_model.cc")
+target_include_directories(ce_ccp1_f04_006 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f04_006 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f04_006 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f04_006 COMMAND ce_ccp1_f04_006
+    "${PTXAS_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/f04_006")
