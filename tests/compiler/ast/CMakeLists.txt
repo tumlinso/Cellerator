@@ -56,3 +56,10 @@ add_executable(ce_ccp1_c02_006
 target_include_directories(ce_ccp1_c02_006 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_006 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_006 COMMAND ce_ccp1_c02_006)
+
+add_executable(ce_ccp1_c02_007
+    implement_ast_visitors_matchers_and_queries_test.cc
+    ../../../src/compiler/ast/implement_ast_visitors_matchers_and_queries.cc)
+target_include_directories(ce_ccp1_c02_007 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_007 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_007 COMMAND ce_ccp1_c02_007)
