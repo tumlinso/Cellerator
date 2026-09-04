@@ -105,3 +105,11 @@ add_library(ce_ccp1_f02_010_object OBJECT
 target_include_directories(ce_ccp1_f02_010_object PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_010_object PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_f02_010 COMMAND ce_ccp1_f02_010)
+
+add_executable(ce_ccp1_f02_011
+  map_backend_diagnostics_to_source_and_ceir_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/map_backend_diagnostics_to_source_and_ceir.cc)
+target_include_directories(ce_ccp1_f02_011 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_011 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_011 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_011 COMMAND ce_ccp1_f02_011)
