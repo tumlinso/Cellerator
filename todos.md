@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4435`
+Project revision: `4436`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -646,7 +646,7 @@ Project revision: `4435`
 - `CE-CCP1-B03-009` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Identify -[relation]-> and other language-spec operation families without assigning semantics during the raw source pass.
 - `CE-CCP1-B03-010` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Replace Cellerator constructs with valid generated C++ expressions/declarations carrying stable placeholder IDs, typed capture slots, and source-map anchors while retaining unaffected C++ verbatim.
 - `CE-CCP1-B03-011` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Maintain one-to-one or explicit many-to-one mappings from placeholder declarations/calls to Cellerator parse nodes and source captures.
-- `CE-CCP1-B03-012` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Use reserved internal namespaces and content-derived identifiers that cannot collide with user macros, symbols, modules, or link names.
+- `CE-CCP1-B03-012` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Use reserved internal namespaces and content-derived identifiers that cannot collide with user macros, symbols, modules, or link names.
 - `CE-CCP1-B03-013` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Key cached token/shadow products by file content, pragma revision, macro environment, include context, and frontend adapter identity.
 - `CE-CCP1-B03-014` | kind: task | status: planned | parent: CE-CCP1-B03-000 | objective: Provide token, activation-map, shadow-source, and source-map dumps without making them required hot-path artifacts.
 - `CE-CCP1-B03-015` | kind: validation_task | status: planned | parent: CE-CCP1-B03-000 | objective: Compile a mixed translation unit containing ordinary C++, activated Cellerator syntax, inactive includes, and an activated header through source transformation into a valid Clang parse.
