@@ -98,3 +98,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_009 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_009 COMMAND ce_ccp1_e04_009)
+
+add_executable(ce_ccp1_e04_010
+    implement_complete_cost_normalization_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/implement_complete_cost_normalization.cc")
+target_include_directories(ce_ccp1_e04_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_010 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_010 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_010 COMMAND ce_ccp1_e04_010)
