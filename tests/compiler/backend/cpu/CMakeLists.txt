@@ -74,3 +74,11 @@ target_include_directories(ce_ccp1_f02_007 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_007 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_007 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_007 COMMAND ce_ccp1_f02_007)
+
+add_executable(ce_ccp1_f02_008
+  implement_cpu_projection_packing_and_order_transforms_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/implement_cpu_projection_packing_and_order_transforms.cc)
+target_include_directories(ce_ccp1_f02_008 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_008 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_008 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_008 COMMAND ce_ccp1_f02_008)
