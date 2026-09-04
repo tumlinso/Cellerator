@@ -80,3 +80,10 @@ add_executable(ce_ccp1_g02_009
     ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
 target_include_directories(ce_ccp1_g02_009 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_009 COMMAND ce_ccp1_g02_009)
+
+add_executable(ce_ccp1_g02_010
+    implement_extension_capability_negotiation_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_extension_capability_negotiation.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
+target_include_directories(ce_ccp1_g02_010 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_010 COMMAND ce_ccp1_g02_010)
