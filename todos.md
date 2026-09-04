@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5562`
+Project revision: `5564`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -859,7 +859,7 @@ Project revision: `5562`
 - `CE-CCP1-E04-018` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Publish provider, planner, cache, report, custom candidate, external cost, and force-control contracts used by Realization IR.
 - `CE-GEO-68` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-CCP1-F01-001` | kind: validation_task | status: done | parent: CE-CCP1-F01-000 | objective: Define target-specific modules, functions, kernels, host stubs, data artifacts, stages, bindings, and native fragments while retaining source/semantic/planning lineage in cold metadata.
-- `CE-CCP1-F01-002` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent architecture class, compute capability, instruction families, collective scope, memory interfaces, numeric support, graph capture, toolchain, runtime, and backend requirements.
+- `CE-CCP1-F01-002` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Represent architecture class, compute capability, instruction families, collective scope, memory interfaces, numeric support, graph capture, toolchain, runtime, and backend requirements.
 - `CE-CCP1-F01-003` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Materialize the selected atom/decomposition cover, owners, halos, replicas, partial contributors, canonical recovery, and certification receipt.
 - `CE-CCP1-F01-004` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent stable atom identity, physical instance role, global/local extents, local index width, multi-extent slices, alignment, address-space class, and recovery maps without requiring live addresses.
 - `CE-CCP1-F01-005` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Separate structure, values, active support, gradients, partials, workspace, metadata, and generated constants with independent lifetimes, generations, and residency requirements.
@@ -895,7 +895,7 @@ Project revision: `5562`
 - `CE-GEO-70` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Retain the existing V100 dense-fragment code, fixtures, and PBMC3K non-promotion as an untouched reference and negative control outside production mutation.
 - `CE-CCP1-F03-001` | kind: validation_task | status: done | parent: CE-CCP1-F03-000 | objective: State that NVCC never parses Cellerator syntax; it receives generated CUDA/C++ plus explicit device/host/link jobs, target architectures, support libraries, and source maps.
 - `CE-CCP1-F03-002` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Emit typed kernels, device helpers, host stubs, constants, projection views, stage launchers, and runtime bindings from Realization IR with deterministic formatting.
-- `CE-CCP1-F03-003` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Map candidate/provider identities and prepared-state contracts to source-linked existing sm70 and generic implementations rather than regenerating every kernel.
+- `CE-CCP1-F03-003` | kind: task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Map candidate/provider identities and prepared-state contracts to source-linked existing sm70 and generic implementations rather than regenerating every kernel.
 - `CE-CCP1-F03-004` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower exact cover, projection, numeric tuple, width, order, partial algebra, and epilogue into specialized CUDA code when no prelinked provider is chosen.
 - `CE-CCP1-F03-005` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Lower transpose, contraction, segment, normalization, gates, sparse updates, bundles, chains, moments, exchange, and publication stages required by selected plans.
 - `CE-CCP1-F03-006` | kind: task | status: planned | parent: CE-CCP1-F03-000 | objective: Translate target classes, real/virtual architecture sets, host compiler, language mode, optimization, debug/line info, RDC, libraries, and user overrides deterministically.
