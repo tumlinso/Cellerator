@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4706`
+Project revision: `4707`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -680,7 +680,7 @@ Project revision: `4706`
 - `CE-CCP1-C01-012` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse IR reflection, pass declarations, pipeline insertion/replacement, compiler preludes, same-compilation transform application, and compile-time IR construction.
 - `CE-CCP1-C01-013` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse typed generated-C++, CUDA, PTX, and raw-native blocks with explicit target, inputs, outputs, clobbers/effects, and fallback requirements.
 - `CE-CCP1-C01-014` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Recover at field, declaration, operation, qualifier, and inline-IR boundaries; emit one primary diagnostic and bounded notes rather than cascades.
-- `CE-CCP1-C01-015` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
+- `CE-CCP1-C01-015` | kind: task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
 - `CE-CCP1-C01-016` | kind: validation_task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse every normative and provisional syntax example in docs/language, mark intentionally changed examples, and produce a grammar coverage matrix.
 - `CE-GEO-58` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Freeze validated support-atlas, rectangular evidence, deterministic sampling, exact-rescan, and CSG1 optional-section contracts.
 - `CE-CCP1-C02-001` | kind: validation_task | status: planned | parent: CE-CCP1-C02-000 | objective: Use arena-owned immutable nodes with stable compile-time handles, explicit parent/region links, and no runtime burden in emitted programs.
