@@ -16,3 +16,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f02_001 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f02_001 COMMAND ce_ccp1_f02_001)
+
+add_executable(ce_ccp1_f02_002
+    implement_backend_registry_and_selection_test.cc
+    mock_backend_provider_v1.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/freeze_the_backend_provider_abi.cc"
+    "${CELLERATOR_ROOT}/src/compiler/backend/implement_backend_registry_and_selection.cc")
+target_include_directories(ce_ccp1_f02_002 PRIVATE
+    "${CELLERATOR_ROOT}/include"
+    "${CMAKE_CURRENT_LIST_DIR}")
+target_compile_features(ce_ccp1_f02_002 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f02_002 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f02_002 COMMAND ce_ccp1_f02_002)
