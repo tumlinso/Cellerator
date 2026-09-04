@@ -100,3 +100,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_009 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_009 COMMAND ce_ccp1_d02_009)
+
+add_executable(ce_ccp1_d02_010
+    implement_gradient_and_publication_operations_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc")
+target_include_directories(ce_ccp1_d02_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_010 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_010 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_010 COMMAND ce_ccp1_d02_010)
