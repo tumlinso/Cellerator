@@ -30,4 +30,8 @@ inline constexpr std::array<std::string_view, 11> ir_conformance = {
     "semantic-ir", "planning-ir", "realization-ir", "reflection", "inline-ir",
     "custom-passes", "staging", "extensions", "trust-modes", "native-boundary", "lto"};
 
+inline constexpr std::array<std::string_view, 10> guide_examples = {
+    "minimal", "profiles", "planning", "realization", "custom-pass",
+    "unsafe-native", "lto", "sdk", "celleratord", "ordinary-cxx"};
+
 }  // namespace cellerator::compiler::acceptance::v1
