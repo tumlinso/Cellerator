@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5366`
+Project revision: `5372`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -813,7 +813,7 @@ Project revision: `5366`
 - `CE-CCP1-E02-010` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Represent candidate/certified atom identity, species, exact coverage, typed inputs/outputs, planes, dependencies, effects, and lineage in Planning IR extensions.
 - `CE-CCP1-E02-011` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Preserve structure, mutable values, active support, gradients, partials, physical views, evidence, and lineage as distinct planes with independent generations.
 - `CE-CCP1-E02-012` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Bind migrated atom records to existing Cellerator requirements, affordances, extents, orders, projections, and target capabilities.
-- `CE-CCP1-E02-013` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Replace any bounded linear/quadratic duplicate checks unsuitable for compiler-scale atlases with sorted/radix/hash or caller-owned mark strategies while retaining exact results.
+- `CE-CCP1-E02-013` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Replace any bounded linear/quadratic duplicate checks unsuitable for compiler-scale atlases with sorted/radix/hash or caller-owned mark strategies while retaining exact results.
 - `CE-CCP1-E02-014` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Attach Migrated-From repository/commit/path/Todo metadata in cold manifests and commit instructions, not hot IR records.
 - `CE-CCP1-E02-015` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Forward old compiler-facing CellShard includes to Cellerator contracts where required for preserved tests, with deprecation and explicit retirement gates.
 - `CE-CCP1-E02-016` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Move or adapt all relevant unit/property/malformed/benchmark fixtures, retaining original expected results and documenting intentional semantic changes.

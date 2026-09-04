@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5366`
+Project revision: `5372`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -432,7 +432,7 @@ Project revision: `5366`
 - `CE-CCP1-E02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement import atom envelope and typed ports in the isolated E02 lane, add the focused ce_ccp1_e02_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement import atom plane separation in the isolated E02 lane, add the focused ce_ccp1_e02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement import atom requirement/affordance matching in the isolated E02 lane, add the focused ce_ccp1_e02_012 gate, and publish a source-linked receipt.
-- `CE-CCP1-E02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement import scalable certification indexes in the isolated E02 lane, add the focused ce_ccp1_e02_013 gate, and publish a source-linked receipt.
+- `CE-CCP1-E02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement import scalable certification indexes in the isolated E02 lane, add the focused ce_ccp1_e02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement preserve migration provenance in source and artifacts in the isolated E02 lane, add the focused ce_ccp1_e02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement create temporary cellshard compiler compatibility adapters in the isolated E02 lane, add the focused ce_ccp1_e02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement port discovery tests and evidence fixtures in the isolated E02 lane, add the focused ce_ccp1_e02_016 gate, and publish a source-linked receipt.
