@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6695`
+Project revision: `6697`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -520,7 +520,7 @@ Project revision: `6695`
 - `CE-CCP1-H01-000` | kind: workstream | status: done | parent: CE-CCP1-P70 | objective: Carry explicitly authorized biological fields and profiles across ordinary object boundaries for program-level Cellerator optimization.
 - `CE-EXOP-26` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze scalable indexing and geometry exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-36` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement the full-relation identity strategy and public compile pipeline; prove malformed strategy output cannot certify itself.
-- `CE-CCP1-H02-000` | kind: workstream | status: planned | parent: CE-CCP1-P70 | objective: Expose reusable compiler services and the existing execution substrate as coherent public components for source-language and non-language users.
+- `CE-CCP1-H02-000` | kind: workstream | status: done | parent: CE-CCP1-P70 | objective: Expose reusable compiler services and the existing execution substrate as coherent public components for source-language and non-language users.
 - `CE-GEO-37` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Expose existing CP-BP semantic information through new geometry contracts without modifying, thawing, reconstructing, or reinterpreting CPK1.
 - `CE-CCP1-H03-000` | kind: workstream | status: planned | parent: CE-CCP1-P70 | objective: Deliver an installable compiler SDK whose standard library is Cellerator source and whose test profiles are explicit low-performance resources.
 - `CE-GEO-38` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement fixed-width little-endian pointer-free checksummed aligned sectioned semantic-image build, validation, identity, relocation, and optional extensions.
