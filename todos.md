@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5619`
+Project revision: `5620`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -863,7 +863,7 @@ Project revision: `5619`
 - `CE-CCP1-F01-003` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Materialize the selected atom/decomposition cover, owners, halos, replicas, partial contributors, canonical recovery, and certification receipt.
 - `CE-CCP1-F01-004` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent stable atom identity, physical instance role, global/local extents, local index width, multi-extent slices, alignment, address-space class, and recovery maps without requiring live addresses.
 - `CE-CCP1-F01-005` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Separate structure, values, active support, gradients, partials, workspace, metadata, and generated constants with independent lifetimes, generations, and residency requirements.
-- `CE-CCP1-F01-006` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent CSR, feature-major, row-masked, dense fragment, MMA hybrid, transpose, vendor-specific, and extension projections with payload ABI and value-position maps.
+- `CE-CCP1-F01-006` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Represent CSR, feature-major, row-masked, dense fragment, MMA hybrid, transpose, vendor-specific, and extension projections with payload ABI and value-position maps.
 - `CE-CCP1-F01-007` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent packed value/input/output operands, source generation, value-position maps, alignment, padding holes, pack operation, persistence horizon, and stale-generation behavior.
 - `CE-CCP1-F01-008` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus explicit gather/scatter/canonicalize stages and reuse.
 - `CE-CCP1-F01-009` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent persistent/transient/graph-stable allocations, alignment, capacity, lifetime, host/device/address-space class, and caller/session ownership without allocating during IR construction.

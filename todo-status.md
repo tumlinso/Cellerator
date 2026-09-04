@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5619`
+Project revision: `5620`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -482,7 +482,7 @@ Project revision: `5619`
 - `CE-CCP1-F01-003` | status: done | execution: closed | next: Inspect the cited read scope, implement commit selected exact cover and contribution ownership in the isolated F01 lane, add the focused ce_ccp1_f01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement atom and extent bindings in the isolated F01 lane, add the focused ce_ccp1_f01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement physical plane representation in the isolated F01 lane, add the focused ce_ccp1_f01_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-F01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement projection contracts in the isolated F01 lane, add the focused ce_ccp1_f01_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-F01-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement projection contracts in the isolated F01 lane, add the focused ce_ccp1_f01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement packed operands and invalidation in the isolated F01 lane, add the focused ce_ccp1_f01_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement order transforms and persistent physical order in the isolated F01 lane, add the focused ce_ccp1_f01_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement memory, workspace, and residency requirements in the isolated F01 lane, add the focused ce_ccp1_f01_009 gate, and publish a source-linked receipt.
