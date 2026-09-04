@@ -45,3 +45,7 @@ add_executable(ce_ccp1_g03_009 implement_planning_barrier_explanations_test.cc "
 target_include_directories(ce_ccp1_g03_009 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_009 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_009 COMMAND ce_ccp1_g03_009)
+add_executable(ce_ccp1_g03_010 implement_candidate_decision_reports_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_candidate_decision_reports.cc")
+target_include_directories(ce_ccp1_g03_010 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_010 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_010 COMMAND ce_ccp1_g03_010)
