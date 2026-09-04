@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5317`
+Project revision: `5318`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -833,7 +833,7 @@ Project revision: `5317`
 - `CE-CCP1-E03-011` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move graph rewrites, shared traversals, persistent orders, common outputs, partial trees, and field-authorized fusion into connected-operation planning.
 - `CE-CCP1-E03-012` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent machine-independent operation order, atom requirements, partial tree, canonical recovery, and replay modes as Cellerator Planning IR, not concrete placement.
 - `CE-CCP1-E03-013` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Map compiled ruleset requirements to a narrow future request that CellShard can use to materialize, shard, place, and deliver concrete instances in Part Two.
-- `CE-CCP1-E03-014` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move/adapt test suites with provenance, preserving expected derivations, no-basis cases, exact coverage, and performance baselines.
+- `CE-CCP1-E03-014` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Move/adapt test suites with provenance, preserving expected derivations, no-basis cases, exact coverage, and performance baselines.
 - `CE-CCP1-E03-015` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Run old CellShard compiler implementations and new Cellerator passes on identical fixtures during migration, comparing canonicalized outputs rather than raw struct bytes when schemas improve.
 - `CE-CCP1-E03-016` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Leave compatibility aliases only where needed; mark global compiler headers non-authoritative and prevent new registration there.
 - `CE-CCP1-E03-017` | kind: validation_task | status: planned | parent: CE-CCP1-E03-000 | objective: Compile representative profiles and a multi-operation Semantic IR program through discovery, grammar, basis, global graph, and portable schedule Planning IR.
