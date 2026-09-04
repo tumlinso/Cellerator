@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4515`
+Project revision: `4518`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -733,7 +733,7 @@ Project revision: `4515`
 - `CE-CCP1-C04-016` | kind: validation_task | status: planned | parent: CE-CCP1-C04-000 | objective: Compile a typed relation field through source, C++ resolution, biological Sema, profile binding, effect/lifetime analysis, and a semantic operation problem without selecting physical execution yet.
 - `CE-EXOP-61` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver default registry, provider, catalog, and planner assembly exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-61` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Define pointer-free groups, tiles, 256-bit masks, compact slots, width-tagged edge IDs, residual descriptors, schedules, and value maps for architecture_specific projection.
-- `CE-CCP1-D01-001` | kind: validation_task | status: planned | parent: CE-CCP1-D01-000 | objective: Define identifiers, stable/persistent identities, SSA values, types, attributes, regions, comments, profile references, native payloads, extension namespaces, and abstraction-level markers in a compact Cellerator-native textual grammar.
+- `CE-CCP1-D01-001` | kind: validation_task | status: in_progress | parent: CE-CCP1-D01-000 | objective: Define identifiers, stable/persistent identities, SSA values, types, attributes, regions, comments, profile references, native payloads, extension namespaces, and abstraction-level markers in a compact Cellerator-native textual grammar.
 - `CE-CCP1-D01-002` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Provide mutable builders, immutable snapshots, copy-on-write editing, explicit contexts, and allocation-free traversal views for all public IR levels.
 - `CE-CCP1-D01-003` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Intern structural types and attributes by canonical content while allowing opaque extension payloads and user-controlled identity assertions.
 - `CE-CCP1-D01-004` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Provide typed values, regions, blocks, explicit control edges, use lists, mutation APIs, and stable handles suitable for source reflection and pass rewriting.

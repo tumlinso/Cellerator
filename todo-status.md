@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4515`
+Project revision: `4518`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -352,7 +352,7 @@ Project revision: `4515`
 - `CE-CCP1-C04-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first profile-required semantic field slice in the isolated C04 lane, add the focused ce_ccp1_c04_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-61` | status: done | execution: closed | next: Deliver default registry, provider, catalog, and planner assembly exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-61` | status: done | execution: closed | next: Define pointer-free groups, tiles, 256-bit masks, compact slots, width-tagged edge IDs, residual descriptors, schedules, and value maps for architecture_specific projection.
-- `CE-CCP1-D01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze ceir common lexical conventions in the isolated D01 lane, add the focused ce_ccp1_d01_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-D01-001` | status: in_progress | execution: idle | next: Inspect the cited read scope, implement freeze ceir common lexical conventions in the isolated D01 lane, add the focused ce_ccp1_d01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement arena and ownership model in the isolated D01 lane, add the focused ce_ccp1_d01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement common type and attribute interning in the isolated D01 lane, add the focused ce_ccp1_d01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-D01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement regions, blocks, values, and use-def chains in the isolated D01 lane, add the focused ce_ccp1_d01_004 gate, and publish a source-linked receipt.

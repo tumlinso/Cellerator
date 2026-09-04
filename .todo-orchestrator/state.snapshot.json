@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T08:20:15Z",
+  "generated_at": "2026-09-04T08:23:39Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4515,
+  "project_revision": 4518,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -49411,6 +49411,36 @@
         "revision": 4515,
         "seq": 4515,
         "timestamp": "2026-09-04T08:20:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-D01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-D01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"CE-CCP1-D01-001\"}",
+        "revision": 4516,
+        "seq": 4516,
+        "timestamp": "2026-09-04T08:22:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-D01-001",
+        "entity_type": "task",
+        "event_type": "workflow.task.release",
+        "payload_json": "{\"reason\": \"Accidental cross-lane claim while diagnosing C02 task-specific no_actionable_work; no implementation begun.\"}",
+        "revision": 4517,
+        "seq": 4517,
+        "timestamp": "2026-09-04T08:22:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-L-C01",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"CE-CCP1-L-C01\", \"run_id\": \"CE-CCP1-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"CE-CCP1-C01-001\"}",
+        "revision": 4518,
+        "seq": 4518,
+        "timestamp": "2026-09-04T08:23:39Z"
       }
     ],
     "evidence": [
@@ -236444,7 +236474,7 @@
         "version": 3
       },
       {
-        "attention_reason": null,
+        "attention_reason": "Accidental cross-lane claim while diagnosing C02 task-specific no_actionable_work; no implementation begun.",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -236461,12 +236491,12 @@
         "priority": 838,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4123,
-        "status": "planned",
+        "revision": 4516,
+        "status": "in_progress",
         "tags_json": "[\"d01\", \"compiler-ir-common\", \"leaf\"]",
         "title": "Freeze CEIR common lexical conventions",
-        "updated_at": "2026-09-04T06:14:24Z",
-        "version": 3
+        "updated_at": "2026-09-04T08:22:51Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -279134,7 +279164,7 @@
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-D01",
         "position": 0,
-        "revision": 4123,
+        "revision": 4517,
         "state": "queued",
         "task_id": "CE-CCP1-D01-001"
       },
@@ -286987,11 +287017,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-D01",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4123,
+        "revision": 4517,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-04T06:14:25Z",
+        "updated_at": "2026-09-04T08:22:51Z",
         "workspace_mode": "isolated_merge"
       },
       {
