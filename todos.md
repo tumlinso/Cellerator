@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5639`
+Project revision: `5646`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -864,7 +864,7 @@ Project revision: `5639`
 - `CE-CCP1-F01-004` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent stable atom identity, physical instance role, global/local extents, local index width, multi-extent slices, alignment, address-space class, and recovery maps without requiring live addresses.
 - `CE-CCP1-F01-005` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Separate structure, values, active support, gradients, partials, workspace, metadata, and generated constants with independent lifetimes, generations, and residency requirements.
 - `CE-CCP1-F01-006` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent CSR, feature-major, row-masked, dense fragment, MMA hybrid, transpose, vendor-specific, and extension projections with payload ABI and value-position maps.
-- `CE-CCP1-F01-007` | kind: task | status: in_progress | parent: CE-CCP1-F01-000 | objective: Represent packed value/input/output operands, source generation, value-position maps, alignment, padding holes, pack operation, persistence horizon, and stale-generation behavior.
+- `CE-CCP1-F01-007` | kind: task | status: done | parent: CE-CCP1-F01-000 | objective: Represent packed value/input/output operands, source generation, value-position maps, alignment, padding holes, pack operation, persistence horizon, and stale-generation behavior.
 - `CE-CCP1-F01-008` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus explicit gather/scatter/canonicalize stages and reuse.
 - `CE-CCP1-F01-009` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent persistent/transient/graph-stable allocations, alignment, capacity, lifetime, host/device/address-space class, and caller/session ownership without allocating during IR construction.
 - `CE-CCP1-F01-010` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent stage identity/kind, candidate, dependencies, bindings, resources, input/output order, structure epoch, value generations, global/local ranges, and profiler indices.
@@ -905,7 +905,7 @@ Project revision: `5639`
 - `CE-CCP1-F03-010` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Select cudart, driver API, cuSPARSE, cuBLAS, CUB, NCCL, and Cellerator provider/runtime libraries only when required by the selected realization.
 - `CE-CCP1-F03-011` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Use generated `#line`, source maps, ptxas diagnostics, resource-usage reports, and keep-temps to trace source/IR to CUDA/PTX.
 - `CE-CCP1-F03-012` | kind: task | status: done | parent: CE-CCP1-F03-000 | objective: Lower symbolic stage dependencies to caller streams, events, same-stream elision, generation publication, and graph-compatible launch behavior using existing runtime contracts.
-- `CE-CCP1-F03-013` | kind: validation_task | status: planned | parent: CE-CCP1-F03-000 | objective: Compile a profile-bound relation program through data-aware Planning IR and Realization IR into an ordinary CUDA-capable object with NVCC, link it, and execute on sm70.
+- `CE-CCP1-F03-013` | kind: validation_task | status: in_progress | parent: CE-CCP1-F03-000 | objective: Compile a profile-bound relation program through data-aware Planning IR and Realization IR into an ordinary CUDA-capable object with NVCC, link it, and execute on sm70.
 - `CE-CCP1-F03-014` | kind: validation_task | status: planned | parent: CE-CCP1-F03-000 | objective: Measure Cellerator compile/planning, generated source, nvcc time, ptxas resources, object size, preparation, packing, transfers, launches, kernel time, and reuse.
 - `CE-CCP1-F03-015` | kind: validation_task | status: planned | parent: CE-CCP1-F03-000 | objective: Publish source emission, provider binding, action graph, object/fatbinary behavior, diagnostics, readiness, and performance receipts.
 - `CE-EXOP-71` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver resource receipts and stable profiling identities exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
@@ -915,7 +915,7 @@ Project revision: `5639`
 - `CE-CCP1-F04-003` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Lower a constrained Realization IR subset to LLVM IR/NVPTX through an internal adapter while keeping LLVM types out of public Cellerator IR APIs.
 - `CE-CCP1-F04-004` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Represent PTX types, registers, address spaces, predicates, labels, parameters, memory effects, barriers, collectives, and instruction requirements as Realization IR extension nodes.
 - `CE-CCP1-F04-005` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Bind typed inputs, outputs, clobbers, memory/order/effect contracts, target predicates, fallback, and source provenance for expert inline blocks.
-- `CE-CCP1-F04-006` | kind: task | status: in_progress | parent: CE-CCP1-F04-000 | objective: Emit deterministic PTX, invoke ptxas when available, capture cubin/resource diagnostics, and support retained PTX for driver-JIT loading without defining the full Part Two JIT system.
+- `CE-CCP1-F04-006` | kind: task | status: done | parent: CE-CCP1-F04-000 | objective: Emit deterministic PTX, invoke ptxas when available, capture cubin/resource diagnostics, and support retained PTX for driver-JIT loading without defining the full Part Two JIT system.
 - `CE-CCP1-F04-007` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Package PTX/cubin plus registration/launch stubs into ordinary linkable objects through supported toolchain mechanisms.
 - `CE-CCP1-F04-008` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Validate compute capability, WMMA/MMA shapes, collective scope, layouts, sparsity, memory interfaces, and numeric tuples against current capability manifests.
 - `CE-CCP1-F04-009` | kind: task | status: planned | parent: CE-CCP1-F04-000 | objective: Map source field/operation, Semantic/Planning/Realization nodes, generated PTX lines, and assembled resource reports through cold sidecars.
