@@ -87,3 +87,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_008 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_008 COMMAND ce_ccp1_e04_008)
+
+add_executable(ce_ccp1_e04_009
+    adapt_external_global_cost_exchange_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/adapt_external_global_cost_exchange.cc"
+    "${CELLERATOR_ROOT}/src/planner/external_cost/vector_v1.cc")
+target_include_directories(ce_ccp1_e04_009 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_009 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_009 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_009 COMMAND ce_ccp1_e04_009)
