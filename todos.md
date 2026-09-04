@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6213`
+Project revision: `6214`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1026,7 +1026,7 @@ Project revision: `6213`
 - `CE-CCP1-H03-009` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Ship explicitly named, low-performance, testing-oriented profiles for a small audited set such as Homo sapiens, Mus musculus, and a rat reference.
 - `CE-CCP1-H03-010` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Generate compact relation/domain/statistical placeholders sufficient for parser, Sema, IR, planning fallback, examples, and CI, not claims of realistic optimized biology.
 - `CE-CCP1-H03-011` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Locate standard library, reference profiles, backend manifests, schemas, and support binaries relative to the installed executable with explicit override flags.
-- `CE-CCP1-H03-012` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Install component targets, CelleratorConfig, version config, compiler helpers, backend/provider targets, feature variables, and dependency discovery without source-tree paths.
+- `CE-CCP1-H03-012` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Install component targets, CelleratorConfig, version config, compiler helpers, backend/provider targets, feature variables, and dependency discovery without source-tree paths.
 - `CE-CCP1-H03-013` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Provide functions/toolchain guidance for `.
 - `CE-CCP1-H03-014` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Install bin/cellerator, bin/celleratord, component libraries, headers, stdlib, profiles, schemas, backends, docs/examples, and debug metadata in relocatable platform-appropriate locations.
 - `CE-CCP1-H03-015` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Expose libCellerator compiler/runtime compile and link flags for non-CMake consumers where platform conventions support it.
