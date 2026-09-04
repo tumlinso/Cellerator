@@ -87,3 +87,7 @@ add_executable(ce_ccp1_d03_012 ../d03/implement_bounded_branch_alternatives_and_
 target_include_directories(ce_ccp1_d03_012 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_012 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_012 COMMAND ce_ccp1_d03_012)
+add_executable(ce_ccp1_d03_013 ../d03/implement_profile_state_attachment_to_semantic_ir_test.cc "${CELLERATOR_ROOT}/src/compiler/profile/implement_profile_state_attachment_to_semantic_ir.cc")
+target_include_directories(ce_ccp1_d03_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_013 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_013 COMMAND ce_ccp1_d03_013)
