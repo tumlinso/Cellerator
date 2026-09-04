@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6679`
+Project revision: `6681`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -121,7 +121,7 @@ Project revision: `6679`
 - `CE-CCP1-P50` | status: planned | execution: inactive | next: Dispatch only the workstream lanes whose explicit dependencies are satisfied.
 - `CE-EXOP-20` | status: done | execution: closed | next: Deliver hierarchical index-space contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-30` | status: done | execution: closed | next: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
-- `CE-CCP1-F03-000` | status: planned | execution: ready | next: Claim F03-001 after milestone prerequisites are reached.
+- `CE-CCP1-F03-000` | status: done | execution: closed | next: Claim F03-001 after milestone prerequisites are reached.
 - `CE-EXOP-21` | status: done | execution: closed | next: Deliver scalable work, support, cover, and map views exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-31` | status: done | execution: closed | next: Implement cheap permissive defaults and cold axis-qualified fixed-position, membership, linkage, exclusion, precedence, partition, and exchange-window constraints.
 - `CE-CCP1-F04-000` | status: planned | execution: ready | next: Claim F04-001 after milestone prerequisites are reached.

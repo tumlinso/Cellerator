@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6679`
+Project revision: `6681`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -502,7 +502,7 @@ Project revision: `6679`
 - `CE-CCP1-P50` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate realization ir and native backends and publish milestone M50.
 - `CE-EXOP-20` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver hierarchical index-space contract exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-30` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement bounded axis-bound work windows for relation rows, dense columns, and grouped operation instances; the caller chooses membership.
-- `CE-CCP1-F03-000` | kind: workstream | status: planned | parent: CE-CCP1-P50 | objective: Use Cellerator planning to generate and assemble CUDA programs while delegating conventional CUDA compilation and device linking to NVCC.
+- `CE-CCP1-F03-000` | kind: workstream | status: done | parent: CE-CCP1-P50 | objective: Use Cellerator planning to generate and assemble CUDA programs while delegating conventional CUDA compilation and device linking to NVCC.
 - `CE-EXOP-21` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver scalable work, support, cover, and map views exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-31` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement cheap permissive defaults and cold axis-qualified fixed-position, membership, linkage, exclusion, precedence, partition, and exchange-window constraints.
 - `CE-CCP1-F04-000` | kind: workstream | status: planned | parent: CE-CCP1-P50 | objective: Provide alternative accelerator lowering paths and a legitimate expert-native endpoint without making them mandatory for the core compiler.
