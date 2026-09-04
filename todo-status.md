@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5567`
+Project revision: `5568`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -515,7 +515,7 @@ Project revision: `5567`
 - `CE-CCP1-F03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the nvcc backend contract in the isolated F03 lane, add the focused ce_ccp1_f03_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cuda source emission in the isolated F03 lane, add the focused ce_ccp1_f03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement bind existing cellerator cuda providers in the isolated F03 lane, add the focused ce_ccp1_f03_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-F03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement generate custom relation kernels where selected in the isolated F03 lane, add the focused ce_ccp1_f03_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-F03-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement generate custom relation kernels where selected in the isolated F03 lane, add the focused ce_ccp1_f03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement generate non-relation cuda operations in the isolated F03 lane, add the focused ce_ccp1_f03_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement nvcc option and architecture mapping in the isolated F03 lane, add the focused ce_ccp1_f03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-F03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement host/device split compilation in the isolated F03 lane, add the focused ce_ccp1_f03_007 gate, and publish a source-linked receipt.
