@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5838`
+Project revision: `5849`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -562,7 +562,7 @@ Project revision: `5838`
 - `CE-CCP1-G01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first source-defined inline rewrite in the isolated G01 lane, add the focused ce_ccp1_g01_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-73` | status: done | execution: closed | next: Deliver generic partition/order/resource export exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-73` | status: done | execution: closed | next: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
-- `CE-CCP1-G02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the pass pipeline stage taxonomy in the isolated G02 lane, add the focused ce_ccp1_g02_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-G02-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the pass pipeline stage taxonomy in the isolated G02 lane, add the focused ce_ccp1_g02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement pass manager and analysis invalidation in the isolated G02 lane, add the focused ce_ccp1_g02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement pipeline configuration syntax and apis in the isolated G02 lane, add the focused ce_ccp1_g02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement custom semantic pass api in the isolated G02 lane, add the focused ce_ccp1_g02_004 gate, and publish a source-linked receipt.
