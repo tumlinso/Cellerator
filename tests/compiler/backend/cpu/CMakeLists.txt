@@ -40,3 +40,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_f02_003 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_f02_003 COMMAND ce_ccp1_f02_003)
+
+add_executable(ce_ccp1_f02_004
+    implement_generated_c_representation_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/backend/implement_generated_c_representation.cc")
+target_include_directories(ce_ccp1_f02_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_f02_004 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_f02_004 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_f02_004 COMMAND ce_ccp1_f02_004)
