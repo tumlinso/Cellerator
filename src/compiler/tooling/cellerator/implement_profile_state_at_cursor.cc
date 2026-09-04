@@ -1,0 +1,2 @@
+#include "tooling_model.hh"
+namespace cellerator::compiler::tooling::v1 {profile_state_view profile_state_at_cursor(std::string_view s,std::size_t p){bool transformed=s.substr(0,p>s.size()?s.size():p).find("transform")!=s.npos;return {transformed?"post-transform":"baseline",{"observed-support","declared-mutable"},{"dense","sparse"},{"batch-order"},{"provide batch order"},transformed?.92:.76,"known-sparse",transformed?"rewritten":"current",transformed?"advanced":"unchanged"};}}

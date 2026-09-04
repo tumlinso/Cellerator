@@ -22,5 +22,7 @@ struct biological_hover {
 [[nodiscard]] biological_hover describe_biological_relation(std::string_view declaration);
 struct field_effect_view {std::string field,boundary,profile;std::vector<std::string> captures,reads,writes,effects,barriers;bool optimization_visible=false;};
 [[nodiscard]] field_effect_view describe_field_effects(std::string_view source,std::size_t cursor);
+struct profile_state_view {std::string selected;std::vector<std::string> evidence,alternatives,unknown_dimensions,missing_hints;double confidence=0;std::string support_state,value_state,mutation_state;};
+[[nodiscard]] profile_state_view profile_state_at_cursor(std::string_view source,std::size_t cursor);
 
 }  // namespace cellerator::compiler::tooling::v1
