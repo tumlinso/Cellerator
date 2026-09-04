@@ -33,3 +33,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_003 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_003 COMMAND ce_ccp1_e04_003)
+
+add_executable(ce_ccp1_e04_004
+    represent_partial_result_trees_and_algebra_selection_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/represent_partial_result_trees_and_algebra_selection.cc")
+target_include_directories(ce_ccp1_e04_004 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_004 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_004 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_004 COMMAND ce_ccp1_e04_004)
