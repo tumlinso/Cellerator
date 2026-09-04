@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6329`
+Project revision: `6340`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -666,7 +666,7 @@ Project revision: `6329`
 - `CE-CCP1-I01-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement host-only/no-profile editing behavior in the isolated I01 lane, add the focused ce_ccp1_i01_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-I01-012` | status: done | execution: closed | next: Inspect the cited read scope, implement expose reusable tooling snapshot apis in the isolated I01 lane, add the focused ce_ccp1_i01_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-I01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark baseline editor latency in the isolated I01 lane, add the focused ce_ccp1_i01_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-I01-014` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver celleratord c++-parity milestone in the isolated I01 lane, add the focused ce_ccp1_i01_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-I01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver celleratord c++-parity milestone in the isolated I01 lane, add the focused ce_ccp1_i01_014 gate, and publish a source-linked receipt.
 - `CE-GEO-79` | status: done | execution: closed | next: Consume complete-cost forward evidence, record implemented/evaluated-not-promoted/failed disposition, keep nonwinning code optional and outside normal promotion, and freeze the implemented provider contract.
 - `CE-CCP1-I02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cellerator syntax completion in the isolated I02 lane, add the focused ce_ccp1_i02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-I02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement biological type and relation hover in the isolated I02 lane, add the focused ce_ccp1_i02_002 gate, and publish a source-linked receipt.
