@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5495`
+Project revision: `5502`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -475,7 +475,7 @@ Project revision: `5495`
 - `CE-CCP1-E04-015` | status: done | execution: closed | next: Inspect the cited read scope, implement expose complete planning reports in the isolated E04 lane, add the focused ce_ccp1_e04_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-016` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark planning scalability and boundedness in the isolated E04 lane, add the focused ce_ccp1_e04_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-E04-017` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver source-to-selected-plan vertical slice in the isolated E04 lane, add the focused ce_ccp1_e04_017 gate, and publish a source-linked receipt.
-- `CE-CCP1-E04-018` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the public planning compiler interface in the isolated E04 lane, add the focused ce_ccp1_e04_018 gate, and publish a source-linked receipt.
+- `CE-CCP1-E04-018` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the public planning compiler interface in the isolated E04 lane, add the focused ce_ccp1_e04_018 gate, and publish a source-linked receipt.
 - `CE-GEO-68` | status: done | execution: closed | next: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-CCP1-F01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze realization ir module and target scopes in the isolated F01 lane, add the focused ce_ccp1_f01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement target and capability descriptions in the isolated F01 lane, add the focused ce_ccp1_f01_002 gate, and publish a source-linked receipt.

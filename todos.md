@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5495`
+Project revision: `5502`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -856,7 +856,7 @@ Project revision: `5495`
 - `CE-CCP1-E04-015` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Report considered alternatives, exact coverage, costs, evidence freshness, rejection/dominance, selected source, forced edits, and fallback.
 - `CE-CCP1-E04-016` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Measure time, peak memory, candidate count, exact certification, search frontier, and quality versus oracle on scalable synthetic and biological fixtures.
 - `CE-CCP1-E04-017` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Compile a profile-bound relation and a two-operation field from source through Semantic IR, Planning IR, decomposition, candidates, complete cost, and selected portable ruleset.
-- `CE-CCP1-E04-018` | kind: validation_task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Publish provider, planner, cache, report, custom candidate, external cost, and force-control contracts used by Realization IR.
+- `CE-CCP1-E04-018` | kind: validation_task | status: done | parent: CE-CCP1-E04-000 | objective: Publish provider, planner, cache, report, custom candidate, external cost, and force-control contracts used by Realization IR.
 - `CE-GEO-68` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Emit CPE2 projection sources, typed capability manifests, schedules, and provider-erased activated views for every complete candidate cover.
 - `CE-CCP1-F01-001` | kind: validation_task | status: planned | parent: CE-CCP1-F01-000 | objective: Define target-specific modules, functions, kernels, host stubs, data artifacts, stages, bindings, and native fragments while retaining source/semantic/planning lineage in cold metadata.
 - `CE-CCP1-F01-002` | kind: task | status: planned | parent: CE-CCP1-F01-000 | objective: Represent architecture class, compute capability, instruction families, collective scope, memory interfaces, numeric support, graph capture, toolchain, runtime, and backend requirements.
