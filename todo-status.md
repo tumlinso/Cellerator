@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6659`
+Project revision: `6661`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -103,7 +103,7 @@ Project revision: `6659`
 - `CE-CCP1-D01-000` | status: done | execution: closed | next: Claim D01-001 after milestone prerequisites are reached.
 - `CE-EXOP-12` | status: done | execution: closed | next: Deliver split generic/common/sm70 build targets and manifest exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-22` | status: done | execution: closed | next: Implement provider-erased activated projection references carrying provider, view type, ABI, schema, variant, and capability identity.
-- `CE-CCP1-D02-000` | status: planned | execution: ready | next: Claim D02-001 after milestone prerequisites are reached.
+- `CE-CCP1-D02-000` | status: done | execution: closed | next: Claim D02-001 after milestone prerequisites are reached.
 - `CE-EXOP-13` | status: done | execution: closed | next: Deliver implement precise, experimental, and profiling build policy exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-23` | status: done | execution: closed | next: Move typed preparation dispatch behind each catalog entry while preserving existing bridges and eliminating central physical-projection knowledge.
 - `CE-CCP1-D03-000` | status: planned | execution: ready | next: Claim D03-001 after milestone prerequisites are reached.
