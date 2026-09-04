@@ -111,3 +111,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_010 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_010 COMMAND ce_ccp1_d02_010)
+
+add_executable(ce_ccp1_d02_011
+    implement_native_and_opaque_c_call_operations_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_native_and_opaque_c_call_operations.cc")
+target_include_directories(ce_ccp1_d02_011 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_011 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_011 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_011 COMMAND ce_ccp1_d02_011)
