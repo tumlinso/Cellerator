@@ -130,3 +130,13 @@ target_include_directories(ce_ccp1_f02_013 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_013 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_013 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_013 COMMAND ce_ccp1_f02_013)
+
+add_executable(ce_ccp1_f02_014
+  freeze_the_cpu_backend_thin_waist_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/freeze_the_cpu_backend_thin_waist.cc)
+target_include_directories(ce_ccp1_f02_014 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_014 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_014 PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(ce_ccp1_f02_014 PRIVATE
+  CELLERATOR_TEST_INCLUDE_ROOT="${CELLERATOR_ROOT}/include")
+add_test(NAME ce_ccp1_f02_014 COMMAND ce_ccp1_f02_014)
