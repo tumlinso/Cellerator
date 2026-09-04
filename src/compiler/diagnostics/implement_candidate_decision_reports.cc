@@ -1,0 +1,2 @@
+#include <Cellerator/compiler/diagnostics/implement_candidate_decision_reports_v1.hh>
+namespace cellerator::compiler::diagnostics::v1 {decision_report build_candidate_report(std::vector<candidate_record> c){decision_report r{std::move(c)};unsigned selected=0;for(auto&e:r.candidates){if(!e.id||!e.complete_cost_ns||(e.legal&&e.rejection_reason)||(!e.legal&&!e.rejection_reason))return r;if(e.legal)r.legal_total_ns+=e.complete_cost_ns;if(e.selected){++selected;r.selected_id=e.id;r.selected_cost_ns=e.complete_cost_ns;if(!e.legal)return r;}}r.valid=selected==1;return r;}}

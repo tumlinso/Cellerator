@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M60: Reflection, open passes, self-transforms, validation modes, and provenance integrated
 
-Task revision: `5493`; current project revision is in `todo-status.md`.
+Task revision: `6059`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P60 workstreams, freeze shared interfaces, and publish milestone M60.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 

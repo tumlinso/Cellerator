@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/reflection/implement_inline_semantic_ir_blocks_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::reflection::v1;static ir_handle_v1 h(handle_kind_v1 k){return{1,1,1,1,k,availability_phase_v1::semantic,handle_lifetime_v1::compilation};}
+int main(){reflected_value_v1 in{h(handle_kind_v1::field),"f32",1,3,5},out{h(handle_kind_v1::field),"f32",2,4,5};reflected_operation_v1 op{h(handle_kind_v1::operation),"relation_apply",{in},{out},{h(handle_kind_v1::relation),1,2,3,4,5},reflected_effect_v1::reads_writes,h(handle_kind_v1::provenance)};inline_semantic_block_v1 b{{{"x",in}},{{"y",out}},op,"field","baseline"};assert(validate_inline_semantic_block_v1(b)==inline_semantic_status_v1::valid);b.captures[0].value.generation=6;assert(validate_inline_semantic_block_v1(b)==inline_semantic_status_v1::generation_mismatch);}

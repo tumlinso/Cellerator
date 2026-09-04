@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/reflection/implement_typed_capture_and_result_binding_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::reflection::v1;
+int main(){int x=3;typed_capture_binding_v1 b{"x","i32",binding_source_kind_v1::source_variable,binding_semantics_v1::reference,{},&x,4,handle_lifetime_v1::compilation};assert(validate_typed_binding_v1(b,4)==typed_binding_status_v1::valid);assert(validate_typed_binding_v1(b,5)==typed_binding_status_v1::stale_generation);b.semantics=binding_semantics_v1::value;b.lifetime=handle_lifetime_v1::expression;assert(validate_typed_binding_v1(b,4)==typed_binding_status_v1::valid);b.source=binding_source_kind_v1::profile_state;b.semantics=binding_semantics_v1::move;assert(validate_typed_binding_v1(b,4)==typed_binding_status_v1::illegal_move);}

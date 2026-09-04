@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/diagnostics/implement_target_native_diagnostics_v1.hh>
+namespace cellerator::compiler::diagnostics::v1 {
+target_native_diagnostic diagnose_target_native(const target_native_request&r) noexcept {static constexpr std::string_view messages[]={"unsupported native instruction","target capability outside supported range","native clobber contract violated","native operand alignment invalid","native address space mismatch","collective contract incompatible","native ABI incompatible","operation is not graph-capture compatible","required fallback unavailable"};auto m=messages[static_cast<unsigned>(r.issue)];if(r.fallback_available)return{true,false,m};if(r.mode==validation_mode::unsafe&&r.unsafe_acknowledged&&r.representable)return{true,true,m};return{false,false,m};}
+}
