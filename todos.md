@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4659`
+Project revision: `4669`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -677,7 +677,7 @@ Project revision: `4659`
 - `CE-CCP1-C01-009` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse field-local and operation-local facts for profiles, reuse, persistence, budgets, objectives, target classes, candidate inclusion/exclusion, and forced realization while preserving hierarchy of authority.
 - `CE-CCP1-C01-010` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse native effect contracts, structure/value/support/order mutations, publication, epoch boundaries, generation assertions, and expert identity manipulation.
 - `CE-CCP1-C01-011` | kind: task | status: done | parent: CE-CCP1-C01-000 | objective: Parse semantic, planning, and realization inline IR regions with typed captures, results, nesting, validation mode, and abstraction transitions.
-- `CE-CCP1-C01-012` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse IR reflection, pass declarations, pipeline insertion/replacement, compiler preludes, same-compilation transform application, and compile-time IR construction.
+- `CE-CCP1-C01-012` | kind: task | status: in_progress | parent: CE-CCP1-C01-000 | objective: Parse IR reflection, pass declarations, pipeline insertion/replacement, compiler preludes, same-compilation transform application, and compile-time IR construction.
 - `CE-CCP1-C01-013` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Parse typed generated-C++, CUDA, PTX, and raw-native blocks with explicit target, inputs, outputs, clobbers/effects, and fallback requirements.
 - `CE-CCP1-C01-014` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Recover at field, declaration, operation, qualifier, and inline-IR boundaries; emit one primary diagnostic and bounded notes rather than cascades.
 - `CE-CCP1-C01-015` | kind: task | status: planned | parent: CE-CCP1-C01-000 | objective: Publish reusable parser entrypoints, immutable parse trees, visitors, and deterministic text/JSON dumps for compiler, tests, and celleratord.
@@ -724,7 +724,7 @@ Project revision: `4659`
 - `CE-CCP1-C04-007` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Represent stable topology, mutable values, slowly evolving support, stable order, reuse horizon, recurrence, loop invariance, epoch boundary, and invalidation as source-level planning facts.
 - `CE-CCP1-C04-008` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Bind one or more compile-supplied profile states to fields and operations, support explicit state selection/aliasing, and keep data paths outside language semantics.
 - `CE-CCP1-C04-009` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Allow operations/native calls to state or select expected post-transform profile states, support inferred transfer functions, and warn when costly widening is required.
-- `CE-CCP1-C04-010` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Carry bounded branch-conditioned alternatives and explicit joins without generating uncontrolled decision-tree specialization.
+- `CE-CCP1-C04-010` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Carry bounded branch-conditioned alternatives and explicit joins without generating uncontrolled decision-tree specialization.
 - `CE-CCP1-C04-011` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Apply non-binding facts/objectives for reuse, memory, latency, throughput, compilation budget, target preference, graph capture, and canonical output without changing mathematical meaning.
 - `CE-CCP1-C04-012` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Restrict legal plans for determinism, numerical tolerance, exactness, memory bounds, target capabilities, candidate families, order, and synchronization.
 - `CE-CCP1-C04-013` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Bind source declarations that offer a custom candidate to the planner or force an exact candidate/decomposition/realization, including explicit unsafe modes.
