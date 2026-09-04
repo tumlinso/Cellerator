@@ -58,10 +58,10 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6715`
+Project revision: `6717`
 
 ## Workstreams
-- `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
+- `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
 - `CE-EXOP-00` | status: done | execution: closed | next: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
 - `CE-GEO-00` | status: planned | execution: inactive | next: Own the complete Volta-first CE-GEO campaign and the loaded but permission-gated CE-AMP extension under docs/CE_GEO_PROGRAM.md.
 - `CE-EXOP-PTR-BASELINE` | status: done | execution: closed | next: Record that terminal CE-PTR-15 and its final acceptance evidence satisfy the settled CE-EXOP prerequisite without revising CE-PTR history.

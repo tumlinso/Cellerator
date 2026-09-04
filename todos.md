@@ -439,10 +439,10 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6715`
+Project revision: `6717`
 
 ## Workstreams
-- `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
+- `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
 - `CE-EXOP-00` | kind: epic | status: done | parent: - | objective: Own the complete CE-EXOP campaign under docs/CE_EXOP_PROGRAM.md without implementing CE-AMP or the deferred profiling and data campaigns.
 - `CE-GEO-00` | kind: epic | status: planned | parent: - | objective: Own the complete Volta-first CE-GEO campaign and the loaded but permission-gated CE-AMP extension under docs/CE_GEO_PROGRAM.md.
 - `CE-EXOP-PTR-BASELINE` | kind: validation_task | status: done | parent: - | objective: Record that terminal CE-PTR-15 and its final acceptance evidence satisfy the settled CE-EXOP prerequisite without revising CE-PTR history.
