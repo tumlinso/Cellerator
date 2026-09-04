@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4345`
+Project revision: `4350`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -632,7 +632,7 @@ Project revision: `4345`
 - `CE-CCP1-B02-011` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Use deterministic per-action temporary directories, explicit keep-temps modes, content-addressed cold caches, and cleanup that never hides artifacts requested for diagnostics.
 - `CE-CCP1-B02-012` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Preserve severity, source ranges, fix-its, and exit codes from downstream compilers while allowing Cellerator source maps to remap generated/shadow locations.
 - `CE-CCP1-B02-013` | kind: task | status: done | parent: CE-CCP1-B02-000 | objective: Create a stable toolchain identity from executable content/version, target, resource directory, critical flags, runtime/driver identity, and backend plugin revision.
-- `CE-CCP1-B02-014` | kind: validation_task | status: in_progress | parent: CE-CCP1-B02-000 | objective: Build bin/cellerator as a thin main over the shared driver library and compile/link ordinary C++ through Clang and GCC without Cellerator semantics.
+- `CE-CCP1-B02-014` | kind: validation_task | status: done | parent: CE-CCP1-B02-000 | objective: Build bin/cellerator as a thin main over the shared driver library and compile/link ordinary C++ through Clang and GCC without Cellerator semantics.
 - `CE-EXOP-55` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze planner portfolio exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-55` | kind: workstream | status: done | parent: CE-GEO-00 | objective: After approximate proposal, perform one exact full-edge pass that decides component membership, occupancy, ownership, and cost.
 - `CE-CCP1-B03-001` | kind: task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Represent physical files, include instances, macro expansions, transformed buffers, CEIR nodes, and backend output with stable source spans and reversible mapping edges.
