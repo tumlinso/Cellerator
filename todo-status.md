@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5459`
+Project revision: `5464`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -418,7 +418,7 @@ Project revision: `5459`
 - `CE-CCP1-E01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement user edits and authority hierarchy in the isolated E01 lane, add the focused ce_ccp1_e01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement planning ir parser, printer, and validator in the isolated E01 lane, add the focused ce_ccp1_e01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-E01-015` | status: done | execution: closed | next: Inspect the cited read scope, implement implement semantic-to-planning lowering in the isolated E01 lane, add the focused ce_ccp1_e01_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-E01-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver the first inspectable candidate search space in the isolated E01 lane, add the focused ce_ccp1_e01_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-E01-016` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the first inspectable candidate search space in the isolated E01 lane, add the focused ce_ccp1_e01_016 gate, and publish a source-linked receipt.
 - `CE-GEO-65` | status: done | execution: closed | next: Use portable rectangular evidence, disjoint source groups up to 16, and deterministic destination support signatures and groups up to 16.
 - `CE-CCP1-E02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement import the common jbc atom identity adapters in the isolated E02 lane, add the focused ce_ccp1_e02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-E02-002` | status: done | execution: closed | next: Inspect the cited read scope, implement import the overlapping evidence-atlas core in the isolated E02 lane, add the focused ce_ccp1_e02_002 gate, and publish a source-linked receipt.
