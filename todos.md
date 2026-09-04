@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5259`
+Project revision: `5261`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -791,7 +791,7 @@ Project revision: `5259`
 - `CE-CCP1-E01-005` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent required/available planes, coverage, order, numeric/index types, alignment, extent rules, graph stability, generation, target ABI, and transform routes.
 - `CE-CCP1-E01-006` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent legal split dimensions, fragments, halos, replicas, exact input/output/contribution coverage, partial algebra, order constraints, and unsplit fallback.
 - `CE-CCP1-E01-007` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent state schema, neutral element, merge/finalize operations, algebraic laws, determinism/order requirements, numeric policy, and implementation identity.
-- `CE-CCP1-E01-008` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus conversion routes, projection schemas, value maps, and packing invalidation.
+- `CE-CCP1-E01-008` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Represent logical, canonical, projection-native, and persistent physical orders plus conversion routes, projection schemas, value maps, and packing invalidation.
 - `CE-CCP1-E01-009` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent persistent/transient memory, workspace alignment, launch count, graph capture, synchronization, libraries, streams, transfers, and target capabilities.
 - `CE-CCP1-E01-010` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Represent preparation, conversion, transfer, pack, order, execution, residual, epilogue, synchronization, canonicalization, memory, compile time, and reuse amortization as named dimensions.
 - `CE-CCP1-E01-011` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Attach distributions, sample counts, uncertainty, contamination, target/toolchain/build/profile identity, revision, validity, and external evidence references.
@@ -828,7 +828,7 @@ Project revision: `5259`
 - `CE-CCP1-E03-006` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move selected atoms/productions, redundancy, membership, budgets, validity, evidence freshness, and objective vectors into Planning IR.
 - `CE-CCP1-E03-007` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Allow empty/no-benefit basis, several profile-specific bases, and externally offered bases without forcing a universal decomposition.
 - `CE-CCP1-E03-008` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move composed-unit promotion into the Cellerator planner with exact derivation, deconstruction, profile specificity, complete cost, and experimental status.
-- `CE-CCP1-E03-009` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move dependency closure, contribution coverage, merge/finalize algebra, generation legality, numerical contract, and amortization decision into Cellerator.
+- `CE-CCP1-E03-009` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Move dependency closure, contribution coverage, merge/finalize algebra, generation legality, numerical contract, and amortization decision into Cellerator.
 - `CE-CCP1-E03-010` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Recast provider-neutral typed operations, effects, atom flow, graph families, rewrites, local fragments, and profile variants as Cellerator program Planning IR.
 - `CE-CCP1-E03-011` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move graph rewrites, shared traversals, persistent orders, common outputs, partial trees, and field-authorized fusion into connected-operation planning.
 - `CE-CCP1-E03-012` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Represent machine-independent operation order, atom requirements, partial tree, canonical recovery, and replay modes as Cellerator Planning IR, not concrete placement.
