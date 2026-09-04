@@ -125,3 +125,12 @@ add_executable(ce_ccp1_g02_016
     ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
 target_include_directories(ce_ccp1_g02_016 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_016 COMMAND ce_ccp1_g02_016)
+
+add_executable(ce_ccp1_g02_017
+    deliver_same_compilation_self_transformation_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/deliver_same_compilation_self_transformation.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/cache_compiled_transforms_safely.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/compile_same_translation_unit_transforms_in_an_early_hos.cc)
+target_include_directories(ce_ccp1_g02_017 PRIVATE ${CELLERATOR_ROOT}/include)
+target_link_libraries(ce_ccp1_g02_017 PRIVATE dl)
+add_test(NAME ce_ccp1_g02_017 COMMAND ce_ccp1_g02_017)
