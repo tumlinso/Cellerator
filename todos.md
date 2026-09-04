@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6364`
+Project revision: `6365`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1055,7 +1055,7 @@ Project revision: `6364`
 - `CE-CCP1-I02-004` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Show selected/named states, inferred evidence, confidence, alternatives, joined/unknown dimensions, expected support/value/mutation state, and missing hints.
 - `CE-CCP1-I02-005` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Answer what structure/value/support/order generations are live, what changes after a statement, and which cached/planned artifacts become stale.
 - `CE-CCP1-I02-006` | kind: task | status: done | parent: CE-CCP1-I02-000 | objective: Render or open the normalized field/operation Semantic IR, source mapping, effects, profiles, and extensions with navigation back to source.
-- `CE-CCP1-I02-007` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Show planning problem, exact cover, atom proposals/certification, decompositions, candidates, resources, costs, evidence, rejected reasons, and selected/forced state.
+- `CE-CCP1-I02-007` | kind: task | status: in_progress | parent: CE-CCP1-I02-000 | objective: Show planning problem, exact cover, atom proposals/certification, decompositions, candidates, resources, costs, evidence, rejected reasons, and selected/forced state.
 - `CE-CCP1-I02-008` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Show selected atoms/extents, projection/packing, orders, partial trees, stage graph, dependencies, workspace, target, and graph-capture/readiness behavior.
 - `CE-CCP1-I02-009` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Explain complete cost, evidence freshness/uncertainty, constraints, transition costs, reuse, alternatives, dominance, user edits, and fallback.
 - `CE-CCP1-I02-010` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Explain uncontracted native calls, alias/effect uncertainty, field boundaries, profile widening, missing persistence facts, and canonicalization costs; offer safe source fix-its where available.
