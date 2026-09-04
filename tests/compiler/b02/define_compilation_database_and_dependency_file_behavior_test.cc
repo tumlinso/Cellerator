@@ -1,0 +1,5 @@
+#include <Cellerator/compiler/driver/define_compilation_database_and_dependency_file_behavior_v1.hh>
+#include <cstdlib>
+#include <iostream>
+using namespace cellerator::compiler::driver;
+int main() { const compilation_record_v1 record{"/build", "/src/probe.cc", "/build/probe.o", "/build/probe.d", "/build/probe.modules", {"cellerator", "-c", "/src/probe.cc", "-o", "/build/probe.o"}}; const auto json = compilation_database_entry_v1(record); for (const auto* required : {"\"directory\":\"/build\"", "\"file\":\"/src/probe.cc\"", "\"output\":\"/build/probe.o\"", "\"arguments\":[\"cellerator\""}) if (json.find(required) == std::string::npos) return EXIT_FAILURE; const auto deps = dependency_arguments_v1(record); const std::vector<std::string> expected{"-MMD", "-MF", "/build/probe.d", "-MT", "/build/probe.o", "-fdeps-file=/build/probe.modules", "-fdeps-target=/build/probe.o"}; if (deps != expected) return EXIT_FAILURE; std::cout << "validated compilation database, depfile, module dependency, and source/output mapping\n"; }
