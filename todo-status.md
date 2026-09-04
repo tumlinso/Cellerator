@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5766`
+Project revision: `5767`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -506,7 +506,7 @@ Project revision: `5766`
 - `CE-CCP1-F02-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cpu projection, packing, and order transforms in the isolated F02 lane, add the focused ce_ccp1_f02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-009` | status: done | execution: closed | next: Inspect the cited read scope, implement compile generated c++ into ordinary objects in the isolated F02 lane, add the focused ce_ccp1_f02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement host runtime binding abi in the isolated F02 lane, add the focused ce_ccp1_f02_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement map backend diagnostics to source and ceir in the isolated F02 lane, add the focused ce_ccp1_f02_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-011` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement map backend diagnostics to source and ceir in the isolated F02 lane, add the focused ce_ccp1_f02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement benchmark cpu backend complete cost in the isolated F02 lane, add the focused ce_ccp1_f02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first cpu object milestone in the isolated F02 lane, add the focused ce_ccp1_f02_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the cpu/backend thin waist in the isolated F02 lane, add the focused ce_ccp1_f02_014 gate, and publish a source-linked receipt.
