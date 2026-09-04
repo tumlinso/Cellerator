@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4833`
+Project revision: `4837`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -308,7 +308,7 @@ Project revision: `4833`
 - `CE-CCP1-C02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cellerator symbol tables and scopes in the isolated C02 lane, add the focused ce_ccp1_c02_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement assign deterministic source identities in the isolated C02 lane, add the focused ce_ccp1_c02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement preserve token and macro provenance in the isolated C02 lane, add the focused ce_ccp1_c02_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-C02-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement ast visitors, matchers, and queries in the isolated C02 lane, add the focused ce_ccp1_c02_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-C02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement ast visitors, matchers, and queries in the isolated C02 lane, add the focused ce_ccp1_c02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement create structured frontend diagnostic records in the isolated C02 lane, add the focused ce_ccp1_c02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement source-aware fix-its in the isolated C02 lane, add the focused ce_ccp1_c02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement create deterministic ast dump and snapshot formats in the isolated C02 lane, add the focused ce_ccp1_c02_010 gate, and publish a source-linked receipt.
