@@ -104,3 +104,7 @@ add_executable(ce_ccp1_e01_012 implement_rejection_and_dominance_explanations_te
 target_include_directories(ce_ccp1_e01_012 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_e01_012 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_e01_012 COMMAND ce_ccp1_e01_012)
+add_executable(ce_ccp1_e01_013 implement_user_edits_and_authority_hierarchy_test.cc "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_user_edits_and_authority_hierarchy.cc")
+target_include_directories(ce_ccp1_e01_013 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_013 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_e01_013 COMMAND ce_ccp1_e01_013)
