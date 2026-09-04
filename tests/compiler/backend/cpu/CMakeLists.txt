@@ -82,3 +82,11 @@ target_include_directories(ce_ccp1_f02_008 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_f02_008 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_f02_008 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_f02_008 COMMAND ce_ccp1_f02_008)
+
+add_executable(ce_ccp1_f02_009
+  compile_generated_c_into_ordinary_objects_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/backend/compile_generated_c_into_ordinary_objects.cc)
+target_include_directories(ce_ccp1_f02_009 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_f02_009 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_f02_009 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_f02_009 COMMAND ce_ccp1_f02_009)
