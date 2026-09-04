@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6014`
+Project revision: `6015`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -597,7 +597,7 @@ Project revision: `6014`
 - `CE-CCP1-G03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement crash and timeout diagnostics in the isolated G03 lane, add the focused ce_ccp1_g03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement expose structured diagnostic and query apis in the isolated G03 lane, add the focused ce_ccp1_g03_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement benchmark diagnostics and provenance overhead in the isolated G03 lane, add the focused ce_ccp1_g03_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-G03-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze explainability and unsafe-control behavior in the isolated G03 lane, add the focused ce_ccp1_g03_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-G03-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze explainability and unsafe-control behavior in the isolated G03 lane, add the focused ce_ccp1_g03_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-75` | status: done | execution: closed | next: Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-75` | status: done | execution: closed | next: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
 - `CE-CCP1-H01-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the ceir companion object-artifact contract in the isolated H01 lane, add the focused ce_ccp1_h01_001 gate, and publish a source-linked receipt.

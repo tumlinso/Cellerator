@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6014`
+Project revision: `6015`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -978,7 +978,7 @@ Project revision: `6014`
 - `CE-CCP1-G03-013` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Attribute failures to compiler phase/pass/backend, preserve temporary artifacts, and isolate optional custom passes when configured.
 - `CE-CCP1-G03-014` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Publish C/C++ callbacks, JSON/LSP records, stable IDs, related-information links, and cancellation-safe streaming for cellerator, libCellerator, and celleratord.
 - `CE-CCP1-G03-015` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Measure disabled, minimal, and full provenance compile-time/RSS/object-size overhead; keep hot runtime overhead zero.
-- `CE-CCP1-G03-016` | kind: validation_task | status: planned | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
+- `CE-CCP1-G03-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Demonstrate verified failure, trusted continuation, unsafe native lowering, full candidate explanation, source-to-native trace, and provenance stripping.
 - `CE-EXOP-75` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver freeze profiling interfaces exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-75` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement and retain empirical-required two-warps/one-group and four-warps/two-compatible-groups candidates until complete-cost evaluation.
 - `CE-CCP1-H01-001` | kind: validation_task | status: planned | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
