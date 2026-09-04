@@ -53,3 +53,7 @@ add_executable(ce_ccp1_g03_011 implement_optimization_remarks_and_missed_opportu
 target_include_directories(ce_ccp1_g03_011 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_g03_011 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_g03_011 COMMAND ce_ccp1_g03_011)
+add_executable(ce_ccp1_g03_012 implement_deterministic_reproducer_bundles_test.cc "${CELLERATOR_ROOT}/src/compiler/diagnostics/implement_deterministic_reproducer_bundles.cc")
+target_include_directories(ce_ccp1_g03_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_g03_012 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_g03_012 COMMAND ce_ccp1_g03_012)
