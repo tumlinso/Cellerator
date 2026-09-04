@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-M80: celleratord core and Cellerator-aware semantic tooling integrated
 
-Task revision: `4123`; current project revision is in `todo-status.md`.
+Task revision: `6401`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate and validate all P80 workstreams, freeze shared interfaces, and publish milestone M80.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
