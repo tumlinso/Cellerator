@@ -13,3 +13,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e01_001 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e01_001 COMMAND ce_ccp1_e01_001)
+
+add_executable(ce_ccp1_e01_002
+    implement_planning_problems_and_operation_scopes_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/planning/implement_planning_problems_and_operation_scopes.cc")
+target_include_directories(ce_ccp1_e01_002 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e01_002 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e01_002 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e01_002 COMMAND ce_ccp1_e01_002)
