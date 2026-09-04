@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4450`
+Project revision: `4455`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -268,7 +268,7 @@ Project revision: `4450`
 - `CE-CCP1-B03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement define generated identifier hygiene in the isolated B03 lane, add the focused ce_ccp1_b03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-013` | status: done | execution: closed | next: Inspect the cited read scope, implement cache preprocessed activated headers safely in the isolated B03 lane, add the focused ce_ccp1_b03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-B03-014` | status: done | execution: closed | next: Inspect the cited read scope, implement expose source-pipeline diagnostics and dumps in the isolated B03 lane, add the focused ce_ccp1_b03_014 gate, and publish a source-linked receipt.
-- `CE-CCP1-B03-015` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement deliver the pragma-aware source milestone in the isolated B03 lane, add the focused ce_ccp1_b03_015 gate, and publish a source-linked receipt.
+- `CE-CCP1-B03-015` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver the pragma-aware source milestone in the isolated B03 lane, add the focused ce_ccp1_b03_015 gate, and publish a source-linked receipt.
 - `CE-GEO-56` | status: done | execution: closed | next: Persist or reference optional support-atlas sections without making them mandatory for core CSG1 validity or semantic identity beyond actual semantic content.
 - `CE-CCP1-B04-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the upstream clang adapter boundary in the isolated B04 lane, add the focused ce_ccp1_b04_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-B04-002` | status: done | execution: closed | next: Inspect the cited read scope, implement create the c++ compilation invocation bridge in the isolated B04 lane, add the focused ce_ccp1_b04_002 gate, and publish a source-linked receipt.

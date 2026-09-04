@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4450`
+Project revision: `4455`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -649,7 +649,7 @@ Project revision: `4450`
 - `CE-CCP1-B03-012` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Use reserved internal namespaces and content-derived identifiers that cannot collide with user macros, symbols, modules, or link names.
 - `CE-CCP1-B03-013` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Key cached token/shadow products by file content, pragma revision, macro environment, include context, and frontend adapter identity.
 - `CE-CCP1-B03-014` | kind: task | status: done | parent: CE-CCP1-B03-000 | objective: Provide token, activation-map, shadow-source, and source-map dumps without making them required hot-path artifacts.
-- `CE-CCP1-B03-015` | kind: validation_task | status: in_progress | parent: CE-CCP1-B03-000 | objective: Compile a mixed translation unit containing ordinary C++, activated Cellerator syntax, inactive includes, and an activated header through source transformation into a valid Clang parse.
+- `CE-CCP1-B03-015` | kind: validation_task | status: done | parent: CE-CCP1-B03-000 | objective: Compile a mixed translation unit containing ordinary C++, activated Cellerator syntax, inactive includes, and an activated header through source transformation into a valid Clang parse.
 - `CE-GEO-56` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Persist or reference optional support-atlas sections without making them mandatory for core CSG1 validity or semantic identity beyond actual semantic content.
 - `CE-CCP1-B04-001` | kind: validation_task | status: done | parent: CE-CCP1-B04-000 | objective: Hide Clang-version-specific AST, Sema, Preprocessor, diagnostics, and tooling APIs behind a versioned Cellerator adapter so the public compiler API does not expose unstable Clang internals.
 - `CE-CCP1-B04-002` | kind: task | status: done | parent: CE-CCP1-B04-000 | objective: Construct Clang CompilerInvocation state from normalized cellerator driver arguments, target, sysroot, includes, macros, modules, and language mode.
