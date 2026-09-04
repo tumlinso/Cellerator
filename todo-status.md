@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6053`
+Project revision: `6058`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -579,7 +579,7 @@ Project revision: `6053`
 - `CE-CCP1-G02-015` | status: done | execution: closed | next: Inspect the cited read scope, implement implement transform sandbox policy as opt-in, not authority in the isolated G02 lane, add the focused ce_ccp1_g02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-016` | status: done | execution: closed | next: Inspect the cited read scope, implement integrate extension/pass provenance in the isolated G02 lane, add the focused ce_ccp1_g02_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-017` | status: done | execution: closed | next: Inspect the cited read scope, implement deliver same-compilation self-transformation in the isolated G02 lane, add the focused ce_ccp1_g02_017 gate, and publish a source-linked receipt.
-- `CE-CCP1-G02-018` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the open compiler-extension surface in the isolated G02 lane, add the focused ce_ccp1_g02_018 gate, and publish a source-linked receipt.
+- `CE-CCP1-G02-018` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the open compiler-extension surface in the isolated G02 lane, add the focused ce_ccp1_g02_018 gate, and publish a source-linked receipt.
 - `CE-EXOP-74` | status: done | execution: closed | next: Deliver prove disabled profiling does not alter the hot path exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-74` | status: done | execution: closed | next: Combine prepared value pack, output-owned MMA, exact row-owned residual, one epilogue, persistent order, planner visibility, and pure-sparse fallback.
 - `CE-CCP1-G03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze validation-mode semantics in the isolated G03 lane, add the focused ce_ccp1_g03_001 gate, and publish a source-linked receipt.
