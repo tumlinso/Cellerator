@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5747`
+Project revision: `5750`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -502,7 +502,7 @@ Project revision: `5747`
 - `CE-CCP1-F02-004` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generated c++ representation in the isolated F02 lane, add the focused ce_ccp1_f02_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-005` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generic cpu relation apply in the isolated F02 lane, add the focused ce_ccp1_f02_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-006` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cpu transpose and contraction in the isolated F02 lane, add the focused ce_ccp1_f02_006 gate, and publish a source-linked receipt.
-- `CE-CCP1-F02-007` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement cpu segment, gate, update, bundle, and chain paths in the isolated F02 lane, add the focused ce_ccp1_f02_007 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-007` | status: done | execution: closed | next: Inspect the cited read scope, implement implement cpu segment, gate, update, bundle, and chain paths in the isolated F02 lane, add the focused ce_ccp1_f02_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement cpu projection, packing, and order transforms in the isolated F02 lane, add the focused ce_ccp1_f02_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement compile generated c++ into ordinary objects in the isolated F02 lane, add the focused ce_ccp1_f02_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-010` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement host runtime binding abi in the isolated F02 lane, add the focused ce_ccp1_f02_010 gate, and publish a source-linked receipt.
