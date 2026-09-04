@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5088`
+Project revision: `5092`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -381,7 +381,7 @@ Project revision: `5088`
 - `CE-CCP1-D02-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement native and opaque c++ call operations in the isolated D02 lane, add the focused ce_ccp1_d02_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-012` | status: done | execution: closed | next: Inspect the cited read scope, implement implement control flow and loop semantics in the isolated D02 lane, add the focused ce_ccp1_d02_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement generation and epoch transition operations in the isolated D02 lane, add the focused ce_ccp1_d02_013 gate, and publish a source-linked receipt.
-- `CE-CCP1-D02-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic ir inlining and composition in the isolated D02 lane, add the focused ce_ccp1_d02_014 gate, and publish a source-linked receipt.
+- `CE-CCP1-D02-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement semantic ir inlining and composition in the isolated D02 lane, add the focused ce_ccp1_d02_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-015` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement semantic canonicalization and equivalence in the isolated D02 lane, add the focused ce_ccp1_d02_015 gate, and publish a source-linked receipt.
 - `CE-CCP1-D02-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver source-to-semantic-ir vertical slice in the isolated D02 lane, add the focused ce_ccp1_d02_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-63` | status: done | execution: closed | next: Deliver generic external-consumer boundary and tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
