@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5888`
+Project revision: `5891`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -929,7 +929,7 @@ Project revision: `5888`
 - `CE-CCP1-G01-002` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Allow source code to acquire the current field or a named/exported field as Semantic IR during the valid compiler phase.
 - `CE-CCP1-G01-003` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Expose normalized operation kind, typed operands/results, relation/domain/order/generation semantics, effects, and source provenance.
 - `CE-CCP1-G01-004` | kind: task | status: done | parent: CE-CCP1-G01-000 | objective: Expose named states, attached evidence summaries, confidence, mutation expectations, joins, unknown dimensions, and selected state at a source location.
-- `CE-CCP1-G01-005` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Expose alternatives, exact coverage, atoms, decompositions, candidates, costs, rejection reasons, and selection state after planning becomes available.
+- `CE-CCP1-G01-005` | kind: task | status: in_progress | parent: CE-CCP1-G01-000 | objective: Expose alternatives, exact coverage, atoms, decompositions, candidates, costs, rejection reasons, and selection state after planning becomes available.
 - `CE-CCP1-G01-006` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Expose selected cover, extents, projections, packing, stage graph, resources, generations, and native/backend fragments after realization.
 - `CE-CCP1-G01-007` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Allow compile-time branching, concepts, and type/value construction over stable reflection queries without requiring standardized C++ reflection.
 - `CE-CCP1-G01-008` | kind: task | status: planned | parent: CE-CCP1-G01-000 | objective: Provide source-accessible builders for typed CEIR nodes, attributes, regions, alternatives, candidates, and native fragments with deterministic allocation and diagnostics.
@@ -946,7 +946,7 @@ Project revision: `5888`
 - `CE-CCP1-G02-001` | kind: validation_task | status: done | parent: CE-CCP1-G02-000 | objective: Name stable interception points before/after source canonicalization, profile propagation, discovery, certification, decomposition, candidate enumeration, cost modeling, selection, realization, packing, stage construction, and backend emission.
 - `CE-CCP1-G02-002` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Provide ordered pipelines, nested scopes, required/preserved analyses, explicit invalidation, cancellation, timing, diagnostics, and deterministic replay.
 - `CE-CCP1-G02-003` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Accept source directives, inline Planning IR, command-line pipeline text, C++ API builders, and profile-specific pipelines with one normalized representation.
-- `CE-CCP1-G02-004` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose Semantic IR read/write access, profiles, source mappings, diagnostics, and analysis cache while allowing semantics-changing transformations under declared validation mode.
+- `CE-CCP1-G02-004` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Expose Semantic IR read/write access, profiles, source mappings, diagnostics, and analysis cache while allowing semantics-changing transformations under declared validation mode.
 - `CE-CCP1-G02-005` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose search spaces, evidence, atoms, decomposition, candidates, costs, selection, and planner services for additions or full replacement.
 - `CE-CCP1-G02-006` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Expose physical covers, projections, packs, stages, bindings, target operations, and native fragments before backend emission.
 - `CE-CCP1-G02-007` | kind: task | status: planned | parent: CE-CCP1-G02-000 | objective: Allow profile propagation, discovery, certification, decomposition, candidate enumeration, cost model, planner, realization, and backend lowering to be replaced rather than merely decorated.
@@ -966,7 +966,7 @@ Project revision: `5888`
 - `CE-CCP1-G03-001` | kind: validation_task | status: done | parent: CE-CCP1-G03-000 | objective: Define verified, checked, trusted, unsafe, and unchecked behavior separately for parsing, semantic invariants, exact coverage, numerical claims, resources, native bindings, and backend support.
 - `CE-CCP1-G03-002` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Fail only for malformed graphs, missing required operands, impossible references, uninterpretable text, or backend states that cannot be represented/continued.
 - `CE-CCP1-G03-003` | kind: task | status: done | parent: CE-CCP1-G03-000 | objective: Detect domain/order/generation/effect/numerical/identity inconsistencies and permit explicit trusted/unsafe continuation where the IR remains representable.
-- `CE-CCP1-G03-004` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain omissions, duplicates, wrong roles, incompatible partial algebra, halo/contributor confusion, and canonical recovery failure with member-level evidence.
+- `CE-CCP1-G03-004` | kind: task | status: in_progress | parent: CE-CCP1-G03-000 | objective: Explain omissions, duplicates, wrong roles, incompatible partial algebra, halo/contributor confusion, and canonical recovery failure with member-level evidence.
 - `CE-CCP1-G03-005` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Explain unsupported instructions, capability ranges, clobbers, alignment, address spaces, collectives, ABI, graph capture, and fallback availability.
 - `CE-CCP1-G03-006` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Trace source, AST, Semantic IR, profile evidence, passes, Planning alternatives, selection, Realization stages, generated source, backend objects, and native symbols through cold IDs and edges.
 - `CE-CCP1-G03-007` | kind: task | status: planned | parent: CE-CCP1-G03-000 | objective: Emit sidecars or debug/object sections for provenance without adding hot runtime fields; support strip and separate-debug workflows.
