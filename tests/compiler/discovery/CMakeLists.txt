@@ -112,3 +112,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_011 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_011 COMMAND ce_ccp1_e02_011)
+
+add_executable(ce_ccp1_e02_012
+    import_atom_requirement_affordance_matching_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_requirement_affordance_matching.cc")
+target_include_directories(ce_ccp1_e02_012 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_012 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_012 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_012 COMMAND ce_ccp1_e02_012)
