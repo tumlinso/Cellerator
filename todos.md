@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5314`
+Project revision: `5325`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -796,7 +796,7 @@ Project revision: `5314`
 - `CE-CCP1-E01-010` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Represent preparation, conversion, transfer, pack, order, execution, residual, epilogue, synchronization, canonicalization, memory, compile time, and reuse amortization as named dimensions.
 - `CE-CCP1-E01-011` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Attach distributions, sample counts, uncertainty, contamination, target/toolchain/build/profile identity, revision, validity, and external evidence references.
 - `CE-CCP1-E01-012` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Record correctness, capability, resource, numerical, profile, stale-evidence, cost, and user-policy reasons for every removed alternative.
-- `CE-CCP1-E01-013` | kind: task | status: in_progress | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
+- `CE-CCP1-E01-013` | kind: task | status: done | parent: CE-CCP1-E01-000 | objective: Support add/remove candidate, change fact/objective/cost, replace decomposition, force selection, and unsafe assertions while recording who changed the search space.
 - `CE-CCP1-E01-014` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Add compact textual syntax for alternatives, coverage, atoms, costs, evidence, and selections with unknown extension preservation.
 - `CE-CCP1-E01-015` | kind: task | status: planned | parent: CE-CCP1-E01-000 | objective: Create planning problems from typed Semantic IR plus profile environments, preserving operation kinds, numeric policies, fields, generations, and explicit constraints.
 - `CE-CCP1-E01-016` | kind: validation_task | status: planned | parent: CE-CCP1-E01-000 | objective: Lower a profile-aware relation field to Planning IR containing a conventional fallback and at least one structure-dependent candidate, with complete costs and rejection explanations.
@@ -832,8 +832,8 @@ Project revision: `5314`
 - `CE-CCP1-E03-010` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Recast provider-neutral typed operations, effects, atom flow, graph families, rewrites, local fragments, and profile variants as Cellerator program Planning IR.
 - `CE-CCP1-E03-011` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move graph rewrites, shared traversals, persistent orders, common outputs, partial trees, and field-authorized fusion into connected-operation planning.
 - `CE-CCP1-E03-012` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Represent machine-independent operation order, atom requirements, partial tree, canonical recovery, and replay modes as Cellerator Planning IR, not concrete placement.
-- `CE-CCP1-E03-013` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Map compiled ruleset requirements to a narrow future request that CellShard can use to materialize, shard, place, and deliver concrete instances in Part Two.
-- `CE-CCP1-E03-014` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Move/adapt test suites with provenance, preserving expected derivations, no-basis cases, exact coverage, and performance baselines.
+- `CE-CCP1-E03-013` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Map compiled ruleset requirements to a narrow future request that CellShard can use to materialize, shard, place, and deliver concrete instances in Part Two.
+- `CE-CCP1-E03-014` | kind: task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Move/adapt test suites with provenance, preserving expected derivations, no-basis cases, exact coverage, and performance baselines.
 - `CE-CCP1-E03-015` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Run old CellShard compiler implementations and new Cellerator passes on identical fixtures during migration, comparing canonicalized outputs rather than raw struct bytes when schemas improve.
 - `CE-CCP1-E03-016` | kind: task | status: planned | parent: CE-CCP1-E03-000 | objective: Leave compatibility aliases only where needed; mark global compiler headers non-authoritative and prevent new registration there.
 - `CE-CCP1-E03-017` | kind: validation_task | status: planned | parent: CE-CCP1-E03-000 | objective: Compile representative profiles and a multi-operation Semantic IR program through discovery, grammar, basis, global graph, and portable schedule Planning IR.
@@ -844,7 +844,7 @@ Project revision: `5314`
 - `CE-CCP1-E04-003` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Map decomposition_v1 exact input/output/contribution coverage, replication, halo read roles, orders, and extent bounds into Planning IR.
 - `CE-CCP1-E04-004` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Choose legal merge/finalize structures under numerical, determinism, order, resource, and reuse constraints.
 - `CE-CCP1-E04-005` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Offer direct multi-extent execution where candidates support it and explicit profiler-visible assembly as the complete fallback.
-- `CE-CCP1-E04-006` | kind: task | status: in_progress | parent: CE-CCP1-E04-000 | objective: Translate stable provider/candidate/projection/capability/operation/numeric/resource descriptors into Planning IR with source-linked preparation hooks.
+- `CE-CCP1-E04-006` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Translate stable provider/candidate/projection/capability/operation/numeric/resource descriptors into Planning IR with source-linked preparation hooks.
 - `CE-CCP1-E04-007` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Allow source, inline IR, external libraries, and migrated providers to add candidates with partial protocol implementations and explicit opaque behavior where necessary.
 - `CE-CCP1-E04-008` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Apply source/pipeline/user edits in the defined authority hierarchy while retaining diagnostics for impossible or dominated choices.
 - `CE-CCP1-E04-009` | kind: task | status: planned | parent: CE-CCP1-E04-000 | objective: Expose storage, movement, replication, invalidation, latency, throughput, and application-supplied costs through generic callbacks/IR evidence without a CellShard dependency.
