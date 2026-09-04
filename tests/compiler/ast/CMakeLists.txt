@@ -91,3 +91,22 @@ add_executable(ce_ccp1_c02_011
 target_include_directories(ce_ccp1_c02_011 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_011 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_011 COMMAND ce_ccp1_c02_011)
+
+# Compile the milestone consumer against an install-shaped copy, not the source
+# include tree, so the gate catches missing public headers and relative leaks.
+set(C02_012_INSTALLED_INCLUDE "${CMAKE_CURRENT_BINARY_DIR}/c02_012_installed/include")
+file(REMOVE_RECURSE "${C02_012_INSTALLED_INCLUDE}")
+file(MAKE_DIRECTORY "${C02_012_INSTALLED_INCLUDE}")
+file(COPY ../../../include/Cellerator DESTINATION "${C02_012_INSTALLED_INCLUDE}")
+add_executable(ce_ccp1_c02_012
+    freeze_the_ast_and_source_diagnostics_interface_test.cc
+    ../../../src/compiler/ast/freeze_the_ast_and_source_diagnostics_interface.cc
+    ../../../src/compiler/ast/freeze_ast_node_ownership_and_lifetime.cc
+    ../../../src/compiler/ast/define_source_level_ast_node_families.cc
+    ../../../src/compiler/ast/bind_c_ast_references_safely.cc
+    ../../../src/compiler/ast/implement_ast_visitors_matchers_and_queries.cc
+    ../../../src/compiler/ast/preserve_token_and_macro_provenance.cc
+    ../../../src/compiler/ast/create_structured_frontend_diagnostic_records.cc)
+target_include_directories(ce_ccp1_c02_012 PRIVATE "${C02_012_INSTALLED_INCLUDE}")
+target_compile_features(ce_ccp1_c02_012 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_012 COMMAND ce_ccp1_c02_012)
