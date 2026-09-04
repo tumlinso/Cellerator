@@ -178,3 +178,21 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_017 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_017 COMMAND ce_ccp1_e02_017)
+
+add_executable(ce_ccp1_e02_018
+    freeze_the_migrated_discovery_and_atom_compiler_slice_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/freeze_the_migrated_discovery_and_atom_compiler_slice.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_envelope_and_typed_ports.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_exact_rescan_and_proposal_certification.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_support_signature_discovery.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_the_common_jbc_atom_identity_adapters.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/create_temporary_cellshard_compiler_compatibility_adapte.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/port_discovery_tests_and_evidence_fixtures.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/preserve_migration_provenance_in_source_and_artifacts.cc"
+    "${CELLERATOR_ROOT}/src/compiler/discovery/validate_no_compiler_discovery_remains_authoritative_in.cc")
+target_include_directories(ce_ccp1_e02_018 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_018 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_018 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_018 COMMAND ce_ccp1_e02_018)
