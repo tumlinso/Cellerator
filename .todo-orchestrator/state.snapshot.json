@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T06:10:28Z",
+  "generated_at": "2026-09-04T06:11:24Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4114,
+  "project_revision": 4117,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -45401,6 +45401,36 @@
         "revision": 4114,
         "seq": 4114,
         "timestamp": "2026-09-04T06:10:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-012-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-A03-012-GATE\"}",
+        "revision": 4115,
+        "seq": 4115,
+        "timestamp": "2026-09-04T06:11:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-012-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"3cb00926-0e1e-433a-a17f-ce1c55732af4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4116,
+        "seq": 4116,
+        "timestamp": "2026-09-04T06:11:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-A03-012",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 4117, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 4117,
+        "seq": 4117,
+        "timestamp": "2026-09-04T06:11:24Z"
       }
     ],
     "evidence": [
@@ -48015,6 +48045,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"Cellerator/include/Cellerator/compute/math/MATH_V1_EVIDENCE.md\", \"Cellerator/include/Cellerator/compute/math/execution_plan.hh\", \"Cellerator/include/Cellerator/compute/math/operation_core/OPERATION_CORE.md\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\", \"--\", \"Cellerator/include/Cellerator/compute/math/MATH_V1_EVIDENCE.md\", \"Cellerator/include/Cellerator/compute/math/execution_plan.hh\", \"Cellerator/include/Cellerator/compute/math/operation_core/OPERATION_CORE.md\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"213f79c04855dbf513cfd5c9c2fe91501e813ffa3652237d29b798a6ce4f0c86\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"architecture-recovery-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/baseplane-dna2-benchmark.md\", \"todos/baseplane-dna2-explicit-widths.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-01.md\", \"todos/ce-arch-02.md\", \"todos/ce-arch-10.md\", \"todos/ce-arch-11.md\", \"todos/ce-arch-12.md\", \"todos/ce-arch-20.md\", \"todos/ce-arch-21.md\", \"todos/ce-arch-22.md\", \"todos/ce-arch-30.md\", \"todos/ce-arch-31.md\", \"todos/ce-arch-40.md\", \"todos/ce-arch-50.md\", \"todos/ce-arch-60.md\", \"todos/ce-arch-61.md\", \"todos/cellerator-hierarchy-reset.md\", \"todos/cellerator-runtime-autotune.md\", \"todos/cellerator-sparse-ml-layout.md\", \"todos/cellpack-packing-plan-cuda-evaluator.md\", \"todos/cellpack-packing-plan-evaluator.md\", \"todos/cp-bp-00.md\", \"todos/cp-bp-01.md\", \"todos/cp-bp-02.md\", \"todos/cp-bp-03.md\", \"todos/cp-bp-04.md\", \"todos/cp-bp-05.md\", \"todos/cp-bp-06.md\", \"todos/cp-bp-07.md\", \"todos/cp-bp-08.md\", \"todos/cp-bp-09.md\", \"todos/cp-bp-10.md\", \"todos/cp-bp-11.md\", \"todos/cp-bp-12.md\", \"todos/cp-bp-13.md\", \"todos/cp-math-00.md\", \"todos/cp-math-06.md\", \"todos/cp-math-08.md\", \"todos/cp-math-10.md\", \"todos/cp-math-11.md\", \"todos/cp-math-12.md\", \"todos/cp-math-12d.md\", \"todos/cp-math-13.md\", \"todos/cp-math-14.md\", \"todos/cp-math-15.md\", \"todos/cp-math-16.md\", \"todos/cp-math-17.md\", \"todos/cp-math-hard-data.md\", \"todos/cp-math-opt-not-promoted.md\", \"todos/cp-math-opt-promoted.md\", \"todos/cp-math-real-data.md\", \"todos/sequence-bits-dna2.md\"], \"files\": [{\"path\": \"Cellerator/include/Cellerator/compute/math/MATH_V1_EVIDENCE.md\", \"sha256\": \"43e2a798eaa17c73c806014dda2cde6423fa525ed0d84be9a3d27567b5b19232\"}, {\"path\": \"Cellerator/include/Cellerator/compute/math/execution_plan.hh\", \"sha256\": \"245d0645fb0f6509374a5c0c18f9bd9229d5ea0b1b9bf73d6516e3c582794edb\"}, {\"path\": \"Cellerator/include/Cellerator/compute/math/operation_core/OPERATION_CORE.md\", \"sha256\": \"a9a9dd2a9b0bb11b6ec499f2cef885b9d28f5825d89413020d1900fae834c711\"}], \"interfaces\": [], \"recorded_git_head\": \"dde2c8a7639a6828a22deb02a9944d80bb51ef17\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 758}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/3c98395e-2aac-49a1-9714-b2721005ce8b",
         "revision": 759,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T06:11:23Z",
+        "gate_id": "CE-CCP1-A03-012-GATE",
+        "id": "3cb00926-0e1e-433a-a17f-ce1c55732af4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_012$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_012$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f90ee3deca55c4d1cc2939a522d2e16b6fdf0547\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f59c0b60ee574a0a5ae258ae695f42517c0bdbf1608c8b065ccca5b3d3e1754d\", \"started_revision\": 4115, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a03\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3cb00926-0e1e-433a-a17f-ce1c55732af4",
+        "revision": 4116,
         "status": "passed"
       },
       {
@@ -58540,14 +58583,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_012$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-A03-012-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719",
+        "last_run_at": "2026-09-04T06:11:23Z",
         "required": 1,
-        "revision": 4015,
-        "status": "pending",
+        "revision": 4116,
+        "status": "passed",
         "task_id": "CE-CCP1-A03-012",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -75001,6 +75044,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"f27bddad348f9366ade2b3a9772de584b8f1f530\", \"completion_gates\": [], \"completion_revision\": 3607, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 34 ++++++++++++++++++++++------------\\n components/CellShard                   |  2 +-\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/ce-jbc-b02.md                    |  6 +++---\\n 5 files changed, 30 insertions(+), 20 deletions(-)\", \"git_head\": \"f27bddad348f9366ade2b3a9772de584b8f1f530\", \"interfaces\": [], \"note\": \"Created docs/JBC/CE_JBC_B02_TRANSITION_MAP.md. Recorded separate Git and Todo cursors; mapped support evidence, semantic geometry, optimizer portfolios, operation core, relation algebra, projection values, acquisition, programs, candidate catalog, profiling, compatibility surfaces, and CellShard adapters into the six required transition classes. Validated all named representative paths, all six classifications, map row count, and git diff --check. Documentation-only task changed no build or runtime inputs, so no compile was warranted.\", \"resources\": [], \"task_id\": \"CE-JBC-B02\"}",
         "revision": 3607,
         "task_id": "CE-JBC-B02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-04T06:11:23Z",
+        "id": "bbd31919-87de-44ac-9502-2732999cd3ff",
+        "kind": "complete",
+        "note": "Reserved a narrow immutable ruleset/profile/exact-coverage/realization-requirements export for future CellShard consumption without deep Part Two integration. Focused standalone C++17 compile/link and contract scan passed; ctest selector succeeded with no registered tests. Commit pushed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"f90ee3deca55c4d1cc2939a522d2e16b6fdf0547\", \"completion_gates\": [{\"evidence_id\": \"3cb00926-0e1e-433a-a17f-ce1c55732af4\", \"evidence_revision\": 4116, \"id\": \"CE-CCP1-A03-012-GATE\", \"input_fingerprint\": \"5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"f90ee3deca55c4d1cc2939a522d2e16b6fdf0547\"}], \"completion_revision\": 4117, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"CE-CCP1-A03-012-GATE\", \"input_fingerprint\": \"5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719\", \"last_run_at\": \"2026-09-04T06:11:23Z\", \"revision\": 4116, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"f90ee3deca55c4d1cc2939a522d2e16b6fdf0547\", \"interfaces\": [], \"note\": \"Reserved a narrow immutable ruleset/profile/exact-coverage/realization-requirements export for future CellShard consumption without deep Part Two integration. Focused standalone C++17 compile/link and contract scan passed; ctest selector succeeded with no registered tests. Commit pushed.\", \"resources\": [], \"task_id\": \"CE-CCP1-A03-012\"}",
+        "revision": 4117,
+        "task_id": "CE-CCP1-A03-012"
       },
       {
         "claim_id": null,
@@ -168656,6 +168709,19 @@
         "validation_git_head": "93cf7d7144035aa54c3ff8273ab835b569419aa5"
       },
       {
+        "completion_git_head": "f90ee3deca55c4d1cc2939a522d2e16b6fdf0547",
+        "completion_revision": 4117,
+        "evidence_id": "3cb00926-0e1e-433a-a17f-ce1c55732af4",
+        "evidence_revision": 4116,
+        "gate_id": "CE-CCP1-A03-012-GATE",
+        "input_fingerprint": "5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719",
+        "provenance_json": "{\"claim_id\": \"cbe54d6f-0568-4902-9507-90c9f2bf562b\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_012$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5ec41efbd63d44d7c9c56e49ff07e43fa4821e78b5f94106a407d851f2190719\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_a03_012$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"f90ee3deca55c4d1cc2939a522d2e16b6fdf0547\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f59c0b60ee574a0a5ae258ae695f42517c0bdbf1608c8b065ccca5b3d3e1754d\", \"started_revision\": 4115, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-a03\"}, \"evidence_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/3cb00926-0e1e-433a-a17f-ce1c55732af4\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "CE-CCP1-A03-012",
+        "valid": 1,
+        "validation_git_head": "f90ee3deca55c4d1cc2939a522d2e16b6fdf0547"
+      },
+      {
         "completion_git_head": "31e491ed29de0fcde70259cbeab8c5c7ad353485",
         "completion_revision": 4036,
         "evidence_id": "fd2d645b-a297-43b4-a5af-1e16419230fa",
@@ -226373,9 +226439,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "f90ee3deca55c4d1cc2939a522d2e16b6fdf0547",
+        "completion_git_head": "f90ee3deca55c4d1cc2939a522d2e16b6fdf0547",
+        "completion_revision": 4117,
         "created_at": "2026-09-03T19:12:56Z",
         "id": "CE-CCP1-A03-012",
         "kind": "task",
@@ -226387,14 +226453,14 @@
         "parallel_policy": "serial",
         "parent_id": "CE-CCP1-A03-000",
         "priority": 848,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 4114,
-        "status": "in_progress",
+        "revision": 4117,
+        "status": "done",
         "tags_json": "[\"a03\", \"compiler-migration\", \"leaf\"]",
         "title": "Define Cellerator ruleset export consumed by CellShard",
-        "updated_at": "2026-09-04T06:10:28Z",
-        "version": 3
+        "updated_at": "2026-09-04T06:11:24Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -270700,12 +270766,12 @@
       },
       {
         "activated_at": "2026-09-04T06:10:28Z",
-        "completed_at": null,
+        "completed_at": "2026-09-04T06:11:24Z",
         "enqueued_at": "2026-09-03T19:12:57Z",
         "lane_id": "CE-CCP1-L-A03",
         "position": 11,
-        "revision": 4114,
-        "state": "active",
+        "revision": 4117,
+        "state": "completed",
         "task_id": "CE-CCP1-A03-012"
       },
       {
@@ -280155,11 +280221,11 @@
         "created_at": "2026-09-03T19:12:57Z",
         "id": "CE-CCP1-L-A03",
         "parent_lane_id": "CE-CCP1-L-COORD",
-        "revision": 4114,
+        "revision": 4117,
         "role": "implementer",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T06:10:28Z",
+        "state": "ready",
+        "updated_at": "2026-09-04T06:11:24Z",
         "workspace_mode": "isolated_merge"
       },
       {

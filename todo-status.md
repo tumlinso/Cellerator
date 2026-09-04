@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4114`
+Project revision: `4117`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -207,7 +207,7 @@ Project revision: `4114`
 - `CE-CCP1-A03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of portable schedule compilation in the isolated A03 lane, add the focused ce_ccp1_a03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement define the retained cellshard concrete application boundary in the isolated A03 lane, add the focused ce_ccp1_a03_010 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement define temporary compiler-to-cellshard migration adapters in the isolated A03 lane, add the focused ce_ccp1_a03_011 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-012` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define cellerator ruleset export consumed by cellshard in the isolated A03 lane, add the focused ce_ccp1_a03_012 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-012` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ruleset export consumed by cellshard in the isolated A03 lane, add the focused ce_ccp1_a03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement reconcile old jbc documentation and active-run status in the isolated A03 lane, add the focused ce_ccp1_a03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the compiler-ownership rehoming contract in the isolated A03 lane, add the focused ce_ccp1_a03_014 gate, and publish a source-linked receipt.
 - `CE-EXOP-52` | status: done | execution: closed | next: Deliver pareto portfolio and experimental selection policy exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
