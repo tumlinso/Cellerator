@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P70: Cross-TU compilation, libCellerator, standard library, and SDK
 
-Task revision: `5367`; current project revision is in `todo-status.md`.
+Task revision: `5454`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate cross-tu compilation, libcellerator, standard library, and sdk and publish milestone M70.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-CCP1-P80: celleratord
 
-Task revision: `5367`; current project revision is in `todo-status.md`.
+Task revision: `5454`; current project revision is in `todo-status.md`.
 
 ## Objective
 Coordinate celleratord and publish milestone M80.
