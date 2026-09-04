@@ -1,4 +1,4 @@
-#include <Cellerator/compiler/planning/freeze_the_public_planning_compiler_interface_v1.hh>
+#include <Cellerator/compiler/planning/planner_v1.hh>
 
 #include <cassert>
 #include <type_traits>
