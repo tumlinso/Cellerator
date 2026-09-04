@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6043`
+Project revision: `6046`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -958,7 +958,7 @@ Project revision: `6043`
 - `CE-CCP1-G02-013` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Allow a transform generation to affect later phases of the same compilation, cap recursive self-generation by explicit policy, and provide deterministic cycle/phase diagnostics.
 - `CE-CCP1-G02-014` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Cache prelude extension artifacts by source, compiler API, ABI, toolchain, target-host, dependencies, and trust policy; invalidate precisely and support keep-temps.
 - `CE-CCP1-G02-015` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Offer subprocess isolation, time/memory limits, and verified modes while allowing trusted in-process transforms and unsafe continuation for experts.
-- `CE-CCP1-G02-016` | kind: task | status: in_progress | parent: CE-CCP1-G02-000 | objective: Record extension identity, binary/source hash, pipeline location, inputs, outputs, invalidated analyses, diagnostics, and trust mode in cold provenance.
+- `CE-CCP1-G02-016` | kind: task | status: done | parent: CE-CCP1-G02-000 | objective: Record extension identity, binary/source hash, pipeline location, inputs, outputs, invalidated analyses, diagnostics, and trust mode in cold provenance.
 - `CE-CCP1-G02-017` | kind: validation_task | status: planned | parent: CE-CCP1-G02-000 | objective: Compile a translation unit that defines a prelude pass, reflects a field, rewrites Semantic or Planning IR in the same compilation, and emits a correct ordinary object.
 - `CE-CCP1-G02-018` | kind: validation_task | status: planned | parent: CE-CCP1-G02-000 | objective: Publish pass, pipeline, extension, staging, cache, trust, and provenance contracts for libCellerator and celleratord.
 - `CE-EXOP-74` | kind: validation_task | status: done | parent: CE-EXOP-00 | objective: Deliver prove disabled profiling does not alter the hot path exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
