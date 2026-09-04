@@ -87,3 +87,9 @@ add_executable(ce_ccp1_g02_010
     ${CELLERATOR_ROOT}/src/compiler/pass/implement_unknown_extension_preservation_and_forwarding.cc)
 target_include_directories(ce_ccp1_g02_010 PRIVATE ${CELLERATOR_ROOT}/include)
 add_test(NAME ce_ccp1_g02_010 COMMAND ce_ccp1_g02_010)
+
+add_executable(ce_ccp1_g02_011
+    implement_compiler_prelude_regions_test.cc
+    ${CELLERATOR_ROOT}/src/compiler/pass/implement_compiler_prelude_regions.cc)
+target_include_directories(ce_ccp1_g02_011 PRIVATE ${CELLERATOR_ROOT}/include)
+add_test(NAME ce_ccp1_g02_011 COMMAND ce_ccp1_g02_011)
