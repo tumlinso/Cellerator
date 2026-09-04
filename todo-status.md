@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6113`
+Project revision: `6114`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -603,7 +603,7 @@ Project revision: `6113`
 - `CE-CCP1-H01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the ceir companion object-artifact contract in the isolated H01 lane, add the focused ce_ccp1_h01_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement elf ceir sections in the isolated H01 lane, add the focused ce_ccp1_h01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-003` | status: done | execution: closed | next: Inspect the cited read scope, implement implement mach-o and coff strategies in the isolated H01 lane, add the focused ce_ccp1_h01_003 gate, and publish a source-linked receipt.
-- `CE-CCP1-H01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement portable sidecar fallback in the isolated H01 lane, add the focused ce_ccp1_h01_004 gate, and publish a source-linked receipt.
+- `CE-CCP1-H01-004` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement portable sidecar fallback in the isolated H01 lane, add the focused ce_ccp1_h01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement assign cross-tu field and symbol identities in the isolated H01 lane, add the focused ce_ccp1_h01_005 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement template instantiation deduplication in the isolated H01 lane, add the focused ce_ccp1_h01_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-H01-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement profile environment merge in the isolated H01 lane, add the focused ce_ccp1_h01_007 gate, and publish a source-linked receipt.

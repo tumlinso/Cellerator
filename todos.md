@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6113`
+Project revision: `6114`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -984,7 +984,7 @@ Project revision: `6113`
 - `CE-CCP1-H01-001` | kind: validation_task | status: done | parent: CE-CCP1-H01-000 | objective: Define versioned Semantic/Planning summary, profile references, field exports, provenance maps, toolchain identity, and content hashes embedded in or associated with ordinary objects.
 - `CE-CCP1-H01-002` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Emit deterministic non-loadable sections, symbols/notes, compression policy, strip behavior, and extraction without affecting runtime ABI.
 - `CE-CCP1-H01-003` | kind: task | status: done | parent: CE-CCP1-H01-000 | objective: Define platform sections or sidecar fallback with identical semantic content and deterministic naming where platform toolchains are available.
-- `CE-CCP1-H01-004` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Emit content-addressed `.
+- `CE-CCP1-H01-004` | kind: task | status: in_progress | parent: CE-CCP1-H01-000 | objective: Emit content-addressed `.
 - `CE-CCP1-H01-005` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Resolve exported domains, relations, fields, profiles, passes, native symbols, and template instantiations using semantic fingerprints plus linkage/module identity.
 - `CE-CCP1-H01-006` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Deduplicate equivalent C++/Cellerator template specializations while preserving distinct numeric/domain/profile semantics and backend variants.
 - `CE-CCP1-H01-007` | kind: task | status: planned | parent: CE-CCP1-H01-000 | objective: Merge named states and evidence references by stable identity/revision, diagnose conflicting biological semantics, and retain bounded alternatives.
