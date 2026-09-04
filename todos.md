@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6079`
+Project revision: `6086`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1063,7 +1063,7 @@ Project revision: `6079`
 - `CE-CCP1-I02-012` | kind: task | status: planned | parent: CE-CCP1-I02-000 | objective: Provide level-aware operations/types/attributes, captures, profiles, candidates, target instructions, extension namespaces, validation modes, and structural diagnostics.
 - `CE-CCP1-I02-013` | kind: validation_task | status: planned | parent: CE-CCP1-I02-000 | objective: Measure latency/RSS/cancellation for profile propagation, candidate explanation, IR rendering, decomposition graph, and native navigation with cached and cold states.
 - `CE-CCP1-I02-014` | kind: validation_task | status: planned | parent: CE-CCP1-I02-000 | objective: Demonstrate all agreed baseline queries over an installed multi-profile relation project, including IR at cursor, candidate costs, mutation staleness, decomposition, and source-to-native navigation.
-- `CE-CCP1-M60` | kind: validation_task | status: in_progress | parent: CE-CCP1-P60 | objective: Integrate and validate all P60 workstreams, freeze shared interfaces, and publish milestone M60.
+- `CE-CCP1-M60` | kind: validation_task | status: done | parent: CE-CCP1-P60 | objective: Integrate and validate all P60 workstreams, freeze shared interfaces, and publish milestone M60.
 - `CE-CCP1-P80` | kind: epic | status: planned | parent: CE-CCP1-0000 | objective: Coordinate celleratord and publish milestone M80.
 - `CE-EXOP-80` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver workload profile v2 exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-CCP1-J01-001` | kind: task | status: planned | parent: CE-CCP1-J01-000 | objective: Turn every normative syntax/semantic example and rejected design into positive/negative tests with specification section references.
