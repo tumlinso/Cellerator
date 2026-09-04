@@ -9,6 +9,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_tree_generat
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_host_only_compiler_smoke_targets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/create_accelerator_enabled_compiler_smoke_targets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/define_build_presets_and_ci_matrix.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/compiler/freeze_the_compiler_target_graph.cmake)
 
 get_filename_component(CELLERATOR_COMPILER_REPOSITORY_ROOT
     "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -27,3 +28,4 @@ cellerator_generate_compiler_build_header(
 cellerator_create_host_only_compiler_smoke_targets()
 cellerator_create_accelerator_compiler_smoke_target()
 cellerator_validate_compiler_ci_matrix()
+cellerator_validate_frozen_compiler_target_graph()
