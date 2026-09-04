@@ -1,0 +1,4 @@
+#include <Cellerator/compiler/reflection/implement_operation_replacement_and_ir_splicing_v1.hh>
+#include <cassert>
+using namespace cellerator::compiler::reflection::v1;static ir_handle_v1 h(handle_kind_v1 k){return{1,1,1,1,k,availability_phase_v1::semantic,handle_lifetime_v1::compilation};}
+int main(){reflected_value_v1 v{h(handle_kind_v1::field),"f32",1,1,1};reflected_operation_v1 op{h(handle_kind_v1::operation),"old",{v},{v},{h(handle_kind_v1::relation),1,1,1,1,1},reflected_effect_v1::reads_writes,h(handle_kind_v1::provenance)},replacement=op;replacement.normalized_kind="new";std::vector<reflected_operation_v1>g{op};operation_splice_v1 s{splice_kind_v1::replace,0,replacement,{},{{0,0}},"base",true};assert(validate_operation_splice_v1(g,s)==splice_status_v1::valid);auto r=apply_operation_splice_v1(g,s);assert(r[0].normalized_kind=="new");s.operation.effects=reflected_effect_v1::reads;assert(validate_operation_splice_v1(g,s)==splice_status_v1::effect_violation);}
