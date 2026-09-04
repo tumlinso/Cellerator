@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4069`
+Project revision: `4078`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -200,8 +200,8 @@ Project revision: `4069`
 - `CE-CCP1-A03-002` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of exact certification in the isolated A03 lane, add the focused ce_ccp1_a03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-003` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of atom semantics in the isolated A03 lane, add the focused ce_ccp1_a03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-004` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of typed composition and grammar in the isolated A03 lane, add the focused ce_ccp1_a03_004 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of basis selection in the isolated A03 lane, add the focused ce_ccp1_a03_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-A03-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of superatom promotion in the isolated A03 lane, add the focused ce_ccp1_a03_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-005` | status: done | execution: closed | next: Inspect the cited read scope, implement define cellerator ownership of basis selection in the isolated A03 lane, add the focused ce_ccp1_a03_005 gate, and publish a source-linked receipt.
+- `CE-CCP1-A03-006` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement define cellerator ownership of superatom promotion in the isolated A03 lane, add the focused ce_ccp1_a03_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement split persistent partial semantics from partial storage in the isolated A03 lane, add the focused ce_ccp1_a03_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of global operation/program ir in the isolated A03 lane, add the focused ce_ccp1_a03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-A03-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement define cellerator ownership of portable schedule compilation in the isolated A03 lane, add the focused ce_ccp1_a03_009 gate, and publish a source-linked receipt.
@@ -217,7 +217,7 @@ Project revision: `4069`
 - `CE-CCP1-A04-003` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze compiler executable locations in the isolated A04 lane, add the focused ce_ccp1_a04_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-004` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze standard-library and resource locations in the isolated A04 lane, add the focused ce_ccp1_a04_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-005` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze compiler test and benchmark locations in the isolated A04 lane, add the focused ce_ccp1_a04_005 gate, and publish a source-linked receipt.
-- `CE-CCP1-A04-006` | status: planned | execution: ready | next: Inspect the cited read scope, implement define central registry and generated-manifest ownership in the isolated A04 lane, add the focused ce_ccp1_a04_006 gate, and publish a source-linked receipt.
+- `CE-CCP1-A04-006` | status: done | execution: closed | next: Inspect the cited read scope, implement define central registry and generated-manifest ownership in the isolated A04 lane, add the focused ce_ccp1_a04_006 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-007` | status: planned | execution: ready | next: Inspect the cited read scope, implement split umbrella headers and public component imports in the isolated A04 lane, add the focused ce_ccp1_a04_007 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-008` | status: planned | execution: ready | next: Inspect the cited read scope, implement define generated-source and build-tree boundaries in the isolated A04 lane, add the focused ce_ccp1_a04_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-A04-009` | status: planned | execution: ready | next: Inspect the cited read scope, implement define agents and ownership inheritance in the isolated A04 lane, add the focused ce_ccp1_a04_009 gate, and publish a source-linked receipt.
