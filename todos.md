@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4252`
+Project revision: `4253`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -609,7 +609,7 @@ Project revision: `4252`
 - `CE-CCP1-B01-002` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Specify CELLERATOR_ENABLE_CUDA=AUTO|ON|OFF, check_language(CUDA), explicit failure for ON without a toolchain, and non-failure for AUTO/OFF.
 - `CE-CCP1-B01-003` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Define Cellerator::CompilerCore, Frontend, CEIR, Profiles, Planning, Realization, Backends, Tooling, and Diagnostics targets with acyclic link directions.
 - `CE-CCP1-B01-004` | kind: task | status: done | parent: CE-CCP1-B01-000 | objective: Build compiler and tooling implementation with a modern C++ baseline, initially C++23 where supported, while retaining explicit C++17/CUDA17 compatibility islands for existing runtime/provider code.
-- `CE-CCP1-B01-005` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Move CUDA language properties, CUDAToolkit discovery, architecture flags, and provider manifests behind CUDA-enabled target functions rather than root-global requirements.
+- `CE-CCP1-B01-005` | kind: task | status: in_progress | parent: CE-CCP1-B01-000 | objective: Move CUDA language properties, CUDAToolkit discovery, architecture flags, and provider manifests behind CUDA-enabled target functions rather than root-global requirements.
 - `CE-CCP1-B01-006` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Discover compatible upstream LLVM/Clang development packages for frontend integration without pinning a fork.
 - `CE-CCP1-B01-007` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Generate a cold compiler resource manifest naming available host compilers, nvcc, clang CUDA, LLVM/NVPTX, ptxas, linkers, and support directories without probing devices in hot paths.
 - `CE-CCP1-B01-008` | kind: task | status: planned | parent: CE-CCP1-B01-000 | objective: Generate compiler version, language revision, CEIR revision, backend capability, and install-resource path headers into the build tree.
