@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T07:52:34Z",
+  "generated_at": "2026-09-04T08:00:31Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -19,7 +19,7 @@
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
     "schema_version": 2
   },
-  "project_revision": 4456,
+  "project_revision": 4463,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -48821,6 +48821,76 @@
         "revision": 4456,
         "seq": 4456,
         "timestamp": "2026-09-04T07:52:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B04-014-GATE\"}",
+        "revision": 4457,
+        "seq": 4457,
+        "timestamp": "2026-09-04T07:58:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"9594a44e-acef-43dc-813a-61f211580756\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4458,
+        "seq": 4458,
+        "timestamp": "2026-09-04T07:58:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CE-CCP1-B04-014-GATE\"}",
+        "revision": 4459,
+        "seq": 4459,
+        "timestamp": "2026-09-04T07:58:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-B04-014-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0da19e8d-fe53-416a-b50b-b2e0db0066b4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 4460,
+        "seq": 4460,
+        "timestamp": "2026-09-04T07:58:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "d4104926-6ed3-4940-bf70-ae4ee7b30960",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow_patch_artifact_published",
+        "payload_json": "{\"content_hash\": \"86a6427fed370000e463311eedfe32604986c79f0cfb578005cc354b7acd42e2\", \"kind\": \"commit\", \"task_id\": \"CE-CCP1-B04-014\", \"workspace_id\": \"adf5c82e-381b-4c6a-a8ad-469e8d5bafa5\"}",
+        "revision": 4461,
+        "seq": 4461,
+        "timestamp": "2026-09-04T07:58:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "ea7527de-6759-44f1-9f24-8d8f84319c15",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_artifact_queued",
+        "payload_json": "{\"artifact_id\": \"d4104926-6ed3-4940-bf70-ae4ee7b30960\", \"integration_task_id\": \"CE-CCP1-M10\", \"integrator_lane_id\": \"CE-CCP1-L-INTEGRATE-FOUNDATION\"}",
+        "revision": 4462,
+        "seq": 4462,
+        "timestamp": "2026-09-04T07:58:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-CCP1-I09-CXX-SEMA-BRIDGE",
+        "entity_type": "interface",
+        "event_type": "workflow.interface.published",
+        "payload_json": "{\"version\": \"1\"}",
+        "revision": 4463,
+        "seq": 4463,
+        "timestamp": "2026-09-04T08:00:31Z"
       }
     ],
     "evidence": [
@@ -49420,6 +49490,19 @@
         "metadata_json": "{\"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\", \"-std=c++17\", \"-arch=sm_70\", \"-Wno-deprecated-gpu-targets\", \"-Xcompiler=-Wall,-Wextra,-Werror\", \"-ccbin\", \"/usr/bin/g++-12\", \"-Iinclude\", \"-I.\", \"src/compute/candidate/segment/normalize.cu\", \"tests/tensor_core/sm70/segment_backward_integration_test.cu\", \"-o\", \"build/ceGeoSm70SegmentBackwardIntegrationTest\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"cbb315dcbd33a646b505160aababde0373430488969bc7c4971515711c2e6494\", \"inputs\": {\"command_contract\": {\"argv\": [\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\", \"-std=c++17\", \"-arch=sm_70\", \"-Wno-deprecated-gpu-targets\", \"-Xcompiler=-Wall,-Wextra,-Werror\", \"-ccbin\", \"/usr/bin/g++-12\", \"-Iinclude\", \"-I.\", \"src/compute/candidate/segment/normalize.cu\", \"tests/tensor_core/sm70/segment_backward_integration_test.cu\", \"-o\", \"build/ceGeoSm70SegmentBackwardIntegrationTest\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"745f11742a8dcd7c573548482caed29742a37bf5b0cb56ddbd92cb2ec287b77b\", \"dirty_paths\": [\".todo-orchestrator/ce-ptr-plan.json\", \".todo-orchestrator/state.snapshot.json\", \"AGENTS.md\", \"bench/ce_geo/evidence/sm70_forward_disposition.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-amp-00.md\", \"todos/ce-amp-01.md\", \"todos/ce-amp-02.md\", \"todos/ce-amp-03.md\", \"todos/ce-amp-04.md\", \"todos/ce-amp-05.md\", \"todos/ce-amp-06.md\", \"todos/ce-amp-07.md\", \"todos/ce-amp-08.md\", \"todos/ce-amp-09.md\", \"todos/ce-geo-00.md\", \"todos/ce-geo-01.md\", \"todos/ce-geo-02.md\", \"todos/ce-geo-03.md\", \"todos/ce-geo-10.md\", \"todos/ce-geo-100.md\", \"todos/ce-geo-101.md\", \"todos/ce-geo-102.md\", \"todos/ce-geo-103.md\", \"todos/ce-geo-104.md\", \"todos/ce-geo-105.md\", \"todos/ce-geo-106.md\", \"todos/ce-geo-107.md\", \"todos/ce-geo-108.md\", \"todos/ce-geo-109.md\", \"todos/ce-geo-11.md\", \"todos/ce-geo-110.md\", \"todos/ce-geo-111.md\", \"todos/ce-geo-112.md\", \"todos/ce-geo-113.md\", \"todos/ce-geo-114.md\", \"todos/ce-geo-115.md\", \"todos/ce-geo-116.md\", \"todos/ce-geo-117.md\", \"todos/ce-geo-118.md\", \"todos/ce-geo-119.md\", \"todos/ce-geo-12.md\", \"todos/ce-geo-120.md\", \"todos/ce-geo-121.md\", \"todos/ce-geo-122.md\", \"todos/ce-geo-123.md\", \"todos/ce-geo-124.md\", \"todos/ce-geo-125.md\", \"todos/ce-geo-126.md\", \"todos/ce-geo-127.md\", \"todos/ce-geo-13.md\", \"todos/ce-geo-14.md\", \"todos/ce-geo-20.md\", \"todos/ce-geo-21.md\", \"todos/ce-geo-22.md\", \"todos/ce-geo-23.md\", \"todos/ce-geo-24.md\", \"todos/ce-geo-25.md\", \"todos/ce-geo-30.md\", \"todos/ce-geo-31.md\", \"todos/ce-geo-32.md\", \"todos/ce-geo-33.md\", \"todos/ce-geo-34.md\", \"todos/ce-geo-35.md\", \"todos/ce-geo-36.md\", \"todos/ce-geo-37.md\", \"todos/ce-geo-38.md\", \"todos/ce-geo-39.md\", \"todos/ce-geo-40.md\", \"todos/ce-geo-41.md\", \"todos/ce-geo-42.md\", \"todos/ce-geo-43.md\", \"todos/ce-geo-44.md\", \"todos/ce-geo-45.md\", \"todos/ce-geo-46.md\", \"todos/ce-geo-47.md\", \"todos/ce-geo-50.md\", \"todos/ce-geo-51.md\", \"todos/ce-geo-52.md\", \"todos/ce-geo-53.md\", \"todos/ce-geo-54.md\", \"todos/ce-geo-55.md\", \"todos/ce-geo-56.md\", \"todos/ce-geo-57.md\", \"todos/ce-geo-58.md\", \"todos/ce-geo-60.md\", \"todos/ce-geo-61.md\", \"todos/ce-geo-62.md\", \"todos/ce-geo-63.md\", \"todos/ce-geo-64.md\", \"todos/ce-geo-65.md\", \"todos/ce-geo-66.md\", \"todos/ce-geo-67.md\", \"todos/ce-geo-68.md\", \"todos/ce-geo-69.md\", \"todos/ce-geo-70.md\", \"todos/ce-geo-71.md\", \"todos/ce-geo-72.md\", \"todos/ce-geo-73.md\", \"todos/ce-geo-74.md\", \"todos/ce-geo-75.md\", \"todos/ce-geo-76.md\", \"todos/ce-geo-77.md\", \"todos/ce-geo-78.md\", \"todos/ce-geo-79.md\", \"todos/ce-geo-80.md\", \"todos/ce-geo-81.md\", \"todos/ce-geo-82.md\", \"todos/ce-geo-83.md\", \"todos/ce-geo-84.md\", \"todos/ce-geo-85.md\", \"todos/ce-geo-86.md\", \"todos/ce-geo-87.md\", \"todos/ce-geo-88.md\", \"todos/ce-geo-90.md\", \"todos/ce-geo-91.md\", \"todos/ce-geo-92.md\", \"todos/ce-geo-93.md\", \"todos/ce-geo-94.md\", \"todos/ce-geo-95.md\", \"todos/ce-geo-96.md\", \"todos/ce-geo-97.md\", \"todos/ce-geo-98.md\", \"todos/ce-geo-99.md\", \"todos/ce-ptr-01.md\", \"todos/ce-ptr-02.md\", \"todos/ce-ptr-03.md\", \"todos/ce-ptr-04.md\", \"todos/ce-ptr-05.md\", \"todos/ce-ptr-06.md\", \"todos/ce-ptr-07.md\", \"todos/ce-ptr-08.md\", \"todos/ce-ptr-09.md\", \"todos/ce-ptr-10.md\", \"todos/ce-ptr-11.md\", \"todos/ce-ptr-12.md\", \"todos/ce-ptr-13.md\", \"todos/ce-ptr-14.md\", \"todos/ce-ptr-15.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"4eeb0f9011863e55a7dfc486c7b4f78a72b3c8d8\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 2880}",
         "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/0d3aa1d4-fc87-4e0c-8d5b-321eb073ba4e",
         "revision": 2881,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T07:58:32Z",
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "id": "0da19e8d-fe53-416a-b50b-b2e0db0066b4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"2538a82a170d7fb05194ac664703056c56975a2a\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c11683e81286c60d00db00579c31ad34b66b0334b5da6c3dba0299e676aa243c\", \"started_revision\": 4459, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/0da19e8d-fe53-416a-b50b-b2e0db0066b4",
+        "revision": 4460,
         "status": "passed"
       },
       {
@@ -55764,6 +55847,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-f-build.json\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py\", \"run\", \"--spec\", \"Cellerator/.todo-orchestrator/runtime/ce-arch-70/phase-f-build.json\", \"--json\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"72963fd6795f81699d65189040021dbdf7ca14822551fa1865f1e5d5198c613a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"Baseplane\", \"Cellerator\", \"ce-arch-70-plan.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-arch-00.md\", \"todos/ce-arch-70.md\", \"todos/ce-arch-70a.md\", \"todos/ce-arch-70b.md\", \"todos/ce-arch-70c.md\", \"todos/ce-arch-70d.md\", \"todos/ce-arch-70e.md\", \"todos/ce-arch-70f.md\", \"todos/ce-arch-70g.md\", \"todos/ce-arch-71.md\", \"todos/ce-arch-72.md\", \"todos/ce-arch-73.md\", \"todos/ce-arch-74.md\", \"todos/ce-arch-75.md\", \"todos/ce-arch-76.md\", \"todos/ce-arch-77.md\", \"todos/ce-arch-78.md\", \"todos/ce-arch-79.md\"], \"files\": [{\"path\": \"Cellerator/components/CellPack/include/CellPack/persistence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/components/CellPack/src/persistence\", \"sha256\": \"missing\"}, {\"path\": \"Cellerator/components/CellPack/tests/persistence\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"20acf900ba6f46778507d53fd53a3a73426204c7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 890}",
         "path": "/home/tumlinson/CellStack/.git/todo-orchestrator/1f07f97e-20c7-4f87-b38f-2d511eb306aa/evidence/94f54f76-c936-44df-a9cb-76a0d8f61686",
         "revision": 891,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-04T07:58:04Z",
+        "gate_id": "CE-CCP1-B04-014-GATE",
+        "id": "9594a44e-acef-43dc-813a-61f211580756",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5\", \"inputs\": {\"command_contract\": {\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}, \"diff_fingerprint\": \"0f4621adecd76fcc11bcb33275d3aaaabf39c82b82abfa0edd7a031370129260\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/ce-ccp1-b04-014.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"00a1993a84607c6acc655e60bee1c1c1cef48f3a\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"c11683e81286c60d00db00579c31ad34b66b0334b5da6c3dba0299e676aa243c\", \"started_revision\": 4457, \"workspace_path\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04\"}",
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/9594a44e-acef-43dc-813a-61f211580756",
+        "revision": 4458,
         "status": "passed"
       },
       {
@@ -63884,14 +63980,14 @@
         "checkpoint_id": "CE-CCP1-CP-B04",
         "config_json": "{\"argv\": [\"ctest\", \"--test-dir\", \"build\", \"--output-on-failure\", \"-R\", \"^ce_ccp1_b04_014$\"], \"cwd\": \".\"}",
         "id": "CE-CCP1-B04-014-GATE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "50c2054f1ecf1f68a4c355f8286ba5a87ef2d51663cf40e0749ef83ef2b258d5",
+        "last_run_at": "2026-09-04T07:58:32Z",
         "required": 1,
-        "revision": 4123,
-        "status": "pending",
+        "revision": 4460,
+        "status": "passed",
         "task_id": "CE-CCP1-B04-014",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -82425,14 +82521,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "43151d264bc6c6e9f155f724017d84c66276eaed493c7c0da9c583c3963c7920",
         "contract_paths_json": "[\"include/Cellerator/compiler/frontend/cxx/cxx_sema_bridge_v1.hh\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-09-04T08:00:31Z",
         "id": "CE-CCP1-I09-CXX-SEMA-BRIDGE",
         "owner_task_id": "CE-CCP1-B04-014",
         "revised_at": null,
-        "revision": 4123,
-        "state": "draft",
+        "revision": 4463,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -276098,6 +276194,19 @@
       },
       {
         "conflict_json": "{}",
+        "created_at": "2026-09-04T07:58:33Z",
+        "id": "ea7527de-6759-44f1-9f24-8d8f84319c15",
+        "integration_task_id": "CE-CCP1-M10",
+        "integrator_lane_id": "CE-CCP1-L-INTEGRATE-FOUNDATION",
+        "merge_result_json": "{}",
+        "patch_artifact_id": "d4104926-6ed3-4940-bf70-ae4ee7b30960",
+        "position": 3,
+        "run_id": "CE-CCP1-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-09-04T07:58:33Z"
+      },
+      {
+        "conflict_json": "{}",
         "created_at": "2026-09-04T06:22:31Z",
         "id": "eb961f7e-4b42-420b-acc3-021192b4957f",
         "integration_task_id": "CE-CCP1-M00",
@@ -289015,6 +289124,17 @@
         "workspace_id": "733cde9f-027b-4690-864c-f4d8c0f3ba68"
       },
       {
+        "artifact_ref": "2538a82a170d7fb05194ac664703056c56975a2a",
+        "base_commit": "b50c0affcd2eb9b61dae69270f371221b4ad720b",
+        "content_hash": "86a6427fed370000e463311eedfe32604986c79f0cfb578005cc354b7acd42e2",
+        "created_at": "2026-09-04T07:58:33Z",
+        "id": "d4104926-6ed3-4940-bf70-ae4ee7b30960",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "CE-CCP1-B04-014",
+        "workspace_id": "adf5c82e-381b-4c6a-a8ad-469e8d5bafa5"
+      },
+      {
         "artifact_ref": "33fcf31c3e25b7e9ec2aeaa2789f60532c8e852b",
         "base_commit": "72307c37b2bed0d1d808bdec778dfdf0489c81ac",
         "content_hash": "32885fe8bfecaab81f0ce712a244377e39a80d351b84de5e1e8271cbee0aad1b",
@@ -291006,13 +291126,13 @@
         "worktree_path": "/home/tumlinson/.codex/workflow-workspaces/cellerator/ce-exop/segment"
       },
       {
-        "artifact_kind": null,
-        "artifact_ref": null,
+        "artifact_kind": "commit",
+        "artifact_ref": "2538a82a170d7fb05194ac664703056c56975a2a",
         "base_commit": "b50c0affcd2eb9b61dae69270f371221b4ad720b",
         "branch": "codex/ce-ccp1-l-b04",
         "cleanup_eligible": 0,
         "created_at": "2026-09-04T06:50:22Z",
-        "diff_hash": null,
+        "diff_hash": "86a6427fed370000e463311eedfe32604986c79f0cfb578005cc354b7acd42e2",
         "id": "adf5c82e-381b-4c6a-a8ad-469e8d5bafa5",
         "integration_task_id": "CE-CCP1-M10",
         "lane_id": "CE-CCP1-L-B04",
@@ -291020,8 +291140,8 @@
         "mode": "isolated_merge",
         "repository_identity": "d79d49b73227d23d9fb3f3b4dd4af973e8a3c8118442d378fafda99257ace30c",
         "run_id": "CE-CCP1-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-04T06:50:22Z",
+        "state": "queued",
+        "updated_at": "2026-09-04T07:58:33Z",
         "worktree_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ccp1-l-b04"
       },
       {
