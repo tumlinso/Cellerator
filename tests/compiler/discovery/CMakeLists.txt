@@ -102,3 +102,13 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e02_010 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e02_010 COMMAND ce_ccp1_e02_010)
+
+add_executable(ce_ccp1_e02_011
+    import_atom_plane_separation_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/discovery/import_atom_plane_separation.cc")
+target_include_directories(ce_ccp1_e02_011 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e02_011 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e02_011 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e02_011 COMMAND ce_ccp1_e02_011)
