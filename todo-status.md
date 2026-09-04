@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `4784`
+Project revision: `4788`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -324,7 +324,7 @@ Project revision: `4784`
 - `CE-CCP1-C03-008` | status: done | execution: closed | next: Inspect the cited read scope, implement implement numerical tuple semantics in the isolated C03 lane, add the focused ce_ccp1_c03_008 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-009` | status: done | execution: closed | next: Inspect the cited read scope, implement implement operation-kind resolution in the isolated C03 lane, add the focused ce_ccp1_c03_009 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-010` | status: done | execution: closed | next: Inspect the cited read scope, implement implement output/update effect semantics in the isolated C03 lane, add the focused ce_ccp1_c03_010 gate, and publish a source-linked receipt.
-- `CE-CCP1-C03-011` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement structure, value, and support generation typing in the isolated C03 lane, add the focused ce_ccp1_c03_011 gate, and publish a source-linked receipt.
+- `CE-CCP1-C03-011` | status: done | execution: closed | next: Inspect the cited read scope, implement implement structure, value, and support generation typing in the isolated C03 lane, add the focused ce_ccp1_c03_011 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-012` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement persistence and identity typing in the isolated C03 lane, add the focused ce_ccp1_c03_012 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-013` | status: planned | execution: ready | next: Inspect the cited read scope, implement integrate c++ templates and concepts with biological constraints in the isolated C03 lane, add the focused ce_ccp1_c03_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-C03-014` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement explicit low-level casts and escape hatches in the isolated C03 lane, add the focused ce_ccp1_c03_014 gate, and publish a source-linked receipt.
