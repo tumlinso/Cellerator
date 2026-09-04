@@ -95,3 +95,13 @@ add_executable(ce_ccp1_d03_014 ../d03/expose_profile_inspection_and_diff_tooling
 target_include_directories(ce_ccp1_d03_014 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_014 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_014 COMMAND ce_ccp1_d03_014)
+
+add_executable(ce_ccp1_d03_015
+    ../d03/deliver_the_first_profile_aware_compile_benchmark_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/profile/deliver_the_first_profile_aware_compile_benchmark.cc")
+target_include_directories(ce_ccp1_d03_015 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_015 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d03_015 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d03_015 COMMAND ce_ccp1_d03_015)
