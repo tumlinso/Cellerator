@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4109`
+Project revision: `4110`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -587,7 +587,7 @@ Project revision: `4109`
 - `CE-CCP1-A03-008` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Recast CellShard global graph IR as Cellerator program-level Semantic/Planning IR over fields, operations, atom flows, and profile families.
 - `CE-CCP1-A03-009` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Move machine-independent schedule and ruleset selection into Cellerator Planning/Realization IR.
 - `CE-CCP1-A03-010` | kind: task | status: done | parent: CE-CCP1-A03-000 | objective: Enumerate atom-store containers, materialized instances, encoded replicas, file/object storage, staging, placement, residency, transport, leases, and delivery that remain in CellShard.
-- `CE-CCP1-A03-011` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Specify versioned, removable adapters that let preserved tests and branches compile while compiler records move to Cellerator.
+- `CE-CCP1-A03-011` | kind: task | status: in_progress | parent: CE-CCP1-A03-000 | objective: Specify versioned, removable adapters that let preserved tests and branches compile while compiler records move to Cellerator.
 - `CE-CCP1-A03-012` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Reserve a narrow Part Two-facing interface for immutable compiled rules, profile identity, exact coverage, and realization requirements without implementing deep CellShard integration now.
 - `CE-CCP1-A03-013` | kind: task | status: planned | parent: CE-CCP1-A03-000 | objective: Specify additive supersession notes for the active historical JBC run, charters, interfaces, and package documents.
 - `CE-CCP1-A03-014` | kind: validation_task | status: planned | parent: CE-CCP1-A03-000 | objective: Publish the complete before/after ownership map, migration targets, temporary adapters, and Part Two seam.
