@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5746`
+Project revision: `5747`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -883,7 +883,7 @@ Project revision: `5746`
 - `CE-CCP1-F02-004` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Emit readable modern C++ for host stubs, CPU kernels, static data, runtime bindings, stage graphs, and calls into libCellerator where profitable.
 - `CE-CCP1-F02-005` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Lower typed relation apply to exact CPU loops or library calls using canonical/projection order and numeric policy, with deterministic reference behavior.
 - `CE-CCP1-F02-006` | kind: task | status: done | parent: CE-CCP1-F02-000 | objective: Lower transpose, logical-edge gradients, support contraction, and partial merges with explicit order maps and accumulation types.
-- `CE-CCP1-F02-007` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
+- `CE-CCP1-F02-007` | kind: task | status: in_progress | parent: CE-CCP1-F02-000 | objective: Provide complete conventional CPU fallbacks for core non-relation operation families needed by language conformance.
 - `CE-CCP1-F02-008` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Lower selected physical projections and explicit pack/gather/scatter/canonicalization stages while retaining conventional unpacked fallback.
 - `CE-CCP1-F02-009` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Invoke discovered GCC or Clang with tracked source maps, depfiles, ABI flags, support libraries, and reproducible output paths.
 - `CE-CCP1-F02-010` | kind: task | status: planned | parent: CE-CCP1-F02-000 | objective: Bind typed operand slots, workspace, generated constants, prepared stages, and error returns through libCellerator without requiring Cellerator source at runtime.
