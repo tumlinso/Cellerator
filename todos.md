@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5353`
+Project revision: `5355`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -811,7 +811,7 @@ Project revision: `5353`
 - `CE-CCP1-E02-008` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Rehome experimental factorization/bicluster/signature providers as proposal mechanisms with explicit approximation, confidence, bounded work, and no self-promotion.
 - `CE-CCP1-E02-009` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Move independent exact scans that turn proposals into certified logical coverage, canonical maps, and omission/duplicate receipts.
 - `CE-CCP1-E02-010` | kind: task | status: done | parent: CE-CCP1-E02-000 | objective: Represent candidate/certified atom identity, species, exact coverage, typed inputs/outputs, planes, dependencies, effects, and lineage in Planning IR extensions.
-- `CE-CCP1-E02-011` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Preserve structure, mutable values, active support, gradients, partials, physical views, evidence, and lineage as distinct planes with independent generations.
+- `CE-CCP1-E02-011` | kind: task | status: in_progress | parent: CE-CCP1-E02-000 | objective: Preserve structure, mutable values, active support, gradients, partials, physical views, evidence, and lineage as distinct planes with independent generations.
 - `CE-CCP1-E02-012` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Bind migrated atom records to existing Cellerator requirements, affordances, extents, orders, projections, and target capabilities.
 - `CE-CCP1-E02-013` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Replace any bounded linear/quadratic duplicate checks unsuitable for compiler-scale atlases with sorted/radix/hash or caller-owned mark strategies while retaining exact results.
 - `CE-CCP1-E02-014` | kind: task | status: planned | parent: CE-CCP1-E02-000 | objective: Attach Migrated-From repository/commit/path/Todo metadata in cold manifests and commit instructions, not hot IR records.
@@ -836,7 +836,7 @@ Project revision: `5353`
 - `CE-CCP1-E03-014` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Move/adapt test suites with provenance, preserving expected derivations, no-basis cases, exact coverage, and performance baselines.
 - `CE-CCP1-E03-015` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Run old CellShard compiler implementations and new Cellerator passes on identical fixtures during migration, comparing canonicalized outputs rather than raw struct bytes when schemas improve.
 - `CE-CCP1-E03-016` | kind: task | status: done | parent: CE-CCP1-E03-000 | objective: Leave compatibility aliases only where needed; mark global compiler headers non-authoritative and prevent new registration there.
-- `CE-CCP1-E03-017` | kind: validation_task | status: planned | parent: CE-CCP1-E03-000 | objective: Compile representative profiles and a multi-operation Semantic IR program through discovery, grammar, basis, global graph, and portable schedule Planning IR.
+- `CE-CCP1-E03-017` | kind: validation_task | status: in_progress | parent: CE-CCP1-E03-000 | objective: Compile representative profiles and a multi-operation Semantic IR program through discovery, grammar, basis, global graph, and portable schedule Planning IR.
 - `CE-CCP1-E03-018` | kind: validation_task | status: planned | parent: CE-CCP1-E03-000 | objective: Publish migrated contracts, provenance, differential receipts, compatibility aliases, and CellShard application seam.
 - `CE-GEO-67` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Use complete target-calibrated marginal cost and bounded moves, swaps, splits, merges, rectangle toggles, and admissible exchanges; always emit pure sparse, conservative hybrid, and aggressive hybrid covers.
 - `CE-CCP1-E04-001` | kind: task | status: done | parent: CE-CCP1-E04-000 | objective: Expose compile-now, precompiled semantic geometry, external exact cover, and conventional fallback as explicit alternatives with acquisition costs and compatibility.
