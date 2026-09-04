@@ -1,0 +1,2 @@
+#include <Cellerator/compiler/diagnostics/implement_crash_and_timeout_diagnostics_v1.hh>
+namespace cellerator::compiler::diagnostics::v1 {failure_diagnostic diagnose_failure(const failure_event&e) noexcept{bool custom=e.extension!=extension_mode::builtin;bool isolated=e.extension==extension_mode::custom_isolated&&e.isolation_configured;return{e.component!=0,true,custom&&isolated,e.owner,e.component};}}
