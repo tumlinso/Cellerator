@@ -10,3 +10,12 @@ target_include_directories(ce_ccp1_g02_001 PRIVATE ${CELLERATOR_ROOT}/include)
 target_compile_features(ce_ccp1_g02_001 PRIVATE cxx_std_17)
 target_compile_options(ce_ccp1_g02_001 PRIVATE -Wall -Wextra -Werror)
 add_test(NAME ce_ccp1_g02_001 COMMAND ce_ccp1_g02_001)
+
+add_executable(ce_ccp1_g02_002
+  implement_pass_manager_and_analysis_invalidation_test.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/implement_pass_manager_and_analysis_invalidation.cc
+  ${CELLERATOR_ROOT}/src/compiler/pass/freeze_the_pass_pipeline_stage_taxonomy.cc)
+target_include_directories(ce_ccp1_g02_002 PRIVATE ${CELLERATOR_ROOT}/include)
+target_compile_features(ce_ccp1_g02_002 PRIVATE cxx_std_17)
+target_compile_options(ce_ccp1_g02_002 PRIVATE -Wall -Wextra -Werror)
+add_test(NAME ce_ccp1_g02_002 COMMAND ce_ccp1_g02_002)
