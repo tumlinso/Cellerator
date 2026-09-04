@@ -32,5 +32,8 @@ struct semantic_ir_view {std::string normalized,source_map;std::vector<std::stri
 struct candidate_view {std::string name,decomposition,evidence,rejected_reason;double cost=0;std::size_t resources=0;bool certified=false,selected=false,forced=false;};
 struct planning_ir_view {std::string problem,exact_cover;std::vector<std::string> atom_proposals;std::vector<candidate_view> candidates;};
 [[nodiscard]] planning_ir_view planning_ir_at_cursor(bool force_reference);
+struct realization_view {std::vector<std::string> atoms,extents,projections,orders,partial_tree,stages,dependencies;std::size_t workspace_bytes=0;std::string target,readiness;bool graph_capture=false;};
+[[nodiscard]] realization_view realization_at_cursor();
+[[nodiscard]] std::string render_realization_json(const realization_view&);
 
 }  // namespace cellerator::compiler::tooling::v1
