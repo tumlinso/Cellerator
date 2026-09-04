@@ -77,3 +77,10 @@ add_executable(ce_ccp1_c02_009
 target_include_directories(ce_ccp1_c02_009 PRIVATE ../../../include)
 target_compile_features(ce_ccp1_c02_009 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_c02_009 COMMAND ce_ccp1_c02_009)
+
+add_executable(ce_ccp1_c02_010
+    create_deterministic_ast_dump_and_snapshot_formats_test.cc
+    ../../../src/compiler/ast/create_deterministic_ast_dump_and_snapshot_formats.cc)
+target_include_directories(ce_ccp1_c02_010 PRIVATE ../../../include)
+target_compile_features(ce_ccp1_c02_010 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_c02_010 COMMAND ce_ccp1_c02_010)
