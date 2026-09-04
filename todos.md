@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4998`
+Project revision: `5002`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -773,7 +773,7 @@ Project revision: `4998`
 - `CE-CCP1-D03-004` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Store extents, support counts, degree/occupancy distributions, strata, co-support summaries, ordering stability, hierarchy summaries, and confidence with exact source identities.
 - `CE-CCP1-D03-005` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Store type-relevant ranges, sparsity/zero/nonfinite rates, moments/quantiles, update magnitudes, dynamic range, and approximation risk without treating distributions as guarantees.
 - `CE-CCP1-D03-006` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Store observed structure/value/support/order change rates, mutation half-lives, reuse horizons, recurrence, field frequency, loop counts, and confidence intervals.
-- `CE-CCP1-D03-007` | kind: task | status: in_progress | parent: CE-CCP1-D03-000 | objective: Track dataset/source identity, sampling method, time window, transformation stage, producer/tool version, confidence, revision, and validity predicates independently of semantic identity.
+- `CE-CCP1-D03-007` | kind: task | status: done | parent: CE-CCP1-D03-000 | objective: Track dataset/source identity, sampling method, time window, transformation stage, producer/tool version, confidence, revision, and validity predicates independently of semantic identity.
 - `CE-CCP1-D03-008` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Accept caller-provided relation/support/value/trace observations without owning workflow file formats.
 - `CE-CCP1-D03-009` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Use count/scan/fill, sketches, bounded top-L summaries, histograms, and exact small-instance modes to derive profiles with explicit memory budgets.
 - `CE-CCP1-D03-010` | kind: task | status: planned | parent: CE-CCP1-D03-000 | objective: Resolve command-line/build-provided profile artifacts to source symbols and fields, validate biological identities, and reject complete absence for activated semantic compilation.
@@ -1039,7 +1039,7 @@ Project revision: `4998`
 - `CE-CCP1-I01-003` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Discover an overridable compatible clangd, launch/manage it when proxy mode is used, forward initialization/configuration, restart safely, and expose version diagnostics.
 - `CE-CCP1-I01-004` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Consume compile_commands, cellerator toolchain/profile/backend flags, resource directories, response files, and per-file activation state.
 - `CE-CCP1-I01-005` | kind: task | status: done | parent: CE-CCP1-I01-000 | objective: Maintain transformed C++ documents for clangd while mapping positions, edits, diagnostics, symbols, and fix-its to original `.
-- `CE-CCP1-I01-006` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Reuse source tokens, include state, shadow C++, C++ AST bridge, Cellerator AST, and Semantic IR for unchanged regions with dependency-aware invalidation.
+- `CE-CCP1-I01-006` | kind: task | status: in_progress | parent: CE-CCP1-I01-000 | objective: Reuse source tokens, include state, shadow C++, C++ AST bridge, Cellerator AST, and Semantic IR for unchanged regions with dependency-aware invalidation.
 - `CE-CCP1-I01-007` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Prioritize active files, debounce edits, cancel stale parses/plans, bound background work, and isolate slow profile/planning requests from basic editing.
 - `CE-CCP1-I01-008` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Deduplicate/remap clangd and Cellerator diagnostics, preserve severities/fix-its/related information, and identify their originating phase.
 - `CE-CCP1-I01-009` | kind: task | status: planned | parent: CE-CCP1-I01-000 | objective: Pass through ordinary C++ features with source mapping and merge Cellerator symbol results without changing normal C++ behavior.
