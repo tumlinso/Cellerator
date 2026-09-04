@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6252`
+Project revision: `6254`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1011,7 +1011,7 @@ Project revision: `6252`
 - `CE-CCP1-H02-011` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Specify global immutable registries, per-context mutable state, thread-safe readers, explicit non-thread-safe builders, and backend process isolation.
 - `CE-CCP1-H02-012` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Keep biological ABI, operation core, relation algebra, geometry, candidates, planner, prepared programs, sessions, readiness, and providers available to users who never compile `.
 - `CE-CCP1-H02-013` | kind: task | status: done | parent: CE-CCP1-H02-000 | objective: Add stable umbrella/facade contracts over currently broad internal dependency closures without deleting existing lower-level expert headers.
-- `CE-CCP1-H02-014` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Expose source-language revision, CEIR levels, compiler API ABI, backend/provider versions, optional features, and compatibility checks.
+- `CE-CCP1-H02-014` | kind: task | status: in_progress | parent: CE-CCP1-H02-000 | objective: Expose source-language revision, CEIR levels, compiler API ABI, backend/provider versions, optional features, and compatibility checks.
 - `CE-CCP1-H02-015` | kind: task | status: planned | parent: CE-CCP1-H02-000 | objective: Provide plain runtime API, source compiler embedding, CEIR editing, custom candidate, custom pass, and backend examples that build outside the source tree.
 - `CE-CCP1-H02-016` | kind: validation_task | status: planned | parent: CE-CCP1-H02-000 | objective: Publish component libraries and umbrellas, build C/C++ external consumers, preserve current execution functionality, and verify compiler APIs do not leak Clang/LLVM internals.
 - `CE-GEO-77` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove initialization, alpha, beta, activation, residual, and output order apply exactly once for all width/tail regimes.
@@ -1030,7 +1030,7 @@ Project revision: `6252`
 - `CE-CCP1-H03-013` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Provide functions/toolchain guidance for `.
 - `CE-CCP1-H03-014` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Install bin/cellerator, bin/celleratord, component libraries, headers, stdlib, profiles, schemas, backends, docs/examples, and debug metadata in relocatable platform-appropriate locations.
 - `CE-CCP1-H03-015` | kind: task | status: done | parent: CE-CCP1-H03-000 | objective: Expose libCellerator compiler/runtime compile and link flags for non-CMake consumers where platform conventions support it.
-- `CE-CCP1-H03-016` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Generate installed-file manifests, CEIR/profile/schema revisions, backend identities, standard-library hashes, and reproducibility metadata.
+- `CE-CCP1-H03-016` | kind: task | status: in_progress | parent: CE-CCP1-H03-000 | objective: Generate installed-file manifests, CEIR/profile/schema revisions, backend identities, standard-library hashes, and reproducibility metadata.
 - `CE-CCP1-H03-017` | kind: task | status: planned | parent: CE-CCP1-H03-000 | objective: Install two versioned resource trees, test selected compiler/resource pairing, plugin compatibility diagnostics, and no accidental cross-version profile/IR loading.
 - `CE-CCP1-H03-018` | kind: validation_task | status: planned | parent: CE-CCP1-H03-000 | objective: Install from a clean checkout, compile ordinary C++, `.
 - `CE-GEO-78` | kind: validation_task | status: done | parent: CE-GEO-00 | objective: Prove changing values only repacks preallocated buffers, stable addresses permit graph replay, and no structure search/build occurs across generations.
