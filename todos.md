@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4602`
+Project revision: `4609`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -720,7 +720,7 @@ Project revision: `4602`
 - `CE-CCP1-C04-003` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Permit reordering/fusion only when data dependencies, C++ observable effects, generations, numerical contracts, and field constraints prove equivalence.
 - `CE-CCP1-C04-004` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Convert uncontracted C/C++ calls into explicit field barriers that conservatively invalidate affected profile/generation state and stop cross-call planning.
 - `CE-CCP1-C04-005` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Attach reads, writes, topology/order/support/value mutation, purity, determinism, alias, publication, and target behavior to resolved C++ functions.
-- `CE-CCP1-C04-006` | kind: task | status: in_progress | parent: CE-CCP1-C04-000 | objective: Propagate structure/value/support/order generations through known operations, loops, native contracts, and field exits; materialize explicit transitions in semantic state.
+- `CE-CCP1-C04-006` | kind: task | status: done | parent: CE-CCP1-C04-000 | objective: Propagate structure/value/support/order generations through known operations, loops, native contracts, and field exits; materialize explicit transitions in semantic state.
 - `CE-CCP1-C04-007` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Represent stable topology, mutable values, slowly evolving support, stable order, reuse horizon, recurrence, loop invariance, epoch boundary, and invalidation as source-level planning facts.
 - `CE-CCP1-C04-008` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Bind one or more compile-supplied profile states to fields and operations, support explicit state selection/aliasing, and keep data paths outside language semantics.
 - `CE-CCP1-C04-009` | kind: task | status: planned | parent: CE-CCP1-C04-000 | objective: Allow operations/native calls to state or select expected post-transform profile states, support inferred transfer functions, and warn when costly widening is required.
@@ -741,7 +741,7 @@ Project revision: `4602`
 - `CE-CCP1-D01-006` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Separate semantic/persistent IDs, artifact/content IDs, compiler-local handles, and optional provenance IDs; allow identities to be stripped from hot lowerings when not required.
 - `CE-CCP1-D01-007` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Store source spans, transform lineage, profile evidence, planner decisions, and backend mappings in cold sidecars or removable artifact sections.
 - `CE-CCP1-D01-008` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Build reusable error-recovering parsing with dialect dispatch, source includes/imports, inline block support, and precise byte ranges.
-- `CE-CCP1-D01-009` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Print stable ordering, normalized whitespace, explicit versions, and lossless opaque extension payloads while offering a readable noncanonical pretty mode.
+- `CE-CCP1-D01-009` | kind: task | status: done | parent: CE-CCP1-D01-000 | objective: Print stable ordering, normalized whitespace, explicit versions, and lossless opaque extension payloads while offering a readable noncanonical pretty mode.
 - `CE-CCP1-D01-010` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Design a versioned, checksummed, pointer-free, memory-mappable container for large IR modules and cold metadata, with textual form remaining authoritative for hand programming.
 - `CE-CCP1-D01-011` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Allow cellerator to accept semantic, planning, or realization `.
 - `CE-CCP1-D01-012` | kind: task | status: planned | parent: CE-CCP1-D01-000 | objective: Carry verified, checked, trusted, unsafe, and unchecked modes through parser, builder, pass, serializer, and backend handoff without conflating structural parseability with semantic trust.
