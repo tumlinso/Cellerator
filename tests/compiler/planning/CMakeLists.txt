@@ -43,3 +43,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_004 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_004 COMMAND ce_ccp1_e04_004)
+
+add_executable(ce_ccp1_e04_005
+    adapt_multi_extent_direct_binding_and_assembly_fallback_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/adapt_multi_extent_direct_binding_and_assembly_fallback.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/external_binding_v1.cc"
+    "${CELLERATOR_ROOT}/src/execution/joint_compiler/persistent_identity_v1.cc")
+target_include_directories(ce_ccp1_e04_005 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_e04_005 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_005 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_005 COMMAND ce_ccp1_e04_005)
