@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(cellerator_compiler_profile_tests LANGUAGES CXX)
+project(cellerator_compiler_profile_tests LANGUAGES C CXX)
 
 enable_testing()
 
@@ -66,3 +66,8 @@ add_executable(ce_ccp1_d03_007 ../d03/represent_evidence_provenance_and_revision
 target_include_directories(ce_ccp1_d03_007 PRIVATE "${CELLERATOR_ROOT}/include")
 target_compile_features(ce_ccp1_d03_007 PRIVATE cxx_std_17)
 add_test(NAME ce_ccp1_d03_007 COMMAND ce_ccp1_d03_007)
+add_executable(ce_ccp1_d03_008 ../d03/build_pointer_plus_count_profile_ingestion_apis_test.cc ingestion_c_producer.c
+ "${CELLERATOR_ROOT}/src/compiler/profile/build_pointer_plus_count_profile_ingestion_apis.cc")
+target_include_directories(ce_ccp1_d03_008 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d03_008 PRIVATE cxx_std_17)
+add_test(NAME ce_ccp1_d03_008 COMMAND ce_ccp1_d03_008)
