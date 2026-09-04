@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6452`
+Project revision: `6453`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1083,7 +1083,7 @@ Project revision: `6452`
 - `CE-CCP1-J02-002` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure driver overhead, preprocess/compile/link wall time, peak RSS, depfiles, object size, and diagnostics against direct Clang/GCC.
 - `CE-CCP1-J02-003` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure preprocessing, activated-token analysis, shadow generation, Clang Sema, AST construction, incremental reuse, and source-map memory.
 - `CE-CCP1-J02-004` | kind: validation_task | status: done | parent: CE-CCP1-J02-000 | objective: Measure node construction, canonicalization, text parse/print, binary load/store, memory mapping, unknown extensions, and provenance stripping across all levels.
-- `CE-CCP1-J02-005` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure profile build, exact scans, sketches, load, mapped queries, state transfer, branch joins, multi-state alternatives, and memory.
+- `CE-CCP1-J02-005` | kind: validation_task | status: in_progress | parent: CE-CCP1-J02-000 | objective: Measure profile build, exact scans, sketches, load, mapped queries, state transfer, branch joins, multi-state alternatives, and memory.
 - `CE-CCP1-J02-006` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure each migrated JBC proposal mechanism, candidate counts, exact rescans, certification, memory, no-basis cases, and matched generic/null baselines.
 - `CE-CCP1-J02-007` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure decomposition portfolios, candidate enumeration, transition costs, planner quality versus oracle, external costs, cache/resumption, and profile variants.
 - `CE-CCP1-J02-008` | kind: validation_task | status: planned | parent: CE-CCP1-J02-000 | objective: Measure realization, projection/packing planning, stage construction, generated source, downstream compiler time, ptxas resources, object/fatbinary size, and provenance.
