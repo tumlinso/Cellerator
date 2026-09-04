@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `5096`
+Project revision: `5098`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: planned | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -764,7 +764,7 @@ Project revision: `5096`
 - `CE-CCP1-D02-013` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Make structure/value/support/order invalidation, publication, cloning, assertion, and epoch boundary explicit operations rather than hidden metadata changes.
 - `CE-CCP1-D02-014` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Inline functions, operations, and fields with capture substitution, identity policy, profile-state substitution, generation repair, and provenance retention.
 - `CE-CCP1-D02-015` | kind: task | status: done | parent: CE-CCP1-D02-000 | objective: Normalize source spellings to meaning while preserving relevant type, effect, identity, numerical, and field boundaries.
-- `CE-CCP1-D02-016` | kind: validation_task | status: planned | parent: CE-CCP1-D02-000 | objective: Lower a profile-bound relation field and a mixed multi-operation field from `.
+- `CE-CCP1-D02-016` | kind: validation_task | status: in_progress | parent: CE-CCP1-D02-000 | objective: Lower a profile-bound relation field and a mixed multi-operation field from `.
 - `CE-EXOP-63` | kind: workstream | status: done | parent: CE-EXOP-00 | objective: Deliver generic external-consumer boundary and tests exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-63` | kind: workstream | status: done | parent: CE-GEO-00 | objective: Implement provider-specific work layouts with invalid-sentinel padding that never enters semantic work identity.
 - `CE-CCP1-D03-001` | kind: validation_task | status: done | parent: CE-CCP1-D03-000 | objective: Define a collision-free, versioned, pointer-free profile container distinct from CSG1/CPE2/CEIR.
