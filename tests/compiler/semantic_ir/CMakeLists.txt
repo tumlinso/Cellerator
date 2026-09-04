@@ -151,3 +151,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_d02_014 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_d02_014 COMMAND ce_ccp1_d02_014)
+
+add_executable(ce_ccp1_d02_015
+    implement_semantic_canonicalization_and_equivalence_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_semantic_canonicalization_and_equivalence.cc"
+    "${CELLERATOR_ROOT}/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc")
+target_include_directories(ce_ccp1_d02_015 PRIVATE "${CELLERATOR_ROOT}/include")
+target_compile_features(ce_ccp1_d02_015 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_d02_015 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_d02_015 COMMAND ce_ccp1_d02_015)
