@@ -195,3 +195,46 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(ce_ccp1_e04_017 PRIVATE -Wall -Wextra -Werror)
 endif()
 add_test(NAME ce_ccp1_e04_017 COMMAND ce_ccp1_e04_017)
+
+set(CELLERATOR_DISCOVERY_INTERFACE_ROOT "" CACHE PATH
+    "Root containing frozen discovery interface headers from a contract-split lane")
+set(CELLERATOR_COMPOSITION_INTERFACE_ROOT "" CACHE PATH
+    "Root containing frozen composition interface headers from a contract-split lane")
+
+if(EXISTS "${CELLERATOR_ROOT}/include/Cellerator/compiler/discovery/discovery_v1.hh")
+    set(CELLERATOR_DISCOVERY_INTERFACE_INCLUDE "${CELLERATOR_ROOT}/include")
+elseif(CELLERATOR_DISCOVERY_INTERFACE_ROOT AND
+       EXISTS "${CELLERATOR_DISCOVERY_INTERFACE_ROOT}/include/Cellerator/compiler/discovery/discovery_v1.hh")
+    set(CELLERATOR_DISCOVERY_INTERFACE_INCLUDE
+        "${CELLERATOR_DISCOVERY_INTERFACE_ROOT}/include")
+else()
+    message(FATAL_ERROR
+        "CE-CCP1-I20 discovery_v1.hh is required; set CELLERATOR_DISCOVERY_INTERFACE_ROOT for a contract-split lane build")
+endif()
+
+if(EXISTS "${CELLERATOR_ROOT}/include/Cellerator/compiler/composition/grammar_v1.hh" AND
+   EXISTS "${CELLERATOR_ROOT}/include/Cellerator/compiler/program/ruleset_v1.hh")
+    set(CELLERATOR_COMPOSITION_INTERFACE_INCLUDE "${CELLERATOR_ROOT}/include")
+elseif(CELLERATOR_COMPOSITION_INTERFACE_ROOT AND
+       EXISTS "${CELLERATOR_COMPOSITION_INTERFACE_ROOT}/include/Cellerator/compiler/composition/grammar_v1.hh" AND
+       EXISTS "${CELLERATOR_COMPOSITION_INTERFACE_ROOT}/include/Cellerator/compiler/program/ruleset_v1.hh")
+    set(CELLERATOR_COMPOSITION_INTERFACE_INCLUDE
+        "${CELLERATOR_COMPOSITION_INTERFACE_ROOT}/include")
+else()
+    message(FATAL_ERROR
+        "CE-CCP1-I21/I22 composition interfaces are required; set CELLERATOR_COMPOSITION_INTERFACE_ROOT for a contract-split lane build")
+endif()
+
+add_executable(ce_ccp1_e04_018
+    freeze_the_public_planning_compiler_interface_test.cc
+    "${CELLERATOR_ROOT}/src/compiler/planning/freeze_the_public_planning_compiler_interface.cc")
+target_include_directories(ce_ccp1_e04_018 PRIVATE
+    "${CELLERATOR_ROOT}/include"
+    "${CELLERATOR_PLANNING_INTERFACE_INCLUDE}"
+    "${CELLERATOR_DISCOVERY_INTERFACE_INCLUDE}"
+    "${CELLERATOR_COMPOSITION_INTERFACE_INCLUDE}")
+target_compile_features(ce_ccp1_e04_018 PRIVATE cxx_std_17)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(ce_ccp1_e04_018 PRIVATE -Wall -Wextra -Werror)
+endif()
+add_test(NAME ce_ccp1_e04_018 COMMAND ce_ccp1_e04_018)
