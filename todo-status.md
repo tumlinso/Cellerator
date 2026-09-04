@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5855`
+Project revision: `5866`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -545,7 +545,7 @@ Project revision: `5855`
 - `CE-EXOP-72` | status: done | execution: closed | next: Deliver optional static profiling markers and unique kernel names exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-72` | status: done | execution: closed | next: Implement prepared logical-edge to dense-tile and residual packing with explicit zero holes, generation tracking, preallocated buffers, and caller stream.
 - `CE-CCP1-G01-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the compile-time ir handle model in the isolated G01 lane, add the focused ce_ccp1_g01_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-G01-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement reflection of current and named execution fields in the isolated G01 lane, add the focused ce_ccp1_g01_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-G01-002` | status: done | execution: closed | next: Inspect the cited read scope, implement implement reflection of current and named execution fields in the isolated G01 lane, add the focused ce_ccp1_g01_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of operations and relations in the isolated G01 lane, add the focused ce_ccp1_g01_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of profile environments in the isolated G01 lane, add the focused ce_ccp1_g01_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-G01-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement reflection of planning ir search spaces in the isolated G01 lane, add the focused ce_ccp1_g01_005 gate, and publish a source-linked receipt.
@@ -562,8 +562,8 @@ Project revision: `5855`
 - `CE-CCP1-G01-016` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver the first source-defined inline rewrite in the isolated G01 lane, add the focused ce_ccp1_g01_016 gate, and publish a source-linked receipt.
 - `CE-EXOP-73` | status: done | execution: closed | next: Deliver generic partition/order/resource export exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-73` | status: done | execution: closed | next: Implement fixture-based four-warp output-owned 16-row by 64-column CTA kernel with resident FP32 accumulators, one final store, and no atomics.
-- `CE-CCP1-G02-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the pass pipeline stage taxonomy in the isolated G02 lane, add the focused ce_ccp1_g02_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-G02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement pass manager and analysis invalidation in the isolated G02 lane, add the focused ce_ccp1_g02_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-G02-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze the pass pipeline stage taxonomy in the isolated G02 lane, add the focused ce_ccp1_g02_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-G02-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement pass manager and analysis invalidation in the isolated G02 lane, add the focused ce_ccp1_g02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement pipeline configuration syntax and apis in the isolated G02 lane, add the focused ce_ccp1_g02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement custom semantic pass api in the isolated G02 lane, add the focused ce_ccp1_g02_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-G02-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement custom planning pass api in the isolated G02 lane, add the focused ce_ccp1_g02_005 gate, and publish a source-linked receipt.
@@ -582,8 +582,8 @@ Project revision: `5855`
 - `CE-CCP1-G02-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the open compiler-extension surface in the isolated G02 lane, add the focused ce_ccp1_g02_018 gate, and publish a source-linked receipt.
 - `CE-EXOP-74` | status: done | execution: closed | next: Deliver prove disabled profiling does not alter the hot path exactly within the contracts, boundaries, evidence rules, and deferred-work limits in docs/CE_EXOP_PROGRAM.md.
 - `CE-GEO-74` | status: done | execution: closed | next: Combine prepared value pack, output-owned MMA, exact row-owned residual, one epilogue, persistent order, planner visibility, and pure-sparse fallback.
-- `CE-CCP1-G03-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze validation-mode semantics in the isolated G03 lane, add the focused ce_ccp1_g03_001 gate, and publish a source-linked receipt.
-- `CE-CCP1-G03-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement structural impossibility checks in the isolated G03 lane, add the focused ce_ccp1_g03_002 gate, and publish a source-linked receipt.
+- `CE-CCP1-G03-001` | status: done | execution: closed | next: Inspect the cited read scope, implement freeze validation-mode semantics in the isolated G03 lane, add the focused ce_ccp1_g03_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-G03-002` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement structural impossibility checks in the isolated G03 lane, add the focused ce_ccp1_g03_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement advisory semantic validators in the isolated G03 lane, add the focused ce_ccp1_g03_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement exact-coverage and ownership diagnostics in the isolated G03 lane, add the focused ce_ccp1_g03_004 gate, and publish a source-linked receipt.
 - `CE-CCP1-G03-005` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement target/native diagnostics in the isolated G03 lane, add the focused ce_ccp1_g03_005 gate, and publish a source-linked receipt.
