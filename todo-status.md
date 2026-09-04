@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `5710`
+Project revision: `5714`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: planned | execution: inactive | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -492,11 +492,11 @@ Project revision: `5710`
 - `CE-CCP1-F01-013` | status: done | execution: closed | next: Inspect the cited read scope, implement implement graph-capture and rebind contracts in the isolated F01 lane, add the focused ce_ccp1_f01_013 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-014` | status: done | execution: closed | next: Inspect the cited read scope, implement implement symbolic runtime bindings in the isolated F01 lane, add the focused ce_ccp1_f01_014 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-015` | status: done | execution: closed | next: Inspect the cited read scope, implement implement lowering-resumption checkpoints in the isolated F01 lane, add the focused ce_ccp1_f01_015 gate, and publish a source-linked receipt.
-- `CE-CCP1-F01-016` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement implement realization ir text/parser/printer in the isolated F01 lane, add the focused ce_ccp1_f01_016 gate, and publish a source-linked receipt.
+- `CE-CCP1-F01-016` | status: done | execution: closed | next: Inspect the cited read scope, implement implement realization ir text/parser/printer in the isolated F01 lane, add the focused ce_ccp1_f01_016 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-017` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement realization ir validators and referees in the isolated F01 lane, add the focused ce_ccp1_f01_017 gate, and publish a source-linked receipt.
 - `CE-CCP1-F01-018` | status: planned | execution: ready | next: Inspect the cited read scope, implement deliver selected-plan-to-prepared-program slice in the isolated F01 lane, add the focused ce_ccp1_f01_018 gate, and publish a source-linked receipt.
 - `CE-GEO-69` | status: done | execution: closed | next: Prove exact physical ownership, missing/duplicate rejection, padding, residual exactness, value-map recovery, width tags, corruption rejection, activation, and artifact round trip.
-- `CE-CCP1-F02-001` | status: planned | execution: ready | next: Inspect the cited read scope, implement freeze the backend provider abi in the isolated F02 lane, add the focused ce_ccp1_f02_001 gate, and publish a source-linked receipt.
+- `CE-CCP1-F02-001` | status: in_progress | execution: claimed | next: Inspect the cited read scope, implement freeze the backend provider abi in the isolated F02 lane, add the focused ce_ccp1_f02_001 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-002` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement backend registry and selection in the isolated F02 lane, add the focused ce_ccp1_f02_002 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-003` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement backend code-generation plans in the isolated F02 lane, add the focused ce_ccp1_f02_003 gate, and publish a source-linked receipt.
 - `CE-CCP1-F02-004` | status: planned | execution: ready | next: Inspect the cited read scope, implement implement generated c++ representation in the isolated F02 lane, add the focused ce_ccp1_f02_004 gate, and publish a source-linked receipt.
