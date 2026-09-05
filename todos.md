@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6717`
+Project revision: `6757`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1357,7 +1357,7 @@ Project revision: `6717`
 - `CE-ARCH-70A` | kind: integration_task | status: done | parent: CE-ARCH-70 | objective: Integrate the existing local predicate-plan work, expose and require one explicit sequence predicate ABI version, make validity authoritative, and fail incompatible sibling checkouts early.
 - `CE-ARCH-80` | kind: epic | status: done | parent: - | objective: Finish the implementation and evidence required by roadmap Phases 4 through 11 and the definition of migration completion, without erasing the bounded results of CE-ARCH-40 through CE-ARCH-79.
 - `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
-- `CE-PTR` | kind: epic | status: planned | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
+- `CE-PTR` | kind: epic | status: done | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
 - `CE-PTR-00` | kind: task | status: done | parent: CE-PTR | objective: Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.
 - `CE-ARCH-70B` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Replace monolithic persistent scratch ownership with fixed-capacity independent stable CUDA allocations while preserving the pre-reserved transient arena and allocation-free sealed launch binding.
 - `CE-ARCH-82` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 4 so CPK1 compatibility, sectioned semantic structure, schema-extensible projections, multiple value planes, opaque relocation, and direct prepared execution are one tested path.
