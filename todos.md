@@ -64,7 +64,7 @@ Use this file as the canonical index for substantial multi-step work.
   published. CP-BP-09/10/11/12/13 are closed.
 
 ## Workflow Routing
-- Use the `coding-workflow` MCP interface for substantial implementation.
+- Use the Project Control MCP interface for substantial implementation.
 - Use direct todo-orchestrator and CUDA interfaces only for fallback/debugging,
   recovery, or work on those skills themselves.
 - Preserve scRNA raw-count, QC, normalization, and double-processing semantics

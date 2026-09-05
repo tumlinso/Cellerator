@@ -1,19 +1,17 @@
 # Cellerator Repository Guidance
 
-<!-- coding-workflow:start -->
-## Coding workflow
+<!-- project-control:start -->
+## Project Control workflow
 
-For substantial repository work, use `coding-workflow`.
-Do not directly invoke todo-orchestrator, cpp-context-compiler, CUDA, or
-local-coding-worker unless coding-workflow returns an explicit bounded fallback
-authorization, the user explicitly requests maintenance, or coding-workflow
-itself is being debugged.
+For substantial repository work, use `project-control`. Start with `next_task`,
+use `inspect_task` for bounded current-task context, and use `coordinate_task`
+for typed synchronization. Rich Project Control reads are secondary escalation
+tools when bounded workflow context is insufficient.
 
-Start with `next_task`. First-class Codex agents receive run lanes and roles.
-Local workers are bounded children of one parent claim: they never claim project
-todos, receive lanes or roles, communicate across lanes, join rendezvous, publish
-project decisions or interfaces, or complete the parent task.
-<!-- coding-workflow:end -->
+Todo Orchestrator remains the transactional authority. First-class Codex agents
+receive lanes and roles; local workers are optional bounded children of exactly
+one parent claim and never become first-class participants.
+<!-- project-control:end -->
 
 ## Authority
 

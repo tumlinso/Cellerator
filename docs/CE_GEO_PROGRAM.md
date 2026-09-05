@@ -4,7 +4,7 @@
 
 CE-GEO is the execution program for the Cellerator geometry and Volta campaign. It is subordinate to [AGENTS.md](../AGENTS.md), [scope.md](../scope.md), [Architecture](architecture.qmd), [Current Implementation](current_implementation.qmd), and [Migration Roadmap](migration_roadmap.qmd). Those documents define repository architecture and ownership; this document defines the settled campaign decomposition, interfaces, gates, empirical questions, and completion semantics. It does not reopen CE-ARCH, CE-LIVE, CP-BP, CPK1, CPE2, or planner-v2 decisions.
 
-The campaign is Volta-first and additive. Ordinary implementation begins only through the configured `coding-workflow` front door. First-class agents own serial run lanes. Local workers may return bounded candidate findings to one claimed parent but never own CE-GEO tasks, lanes, interfaces, decisions, rendezvous, or completion.
+The campaign is Volta-first and additive. Ordinary implementation begins only through the configured Project Control front door. First-class agents own serial run lanes. Local workers may return bounded candidate findings to one claimed parent but never own CE-GEO tasks, lanes, interfaces, decisions, rendezvous, or completion.
 
 ### Settled contracts and empirical questions
 
@@ -235,4 +235,4 @@ The schema-v3 plan stores the following error-severity invariants as executable 
 
 ## Bootstrap and continuation
 
-The completed bootstrap created this document and `ce-geo-plan.json`, validated and semantically diffed the additive plan, applied it transactionally, verified the runs, lanes, interfaces, decisions, barriers, checkpoints, locks, resources, and representative readiness, and stopped without implementation. Execution proceeds only through `coding-workflow next_task` and the bounded run charter and task packet. CE-AMP remains dormant until both interlocks are satisfied.
+The completed bootstrap created this document and `ce-geo-plan.json`, validated and semantically diffed the additive plan, applied it transactionally, verified the runs, lanes, interfaces, decisions, barriers, checkpoints, locks, resources, and representative readiness, and stopped without implementation. Execution proceeds only through Project Control's `next_task` operation and the bounded run charter and task packet. CE-AMP remains dormant until both interlocks are satisfied.

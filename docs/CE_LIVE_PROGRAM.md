@@ -610,7 +610,7 @@ CE-LIVE does not implement:
 
 Every implementation task has an artifact-existence gate, focused build gate,
 focused correctness gate, applicable negative identity/order/generation/capacity
-checks, `git diff --check`, scope audit, and coding-workflow finish/handoff
+checks, `git diff --check`, scope audit, and Project Control finish/handoff
 gate. Fan-ins additionally require todo audit, reconcile/export,
 project-control overview/frontier, cross-authority warning review, affected
 target fan-in, documentation update, and exact next-frontier validation.

@@ -4,7 +4,7 @@
 
 CE-EXOP is the execution program for the next Volta-first Cellerator campaign. It is subordinate to [AGENTS.md](../AGENTS.md), [scope.md](../scope.md), [Architecture](architecture.qmd), [Current Implementation](current_implementation.qmd), [Migration Roadmap](migration_roadmap.qmd), and the completed [CE-GEO program](CE_GEO_PROGRAM.md). Those documents remain the architecture spine. This document supplies the campaign charter, work decomposition, integration rules, validation contract, and completion meaning needed by a fresh first-class Codex lane agent.
 
-Implementation begins only through the configured `coding-workflow` front door after CE-EXOP-01 is claimed. First-class agents own serial lanes and managed isolated-merge workspaces. Local coding workers, if later delegated by a claimed parent, are subordinate candidate producers only: they do not claim CE-EXOP tasks, own lanes, publish interfaces, communicate cross-lane authority, join rendezvous, or complete the parent. Integration lanes alone accept cross-lane merges. This bootstrap creates no implementation worktree and claims no task.
+Implementation begins only through the configured Project Control front door after CE-EXOP-01 is claimed. First-class agents own serial lanes and managed isolated-merge workspaces. Local coding workers, if later delegated by a claimed parent, are subordinate candidate producers only: they do not claim CE-EXOP tasks, own lanes, publish interfaces, communicate cross-lane authority, join rendezvous, or complete the parent. Integration lanes alone accept cross-lane merges. This bootstrap creates no implementation worktree and claims no task.
 
 The plan authority is `ce-exop-plan.json`, schema version 3. SQLite is the live task-graph authority; generated Markdown and snapshots are projections. This document explains the program but does not override live workflow state.
 
@@ -226,7 +226,7 @@ Only two rendezvous exist: core ABI and optimizer fan-in. The seven barriers in 
 
 Host work requires no accelerator. CUDA correctness gates request `accelerator:any`, verify sm_70 when required, and release immediately. Independent V100 correctness tasks may run concurrently on separate leased devices. Timing smoke additionally holds `cuda-benchmark-mutex`. No task hard-codes an ordinal/UUID, leases the A5000, or runs CE-AMP code.
 
-Write lanes use `isolated_merge` workspaces tied to their integration task. Coordinator and final integrators use exclusive authority where appropriate. Bootstrap creates none of these worktrees; they are provisioned only when later coding-workflow assignment claims a writable lane.
+Write lanes use `isolated_merge` workspaces tied to their integration task. Coordinator and final integrators use exclusive authority where appropriate. Bootstrap creates none of these worktrees; they are provisioned only when later Project Control assignment claims a writable lane.
 
 ## Validation and acceptance
 
