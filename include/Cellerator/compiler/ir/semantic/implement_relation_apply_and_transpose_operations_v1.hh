@@ -3,6 +3,7 @@
 #include <Cellerator/compiler/ir/semantic/implement_relation_ir_types_v1.hh>
 #include <Cellerator/compute/operation/relation_algebra_v2/relation_algebra.hh>
 
+#include <Cellerator/compute/operation/relation_semantics.hh>
 #include <cstdint>
 
 namespace Cellerator::compiler::ir::semantic {
@@ -22,6 +23,12 @@ struct relation_apply_operation_ir_v1 {
     cellerator::compute::operation::v2::destination_update update =
         cellerator::compute::operation::v2::destination_update::overwrite;
     bool deterministic = true;
+    // Weight storage is independent of the input state numeric tuple.
+    cellerator::execution::numeric_type relation_storage = cellerator::execution::numeric_type::f16;
+    bool permit_fma = true;
+    bool permit_reassociation = true;
+    cellerator::compute::relation::nonfinite_policy nonfinite =
+        cellerator::compute::relation::nonfinite_policy::propagate;
     std::uint32_t effects = relation_apply_reads_source_v1 |
         relation_apply_reads_values_v1 | relation_apply_writes_result_v1 |
         relation_apply_advances_result_generation_v1;
@@ -40,7 +47,17 @@ enum class relation_apply_ir_validation_code_v1 : std::uint8_t {
     invalid_effects,
 };
 
+enum class relation_transport_status_v1 : std::uint8_t {
+    not_lowered,
+    available,
+    unsupported_arithmetic_policy,
+};
+
 struct lowered_relation_apply_v1 {
+    // Canonical mathematics can be valid even when legacy transport cannot
+    // represent it. Unavailable transport carries no executable operation.
+    relation_transport_status_v1 transport_status = relation_transport_status_v1::not_lowered;
+    cellerator::compute::relation::operation_descriptor semantic{};
     cellerator::compute::operation::v2::typed_relation relation{};
     cellerator::compute::operation::v2::relation_binding_contract binding{};
     cellerator::compute::operation::v2::relation_value_binding_contract value_binding{};

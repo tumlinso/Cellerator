@@ -25,8 +25,8 @@ state_ir_type_v1 state(std::uint64_t seed, semantic_identity_v1 axis_identity) {
     result.identity = {seed, seed + 1};
     result.axes = {axis_identity};
     result.dense_width = 16;
-    result.numeric = {numeric_type::f16, numeric_type::f16,
-                      numeric_type::f32, numeric_type::f16};
+    result.numeric = {numeric_type::f32, numeric_type::f32,
+                      numeric_type::f32, numeric_type::f32};
     result.order = {seed + 2, seed + 3};
     result.generation = {1, true};
     return result;
@@ -70,6 +70,37 @@ int main() {
     assert(lowered.algebra.value_bindings->generation.value == 3);
     assert(lowered.algebra.core.dense_width == 16);
 
+    namespace canonical = cellerator::compute::relation;
+    canonical::operation_descriptor cpp;
+    cpp.topology.identity = {40, 41};
+    cpp.topology.epoch = {2};
+    const cellerator::execution::serialized_record_header header{
+        cellerator::execution::biological_abi_version,
+        cellerator::execution::serialized_record_kind::persistent_axis_identity,
+        sizeof(cellerator::execution::persistent_axis_identity)};
+    cpp.topology.source = {{header, {1, 2}, {3, 4}, {20, 21}, {22, 23}}, 64};
+    cpp.topology.destination = {{header, {5, 6}, {7, 8}, {30, 31}, {32, 33}}, 64};
+    cpp.topology.logical_edge_order = {44, 45};
+    cpp.topology.edge_count = 1024;
+    cpp.dense_width = 16;
+    assert(canonical::equivalent(cpp, lowered.semantic));
+    auto independent_identity = apply;
+    independent_identity.identity = {500, 501};
+    independent_identity.relation.value_generation = 99;
+    lowered_relation_apply_v1 equivalent;
+    assert(lower_relation_apply_operation_v1(independent_identity, &equivalent) ==
+           relation_apply_ir_validation_code_v1::success);
+    assert(canonical::equivalent(lowered.semantic, equivalent.semantic));
+    auto changed = apply;
+    changed.relation_storage = numeric_type::f32;
+    assert(lower_relation_apply_operation_v1(changed, &equivalent) ==
+           relation_apply_ir_validation_code_v1::success);
+    assert(!canonical::equivalent(lowered.semantic, equivalent.semantic));
+    changed = apply;
+    changed.permit_fma = false;
+    assert(lower_relation_apply_operation_v1(changed, &equivalent) ==
+           relation_apply_ir_validation_code_v1::success);
+    assert(!canonical::equivalent(lowered.semantic, equivalent.semantic));
     auto transpose = apply;
     transpose.identity = {102, 103};
     transpose.relation.orientation = relation_orientation_ir_v1::transpose;
@@ -84,6 +115,11 @@ int main() {
     assert(lowered.operation.orientation ==
            cellerator::compute::operation::v2::relation_orientation::transpose);
 
+    cpp.direction = canonical::orientation::transpose;
+    assert(canonical::equivalent(cpp, lowered.semantic));
+    lowered_relation_apply_v1 copied = lowered;
+    assert(canonical::equivalent(cpp, copied.semantic));
+    assert(copied.operation.relations.relations == &copied.relation);
     transpose.result.dense_width = 8;
     assert(validate_relation_apply_operation_ir_v1(transpose) ==
            relation_apply_ir_validation_code_v1::width_mismatch);

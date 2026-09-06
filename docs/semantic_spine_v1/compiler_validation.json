@@ -1,0 +1,1045 @@
+{
+  "schema_version": 1,
+  "task": "CE-SS1-F04",
+  "timestamp_utc": "2026-09-06T10:53:18.783865+00:00",
+  "source_commit": "10974b209251140e8c2b321e0c207e9d3109a606",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "cuda_headers": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+  "parallel_jobs": 80,
+  "source_sha256": {
+    "src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc": "8acf7ea013775b7f7160bdc0788b337ad1d62b8d6fa493aa93235f07284951f2",
+    "src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc": "42ca11ce79badeecd6ef81974e9b8494b8ff7fe5e91b7d1b3353b20e6ff43c02",
+    "src/compiler/frontend/parser/parse_non_relation_operation_families.cc": "929df9ffa8612e7ca5672d32e7b170a8b8ca835e14804aba0c7e2c1e47804823",
+    "src/compiler/frontend/parser/parse_relation_application.cc": "6aa35e066e375f8955e22188207758d8429fdb561e3f0ffd5d6ea45dcf7a12a3",
+    "src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc": "03a2f373342ca82d18ce31d459551bb1ebc1108094cfb0865070d145edd6a41a",
+    "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc": "5083796c2e196c4b4d445388f6230fba86322e4dee5e4a1341d46aa06df02237",
+    "src/compiler/ir/semantic/implement_relation_ir_types.cc": "368d2290062d902e6a98251780c5a5251a3ed1ebb6a3e37d9d8955f9bcc6f3a8",
+    "src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc": "5d70d0161d450835808f410b2ec61216d4d1dc312e918387082b762b4ddaab73",
+    "src/compiler/sema/implement_numerical_tuple_semantics.cc": "c15cf60a73285bfe37e4f58349c6a0b3f874cc9ee42f3f81aaa5a9c31cad531a",
+    "src/compiler/sema/relation_spine_bridge.cc": "a313bbc57a28f0a0aa4f0030fd956d7753bd550a285df3642a03f0939bb5687f",
+    "src/compute/operation/relation_semantics.cc": "466dea49f97c930bc342f6a8859940a6a92590d0a147f6eb8de73f3a1549a7f3",
+    "tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc": "445475e8a3e51af730f9223d5b81bbc24da24bb8aff6b39d98e31b63588a96bd",
+    "tests/semantic_spine/compiler/diagnostic_test.cc": "adbdb4304b7380ab933be21f33daa9ff089876eaef28db4011ce465873de44e5",
+    "tests/semantic_spine/compiler/lowering_test.cc": "b308918eeb688b7b19479934260d58d7958c141c9cfc34ed13e7f70a1df83ca2",
+    "tests/semantic_spine/compiler/source_slice_test.cc": "6bc7e0f8f7e293bc57d53f6fef633f5eb485460e67ee85ad4e3815091e6130f5"
+  },
+  "symbols_exercised": [
+    "Cellerator::compiler::frontend::parser::parse_semantic_declarations_v1",
+    "Cellerator::compiler::frontend::parser::parse_biological_type_v1",
+    "Cellerator::compiler::frontend::parser::parse_relation_applications_v1",
+    "Cellerator::compiler::frontend::parser::parse_operation_families_v1",
+    "cellerator::compiler::sema::v1::valid_numerical_tuple",
+    "Cellerator::compiler::sema::lower_relation_source_slice_v1",
+    "Cellerator::compiler::ir::semantic::lower_relation_apply_operation_v1",
+    "cellerator::compute::relation::validate",
+    "cellerator::compute::relation::equivalent"
+  ],
+  "compile_results": [
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/frontend/parser/parse_non_relation_operation_families.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/frontend/parser/parse_relation_application.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_relation_application.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/ir/semantic/implement_relation_ir_types.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_ir_types.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/sema/implement_numerical_tuple_semantics.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_implement_numerical_tuple_semantics.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compiler/sema/relation_spine_bridge.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_relation_spine_bridge.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/src/compute/operation/relation_semantics.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/src_compute_operation_relation_semantics.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/tests_compiler_semantic_ir_implement_relation_apply_and_transpose_operations_test.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/tests/semantic_spine/compiler/diagnostic_test.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_diagnostic_test.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/tests/semantic_spine/compiler/lowering_test.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_lowering_test.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/include",
+        "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "-c",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend/tests/semantic_spine/compiler/source_slice_test.cc",
+        "-o",
+        "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_source_slice_test.cc.o"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "tests": [
+    {
+      "name": "lowering",
+      "source": "tests/semantic_spine/compiler/lowering_test.cc",
+      "link": {
+        "command": [
+          "g++",
+          "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_lowering_test.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compute_operation_relation_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+          "-o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/lowering"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "execution": {
+        "command": [
+          "/tmp/ce-ss1-frontend-08sn9v1w/lowering"
+        ],
+        "exit_code": 0,
+        "stdout": "apply_and_transpose=typed format_independent=true\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "source_slice",
+      "source": "tests/semantic_spine/compiler/source_slice_test.cc",
+      "link": {
+        "command": [
+          "g++",
+          "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_source_slice_test.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compute_operation_relation_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_relation_spine_bridge.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_implement_numerical_tuple_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_relation_application.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o",
+          "-o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/source_slice"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "execution": {
+        "command": [
+          "/tmp/ce-ss1-frontend-08sn9v1w/source_slice"
+        ],
+        "exit_code": 0,
+        "stdout": "source_slice: parser/Sema/IR canonical equivalence and negative inputs passed; full .cell execution deferred\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "diagnostic",
+      "source": "tests/semantic_spine/compiler/diagnostic_test.cc",
+      "link": {
+        "command": [
+          "g++",
+          "/tmp/ce-ss1-frontend-08sn9v1w/tests_semantic_spine_compiler_diagnostic_test.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compute_operation_relation_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_relation_spine_bridge.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_sema_implement_numerical_tuple_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_relation_application.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o",
+          "-o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/diagnostic"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "execution": {
+        "command": [
+          "/tmp/ce-ss1-frontend-08sn9v1w/diagnostic"
+        ],
+        "exit_code": 0,
+        "stdout": "diagnostics: identity high bits, order, effects, empty shapes, independent arithmetic, alias representation and source ranges passed\n",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "legacy_relation_ir",
+      "source": "tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc",
+      "link": {
+        "command": [
+          "g++",
+          "/tmp/ce-ss1-frontend-08sn9v1w/tests_compiler_semantic_ir_implement_relation_apply_and_transpose_operations_test.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compute_operation_relation_semantics.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+          "-o",
+          "/tmp/ce-ss1-frontend-08sn9v1w/legacy_relation_ir"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "execution": {
+        "command": [
+          "/tmp/ce-ss1-frontend-08sn9v1w/legacy_relation_ir"
+        ],
+        "exit_code": 0,
+        "stdout": "apply_and_transpose=typed format_independent=true\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "status": "passed",
+  "scope": "Bounded embedded declarations and one assigned relation application through existing parser/Sema/IR to canonical descriptor.",
+  "negative_coverage": [
+    "altered direction with wrong endpoints",
+    "unknown symbol",
+    "numeric declaration mismatch",
+    "ambiguous binding",
+    "unconsumed source",
+    "unsupported filter",
+    "high identity bits",
+    "axis/order mismatch",
+    "invalid effects",
+    "unknown extent",
+    "nonempty support with empty axes",
+    "unsupported update"
+  ],
+  "accelerator_execution": "Not performed by this host conformance harness; integrated native cross-origin tests are separately required.",
+  "deferred": [
+    "full .cell executable pipeline",
+    "full expression or execution-field lowering",
+    "LTO and driver completion",
+    "installed SDK completion"
+  ],
+  "corrective_validation": [
+    {
+      "task": "CE-SS1-F05",
+      "problem": "Accepted f16 relation with f32 state produced f32 relation_storage in retained operation/algebra transport; nonfinite rejection and restricted FMA/reassociation permissions were lost.",
+      "fix": "Derive retained numeric tuple and nonfinite policies from canonical arithmetic. Explicit transport status preserves valid canonical descriptors while clearing nonrepresentable FMA/reassociation legacy operation/algebra and bindings. Copy/move and assignment preserve availability.",
+      "scope": "Frontend-owned lowering/header/tests only; no shared canonical ABI, general numeric helper, CUDA implementation, external tooling or source-language expansion.",
+      "original_failure": {
+        "source_commit": "ba2b4d960f74c94c92161a1331a5cc448965c63e",
+        "build_command": [
+          "python",
+          "tests/semantic_spine/compiler/run_tests.py",
+          "--build-dir",
+          "/tmp/ce-ss1-f05-red"
+        ],
+        "regression": "Lower the existing independent f16 relation/f32 state fixture, then assert canonical, operation and algebra relation_storage are all f16. Original lowering fails the operation assertion.",
+        "execution_command": [
+          "/tmp/ce-ss1-f05-red/numeric_transport"
+        ],
+        "exit_code": -6,
+        "stdout": "",
+        "stderr": "numeric_transport: /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/semantic_spine/compiler/numeric_transport_test.cc:65: int main(): Assertion `lowered.operation.numeric.relation_storage == numeric_type::f16' failed.\n",
+        "binary_sha256": "206325c20a6e5abc5e5a6fc18dc709dba393e2cadd535bad8f36289b9123e98f"
+      },
+      "validation": {
+        "schema_version": 1,
+        "task": "CE-SS1-F05",
+        "timestamp_utc": "2026-09-06T12:31:12.900632+00:00",
+        "source_commit": "ba2b4d960f74c94c92161a1331a5cc448965c63e",
+        "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+        "cuda_headers": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+        "parallel_jobs": 80,
+        "source_sha256": {
+          "src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc": "8acf7ea013775b7f7160bdc0788b337ad1d62b8d6fa493aa93235f07284951f2",
+          "src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc": "42ca11ce79badeecd6ef81974e9b8494b8ff7fe5e91b7d1b3353b20e6ff43c02",
+          "src/compiler/frontend/parser/parse_non_relation_operation_families.cc": "929df9ffa8612e7ca5672d32e7b170a8b8ca835e14804aba0c7e2c1e47804823",
+          "src/compiler/frontend/parser/parse_relation_application.cc": "6aa35e066e375f8955e22188207758d8429fdb561e3f0ffd5d6ea45dcf7a12a3",
+          "src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc": "03a2f373342ca82d18ce31d459551bb1ebc1108094cfb0865070d145edd6a41a",
+          "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc": "dd2bf9c1410a158f10e20fd9eac57b1b963c8ef786f09af3ce4afccdf0e693fd",
+          "src/compiler/ir/semantic/implement_relation_ir_types.cc": "368d2290062d902e6a98251780c5a5251a3ed1ebb6a3e37d9d8955f9bcc6f3a8",
+          "src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc": "5d70d0161d450835808f410b2ec61216d4d1dc312e918387082b762b4ddaab73",
+          "src/compiler/sema/implement_numerical_tuple_semantics.cc": "c15cf60a73285bfe37e4f58349c6a0b3f874cc9ee42f3f81aaa5a9c31cad531a",
+          "src/compiler/sema/relation_spine_bridge.cc": "a313bbc57a28f0a0aa4f0030fd956d7753bd550a285df3642a03f0939bb5687f",
+          "src/compute/operation/operation_core_v2/schema.cc": "6b3cbbf138755db04ab8ca56ec50e1d669ed31a78ba14ef954beeedc158e11e9",
+          "src/compute/operation/relation_semantics.cc": "466dea49f97c930bc342f6a8859940a6a92590d0a147f6eb8de73f3a1549a7f3",
+          "tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc": "445475e8a3e51af730f9223d5b81bbc24da24bb8aff6b39d98e31b63588a96bd",
+          "tests/semantic_spine/compiler/diagnostic_test.cc": "adbdb4304b7380ab933be21f33daa9ff089876eaef28db4011ce465873de44e5",
+          "tests/semantic_spine/compiler/lowering_test.cc": "b308918eeb688b7b19479934260d58d7958c141c9cfc34ed13e7f70a1df83ca2",
+          "tests/semantic_spine/compiler/numeric_transport_test.cc": "508ce4ef942a46c9bb584feb9d15d9b9bf93bc0c6f60d44f08ed7668222b455a",
+          "tests/semantic_spine/compiler/source_slice_test.cc": "ce1409dce178562b2e6b171ea2db37c4af6e48560196d7e15faea423b21a7105",
+          "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh": "1f8abe56ed429e33015896b007b437685473cc07a9e7cbf4da26137c9331dc97",
+          "include/Cellerator/compute/operation/relation_semantics.hh": "b55ee11b9a21c4f5c337dedfea4ec29858c6c1949395b9e77fa4d676f88d706c",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh": "8cb0eac80df4318c3c9e9e477097e222df630d505aaa377ccfad68d527a425c2"
+        },
+        "symbols_exercised": [
+          "Cellerator::compiler::frontend::parser::parse_semantic_declarations_v1",
+          "Cellerator::compiler::frontend::parser::parse_biological_type_v1",
+          "Cellerator::compiler::frontend::parser::parse_relation_applications_v1",
+          "Cellerator::compiler::frontend::parser::parse_operation_families_v1",
+          "cellerator::compiler::sema::v1::valid_numerical_tuple",
+          "Cellerator::compiler::sema::lower_relation_source_slice_v1",
+          "Cellerator::compiler::ir::semantic::lower_relation_apply_operation_v1",
+          "cellerator::compute::relation::validate",
+          "cellerator::compute::relation::equivalent"
+        ],
+        "compile_results": [
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/frontend/parser/parse_biological_type_constructors_and_qualifiers.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/frontend/parser/parse_compiler_semantic_declarations.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/frontend/parser/parse_non_relation_operation_families.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/frontend/parser/parse_relation_application.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_relation_application.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/ir/semantic/implement_domain_and_axis_ir_types.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/ir/semantic/implement_relation_ir_types.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/ir/semantic/implement_state_and_value_plane_ir_types.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/sema/implement_numerical_tuple_semantics.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_sema_implement_numerical_tuple_semantics.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compiler/sema/relation_spine_bridge.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compiler_sema_relation_spine_bridge.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compute/operation/operation_core_v2/schema.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compute_operation_operation_core_v2_schema.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/src/compute/operation/relation_semantics.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/tests_compiler_semantic_ir_implement_relation_apply_and_transpose_operations_test.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/semantic_spine/compiler/diagnostic_test.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_diagnostic_test.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/semantic_spine/compiler/lowering_test.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_lowering_test.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/semantic_spine/compiler/numeric_transport_test.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_numeric_transport_test.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "g++",
+              "-std=c++17",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-UNDEBUG",
+              "-I/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/include",
+              "-I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include",
+              "-c",
+              "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ss1-l-frontend-repair/tests/semantic_spine/compiler/source_slice_test.cc",
+              "-o",
+              "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_source_slice_test.cc.o"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        ],
+        "tests": [
+          {
+            "name": "numeric_transport",
+            "source": "tests/semantic_spine/compiler/numeric_transport_test.cc",
+            "link": {
+              "command": [
+                "g++",
+                "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_numeric_transport_test.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_operation_core_v2_schema.cc.o",
+                "-o",
+                "/tmp/ce-ss1-f05-green/numeric_transport"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": ""
+            },
+            "execution": {
+              "command": [
+                "/tmp/ce-ss1-f05-green/numeric_transport"
+              ],
+              "exit_code": 0,
+              "stdout": "numeric transport: canonical precision/nonfinite parity, independent output, restricted arithmetic unavailable, copy/move and reuse passed\n",
+              "stderr": ""
+            }
+          },
+          {
+            "name": "lowering",
+            "source": "tests/semantic_spine/compiler/lowering_test.cc",
+            "link": {
+              "command": [
+                "g++",
+                "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_lowering_test.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+                "-o",
+                "/tmp/ce-ss1-f05-green/lowering"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": ""
+            },
+            "execution": {
+              "command": [
+                "/tmp/ce-ss1-f05-green/lowering"
+              ],
+              "exit_code": 0,
+              "stdout": "apply_and_transpose=typed format_independent=true\n",
+              "stderr": ""
+            }
+          },
+          {
+            "name": "source_slice",
+            "source": "tests/semantic_spine/compiler/source_slice_test.cc",
+            "link": {
+              "command": [
+                "g++",
+                "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_source_slice_test.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_sema_relation_spine_bridge.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_sema_implement_numerical_tuple_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_relation_application.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o",
+                "-o",
+                "/tmp/ce-ss1-f05-green/source_slice"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": ""
+            },
+            "execution": {
+              "command": [
+                "/tmp/ce-ss1-f05-green/source_slice"
+              ],
+              "exit_code": 0,
+              "stdout": "source_slice: parser/Sema/IR canonical equivalence and negative inputs passed; full .cell execution deferred\n",
+              "stderr": ""
+            }
+          },
+          {
+            "name": "diagnostic",
+            "source": "tests/semantic_spine/compiler/diagnostic_test.cc",
+            "link": {
+              "command": [
+                "g++",
+                "/tmp/ce-ss1-f05-green/tests_semantic_spine_compiler_diagnostic_test.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_sema_relation_spine_bridge.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_sema_implement_numerical_tuple_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_compiler_semantic_declarations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_biological_type_constructors_and_qualifiers.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_relation_application.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_frontend_parser_parse_non_relation_operation_families.cc.o",
+                "-o",
+                "/tmp/ce-ss1-f05-green/diagnostic"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": ""
+            },
+            "execution": {
+              "command": [
+                "/tmp/ce-ss1-f05-green/diagnostic"
+              ],
+              "exit_code": 0,
+              "stdout": "diagnostics: identity high bits, order, effects, empty shapes, independent arithmetic, alias representation and source ranges passed\n",
+              "stderr": ""
+            }
+          },
+          {
+            "name": "legacy_relation_ir",
+            "source": "tests/compiler/semantic_ir/implement_relation_apply_and_transpose_operations_test.cc",
+            "link": {
+              "command": [
+                "g++",
+                "/tmp/ce-ss1-f05-green/tests_compiler_semantic_ir_implement_relation_apply_and_transpose_operations_test.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compute_operation_relation_semantics.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_apply_and_transpose_operations.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_relation_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_state_and_value_plane_ir_types.cc.o",
+                "/tmp/ce-ss1-f05-green/src_compiler_ir_semantic_implement_domain_and_axis_ir_types.cc.o",
+                "-o",
+                "/tmp/ce-ss1-f05-green/legacy_relation_ir"
+              ],
+              "exit_code": 0,
+              "stdout": "",
+              "stderr": ""
+            },
+            "execution": {
+              "command": [
+                "/tmp/ce-ss1-f05-green/legacy_relation_ir"
+              ],
+              "exit_code": 0,
+              "stdout": "apply_and_transpose=typed format_independent=true\n",
+              "stderr": ""
+            }
+          }
+        ],
+        "status": "passed",
+        "scope": "Bounded embedded declarations and one assigned relation application through existing parser/Sema/IR to canonical descriptor.",
+        "negative_coverage": [
+          "altered direction with wrong endpoints",
+          "unknown symbol",
+          "numeric declaration mismatch",
+          "ambiguous binding",
+          "unconsumed source",
+          "unsupported filter",
+          "high identity bits",
+          "axis/order mismatch",
+          "invalid effects",
+          "unknown extent",
+          "nonempty support with empty axes",
+          "unsupported update",
+          "unrepresentable legacy arithmetic clears executable transport"
+        ],
+        "accelerator_execution": "Not performed by this host conformance harness; integrated native cross-origin tests are separately required.",
+        "deferred": [
+          "full .cell executable pipeline",
+          "full expression or execution-field lowering",
+          "LTO and driver completion",
+          "installed SDK completion"
+        ]
+      },
+      "context_tool_fallback": "ctxpp doctor/status report existing missing compile database and intrinsic parse errors; used readable canonical-source fallback documented in ENVIRONMENT_NOTES.md."
+    }
+  ]
+}
