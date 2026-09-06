@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-C01: Specify relation calculus and explicit arithmetic profiles
 
-Task revision: `6878`; current project revision is in `todo-status.md`.
+Task revision: `6886`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
