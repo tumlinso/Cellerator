@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "source_disposition",
+  "scope": "CE-RU1-I01 read-only source audit",
+  "source_root": "/home/tumlinson/Cellerator",
+  "source_head": "f75c001ce819910efacfcc03d0b313f017a2598f",
+  "created_utc": "2026-09-06T16:03:35.562578+00:00",
+  "task_owner_mapping_authority": "Proposed follow-up ownership only; live task scope must be inspected before editing. I01 authorizes this disposition record, not those mutations.",
+  "verification_limit": "Read-only source inspection; no tests or GPU execution performed by this audit. Caller lists are bounded inspected matches, not a proof of absence of dynamically selected users.",
+  "records": [
+    {
+      "sources": [
+        {
+          "path": "src/compute/operation/prepared_relation.cu",
+          "sha256": "824b0814240e8e1c62f3d2b876caf4e906cd70a369a8071b5e04fcefc1ddcf28"
+        },
+        {
+          "path": "include/Cellerator/compute/operation/prepared_relation.hh",
+          "sha256": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491"
+        }
+      ],
+      "disposition": "preserve_and_extend",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-C02",
+        "CE-RU1-N01",
+        "CE-RU1-N02",
+        "CE-RU1-N03",
+        "CE-RU1-N04",
+        "CE-RU1-N05",
+        "CE-RU1-N06"
+      ],
+      "preserved_mechanics_and_required_change": "Pair is sole owner of cold FMP1/CTP1, physical f16 plane, logical map, stream and poison state. adapt rejects N != 1. publish_values gathers and increments metadata without an event. Extend same pair; retain N1 read-only graph replay.",
+      "live_callers": [
+        "tests/semantic_spine/native/preparation_test.cu",
+        "tests/semantic_spine/native/forward_test.cu",
+        "tests/semantic_spine/native/transpose_test.cu",
+        "tests/semantic_spine/native/generation_test.cu",
+        "tests/semantic_spine/native/lifecycle_test.cu"
+      ],
+      "regression_evidence_paths": [
+        "tests/semantic_spine/native/lifecycle_test.cu",
+        "tests/semantic_spine/native/overhead_test.cu"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "include/Cellerator/compute/projection/physical_feature_major.hh",
+          "sha256": "a92a43f4008350ec8cec79171e169786e2bb160868d8e24f0723d8f7d1b9b805"
+        },
+        {
+          "path": "include/Cellerator/compute/projection/physical_transpose.hh",
+          "sha256": "5d3344cedb9577eccf5ec9d3e486a5ba9f02760ba61612f8915e03f1826a1010"
+        }
+      ],
+      "disposition": "preserve",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-N01",
+        "CE-RU1-N02",
+        "CE-RU1-N03"
+      ],
+      "preserved_mechanics_and_required_change": "FMP source_value_positions retains logical recovery. Pair composes cold CP-BP positions with CSR positions before CTP build. CTP forward_value_positions addresses the same mutable weight plane.",
+      "live_callers": [
+        "src/compute/operation/prepared_relation.cu",
+        "src/compute/training/native_training_slice.cu"
+      ],
+      "regression_evidence_paths": [
+        "tests/semantic_spine/native/forward_test.cu",
+        "tests/semantic_spine/native/transpose_test.cu"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "src/compute/training/native_training_slice.cu",
+          "sha256": "40385c54f29e1453966312426d8bef1739625ce6af9867450c58180c2921778c"
+        },
+        {
+          "path": "include/Cellerator/compute/training/native_training_slice.hh",
+          "sha256": "b2e0c916e6941525af88241344b86c55b9170803b090430466557a3265e18360"
+        },
+        {
+          "path": "include/Cellerator/compute/math/native_training_slice.hh",
+          "sha256": "8d12a54622aeed7253e6429066f9dc0cbd049fd911421800facc9d41376c9f2f"
+        }
+      ],
+      "disposition": "extract_reusable_arithmetic_preserve_epilogues_then_retire_redundant_on_path_ownership",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-N01",
+        "CE-RU1-N02",
+        "CE-RU1-N03",
+        "CE-RU1-N04",
+        "CE-RU1-I07"
+      ],
+      "preserved_mechanics_and_required_change": "Forward kernel at line 67 traverses FMP masks and shares f32 feature vectors; additionally performs bias/ReLU/RMS. Transpose at line 144 accumulates N16 f32 via CTP physical weight references. Sparse update at line 169 sums channels into physical-order scalar gradient then mutates weights. Extract transpose and split VJP from mutation with explicit FMA/RNE policy. Preserve epilogue backward at line 120 and bias update at line 202 and their live consumer behavior. math header is a forwarder.",
+      "live_callers": [
+        "src/execution/training_program.cu:72 prepare_native_training_slice",
+        "src/execution/training_program.cu:121 run_native_training_step",
+        "components/CelleraTorch/src/autograd_ops.cu:221 indirect run_training_program"
+      ],
+      "regression_evidence_paths": [
+        "tests/math_core/native_training_slice_test.cu",
+        "tests/execution/training_program_test.cu",
+        "tests/execution/ce_live_concurrency_test.cu"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "src/execution/training_program.cu",
+          "sha256": "6ff3164e795d13a41f363e3bcd426816e27ba5c7268eef1883abae9dd5bffc60"
+        },
+        {
+          "path": "include/Cellerator/execution/training_program.hh",
+          "sha256": "e04bc80e7b598c4cd2cf09cd9d472f23f84e279fbf539d02c3bf47be6aa80b5e"
+        },
+        {
+          "path": "components/CelleraTorch/src/autograd_ops.cu",
+          "sha256": "355878e3457d14a373d2e63a9ac887c8d5f4bb44af0e559b4bee26da7c5ea38c"
+        }
+      ],
+      "disposition": "preserve_live_consumers",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-I07"
+      ],
+      "preserved_mechanics_and_required_change": "Existing fused training orchestration and framework adapter remain useful. Retiring training_slice without a tested replacement breaks real callers.",
+      "live_callers": [
+        "components/CelleraTorch/src/autograd_ops.cu:221 run_training_program"
+      ],
+      "regression_evidence_paths": [
+        "tests/execution/training_program_test.cu",
+        "tests/execution/ce_live_concurrency_test.cu"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "src/runtime/value_readiness.cu",
+          "sha256": "818cef2a461d8983863fe61f682c67436652b0fcc80376c20a515d91884a9434"
+        },
+        {
+          "path": "include/Cellerator/runtime/value_readiness.cuh",
+          "sha256": "f373d3db5f5ebf2dce329fce4b5acd7cebb01abdeabf2c37f050e936122c62a0"
+        }
+      ],
+      "disposition": "preserve_primitive_extend_pair_lifetime_protocol",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-R01",
+        "CE-RU1-R02",
+        "CE-RU1-R03",
+        "CE-RU1-N05"
+      ],
+      "preserved_mechanics_and_required_change": "Existing precreated event records producer readiness and waits only after exact epoch/generation validation. It has no consumer-done lease or writer join. Add bounded ready/done protocol without claiming existing readiness protects in-place reader lifetime.",
+      "live_callers": [
+        "src/compute/training/native_training_slice.cu",
+        "src/execution/training_program.cu",
+        "src/execution/program.cc",
+        "src/execution/training_program_v2/program.cc"
+      ],
+      "regression_evidence_paths": [
+        "tests/runtime/value_readiness_test.cu",
+        "tests/execution/ce_live_concurrency_test.cu"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc",
+          "sha256": "eb72707883c19d304c827904d4d082b409386c6de9f36537a5e3dba1436aa288"
+        },
+        {
+          "path": "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
+          "sha256": "e9c2458b4094a5892ab4ab6f2abd63fc8306851d263dee23a4f285d0f3f59c42"
+        }
+      ],
+      "disposition": "replace_on_path_metadata_mapping_preserve_useful_validation",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-F01",
+        "CE-RU1-F02",
+        "CE-RU1-F03",
+        "CE-RU1-F04"
+      ],
+      "preserved_mechanics_and_required_change": "Current implementation validates stage presence/identity/numeric tuple/publication generation and compares stage kinds, but does not execute independently lowered semantics or prove matching axes/operands. caller_update_boundary and publish_generation map to same training stage. Shared calculus and executable bridge must supersede this as RU1 convergence evidence.",
+      "live_callers": [
+        "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc",
+        "include/Cellerator/compiler/ir/semantic/semantic_ir_v1.hh (umbrella exposure)"
+      ],
+      "regression_evidence_paths": [
+        "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc"
+      ]
+    },
+    {
+      "sources": [
+        {
+          "path": "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
+          "sha256": "7644b98a3cd7cdb320c172e91d9490aff79a69f31cf97a40036187b222be3462"
+        },
+        {
+          "path": "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
+          "sha256": "5693da747a711cee8bbf1a3dfab8945ebf8ffc2e2f8f631fa6081c0119db506d"
+        }
+      ],
+      "disposition": "repair_actual_provider_then_connect_hybrid",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-W01",
+        "CE-RU1-W02",
+        "CE-RU1-W03",
+        "CE-RU1-W04",
+        "CE-RU1-W05"
+      ],
+      "preserved_mechanics_and_required_change": "Actual m16n16k16 half/f32 WMMA followed by scalar K tail uses dense_width as ldm without pointer/derived offset/stride/output capacity proof. K17 tail does not repair illegal WMMA prefix. Need explicit aligned physical stride and exact support extraction plus sparse residual. Source search found declaration and definition, no existing direct invocations in src/include/tests.",
+      "live_callers": [],
+      "regression_evidence_paths": []
+    },
+    {
+      "sources": [
+        {
+          "path": "tests/semantic_spine/native/lifecycle_test.cu",
+          "sha256": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93"
+        }
+      ],
+      "disposition": "preserve_and_rerun",
+      "intended_ru1_owner_tasks": [
+        "CE-RU1-N06",
+        "CE-RU1-I05",
+        "CE-RU1-I08"
+      ],
+      "preserved_mechanics_and_required_change": "Lines 59-64 reject publication during capture without generation advance; lines 65-72 capture/replay N1 enqueue at fixed storage and generation 32. RU1 must retain this while rejecting new mutable capture before side effects.",
+      "live_callers": [],
+      "regression_evidence_paths": [
+        "tests/semantic_spine/native/lifecycle_test.cu"
+      ]
+    }
+  ]
+}
