@@ -1,0 +1,193 @@
+{
+  "task": "CE-SS1-I05",
+  "status": "passed",
+  "source_head": "41dbae738a4f64ae20a51f152c982ad59be7428d",
+  "gate": {
+    "protocol_version": 2,
+    "status": "claimed",
+    "gates": [
+      {
+        "gate_id": "CE-SS1-G-I05",
+        "status": "passed",
+        "evidence_id": "76a03465-1774-40b2-b6a3-497d0a9f8551"
+      }
+    ],
+    "integration": [],
+    "task_id": "CE-SS1-I05",
+    "run_id": "CE-SS1-RUN-V1",
+    "lane_id": "CE-SS1-L-INTEGRATE",
+    "role": "integrator",
+    "operation_status": "passed",
+    "allowed_actions": [
+      "inspect_task",
+      "coordinate_task",
+      "delegate_task",
+      "finish_task"
+    ],
+    "recommended_next_call": "finish_task"
+  },
+  "controller": {
+    "classification": "decision-result",
+    "evidence_id": "86e09ca7-6cf9-4688-81fa-0c0a78c544dc",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded"
+  },
+  "receipt": {
+    "status": "passed",
+    "group": "conformance",
+    "source_head": "41dbae738a4f64ae20a51f152c982ad59be7428d",
+    "source_root": "/home/tumlinson/Cellerator",
+    "created_unix": 1788698236.824048,
+    "gpu_targets_executed": [
+      "ceSpineCrossOriginTest",
+      "ceSpineNativeTest"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.0015151500701904297,
+        "stdout_sha256": "14fb4384815d31f53c786db6e0a0c696006a0b97238c7f50ee9983403a9aff37"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/tumlinson/Cellerator",
+          "-B",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "-DCELLERATOR_BUILD_TESTS=ON",
+          "-DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON",
+          "-DCELLERATOR_ENABLE_CUDA=ON",
+          "-DCMAKE_CUDA_ARCHITECTURES=70",
+          "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.7794506549835205,
+        "stdout_sha256": "c8a30cdc57b35269b8999d74203d6569efa2771b983c41bb63cde07f5f79a99a"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "--parallel",
+          "80",
+          "--target",
+          "ceSpineCoreTest",
+          "ceSpineAlgebraTest",
+          "ceSpineFrontendTest",
+          "ceSpineNativeTest",
+          "ceSpineCrossOriginTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 18.755207777023315,
+        "stdout_sha256": "66cff82e037e2ab1175b670d670884717dfbb144595c0c986fa7c129a1665b6c"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineCoreTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.0017418861389160156,
+        "stdout_sha256": "2c3b22de7ea6f49ac4530bc639e3f85af4d495032124b9f4dbf7a2ff324f952b"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineAlgebraTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.009603738784790039,
+        "stdout_sha256": "1fbbfd78d7872f87a42da872ecb841a793994751661c2f6d5333c73e5487dce8"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineFrontendTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.008090019226074219,
+        "stdout_sha256": "316770869c8e405ab49787ee2fcf625dcfacaaa6c319653b724e76814c3ff571"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineNativeTest",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.454895257949829,
+        "stdout_sha256": "5b487173663e3acd7aac23df36c97b2fd78d917aa8a056f9b06503c369b7b0af"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineCrossOriginTest",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.2102956771850586,
+        "stdout_sha256": "dc0df6ece065487ddf1b9c8f433e9660a1cd6d651b4cb6f4da09855935b03a57"
+      }
+    ],
+    "performance_promotion": false,
+    "full_cell_compilation_complete": false
+  },
+  "raw_gate_log": {
+    "path": ".git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/76a03465-1774-40b2-b6a3-497d0a9f8551/stdout.txt",
+    "sha256": "66cf44d762cae7d592cea686bddbdbb4b9ab8952360e949b876a7b561039bba8"
+  },
+  "negative_controls": {
+    "controller": {
+      "classification": "decision-result",
+      "evidence_id": "f263cf83-f64c-46de-80f0-5615c7541916",
+      "message": "No action-worthy result; evidence stored.",
+      "ok": true,
+      "returncode": 0,
+      "status": "succeeded"
+    },
+    "command": [
+      "python3",
+      "tests/semantic_spine/verification/run_controls.py",
+      "--build-dir",
+      "build-ss1"
+    ],
+    "stdout": "missing-device exit 1 no CUDA-capable device is detected\n\nwrong-output exit 1 Device Tesla V100-SXM2-16GB sm_70\nGPU forward differs from logical-edge oracle\n\nintegrated negative controls passed\n",
+    "stdout_sha256": "583078b4ef414291eda3b40510aa40f030e30a95a48adfe4eb3cefcfe76d3cba"
+  },
+  "hardware": {
+    "device": "Tesla V100-SXM2-16GB",
+    "sm": 70,
+    "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "driver": "580.173.02",
+    "cuda": "12.9.86",
+    "build": "Release, assertions explicitly enabled",
+    "jobs": 80,
+    "lease": "Actual CUDA controller foreground owner observed and validated by /tmp/ce-ss1-leased-gate.py; mutex /tmp/cuda_v100_benchmark.lock"
+  },
+  "executed_witness": {
+    "origins": [
+      "native descriptor",
+      "existing parser/Sema/IR source-derived descriptor"
+    ],
+    "fixtures": 2,
+    "generations_per_origin_per_fixture": 2,
+    "directions": [
+      "forward",
+      "transpose"
+    ],
+    "native_candidates": [
+      "cpbp-feature-major-small-n-f16-f32",
+      "cpbp-transpose-backward-n1-f16-f32"
+    ],
+    "numeric": "N1, f16 weights, f32 input/multiply/accumulation/output",
+    "reference": "Independent logical-edge host oracle, exact support/identity/order and tolerance checked numerical output",
+    "reuse": "One preparation and stable projection IDs per origin/fixture, two refreshes, four accepted launches",
+    "rejections": "Missing source binding, changed high identity bits, stale generation, device/capacity/alias/order and unsupported valid width/numeric contracts exercised by integrated/native/frontend suites"
+  },
+  "full_cell_compilation_complete": false,
+  "performance_promotion": false
+}
