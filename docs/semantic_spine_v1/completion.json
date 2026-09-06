@@ -1,0 +1,286 @@
+{
+  "task": "CE-SS1-I07",
+  "acceptance_status": "final executable suite passed; authoritative task/run closure follows committed completion gate",
+  "observed_utc": "2026-09-06T12:45:48.972514+00:00",
+  "tested_source_head": "cd16da82305b388a499cc466091f548e46231a19",
+  "required_final_gate": {
+    "protocol_version": 2,
+    "status": "claimed",
+    "gates": [
+      {
+        "gate_id": "CE-SS1-G-I07",
+        "status": "passed",
+        "evidence_id": "6e0f663c-cc34-47c3-ae1f-9d8e022a07ea"
+      }
+    ],
+    "integration": [],
+    "task_id": "CE-SS1-I07",
+    "run_id": "CE-SS1-RUN-V1",
+    "lane_id": "CE-SS1-L-INTEGRATE",
+    "role": "integrator",
+    "operation_status": "passed",
+    "allowed_actions": [
+      "inspect_task",
+      "coordinate_task",
+      "delegate_task",
+      "finish_task"
+    ],
+    "recommended_next_call": "finish_task"
+  },
+  "controller": {
+    "classification": "decision-result",
+    "evidence_id": "da8a3c03-6eaf-4a4d-922a-4c8f788bf138",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded"
+  },
+  "receipt": {
+    "status": "passed",
+    "group": "final",
+    "source_head": "cd16da82305b388a499cc466091f548e46231a19",
+    "source_root": "/home/tumlinson/Cellerator",
+    "created_unix": 1788698645.6651602,
+    "gpu_targets_executed": [
+      "ceSemanticSpineDemo",
+      "ceSpineCrossOriginTest",
+      "ceSpineNativeTest"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.0015895366668701172,
+        "stdout_sha256": "b005dfd2610d09e5d5b8e8a11c145250987269e6458d3988bbb5b104a1802d8f"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/tumlinson/Cellerator",
+          "-B",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "-DCELLERATOR_BUILD_TESTS=ON",
+          "-DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON",
+          "-DCELLERATOR_ENABLE_CUDA=ON",
+          "-DCMAKE_CUDA_ARCHITECTURES=70",
+          "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.8087666034698486,
+        "stdout_sha256": "c8a30cdc57b35269b8999d74203d6569efa2771b983c41bb63cde07f5f79a99a"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "--parallel",
+          "80",
+          "--target",
+          "ceSpineCoreTest",
+          "ceSpineAlgebraTest",
+          "ceSpineFrontendTest",
+          "ceSpineNativeTest",
+          "ceSpineCrossOriginTest",
+          "ceSemanticSpineDemo"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.5963714122772217,
+        "stdout_sha256": "2ab501d682e997e1616988e63e403377555f5c1eab83e74e6415651646adfa04"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineCoreTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.0021371841430664062,
+        "stdout_sha256": "2c3b22de7ea6f49ac4530bc639e3f85af4d495032124b9f4dbf7a2ff324f952b"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineAlgebraTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.009121417999267578,
+        "stdout_sha256": "1fbbfd78d7872f87a42da872ecb841a793994751661c2f6d5333c73e5487dce8"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineFrontendTest"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.008094549179077148,
+        "stdout_sha256": "316770869c8e405ab49787ee2fcf625dcfacaaa6c319653b724e76814c3ff571"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineNativeTest",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.438310146331787,
+        "stdout_sha256": "663c97f3154000c249c4fc4feb15b83cd175cdb5df99c1b7b00cb72c52ee0f96"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSpineCrossOriginTest",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.21597886085510254,
+        "stdout_sha256": "dc0df6ece065487ddf1b9c8f433e9660a1cd6d651b4cb6f4da09855935b03a57"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSemanticSpineDemo",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.20374155044555664,
+        "stdout_sha256": "51e1200f28510a4bed3022dfd637aed020df44b7bc096ee4cb8ba04e563977d4"
+      },
+      {
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "/home/tumlinson/Cellerator/build-ss1/ceSemanticSpineDemo",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.3590977191925049,
+        "stdout_sha256": "07591d5b28dd8b6c62fb1d28d9245158a81c111eac52682701c8e7fcd6fdff34"
+      }
+    ],
+    "performance_promotion": false,
+    "full_cell_compilation_complete": false
+  },
+  "raw_stdout": {
+    "path": ".git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/6e0f663c-cc34-47c3-ae1f-9d8e022a07ea/stdout.txt",
+    "sha256": "ea5574a1feb0664fb0cab91fde3477a43914b15759107980105d1ca52ad5fe61"
+  },
+  "required_gate_completion_policy": "finish_task reruns the required final suite under the actual GPU controller lease and mutex after this report is committed. The authoritative handoff records that final evidence and validation HEAD.",
+  "prior_completed_gates": {
+    "i05": [
+      {
+        "id": "CE-SS1-G-I05",
+        "status": "passed",
+        "valid": true,
+        "input_fingerprint": "71ed771ded03c37bb962f49742ed503ef46595a186bbcc0c9ea8a4b1c714153d",
+        "evidence_id": "cefbcd8c-db05-4882-8611-d4069b533317",
+        "evidence_revision": 6850,
+        "validation_git_head": "844e64a3081d1c0001849446f3111c42267a4a97"
+      }
+    ],
+    "i06": [
+      {
+        "id": "CE-SS1-G-I06",
+        "status": "passed",
+        "valid": true,
+        "input_fingerprint": "c7315ebb25b4b97548c0f8d9805139870a66df75283155c87e18028dfaeb7e81",
+        "evidence_id": "5929b198-db0a-40db-a712-908de6bda091",
+        "evidence_revision": 6856,
+        "validation_git_head": "cd16da82305b388a499cc466091f548e46231a19"
+      }
+    ]
+  },
+  "implemented": [
+    "One fieldwise canonical mathematical relation contract shared by native and real parser/Sema/IR source origin",
+    "Direct sm70 forward/transpose prepared execution using existing FMP1/CTP1 candidates",
+    "Reusable immutable topology across state pointers and two value generations with pre-launch rejection checks",
+    "Exact support-dot/channel assembly semantics and non-fabricated primitive/composition/effect classification",
+    "Byte-preserved .ceh-to-.cell umbrella conversion",
+    "Opt-in real independent host/CUDA suites and unchanged supplied biological reuse demo"
+  ],
+  "accepted_branch_ancestry": [
+    {
+      "lane": "CE-SS1-L-VERIFY",
+      "branch": "codex/ce-ss1-l-verify",
+      "head": "ea10cf87fa9a7675b54cf5d4e6d30295e9240a23",
+      "ancestor_of_main": true
+    },
+    {
+      "lane": "CE-SS1-L-FRONTEND-REPAIR",
+      "branch": "codex/ce-ss1-l-frontend-repair",
+      "head": "57c6a60c0d1a3eecb072fe609a9ab635eaaeff7f",
+      "ancestor_of_main": true
+    },
+    {
+      "lane": "CE-SS1-L-FRONTEND",
+      "branch": "codex/ce-ss1-l-frontend",
+      "head": "70dfc093fdf9b59dca06aae5841a8ec6fd481330",
+      "ancestor_of_main": true
+    },
+    {
+      "lane": "CE-SS1-L-CORE",
+      "branch": "codex/ce-ss1-l-core",
+      "head": "a485a01a2a70313fae1a0332480c7215d7559cff",
+      "ancestor_of_main": true
+    },
+    {
+      "lane": "CE-SS1-L-NATIVE",
+      "branch": "codex/ce-ss1-l-native",
+      "head": "0498be36f5831bc6b9551e430dfce7bb9dbc0ff4",
+      "ancestor_of_main": true
+    },
+    {
+      "lane": "CE-SS1-L-ALGEBRA",
+      "branch": "codex/ce-ss1-l-algebra",
+      "head": "3a05b73fb78e53132a6245a60d78ebe6990b3a25",
+      "ancestor_of_main": true
+    }
+  ],
+  "task_inventory_at_recording": {
+    "CE-SS1-0000": "planned",
+    "CE-SS1-A01": "done",
+    "CE-SS1-A02": "done",
+    "CE-SS1-A03": "done",
+    "CE-SS1-A04": "done",
+    "CE-SS1-C01": "done",
+    "CE-SS1-C02": "done",
+    "CE-SS1-C03": "done",
+    "CE-SS1-C04": "done",
+    "CE-SS1-F01": "done",
+    "CE-SS1-F02": "done",
+    "CE-SS1-F03": "done",
+    "CE-SS1-F04": "done",
+    "CE-SS1-F05": "done",
+    "CE-SS1-I01": "done",
+    "CE-SS1-I02": "done",
+    "CE-SS1-I03": "done",
+    "CE-SS1-I04": "done",
+    "CE-SS1-I05": "done",
+    "CE-SS1-I06": "done",
+    "CE-SS1-I07": "in_progress",
+    "CE-SS1-N01": "done",
+    "CE-SS1-N02": "done",
+    "CE-SS1-N03": "done",
+    "CE-SS1-N04": "done",
+    "CE-SS1-N05": "done",
+    "CE-SS1-N06": "done",
+    "CE-SS1-V01": "done",
+    "CE-SS1-V02": "done",
+    "CE-SS1-V03": "done",
+    "CE-SS1-V04": "done"
+  },
+  "program_accounting": {
+    "original_leaf_tasks": 29,
+    "supplemental_correction": "CE-SS1-F05: restore required canonical numeric transport parity; no new epic",
+    "leaf_tasks_total": 30,
+    "root": "CE-SS1-0000"
+  },
+  "cleanup_policy": "Only after authoritative terminal run and integration receipts, remove clean merged Semantic Spine worktrees/branches; preserve unrelated JBC work.",
+  "deferred": "docs/semantic_spine_v1/deferred.md",
+  "source_disposition": "docs/semantic_spine_v1/source_disposition.json",
+  "full_cell_compilation_complete": false,
+  "installed_sdk_complete": false,
+  "performance_promotion": false,
+  "follow_on_epic_started": false
+}

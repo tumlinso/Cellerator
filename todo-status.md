@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6854`
+Project revision: `6860`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1037,8 +1037,8 @@ Project revision: `6854`
 - `CE-SS1-I03` | status: done | execution: closed | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
 - `CE-SS1-I04` | status: done | execution: closed | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: done | execution: closed | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
-- `CE-SS1-I06` | status: in_progress | execution: claimed | next: Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.
-- `CE-SS1-I07` | status: planned | execution: ready | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.
+- `CE-SS1-I06` | status: done | execution: closed | next: Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.
+- `CE-SS1-I07` | status: in_progress | execution: claimed | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.
 - `CE-SS1-N01` | status: done | execution: closed | next: Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.
 - `CE-SS1-N02` | status: done | execution: closed | next: Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.
 - `CE-SS1-N03` | status: done | execution: closed | next: Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.

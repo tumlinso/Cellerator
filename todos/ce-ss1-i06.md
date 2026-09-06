@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I06: Run the supplied biological demo and CUDA memory checks
 
-Task revision: `6852`; current project revision is in `todo-status.md`.
+Task revision: `6857`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.

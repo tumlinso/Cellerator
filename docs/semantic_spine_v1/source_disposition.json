@@ -1,24 +1,78 @@
 {
-  "task": "CE-SS1-I01",
-  "source_head": "95688c0d30fcaa6155373290e2851804903a101a",
-  "active_ceh_files": [
+  "task": "CE-SS1-I07",
+  "source_head": "cd16da82305b388a499cc466091f548e46231a19",
+  "baseline_inventory": {
+    "task": "CE-SS1-I01",
+    "source_head": "95688c0d30fcaa6155373290e2851804903a101a",
+    "active_ceh_files": [
+      {
+        "path": "library/cellerator/cellerator.ceh",
+        "sha256": "d16bc4ec43107e11b351d0242b157943a89cbc8bcb741bd7090779305e738c0d",
+        "content": "#pragma cellerator\n\n// Installed stable umbrella for the allocation-free Cellerator source library.\n#include \"../core/core.cell\"\n#include \"../core/builders.cell\"\n#include \"../core/operations.cell\"\n#include \"../core/profile.cell\"\n#include \"../core/planning.cell\"\n#include \"../core/reflection.cell\"\n",
+        "disposition": "Preserve all six core .cell includes during I03 conversion; not converted by I01."
+      }
+    ],
+    "protected_original_edits": {
+      "library/cellerator/cellerator.ceh": "Previously dirty content committed in 30ec292d9fbc68932a0527e61736f23f72a5101b; currently clean.",
+      "library/cellerator.cell": "Already deleted in 30ec292d9fbc68932a0527e61736f23f72a5101b; historical body was #pragma cellerator and a blank line, retained in Git."
+    },
+    "demo_present": true,
+    "demo_sha256": "e528a1d25daa6aca5677181e413fc9bd43648755c59fd5329e2ffd473238c296",
+    "semantic_disposition": {
+      "persistent_identities": "Preserve full low/high identities and independent epoch/generation.",
+      "legacy_core_records": "Retain as checked provider adaptation, not competing relation authority.",
+      "physical_candidates": "Preserve existing FMP1/CTP1 arithmetic and value position maps."
+    },
+    "no_source_conversion_performed": true
+  },
+  "active_ceh_remaining": 0,
+  "active_ceh_paths": [],
+  "tracked_ceh_paths": [],
+  "ceh_conversion": {
+    "task": "CE-SS1-I03",
+    "conversions": [
+      {
+        "from": "library/cellerator/cellerator.ceh",
+        "to": "library/cellerator/cellerator.cell",
+        "sha256_before_and_after": "d16bc4ec43107e11b351d0242b157943a89cbc8bcb741bd7090779305e738c0d",
+        "preservation": "byte-for-byte",
+        "direct_references_found": 0
+      }
+    ],
+    "active_ceh_remaining": 0,
+    "scan": "project-owned tracked/untracked source, excluding Git/runtime/build/dependency/compatibility evidence trees",
+    "full_cell_compiler_complete": false
+  },
+  "legacy_dispositions": [
     {
-      "path": "library/cellerator/cellerator.ceh",
-      "sha256": "d16bc4ec43107e11b351d0242b157943a89cbc8bcb741bd7090779305e738c0d",
-      "content": "#pragma cellerator\n\n// Installed stable umbrella for the allocation-free Cellerator source library.\n#include \"../core/core.cell\"\n#include \"../core/builders.cell\"\n#include \"../core/operations.cell\"\n#include \"../core/profile.cell\"\n#include \"../core/planning.cell\"\n#include \"../core/reflection.cell\"\n",
-      "disposition": "Preserve all six core .cell includes during I03 conversion; not converted by I01."
+      "area": "Persistent domain/order/geometry/partition and structure identity",
+      "disposition": "Retained full low/high identities, epochs and 64-bit logical extents in the canonical relation contract."
+    },
+    {
+      "area": "Legacy relation IR and operation/algebra records",
+      "disposition": "Adapted to canonical relation meaning; retained as checked transport. Corrected precision/nonfinite parity; unrepresentable FMA/reassociation restrictions expose unavailable legacy transport while canonical semantics remain valid."
+    },
+    {
+      "area": "Native operation core, FMP1/CTP1 projections and candidates",
+      "disposition": "Retained existing implementations and direct device arithmetic; prepared pair checks identity, scope, capacity, device, stream and generation before dispatch. Zero derived projection IDs corrected without changing biological identity."
+    },
+    {
+      "area": "Support embedding and scalar contraction",
+      "disposition": "Retained useful interpreters/providers; corrected scalar-dot versus edge-channel assembly and zero-neutral semantics. Independent K2/K17 regressions retained."
+    },
+    {
+      "area": "Operation-kind and graph classification",
+      "disposition": "Removed fabricated primitive substitutes; explicit primitive/composition/effect variant and optional unsupported graph lowering. No new accelerator family claimed."
+    },
+    {
+      "area": "Library umbrella",
+      "disposition": "Byte-for-byte rename .ceh to .cell; six existing includes retained."
+    },
+    {
+      "area": "Supplied regulatory demo and fixture",
+      "disposition": "Source unchanged; existing independent expected outputs and normal real-device mode preserved."
     }
   ],
-  "protected_original_edits": {
-    "library/cellerator/cellerator.ceh": "Previously dirty content committed in 30ec292d9fbc68932a0527e61736f23f72a5101b; currently clean.",
-    "library/cellerator.cell": "Already deleted in 30ec292d9fbc68932a0527e61736f23f72a5101b; historical body was #pragma cellerator and a blank line, retained in Git."
-  },
-  "demo_present": true,
-  "demo_sha256": "e528a1d25daa6aca5677181e413fc9bd43648755c59fd5329e2ffd473238c296",
-  "semantic_disposition": {
-    "persistent_identities": "Preserve full low/high identities and independent epoch/generation.",
-    "legacy_core_records": "Retain as checked provider adaptation, not competing relation authority.",
-    "physical_candidates": "Preserve existing FMP1/CTP1 arithmetic and value position maps."
-  },
-  "no_source_conversion_performed": true
+  "preserved_unrelated_work": "All JBC worktrees/branches and components/compat implementations remain untouched by this epic integration.",
+  "full_cell_compiler_complete": false
 }

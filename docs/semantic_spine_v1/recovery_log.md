@@ -87,3 +87,15 @@ completion call ran outside that lease. Source inspection confirmed that
 missing lease receipt. Completion calls for I05-I07 therefore run inside the
 controller and benchmark mutex too. This is an invocation correction, with no
 workflow-source edit, fabricated lease, skipped gate, or weakened test.
+
+## Integrated acceptance
+
+All six producer branches (the original five plus the frontend correction) are
+verified ancestors of main. The root Release build passed with assertions
+enabled. I05 completed at revision 6851 after real cross-origin conformance and
+missing-device/wrong-output controls. I06 completed at revision 6857 after the
+unchanged supplied demo and Compute Sanitizer reported zero errors. Final suite
+evidence `6e0f663c-cc34-47c3-ae1f-9d8e022a07ea` passed all required targets
+and demo memcheck. The completion call will validate the committed final report
+under the same lease discipline before authoritative closure and safe cleanup.
+No active project-owned `.ceh` remains; the umbrella content hash is unchanged.
