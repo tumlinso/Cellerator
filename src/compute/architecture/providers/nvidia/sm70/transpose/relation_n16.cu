@@ -94,14 +94,11 @@ operation_status run_impl(const prepared_operation &prepared,
         || launch.stream.device_ordinal != state.device_ordinal)
         return fail(operation_status_code::invalid_launch_bindings,
             "transpose backward order, shape, value, or residency is incompatible");
-    constexpr std::uint32_t threads = 128u;
-    const std::uint32_t blocks =
-        (std::uint64_t(projection.header.feature_count) + threads - 1u) / threads;
-    transpose_backward_n16_kernel<<<blocks, threads, 0u,
-        static_cast<cudaStream_t>(launch.stream.stream)>>>(projection,
+    launch_transpose_backward_n16(projection,
         static_cast<const __half *>(values.values),
         static_cast<const float *>(input.data),
-        static_cast<float *>(output.data));
+        static_cast<float *>(output.data),
+        static_cast<cudaStream_t>(launch.stream.stream));
     if (cudaPeekAtLastError() != cudaSuccess)
         return fail(operation_status_code::execution_failed,
             "transpose backward kernel launch failed");
@@ -138,6 +135,15 @@ operation_status prepare_impl(const operation_candidate& candidate,
     return validate_prepared_operation(*prepared);
 }
 } // namespace
+void launch_transpose_backward_n16(const transpose_projection_view& projection,
+    const __half* forward_values, const float* row_input,
+    float* feature_output, cudaStream_t stream) noexcept {
+    constexpr std::uint32_t threads = 128u;
+    const std::uint32_t blocks =
+        (std::uint64_t(projection.header.feature_count) + threads - 1u) / threads;
+    transpose_backward_n16_kernel<<<blocks, threads, 0u, stream>>>(
+        projection, forward_values, row_input, feature_output);
+}
 operation_candidate transpose_backward_n16_candidate() noexcept {
     auto candidate = transpose_backward_n1_candidate();
     candidate.identity = transpose_backward_n16_candidate_id;

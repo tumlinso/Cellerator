@@ -48,3 +48,10 @@ explicitly, set a nonzero `--error-exitcode`, and require the raw sanitizer
 summary as well as the actual test output. The corrected readiness and native
 runs reported zero memcheck errors. Controller quiescence uses a 60-second
 budget to fit all three required idle samples; retain the samples and mutex.
+
+The explicit Torch compatibility configuration also needs the storage component:
+`-DCELLERATOR_ENABLE_CELLSHARD=ON` and, in nested worktrees,
+`-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard`. Without these,
+Torch configuration fails on the existing `CellShard::runtime` links. With them
+the native adapter configuration generates successfully; dependency source trees
+are read only and all build products stay under the Cellerator build directory.
