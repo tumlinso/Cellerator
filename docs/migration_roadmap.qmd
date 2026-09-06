@@ -564,3 +564,19 @@ native/Torch compatibility validation. Remaining closure is administrative:
 publish this documentation spine, run the final acceptance/interlock audits,
 and record CE-GEO completion. CE-AMP is loaded but remains dormant because
 `CE-AMP-PERMISSION` is `not_granted`.
+
+## Relation Update Spine v1 outcome
+
+The bounded relation update spine now connects independent native/compiler
+origins to one prepared N16 relation, exact gradient/update arithmetic,
+event-backed publication, an external read lease, and real sm70 WMMA plus exact
+residual/fallback execution. Retained native/Torch training remains connected
+and shares the N16 transpose provider. Final post-pruning acceptance is recorded
+in [RU1 completion](relation_update_spine_v1/completion.json).
+
+The performance comparison does not promote hybrid automatically. Full `.cell`,
+arbitrary-N training, a general optimizer framework, graph-wide planning and
+mutable-cycle capture remain deferred; see
+[recorded obligations](relation_update_spine_v1/deferred_work.md). This closes
+the bounded RU1 work and does not activate another program or complete the full
+architectural roadmap.
