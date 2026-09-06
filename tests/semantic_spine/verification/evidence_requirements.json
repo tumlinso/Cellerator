@@ -1,0 +1,9 @@
+{
+  "task": "CE-SS1-V03",
+  "required_runtime_fields": ["source_commit", "source_and_binary_hashes", "build_commands", "compiler_and_cuda_versions", "actual_device_name_capability_uuid", "canonical_lease_receipt", "benchmark_mutex", "exact_commands_and_exit_status", "actual_candidates", "forward_and_transpose_oracle_comparisons", "generation_reuse_and_untouched_rejection", "sanitizer_result"],
+  "tiny_fixture_tolerance": {"absolute": 0.00001, "relative": 0.00001, "nan_never_matches_finite": true},
+  "required_negative_controls": ["wrong-output injection fails", "zero or stale generation rejected", "missing CUDA device fails", "missing native implementation fails linkage", "NaN fails finite expectation"],
+  "preintegration_status": "syntax only; no device success claimed",
+  "full_cell_compiler_complete": false,
+  "performance_promotion": false
+}
