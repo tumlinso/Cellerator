@@ -28,3 +28,12 @@ unsupported declarations, qualifiers, filters, expression chains and trailing
 statements are rejected. Full `.cell` execution and installed SDK completion
 remain deferred. See the authoritative [architecture](../../../docs/architecture.qmd)
 and [Semantic Spine contract](../../../planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md).
+
+F05 additionally checks that canonical arithmetic and retained v2 operation/algebra
+transport agree, including distinct relation/input/output precision and nonfinite
+handling. `lowered_relation_apply_v1::transport_status` reports whether the legacy
+transport exists. A successful canonical lowering with restricted FMA or
+reassociation permissions retains that mathematical descriptor and reports
+`unsupported_arithmetic_policy`; its legacy operation and algebra carry invalid
+schema/kind and no bindings. Consumers must use the canonical descriptor or test
+transport availability. Canonical validity does not promise a native candidate.

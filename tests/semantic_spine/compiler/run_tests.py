@@ -28,6 +28,8 @@ BRIDGE = [
     "src/compiler/frontend/parser/parse_non_relation_operation_families.cc",
 ]
 TESTS = {
+    "numeric_transport": ("tests/semantic_spine/compiler/numeric_transport_test.cc",
+                          COMMON + ["src/compute/operation/operation_core_v2/schema.cc"]),
     "lowering": ("tests/semantic_spine/compiler/lowering_test.cc", COMMON),
     "source_slice": ("tests/semantic_spine/compiler/source_slice_test.cc", COMMON + BRIDGE),
     "diagnostic": ("tests/semantic_spine/compiler/diagnostic_test.cc", COMMON + BRIDGE),
@@ -50,6 +52,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--receipt", type=Path, help="Write actual commands and results as JSON")
     parser.add_argument("--build-dir", type=Path)
+    parser.add_argument("--task-id", default="CE-SS1-F04")
     args = parser.parse_args()
     compiler = shlex.split(os.environ.get("CXX", "g++"))
     cuda_root = Path("/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9")
@@ -58,7 +61,8 @@ def main():
     build = args.build_dir.resolve() if args.build_dir else Path(tempfile.mkdtemp(prefix="ce-ss1-frontend-"))
     build.mkdir(parents=True, exist_ok=True)
     flags = ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-UNDEBUG", "-I" + str(ROOT / "include"), "-I" + str(cuda_root / "include")]
-    sources = sorted(set(COMMON + BRIDGE + [test[0] for test in TESTS.values()]))
+    sources = sorted({source for test, dependencies in TESTS.values()
+                      for source in [test] + dependencies})
     objects = {source: build / (source.replace("/", "_") + ".o") for source in sources}
     compile_commands = [compiler + flags + ["-c", str(ROOT / source), "-o", str(objects[source])] for source in sources]
     # Independent source compilation uses all available processors, as AGENTS.md
@@ -81,19 +85,24 @@ def main():
         print(name + ": passed")
     receipt = {
         "schema_version": 1,
-        "task": "CE-SS1-F04",
+        "task": args.task_id,
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "source_commit": run(["git", "rev-parse", "HEAD"])["stdout"].strip(),
         "compiler": run(compiler + ["--version"])["stdout"].splitlines()[0],
         "cuda_headers": str(cuda_root / "include"),
         "parallel_jobs": jobs,
-        "source_sha256": {source: hashlib.sha256((ROOT / source).read_bytes()).hexdigest() for source in sources},
+        "source_sha256": {source: hashlib.sha256((ROOT / source).read_bytes()).hexdigest()
+                          for source in sources + [
+                              "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+                              "include/Cellerator/compute/operation/relation_semantics.hh",
+                              "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+                          ]},
         "symbols_exercised": SYMBOLS,
         "compile_results": compiles,
         "tests": results,
         "status": "passed",
         "scope": "Bounded embedded declarations and one assigned relation application through existing parser/Sema/IR to canonical descriptor.",
-        "negative_coverage": ["altered direction with wrong endpoints", "unknown symbol", "numeric declaration mismatch", "ambiguous binding", "unconsumed source", "unsupported filter", "high identity bits", "axis/order mismatch", "invalid effects", "unknown extent", "nonempty support with empty axes", "unsupported update"],
+        "negative_coverage": ["altered direction with wrong endpoints", "unknown symbol", "numeric declaration mismatch", "ambiguous binding", "unconsumed source", "unsupported filter", "high identity bits", "axis/order mismatch", "invalid effects", "unknown extent", "nonempty support with empty axes", "unsupported update", "unrepresentable legacy arithmetic clears executable transport"],
         "accelerator_execution": "Not performed by this host conformance harness; integrated native cross-origin tests are separately required.",
         "deferred": ["full .cell executable pipeline", "full expression or execution-field lowering", "LTO and driver completion", "installed SDK completion"],
     }

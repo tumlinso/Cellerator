@@ -47,7 +47,16 @@ enum class relation_apply_ir_validation_code_v1 : std::uint8_t {
     invalid_effects,
 };
 
+enum class relation_transport_status_v1 : std::uint8_t {
+    not_lowered,
+    available,
+    unsupported_arithmetic_policy,
+};
+
 struct lowered_relation_apply_v1 {
+    // Canonical mathematics can be valid even when legacy transport cannot
+    // represent it. Unavailable transport carries no executable operation.
+    relation_transport_status_v1 transport_status = relation_transport_status_v1::not_lowered;
     cellerator::compute::relation::operation_descriptor semantic{};
     cellerator::compute::operation::v2::typed_relation relation{};
     cellerator::compute::operation::v2::relation_binding_contract binding{};

@@ -65,6 +65,9 @@ int main() {
     auto forward = parse("y = x -[regulation]-> modules;");
     for (const auto& diagnostic : forward.diagnostics) std::cerr << diagnostic.message << '\n';
     assert(forward.accepted());
+    assert(forward.lowered.transport_status == relation_transport_status_v1::available);
+    assert(forward.lowered.operation.numeric.relation_storage == numeric_type::f16);
+    assert(forward.lowered.algebra.core.numeric.relation_storage == numeric_type::f16);
     namespace canonical = cellerator::compute::relation;
     canonical::operation_descriptor cpp;
     const cellerator::execution::serialized_record_header header{

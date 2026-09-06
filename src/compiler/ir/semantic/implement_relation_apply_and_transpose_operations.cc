@@ -19,7 +19,7 @@ lowered_relation_apply_v1::lowered_relation_apply_v1() noexcept { refresh_views(
 
 lowered_relation_apply_v1::lowered_relation_apply_v1(
     const lowered_relation_apply_v1& other) noexcept
-    : semantic(other.semantic), relation(other.relation), binding(other.binding), value_binding(other.value_binding),
+    : transport_status(other.transport_status), semantic(other.semantic), relation(other.relation), binding(other.binding), value_binding(other.value_binding),
       operation(other.operation), algebra(other.algebra) {
     refresh_views();
 }
@@ -27,6 +27,7 @@ lowered_relation_apply_v1::lowered_relation_apply_v1(
 lowered_relation_apply_v1& lowered_relation_apply_v1::operator=(
     const lowered_relation_apply_v1& other) noexcept {
     if (this != &other) {
+        transport_status = other.transport_status;
         semantic = other.semantic;
         relation = other.relation;
         binding = other.binding;
@@ -48,6 +49,14 @@ lowered_relation_apply_v1& lowered_relation_apply_v1::operator=(
 }
 
 void lowered_relation_apply_v1::refresh_views() noexcept {
+    if (transport_status != relation_transport_status_v1::available) {
+        operation = {};
+        operation.schema_version = 0;
+        operation.kind = static_cast<cellerator::compute::operation::v2::operation_kind>(0);
+        algebra = {};
+        algebra.core = operation;
+        return;
+    }
     operation.relations = {&relation, 1};
     algebra.core = operation;
     algebra.bindings = {&binding, 1};
@@ -138,6 +147,15 @@ relation_apply_ir_validation_code_v1 lower_relation_apply_operation_v1(
     if (!canonical::validate(result.semantic))
         return relation_apply_ir_validation_code_v1::numeric_mismatch;
     result.relation = *relation;
+    if (!result.semantic.arithmetic.permit_fma || !result.semantic.arithmetic.permit_reassociation) {
+        // v2 has no FMA/reassociation permissions. Preserve the mathematical
+        // descriptor without publishing a permissive substitute transport.
+        result.transport_status = relation_transport_status_v1::unsupported_arithmetic_policy;
+        result.refresh_views();
+        *lowered = std::move(result);
+        return relation_apply_ir_validation_code_v1::success;
+    }
+    result.transport_status = relation_transport_status_v1::available;
     result.operation.schema_version = cellerator::compute::operation::v2::operation_core_schema_version;
     result.operation.kind = operation.relation.orientation == relation_orientation_ir_v1::forward
         ? cellerator::compute::operation::v2::operation_kind::relation_apply
@@ -155,7 +173,21 @@ relation_apply_ir_validation_code_v1 lower_relation_apply_operation_v1(
         ? result.relation.destination_axis : result.relation.source_axis;
     result.operation.logical_edge_order = result.relation.logical_edge_order;
     result.operation.expected_value_generation = {operation.relation.value_generation};
-    result.operation.numeric = to_operation_numeric_policy_v1(operation.source.numeric);
+    const auto& arithmetic = result.semantic.arithmetic;
+    auto& numeric = result.operation.numeric;
+    numeric.relation_storage = arithmetic.relation_storage;
+    numeric.state_storage = arithmetic.input_storage;
+    numeric.multiply = arithmetic.multiply;
+    numeric.accumulation = arithmetic.accumulation;
+    numeric.output_storage = arithmetic.output_storage;
+    numeric.scalar = arithmetic.multiply;
+    using namespace cellerator::compute::operation::v2;
+    numeric.rounding = rounding_policy::nearest_even;
+    numeric.saturation = saturation_policy::none;
+    numeric.nan = arithmetic.nonfinite == canonical::nonfinite_policy::reject
+        ? nan_policy::reject : nan_policy::propagate;
+    numeric.infinity = arithmetic.nonfinite == canonical::nonfinite_policy::reject
+        ? infinity_policy::reject : infinity_policy::propagate;
     result.operation.output.produced_axis = result.operation.result_axis;
     result.operation.output.canonical_axis = result.operation.result_axis;
     result.operation.output.update = operation.update;
