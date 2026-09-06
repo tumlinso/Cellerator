@@ -2,7 +2,7 @@
 
 ## What this package authorizes
 
-Nothing in this package applies itself. Package construction, installation as repository files, native plan validation, deliberate Todo ingestion, run activation and implementation are separate actions. The supplied plan has no active task/run state. The delivered default is all 35 records planned. No invocation below has been run against the remote authority during package construction, except the explicitly read-only final `plan_preview` validation recorded in evidence.
+Nothing in this package applies itself. Package construction, installation as repository files, native plan validation, deliberate Todo ingestion and implementation are separate actions. Native schema-3 ingestion creates the run with status `active`, even when the payload omits status; it does not dispatch tasks. The supplied plan has no started tasks. The delivered default is all 35 records planned. No invocation below has been run against the remote authority during package construction, except the explicitly read-only final `plan_preview` validation recorded in evidence.
 
 `machine/relation-update-spine-v1.todo-plan.json` is the **only apply input**. It is native schema 3. Do not apply `proposed_todos.json`, CSV projections or the source snapshot. Do not run the generic preledger compiler over this package: that can discard native run/lane information. `scripts/compile_plan.py --check` is the package's pure deterministic projection checker.
 
@@ -69,18 +69,18 @@ python3 -B planning/relation-update-spine-v1/scripts/todo_bootstrap.py apply \
   --confirm APPLY-CE-RU1-RUN-V1
 ```
 
-The wrapper repeats validation and compares the fresh response with the reviewed receipt. The bridge then constructs an inert `ProposalEnvelope` containing the **saved reviewed observation preconditions**, calls the actual `apply_proposal`, and relies on the native mutation service's immediate freshness recheck and expected-revision check inside the Todo transaction. It does not directly edit SQLite, use MCP-to-MCP mutation, reconstruct authority, or call run activation.
+The wrapper repeats validation and compares the fresh response with the reviewed receipt. The bridge then constructs an inert `ProposalEnvelope` containing the **saved reviewed observation preconditions**, calls the actual `apply_proposal`, and relies on the native mutation service's immediate freshness recheck and expected-revision check inside the Todo transaction. It does not directly edit SQLite, use MCP-to-MCP mutation, reconstruct authority, or dispatch tasks. The native transaction creates an `active` run record.
 
 A receipt file is reserved before mutation. Any ambiguous exception, timeout or disconnect is recorded as requiring inspection. **Do not automatically retry.** Inspect the current authority and apply receipt first. Reapplying a partially imported plan or overwriting an earlier receipt is rejected. Rollback would require its own explicitly reviewed administrative operation, not editing authority files.
 
 ## 5. Verify ingestion, do not start work yet
 
-Review the actual apply result and read Project Control again. Confirm the expected project UUID, plan digest, 35 task IDs, planned root/leaves, CE-RU1-RUN-V1, eight lane definitions and their queues, checkpoints and interface ownership. Confirm unrelated records and the active run were not replaced. No tasks should be claimed, no implementation workspace created, and no CE-RU1 run activated by ingestion.
+Review the actual apply result and read Project Control again. Confirm the expected project UUID, plan digest, 35 task IDs, planned root/leaves, CE-RU1-RUN-V1, eight lane definitions and their queues, checkpoints and interface ownership. Confirm unrelated records, including prior run records, were not replaced. Expect the new run record to be `active` and the observer active-run selection to identify it. No tasks should be claimed and no implementation workspace should be created. The installed runtime has no planned/paused run state; this package does not promise an inactive run.
 
-Task execution remains blocked on a later explicit authorization. The package intentionally does not bundle an activation/dispatch command that could accidentally collapse this boundary. The lane handoffs are prospective instructions for that later step.
+Task execution still requires later explicit user authorization; this is an instruction boundary, not a runtime activation gate. The package intentionally does not bundle a dispatch command that could accidentally collapse this boundary. The lane handoffs are prospective instructions for that later step.
 
 ## Failure and drift rules
 
 Never substitute a capability table or a schema probe for final native validation. The complete delivered plan was validated live; its pretty-JSON observer digest is recorded separately from the CLI compact-JSON digest, so the two encodings are not accidentally compared as if identical. Regenerating any machine plan requires all projections, human scope, manifest and native validation to agree again.
 
-The runtime source pin is intentionally conservative. A changed runtime, project UUID, revision, source HEAD, dirty fingerprint, run/lane context or interface version stops application. Re-review the relevant change, regenerate a preview, and approve it anew. There is no `--force`, auto-activation or schema-downgrade escape hatch.
+The runtime source pin is intentionally conservative. A changed runtime, project UUID, revision, source HEAD, dirty fingerprint, run/lane context or interface version stops application. Re-review the relevant change, regenerate a preview, and approve it anew. There is no `--force`, automatic task dispatch or schema-downgrade escape hatch.

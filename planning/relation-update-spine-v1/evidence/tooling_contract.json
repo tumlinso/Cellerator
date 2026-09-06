@@ -31,6 +31,18 @@
     "previous_recorded_mutation_sha256": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
     "finding": "Installed mutation.py is byte-identical to src/project_control/mutation.py at the cited 5866689e425056b3171f7fc13b2b9d20a9494a1e commit; the original recorded hash was incorrect. Reinspected validate_native_plan, apply_proposal, inert ProposalEnvelope creation, saved-precondition freshness checks and transaction expected-revision check.",
     "reviewed_bootstrap_baseline": "45b965123d1d7ae4d10b0ac59e1714fcb7990d02",
-    "baseline_review": "Install commit adds the relation package/demo and deletes the old top-level semantic_spine_v1 example plus AppleDouble metadata. Canonical examples/semantic_spine_v1 remains present. No production implementation changes. Future changes remain limited to the relation package/demo."
+    "baseline_review": "Install commit adds the relation package/demo and deletes the old top-level semantic_spine_v1 example plus AppleDouble metadata. Canonical examples/semantic_spine_v1 remains present. No production implementation changes. Future changes remain limited to the relation package/demo.",
+    "native_run_lifecycle": "Verified in installed workflow/runs.py: create_run_in_transaction inserts active. There is no planned/paused run state or separate activation gate. Bootstrap imports planned tasks without dispatch; later execution requires user authorization."
+  },
+  "bootstrap_result": {
+    "revision_before": 6877,
+    "revision_after": 6878,
+    "tasks_added": 35,
+    "task_status": "planned",
+    "lanes_added": 8,
+    "run_status": "active",
+    "task_execution_started": false,
+    "preexisting_rows_preserved": true,
+    "receipt": "/tmp/ce-ru1-bootstrap.J3RHZq/apply.json"
   }
 }

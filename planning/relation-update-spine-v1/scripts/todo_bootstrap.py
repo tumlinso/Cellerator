@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guarded manual bootstrap: validate, preview, deliberate apply. Never activate."""
+"""Guarded manual bootstrap: validate, preview, deliberate apply. Never dispatch tasks."""
 from pathlib import Path
 import argparse,hashlib,json,os,subprocess,sys,time
 sys.dont_write_bytecode=True
@@ -84,7 +84,7 @@ def main():
     # Reserve the receipt BEFORE mutation. Save the full outcome even on an
     # ambiguous error; never automatically retry a potentially applied plan.
     with output.open('x') as f:
-        record={'kind':'ce-ru1-manual-apply-receipt-v1','preview_sha256':digest(o.preview),'started_unix':time.time(),'activation_requested':False}
+        record={'kind':'ce-ru1-manual-apply-receipt-v1','preview_sha256':digest(o.preview),'started_unix':time.time(),'task_execution_requested':False}
         json.dump({**record,'status':'attempt_starting'},f,indent=2);f.flush();os.fsync(f.fileno())
         try:
             source_snapshot(repo,o.review_head);validate(PACKAGE,repo)
@@ -98,7 +98,7 @@ def main():
             f.seek(0);f.truncate();json.dump(record,f,indent=2);f.flush();os.fsync(f.fileno())
             raise RuntimeError('STOP: inspect current authority and this receipt before any retry. '+str(e)) from e
         f.seek(0);f.truncate();json.dump(record,f,indent=2);f.write('\n');f.flush();os.fsync(f.fileno())
-    print(json.dumps({'status':'applied_inactive_plan','receipt':str(output),'activation_requested':False}))
+    print(json.dumps({'status':'applied_plan','receipt':str(output),'task_execution_requested':False}))
 if __name__=='__main__':
     try:main()
     except (ValueError,KeyError,OSError,RuntimeError,subprocess.SubprocessError) as e:raise SystemExit('todo_bootstrap: '+str(e))

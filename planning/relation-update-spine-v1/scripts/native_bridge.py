@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Use the verified installed Project Control Python API. No implicit activation."""
+"""Use the verified installed Project Control Python API. No task dispatch."""
 from pathlib import Path
 import argparse,hashlib,json,sys
 sys.dont_write_bytecode=True
@@ -39,7 +39,7 @@ def main():
         # Use THE REVIEWED preconditions, not a new snapshot. Native apply checks
         # freshness again and checks expected revision inside BEGIN IMMEDIATE.
         conditions=models.ObservationPreconditions.model_validate(approved['native_response']['current_observation_preconditions'])
-        proposal=models.ProposalEnvelope.create(intent='Manually apply the reviewed CE-RU1 inactive plan only',
+        proposal=models.ProposalEnvelope.create(intent='Manually apply the reviewed CE-RU1 plan only; do not dispatch tasks',
             proposed_change=plan,observation_preconditions=conditions,created_at=conditions.observed_at)
         result=mutation.apply_proposal(conf,'cellerator',proposal)
     result['runtime_identity']=identity;print(json.dumps(result,sort_keys=True,separators=(',',':')))
