@@ -9,11 +9,6 @@ bool same(semantic_identity_v1 left, semantic_identity_v1 right) noexcept {
     return left.low == right.low && left.high == right.high;
 }
 
-bool same_numeric(const numeric_tuple_ir_v1& left, const numeric_tuple_ir_v1& right) noexcept {
-    return left.storage == right.storage && left.compute == right.compute &&
-        left.accumulation == right.accumulation && left.output == right.output;
-}
-
 cellerator::compute::operation::v2::stable_id stable(semantic_identity_v1 value) noexcept {
     return {value.low, value.high};
 }
@@ -69,6 +64,8 @@ relation_apply_ir_validation_code_v1 validate_relation_apply_operation_ir_v1(
         return relation_apply_ir_validation_code_v1::invalid_source;
     if (validate_state_ir_type_v1(operation.result) != state_value_ir_validation_code_v1::success)
         return relation_apply_ir_validation_code_v1::invalid_result;
+    if (operation.source.axes.size() != 1 || operation.result.axes.size() != 1)
+        return relation_apply_ir_validation_code_v1::axis_mismatch;
     const auto source_axis = operation.source.axes.back();
     const auto result_axis = operation.result.axes.back();
     const bool forward = operation.relation.orientation == relation_orientation_ir_v1::forward;
@@ -79,7 +76,15 @@ relation_apply_ir_validation_code_v1 validate_relation_apply_operation_ir_v1(
         return relation_apply_ir_validation_code_v1::axis_mismatch;
     if (operation.source.dense_width != operation.result.dense_width)
         return relation_apply_ir_validation_code_v1::width_mismatch;
-    if (!same_numeric(operation.source.numeric, operation.result.numeric))
+    const auto& input_endpoint = forward ? operation.relation.source_axis : operation.relation.destination_axis;
+    const auto& output_endpoint = forward ? operation.relation.destination_axis : operation.relation.source_axis;
+    if (!same(operation.source.order, input_endpoint.order.identity) ||
+        !same(operation.result.order, output_endpoint.order.identity))
+        return relation_apply_ir_validation_code_v1::axis_mismatch;
+    if (operation.source.numeric.compute != operation.result.numeric.compute ||
+        operation.source.numeric.accumulation != operation.result.numeric.accumulation ||
+        operation.source.numeric.output != operation.result.numeric.storage ||
+        operation.result.numeric.output != operation.result.numeric.storage)
         return relation_apply_ir_validation_code_v1::numeric_mismatch;
     using cellerator::compute::operation::v2::destination_update;
     if (operation.update < destination_update::overwrite ||
@@ -88,7 +93,7 @@ relation_apply_ir_validation_code_v1 validate_relation_apply_operation_ir_v1(
     constexpr std::uint32_t required = relation_apply_reads_source_v1 |
         relation_apply_reads_values_v1 | relation_apply_writes_result_v1 |
         relation_apply_advances_result_generation_v1;
-    if ((operation.effects & required) != required)
+    if (operation.effects != required)
         return relation_apply_ir_validation_code_v1::invalid_effects;
     return relation_apply_ir_validation_code_v1::success;
 }

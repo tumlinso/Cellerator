@@ -21,6 +21,12 @@ bool identifier(std::string_view text) {
 bool same(spine_ir::semantic_identity_v1 a, spine_ir::semantic_identity_v1 b) {
     return a.low == b.low && a.high == b.high;
 }
+bool same_axis(const spine_ir::axis_ir_type_v1& a, const spine_ir::axis_ir_type_v1& b) {
+    return same(a.identity, b.identity) && same(a.domain.identity, b.domain.identity) &&
+        same(a.order.identity, b.order.identity) && same(a.geometry.identity, b.geometry.identity) &&
+        same(a.partition.identity, b.partition.identity) && a.extent.kind == b.extent.kind &&
+        a.extent.lower_bound == b.extent.lower_bound && a.extent.upper_bound == b.extent.upper_bound;
+}
 numeric_type numeric(std::string_view name) {
     if (name == "f16") return numeric_type::f16;
     if (name == "f32") return numeric_type::f32;
@@ -150,14 +156,11 @@ relation_spine_source_result lower_relation_source_slice_v1(
     if (!same(input->state.order, expected_input.order.identity) ||
         !same(output->state.order, expected_output.order.identity))
         error("state order does not match oriented relation order", app.range);
-    if (!same(target->axis.domain.identity, expected_output.domain.identity) ||
-        !same(target->axis.order.identity, expected_output.order.identity) ||
-        !same(target->axis.geometry.identity, expected_output.geometry.identity) ||
-        !same(target->axis.partition.identity, expected_output.partition.identity) ||
-        target->axis.extent.kind != expected_output.extent.kind ||
-        target->axis.extent.lower_bound != expected_output.extent.lower_bound ||
-        target->axis.extent.upper_bound != expected_output.extent.upper_bound)
+    if (!same_axis(target->axis, expected_output))
         error("destination axis metadata does not match relation endpoint", app.range);
+    for (const auto& axis : environment.axes)
+        if (same(axis.axis.identity, expected_input.identity) && !same_axis(axis.axis, expected_input))
+            error("input axis metadata does not match relation endpoint", app.range);
     operation.update = app.update == parser::relation_update_v1::accumulate
         ? cellerator::compute::operation::v2::destination_update::accumulate
         : cellerator::compute::operation::v2::destination_update::overwrite;
@@ -177,9 +180,24 @@ relation_spine_source_result lower_relation_source_slice_v1(
     tuple.output = output->state.numeric.output;
     if (!cellerator::compiler::sema::v1::valid_numerical_tuple(tuple)) error("invalid numerical tuple", app.range);
     if (!result.accepted()) return result;
-    if (spine_ir::lower_relation_apply_operation_v1(operation, &result.lowered) !=
-        spine_ir::relation_apply_ir_validation_code_v1::success)
-        error("relation IR rejects identity, axis, width, numeric or effect contract", app.range);
+    const auto lowered_status = spine_ir::lower_relation_apply_operation_v1(operation, &result.lowered);
+    if (lowered_status != spine_ir::relation_apply_ir_validation_code_v1::success) {
+        const char* reason = "invalid relation IR";
+        using code = spine_ir::relation_apply_ir_validation_code_v1;
+        switch (lowered_status) {
+        case code::invalid_identity: reason = "invalid operation identity"; break;
+        case code::invalid_relation: reason = "invalid relation identity or generation"; break;
+        case code::invalid_source: reason = "invalid input state"; break;
+        case code::invalid_result: reason = "invalid result state"; break;
+        case code::axis_mismatch: reason = "axis identity, order or extent mismatch"; break;
+        case code::width_mismatch: reason = "dense width mismatch"; break;
+        case code::numeric_mismatch: reason = "numeric policy or logical shape invalid"; break;
+        case code::invalid_update: reason = "unsupported output update"; break;
+        case code::invalid_effects: reason = "unsupported operation effects"; break;
+        case code::success: break;
+        }
+        error(reason, app.range);
+    }
     result.provenance = {app.range, relation_name, app.source_expression, app.result_expression};
     return result;
 }

@@ -57,6 +57,8 @@ int main() {
     apply.source = state(110, apply.relation.source_axis.identity);
     apply.result = state(120, apply.relation.destination_axis.identity);
 
+    apply.source.order = apply.relation.source_axis.order.identity;
+    apply.result.order = apply.relation.destination_axis.order.identity;
     lowered_relation_apply_v1 lowered;
     assert(lower_relation_apply_operation_v1(apply, &lowered) ==
            relation_apply_ir_validation_code_v1::success);
@@ -73,6 +75,8 @@ int main() {
     transpose.relation.orientation = relation_orientation_ir_v1::transpose;
     transpose.source.axes.back() = transpose.relation.destination_axis.identity;
     transpose.result.axes.back() = transpose.relation.source_axis.identity;
+    transpose.source.order = transpose.relation.destination_axis.order.identity;
+    transpose.result.order = transpose.relation.source_axis.order.identity;
     assert(lower_relation_apply_operation_v1(transpose, &lowered) ==
            relation_apply_ir_validation_code_v1::success);
     assert(lowered.operation.kind ==
