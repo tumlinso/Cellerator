@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-N02: Move useful N16 transpose computation into core ownership
 
-Task revision: `6878`; current project revision is in `todo-status.md`.
+Task revision: `6922`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

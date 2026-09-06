@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-R03: Validate event retirement and runtime failure semantics
 
-Task revision: `6878`; current project revision is in `todo-status.md`.
+Task revision: `6927`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
