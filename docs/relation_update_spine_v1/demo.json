@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task": "CE-RU1-I04",
+  "accepted_source_commit": "aca81d2789ca5ff11ee95bcce7347ee34d47fb48",
+  "controller": {
+    "classification": "decision-result",
+    "evidence_id": "ac9df43a-5d82-48f2-bdd3-dcc897d187ae",
+    "lease_receipt": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/f5e0b6b6-9ade-47bc-8b97-db8ca67cff65/lease.json",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded",
+    "stderr_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/f5e0b6b6-9ade-47bc-8b97-db8ca67cff65/foreground.stderr.txt",
+    "stdout_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/f5e0b6b6-9ade-47bc-8b97-db8ca67cff65/foreground.stdout.txt"
+  },
+  "lease": {
+    "format": "CUDA-FOREGROUND-LEASE/1",
+    "owner_id": "foreground:86701836-c5f8-4c2e-b640-56859f7f60d9",
+    "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+    "pid": 753160,
+    "resource_ids": [
+      "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ],
+    "observed_unix": 1788717106.3805752,
+    "state": "active"
+  },
+  "execution_source_note": "Controller ran the source changes subsequently committed as accepted_source_commit; I05/I08 rerun integrated source. No source-only device acceptance.",
+  "source_sha256": {
+    "examples/relation_update_spine_v1/regulatory_learning.cc": "56e7e71d90c2f977208c9e6a501bb88fd29deeca204d4c124206b8ac60f2d95f",
+    "src/compute/operation/prepared_relation.cu": "2ce64dd4ff49305697ccefb172b9fd1182a274aab01b2de49d558508baaefaa5"
+  },
+  "binary_sha256": "2272923fd9b120f03489dc8217e88fc1286cb78a92b3ac4cd34d78cef0d5e86b",
+  "spec": {
+    "schema_version": 1,
+    "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+    "argv": [
+      "python3",
+      "/tmp/ce-ru1-i04/run.py"
+    ],
+    "benchmark": {
+      "build_argv": [
+        "python3",
+        "/tmp/ce-ru1-i04/build.py"
+      ]
+    },
+    "toolchain": {
+      "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+      "require_sanitizer": true
+    },
+    "resources": {
+      "gpus": 1
+    },
+    "quiescence": {
+      "timeout_seconds": 60
+    },
+    "binary_paths": [
+      "build-ru1/ceRelationUpdateDemo"
+    ]
+  },
+  "raw_log_sha256": "a11526363b5d04b6b66bd6019838aea1e2edfa11d6d06c430e0255c0b6c6956d",
+  "raw_stdout": "RUN ['/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer', '--tool', 'memcheck', '--error-exitcode', '1', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo', '--route', 'hybrid']\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -> 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -> 0.002780993225 -> 0.002562196675\nTopology preparations=1; updates=2; WMMA=3; residual=3; sparse=0\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; not full .cell compilation or a performance-superiority claim.\n========= ERROR SUMMARY: 0 errors\nRUN ['/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer', '--tool', 'memcheck', '--error-exitcode', '1', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo', '--route', 'sparse']\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -> 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -> 0.002780993225 -> 0.002562196675\nTopology preparations=1; updates=2; WMMA=0; residual=0; sparse=3\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; not full .cell compilation or a performance-superiority claim.\n========= ERROR SUMMARY: 0 errors\nRUN ['/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateReference']\nRU1_REFERENCE_ONLY_PASS: fixture mathematics only; no Cellerator/GPU execution.\nLoss: 0.003025651247 -> 0.002780993234 -> 0.002562196663\nMax continuous finite-difference error: 2.369790475e-11\nMax mixed VJP difference: 8.90577212e-07\n",
+  "raw_stderr": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n",
+  "routes": [
+    "hybrid",
+    "sparse"
+  ],
+  "actual_compiler_actions_per_route": 10,
+  "topology_preparations_per_route": 1,
+  "gradient_preparations_per_route": 1,
+  "updates_per_route": 2,
+  "returned_read_leases_per_route": 3,
+  "generations": [
+    1,
+    2,
+    3
+  ],
+  "fixture": "synthetic 20 source,19 destination,262 edges,N16;16x16 dense module+6 residual;isolated source19,empty destination18",
+  "numerical_policy": "stored f16 weights, f32 forward/transpose; explicitly half-rounded operands for VJP; f32 FMA and RNE f16 update",
+  "claim_limits": [
+    "Synthetic loss decrease is a correctness witness, not biological predictive or performance evidence.",
+    "V02 independent numerics separately distinguish full_f32 versus half-rounded profiles beyond their error bounds.",
+    "No full .cell compilation, mutable CUDA Graph capture or universal WMMA speedup."
+  ]
+}
