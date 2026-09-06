@@ -335,3 +335,48 @@ status publish_values(prepared_relation_pair& p,const device_values_binding& bin
     p.report.latest_enqueued_generation=binding.generation;++p.report.value_refreshes;return {};
 }
 } // namespace cellerator::compute::relation
+
+namespace cellerator::compute::relation {
+namespace {
+bool matching_axis(const axis_descriptor& a,const axis_descriptor& b) noexcept {
+    const auto& x=a.identity;const auto& y=b.identity;
+    return a.extent==b.extent && x.header.schema_version==y.header.schema_version
+        && x.header.kind==y.header.kind && x.header.byte_count==y.header.byte_count
+        && execution::same_identity(x.domain,y.domain) && execution::same_identity(x.order,y.order)
+        && execution::same_identity(x.geometry,y.geometry) && execution::same_identity(x.partition,y.partition);
+}
+status check_launch(const prepared_relation_pair& p,const operation_descriptor& op,
+    const device_state_view& input,const device_result_view& output,
+    execution::value_generation expected,cudaStream_t stream) noexcept {
+    auto s=check_context(p,input.device_ordinal,stream);if(!s)return s;
+    if(output.device_ordinal!=p.device)return {status_code::incompatible_device,"output belongs to another device"};
+    native_contract checked{};s=adapt(op,checked);if(!s)return s;
+    const auto& prepared=op.direction==orientation::forward?p.forward.semantic:p.transpose.semantic;
+    if(!execution::same_identity(op.topology.identity,prepared.topology.identity) || op.topology.epoch.value!=prepared.topology.epoch.value)
+        return {status_code::stale_structure,"launch topology identity or epoch is stale"};
+    if(!equivalent(op,prepared))return {status_code::invalid_argument,"launch semantics differ from prepared contract"};
+    if(!expected.value || expected.value!=p.report.latest_enqueued_generation.value)
+        return {status_code::stale_generation,"launch must consume latest enqueued value generation"};
+    if(!matching_axis(input.axis,input_axis(op)) || !matching_axis(output.axis,result_axis(op)))
+        return {status_code::invalid_axis,"launch axis identity, order or extent is incompatible"};
+    auto input_count=input_axis(op).extent,output_count=result_axis(op).extent;
+    if(input.count<input_count || output.count<output_count)
+        return {status_code::insufficient_capacity,"state or result buffer count is too small"};
+    s=check_pointer(input.data,input_count*4,p.device,4);if(!s)return s;
+    s=check_pointer(output.data,output_count*4,p.device,4);if(!s)return s;
+    if(overlaps(input.data,input_count*4,output.data,output_count*4))
+        return {status_code::invalid_argument,"input and output byte ranges overlap"};
+    return {};
+}
+} // namespace
+status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
+    const device_state_view& input,const device_result_view& output,
+    execution::value_generation expected,cudaStream_t stream) noexcept {
+    auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
+    if(op.direction!=orientation::forward)
+        return {status_code::unsupported_semantics,"transpose public dispatch is not enabled"};
+    s=submit(p,op.direction,input.data,output.data);
+    if(!s){p.poisoned=true;return s;}
+    ++p.report.accepted_forward_launches;return {};
+}
+} // namespace cellerator::compute::relation
