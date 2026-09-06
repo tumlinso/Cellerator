@@ -316,7 +316,10 @@
         "exclusive_paths": [
           "src/compute/operation/prepared_relation.cu",
           "docs/relation_update_spine_v1/native_runtime.md",
-          "tests/relation_update_spine_v1/native_failure_test.cu"
+          "tests/relation_update_spine_v1/native_failure_test.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh",
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu",
+          "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu"
         ]
       },
       "depends_on": [
@@ -819,7 +822,10 @@
           "src/runtime/CMakeLists.txt",
           "src/compiler/CMakeLists.txt",
           "tests/relation_update_spine_v1/CMakeLists.txt",
-          "docs/relation_update_spine_v1/integration.json"
+          "docs/relation_update_spine_v1/integration.json",
+          "tests/compiler/semantic_ir/CMakeLists.txt",
+          "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc",
+          "ENVIRONMENT_NOTES.md"
         ]
       },
       "depends_on": [
