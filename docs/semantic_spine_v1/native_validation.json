@@ -1,0 +1,447 @@
+{
+  "format": "CE-SS1-NATIVE-VALIDATION/1",
+  "date": "2026-09-06",
+  "status": "passed",
+  "task": "CE-SS1-N06",
+  "branch": "codex/ce-ss1-l-native",
+  "base_commit": "b30ccc5683c5b5aef8c950a184917f66f61e078e",
+  "source_sha256": {
+    "src/compute/operation/prepared_relation.cu": "824b0814240e8e1c62f3d2b876caf4e906cd70a369a8071b5e04fcefc1ddcf28",
+    "tests/semantic_spine/native/CMakeLists.txt": "34350a54a43bb5c5d41694093feb8923a650de0697a6ecbb60bba4ca3030c0aa",
+    "tests/semantic_spine/native/adapter_test.cu": "7d26bcecba1521faaeeab8ec299873bc444cd4e5db85b7e55ec48b987e7ebd93",
+    "tests/semantic_spine/native/forward_test.cu": "d38b101ea3b45436aa5f04642e5aee9c00f1860fc03c48b39deed4d704d4d766",
+    "tests/semantic_spine/native/generation_test.cu": "bae35bd7ed03369a7a24e332c6f942b3db81cff603320b101bb55d80a32f35db",
+    "tests/semantic_spine/native/lifecycle_test.cu": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93",
+    "tests/semantic_spine/native/preparation_test.cu": "85a7600b68e0e93387b76334c1a64c926bc3cf1b995662444c73a5a4365ffc6d",
+    "tests/semantic_spine/native/run_suite.py": "c84872551d6ceb1cd3790fd3caeea7dce6b5b12d7994f45bfd12db1c261f9532",
+    "tests/semantic_spine/native/test_require.hh": "e1f6f8ec5d466314e2bb3e37b1fd6a387faa98f62f10a91cb3e83ade2662584d",
+    "tests/semantic_spine/native/transpose_test.cu": "a0760045a2302268597afbbcdcc754d97f9fb72c9de5ef9509630c40a14f113c",
+    "tests/semantic_spine/native/overhead_test.cu": "81b2a8c9834ad9030502bf8b356426f279ba39064e5d6536eb4e1c50c13f6fad"
+  },
+  "hardware": {
+    "name": "Tesla V100-SXM2-16GB",
+    "sm": 70,
+    "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "driver": "580.173.02",
+    "device_count_used": 1
+  },
+  "toolchain": {
+    "cuda": "12.9.86",
+    "host_compiler": "GNU 13.3.0",
+    "mode": "Release",
+    "language": "C++17/CUDA17",
+    "native_tests": "always-on SPINE_REQUIRE; -UNDEBUG also set"
+  },
+  "evidence": {
+    "N02": "c29f9f0d-1636-44b3-968e-8719d1f974dc",
+    "N03": "9f74e7c9-6fbf-4343-875a-c922b1db7d34",
+    "N04": "c4f10362-30e8-4db6-ad45-2163ec8a9394",
+    "N05": "707b24cb-4c39-47c3-8052-5fe3131930db",
+    "final_suite": "5d6e4132-1356-4108-b03f-718dec4fcdd4",
+    "sanitizer": "41eeef30-f0dc-497f-8bee-a56b655a2cdf"
+  },
+  "provenance_note": "Controller resource authority is main and automatic snapshots record main HEAD. source_commit and source_sha256 identify the lane code actually compiled. Direct-provider timings are bounded observations, not broad superiority claims.",
+  "build_commands": [
+    "cmake -S tests/semantic_spine/native -B /tmp/ce-ss1-native-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 -DCELLERATOR_PROVIDER_BUILD=/home/tumlinson/Cellerator/build",
+    "cmake --build /tmp/ce-ss1-native-build -j \"$(nproc)\""
+  ],
+  "controller_argv_equivalents": [
+    [
+      "python3",
+      "tests/semantic_spine/native/run_suite.py",
+      "--build",
+      "/tmp/ce-ss1-native-build"
+    ],
+    [
+      "python3",
+      "tests/semantic_spine/native/run_suite.py",
+      "--build",
+      "/tmp/ce-ss1-native-build",
+      "--sanitize"
+    ]
+  ],
+  "resources": {
+    "foreground_cuda_controller_lease": true,
+    "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock",
+    "foreign_activity": false
+  },
+  "coverage": [
+    "full low/high persistent identities and numeric separation",
+    "arbitrary 3x4 and 35x67 support, unsorted logical edges, partial 32-row tiles",
+    "singleton, zero degree, empty support and 0x0",
+    "duplicate endpoints explicitly unsupported, huge dimensions rejected before CSR dereference",
+    "two generations against independent stored-f16/double oracle",
+    "adjoint dot-product for three vectors at both generations",
+    "32 device-packed refreshes, pointer rebinding, device free-memory unchanged",
+    "stale generation/epoch/order, wrong device/stream/domain, capacities and partial overlap rejection",
+    "preparation consumes host CSR; failure keeps null output",
+    "enqueue-only CUDA Graph capture/replay; publication capture explicitly rejected",
+    "poison state rejection; real CUDA fault injection not performed",
+    "adversarial valid structure identities that initially derive zero forward or transpose projection IDs"
+  ],
+  "sanitizer": {
+    "tools": [
+      "memcheck",
+      "initcheck"
+    ],
+    "targets": [
+      "spine_lifecycle_test",
+      "spine_transpose_test",
+      "spine_regulatory_reuse",
+      "spine_overhead_test"
+    ],
+    "error_summaries": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "numerics": {
+    "relation": "f16",
+    "input_multiply_accumulate_output": "f32",
+    "oracle": "double on exactly stored f16 values",
+    "finite_fixture_tolerance": "1e-5 + 1e-5 * abs(expected)",
+    "nonfinite_reject": "unsupported; no device scan claimed"
+  },
+  "demo": {
+    "marker": "SPINE_DEMO_GPU_PASS",
+    "topology_preparations": 1,
+    "value_refreshes": 2,
+    "accepted_forward_launches": 3,
+    "accepted_transpose_launches": 2,
+    "forward_candidate": "cpbp-feature-major-small-n-f16-f32",
+    "transpose_candidate": "cpbp-transpose-backward-n1-f16-f32"
+  },
+  "scope_limits": [
+    "N1 only",
+    "one device and caller stream",
+    "overwrite and nonaliasing only",
+    "FMA/reassociation permission required",
+    "no compiler CLI completion, planner promotion, MMA, training, optimizer or general SDK changes",
+    "empty support reports device-zero-fill/device-no-op and absent projection IDs"
+  ],
+  "suite_logs": {
+    "foreground.stdout.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/531fc64d-ec72-4b89-b609-5d538e875e15/foreground.stdout.txt",
+      "sha256": "7bcb3c09fe400417b4eab77a235a5d082e0bdd04c6038ab01b204aefd0eca62f",
+      "text": "adapter identities, orientation, numeric separation and capability rejection passed\nsm70 arbitrary nonsquare/partial-tile/singleton/empty preparation and real FMP1/CTP1 execution passed\nsm70 device generation packing, stale/order/epoch rejection and two-generation FMP1/CTP1 math passed\nsm70 checked forward dispatch, independent oracle and rejection sentinel preservation passed\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n{\"device\":\"Tesla V100-SXM2-16GB\",\"rows\":35,\"cols\":67,\"edges\":52,\"cold_us\":237.559,\"refresh\":{\"host_us\":2.60428125,\"event_us\":2.68799996,\"resident_us\":3.0034375},\"orientations\":[{\"direction\":\"forward\",\"direct\":[{\"host_us\":2.22419336,\"event_us\":16.5059986,\"resident_us\":16.5222402},{\"host_us\":2.21022852,\"event_us\":16.5,\"resident_us\":16.5141699},{\"host_us\":2.21187109,\"event_us\":16.4979992,\"resident_us\":16.5132188},{\"host_us\":2.11050391,\"event_us\":16.4979992,\"resident_us\":16.5145918},{\"host_us\":2.09891211,\"event_us\":16.4979992,\"resident_us\":16.513793},{\"host_us\":2.10695508,\"event_us\":16.5,\"resident_us\":16.5150684},{\"host_us\":2.10255078,\"event_us\":16.5020008,\"resident_us\":16.5189746},{\"host_us\":2.10828906,\"event_us\":16.5020008,\"resident_us\":16.5186133},{\"host_us\":2.10401953,\"event_us\":16.5,\"resident_us\":16.5143594}],\"adapter\":[{\"host_us\":2.90762305,\"event_us\":16.5020008,\"resident_us\":16.5176777},{\"host_us\":2.83594727,\"event_us\":16.5,\"resident_us\":16.5160508},{\"host_us\":2.87383594,\"event_us\":16.4979992,\"resident_us\":16.5136602},{\"host_us\":2.82147461,\"event_us\":16.4960003,\"resident_us\":16.5111055},{\"host_us\":2.76970508,\"event_us\":16.5020008,\"resident_us\":16.5149746},{\"host_us\":2.73868555,\"event_us\":16.5,\"resident_us\":16.5139219},{\"host_us\":2.77038672,\"event_us\":16.5040016,\"resident_us\":16.5175352},{\"host_us\":2.74238672,\"event_us\":16.4979992,\"resident_us\":16.5138867},{\"host_us\":2.75728125,\"event_us\":16.5,\"resident_us\":16.5143496}]},{\"direction\":\"transpose\",\"direct\":[{\"host_us\":2.1942832,\"event_us\":2.66000009,\"resident_us\":2.67513281},{\"host_us\":2.176125,\"event_us\":2.66199994,\"resident_us\":2.67558594},{\"host_us\":2.19144727,\"event_us\":2.65799999,\"resident_us\":2.67307422},{\"host_us\":2.19908008,\"event_us\":2.65799999,\"resident_us\":2.67204687},{\"host_us\":2.17247266,\"event_us\":2.6559999,\"resident_us\":2.66802148},{\"host_us\":2.16990625,\"event_us\":2.66400003,\"resident_us\":2.67662109},{\"host_us\":2.19464453,\"event_us\":2.66199994,\"resident_us\":2.67689648},{\"host_us\":2.18574219,\"event_us\":2.66199994,\"resident_us\":2.67469141},{\"host_us\":2.17339453,\"event_us\":2.66199994,\"resident_us\":2.6767207}],\"adapter\":[{\"host_us\":2.80566016,\"event_us\":2.80999994,\"resident_us\":2.82510352},{\"host_us\":2.80460938,\"event_us\":2.80999994,\"resident_us\":2.82442578},{\"host_us\":2.79095508,\"event_us\":2.796,\"resident_us\":2.81262695},{\"host_us\":2.79311523,\"event_us\":2.79799986,\"resident_us\":2.81252148},{\"host_us\":2.80517969,\"event_us\":2.81200004,\"resident_us\":2.82426562},{\"host_us\":2.79868945,\"event_us\":2.8039999,\"resident_us\":2.81777344},{\"host_us\":2.79267578,\"event_us\":2.79799986,\"resident_us\":2.81175},{\"host_us\":2.80804297,\"event_us\":2.81399989,\"resident_us\":2.82717773},{\"host_us\":2.79912305,\"event_us\":2.8039999,\"resident_us\":2.81811328}]}],\"correctness\":true,\"topology_preparations\":1,\"value_refreshes\":33}\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n"
+    },
+    "foreground.stderr.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/531fc64d-ec72-4b89-b609-5d538e875e15/foreground.stderr.txt",
+      "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb",
+      "text": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+    }
+  },
+  "sanitizer_logs": {
+    "foreground.stdout.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/3eb67027-66e9-4ce2-89cf-7db02a8a9fc9/foreground.stdout.txt",
+      "sha256": "2b95266ad6600a99d2f5229a1b1add286635841554042a33913109873a7ec729",
+      "text": "========= COMPUTE-SANITIZER\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\n{\"device\":\"Tesla V100-SXM2-16GB\",\"rows\":35,\"cols\":67,\"edges\":52,\"cold_us\":269.929,\"refresh\":{\"host_us\":45.9058125,\"event_us\":191.776001,\"resident_us\":192.196469},\"orientations\":[{\"direction\":\"forward\",\"direct\":[{\"host_us\":341.474619,\"event_us\":685.685974,\"resident_us\":685.70866},{\"host_us\":340.941715,\"event_us\":684.955994,\"resident_us\":684.97832},{\"host_us\":340.995848,\"event_us\":685.01001,\"resident_us\":685.030592},{\"host_us\":340.840582,\"event_us\":684.853943,\"resident_us\":684.875521},{\"host_us\":340.74766,\"event_us\":684.759949,\"resident_us\":684.780551},{\"host_us\":340.871729,\"event_us\":684.884033,\"resident_us\":684.906771},{\"host_us\":340.973248,\"event_us\":685.002014,\"resident_us\":685.023854},{\"host_us\":340.943271,\"event_us\":684.953979,\"resident_us\":684.974328},{\"host_us\":340.910756,\"event_us\":684.921997,\"resident_us\":684.943332}],\"adapter\":[{\"host_us\":340.988717,\"event_us\":685.006042,\"resident_us\":685.119787},{\"host_us\":340.947865,\"event_us\":684.960022,\"resident_us\":685.003719},{\"host_us\":340.936359,\"event_us\":684.950012,\"resident_us\":684.969707},{\"host_us\":341.000303,\"event_us\":685.029968,\"resident_us\":685.052293},{\"host_us\":341.080297,\"event_us\":685.108032,\"resident_us\":685.12949},{\"host_us\":341.003332,\"event_us\":685.02002,\"resident_us\":685.043508},{\"host_us\":340.987104,\"event_us\":685.003967,\"resident_us\":685.046111},{\"host_us\":341.057639,\"event_us\":685.072021,\"resident_us\":685.093393},{\"host_us\":340.855891,\"event_us\":684.866028,\"resident_us\":684.889611}]},{\"direction\":\"transpose\",\"direct\":[{\"host_us\":42.8166289,\"event_us\":42.868,\"resident_us\":42.8905566},{\"host_us\":42.8306387,\"event_us\":42.882,\"resident_us\":42.9031465},{\"host_us\":41.9279062,\"event_us\":41.9799995,\"resident_us\":42.0015254},{\"host_us\":42.8422383,\"event_us\":42.8939972,\"resident_us\":42.9144883},{\"host_us\":42.9074121,\"event_us\":42.9580002,\"resident_us\":42.9812695},{\"host_us\":42.6988281,\"event_us\":42.75,\"resident_us\":42.7718711},{\"host_us\":42.6730723,\"event_us\":42.723999,\"resident_us\":42.7460996},{\"host_us\":42.9086523,\"event_us\":42.9580002,\"resident_us\":42.9806895},{\"host_us\":43.0480234,\"event_us\":43.0979996,\"resident_us\":43.1194336}],\"adapter\":[{\"host_us\":46.2906523,\"event_us\":46.3419991,\"resident_us\":46.3620703},{\"host_us\":46.0882734,\"event_us\":46.1380005,\"resident_us\":46.1603672},{\"host_us\":46.3249355,\"event_us\":46.3759995,\"resident_us\":46.3968672},{\"host_us\":46.2139102,\"event_us\":46.2639999,\"resident_us\":46.2848066},{\"host_us\":46.1768887,\"event_us\":46.2280006,\"resident_us\":46.2511797},{\"host_us\":46.0068613,\"event_us\":46.0559998,\"resident_us\":46.0784492},{\"host_us\":45.7850957,\"event_us\":45.8339996,\"resident_us\":45.8586992},{\"host_us\":46.1366309,\"event_us\":46.1860008,\"resident_us\":46.2095684},{\"host_us\":46.3924766,\"event_us\":46.4440002,\"resident_us\":46.4635078}]}],\"correctness\":true,\"topology_preparations\":1,\"value_refreshes\":33}\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\n{\"device\":\"Tesla V100-SXM2-16GB\",\"rows\":35,\"cols\":67,\"edges\":52,\"cold_us\":2684.979,\"refresh\":{\"host_us\":27.66975,\"event_us\":60.1920013,\"resident_us\":60.602625},\"orientations\":[{\"direction\":\"forward\",\"direct\":[{\"host_us\":24.8533633,\"event_us\":466.917999,\"resident_us\":466.937207},{\"host_us\":22.1223594,\"event_us\":466.978027,\"resident_us\":467.017359},{\"host_us\":24.3567285,\"event_us\":466.967987,\"resident_us\":466.986471},{\"host_us\":24.3609336,\"event_us\":466.936005,\"resident_us\":466.958803},{\"host_us\":24.3985508,\"event_us\":466.973999,\"resident_us\":466.992682},{\"host_us\":21.8685527,\"event_us\":466.973999,\"resident_us\":466.995141},{\"host_us\":24.4240137,\"event_us\":466.970001,\"resident_us\":466.988311},{\"host_us\":24.2797871,\"event_us\":466.936005,\"resident_us\":466.954205},{\"host_us\":24.3758027,\"event_us\":466.967987,\"resident_us\":466.986363}],\"adapter\":[{\"host_us\":28.2525352,\"event_us\":467.052002,\"resident_us\":467.072584},{\"host_us\":25.6117266,\"event_us\":466.971985,\"resident_us\":467.049475},{\"host_us\":25.7553105,\"event_us\":466.971985,\"resident_us\":466.990363},{\"host_us\":27.7571836,\"event_us\":467.083984,\"resident_us\":467.10298},{\"host_us\":27.9399238,\"event_us\":467.009979,\"resident_us\":467.031248},{\"host_us\":27.6331367,\"event_us\":467.009979,\"resident_us\":467.02918},{\"host_us\":27.7609063,\"event_us\":467.009979,\"resident_us\":467.029131},{\"host_us\":27.864043,\"event_us\":466.951996,\"resident_us\":466.972617},{\"host_us\":27.8046738,\"event_us\":467.072021,\"resident_us\":467.092787}]},{\"direction\":\"transpose\",\"direct\":[{\"host_us\":25.3977031,\"event_us\":39.1720009,\"resident_us\":39.1925117},{\"host_us\":23.8350117,\"event_us\":39.382,\"resident_us\":39.4008887},{\"host_us\":25.4725469,\"event_us\":39.1639977,\"resident_us\":39.211332},{\"host_us\":25.3176328,\"event_us\":39.2180023,\"resident_us\":39.2373027},{\"host_us\":25.3343086,\"event_us\":39.2999992,\"resident_us\":39.3172891},{\"host_us\":24.8024277,\"event_us\":39.156002,\"resident_us\":39.1994141},{\"host_us\":25.4835566,\"event_us\":39.0940018,\"resident_us\":39.1151426},{\"host_us\":23.9330176,\"event_us\":38.9039993,\"resident_us\":38.9254492},{\"host_us\":25.4530254,\"event_us\":39.2739983,\"resident_us\":39.2930957}],\"adapter\":[{\"host_us\":28.9877949,\"event_us\":38.3919983,\"resident_us\":38.4119863},{\"host_us\":30.0660039,\"event_us\":38.4779968,\"resident_us\":38.4980156},{\"host_us\":28.3162832,\"event_us\":38.5200005,\"resident_us\":38.5386152},{\"host_us\":26.6707461,\"event_us\":38.8100014,\"resident_us\":38.8290234},{\"host_us\":26.9282559,\"event_us\":38.0919991,\"resident_us\":38.1112344},{\"host_us\":27.0457051,\"event_us\":37.9860001,\"resident_us\":38.0042363},{\"host_us\":26.2453242,\"event_us\":38.8979988,\"resident_us\":38.9171309},{\"host_us\":28.6581602,\"event_us\":38.6699982,\"resident_us\":38.6902227},{\"host_us\":27.2879707,\"event_us\":38.8999977,\"resident_us\":38.9212676}]}],\"correctness\":true,\"topology_preparations\":1,\"value_refreshes\":33}\n========= ERROR SUMMARY: 0 errors\n"
+    },
+    "foreground.stderr.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/3eb67027-66e9-4ce2-89cf-7db02a8a9fc9/foreground.stderr.txt",
+      "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb",
+      "text": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+    }
+  },
+  "previous_validation_evidence": {
+    "final_suite": "16d4dc55-bfb8-4370-97d3-83d25bb011ce",
+    "sanitizer": "62cf049c-cd53-4fb3-b5e7-deaaa4108017"
+  },
+  "source_commit": "30f62f72c26e7f91b6cba07ed0869385878cb040",
+  "direct_provider_comparison": {
+    "evidence_id": "5d6e4132-1356-4108-b03f-718dec4fcdd4",
+    "target": "spine_overhead_test",
+    "source_commit": "30f62f72c26e7f91b6cba07ed0869385878cb040",
+    "expected_limiter": "Tiny N1: host validation and launch; forward observed device execution dominates. No kernel promotion claim.",
+    "workload": "35 destination rows x 67 source columns, 52 signed edges, asymmetric unsorted support, every fourth row empty, N=1",
+    "baseline": "core::run_prepared_operation with the identical prepared forward/transpose operation, projection buffers, resident packed values, dense pointers, numeric tuple, stream, output overwrite and launch records used by ce::enqueue",
+    "numerics": {
+      "relation": "f16",
+      "input_multiply_accumulate_output": "f32",
+      "oracle": "double on exactly stored f16 values",
+      "finite_fixture_tolerance": "1e-5 + 1e-5 * abs(expected)",
+      "nonfinite_reject": "unsupported; no device scan claimed"
+    },
+    "warmup_launches_per_path_per_orientation": 64,
+    "batches_per_path_per_orientation": 9,
+    "launches_per_batch": 512,
+    "ordering": "alternating direct/adapter then adapter/direct batches",
+    "cold_preparations": 1,
+    "refreshes": {
+      "untimed_warmup": 1,
+      "timed": 32,
+      "host_input_copy_excluded": true
+    },
+    "timing_boundaries": {
+      "cold": "One preparation after CUDA context initialization; includes host geometry, both physical projections, allocation, three host-to-device uploads, stream synchronization and provider preparation. Excludes context startup and caller input/weight allocation.",
+      "refresh": "Resident logical f16 to resident packed f16 device gather; host submission, event span and stream-complete elapsed measured separately across 32 new generations. Excludes prior caller H2D copy.",
+      "host": "steady_clock around repeated calls only; excludes event recording and final synchronization",
+      "event": "CUDA events bracket batch on same nonblocking caller stream; includes device work and gaps waiting for host submission",
+      "resident": "steady_clock from begin-event submission through end-event synchronization; includes host work and explicit completion; per-launch amortized",
+      "copies": "All caller H2D inputs/weights and D2H oracle readbacks are outside repeated timings. Preparation uploads are inside cold timing. No repeated path copies.",
+      "synchronization": "One stream drain before each batch, one event synchronization at batch end; no per-launch or device-wide synchronization. Event creation/destruction outside timings."
+    },
+    "correctness": "Both direct and adapter checked independently against a logical-edge double oracle on exactly stored f16 values before and after timed batches; finite check and 1e-5+1e-5*abs(expected) tolerance.",
+    "medians_us": {
+      "forward": {
+        "direct": {
+          "host_us": 2.10828906,
+          "event_us": 16.5,
+          "resident_us": 16.5145918
+        },
+        "adapter": {
+          "host_us": 2.77038672,
+          "event_us": 16.5,
+          "resident_us": 16.5143496
+        }
+      },
+      "transpose": {
+        "direct": {
+          "host_us": 2.18574219,
+          "event_us": 2.66199994,
+          "resident_us": 2.67513281
+        },
+        "adapter": {
+          "host_us": 2.79912305,
+          "event_us": 2.8039999,
+          "resident_us": 2.81811328
+        }
+      }
+    },
+    "raw_samples": {
+      "device": "Tesla V100-SXM2-16GB",
+      "rows": 35,
+      "cols": 67,
+      "edges": 52,
+      "cold_us": 237.559,
+      "refresh": {
+        "host_us": 2.60428125,
+        "event_us": 2.68799996,
+        "resident_us": 3.0034375
+      },
+      "orientations": [
+        {
+          "direction": "forward",
+          "direct": [
+            {
+              "host_us": 2.22419336,
+              "event_us": 16.5059986,
+              "resident_us": 16.5222402
+            },
+            {
+              "host_us": 2.21022852,
+              "event_us": 16.5,
+              "resident_us": 16.5141699
+            },
+            {
+              "host_us": 2.21187109,
+              "event_us": 16.4979992,
+              "resident_us": 16.5132188
+            },
+            {
+              "host_us": 2.11050391,
+              "event_us": 16.4979992,
+              "resident_us": 16.5145918
+            },
+            {
+              "host_us": 2.09891211,
+              "event_us": 16.4979992,
+              "resident_us": 16.513793
+            },
+            {
+              "host_us": 2.10695508,
+              "event_us": 16.5,
+              "resident_us": 16.5150684
+            },
+            {
+              "host_us": 2.10255078,
+              "event_us": 16.5020008,
+              "resident_us": 16.5189746
+            },
+            {
+              "host_us": 2.10828906,
+              "event_us": 16.5020008,
+              "resident_us": 16.5186133
+            },
+            {
+              "host_us": 2.10401953,
+              "event_us": 16.5,
+              "resident_us": 16.5143594
+            }
+          ],
+          "adapter": [
+            {
+              "host_us": 2.90762305,
+              "event_us": 16.5020008,
+              "resident_us": 16.5176777
+            },
+            {
+              "host_us": 2.83594727,
+              "event_us": 16.5,
+              "resident_us": 16.5160508
+            },
+            {
+              "host_us": 2.87383594,
+              "event_us": 16.4979992,
+              "resident_us": 16.5136602
+            },
+            {
+              "host_us": 2.82147461,
+              "event_us": 16.4960003,
+              "resident_us": 16.5111055
+            },
+            {
+              "host_us": 2.76970508,
+              "event_us": 16.5020008,
+              "resident_us": 16.5149746
+            },
+            {
+              "host_us": 2.73868555,
+              "event_us": 16.5,
+              "resident_us": 16.5139219
+            },
+            {
+              "host_us": 2.77038672,
+              "event_us": 16.5040016,
+              "resident_us": 16.5175352
+            },
+            {
+              "host_us": 2.74238672,
+              "event_us": 16.4979992,
+              "resident_us": 16.5138867
+            },
+            {
+              "host_us": 2.75728125,
+              "event_us": 16.5,
+              "resident_us": 16.5143496
+            }
+          ]
+        },
+        {
+          "direction": "transpose",
+          "direct": [
+            {
+              "host_us": 2.1942832,
+              "event_us": 2.66000009,
+              "resident_us": 2.67513281
+            },
+            {
+              "host_us": 2.176125,
+              "event_us": 2.66199994,
+              "resident_us": 2.67558594
+            },
+            {
+              "host_us": 2.19144727,
+              "event_us": 2.65799999,
+              "resident_us": 2.67307422
+            },
+            {
+              "host_us": 2.19908008,
+              "event_us": 2.65799999,
+              "resident_us": 2.67204687
+            },
+            {
+              "host_us": 2.17247266,
+              "event_us": 2.6559999,
+              "resident_us": 2.66802148
+            },
+            {
+              "host_us": 2.16990625,
+              "event_us": 2.66400003,
+              "resident_us": 2.67662109
+            },
+            {
+              "host_us": 2.19464453,
+              "event_us": 2.66199994,
+              "resident_us": 2.67689648
+            },
+            {
+              "host_us": 2.18574219,
+              "event_us": 2.66199994,
+              "resident_us": 2.67469141
+            },
+            {
+              "host_us": 2.17339453,
+              "event_us": 2.66199994,
+              "resident_us": 2.6767207
+            }
+          ],
+          "adapter": [
+            {
+              "host_us": 2.80566016,
+              "event_us": 2.80999994,
+              "resident_us": 2.82510352
+            },
+            {
+              "host_us": 2.80460938,
+              "event_us": 2.80999994,
+              "resident_us": 2.82442578
+            },
+            {
+              "host_us": 2.79095508,
+              "event_us": 2.796,
+              "resident_us": 2.81262695
+            },
+            {
+              "host_us": 2.79311523,
+              "event_us": 2.79799986,
+              "resident_us": 2.81252148
+            },
+            {
+              "host_us": 2.80517969,
+              "event_us": 2.81200004,
+              "resident_us": 2.82426562
+            },
+            {
+              "host_us": 2.79868945,
+              "event_us": 2.8039999,
+              "resident_us": 2.81777344
+            },
+            {
+              "host_us": 2.79267578,
+              "event_us": 2.79799986,
+              "resident_us": 2.81175
+            },
+            {
+              "host_us": 2.80804297,
+              "event_us": 2.81399989,
+              "resident_us": 2.82717773
+            },
+            {
+              "host_us": 2.79912305,
+              "event_us": 2.8039999,
+              "resident_us": 2.81811328
+            }
+          ]
+        }
+      ],
+      "correctness": true,
+      "topology_preparations": 1,
+      "value_refreshes": 33
+    },
+    "diagnosis": "Adapter adds roughly 0.6 us host work for biological semantic/axis/generation checks, cudaGetDevice and pointer residency checks, and constructing launch records. Source audit confirms constant-size checks, one unchanged provider dispatch, no topology hashing/search, allocation, copy or synchronization. Forward resident medians equal (~16.51 us); transpose medians 2.68 vs 2.82 us, a small absolute difference. Retain required validation; no broad speedup or kernel-regression claim. These tiny observations do not establish general workload performance."
+  },
+  "fix_log": [
+    {
+      "problem": "Valid structure identity derived an all-zero transpose projection ID, rejected by existing provider.",
+      "trigger": "{low:0x464d5031, high:0x535331 ^ 0x43545031}",
+      "before_evidence": "4d9b84c4-32d2-43ff-85c7-8e766a6cf0d0",
+      "observed_error": "transpose requirements need distinct valid projection identities",
+      "fix": "Repair reserved zero transpose projection ID with low=1; remains distinct from nonzero forward.high. No change to ordinary identities or kernels.",
+      "regression": "Public publish_values/enqueue in both orientations and generations for both zero-forward and zero-transpose derivations; validates nonzero distinct projections.",
+      "after_evidence": "5d6e4132-1356-4108-b03f-718dec4fcdd4",
+      "sanitizer_evidence": "41eeef30-f0dc-497f-8bee-a56b655a2cdf"
+    },
+    {
+      "problem": "N06 had no measured matched direct-provider comparison.",
+      "fix": "Added bounded overhead_test using exact same prepared provider objects and bindings, independent correctness and explicit timing boundaries.",
+      "evidence": "5d6e4132-1356-4108-b03f-718dec4fcdd4"
+    }
+  ]
+}
