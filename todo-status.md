@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6860`
+Project revision: `6865`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -978,7 +978,7 @@ Project revision: `6860`
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
-- `CE-SS1-0000` | status: planned | execution: inactive | next: Coordinate first-class lane work only after a separate execution go-ahead; this plan application does not activate the run.
+- `CE-SS1-0000` | status: done | execution: closed | next: Coordinate first-class lane work only after a separate execution go-ahead; this plan application does not activate the run.
 - `CE-ARCH-70B` | status: done | execution: closed | next: Implement independent recorded persistent allocations, accounting and exhaustion checks, pointer alignment validation, focused CUDA correctness, and Compute Sanitizer if available; do not redesign transient workspace.
 - `CE-ARCH-82` | status: done | execution: closed | next: Audit the existing CPE2 implementation against every Phase 4 exit criterion, implement only missing runtime/compatibility pieces, and add direct-execution regression coverage.
 - `CE-PTR-01` | status: done | execution: closed | next: Inspect live code and existing gates; publish CE-PTR-POLICY-READY once classification and enforcement semantics are stable so CE-PTR-02 may proceed while remaining baseline measurements finish.
@@ -1038,7 +1038,7 @@ Project revision: `6860`
 - `CE-SS1-I04` | status: done | execution: closed | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: done | execution: closed | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
 - `CE-SS1-I06` | status: done | execution: closed | next: Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.
-- `CE-SS1-I07` | status: in_progress | execution: claimed | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.
+- `CE-SS1-I07` | status: done | execution: closed | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.
 - `CE-SS1-N01` | status: done | execution: closed | next: Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.
 - `CE-SS1-N02` | status: done | execution: closed | next: Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.
 - `CE-SS1-N03` | status: done | execution: closed | next: Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.
