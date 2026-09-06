@@ -1,6 +1,6 @@
 {
   "task": "CE-SS1-I07",
-  "acceptance_status": "final executable suite passed; authoritative task/run closure follows committed completion gate",
+  "acceptance_status": "completed",
   "observed_utc": "2026-09-06T12:45:48.972514+00:00",
   "tested_source_head": "cd16da82305b388a499cc466091f548e46231a19",
   "required_final_gate": {
@@ -282,5 +282,218 @@
   "full_cell_compilation_complete": false,
   "installed_sdk_complete": false,
   "performance_promotion": false,
-  "follow_on_epic_started": false
+  "follow_on_epic_started": false,
+  "authoritative_closure": {
+    "i07_revision": 6863,
+    "root_and_run_revision": 6865,
+    "maintenance_revision": 6877,
+    "all_leaf_tasks_done": 30,
+    "all_lanes_closed": 8,
+    "active_run_claims": 0,
+    "final_gate": [
+      {
+        "id": "CE-SS1-G-I07",
+        "status": "passed",
+        "valid": true,
+        "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631",
+        "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+        "evidence_revision": 6862,
+        "validation_git_head": "a66a64deb14d46d9ac5a871d5303cbf80f260c93"
+      }
+    ]
+  },
+  "cleanup": {
+    "integration_receipts": [
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-VERIFY",
+        "previous_state": "active",
+        "producer_commit": "ea10cf87fa9a7675b54cf5d4e6d30295e9240a23",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6866,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "2c384056-6553-4b90-8e90-159a5063667b"
+      },
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-FRONTEND-REPAIR",
+        "previous_state": "active",
+        "producer_commit": "57c6a60c0d1a3eecb072fe609a9ab635eaaeff7f",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6867,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "3f22275b-e927-4457-ac8e-0dd2d7d4771a"
+      },
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-FRONTEND",
+        "previous_state": "active",
+        "producer_commit": "70dfc093fdf9b59dca06aae5841a8ec6fd481330",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6868,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "7ad41d73-61fc-45a0-be84-10bd7e3d58df"
+      },
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-CORE",
+        "previous_state": "active",
+        "producer_commit": "a485a01a2a70313fae1a0332480c7215d7559cff",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6869,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "8e2d5c7a-aa90-4f10-b04d-6acf3f1ad20a"
+      },
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-NATIVE",
+        "previous_state": "active",
+        "producer_commit": "0498be36f5831bc6b9551e430dfce7bb9dbc0ff4",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6870,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "df57c8a2-f783-4c64-8c7b-921a2c4749ea"
+      },
+      {
+        "accepted_commit": "3db12f072a50b53b04e6127b5eda9f7b9c757a57",
+        "cleanup_eligible": false,
+        "deleted": false,
+        "evidence": [
+          {
+            "evidence_id": "18fd6964-3815-447b-aae7-dcdc5223eb39",
+            "gate_id": "CE-SS1-G-I07",
+            "input_fingerprint": "3d508e9b66a7bf3cc1d752ab8dfc073ff43b61817f432f27f58c85796104e631"
+          }
+        ],
+        "integration_task_id": "CE-SS1-I07",
+        "lane_id": "CE-SS1-L-ALGEBRA",
+        "previous_state": "active",
+        "producer_commit": "3a05b73fb78e53132a6245a60d78ebe6990b3a25",
+        "reason": "Completed Semantic Spine run; clean producer is merged into main and committed final executable gate evidence matches",
+        "revision": 6871,
+        "run_id": "CE-SS1-RUN-V1",
+        "status": "integrated",
+        "workspace_id": "f17887ce-8607-48a4-9957-edd7b45a1285"
+      }
+    ],
+    "eligibility_receipts": [
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6872,
+        "workspace_id": "f17887ce-8607-48a4-9957-edd7b45a1285"
+      },
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6873,
+        "workspace_id": "8e2d5c7a-aa90-4f10-b04d-6acf3f1ad20a"
+      },
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6874,
+        "workspace_id": "7ad41d73-61fc-45a0-be84-10bd7e3d58df"
+      },
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6875,
+        "workspace_id": "3f22275b-e927-4457-ac8e-0dd2d7d4771a"
+      },
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6876,
+        "workspace_id": "df57c8a2-f783-4c64-8c7b-921a2c4749ea"
+      },
+      {
+        "cleanup_eligible": true,
+        "deleted": false,
+        "revision": 6877,
+        "workspace_id": "2c384056-6553-4b90-8e90-159a5063667b"
+      }
+    ],
+    "removed_worktrees_and_branches": 6,
+    "preserved_jbc_worktrees": 9,
+    "remote_deletion": {
+      "argv": [
+        "git",
+        "push",
+        "--atomic",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-verify:ea10cf87fa9a7675b54cf5d4e6d30295e9240a23",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-frontend-repair:57c6a60c0d1a3eecb072fe609a9ab635eaaeff7f",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-frontend:70dfc093fdf9b59dca06aae5841a8ec6fd481330",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-core:a485a01a2a70313fae1a0332480c7215d7559cff",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-native:0498be36f5831bc6b9551e430dfce7bb9dbc0ff4",
+        "--force-with-lease=refs/heads/codex/ce-ss1-l-algebra:3a05b73fb78e53132a6245a60d78ebe6990b3a25",
+        "origin",
+        ":refs/heads/codex/ce-ss1-l-verify",
+        ":refs/heads/codex/ce-ss1-l-frontend-repair",
+        ":refs/heads/codex/ce-ss1-l-frontend",
+        ":refs/heads/codex/ce-ss1-l-core",
+        ":refs/heads/codex/ce-ss1-l-native",
+        ":refs/heads/codex/ce-ss1-l-algebra"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "To github.com:tumlinso/Cellerator.git\n - [deleted]           codex/ce-ss1-l-algebra\n - [deleted]           codex/ce-ss1-l-core\n - [deleted]           codex/ce-ss1-l-frontend\n - [deleted]           codex/ce-ss1-l-frontend-repair\n - [deleted]           codex/ce-ss1-l-native\n - [deleted]           codex/ce-ss1-l-verify\n"
+    }
+  },
+  "post_acceptance_changes": "Only closure/cleanup projections and reports plus the I05 integration entry-point README; executable source and test expectations unchanged from a66a64de."
 }

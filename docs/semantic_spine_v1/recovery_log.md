@@ -99,3 +99,28 @@ evidence `6e0f663c-cc34-47c3-ae1f-9d8e022a07ea` passed all required targets
 and demo memcheck. The completion call will validate the committed final report
 under the same lease discipline before authoritative closure and safe cleanup.
 No active project-owned `.ceh` remains; the umbrella content hash is unchanged.
+
+## Closure and cleanup
+
+I07 completed at revision 6863 with final committed-source gate evidence
+`18fd6964-3815-447b-aae7-dcdc5223eb39` (validation HEAD `a66a64de`).
+The root and run closed at revision 6865: all 29 original leaves plus F05 are
+done, all eight lanes closed, and no run claim remains active.
+
+Owner maintenance recorded the six contract-split integration receipts at
+revisions 6866-6871, verifying the real producer commits against main `3db12f07`
+and the recorded final executable gate. Cleanup eligibility followed at
+6872-6877. All six clean, merged worktrees and local/remote Semantic Spine
+branches were removed. Remote deletion was atomic and guarded by exact expected
+tips. The nine JBC worktrees and their branches were preserved.
+
+The final audit found I05 had no directory at its declared integration artifact
+path, although the integrated tests themselves had executed from the owning
+verification directory. Added `tests/semantic_spine/integration/README.md` as
+the truthful entry point to those real targets, source files, lease requirements
+and recorded results. No test implementation or expected result changed.
+Regenerated snapshot and Markdown through the supported Todo projection service
+after owner maintenance; no database or generated projection was hand-edited.
+The database integrity and foreign-key checks pass. General historical audit
+notices about tasks without structured per-task gates are not new failed tests;
+this epic retains the independent lane evidence and required integrated gates.
