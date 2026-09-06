@@ -1,0 +1,36 @@
+id,kind,title,lane,depends_on,specification
+CE-RU1-0000,epic,Relation Update Spine v1,CE-RU1-L-COORD,,planning/relation-update-spine-v1/proposed-todos/ce-ru1-0000.md
+CE-RU1-I01,task,Revalidate the completed spine and execution baseline,CE-RU1-L-INTEGRATE,,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i01.md
+CE-RU1-C01,task,Specify relation calculus and explicit arithmetic profiles,CE-RU1-L-CORE,CE-RU1-I01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-c01.md
+CE-RU1-C02,task,"Define prepared value, gradient and reader lifetime contracts",CE-RU1-L-CORE,CE-RU1-C01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-c02.md
+CE-RU1-C03,task,Implement host semantic and effect-order validation,CE-RU1-L-CORE,CE-RU1-C02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-c03.md
+CE-RU1-I02,task,Integrate the contract and publish the common interface,CE-RU1-L-INTEGRATE,CE-RU1-C03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i02.md
+CE-RU1-N01,task,Admit N16 forward through the prepared spine,CE-RU1-L-NATIVE,CE-RU1-I02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n01.md
+CE-RU1-N02,task,Move useful N16 transpose computation into core ownership,CE-RU1-L-NATIVE,CE-RU1-N01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n02.md
+CE-RU1-N03,task,Prepare physical edge gradients and full-f32 sparse VJP,CE-RU1-L-NATIVE,CE-RU1-N02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n03.md
+CE-RU1-N04,task,Implement delta-add and gradient-step updates on physical values,CE-RU1-L-NATIVE,CE-RU1-N03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n04.md
+CE-RU1-N05,task,Connect updates to readiness and generation publication,CE-RU1-L-NATIVE,CE-RU1-N04;CE-RU1-R02;CE-RU1-W04,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n05.md
+CE-RU1-N06,task,"Finish rebinding, failure, capture and instrumentation boundaries",CE-RU1-L-NATIVE,CE-RU1-N05,planning/relation-update-spine-v1/proposed-todos/ce-ru1-n06.md
+CE-RU1-R01,task,Build a reusable generation readiness component,CE-RU1-L-READINESS,CE-RU1-I02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-r01.md
+CE-RU1-R02,task,Add bounded consumer read leases and writer join,CE-RU1-L-READINESS,CE-RU1-R01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-r02.md
+CE-RU1-R03,task,Validate event retirement and runtime failure semantics,CE-RU1-L-READINESS,CE-RU1-R02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-r03.md
+CE-RU1-W01,task,Repair rectangular WMMA legality and capacities,CE-RU1-L-WMMA,CE-RU1-I02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-w01.md
+CE-RU1-W02,task,Prepare exact rectangular support plus sparse residual,CE-RU1-L-WMMA,CE-RU1-W01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-w02.md
+CE-RU1-W03,task,Pack explicit half-rounded operands with reusable scratch,CE-RU1-L-WMMA,CE-RU1-W02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-w03.md
+CE-RU1-W04,task,Execute N16 hybrid edge gradients in persistent edge order,CE-RU1-L-WMMA,CE-RU1-W03;CE-RU1-N03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-w04.md
+CE-RU1-W05,task,Expose truthful bounded forcing and lifetime cost evidence,CE-RU1-L-WMMA,CE-RU1-W04,planning/relation-update-spine-v1/proposed-todos/ce-ru1-w05.md
+CE-RU1-F01,task,Reconcile gradient and publication IR with canonical calculus,CE-RU1-L-FRONTEND,CE-RU1-I02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-f01.md
+CE-RU1-F02,task,Extend the bounded parser and Sema bridge for the closure,CE-RU1-L-FRONTEND,CE-RU1-F01,planning/relation-update-spine-v1/proposed-todos/ce-ru1-f02.md
+CE-RU1-F03,task,Lower both origins to the same prepared operations and effects,CE-RU1-L-FRONTEND,CE-RU1-F02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-f03.md
+CE-RU1-F04,task,Close compiler conformance and remove on-path duplicate mappings,CE-RU1-L-FRONTEND,CE-RU1-F03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-f04.md
+CE-RU1-V01,task,Author independent VJP and storage-rounding oracles,CE-RU1-L-VERIFY,CE-RU1-I02,planning/relation-update-spine-v1/proposed-todos/ce-ru1-v01.md
+CE-RU1-V02,task,Author GPU numerical and exact-cover acceptance,CE-RU1-L-VERIFY,CE-RU1-V01;CE-RU1-N03;CE-RU1-W04,planning/relation-update-spine-v1/proposed-todos/ce-ru1-v02.md
+CE-RU1-V03,task,Author mutable binding and generation adversarial acceptance,CE-RU1-L-VERIFY,CE-RU1-V02;CE-RU1-N06,planning/relation-update-spine-v1/proposed-todos/ce-ru1-v03.md
+CE-RU1-V04,task,Author asynchronous consumer and N1 graph regressions,CE-RU1-L-VERIFY,CE-RU1-V03;CE-RU1-R03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-v04.md
+CE-RU1-V05,task,Define executable evidence and benchmark negative controls,CE-RU1-L-VERIFY,CE-RU1-V04;CE-RU1-W05,planning/relation-update-spine-v1/proposed-todos/ce-ru1-v05.md
+CE-RU1-I03,task,"Integrate runtime, providers, compiler and test targets",CE-RU1-L-INTEGRATE,CE-RU1-N06;CE-RU1-R03;CE-RU1-W05;CE-RU1-F04;CE-RU1-V05,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i03.md
+CE-RU1-I04,task,Complete and run the dual-origin regulatory learning demo,CE-RU1-L-INTEGRATE,CE-RU1-I03,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i04.md
+CE-RU1-I05,task,Run required V100 correctness and sanitizer acceptance,CE-RU1-L-INTEGRATE,CE-RU1-I04,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i05.md
+CE-RU1-I06,task,Measure sparse versus hybrid lifetime crossover,CE-RU1-L-INTEGRATE,CE-RU1-I05,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i06.md
+CE-RU1-I07,task,Retire superseded on-path duplication without losing good code,CE-RU1-L-INTEGRATE,CE-RU1-I06,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i07.md
+CE-RU1-I08,task,Close the bounded epic with truthful capability and deferral records,CE-RU1-L-INTEGRATE,CE-RU1-I07,planning/relation-update-spine-v1/proposed-todos/ce-ru1-i08.md

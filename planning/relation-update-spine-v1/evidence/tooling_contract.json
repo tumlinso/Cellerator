@@ -1,0 +1,29 @@
+{
+  "native_schema": 3,
+  "apply_input": "machine/relation-update-spine-v1.todo-plan.json",
+  "project_control_source_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e",
+  "read_only_native_validation_passed": true,
+  "application_executed": false,
+  "activation_executed": false,
+  "local_python_minimum": "3.10",
+  "runtime_selection": "Explicit configured Project Control Python interpreter; no guessed path.",
+  "verified_api": [
+    "project_control.config.load_config",
+    "project_control.mutation.validate_native_plan",
+    "project_control.mutation.apply_proposal",
+    "project_control.models.ObservationPreconditions.model_validate",
+    "project_control.models.ProposalEnvelope.create"
+  ],
+  "verified_mutation_module_sha256": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
+  "signature_verification": "Source inspected; apply not executed. Isolated doubles test receipt/cursor behavior, not live mutation.",
+  "approval_binding": "Saved reviewed ObservationPreconditions carried into native apply transaction; fresh CLI snapshot is not substituted.",
+  "later_manual_steps": [
+    "copy reviewed overlay",
+    "review and commit package/demo only",
+    "native preview",
+    "human inspection",
+    "explicit confirmed apply",
+    "read-only postcondition inspection",
+    "separate activation authorization"
+  ]
+}

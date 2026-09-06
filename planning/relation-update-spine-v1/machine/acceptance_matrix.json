@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "status": "required_after_implementation",
+  "gpu_evidence_currently_observed": false,
+  "tests": [
+    {
+      "group": "host",
+      "ctest_name": "ru1_calculus",
+      "binary": "ceRU1HostTests",
+      "argv": [
+        "--suite",
+        "calculus"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "host",
+      "ctest_name": "ru1_compiler",
+      "binary": "ceRU1CompilerTests",
+      "argv": [],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "host",
+      "ctest_name": "ru1_reference",
+      "binary": "ceRU1ReferenceTests",
+      "argv": [],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "host",
+      "ctest_name": "ru1_cover",
+      "binary": "ceRU1CoverTests",
+      "argv": [],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_gpu_numerics",
+      "binary": "ceRU1GpuNumerics",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_gpu_bindings",
+      "binary": "ceRU1GpuBindings",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_gpu_lifecycle",
+      "binary": "ceRU1GpuLifecycle",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_readiness",
+      "binary": "ceRU1ReadinessTests",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_wmma_legality",
+      "binary": "ceRU1WmmaLegality",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "gpu",
+      "ctest_name": "ru1_n1_regression",
+      "binary": "ceRU1N1Regression",
+      "argv": [
+        "--require-sm70"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "demo",
+      "ctest_name": "ru1_demo_hybrid",
+      "binary": "ceRelationUpdateDemo",
+      "argv": [
+        "--route",
+        "hybrid"
+      ],
+      "required": true,
+      "status": "future_target"
+    },
+    {
+      "group": "demo",
+      "ctest_name": "ru1_demo_sparse",
+      "binary": "ceRelationUpdateDemo",
+      "argv": [
+        "--route",
+        "sparse"
+      ],
+      "required": true,
+      "status": "future_target"
+    }
+  ],
+  "task_acceptance": [
+    {
+      "task_id": "CE-RU1-I01",
+      "conditions": [
+        "Record exact source hashes, worktree and authority cursor, CUDA/compiler/device identity, commands, exits and pre-existing failures.",
+        "No historical campaign is reopened; useful kernels and all on-path consumers have a named preserve/move/replace/retire decision."
+      ],
+      "cases": [
+        "Existing Semantic Spine N1 acceptance and graph test discovery; baseline on the required V100 when hardware lease is available."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-C01",
+      "conditions": [
+        "Native and compiler-origin descriptors compare every mathematical field while excluding runtime bindings/provenance.",
+        "Scalar contraction split-K sums partials; no edge-channel concatenation or implicit normalization is introduced.",
+        "Mixed-profile semantics and straight-line real-valued VJP versus storage rounding are explicitly distinguished."
+      ],
+      "cases": [
+        "Same extents/different biological axes; orientation reversal; profile mismatch; unknown effect kind; edge-channel rejection."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-C02",
+      "conditions": [
+        "State transitions, invalidation, generation overflow, lease replay, reader-return and teardown behavior are complete.",
+        "Update and publication share one mechanism; delta add and gradient-step convenience do not create separate storage owners.",
+        "Public declaration sketch and demo agree; no declaration is installed without real implementation."
+      ],
+      "cases": [
+        "State-machine table covers uninitialized, published, borrowed, returned, updating and poisoned states."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-C03",
+      "conditions": [
+        "Tests execute validation and equivalence, not only name tables.",
+        "Wrong order/profile is rejected before dispatch; valid native and compiler descriptors share the same validator."
+      ],
+      "cases": [
+        "Host positive and adversarial calculus tests; copy/move of descriptors does not leave self-referential pointers."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I02",
+      "conditions": [
+        "One canonical relation/calculus contract links with existing spine and passes host tests.",
+        "Internal interface checkpoint published with exact headers and test evidence; no broad SDK or language work."
+      ],
+      "cases": [
+        "Host compilation and calculus test."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N01",
+      "conditions": [
+        "N16 forward reaches the actual FMP1 kernel with correct non-square axes and element capacities.",
+        "N1 semantics and rejection behavior remain unchanged; empty support overwrites output with zero."
+      ],
+      "cases": [
+        "Widths 1,16 succeed; unsupported intermediate widths fail honestly; zero rows, empty rows, irregular support."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N02",
+      "conditions": [
+        "Transpose reads the same physical weights as forward and produces source-axis N16 results.",
+        "Non-square adjoint calculation is correct and no logical weight repack is required per transpose."
+      ],
+      "cases": [
+        "Irregular/isolated sources; mixed sign weights; forward/transpose adjoint against independent loops."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N03",
+      "conditions": [
+        "Every logical edge has exactly one physical gradient slot and inverse mapping; missing/duplicate endpoints remain the established explicit rejection.",
+        "Full-f32 profile executes without half conversion; mixed-profile sparse result uses exactly the same operand quantization as WMMA."
+      ],
+      "cases": [
+        "Distinct edge sentinels, randomized logical input ordering, independent VJP, gradient input-version mismatch."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N04",
+      "conditions": [
+        "Both update styles change the authoritative physical plane, not a throwaway logical copy.",
+        "Small updates, ties-to-even, signed zeros and overflow behavior are tested against the stated rounding policy.",
+        "No topology reconstruction and no implicit canonicalization or hidden f32 master weights."
+      ],
+      "cases": [
+        "Delta versus step with equivalent delta; alpha zero; update generation overflow; shifted overlap; f16 rounding boundary."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N05",
+      "conditions": [
+        "Publication happens after all writes; newly published generation is consumed on another nonblocking stream.",
+        "Owner can update after reader-return enqueues completion without host-wide synchronization.",
+        "No false generation advancement or successful-receipt emission after rejected/failed enqueue."
+      ],
+      "cases": [
+        "Two update styles across at least three generations; delayed reader; immediate next forward; stale-generation rejection."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-N06",
+      "conditions": [
+        "New mutable operations cannot be accidentally captured into an unsupported graph.",
+        "Fault-injection and ownership tests cover rejected metadata, partial enqueue and asynchronous-error observation.",
+        "Statistics are evidence counters updated from actual branches, not projected or constant expected values."
+      ],
+      "cases": [
+        "Stale pointer/version; busy lease close; same-device wrong stream; empty relation; capture refusal; N1 graph regression."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-R01",
+      "conditions": [
+        "Event-backed ready wait works on explicit nonblocking streams with no legacy-default-stream crutch.",
+        "No per-generation event allocation and no silent wait on an unrecorded event."
+      ],
+      "cases": [
+        "Initial unready, monotonic generation, wrong epoch/device and failed producer enqueue."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-R02",
+      "conditions": [
+        "Producer-ready and consumer-done edges are both explicit and tested without host/device-global sync.",
+        "A stale lease cannot release a newer reader; next mutation joins the correct completion event.",
+        "Pool exhaustion is explicit; the one-lease limit is documented as a bounded runtime policy, not mathematics."
+      ],
+      "cases": [
+        "Delayed D2D reader; begin/begin rejection; stale return; return then immediate update; repeat on two distinct consumer streams."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-R03",
+      "conditions": [
+        "Tests distinguish enqueue, ready and observed completion, including failure outcomes.",
+        "No use-after-free under valid leases; invalid borrower behavior is rejected where observable and documented otherwise."
+      ],
+      "cases": [
+        "Long repeated-generation run; fault-injected event API; stream-local synchronization only at observation boundaries."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-W01",
+      "conditions": [
+        "Legal N16 executes actual WMMA; unaligned pointers, short capacities, bad tile starts and K17 direct-ldm request are rejected or legally repacked before launch.",
+        "Every warp collectively reaches each WMMA instruction with uniform arguments; output scratch alignment is validated."
+      ],
+      "cases": [
+        "K16 legal; K17 and K24 adversarial stride/offset; zero tile work; overflow; last tile at source/destination boundary."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-W02",
+      "conditions": [
+        "Dense fragments plus residual cover every supported edge once, with no writes to fictitious padded-edge parameters.",
+        "Logical/physical/per-tile mappings are invertible on support; allocation sizes and tile amplification are accounted."
+      ],
+      "cases": [
+        "Dense module plus irregular residual; partial tile holes; shuffled IDs; sparse-only; empty; overlapping hint rejection."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-W03",
+      "conditions": [
+        "Pack and sparse fallback agree on the exact quantized input values and tail initialization.",
+        "Same-address new version forces refresh; same version may reuse only under the documented immutable-through-completion contract.",
+        "No hot allocation or canonical edge-value packing."
+      ],
+      "cases": [
+        "Rounding ties, subnormal/overflow policy, reused pointers, NaN/inf propagation, poisoned padding sentinels."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-W04",
+      "conditions": [
+        "Dense, sparse-only and mixed covers agree with independent quantized-input VJP; required dense and mixed fixtures actually launch WMMA.",
+        "Residual writes cannot overlap rectangular output ownership; every gradient slot is initialized each invocation."
+      ],
+      "cases": [
+        "Forced sparse versus forced hybrid; exact cover partition; cancellation, nonfinite and empty cases."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-W05",
+      "conditions": [
+        "Unsupported forced paths fail with a reason; sparse fallback is actually called where selected.",
+        "Mechanism availability and benchmark promotion are separate statuses.",
+        "No graph-wide planner, arbitrary-N family, Ampere pipeline or new precision portfolio is introduced."
+      ],
+      "cases": [
+        "Dispatch negative controls; phase-attribution counters; forced-ineligible requests."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-F01",
+      "conditions": [
+        "Compiler semantics no longer depend on an independent training object to establish mathematical meaning.",
+        "Update, publication and observation are distinct effects; unknown and misordered stages fail closed."
+      ],
+      "cases": [
+        "IR copy/move; illegal stage order; wrong relation/gradient order; numeric mismatch."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-F02",
+      "conditions": [
+        "The supplied closure source independently lowers into canonical descriptors equivalent to native construction.",
+        "Wrong symbols, shadowed identities, axis flips, undeclared outputs, unsupported syntax and ambiguous update order yield diagnostic failure."
+      ],
+      "cases": [
+        "Positive demo source and multiple rejection cases; not a string-equality stub recognizing only the demo."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-F03",
+      "conditions": [
+        "Native and compiler-origin requests share operation semantics, physical preparation and actual provider dispatch.",
+        "Generation/effect dependencies survive lowering; no compiler-specific execution engine or candidate semantics."
+      ],
+      "cases": [
+        "Exact field equivalence; mutate one semantic field then reject; verify actual provider attribution in final GPU acceptance."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-F04",
+      "conditions": [
+        "All supported closure effects have conformance tests tied to shared semantics; no fabricated substitute primitive remains on this path.",
+        "Deferred language features are explicitly listed and not advertised as working."
+      ],
+      "cases": [
+        "Contract suite for both delta and gradient-step source forms; unsupported syntax remains failure."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-V01",
+      "conditions": [
+        "Adjoint and finite-difference checks catch transposed axes, missing K sums and wrong edge mapping.",
+        "Zero/isolated support and deterministic f16 rounding cases are independent of GPU implementation."
+      ],
+      "cases": [
+        "N1 and N16; high-bit identity differences; stable fixed seeds; signed weights and cancellation."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-V02",
+      "conditions": [
+        "All per-edge and dense results meet declared policy-specific tolerances.",
+        "Forced hybrid dense/mixed fixtures record actual WMMA execution; fallback fixtures record actual sparse execution."
+      ],
+      "cases": [
+        "N16 arbitrary input rebinding; residue mask/padding sentinels; instruction legality adversarial fixture."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-V03",
+      "conditions": [
+        "Prelaunch rejection leaves outputs/values/counters unchanged; post-submission failures poison state and never report a fresh ready generation.",
+        "No topology rebuild or mandatory logical-order traffic occurs across updates."
+      ],
+      "cases": [
+        "Single-field metadata mutations; count overflow; stale gradient stamp; no-op alpha; zero support."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-V04",
+      "conditions": [
+        "Repeated updates cannot overtake a valid reader; returned lease cannot be reused.",
+        "No global synchronization is needed for hot publication; only observation and teardown may wait on documented streams.",
+        "Existing N1 graph replay still computes correct values and new capture behavior is truthful."
+      ],
+      "cases": [
+        "Ready-wait, reader-done, teardown, event reuse, wrong stream, replay; Compute Sanitizer final run."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-V05",
+      "conditions": [
+        "No missing GPU, skipped sanitizer or source-only capability record can be interpreted as a passed device acceptance.",
+        "Benchmarks preserve warm/cold distinction, live mutation state reset and exact fixture/seed/numeric provenance."
+      ],
+      "cases": [
+        "Receipt tamper tests; dense-heavy, irregular sparse and mixed covers; multiple reuse horizons."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I03",
+      "conditions": [
+        "Host and CUDA targets link without adding planning/contracts to production include paths.",
+        "Every advertised RU1 provider has an actual symbol and executable test; no uncompiled code-only completion."
+      ],
+      "cases": [
+        "Host tests plus build of exact CTest inventory specified in the acceptance matrix."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I04",
+      "conditions": [
+        "Normal demo links real Cellerator and sm70 implementations, not planning stubs or reference mode.",
+        "Exactly one topology preparation; both update styles and generations 1,2,3 demonstrated; real sparse/WMMA attribution printed.",
+        "The fixture is labelled synthetic and loss decrease is not a scientific learning-performance claim."
+      ],
+      "cases": [
+        "Post-epic normal GPU demo, reference-only fixture run as separately labelled control."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I05",
+      "conditions": [
+        "Every required test executed with zero failures and no skipped device substitution.",
+        "Required memcheck has zero reported errors; racecheck/synccheck findings are resolved or an explicit bounded tool limitation blocks relevant completion.",
+        "No root closure on build-only evidence."
+      ],
+      "cases": [
+        "Host contract/bridge; GPU numerical/binding/lifecycle; normal demo; N1 graph regressions."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I06",
+      "conditions": [
+        "Performance report separates mechanism correctness, reachability and promotion.",
+        "Dense, irregular and mixed workloads reveal costs and at least one negative control; no fabricated universal WMMA claim.",
+        "If no hybrid win is found, document evidence and dispatch consequences rather than hiding the path or launching a new optimization campaign."
+      ],
+      "cases": [
+        "Repeated independent samples, identical rounded operands, own-state reset outside timed step, declared reuse horizons."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I07",
+      "conditions": [
+        "Every moved/removed implementation has a destination or reason and preserved regression coverage.",
+        "No duplicate canonical semantics remain on the new path; no unrelated adapter or model functionality is silently discarded.",
+        "Integrated relevant tests rerun after pruning."
+      ],
+      "cases": [
+        "Reference/caller audit, link tests of remaining consumers and full RU1 regression."
+      ]
+    },
+    {
+      "task_id": "CE-RU1-I08",
+      "conditions": [
+        "All leaf tasks have reviewed evidence and required post-pruning hardware gates pass at the recorded source.",
+        "No full .cell, arbitrary-N, optimizer framework, graph-wide planner or mutable graph-capture claims.",
+        "Completion distinguishes actual measured performance from unresolved research and does not activate follow-on work."
+      ],
+      "cases": [
+        "Final host/device/sanitizer suite and dual-origin demo; machine receipt coherence review."
+      ]
+    }
+  ],
+  "hard_gates": {
+    "device": "actual sm70, no skip",
+    "sanitizer": [
+      "memcheck all GPU binaries and demo",
+      "racecheck and synccheck on numerical WMMA/lifecycle fixtures"
+    ],
+    "final_acceptance_tasks": [
+      "CE-RU1-I05",
+      "CE-RU1-I08"
+    ]
+  },
+  "receipt_fields": [
+    "source_commit",
+    "source_dirty_paths",
+    "tool_versions",
+    "gpu_uuid",
+    "gpu_compute_capability",
+    "argv",
+    "exit_code",
+    "fixture_identity",
+    "numerical_policy",
+    "raw_log_sha256"
+  ],
+  "performance_promotion": "Measured separately; no mandatory universal speedup threshold."
+}

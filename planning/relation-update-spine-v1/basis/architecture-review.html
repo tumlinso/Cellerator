@@ -1,0 +1,1372 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Read-only, source-grounded review of Cellerator architecture, biological computation, algorithms, and development priorities at commit b3340736."><title>Cellerator — Architecture and Biological Optimization Review</title><style>
+:root{--ink:#202b37;--muted:#5c6977;--paper:#fff;--wash:#f3f5f7;--line:#d8dfe5;--accent:#174c78;}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1.5rem}
+body{margin:0;background:var(--wash);color:var(--ink);font:17px/1.68 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1720px;margin:auto;min-height:100vh}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 22px;border-right:1px solid var(--line);font-size:13px;line-height:1.45}
+nav .brand{font-size:16px;font-weight:750;margin-bottom:6px;letter-spacing:.015em}nav .sub{color:var(--muted);margin-bottom:20px;font-size:12px}
+nav ul{list-style:none;margin:0;padding:0}nav li{margin:0 0 12px}nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--accent);text-decoration:underline}
+main{min-width:0;background:var(--paper);padding:54px 64px 80px;max-width:1380px}
+h1{font-size:2.35rem;line-height:1.16;letter-spacing:-.035em;max-width:950px;margin:0 0 30px;font-weight:770}
+h2{font-size:1.72rem;line-height:1.3;letter-spacing:-.02em;border-top:2px solid var(--line);padding-top:32px;margin:52px 0 22px}
+h3{font-size:1.2rem;line-height:1.4;margin:32px 0 14px}p{margin:0 0 18px}p,li{max-width:1080px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+strong{font-weight:700}code{font:0.87em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--wash);padding:.13em .3em;border-radius:3px;overflow-wrap:anywhere}
+pre{background:#eff3f6;border:1px solid var(--line);border-radius:5px;padding:18px 22px;overflow:auto;line-height:1.52;margin:22px 0}pre code{padding:0;background:none;overflow-wrap:normal;font-size:13px}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:4px;margin:24px 0 28px}
+table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.52;min-width:660px}th,td{text-align:left;vertical-align:top;padding:12px 13px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}th{background:#eaf0f5;font-weight:700}tr:last-child td{border-bottom:0}th:last-child,td:last-child{border-right:0}tbody tr:nth-child(even){background:#f8fafb}td code{font-size:12px}
+.reference{font-size:.86em;white-space:normal;color:var(--muted)}.reference a{text-decoration:none}.reference a:hover{text-decoration:underline}
+hr{border:0;border-top:1px solid var(--line);margin:32px 0}li{padding-left:3px;margin-bottom:9px}blockquote{border-left:4px solid var(--accent);margin:20px 0;padding:3px 24px;color:var(--muted)}
+.footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media(max-width:1050px){.layout{grid-template-columns:215px minmax(0,1fr)}main{padding:36px 32px}nav{padding:24px 16px}h1{font-size:2rem}}
+@media(max-width:750px){.layout{display:block}nav{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}nav ul{columns:2;column-gap:24px}nav li{break-inside:avoid}main{padding:30px 20px}h1{font-size:1.8rem}h2{font-size:1.45rem}}
+@media print{body{background:#fff;font-size:10pt;line-height:1.5}.layout{display:block}nav{display:none}main{padding:0;max-width:none}h1{font-size:25pt}h2{font-size:17pt;break-after:avoid}h3{break-after:avoid}pre{white-space:pre-wrap;break-inside:avoid}.table-scroll{overflow:visible}table{min-width:0;font-size:8pt}a{color:inherit}.footer{display:none}}
+</style></head><body><div class="layout"><nav aria-label="Contents"><div class="brand">CELLERATOR REVIEW</div><div class="sub">5 September 2026<br>Snapshot b3340736 · Read-only investigation</div><ul><li><a href="#evidence-and-snapshot">Evidence and snapshot</a></li>
+<li><a href="#1-executive-synthesis">1. Executive synthesis</a></li>
+<li><a href="#2-current-architecture-map">2. Current architecture map</a></li>
+<li><a href="#3-operation-coverage-matrix">3. Operation coverage matrix</a></li>
+<li><a href="#4-high-performance-implementation-inventory">4. High-performance implementation inventory</a></li>
+<li><a href="#5-what-the-performance-evidence-actually-establishes">5. What the performance evidence actually establishes</a></li>
+<li><a href="#6-reconsidering-the-primitive-algebra">6. Reconsidering the primitive algebra</a></li>
+<li><a href="#7-operation-decomposition-study">7. Operation-decomposition study</a></li>
+<li><a href="#8-biological-optimization-opportunities-beyond-generic-sparse-algebra">8. Biological optimization opportunities beyond generic sparse algebra</a></li>
+<li><a href="#9-standard-library-design-from-first-principles">9. Standard-library design from first principles</a></li>
+<li><a href="#10-libcellerator-as-a-first-class-product">10. libCellerator as a first-class product</a></li>
+<li><a href="#11-geometry-and-representation-model">11. Geometry and representation model</a></li>
+<li><a href="#12-planner-and-optimization-strategy">12. Planner and optimization strategy</a></li>
+<li><a href="#13-compilation-profiling-specialization-and-jit">13. Compilation, profiling, specialization, and JIT</a></li>
+<li><a href="#14-hardware-evaluation">14. Hardware evaluation</a></li>
+<li><a href="#15-strong-architectural-alternatives">15. Strong architectural alternatives</a></li>
+<li><a href="#16-ranked-algorithmic-improvement-proposals">16. Ranked algorithmic improvement proposals</a></li>
+<li><a href="#17-code-and-target-reorganization-proposals">17. Code and target reorganization proposals</a></li>
+<li><a href="#18-development-priority-analysis">18. Development-priority analysis</a></li>
+<li><a href="#19-critical-experiments">19. Critical experiments</a></li>
+<li><a href="#20-questions-that-remain-genuinely-open">20. Questions that remain genuinely open</a></li>
+<li><a href="#appendix-a-source-evidence-ledger">Appendix A. Source evidence ledger</a></li>
+<li><a href="#appendix-b-primary-source-research-bibliography">Appendix B. Primary-source research bibliography</a></li></ul></nav><main><h1 id="cellerator-architecture-execution-and-biological-optimization-review">Cellerator: architecture, execution, and biological optimization review</h1>
+<p><strong>Review date:</strong> 5 September 2026<br/>
+<strong>Purpose:</strong> Find the architecture and algorithms most likely to make biological computation exceptionally fast.<br/>
+<strong>Method:</strong> Read-only investigation of live source through Project Control, examination of retained performance artifacts, and primary-source research. No repository, API, build, Todo, or implementation changes were made. No benchmark or test was executed for this review.</p>
+<h2 id="evidence-and-snapshot">Evidence and snapshot</h2>
+<p>The principal source is Cellerator <code>main</code>, commit <strong><code>b3340736c8c7b17266bd825c9f079d86e42a5639</code></strong>, worktree <code>wt-d3fea47b1244da16</code>. Its working-tree fingerprint was <strong><code>7dbefa2bf1a2fbba979c702f5de99d182fa3ff6ea76fcdf78174f03e2d0c6196</code></strong>. The only reported dirty paths were <code>library/cellerator.cell</code> and <code>library/cellerator/cellerator.ceh</code>. All observations used this working tree, not the other visible JBC worktrees. The commit and fingerprint remained unchanged during the source observations recorded in this report. Source observations ran from <strong>17:22:20 UTC to 18:02:06 UTC on 5 September 2026</strong> (19:22:20–20:02:06 Europe/Berlin). The final read reconfirmed the same commit, working-tree fingerprint, and two dirty library paths.</p>
+<p>Project Control's source reader did not expose the <code>.cell</code> and <code>.ceh</code> bodies requested, including the new library files and the old <code>stdlib/cellerator/core.cell</code>. Consequently, claims about language behavior come from the actual C++ parser, semantic analysis, lowering, backend, and build sources—not an asserted review of those inaccessible library bodies. Standard-library body-level conclusions remain provisional. The manifest and installation rules were accessible. Some <code>.jsonl</code> and <code>.tsv</code> evidence was also unavailable; accessible aggregate JSON and benchmark source were used instead.</p>
+<p>Cellerator's Todo/workflow and live performance summaries were unavailable through the observer. This is not evidence that the repository lacks tests or performance artifacts: several were read directly. “Build-listed” below means the implementation is included by a reviewed build target; it does not mean that this review successfully built it. “Executable” means an actual computational launch/callback path was traced in source, not that it was executed here.</p>
+<p>A limited consumer check examined GlassHelix <code>main</code>, commit <strong><code>5b9dfeb050448a772db5b4e35dbc14b744588b6e</code></strong>, with only <code>.DS_Store</code> dirty, fingerprint <strong><code>9549533d6f455d2c206603ee0b21ed30c8d5577bd1dae96c5ebc4ce342eb30a8</code></strong>. Its reviewed root build defines native C++/CUDA prototypes and does not link a Cellerator target. Prospective GlassHelix regulatory/dynamical workloads in this report are therefore architecture tests, not claims about an existing integrated application. <span class="reference">[<a href="#s27">S27</a>]</span></p>
+<p><strong>Evidence labels:</strong> <strong>Fact</strong> means supported by inspected source or an identified artifact. <strong>Inference</strong> is an interpretation of those facts. <strong>Proposal</strong> is an architectural recommendation. <strong>Performance hypothesis</strong> requires measurement. <strong>Research question</strong> requires further scientific or workload evidence. Source citations <code>[Snn]</code> resolve to the source ledger at the end; research citations <code>[Rnn]</code> resolve to the primary-source bibliography. These labels do not imply that every line of every cited source was audited.</p>
+<hr/>
+<h2 id="1-executive-synthesis">1. Executive synthesis</h2>
+<h3 id="what-cellerator-currently-is">What Cellerator currently is</h3>
+<p><strong>Cellerator is currently a substantial, unevenly integrated biological execution research system, with a more executable native computation layer than its installed compiler/libCellerator product exposes.</strong> Its strongest technical center is not the source-language parser. It is the combination of persistent biological identity, structure/value separation, exact support accounting, physical projection, prepared execution, and operation-specific kernels. <span class="reference">[<a href="#s01">S01</a>–<a href="#s02">S02</a>, <a href="#s11">S11</a>–<a href="#s26">S26</a>]</span></p>
+<p>There are several distinct realities:</p>
+<ul>
+<li>The installed target named <code>libCellerator</code> contains the passthrough-driver and tooling-architecture implementation units, not the native math engine. The installed <code>cellerator</code> entry point forwards to another compiler. Compiler component targets such as Frontend, Planning, and Realization are INTERFACE boundaries in the inspected configuration. <span class="reference">[<a href="#s01">S01</a>–<a href="#s03">S03</a>]</span></li>
+<li>Independently, the repository contains real parser/AST/semantic/profile/IR/backend algorithms, including actual external object compilation and narrow generated PTX. Some “vertical slices” are deliberately small demonstrations with scalar/reference execution, not the complete route implied by their names. <span class="reference">[<a href="#s04">S04</a>–<a href="#s10">S10</a>]</span></li>
+<li>The native build contains real sparse, feature-major, WMMA, residual, contraction, segment, normalization, update, fusion, training, and sequence-predicate execution paths. Some are directly callable through typed APIs; fewer are connected through the same generic candidate/preparation route. <span class="reference">[<a href="#s11">S11</a>–<a href="#s25">S25</a>]</span></li>
+<li>Retained performance evidence establishes particular mechanisms on particular fixtures. It does not establish Cellerator-wide superiority or a broad biological speedup. The newer operation portfolio's reviewed readiness receipt explicitly does not claim CUDA runtime timing or biological promotion. <span class="reference">[<a href="#s26">S26</a>]</span></li>
+</ul>
+<h3 id="the-strongest-assets">The strongest assets</h3>
+<p>The separation of structure identity, structure epoch, value generation, logical edge order, and persistent physical order can enable optimizations a conventional “call SpMM on this CSR” interface cannot express conveniently. These contracts already support useful reuse in native execution. The older N16 training path reuses forward/transpose structure and updates values in physical order; the sequence integration caches predicate-derived artifacts across repeated state computations. These are concrete assets, not merely future intentions. <span class="reference">[<a href="#s12">S12</a>, <a href="#s15">S15</a>, <a href="#s24">S24</a>–<a href="#s25">S25</a>]</span></p>
+<p>Exact heterogeneous support coverage is another asset. It allows sparse and dense fragments to coexist without silently discarding inconvenient biology. The geometry system also already has sparse incremental greedy machinery and support-derived grouping strategies. The planner already has dynamic programming over chains, preparation/reuse cost terms, measured-candidate hooks, and a separate two-dimensional cost/memory Pareto helper. These should be evaluated and connected, not rediscovered under new names. <span class="reference">[<a href="#s14">S14</a>, <a href="#s16">S16</a>–<a href="#s18">S18</a>]</span></p>
+<h3 id="the-largest-uncertainties">The largest uncertainties</h3>
+<p>The largest uncertainty is not whether Cellerator can contain a language. It is whether the semantic and execution layers describe <strong>one coherent computation</strong>, and whether biological information changes that computation enough to justify the machinery.</p>
+<p>Three questions dominate:</p>
+<ol>
+<li>Can both a native C++ caller and the source language reach the same correct, performant prepared execution from the same semantics?</li>
+<li>On realistic repeated biological workloads, which gains come from better kernels, which from layout/preparation reuse, and which specifically require biological meaning?</li>
+<li>Is the most useful compilation unit an individual operation, a composition, or a <strong>family of related biological computations</strong> with shared structure and bounded variation?</li>
+</ol>
+<h3 id="recommended-direction-with-qualifications">Recommended direction, with qualifications</h3>
+<p><strong>Make a prepared biological-computation engine the shared architectural center.</strong> Offer immediate native math, prepared operations, and optional graph construction to C++ users; make the language another way to express that graph and its useful facts. Keep explicit expert access to planning, layouts, IR, candidate forcing, and backend code. Do not expand the language merely to complete a checklist, and do not discard it merely because its current integration is incomplete.</p>
+<p>This is not a recommendation for permanently library-first or compiler-first development. It is a recommendation to make performance-producing semantics and execution primary. A compiler-visible composition can be valuable; it does not require that every caller adopt the language. Structural code generation or JIT may become important for stable biological families, but current evidence does not justify making it the next central implementation project.</p>
+<p>The strongest longer-term hypothesis is that Cellerator should compile <strong>biological structure plus a workload family</strong>, rather than simply compile source text plus one matrix. This preserves the best existing ideas while opening genuinely biological optimizations: repeated regulatory support across states, sequence-derived invariant relations, exact factorized gates, hierarchical mechanisms, ancestry/edit sharing, and perturbation-driven incremental updates. Each requires explicit validity conditions and comparative experiments.</p>
+<hr/>
+<h2 id="2-current-architecture-map">2. Current architecture map</h2>
+<h3 id="2-1-installed-product-versus-repository-implementation">2.1 Installed product versus repository implementation</h3>
+<p>The installed surface is currently approximately:</p>
+<pre><code class="language-text">cellerator executable
+  -&gt; run_driver_passthrough_v1
+  -&gt; external compiler command
+
+Cellerator::libCellerator
+  -&gt; passthrough-driver implementation
+  -&gt; celleratord architecture/routing validation
+
+installed include/ + stdlib/ + profiles/
+  != an installed, linked implementation of all exposed headers
+</code></pre>
+<p><code>cmake/compiler/CelleratorHostSdk.cmake:4–38</code> is decisive. It defines only the two implementation sources in the named library and exports the library plus the two tools. It installs <code>stdlib/</code>, not the new <code>library/</code>. Its generated package config reports compiler/runtime availability while reporting no CUDA backend. The root build reaches this host SDK before the CUDA-disabled early return; substantial native math targets lie beyond that return. Thus “host-only build works” is not equivalent to “native biological math is available on CPU.” <span class="reference">[<a href="#s01">S01</a>]</span></p>
+<h3 id="2-2-compiler-implementation-islands">2.2 Compiler implementation islands</h3>
+<pre><code class="language-text">source scanners / parser API
+  -&gt; source records and AST handles
+  -&gt; semantic type/effect/operation descriptions
+  -&gt; semantic IR and composition descriptions
+  -&gt; planning IR, profile identities, decomposition/atom imports
+  -&gt; selected-plan demonstrators
+  -&gt; realization descriptors and symbolic bindings
+  -&gt; host-reference prepared-program slice
+
+separate backend paths:
+  CSR-oriented CPU computation
+  generated C++ -&gt; external compiler -&gt; ordinary object
+  narrow generated PTX -&gt; ptxas -&gt; cubin
+</code></pre>
+<p>Important symbols include <code>resolve_operation_kind</code>, <code>lower_selected_relation_plan_v1</code>, <code>execute_prepared_relation_slice_v1</code>, profile-artifact build/validation functions, and external object/PTX assembly functions. The selected-relation realization slice records the selected candidate but constructs a host-reference callback regardless of that candidate's physical implementation. It is a real executable demonstration, but not evidence of end-to-end GPU candidate realization. <span class="reference">[<a href="#s05">S05</a>–<a href="#s10">S10</a>]</span></p>
+<p>The source-to-selected-plan demonstration requires exactly two semantic operations and selects between supplied alternatives. That is not the same algorithm as the native end-to-end planner. Likewise, the source-to-semantic demonstration has a separate lightweight parser and scalar interpretation. Multiple parallel representations are present; they are not all interchangeable instances of one pipeline. <span class="reference">[<a href="#s06">S06</a>–<a href="#s08">S08</a>]</span></p>
+<h3 id="2-3-native-execution-paths">2.3 Native execution paths</h3>
+<pre><code class="language-text">C++ typed relation/state/support/axis views
+  -&gt; biological ABI + identity/lifetime validation
+  -&gt; operation core v1 or v2
+  -&gt; geometry acquisition / semantic geometry
+  -&gt; physical projections and value planes
+  -&gt; candidate discovery / direct typed provider access
+  -&gt; planner and preparation factory
+  -&gt; prepared operation or prepared program
+  -&gt; caller-owned buffers, stream, workspace, readiness events
+  -&gt; CUDA / vendor / host callback
+</code></pre>
+<p>This is not one universally connected path. The core-v1 builtin catalog, newer relation-algebra descriptors, provider-specific portfolios, typed launch APIs, training programs, and sequence integration are distinct entry routes. A user who knows the right internal/public headers can reach functionality that the named installed library does not expose coherently. <span class="reference">[<a href="#s11">S11</a>–<a href="#s15">S15</a>, <a href="#s19">S19</a>–<a href="#s25">S25</a>]</span></p>
+<p>The five builtin candidates are narrower than the complete native kernel inventory: row-masked N1, CSR fallback N1, feature-major widths 1–16, feature-major CTA widths 17–64, and a transpose backward N1 candidate. The newer algebra catalog includes operations that intentionally fail closed through the old preparation interface. This is preferable to silently wrong dispatch, but it leaves a real integration gap. <span class="reference">[<a href="#s13">S13</a>]</span></p>
+<h3 id="2-4-permanent-ownership-of-former-campaign-work">2.4 Permanent ownership of former campaign work</h3>
+<p>CE-GEO implementation now lives primarily under <code>src/geometry/</code>, <code>src/compute/projection/</code>, and <code>src/compute/architecture/providers/nvidia/{common,sm70}/</code>. CE-EXOP fan-in is explicitly in <code>src/compute/CMakeLists.txt</code>, with permanent provider and candidate sources for residual, apply, transpose, contraction, edge gradients, segment operations, and fusion. Campaign-labelled portfolio targets still aggregate these permanent implementations. <span class="reference">[<a href="#s11">S11</a>, <a href="#s16">S16</a>, <a href="#s19">S19</a>–<a href="#s23">S23</a>]</span></p>
+<p>JBC-related decomposition, atom, binding, and lowering-resumption sources are included by the <code>cellerator_jbc_v1</code> aggregate. The inspected atom-fragment and resumption units validate coverage, identities, resource/cost fields, and stage compatibility. They are useful executable validators, not themselves code generators. The compiler planning IR can import decomposition alternatives and atom requirements. That connection is real, but does not prove a fully automatic decomposition-to-kernel path for every operation. <span class="reference">[<a href="#s18">S18</a>, <a href="#s28">S28</a>]</span></p>
+<h3 id="2-5-classification-not-indiscriminate-deletion">2.5 Classification, not indiscriminate deletion</h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Source-grounded examples</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build-listed computation</td>
+<td>Native sparse/WMMA providers; segment kernels; old native training; sequence integration</td>
+<td>Real code worth preserving and measuring</td>
+</tr>
+<tr>
+<td>Public but incomplete product</td>
+<td>Named installed libCellerator; several compiler interfaces; generic algebra-to-v1 adapters</td>
+<td>APIs or declarations exceed integrated execution</td>
+</tr>
+<tr>
+<td>Compatibility</td>
+<td>CP-BP/CellPack-related geometry and projection routes; core-v1/v2 adapters</td>
+<td>Some remain active dependencies; age is not deadness</td>
+</tr>
+<tr>
+<td>Experimental</td>
+<td>PTX m8n8k4 instruction probe; alternative WMMA shapes</td>
+<td>Availability is not promotion</td>
+</tr>
+<tr>
+<td>Benchmark/control</td>
+<td>Older atomic dense-fragment implementation, explicitly used as a negative control</td>
+<td>Preserve separately when it tests a meaningful claim</td>
+</tr>
+<tr>
+<td>Contract/acceptance tests</td>
+<td>Compiler capability-name tests; JBC validators</td>
+<td>Useful only for the property actually tested</td>
+</tr>
+<tr>
+<td>Historical evidence</td>
+<td>CE-GEO receipts; tiny training and sequence results recorded in source comments</td>
+<td>Not a current-commit rerun</td>
+</tr>
+<tr>
+<td>Plans/documentation</td>
+<td>Campaign completion statements and language aspirations</td>
+<td>Not proof of implementation or performance</td>
+</tr>
+</tbody>
+</table></div>
+<p>I did not establish a complete dead-code inventory. Source references can disprove apparent deadness; lack of a lexical hit cannot prove it. Removal should require a build/call/export reachability audit, not a naming-based judgment.</p>
+<hr/>
+<h2 id="3-operation-coverage-matrix">3. Operation coverage matrix</h2>
+<p>These matrices describe the identified semantic families, not every low-level arithmetic helper. Their split avoids implying that a declaration, typed launch, generic planner route, and installed SDK are equivalent.</p>
+<p><strong>Legend:</strong> <code>R</code> = actual computation/launch found; <code>D</code> = representation, declaration, or validator found; <code>P</code> = partial/demonstrator route; <code>C</code> = composition or reused primitive; <code>!</code> = semantic mismatch or incomplete connection; <code>?</code> = not established in the inspected sources. <code>R</code> does not mean measured fast. “Language” means recognition by inspected implementation, not validation of the inaccessible <code>.cell</code> library bodies.</p>
+<h3 id="3-1-language-semantics-and-lowering">3.1 Language, semantics, and lowering</h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Source recognition</th>
+<th>Parser / AST</th>
+<th>Sema</th>
+<th>Semantic IR</th>
+<th>Planning IR</th>
+<th>Realization toward actual execution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relation apply</td>
+<td>Relation arrow</td>
+<td>D/P</td>
+<td>D, direct v2 kind</td>
+<td>D/P</td>
+<td>P selected-plan slice; general descriptors</td>
+<td>R host-reference slice; GPU chain not established</td>
+</tr>
+<tr>
+<td>Transpose apply</td>
+<td><code>ce::transpose</code></td>
+<td>D</td>
+<td>D, direct v2 kind</td>
+<td>D</td>
+<td>D/P</td>
+<td>R separate CPU/backend/native paths, not unified CLI</td>
+</tr>
+<tr>
+<td>Support contraction</td>
+<td><code>ce::contract_on</code></td>
+<td>D</td>
+<td>D, direct v2 kind</td>
+<td>D/P, interpretations differ</td>
+<td>D, split semantics conflict</td>
+<td>R native dot-product path; complete source chain not established</td>
+</tr>
+<tr>
+<td>Segment reduction/statistics</td>
+<td><code>ce::segment_reduce</code></td>
+<td>D</td>
+<td>D</td>
+<td>D + host calculations</td>
+<td>D; some statistics lack direct kind mapping</td>
+<td>R native path separate from broad compiler route</td>
+</tr>
+<tr>
+<td>Segment normalization</td>
+<td><code>ce::segment_normalize</code></td>
+<td>D</td>
+<td>D</td>
+<td>D/P</td>
+<td>D</td>
+<td>R native path; host demonstrator differs</td>
+</tr>
+<tr>
+<td>Edge map / numerical gate</td>
+<td><code>ce::edge_map</code>, <code>ce::edge_gate</code></td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D/C</td>
+<td>R typed kernels; source-to-launch route incomplete</td>
+</tr>
+<tr>
+<td>Active support mask</td>
+<td><code>ce::update_active_support</code></td>
+<td>D</td>
+<td>P, no distinct v2 opcode</td>
+<td>P/effects</td>
+<td>P/C</td>
+<td>R native mask kernel; not a unified semantic route</td>
+</tr>
+<tr>
+<td>Sparse axis update</td>
+<td><code>ce::sparse_update</code></td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>R typed unique-index update</td>
+</tr>
+<tr>
+<td>Relation bundle</td>
+<td><code>ce::bundle</code></td>
+<td>D</td>
+<td>D</td>
+<td>D/C</td>
+<td>D</td>
+<td>R callback composition; selected fused helpers are narrower</td>
+</tr>
+<tr>
+<td>Relation chain</td>
+<td><code>ce::chain</code></td>
+<td>D</td>
+<td>Maps to apply + composition hint</td>
+<td>D/C, questionable composition tag</td>
+<td>D/C</td>
+<td>General optimized chain lowering not established</td>
+</tr>
+<tr>
+<td>Relation moments</td>
+<td><code>ce::relation_moments</code></td>
+<td>D</td>
+<td>Maps to reduction + hint</td>
+<td>D/C</td>
+<td>D/C</td>
+<td>R paired raw-moment kernel; centered-state lowering separate</td>
+</tr>
+<tr>
+<td>Hierarchical pool / broadcast</td>
+<td><code>ce::pool</code>, <code>ce::broadcast</code></td>
+<td>D</td>
+<td>Maps hierarchy to reduction + hint</td>
+<td>D/C</td>
+<td>D/C</td>
+<td>Dedicated complete optimized path not established</td>
+</tr>
+<tr>
+<td>Sparse exchange</td>
+<td><code>ce::exchange</code></td>
+<td>D</td>
+<td>Maps to sparse update + hint</td>
+<td>D/C</td>
+<td>D/C</td>
+<td>R separate fused/unfused CUDA implementation</td>
+</tr>
+<tr>
+<td>Gradients</td>
+<td>Sema family, not one generic parser primitive</td>
+<td>P</td>
+<td>Maps to transpose + hint</td>
+<td>D/C</td>
+<td>D/C</td>
+<td>R native transpose, edge contraction, training slice</td>
+</tr>
+<tr>
+<td>Value publication</td>
+<td>Sema/effect family</td>
+<td>P</td>
+<td>Maps to sparse update + hint</td>
+<td>D/effects</td>
+<td>D</td>
+<td>R runtime generation event publication</td>
+</tr>
+<tr>
+<td>Sequence predicate accumulation</td>
+<td>Native core-v1 operation</td>
+<td>? language path</td>
+<td>Absent from v2 eight-kind enum</td>
+<td>?</td>
+<td>Separate native strategy path</td>
+<td>R sequence-to-regulatory CUDA path</td>
+</tr>
+</tbody>
+</table></div>
+<p>The chain, exchange, hierarchy, and gradient mappings are <strong>not proofs of wrong execution on their own</strong>: some are explicitly marked as compositions. They are proofs that the enum mapping alone is insufficient to establish the full semantics. A complete lowering must retain and discharge the composition, not mistake the representative core kind for the operation itself. <span class="reference">[<a href="#s04">S04</a>–<a href="#s08">S08</a>]</span></p>
+<h3 id="3-2-operation-core-decomposition-catalog-implementation">3.2 Operation core, decomposition, catalog, implementation</h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Core</th>
+<th>Decomposition</th>
+<th>Candidate/catalog</th>
+<th>Physical provider / preparation</th>
+<th>CPU/reference</th>
+<th>GPU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apply</td>
+<td>v1 + v2</td>
+<td>Source-K partial, destination/channel disjoint</td>
+<td>R narrow builtin + D broader portfolios</td>
+<td>R sparse/feature-major/WMMA/hybrid</td>
+<td>R references</td>
+<td>R, numeric/width restrictions</td>
+</tr>
+<tr>
+<td>Transpose</td>
+<td>v2 + v1 compatibility</td>
+<td>Source-owned partial descriptions</td>
+<td>R narrow builtin + typed catalog</td>
+<td>R transpose cover/value-map paths</td>
+<td>R</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Support contraction</td>
+<td>v2</td>
+<td>D support splits; <strong>! embedding-channel conflict</strong></td>
+<td>D typed sparse/rectangular catalog</td>
+<td>R sparse and rectangular launch</td>
+<td>R, but not one consistent oracle across layers</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Segment reduction</td>
+<td>v2</td>
+<td>D segment split + partial algebra</td>
+<td>D algebra catalog</td>
+<td>R typed segment kernels</td>
+<td>R</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Normalization</td>
+<td>v2</td>
+<td>D merge-state components</td>
+<td>D</td>
+<td>R typed normalization</td>
+<td>R</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Edge map / gate</td>
+<td>v2 shared kind</td>
+<td>Per-edge independence/effect constraints</td>
+<td>D</td>
+<td>R typed maps/gates</td>
+<td>Some references; coverage not fully audited</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Support mask</td>
+<td>Requirement/effect, no separate v2 kind</td>
+<td>Stable support versus active mask must be explicit</td>
+<td>P</td>
+<td>R byte/bit mask update</td>
+<td>? full independent oracle</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Sparse update</td>
+<td>v2</td>
+<td>Unique-index versus conflict ownership matters</td>
+<td>D / typed interface</td>
+<td>R unique-index kernel</td>
+<td>? complete reference coverage</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Bundle</td>
+<td>v2</td>
+<td>D per-relation partial structure</td>
+<td>D</td>
+<td>R sequential callbacks; partial-output combination</td>
+<td>R/C</td>
+<td>R/C</td>
+</tr>
+<tr>
+<td>Chain</td>
+<td>C, not v2 primitive</td>
+<td>D graph/fragment contracts</td>
+<td>C/P</td>
+<td>Repeated apply possible; automatic optimal fusion unproven</td>
+<td>C</td>
+<td>C/P</td>
+</tr>
+<tr>
+<td>Moments</td>
+<td>C + merge algebra</td>
+<td>R centered host merge state; D physical split contracts</td>
+<td>P composite</td>
+<td>R raw first/second-moment fused traversal</td>
+<td>R centered state</td>
+<td>R raw paired moments</td>
+</tr>
+<tr>
+<td>Pool / broadcast</td>
+<td>C</td>
+<td>Segment/incidence/axis structure</td>
+<td>C/P</td>
+<td>Reuse apply/reduce possible</td>
+<td>C/P</td>
+<td>Dedicated complete route not established</td>
+</tr>
+<tr>
+<td>Exchange</td>
+<td>C</td>
+<td>Contraction + normalization + apply</td>
+<td>Typed fusion path; generic integration incomplete</td>
+<td>R fused/unfused requests</td>
+<td>Limited reference/acceptance evidence</td>
+<td>R, inefficient fully fused algorithm</td>
+</tr>
+<tr>
+<td>Gradients</td>
+<td>C</td>
+<td>Transpose and contraction partials</td>
+<td>Typed paths</td>
+<td>R shared structure and edge gradient</td>
+<td>R small references</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Publication</td>
+<td>Runtime effect</td>
+<td>Dependency ordering, not arithmetic splitting</td>
+<td>Not a math candidate</td>
+<td>R CUDA event readiness</td>
+<td>Validation only</td>
+<td>R event operations</td>
+</tr>
+<tr>
+<td>Sequence predicate accumulation</td>
+<td><strong>v1, absent in v2</strong></td>
+<td>Predicate/materialization/fused alternatives</td>
+<td>R specialized measured strategy selector</td>
+<td>R cached bitmask/relation or fused launch</td>
+<td>Reference evidence reported in source</td>
+<td>R</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-3-api-library-tests-and-performance">3.3 API, library, tests, and performance</h3>
+<p>For <strong>all math rows</strong>, native C++ typed access must be distinguished from the installed target named <code>libCellerator</code>: the latter does not currently link this math corpus in the reviewed SDK definition. The intended-library column below is a proposal, not a claim about the inaccessible library bodies. <span class="reference">[<a href="#s01">S01</a>]</span></p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Native C++ access</th>
+<th>Proposed library home</th>
+<th>Tests / validation inspected or build-listed</th>
+<th>Performance evidence reviewed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apply</td>
+<td>Prepared core + typed provider</td>
+<td><code>math/relation</code></td>
+<td>CPU/ref and GPU/sanitizer fixtures</td>
+<td>Real but narrow CE-GEO N64 synthetic measurements</td>
+</tr>
+<tr>
+<td>Transpose</td>
+<td>Typed projection/provider; old training</td>
+<td><code>math/relation</code></td>
+<td>Transpose and training validation</td>
+<td>No broad biological comparison established</td>
+</tr>
+<tr>
+<td>Contraction</td>
+<td>Typed launch and gradient adapter</td>
+<td><code>math/contraction</code></td>
+<td>Exact validation and focused fixtures</td>
+<td>Reviewed CE-EXOP receipt has no runtime timing</td>
+</tr>
+<tr>
+<td>Segment reduction</td>
+<td>Typed request</td>
+<td><code>math/segment</code></td>
+<td>Focused tests/host references</td>
+<td>No representative biological speed evidence established</td>
+</tr>
+<tr>
+<td>Normalization</td>
+<td>Typed request</td>
+<td><code>math/normalization</code></td>
+<td>Nonfinite/empty behavior in source; tests</td>
+<td>No broad measured claim established</td>
+</tr>
+<tr>
+<td>Edge map / gate</td>
+<td>Typed request</td>
+<td><code>math/edge</code></td>
+<td>Contract/fixture coverage</td>
+<td>No broad measured claim established</td>
+</tr>
+<tr>
+<td>Support mask</td>
+<td>Typed request</td>
+<td><code>structure/support</code></td>
+<td>Generation/mask validation</td>
+<td>No broad measured claim established</td>
+</tr>
+<tr>
+<td>Sparse update</td>
+<td>Typed request</td>
+<td><code>math/update</code></td>
+<td>Unique-index/generation checks</td>
+<td>No broad measured claim established</td>
+</tr>
+<tr>
+<td>Bundle</td>
+<td>Typed callback composition</td>
+<td><code>math/composition</code></td>
+<td>Bundle contract and fusion fixtures</td>
+<td>Partial-output fusion not proof of faster relation traversal</td>
+</tr>
+<tr>
+<td>Chain</td>
+<td>Lower-level composition/IR</td>
+<td><code>math/composition</code></td>
+<td>Graph/contract tests</td>
+<td>No decisive automatic chain-optimization result found</td>
+</tr>
+<tr>
+<td>Moments</td>
+<td>Merge-state API + CUDA helper</td>
+<td><code>math/statistics</code></td>
+<td>Host merge-state validation</td>
+<td>Raw paired traversal not evidence of stable variance performance</td>
+</tr>
+<tr>
+<td>Pool / broadcast</td>
+<td>Lower-level incidence/composition</td>
+<td><code>structure/hierarchy</code></td>
+<td>High-level semantic/contract coverage</td>
+<td>Open</td>
+</tr>
+<tr>
+<td>Exchange</td>
+<td>Typed fusion request</td>
+<td><code>biology/exchange</code> over math composition</td>
+<td>Synthetic readiness / host checks</td>
+<td>Runtime timing not established by reviewed newer receipt</td>
+</tr>
+<tr>
+<td>Gradients/training</td>
+<td>Actual prepared training and typed pieces</td>
+<td><code>math/differentiation</code>, optional training integration</td>
+<td>CPU referee and tiny training fixture reported</td>
+<td>Source reports N16 1.45x on 5-row/8-edge fixture; raw run not repeated</td>
+</tr>
+<tr>
+<td>Publication</td>
+<td>Runtime readiness API</td>
+<td><code>expert/execution</code></td>
+<td>Runtime/generation tests and source</td>
+<td>Correctness mechanism, not independent math speedup</td>
+</tr>
+<tr>
+<td>Sequence accumulation</td>
+<td>Actual native prepared operation</td>
+<td><code>biology/sequence_relations</code>, Baseplane interop</td>
+<td>Narrow predicate/reference fixture</td>
+<td>Source reports fused/materialized/cache crossover on 70 bases</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="most-important-incomplete-chains">Most important incomplete chains</h3>
+<p>The installed language and installed math SDK are the largest product-level gaps. Within the repository, contraction semantics are the most urgent cross-layer mathematical inconsistency. Catalog-to-preparation-to-launch consistency is the next major integration issue. High-level compositions have more declarative coverage than demonstrated shared execution. CPU references exist in several places but are not one complete, coherent backend/oracle product. <span class="reference">[<a href="#s01">S01</a>–<a href="#s15">S15</a>, <a href="#s18">S18</a>–<a href="#s25">S25</a>]</span></p>
+<hr/>
+<h2 id="4-high-performance-implementation-inventory">4. High-performance implementation inventory</h2>
+<h3 id="4-1-apply-and-dense-fragments">4.1 Apply and dense fragments</h3>
+<p>The sm70 provider declares WMMA f16 × f16 with f32 accumulation. The N64 implementation really invokes WMMA and uses output-owned accumulation across relation tiles. Shared-A variants use small shared buffers; this is not evidence of Ampere-style asynchronous copy. Wider feature panels and alternative WMMA shapes are also actual launchable code, subject to their packed geometry and width contracts. <span class="reference">[<a href="#s19">S19</a>]</span></p>
+<p>The older <code>v100_dense_fragment_candidate.cu</code> uses atomic accumulation. It remains useful as a benchmark/negative control and has standalone usage; it should not be labelled dead solely because newer output-owned paths exist. The retained data also shows that output ownership does not win at every depth. <span class="reference">[<a href="#s19">S19</a>, <a href="#s26">S26</a>]</span></p>
+<p>The PTX m8n8k4 experiment is an instruction-level probe, not a complete general relation implementation. A provider inventory should distinguish an instruction experiment from a prepared operation that accepts ordinary relation bindings.</p>
+<p><strong>Concrete integration problem:</strong> <code>apply_inventory_v1.cc</code> describes some N64 variants as pure-sparse, with launch/resource values inconsistent with the inspected WMMA kernel. A planner consuming stale metadata can make wrong decisions even when the kernel itself is correct. Generate or verify launch/resource metadata against the actual bound implementation, and retain an explicit “declaration only” state when the symbol is absent. <span class="reference">[<a href="#s13">S13</a>, <a href="#s19">S19</a>]</span></p>
+<h3 id="4-2-hybrid-and-residual-execution">4.2 Hybrid and residual execution</h3>
+<p><code>enqueue_relation_apply_hybrid_v1</code> performs value packing, MMA work, residual work, and an affine epilogue. Its local implementation validates fallback/cost fields but does not itself compare costs or invoke the supplied sparse fallback. Therefore a caller must make the decision; the existence of the fallback field does not make this function an automatic hybrid-versus-sparse optimizer. <span class="reference">[<a href="#s19">S19</a>]</span></p>
+<p>Residual kernels include warp-per-row and high-degree variants. Some high-degree variants parallelize output features while each feature traverses all row edges serially. That can be reasonable for wide states and poor for narrow, high-degree rows. Degree alone is insufficient for scheduling; the relevant space is at least degree × width × source reuse × output ownership. <span class="reference">[<a href="#s19">S19</a>]</span></p>
+<p>Two names overstate the degree of fusion if read casually. One same-owner residual kernel combines sparse traversal with an <strong>already materialized</strong> MMA contribution. Another fusion helper merely combines two materialized arrays. Neither is equivalent to retaining a Tensor Core accumulator while executing residual arithmetic in the same producer kernel. Both may still save useful work, but their actual stage boundaries must be visible to the planner. <span class="reference">[<a href="#s19">S19</a>, <a href="#s23">S23</a>]</span></p>
+<h3 id="4-3-contraction-and-gradients">4.3 Contraction and gradients</h3>
+<p>Sparse contraction has meaningful thread-per-edge, warp-per-edge, and CTA-per-edge alternatives. The edge-value-gradient adapter correctly reuses this computation: an edge gradient is the dot product of source activation and destination gradient. This argues against inventing a separate arithmetic primitive solely because the biological role changes. <span class="reference">[<a href="#s20">S20</a>]</span></p>
+<p>The rectangular contraction path genuinely computes dense score tiles through WMMA and adds a scalar tail. However, its request validator accepts <code>dense_width &gt;= 16</code> without enforcing the half-precision leading-dimension and alignment constraints used by <code>load_matrix_sync</code>. Width 17 is a concrete adversarial case: adding a scalar tail does not repair the invalid leading dimension of the WMMA prefix. The official CUDA contract requires a 256-bit aligned pointer and half leading dimensions that are multiples of eight. This is a source-confirmed precondition gap, not a runtime failure observed in this review. [S20; R08]</p>
+<h3 id="4-4-segments-normalization-edges">4.4 Segments, normalization, edges</h3>
+<p>Segment kernels implement substantive reduction behavior, including empty and nonfinite policies. Their CTA-per-segment/per-feature traversal should be tested for coalescing and degree imbalance rather than accepted as intrinsically optimal. Native normalization supports several modes and explicit edge cases, while the merge-state and demonstrator layers do not all share those same conventions. <span class="reference">[<a href="#s21">S21</a>]</span></p>
+<p>Dynamic masks currently often operate by zeroing relation values. That is not interchangeable with excluding an edge from a reduction: <code>0 * NaN</code>, normalization denominators, and sparse structural semantics can differ. Sparse axis updates require unique indices by caller promise; they are not a duplicate-index reduction engine. Some update kernels use 32-bit local counts and launch arithmetic; global 64-bit identity alone does not prove large-index safety. <span class="reference">[<a href="#s22">S22</a>]</span></p>
+<h3 id="4-5-fusion-and-training">4.5 Fusion and training</h3>
+<p>The most concerning algorithm is the fully fused sparse exchange. It recomputes the feature dot product while computing maxima, normalization sums, and weighted output, and repeats this for each output feature. For E edges, score width K, and value width V, this can turn an O(E(K+V)) composition into O(EKV) arithmetic. Fewer launches do not compensate automatically for this change in work. <span class="reference">[<a href="#s23">S23</a>]</span></p>
+<p>The old native N16 training path, by contrast, is a genuinely connected implementation: forward relation application plus bias/ReLU/RMS, epilogue backward, transpose input gradient, edge gradient and sparse update, bias update, then generation publication on the caller stream. It keeps learned values in physical order and uses transpose maps referencing forward value positions. Its bias reduction is serial over rows for each of 16 channels, so a tiny launch-dominated speedup cannot establish large-scale efficiency. <span class="reference">[<a href="#s24">S24</a>]</span></p>
+<p>The newer <code>training_program_v2</code> files inspected validate program and graph-capture envelopes. They do not themselves invoke CUDA graph capture/instantiation. Actual graph use appears in tests and caller-controlled paths. Preserve that distinction when presenting runtime capabilities. <span class="reference">[<a href="#s15">S15</a>, <a href="#s24">S24</a>]</span></p>
+<h3 id="4-6-a-genuinely-biological-execution-path">4.6 A genuinely biological execution path</h3>
+<p>Sequence integration supports a bounded motif predicate over packed DNA, coordinate-to-regulatory mapping, and regulatory-to-gene accumulation. It can materialize a predicate mask, materialize a relation, or fuse the predicate into accumulation. Cached artifacts carry sequence/predicate/coordinate/projection identities and CUDA readiness. Its selector compares first-use versus cached-use costs over expected reuse, with evidence compatibility checks. <span class="reference">[<a href="#s25">S25</a>]</span></p>
+<p>This is an excellent architectural case study: biological meaning identifies a computation that should remain unchanged across many changing cell states. It is also a warning against treating the newest operation enum as the whole product: this executable core-v1 operation is absent from the v2 eight-kind vocabulary.</p>
+<hr/>
+<h2 id="5-what-the-performance-evidence-actually-establishes">5. What the performance evidence actually establishes</h2>
+<p>The reviewed CE-GEO N64 fixture has 64 destinations, 64 sources, and 2,176 logical edges, of which 2,048 are a deliberately dense fragment and 128 are residual. Its reported cold and steady costs are:</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Path</th>
+<th style="text-align:right">Accounted cold phases</th>
+<th style="text-align:right">Steady consumer-complete time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hybrid</td>
+<td style="text-align:right">123.953 microseconds</td>
+<td style="text-align:right">39.474 microseconds</td>
+</tr>
+<tr>
+<td>cuSPARSE comparison</td>
+<td style="text-align:right">4,139.683 microseconds</td>
+<td style="text-align:right">36.840 microseconds</td>
+</tr>
+</tbody>
+</table></div>
+<p>The derived average at reuse 16 is 47.221 microseconds versus 295.570 microseconds. However, cuSPARSE is faster in steady execution, with an algebraic crossover around <strong>1,525 uses</strong> under these recorded phase costs. This is evidence that lifetime matters—not evidence that hybrid is universally faster. <span class="reference">[<a href="#s26">S26</a>]</span></p>
+<p>The benchmark source materially narrows interpretation. Its “semantic search” constructs a predetermined exact cover; it does not execute the general production geometry optimizer. The sparse cold phase includes handle/descriptor creation. Some allocations and construction lie outside the accounted phases. The timed iterations include H2D input/value uploads, D2H output, and stream synchronization. Hybrid uses half inputs/weights, while the comparator expands the same rounded data to float. The comparator is cuSPARSE's default algorithm, not a demonstrated exhaustive strongest-baseline selection. The order of timed paths is fixed. <span class="reference">[<a href="#s26">S26</a>]</span></p>
+<p>These choices can be legitimate for a stated scenario. They cannot support an unqualified claim about full compiler preparation, resident repeated biological computation, or all available baselines. Future receipts should separately report process initialization, relation preparation, value preparation, resident execution, transfers, and consumer readout.</p>
+<p>The aggregate microarchitecture report also records missing requested Nsight counters despite a capture artifact being present. Do not infer memory throughput, occupancy achieved, or cache behavior from unavailable counters. The newer CE-EXOP readiness receipt explicitly has no runtime timing or Nsight evidence. The small training and sequence timings quoted elsewhere are reports embedded in source comments; they should be reproduced on larger workloads before promotion. <span class="reference">[<a href="#s24">S24</a>–<a href="#s26">S26</a>]</span></p>
+<p><strong>A better evidence unit:</strong> a candidate/workload/numerical-policy/target/source-build tuple with an execution witness, independent correctness result, preparation and lifetime breakdown, memory peak, uncertainty, baseline definition, and clear limits. An inventory entry, resource receipt, compile success, or passing capability-name test is not that unit.</p>
+<h2 id="6-reconsidering-the-primitive-algebra">6. Reconsidering the primitive algebra</h2>
+<h3 id="6-1-the-eight-kind-enum-is-useful-but-not-a-sufficient-definition-of-biology-aware-computation">6.1 The eight-kind enum is useful, but not a sufficient definition of biology-aware computation</h3>
+<p>The v2 core names apply, transpose apply, support contraction, segment reduction, segment normalization, edge map/gate, bundle apply, and sparse axis update. It also contains valuable numerical, determinism, output-order, ownership, and generation contracts. Those contracts often matter more to optimization than adding another operation name. <span class="reference">[<a href="#s12">S12</a>]</span></p>
+<p>But the enum is simultaneously too coarse in some places and too narrow in others. Support contraction conflates incompatible interpretations across layers. Edge gating does not by itself distinguish numerical multiplication from logical exclusion. Bundle is often a composition, while sequence-predicate accumulation is executable but not represented in v2. A reaction, tree recurrence, or sequence-alignment frontier is not naturally described as one of these eight operations without losing the structure that makes it fast. <span class="reference">[<a href="#s05">S05</a>–<a href="#s06">S06</a>, <a href="#s18">S18</a>, <a href="#s20">S20</a>, <a href="#s22">S22</a>, <a href="#s25">S25</a>]</span></p>
+<p><strong>Proposal:</strong> retain recognizable high-level operations, but give them a common lower semantic substrate:</p>
+<pre><code class="language-text">Typed domains, axes, logical identity
+  + explicit/implicit support generators
+  + gather and pure local computation
+  + reductions with specified partial-result algebras
+  + writes, aliasing, mutation and publication effects
+  + numerical and approximation permissions
+</code></pre>
+<p>This is not a proposal to lower everything immediately into arbitrary loops. Keep apply, contraction, normalized exchange, moments, and hierarchy visible as named patterns while they still enable profitable transformations. Lower only the information that a later stage no longer needs.</p>
+<p>TACO's format abstraction and SparseTIR provide useful precedent for separating format, iteration, and transformation. They do not provide biological identity or prove that their complete architectures should replace Cellerator. SAM provides a related precedent for a streaming realization layer on spatial accelerators. <span class="reference">[<a href="#r01">R01</a>–<a href="#r03">R03</a>]</span></p>
+<h3 id="6-2-specific-semantic-changes-worth-testing">6.2 Specific semantic changes worth testing</h3>
+<p><strong>Split contraction meanings explicitly.</strong> For an edge e=(d,s), distinguish a scalar <code>sum_k A[s,k] B[d,k]</code>, a vector <code>A[s,k] B[d,k]</code> retained for every k, and a reduction across selected edges. Splitting k in the first requires numerical partial sums; splitting k in the second produces disjoint outputs. The existing support-embedding contract asserts the second while the native contraction kernel implements the first. This cannot be solved by a harmless adapter rename. <span class="reference">[<a href="#s18">S18</a>, <a href="#s20">S20</a>]</span></p>
+<p><strong>Separate support from weights.</strong> An absent edge, an inactive mask entry, and a present edge of numerical weight zero are distinct under important numerical policies. The compiler should know when it can replace one by another. A “gate” should state whether it is applied before normalization, after normalization, to the message, or to membership itself.</p>
+<p><strong>Make write semantics independent of operation names.</strong> Unique-index update, reduction-scatter, atomic accumulation, deterministic segmented accumulation, and publication are different effects. Sparse update is not an appropriate semantic substitute for every state-changing composition.</p>
+<p><strong>Treat transpose as a semantic view and a physical planning opportunity.</strong> The mathematics can be orientation-independent while execution is radically different. Shared edge identity enables shared values and gradient mappings; it does not force forward and transpose to share the same tile layout.</p>
+<p><strong>Keep mergeable states first-class.</strong> The existing centered moments and log-sum-exp state interfaces are valuable. A semantic reduction state should define neutral element, accumulate, merge, finalize, numerical behavior, and deterministic-order restrictions. This exposes split-segment, multi-block, distributed, and streaming implementations without adding a separate opcode for every moment or normalization variant. <span class="reference">[<a href="#s18">S18</a>]</span></p>
+<p><strong>Keep compositions visible rather than expanding the primitive enum indiscriminately.</strong> Bundle, chain, many pooling/broadcast operations, and many biological conveniences should begin as library compositions. Promote a composition to a preserved semantic pattern when early decomposition prevents a demonstrated optimization. Exchange is such a plausible pattern because eliminating edge-score/probability materialization can matter. That does not require exchange to become an irreducible hardware primitive.</p>
+<h3 id="6-3-a-three-level-test-for-every-abstraction">6.3 A three-level test for every abstraction</h3>
+<p>At the biological level, ask what identity, mechanism, invariant, or workload-family fact the representation preserves. At the operation level, ask what algebraic rewrites, partial-result decompositions, and materialization choices it enables. At the realization level, ask what exact loop ownership, physical order, memory traffic, and hardware instructions implement it.</p>
+<p>An abstraction earns its place when an experiment can demonstrate one of those benefits. A biological label that never changes legal transformations or planning is descriptive metadata. A physical tile type embedded into semantic IR too early may erase more opportunity than it adds. A generic graph with opaque callbacks may preserve flexibility but prevent fusion. These are empirical tradeoffs, not matters of naming taste.</p>
+<hr/>
+<h2 id="7-operation-decomposition-study">7. Operation-decomposition study</h2>
+<p>This section works from user-visible computations to executable alternatives. Proposed algorithms are not implementations added by this review.</p>
+<p>Notation: E is logical edge count; S and D are source and destination counts; K is a contracted feature width; V is an output/value width; N is the dense width used by relation application. “Exact” refers to the specified mathematical/support semantics; floating-point reassociation still needs permission.</p>
+<h3 id="7-1-regulatory-propagation-across-many-states">7.1 Regulatory propagation across many states</h3>
+<p><strong>Biological operation:</strong> compute the effect of regulators, genes, modules, or other typed entities on destination state.</p>
+<p><strong>Semantic form:</strong> <code>Y[d,n] = sum_(e:dst(e)=d) w[e] X[src(e),n]</code>, with source/destination identities, edge identity, numeric policy, active-support interpretation, and output-update semantics preserved.</p>
+<p><strong>Decomposition:</strong> partition destinations for disjoint ownership; partition source/edge components into partial sums; partition dense channels into disjoint outputs; or partition the relation into exact dense fragments plus residual. These choices already have useful contracts and implementations in Cellerator. <span class="reference">[<a href="#s12">S12</a>, <a href="#s18">S18</a>–<a href="#s19">S19</a>]</span></p>
+<p><strong>Realizations:</strong> a narrow state may favor row-masked or feature-major sparse execution; a wide state may favor coalesced CSR/feature-major traversal, dense fragments, or vendor SpMM. A high-degree, narrow row needs edge-parallel reduction, not merely more threads assigned to absent output channels. Dense-fragment selection must include conversion, packing, padding, residual work, output combination, and the next consumer's layout.</p>
+<p><strong>Preparation and reuse:</strong> cache topology and its inverse identity maps separately from packed values. Repack only the value generation that changed. Share geometry across multiple states only when it really has the same support and interpretation. Keep the result in the persistent order expected by the next operation. Canonicalize at a genuine interface or observation boundary, not automatically after each operation.</p>
+<p><strong>Biology-native opportunity:</strong> a fixed regulatory mechanism across many cell states can turn topology preparation into a long-lived asset. If the relation weights are also shared, cell/state dimensions can become a batch of right-hand sides. If weights vary independently by cell, that is a different batched problem; pretending it is one shared matrix would be wrong. If variation is factorized, the next decomposition becomes possible.</p>
+<p><strong>Falsification:</strong> if stable support lasts too briefly, physical reordering costs dominate, or the input/output must be canonical every call, expensive geometry compilation may lose to a direct sparse baseline. That result should cause a cheaper preparation strategy, not a forced attempt to justify the existing geometry pipeline.</p>
+<h3 id="7-2-exact-factorized-biological-gates">7.2 Exact factorized biological gates</h3>
+<p><strong>Biological operation:</strong> modulate a shared regulatory mechanism by source availability and destination susceptibility.</p>
+<p><strong>Explicit model contract:</strong> <code>R(c) = diag(a(c)) R0 diag(b(c))</code> for state c. This must be supplied by the model or proved from its expression, not guessed from correlated observations.</p>
+<p><strong>Transformation:</strong> <code>R(c) X(c) = diag(a(c)) [R0 (diag(b(c)) X(c))]</code>. Instead of constructing a distinct E-entry weight array for every state, perform source-wise scaling, one shared relation application, and destination-wise scaling.</p>
+<p><strong>Physical alternatives:</strong> fuse source scaling into gathers; fuse destination scaling into the epilogue; cache the common <code>R0</code> geometry and packed weights. Batch states when storage and model semantics allow it. If gates are piecewise shared by cell groups, prepare one grouped schedule per sufficiently stable regime rather than every cell independently.</p>
+<p><strong>Cost:</strong> potential savings are O(E) dynamic edge-weight formation per state versus O(S+D) gate representation, with extra multiply costs at the chosen fusion points. Whether this wins depends on E, dense width, reuse, register pressure, and whether the original weights were already cheaply available.</p>
+<p><strong>Generalization:</strong> an exact finite basis <code>R(c) = sum_b alpha_b(c) R_b</code> exposes a relation bundle without materializing every cell-specific matrix. This is not automatically low rank; it is a model-supplied factorization. Too many basis relations, poor support overlap, or expensive source gating can erase the advantage.</p>
+<p><strong>Why this matters architecturally:</strong> the strongest optimization comes from retaining the way the biology constructs the relation, not merely inspecting the final CSR geometry.</p>
+<h3 id="7-3-relation-application-composed-with-dense-feature-transformation">7.3 Relation application composed with dense feature transformation</h3>
+<p><strong>Operation:</strong> apply a regulatory relation and a dense change of feature basis: <code>Y = R X W</code>.</p>
+<p><strong>Alternatives:</strong> evaluate <code>R (X W)</code> or <code>(R X) W</code>. The first has approximate arithmetic proportional to <code>S Fin Fout + E Fout</code>; the second to <code>E Fin + D Fin Fout</code>. Intermediate shapes and transfer costs differ too.</p>
+<p><strong>Legal transformation:</strong> requires compatible axes, no intervening nonlinearity or stateful effect, and an appropriate floating-point equivalence policy. A biological identity relation must not be confused with a numeric reshape.</p>
+<p><strong>Realization:</strong> a compiler-visible composition can choose the cheaper order and jointly plan persistent layouts. A C++ semantic graph can expose exactly the same opportunity. Two unrelated eager calls generally cannot safely infer and reorder future work.</p>
+<p><strong>Reuse:</strong> a projection W reused across many state updates may favor a different order from a one-shot transform. The planner must consider whether the intermediate serves additional consumers. This is a good early test of whether graph visibility produces actual performance beyond a collection of fast primitives.</p>
+<h3 id="7-4-forward-transpose-edge-gradient-and-update">7.4 Forward, transpose, edge gradient, and update</h3>
+<p>For <code>Y = R X</code>, the basic derivatives are <code>dX = R^T dY</code> and <code>dw[e] = dot(dY[dst(e),:], X[src(e),:])</code>.</p>
+<p><strong>Preparation:</strong> one logical edge identity can connect forward values, transpose traversal, gradient output, optimizer state, and updates. A transpose index map can point back to the same physical value array. The existing native training slice demonstrates this approach. <span class="reference">[<a href="#s24">S24</a>]</span></p>
+<p><strong>Decomposition alternatives:</strong> destination-owned forward plus source-owned transpose; two distinct covers sharing topology; per-edge contraction; split-K edge-gradient reduction; or fused gradient/update when the old value generation is no longer needed. Dense fragments useful for forward may not be useful for edge gradients: the latter's reuse, output geometry, and reduction dimensions differ.</p>
+<p><strong>Execution order:</strong> all consumers of the old weights must complete before an in-place update overwrites them. Publishing a generation event on one stream is useful, but not a substitute for tracking all outstanding readers on other streams. Prepared state needs either explicit single-stream ownership or a defined concurrency protocol. Immutable snapshots/double buffering are alternatives when concurrent readers are required.</p>
+<p><strong>Fusion:</strong> keep activation epilogues with forward output when ownership is local; retain only backward-required quantities. Recompute cheap intermediates only when the memory saving exceeds repeated arithmetic. Bias-gradient reduction deserves its own scalable strategy rather than being left serial because a tiny fixture is launch-bound.</p>
+<p><strong>Numerical issue:</strong> half-stored learned values can lose small updates. The library should expose the existing storage/multiply/accumulation distinctions and allow master-state or compensated update strategies when the consumer's accuracy contract requires them. This is a workload choice, not a compulsory move to a general optimizer framework.</p>
+<h3 id="7-5-support-restricted-contraction">7.5 Support-restricted contraction</h3>
+<p><strong>Operation:</strong> compute one scalar score for each existing relationship, <code>z[e] = sum_k A[src(e),k] B[dst(e),k]</code>.</p>
+<p><strong>Semantic prerequisites:</strong> distinguish this from an edge-channel vector. Preserve the logical support and edge output order; do not silently merge duplicate relationships unless the operation's law permits it.</p>
+<p><strong>Sparse realization:</strong> thread per edge for tiny K, warp per edge for moderate K, CTA or split-K for large K. Splitting K produces partial sums; splitting edges produces independent outputs. A degree-aware destination grouping can reuse B across many source gathers, but may worsen load balance.</p>
+<p><strong>Dense realization:</strong> form a score tile for a sufficiently dense source×destination fragment, then map valid edge scores to their logical/physical edge slots. The dense option computes extra scores; it wins only if saved loads and matrix throughput exceed padding, packing, extraction, and residual cost. K and support density should both enter the decision.</p>
+<p><strong>Existing implementation:</strong> sparse and rectangular WMMA paths exist. Repair/verify rectangular alignment contracts before broader reuse. Do not infer that the exact support census provides all operand alignment guarantees. <span class="reference">[<a href="#s20">S20</a>]</span></p>
+<p><strong>Fusion:</strong> when a score feeds a simple edge map, fuse that map into score production. When it feeds normalization and aggregation, preserve the larger pattern for the next section. When all scores are externally observed or needed by a backward pass, materialization may be the right choice.</p>
+<h3 id="7-6-sparse-biological-exchange-score-normalize-aggregate">7.6 Sparse biological exchange: score, normalize, aggregate</h3>
+<p>Consider scores <code>q[e] = dot(Q[dst(e),:], K[src(e),:])</code>, a typed edge transform, normalized weights over each destination's active support, and <code>Y[d,:] = sum_e p[e] V[src(e),:]</code>.</p>
+<p>The current fully fused implementation risks O(E K V) score recomputation. The right comparison is not simply fused versus unfused; it is a set of ownership and materialization strategies. <span class="reference">[<a href="#s23">S23</a>]</span></p>
+<p><strong>Alternative A: staged score computation plus fused normalization/application.</strong> Compute each q[e] once with an edge-balanced contraction kernel. Then process destination segments, retaining their probabilities or normalization state as appropriate. This accepts one global score array to preserve parallelism for expensive K or very irregular degrees.</p>
+<p><strong>Alternative B: shared-memory tile fusion.</strong> A block owns a set of destination rows, distributes edge scores across warps, then changes the intra-block work mapping for segment normalization and feature aggregation. This avoids recomputation without forcing the same thread layout onto three different operations. Dynamic fusion research such as DF-GNN directly addresses this scheduling problem. <span class="reference">[<a href="#r05">R05</a>]</span></p>
+<p><strong>Alternative C: online normalized weighted reduction.</strong> A partial segment carries <code>(m, l, z)</code>, where m is its maximum score, l its sum of scaled exponentials, and z a V-vector of scaled weighted values. Merge two partials using:</p>
+<pre><code class="language-text">m = max(m_a, m_b)
+l = exp(m_a-m) l_a + exp(m_b-m) l_b
+z = exp(m_a-m) z_a + exp(m_b-m) z_b
+Y = z / l
+</code></pre>
+<p>Compute each score once, then update its contribution to the V-vector. The mathematical work remains O(E(K+V)), though practical tiling may deliberately recompute some terms to control storage. Register pressure grows with V; split very large segments and merge states when necessary. Empty segments, NaNs, positive infinity, and all-negative-infinity segments require an explicit shared policy rather than borrowing incompatible behavior from different kernels.</p>
+<p>The online normalization principle is established prior art, including FlashAttention; it is not a newly invented Cellerator algorithm. The Cellerator-specific opportunity is combining it with stable biological support, persistent identity/order, typed gate semantics, and reusable relation preparation. <span class="reference">[<a href="#r04">R04</a>]</span></p>
+<p><strong>Backward choices:</strong> save normalization statistics rather than all edge probabilities; recompute scores when cheaper than loading them; share support and gradient mappings. If the caller needs edge weights as outputs, a no-materialization plan is not legal. Gate placement must remain explicit: multiplying logits is not the same operation as masking edges or multiplying normalized messages.</p>
+<p><strong>Falsification:</strong> if V-state register pressure destroys occupancy, if degrees exceed useful block ownership, or if score reuse across many consumers dominates, staged execution should win. The planner should preserve all three alternatives rather than declare full fusion the universal target.</p>
+<h3 id="7-7-segmented-statistics-and-normalization">7.7 Segmented statistics and normalization</h3>
+<p><strong>Biological operation:</strong> aggregate cells, genes, regions, modules, or time segments; compute statistics used by a later state transformation.</p>
+<p><strong>Semantic form:</strong> a segment or incidence relation plus a reduction state. The existing centered moments state <code>(n, mean, M2)</code> already supports stable merging. Use it for variance where stability is required rather than assuming the existing raw first/second-moment CUDA kernel is equivalent numerically. <span class="reference">[<a href="#s18">S18</a>, <a href="#s21">S21</a>, <a href="#s23">S23</a>]</span></p>
+<p><strong>Decomposition:</strong> tiny segments can share a warp/block; moderate segments can have one cooperative group; huge segments should split into partial states and merge. Vectorizing across dense features can improve contiguous accesses relative to assigning every thread the same feature and striding through rows. Weighted moments need a defined weight interpretation and merge law, not an improvised extension of integer count.</p>
+<p><strong>Normalization:</strong> a later transform may consume only the aggregate statistics. For RMS or L2 normalization, fuse the scale into the next operation when there is no need to write a separately normalized array. When both original and normalized states are observed, preserve both or explicitly reuse storage with ownership permission.</p>
+<p><strong>Reuse:</strong> static segment membership permits persistent offsets and work partitions even when values change. Hierarchical segments can reuse subtree membership and partial states. Mutable membership invalidates these artifacts separately from value updates.</p>
+<h3 id="7-8-hierarchical-pooling-broadcast-and-tree-computation">7.8 Hierarchical pooling, broadcast, and tree computation</h3>
+<p><strong>Operation:</strong> pool lower-level entities into biological groups, then broadcast group state back, or traverse a genuine ancestry/compartment tree.</p>
+<p><strong>Simple decomposition:</strong> represent pool as an incidence reduction; represent broadcast as an identity-preserving gather. Avoid materializing a full broadcast matrix. A fused producer can update group partials when ownership is compatible. Multi-level pool can reduce through hierarchy levels or flatten membership if that preserves semantics and is cheaper.</p>
+<p><strong>Important distinction:</strong> a hierarchy used merely for grouping is not automatically an exact quotient of the original dynamics. To evolve a reduced state exactly, a condition such as <code>R P = P Q</code> and suitable closure of any nonlinear operations is required. Cluster labels alone do not supply that proof.</p>
+<p><strong>Beyond aggregation:</strong> a tree-structured linear solve or recurrence deserves a structure-preserving representation. Arbor's Hines-matrix implementation separates static construction, dynamic assembly, and tree-structured solution, illustrating how biological morphology can select an algorithm rather than just a sparse format. Forcing such a problem through repeated generic relation applications can erase the direct solver structure. <span class="reference">[<a href="#r12">R12</a>]</span></p>
+<p>The immediate recommendation is not to implement a neuroscience simulator. It is to test whether Cellerator can host a tree recurrence/solve as library mathematics with a useful semantic contract, without pretending the current relation enum exhausts biology.</p>
+<h3 id="7-9-bundles-and-chains-of-relations">7.9 Bundles and chains of relations</h3>
+<p><strong>Bundle:</strong> <code>Y = sum_t R_t X_t</code>. Alternatives include sequential applications into one accumulator, one traversal over a tagged union of edges, grouping relations with shared sources/layouts, or producer fusion with shared input loads. The existing callback bundle is sequential; a helper that reduces already computed outputs is not evidence of shared relation traversal. <span class="reference">[<a href="#s23">S23</a>]</span></p>
+<p>Preparation may be shared across relations only where axes, support, or transformations actually coincide. Different relation types may require different value laws and masks. Preserve typed relation identity while permitting a physical union.</p>
+<p><strong>Chain:</strong> <code>Y = R2 (R1 X)</code>. Candidate choices are materialize the intermediate, fuse a bounded neighborhood with halo/recomputed intermediates, or compose the relations. Composing sparse matrices can introduce massive fill-in; a fused traversal can recompute <code>R1 X</code> for every downstream consumer. Neither is automatically superior to a well-laid-out intermediate.</p>
+<p>The useful planner question is how much each intermediate is reused, whether it fits in cache/local memory, and whether a stable biological partition makes the chain locally closed. A local motif or compartment boundary can sometimes justify a compact fused subprogram. Generic “chain fusion” does not capture these conditions.</p>
+<h3 id="7-10-dynamic-support-and-incremental-state-changes">7.10 Dynamic support and incremental state changes</h3>
+<p><strong>Operation:</strong> update a small subset of weights, edges, masks, or state coordinates and re-evaluate affected biological state.</p>
+<p>Separate immutable topology, active mask, values, and physical geometry generations. A mask update need not force geometry reconstruction. Conversely, treating a now-absent edge as a numerical zero must be justified by the reduction's semantics.</p>
+<p>A masked traversal versus a compacted traversal has a simple lifetime decision: compact when its construction cost is less than expected future uses times the per-use saving. Add costs for value remapping, transpose mappings, and any affected consumer—not only the immediate forward kernel.</p>
+<p>For a linear operation, changes can be propagated algebraically:</p>
+<pre><code class="language-text">(R + dR)(X + dX) - R X = R dX + dR X + dR dX.
+</code></pre>
+<p>The cross term matters when both change. Sparse perturbations can therefore induce a small exact work frontier. But nonlinearities, normalization, and long-range connectivity may expand the frontier quickly. Maintain a measured switch to a full recomputation rather than assuming biological perturbations remain computationally local. Floating-point reproducibility may require a specified accumulation policy or periodic reconstruction.</p>
+<p><strong>Potential preparation:</strong> dependency indices, reverse incidence, touched-row sets, edit logs, and persistent partial sums. A base-plus-delta relation representation can retain unchanged prepared fragments while rebuilding only affected regions. Its value is greatest when edits are genuinely sparse and repeated execution follows each edit.</p>
+<h3 id="7-11-sequence-grounded-regulation">7.11 Sequence-grounded regulation</h3>
+<p><strong>Operation:</strong> map sequence predicates to regulatory intervals and then to gene-state accumulation.</p>
+<p><strong>Existing chain:</strong> packed sequence + predicate + coordinate identity -&gt; predicate evaluation -&gt; optional bitmask or coordinate relation -&gt; regulatory relation -&gt; accumulation. Cellerator already has fused, first-materialization, and cached-materialization choices with reuse-aware selection. <span class="reference">[<a href="#s25">S25</a>]</span></p>
+<p><strong>Improvement directions:</strong> share predicate results across many cell states; index multiple typed interval overlaps where the model requires them; reuse motif evaluation across related sequences with localized variants; fuse cheap predicates only when reuse does not justify materialization; preserve sequence orientation and coordinate identities through any physical permutation.</p>
+<p>The current implementation is bounded: its inspected predicate support and interval mapping are not a general sequence-query compiler. Expand according to a real consumer's required motif/interval semantics, not a broad bioinformatics checklist. Sequence I/O, annotation databases, and workflow orchestration can remain external.</p>
+<h3 id="7-12-reaction-systems-and-rule-structured-biology">7.12 Reaction systems and rule-structured biology</h3>
+<p>A biochemical rate calculation naturally has a structure such as <code>dx/dt = N v(x)</code>: local nonlinear rate expressions followed by sparse stoichiometric accumulation. Repeated reactant combinations may share subexpressions; small integer stoichiometry can specialize arithmetic; a dependency graph can limit recomputation after a local event. Conservation identities are useful only when supplied or proved for the actual model.</p>
+<p>Rule-based systems can represent many species/interactions without enumerating every network edge. BioNetGen and exact hybrid particle/population research demonstrate that the representation and simulation algorithm can change while preserving specified biochemical semantics. This is a concrete reason not to define all future biological computation as an explicit sparse relation. <span class="reference">[<a href="#r10">R10</a>–<a href="#r11">R11</a>]</span></p>
+<p><strong>Possible Cellerator chain:</strong> typed reaction/rule library object -&gt; shared local expression graph and support generator -&gt; dependency-aware partial updates or batched rate evaluation -&gt; stoichiometric reduction -&gt; state update with explicit numerical/time-integration semantics. Keep the scientific model and solver policy outside the low-level engine unless an actual performance need justifies their inclusion.</p>
+<h3 id="7-13-sequence-alignment-and-other-recurrences">7.13 Sequence alignment and other recurrences</h3>
+<p>Wavefront alignment is another caution against a universal SpMM worldview: useful performance can depend on sequence similarity and the frontier of a dynamic program. WFA2 provides exact modes as well as optional heuristic modes; an architecture must not confuse them. <span class="reference">[<a href="#r13">R13</a>]</span></p>
+<p>Cellerator need not reimplement an alignment toolkit immediately. It should be able to host a recurrence/frontier primitive or invoke an optimized external implementation while preserving enough biological structure to select the right algorithm. A source language capable only of decorating relation application would not automatically make this workload natural.</p>
+<hr/>
+<h2 id="8-biological-optimization-opportunities-beyond-generic-sparse-algebra">8. Biological optimization opportunities beyond generic sparse algebra</h2>
+<h3 id="8-1-make-the-unit-of-preparation-a-biological-computation-family">8.1 Make the unit of preparation a biological computation family</h3>
+<p><strong>Architectural hypothesis:</strong> a particularly valuable prepared object is a family with a shared biological domain, common support or support grammar, a variation program, and declared observation/update boundaries. Its artifact may contain common geometry, a dictionary of recurring motifs, edit maps, per-regime candidate choices, and optional specialized code.</p>
+<p>This is more expressive than preparing one matrix. It may be less expensive than independently compiling every state-specific matrix. It also matches the existing sequence cache and fixed-topology training ideas better than a source-file-centric product definition.</p>
+<p>Its falsifier is straightforward: if related states share too little support or legal computation, family maintenance and dispatch overhead will dominate. Then independent prepared operations are the right answer. The system should support both without assuming a universal family abstraction.</p>
+<h3 id="8-2-shared-ancestry-and-base-plus-edit-geometry">8.2 Shared ancestry and base-plus-edit geometry</h3>
+<p>Biological ancestry can provide a constructive explanation of similarity, not merely an empirical correlation. Tree-sequence algorithms exploit differences between neighboring genealogies rather than rebuilding every tree. The relevant precedent is incremental structure traversal, not an assertion that regulatory networks obey the same representation. <span class="reference">[<a href="#r09">R09</a>]</span></p>
+<p>A Cellerator experiment could represent related biological structures as a prepared base plus typed additions, removals, or parameter changes. Rebuild only invalidated fragments, preserve logical identity, and reuse unaffected transpose/gradient maps. The experiment must compare against ordinary structure-based caching and include workloads where edits are not small.</p>
+<h3 id="8-3-support-dictionaries-and-repeated-motifs">8.3 Support dictionaries and repeated motifs</h3>
+<p>Repeated exact neighborhoods or support motifs can share index storage, gather schedules, and preparation. If values are unrelated, this does <strong>not</strong> automatically permit sharing arithmetic results. If a model additionally gives shared weights or a certified factorization, shared partial computations may become legal.</p>
+<p>A useful representation could separate motif identity, entity renaming/permutation, coefficient parameters, and exception edges. This might benefit repeated compartments, regulatory motifs, or incidence patterns. Measure dictionary construction, decoding, exceptions, memory traffic, and gradient/update cost. A compact representation that introduces random decoding on every edge may be slower than CSR.</p>
+<h3 id="8-4-mechanism-mixtures">8.4 Mechanism mixtures</h3>
+<p>A biological relation may combine a local interval/stencil mechanism, a tree or compartment mechanism, a shared module mechanism, and irregular long-range edges. Represent those mechanisms separately when they enable distinct algorithms; do not immediately flatten them into one CSR and ask a rectangle search to rediscover the structure.</p>
+<p>Examples are proposals, not universal biological facts. The same data may lack any profitable mechanism decomposition. Cellerator should accept externally supplied structured generators and retain a generic explicit-support fallback.</p>
+<h3 id="8-5-exact-repeated-product-structure">8.5 Exact repeated product structure</h3>
+<p>A model constructed as repeated compartments × molecular species may have an operator represented by a Kronecker sum or product. Such an operator can be applied without materializing the lifted edge set. Local reactions and inter-compartment transport may also have different update frequencies.</p>
+<p>This opportunity comes from the model's construction. Biological labels alone cannot certify separability. An explicit construction can, and should survive into planning. The test is whether factorized execution saves total work and storage after accounting for layout changes and coefficient updates.</p>
+<h3 id="8-6-biological-semantics-as-transformation-permissions">8.6 Biological semantics as transformation permissions</h3>
+<p>Certain model-level facts can permit transformations unavailable to a generic numerical kernel: exact factorization of gates, known disjoint compartments, a conservation law, a symmetric interaction, a bounded support generator, or an exact quotient. Statistical correlations can guide candidate selection but cannot establish these laws.</p>
+<p>Use four provenance classes: proved from program construction; explicitly asserted by the model with an optional verifier; validated for the loaded instance; and estimated from representative data. Only the appropriate classes should authorize semantic transformations. Approximate scientific transformations require an explicit error/model contract and a way to measure their downstream effect.</p>
+<h3 id="8-7-identity-preserving-stochastic-and-reproducible-execution">8.7 Identity-preserving stochastic and reproducible execution</h3>
+<p>Physical reordering must not silently reassign random variates to different cells, genes, edges, or events. One possible design is counter-based random generation keyed by stable logical identity, step/event, and stream/subsequence rather than thread position. Random123 provides established counter-based machinery; the Cellerator contribution would be the identity/effect contract around it. <span class="reference">[<a href="#r14">R14</a>]</span></p>
+<p>This does not automatically make a stochastic simulation invariant to all event-order changes. Event causality and numerical schedules still matter. It does make a simple permutation of physical storage less likely to change which biological entity receives which random input.</p>
+<h3 id="8-8-workload-prediction-from-meaning">8.8 Workload prediction from meaning</h3>
+<p>Meaning can tell the planner that a sequence predicate is invariant across a training epoch, that topology persists while values update, that a transpose follows a forward pass, or that a hierarchy will be traversed repeatedly. Those facts inform preparation amortization before timing begins.</p>
+<p>The important distinction is between a <strong>declared reuse horizon or effect contract</strong> and an optimistic historical average. Record uncertainty, permit early invalidation, and avoid expensive specialization when the remaining horizon is unknown. This is how biological information can improve execution without making programs brittle.</p>
+<h2 id="9-standard-library-design-from-first-principles">9. Standard-library design from first principles</h2>
+<h3 id="9-1-the-boundary-should-follow-semantic-responsibility">9.1 The boundary should follow semantic responsibility</h3>
+<p>The base language should provide the mechanisms needed to express and preserve identity, types, effects, composition, and expert control. It should not recognize every useful biological function by its source spelling. Library code should express reusable constructions, with selected operations lowering to shared semantic intrinsics whose identity is resolved through symbols/types rather than a literal <code>ce::name</code> string scan.</p>
+<p>The native engine should own preparation, candidate registration, execution contracts, backend dispatch, caching, and the implementation of fundamental semantic operations. The <code>.cell</code> library should own transparent compositions and biological abstractions that are profitable for the compiler to inspect. The C++ facade should expose the same concepts and the same underlying operations, not a second independently defined algebra.</p>
+<p>Templates are valuable for scalar/storage/accumulation policy, axis roles, small static dimensions, local pure maps, and structured constructors. They should not generate a distinct enormous kernel for every biological entity ID. Stable identity is usually data, not a C++ template argument.</p>
+<h3 id="9-2-what-belongs-in-the-library">9.2 What belongs in the library</h3>
+<p>A useful initial library has four substantive layers:</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Facilities</th>
+<th>Why it belongs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core structured mathematics</td>
+<td>Apply/transpose, support dot, map/gate, segmented reductions and normalization, explicit updates</td>
+<td>Small reusable mathematical foundation</td>
+</tr>
+<tr>
+<td>Structure-aware composition</td>
+<td>Bundles/chains, moments, incidence pool/broadcast, persistent-order helpers, masks and relation-family construction</td>
+<td>Exposes shared preparation and fusion</td>
+</tr>
+<tr>
+<td>Biology-specific constructions</td>
+<td>Regulatory propagation, factorized gates, module/compartment composition, sequence-derived relation facades, optional reaction/tree helpers</td>
+<td>Supplies meaning or construction facts not visible in raw arrays</td>
+</tr>
+<tr>
+<td>Expert and interoperation</td>
+<td>Graph/IR builders, plans, profiles, candidate forcing, backend registration, borrowed memory, streams, identity adapters</td>
+<td>Preserves low-level power without burdening simple users</td>
+</tr>
+</tbody>
+</table></div>
+<p>The first layer can be biology-agnostic mathematics over biologically meaningful structure. The third must do more than rename generic graph operations: it should construct legal structure or supply useful invariants.</p>
+<p>Do not make full file-format ingestion, annotation downloading, preprocessing pipelines, generic neighbor-search workflows, plotting, a general model-training framework, or an entire biological theory part of the fast-math core. Some existing adjacent support/feature/legacy-ML code is build-reachable; classify it by actual consumers before relocating it. Interoperability with such software is valuable and should remain possible. <span class="reference">[<a href="#s29">S29</a>]</span></p>
+<h3 id="9-3-two-plausible-tree-organizations">9.3 Two plausible tree organizations</h3>
+<p><strong>Option A: conventional engine/source separation with mirrored semantic modules.</strong></p>
+<pre><code class="language-text">library/
+  cellerator.cell                 # source umbrella, exact syntax to be verified
+  cellerator/
+    core/
+    math/
+      relation/ contraction/ segment/ normalization/ edge/ update/
+      statistics/ composition/ differentiation/
+    structure/
+      domains/ support/ hierarchy/ relation_family/
+    biology/
+      regulatory/ modules/ compartments/ sequence_relations/
+    expert/
+      ir/ planning/ profiles/ execution/
+    interop/
+
+include/Cellerator/
+  core/ math/ structure/ biology/ expert/ interop/
+
+src/
+  core/ geometry/ planning/ execution/ runtime/
+  backends/cpu/
+  backends/nvidia/common/
+  backends/nvidia/sm70/
+  backends/nvidia/sm86/             # only as implemented and measured
+  compiler/
+  interop/
+</code></pre>
+<p>This is my preferred starting organization because it keeps source-language compositions distinct from native runtime/backends while making conceptual ownership visible across interfaces. It does require discipline to keep mirrored module APIs semantically aligned.</p>
+<p><strong>Option B: co-located semantic module packages.</strong></p>
+<pre><code class="language-text">library/
+  relation/{cell,include,src,tests}/
+  segment/{cell,include,src,tests}/
+  hierarchy/{cell,include,src,tests}/
+  regulatory/{cell,include,src,tests}/
+  ...
+engine/{geometry,planning,execution,runtime,backends}/
+compiler/
+</code></pre>
+<p>This makes co-ownership and module tests easier, especially if modules become independently consumable. It risks confusing “library” with the entire implementation and encouraging provider-specific code to leak into high-level modules. It is justified if independent packaging and ownership become concrete needs, not merely to make a symmetric tree.</p>
+<p>Neither option should require moving every existing file before delivering useful math. First establish semantic owners and target dependencies; migrate one validated vertical slice at a time.</p>
+<h3 id="9-4-installed-layout-and-umbrellas">9.4 Installed layout and umbrellas</h3>
+<p>A proposed installed layout is native headers under <code>include/Cellerator/</code>, native libraries under the normal library directory, language sources under <code>share/cellerator/library/</code>, profiles/schemas under versioned resource directories, and exported CMake targets corresponding to real linked functionality.</p>
+<p>Use a small native umbrella such as <code>Cellerator/math.hh</code> for ordinary math, with expert/IR headers separate. A language umbrella can expose the common operations while specialized modules remain explicit. These names are design sketches, not claims about existing usable imports.</p>
+<p>The current <code>stdlib/manifest.json</code> identifies a core source resource and version constraints; the installer still owns <code>stdlib/</code>. Reconcile those rules with <code>library/</code> only after its actual source bodies can be reviewed. Compatibility resource paths can temporarily forward to the new location. Do not silently ship both as independent standard libraries. <span class="reference">[<a href="#s01">S01</a>]</span></p>
+<h3 id="9-5-a-shared-semantic-definition-without-overbuilding-generation-machinery">9.5 A shared semantic definition without overbuilding generation machinery</h3>
+<p>A compact operation definition can specify type/axis rules, effects, numerical behavior, reference semantics, and recognizable compositions. Both frontends lower to that definition. Native and source-library convenience functions may differ in syntax and ergonomics while producing equivalent graphs.</p>
+<p>It is not necessary to auto-generate the entire compiler and every header from a giant schema. Start with a small shared semantic contract and conformance tests. Add generation only where it removes demonstrated duplication without obscuring executable behavior.</p>
+<hr/>
+<h2 id="10-libcellerator-as-a-first-class-product">10. libCellerator as a first-class product</h2>
+<h3 id="10-1-five-user-modes">10.1 Five user modes</h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>User</th>
+<th>Required experience</th>
+<th>Appropriate underlying layer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple C++ fast-math caller</td>
+<td>Bind arrays and typed relations; call math; obtain a correct fast default</td>
+<td>Eager convenience API backed by prepared primitives</td>
+</tr>
+<tr>
+<td>GlassHelix-like consumer</td>
+<td>Reuse structure, update values, supply caller streams/workspaces, compose forward/backward work</td>
+<td>Prepared operation/program API</td>
+</tr>
+<tr>
+<td>Composition-aware C++ expert</td>
+<td>Construct the same graph the language can expose; inspect transforms and costs</td>
+<td>Shared semantic graph and planning API</td>
+</tr>
+<tr>
+<td>Compiler embedder</td>
+<td>Parse/analyze/inspect/lower/emit without command-line coupling</td>
+<td>Compiler library components over the shared engine</td>
+</tr>
+<tr>
+<td>Candidate/backend author</td>
+<td>Register semantics-preserving implementations, capabilities, preparation, launch, resource/cost data</td>
+<td>Explicit developmental provider API</td>
+</tr>
+</tbody>
+</table></div>
+<p>These layers should be independently useful. A simple caller should not need an execution field, source parser, profile file, candidate identifier, or an IR tutorial. An expert should not be prevented from accessing them.</p>
+<h3 id="10-2-the-simple-path">10.2 The simple path</h3>
+<p>The desired conceptual sequence is: create a relation view with identities and index arrays; bind state/value buffers; choose a numerical policy; call apply or prepare it for repeated use. The API should allow caller-supplied allocation, stream, workspace, and memory location, but supply convenient defaults when unambiguous.</p>
+<p>A preparation request can accept optional representative information and expected reuse. Missing hints should select a safe generic path, not make ordinary correct mathematics impossible. An expensive optimized plan should never be forced merely because a profile was supplied.</p>
+<p>The current internal/public typed APIs contain much of the necessary machinery, but the installed named library does not provide this coherent product. Fixing that is a small conceptual change with high user value; it is not just an API-aesthetics exercise. <span class="reference">[<a href="#s01">S01</a>, <a href="#s12">S12</a>–<a href="#s15">S15</a>]</span></p>
+<h3 id="10-3-the-prepared-path">10.3 The prepared path</h3>
+<p>A prepared object should state the facts on which it depends: topology identity/epoch, axis identities, order/projection, numerical policy, target/runtime, required buffers, concurrency rules, and any value-generation-dependent artifacts. It should expose a cheap validity check, rebindable data, and a clear distinction between immutable structure and mutable values.</p>
+<p>For a GlassHelix-like caller, the valuable unit may be a forward/gradient/update subprogram rather than one kernel. The existing native training path shows why: forward and transpose can share value positions and publication semantics. Generalize the useful mechanism without freezing its N16 model-specific composition as the universal API. <span class="reference">[<a href="#s24">S24</a>]</span></p>
+<h3 id="10-4-expert-and-custom-implementation-access">10.4 Expert and custom implementation access</h3>
+<p>Experts should be able to inspect or construct semantic graphs, request decompositions, obtain candidate frontiers, override a chosen plan, query workspace/resources, maintain persistent order, and invoke a typed implementation directly. “Force” should bypass profitability selection; bypassing semantic or safety validation should be a separate explicitly unsafe operation with visible consequences.</p>
+<p>A custom candidate contract should include accepted operation semantics, shape/numeric/support constraints, preparation and value-update behavior, exact output/effect contracts, actual executable bindings, fallback behavior, measured provenance, and teardown/concurrency ownership. A symbol-less catalog entry must remain visibly non-executable.</p>
+<p>The compiler and direct library should use this same contract. No C++ user should have to masquerade as a source-language program to access the best kernels.</p>
+<h3 id="10-5-what-to-stabilize">10.5 What to stabilize</h3>
+<p>Stabilize biological identity, basic domain/axis views, numerical policy vocabulary, buffer/stream ownership, operation semantics, and simple preparation/execution/error behavior only after cross-layer tests validate them. Keep planning IR, provider interfaces, exact physical-layout schemas, and decomposition search explicitly developmental until real workloads exercise them.</p>
+<p>Writable/inlineable IR is valuable when it exposes real optimization choices. A textual record that can be parsed and printed but does not affect execution is not sufficient. Each supported expert edit should have a verifier and a demonstrable lowering consequence.</p>
+<h3 id="10-6-direct-calls-versus-compiler-generated-execution">10.6 Direct calls versus compiler-generated execution</h3>
+<p>A single direct apply and a single language apply should normally reach the same implementation portfolio. The language may outperform a sequence of eager C++ calls by seeing a larger composition. A C++ graph expressing that same composition should be able to achieve the same optimization quality.</p>
+<p>Thus the natural performance distinction is <strong>opaque eager calls versus visible composition</strong>, not C++ versus Cellerator syntax. The language's additional value can be concise semantic construction, transparent inlining, safe propagation of identities/effects, and convenient expert control. Measure that value rather than treating language ownership as a prerequisite for optimization.</p>
+<hr/>
+<h2 id="11-geometry-and-representation-model">11. Geometry and representation model</h2>
+<h3 id="11-1-preserve-the-semantic-physical-distinction">11.1 Preserve the semantic/physical distinction</h3>
+<p>The existing separation lets biological identities survive reordering and lets multiple operations share meaning while choosing different layouts. It is worth preserving. The important extension is that semantic structure should not always require a globally materialized edge list.</p>
+<p>Permit explicit support, an implicit generator, a hierarchy, a product construction, or a verified mixture. Physical realization can still choose CSR, feature-major masks, dense fragments, interval traversal, or generated code. A symbolic exactness certificate may sometimes validate a construction more cheaply than expanding every edge simply to prove it correct.</p>
+<h3 id="11-2-fix-preparation-complexity-before-adding-more-search-sophistication">11.2 Fix preparation complexity before adding more search sophistication</h3>
+<p><code>exact_rectangle_census.cc</code> builds a grid over source groups × destination groups and performs quadratic uniqueness checks over group tuples. For sparse biological relations, this can scale with the empty Cartesian product rather than the actual support. <span class="reference">[<a href="#s17">S17</a>]</span></p>
+<p>The repository already has a sparse hash-based rectangle-counting and incident-edge incremental greedy implementation. Reuse or adapt that mechanism for an occupied-tile census. Compare hashing with sort-and-reduce and hierarchical bucketing; choose based on scale, allocator costs, and reproducibility. Exact cover validation also has a quadratic component-ID check that could be replaced independently of the linear edge coverage accounting. <span class="reference">[<a href="#s16">S16</a>–<a href="#s17">S17</a>]</span></p>
+<p>Avoid a simplistic “all quadratic code is bad” rule: small fixed metadata tables can reasonably use simple loops. The concern is quadratic work tied to biological domain size or unbounded candidate/component counts.</p>
+<h3 id="11-3-physical-order-as-a-persistent-asset">11.3 Physical order as a persistent asset</h3>
+<p>Make logical entity ID, logical edge ID, physical permutation, and projection-local value position explicit. Reverse mappings must exist when users observe canonical biological results, but need not be applied after every operation. Two successive operations with compatible physical domains should exchange data in that order.</p>
+<p>Differentiate reversible permutations from semantic aggregation/coarsening. A reversible order change preserves identity; a quotient may lose distinguishability and needs a stronger mathematical contract. A generation update should invalidate only artifacts that depend on the changed fact.</p>
+<h3 id="11-4-multiple-representations-can-coexist">11.4 Multiple representations can coexist</h3>
+<p>A relation can have a stable logical value authority with several physical read projections, or one authoritative physical order with reversible mappings. The choice should depend on update frequency and consumer mix. Do not impose canonical ownership merely because it simplifies one adapter.</p>
+<p>Forward and transpose can share values through index maps, as the native training path does. If a dense tiled representation requires a second packed value array, keep it generation-indexed and account for its refresh cost. Dynamic masks should have separate identity from the base support whenever semantics permit. <span class="reference">[<a href="#s24">S24</a>]</span></p>
+<h3 id="11-5-scale-and-ownership">11.5 Scale and ownership</h3>
+<p>The v2 operation schema uses 64-bit logical work/edge counts and 32-bit dense widths; it does not impose a 64-work-item limit. Several physical kernels use compact 32-bit local coordinates with 64-bit global bases, which is a sensible pattern. The remaining work is verifying every chunk boundary, product, launch-rounding calculation, and partial assembly—not replacing every local integer with 64 bits. <span class="reference">[<a href="#s12">S12</a>, <a href="#s19">S19</a>–<a href="#s22">S22</a>]</span></p>
+<p>The JBC atom-fragment frontier has an explicit maximum of 64 candidates. That is a search bound, not a biological dataset-size bound. It should expose truncation and selection regret so that a bounded frontier remains an intentional cost/quality tradeoff. <span class="reference">[<a href="#s28">S28</a>]</span></p>
+<hr/>
+<h2 id="12-planner-and-optimization-strategy">12. Planner and optimization strategy</h2>
+<h3 id="12-1-what-already-exists">12.1 What already exists</h3>
+<p>The native end-to-end planner accounts for preparation, packing, kernel execution, epilogue, order transforms, transfer, synchronization, and communication. It distinguishes several reuse horizons. It uses analytical and empirical mechanisms. Its chain solver is dynamic programming over candidate transitions with deterministic tie breaking. <span class="reference">[<a href="#s14">S14</a>]</span></p>
+<p>A separate Pareto helper is also real: it filters compatibility/correctness/quality/resource constraints, sorts by predicted end-to-end cost, and retains a frontier against total persistent-plus-transient memory. It is not a general multidimensional graph optimizer, but it is more than a placeholder. <span class="reference">[<a href="#s14">S14</a>]</span></p>
+<h3 id="12-2-define-the-actual-objective">12.2 Define the actual objective</h3>
+<p>The objective should be the lifetime cost of producing the required observations under memory, numerical, and latency constraints:</p>
+<pre><code class="language-text">initialization actually charged to this workload
++ structure discovery and geometry preparation
++ optional code generation/compilation
++ all value-generation refresh costs
++ all executions and fusion/recomputation costs
++ layout conversion, transfer, synchronization and readout
+</code></pre>
+<p>Use expected remaining reuse, not an arbitrary amortization constant. When latency matters, represent cold latency and steady throughput separately rather than collapsing them into a misleading scalar. Memory peak is a constraint or additional objective, not only a sum of candidate workspaces.</p>
+<h3 id="12-3-preserve-local-optimization-where-it-is-sufficient">12.3 Preserve local optimization where it is sufficient</h3>
+<p>A single independent operation can use a calibrated rule, small shortlist, or bounded empirical trial. There is no need to solve a global optimization problem for every sparse update. A linear composition with additive transition costs is a natural dynamic-programming case.</p>
+<p>The existing chain DP retains the best analytical history per terminal candidate. That is appropriate only to the extent the state summarizes all future-relevant information and the analytical ranking is reliable. Shared prepared artifacts, memory lifetimes, fanout, and measured-model error may require retaining several histories or richer states. Measuring only selected terminal histories cannot recover alternatives discarded earlier. <span class="reference">[<a href="#s14">S14</a>]</span></p>
+<h3 id="12-4-extend-the-search-around-real-cross-operation-costs">12.4 Extend the search around real cross-operation costs</h3>
+<p>Promising state variables include current physical orders, selected shared preparation artifacts, live buffer lifetimes, partition/ownership choices, and numerical constraints. Treat a fused implementation as a candidate covering a subgraph rather than as a new global opcode for every combination.</p>
+<p>Use small exhaustive or integer-optimization oracles for tiny graphs to quantify regret. Use bounded dynamic programming, k-best histories, or beam search for larger graphs. The existing two-dimensional Pareto helper may be reused, but distinct preparation, update, and multi-operation quality dimensions should not be assumed to survive its current cost/memory projection.</p>
+<p>Learned cost models are optional. First establish reliable features, actual execution witnesses, phase accounting, and held-out validation. Otherwise a more powerful learner merely fits misleading labels. Use uncertainty to decide which candidates deserve measurement, and never autotune a state-mutating operation on live application state without safe snapshots or a non-mutating measurement setup.</p>
+<h3 id="12-5-biology-can-reduce-the-search-space">12.5 Biology can reduce the search space</h3>
+<p>Known compartment boundaries, exact relation families, stable support epochs, typed source/destination locality, and anticipated transpose/gradient use can eliminate implausible decompositions before hardware tuning. This is a more distinctive role for biology than adding annotation names to a generic cost model.</p>
+<p>The proof burden remains: a biological partition may be a locality hint, not a legal independent execution boundary. The planner must distinguish those cases.</p>
+<hr/>
+<h2 id="13-compilation-profiling-specialization-and-jit">13. Compilation, profiling, specialization, and JIT</h2>
+<h3 id="13-1-stage-decisions-when-the-relevant-fact-becomes-known">13.1 Stage decisions when the relevant fact becomes known</h3>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Fact / decision</th>
+<th>Typical stage</th>
+<th>Artifact or action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation meaning, type/effect laws, static compositions</td>
+<td>Source/native graph construction</td>
+<td>Shared semantic graph</td>
+</tr>
+<tr>
+<td>Likely degrees, regimes, reuse, value distributions</td>
+<td>Representative profiling</td>
+<td>Hints, candidate priors, calibration—not semantic truth</td>
+</tr>
+<tr>
+<td>Actual topology, axis identities, exact support</td>
+<td>Load/preparation time</td>
+<td>Validated structure and geometry</td>
+</tr>
+<tr>
+<td>Target, alignment, residency, concrete shapes</td>
+<td>Preparation/binding</td>
+<td>Physical realization and dispatch guards</td>
+</tr>
+<tr>
+<td>Stable local motifs or structure-specific loops</td>
+<td>Optional offline/JIT stage</td>
+<td>Specialized code with explicit assumptions</td>
+</tr>
+<tr>
+<td>New values, masks, support edits</td>
+<td>Runtime</td>
+<td>Selective refresh, invalidation, fallback</td>
+</tr>
+<tr>
+<td>Repeated observed performance drift</td>
+<td>Runtime policy</td>
+<td>Bounded retuning or a new prepared artifact</td>
+</tr>
+</tbody>
+</table></div>
+<p>The existing sectioned profile-artifact serialization is substantial implementation work: it has alignment, bounds, checksums, and pointer-free mapped sections. That is useful infrastructure. It is not by itself a profiler that discovers biologically profitable structure, nor proof that a profile's assumptions remain valid. <span class="reference">[<a href="#s10">S10</a>]</span></p>
+<h3 id="13-2-aot-and-prepared-execution">13.2 AOT and prepared execution</h3>
+<p>AOT should compile semantics and reusable kernels that do not require the actual dataset. Load-time preparation can compile data into geometry and execution recipes without generating machine code. This is already a meaningful form of compilation and is likely valuable for Cellerator even when no source language is involved.</p>
+<p>The compiler can emit a prepared-program recipe whose binding phase validates actual structure. A native user can construct that recipe directly. Representative data can guide the recipe, but actual guards must ensure that incompatible real data uses a valid fallback.</p>
+<h3 id="13-3-where-jit-could-outperform-a-finite-catalog">13.3 Where JIT could outperform a finite catalog</h3>
+<p>JIT or offline structural code generation can specialize fixed small degrees, repeated motifs, incidence/rule generators, small constant coefficients, stable fused local programs, or exact model factorizations. It may remove index loads, branches, generic parameter decoding, and repeated address arithmetic that a finite portfolio cannot eliminate completely.</p>
+<p>It can also lose badly through compilation cost, code-size growth, instruction-cache pressure, excessive unrolling, register pressure, or frequent invalidation. Generating one enormous program containing every edge of a large relation is usually the wrong first experiment. Generate recurring motif kernels or bounded local subprograms before attempting whole-dataset unrolling.</p>
+<p>The current generated-C and narrow PTX paths show that some code-emission machinery exists. They do not establish a production JIT lifecycle with safe caching, runtime compilation, eviction, adaptive recompilation, and numerical validation. <span class="reference">[<a href="#s09">S09</a>]</span></p>
+<h3 id="13-4-break-even-and-cache-identity">13.4 Break-even and cache identity</h3>
+<p>Specialization is justified only when:</p>
+<pre><code class="language-text">compile time + extra preparation + cache/maintenance overhead
+  &lt; remaining uses * per-use improvement.
+</code></pre>
+<p>For changing values, the per-use improvement must include repacking or parameter updates. For changing structure, expected invalidation must enter the remaining-use estimate.</p>
+<p>Separate cache layers. Semantic code depends on operation/effect/numerical contracts. Structural specialization depends on the exact certified structure or generator and compiler/target identity. Physical geometry depends on structure, target, and layout choices. Packed values depend on geometry plus value generation. Binding state depends on buffers, residency, and concurrency ownership. A single undifferentiated “profile hash” is not sufficient.</p>
+<p>If generated code embeds values, those values or their generation must invalidate it. Prefer runtime parameters unless constant folding is worth the additional recompilation dependency.</p>
+<h3 id="13-5-determinism-and-unavailable-jit">13.5 Determinism and unavailable JIT</h3>
+<p>Record selected candidate, compiler/toolchain version, target, semantic/geometry identities, numerical policy, and any tuning evidence used. Provide an AOT/candidate fallback when JIT is disabled, unavailable, or prohibited. Deterministic builds and runtime specialization can coexist when specialization artifacts are reproducible, identified, and exportable.</p>
+<p>A model should not become incorrect because a representative profile is missing. The current compiler field policy requires either a representative profile or an explicit generic-reference profile. I recommend making the generic fallback a natural operational mode while keeping warnings and expert forcing available. <span class="reference">[<a href="#s05">S05</a>]</span></p>
+<hr/>
+<h2 id="14-hardware-evaluation">14. Hardware evaluation</h2>
+<h3 id="cpu">CPU</h3>
+<p>CPU is useful both as an independent semantic backend and as a competitive execution target for small, irregular, or preparation-heavy workloads. The inspected host references and generated object demonstrations are not yet a coherent optimized CPU math SDK. Removing the CUDA build dependency from backend-neutral preparation and CPU execution has direct experimental value. <span class="reference">[<a href="#s01">S01</a>, <a href="#s09">S09</a>, <a href="#s11">S11</a>]</span></p>
+<p>Potential CPU realizations include degree-bucketed CSR, feature-major support reuse, vectorized segment reductions, chunked formats, and structure-specific generated loops. SELL-C-sigma is useful precedent for exploiting SIMD while controlling padding and local row ordering. It is a candidate, not a universal replacement. NUMA ownership and thread scheduling should follow actual data residence rather than a GPU-derived partition. <span class="reference">[<a href="#r06">R06</a>]</span></p>
+<h3 id="v100-sm70">V100 / sm70</h3>
+<p>Retain V100 as a serious optimization target. The existing exact support, feature-major, WMMA, transpose, and readiness work is valuable. Improve sparse and preparation algorithms alongside Tensor Core paths; the retained measurements already show that Tensor Core/output-ownership choices do not dominate every workload. <span class="reference">[<a href="#s19">S19</a>–<a href="#s26">S26</a>]</span></p>
+<p>Current toolchain reality matters: NVIDIA removed offline compilation and library support for Maxwell/Pascal/Volta from CUDA 13.0, while documenting continued use of the 12.x toolkits for those architectures. Pin a suitable 12.x lane for V100 rather than letting a global “latest CUDA” upgrade break the target. This does not mean existing V100 binaries cease functioning. <span class="reference">[<a href="#r07">R07</a>]</span></p>
+<h3 id="newer-nvidia-hardware">Newer NVIDIA hardware</h3>
+<p>Do not treat sm86 or later as merely larger sm70 tiles. Data movement, supported arithmetic, asynchronous pipelines, and the balance between matrix operations and non-matrix work can change the best decomposition. A separate provider can preserve identical semantic operations while choosing different physical representations and fusion granularity.</p>
+<p>A recent example is FlashAttention-4's Blackwell-focused algorithm/pipeline co-design: its authors explicitly address matrix throughput scaling differently from other resources. The relevant lesson for Cellerator is to retune the entire decomposition, not to import that paper's speedup claims or assume its attention kernels solve biological exchange unchanged. <span class="reference">[<a href="#r15">R15</a>]</span></p>
+<p>Exact structural sparsity must remain separate from approximate pruning. A hardware-friendly pattern is only legal when the real support or an explicit approximation contract permits it. A wider mixed sparse/dense portfolio is appropriate; forcing biology into a hardware pattern is not.</p>
+<h3 id="fpga-and-other-accelerators">FPGA and other accelerators</h3>
+<p>Useful portable semantics include logical domains, relation generators, reductions/partial states, ownership, and stable identities. Warp layouts, WMMA fragment shapes, CUDA streams, and NVIDIA-specific value packing do not belong in those semantics.</p>
+<p>A streaming realization layer could map support generators, gathers, local maps, merges, and state updates onto a spatial pipeline. SAM is a concrete research precedent. FPGA compilation latency makes repeated motifs, static topology, and long reuse horizons especially relevant; runtime values and masks should remain parameters where possible. <span class="reference">[<a href="#r03">R03</a>]</span></p>
+<p>Do not design a lowest-common-denominator backend that weakens V100 kernels today. Preserve semantic independence and provider-specific realization instead, then test portability using one small workload whose FPGA/CPU decomposition is genuinely different.</p>
+<h2 id="15-strong-architectural-alternatives">15. Strong architectural alternatives</h2>
+<h3 id="a-prepared-mathematics-library-with-optional-composition">A. Prepared mathematics library with optional composition</h3>
+<p><strong>Primary object:</strong> an efficiently prepared operation or hand-composed program. <strong>Preserves:</strong> current typed kernels, geometry, identities, value generations, native preparation, and the language as an optional client. <strong>Changes:</strong> makes installed native math and straightforward C++ ownership the immediate product; limits compulsory graph/IR machinery.</p>
+<p><strong>Expected consequence:</strong> the quickest route to useful performance when a few primitives dominate and hand-written compositions already capture the important fusion. It provides a strong baseline against which a broader compiler must earn its complexity.</p>
+<p><strong>Risks:</strong> eager boundaries lose cross-operation reassociation and shared materialization choices; each larger biological pattern may acquire another bespoke prepared API; a finite catalog can become difficult to maintain.</p>
+<p><strong>Discriminating experiment:</strong> compare a small suite of real prepared compositions against a common-graph optimizer. If the graph adds little beyond existing typed paths while imposing material overhead, retain this emphasis. If it repeatedly discovers substantial layout/fusion/reassociation gains that are burdensome to express by hand, move toward B.</p>
+<h3 id="b-shared-semantic-computation-engine-with-c-and-language-frontends">B. Shared semantic computation engine with C++ and language frontends</h3>
+<p><strong>Primary object:</strong> a typed biological computation graph and its prepared realization. <strong>Preserves:</strong> actual native implementations, semantic/physical separation, useful IR levels, and expert controls. <strong>Changes:</strong> eliminates independent semantic interpretations and connects both frontends to one operation/decomposition/preparation contract.</p>
+<p><strong>Expected consequence:</strong> allows global decisions about layout, shared preparation, contraction-normalization-application fusion, forward/backward reuse, and relation/dense reassociation. The source language can provide strong ergonomics without becoming a mandatory gateway.</p>
+<p><strong>Risks:</strong> graph/schema development can again outpace execution; representing every future possibility may overcomplicate the fast path; forcing a graph into tiny operations may add overhead. The engine must retain an inexpensive eager path and direct typed escape hatches.</p>
+<p><strong>Discriminating experiment:</strong> lower the same computation from a C++ graph and source representation, verify identical semantics and implementation availability, and compare against eager native composition. This alternative is justified by better execution and easier reuse—not by the existence of more IR files.</p>
+<p><strong>Assessment:</strong> this is the most plausible shared architectural destination, but its implementation should proceed through small working workload slices rather than a comprehensive rewrite.</p>
+<h3 id="c-biological-structure-family-compiler-with-generative-representations">C. Biological structure/family compiler with generative representations</h3>
+<p><strong>Primary object:</strong> a biological mechanism or related family of structures plus a variation/effect program. <strong>Preserves:</strong> the native engine, candidate fallbacks, identity contracts, and optionally B's semantic graph. <strong>Changes:</strong> allows implicit support, motif dictionaries, exact model factorizations, ancestry/edit sharing, and optional structural code generation to be first-class.</p>
+<p><strong>Expected consequence:</strong> can eliminate entire materializations or repeated computations that a matrix-at-a-time architecture cannot see. This has the highest biology-specific upside.</p>
+<p><strong>Risks:</strong> stable/exact structure may be rarer than expected; inference of biological structure can be expensive or wrong; a too-specific representation may lock Cellerator to one model. JIT/code generation can overwhelm the saved execution time.</p>
+<p><strong>Discriminating experiment:</strong> exact factorized regulatory gates, a sequence-predicate family, and one controlled base-plus-edit workload against equally well-optimized explicit-relation baselines. Include negative cases with independent weights or high edit rates. If there is little net advantage, keep these as optional library constructions rather than reorganizing the engine around them.</p>
+<h3 id="these-are-development-emphases-not-mutually-exclusive-religions">These are development emphases, not mutually exclusive religions</h3>
+<p>A can deliver useful native math now, B can supply the shared semantic center, and selected C mechanisms can emerge where biology proves them useful. JIT versus AOT is an orthogonal staging decision, not a sufficient product identity. The evidence does not support deleting the compiler or making broad language expansion the next default task.</p>
+<hr/>
+<h2 id="16-ranked-algorithmic-improvement-proposals">16. Ranked algorithmic improvement proposals</h2>
+<p>This ranking is <strong>priority for investigation</strong>, not a claim of measured speedup. Correctness and executable reachability come before kernel promotion.</p>
+<div class="table-scroll" tabindex="0"><table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Proposal</th>
+<th>Source/reason</th>
+<th>Expected value and falsifier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Remove score recomputation from sparse exchange; compare staged, shared-memory, and online-state designs</td>
+<td>Current fully fused arithmetic can scale as E K V <span class="reference">[<a href="#s23">S23</a>]</span></td>
+<td>Large potential when K,V are nontrivial; loses if register/memory scheduling dominates</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Replace Cartesian-product rectangle census with occupied-tile enumeration and linear/log-linear identity checks</td>
+<td>Dense group grid and quadratic checks; existing sparse greedy machinery <span class="reference">[<a href="#s17">S17</a>]</span></td>
+<td>Large preparation/memory benefit at sparse scale; little benefit on tiny/dense instances</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Extend persistent physical-order reuse through forward, transpose, gradients, updates, and real consumers</td>
+<td>Existing native training and value planes <span class="reference">[<a href="#s15">S15</a>,<a href="#s24">S24</a>]</span></td>
+<td>Removes packing/conversion traffic; loses if interfaces require canonical order every step</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Degree × width × locality residual/segment portfolios, including split-row/segment states</td>
+<td>Current ownership can serialize long rows or waste lanes <span class="reference">[<a href="#s19">S19</a>,<a href="#s21">S21</a>]</span></td>
+<td>Better irregular-work utilization; requires workload distributions and deterministic merge costs</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Exact factorized gate and shared relation-family execution</td>
+<td>Algebra from biological model construction</td>
+<td>Avoids per-state edge-weight materialization; invalid without exact factorization</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Shared score/statistics/bundle preparation and producer-consumer ownership</td>
+<td>Existing helpers often combine materialized results <span class="reference">[<a href="#s23">S23</a>]</span></td>
+<td>Fewer global intermediates and loads; can lose through recomputation or peak-memory growth</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Lower centered moments and other merge states efficiently to GPU/CPU</td>
+<td>Host algebra already exists <span class="reference">[<a href="#s18">S18</a>]</span></td>
+<td>Better stability and split-segment scaling; raw moments may still suffice under a weaker policy</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Incremental support/value updates and affected-frontier execution</td>
+<td>Separate identities/generations already exist</td>
+<td>High upside for sparse edits; switches to full execution when frontiers expand</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Bounded motif-specific code generation, AOT or JIT</td>
+<td>Existing narrow code emitters <span class="reference">[<a href="#s09">S09</a>]</span></td>
+<td>Removes generic indexing/branches; must beat compile/code-size/invalidation overhead</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Implicit biological mechanisms: interval/tree/product/rule representations</td>
+<td>Biology changes useful algorithms <span class="reference">[<a href="#r09">R09</a>–<a href="#r13">R13</a>]</span></td>
+<td>High strategic upside, workload-dependent; do not implement a universal mechanism language first</td>
+</tr>
+</tbody>
+</table></div>
+<p>Independently, improve numerical and scale correctness: contraction split semantics, WMMA preconditions, consistent normalization policies, zero-work handling, overflow-safe launch arithmetic, and concurrency/alias ownership. These may not improve benchmark throughput directly, but they determine whether optimized transformations are legal.</p>
+<hr/>
+<h2 id="17-code-and-target-reorganization-proposals">17. Code and target reorganization proposals</h2>
+<h3 id="17-1-reorganize-around-real-dependencies">17.1 Reorganize around real dependencies</h3>
+<p>The useful target boundaries are approximately semantic/core contracts, geometry/preparation, planning, prepared execution/runtime, CPU backend, NVIDIA common/provider backends, source compiler, and optional interop. A public facade can link these deliberately; the installed target should not advertise them merely by installing headers.</p>
+<p>Backend-neutral code should not require CUDA simply through an aggregate runtime dependency. CUDA-enabled builds should not define the only route to host preparation and CPU math. Public targets should reflect linked features and exported dependencies accurately. <span class="reference">[<a href="#s01">S01</a>,<a href="#s11">S11</a>]</span></p>
+<h3 id="17-2-separate-executable-registration-from-descriptive-catalogs">17.2 Separate executable registration from descriptive catalogs</h3>
+<p>Each implementation family needs a permanent owner for its code, constraints, preparation, launch binding, tests, and measured evidence. A catalog can reference these records, but should not independently restate unverified kernel facts. Keep compatibility adapters separate and visible.</p>
+<p>Campaign portfolio names may remain as historical build/test aliases temporarily. The actual source ownership already lies largely in permanent directories. Rename only where it removes ambiguity or obsolete dependency coupling. Do not hide real functionality behind increasingly generic fan-in targets while leaving its registration disconnected.</p>
+<h3 id="17-3-separate-development-history-from-public-api-meaning">17.3 Separate development history from public API meaning</h3>
+<p>Public filenames such as <code>deliver_the_...milestone</code> or <code>freeze_...</code> expose implementation history rather than durable concepts. Replace such names as APIs become real products, keeping compatibility forwarding headers when needed. The replacement should be accompanied by actual linking and conformance tests; renaming a declaration does not make it implemented.</p>
+<p>Likewise, tests should be organized around semantics, decomposition, preparation, numerical policy, execution, installation, and backend behavior. Historical campaign acceptance tests can remain archived or labelled, but should not be the authoritative capability report. Benchmark evidence should retain immutable provenance rather than be silently relabelled as current.</p>
+<h3 id="17-4-what-not-to-move-or-delete-yet">17.4 What not to move or delete yet</h3>
+<p>Do not delete CP-BP/CellPack compatibility or the older training path merely because newer interfaces exist. Some are more executable than their successors. Do not delete the old atomic candidate when it serves a valid negative control. Do not move the inaccessible <code>.cell</code> library bodies blindly. Do not migrate every source before one externally consumable math slice works.</p>
+<p>The reorganization should reduce the number of independent semantic definitions, accidental CUDA dependencies, and unreachable public APIs. A more uniform-looking tree is not a sufficient outcome.</p>
+<hr/>
+<h2 id="18-development-priority-analysis">18. Development-priority analysis</h2>
+<h3 id="immediate-useful-work">Immediate useful work</h3>
+<p>The first useful milestone should be an installed external C++ program that constructs a relation, executes it correctly, prepares it for reuse, updates values, and exercises one real forward/backward or exchange composition. It should work through advertised targets, not a hand-assembled list of internal source files. Keep one CPU semantic path and one V100 path visible.</p>
+<p>Before broadening this milestone, resolve the contraction semantic conflict and the most concrete numerical/precondition gaps. A library built on inconsistent operation meaning will make later integration more expensive.</p>
+<h3 id="architecture-validation-work">Architecture-validation work</h3>
+<p>Express the same small computation through native eager calls, a C++ semantic graph, and the source-language representation. Trace source/operation/candidate/stage identities to an actual launch. Verify that expert plan forcing changes execution when it should and is rejected when semantics are incompatible.</p>
+<p>This tests B directly without requiring a full language implementation. It also establishes whether the current semantic/planning/realization hierarchy is useful or redundant in practice.</p>
+<h3 id="performance-experiments">Performance experiments</h3>
+<p>Prioritize sparse exchange, sparse census preparation, persistent physical layouts across consumers, and degree/width scheduling. Include the vendor and simpler sparse alternatives under matching numerical and lifetime conditions. Add at least one biological construction whose representation can eliminate work, such as exact factorized gates or sequence-derived relation reuse.</p>
+<h3 id="medium-term-engineering">Medium-term engineering</h3>
+<p>Unify semantic definitions, executable candidate registration, package exports, profile validity, preparation reuse, ownership/concurrency, and CPU build separation. Make missing capability states explicit. Extend the planner only when measured counterexamples show which state or search alternatives are missing.</p>
+<h3 id="speculative-high-upside-research">Speculative/high-upside research</h3>
+<p>Explore relation families, support grammars, exact product structures, ancestry/edit reuse, generated motif kernels, incremental perturbation frontiers, and a small non-relation recurrence/tree workload. Preserve the ability to abandon an unprofitable representation without dismantling the core engine.</p>
+<h3 id="where-the-project-appears-over-and-under-engineered">Where the project appears over- and under-engineered</h3>
+<p><strong>Inference:</strong> compiler capability contracts, campaign-shaped interfaces, and layered descriptive schemas have advanced faster than their unified execution witnesses. That is over-engineering relative to demonstrated product capability, not proof those concepts are intrinsically unnecessary.</p>
+<p><strong>Inference:</strong> installed native usability, cross-layer numerical conformance, complete candidate reachability, realistic lifetime benchmarks, and scalable preparation are comparatively under-engineered. These are closer to the fundamental goal than another round of syntax coverage or cosmetic tree cleanup.</p>
+<p>The recommended ordering is driven by information gained: first learn which existing machinery works as one product; then learn which representation/algorithm changes remove real biological work; only then freeze broader abstractions.</p>
+<hr/>
+<h2 id="19-critical-experiments">19. Critical experiments</h2>
+<h3 id="e1-capability-must-have-an-execution-witness">E1. Capability must have an execution witness</h3>
+<p><strong>Question:</strong> which advertised operations are actually usable through installed interfaces?</p>
+<p>Build a tiny external consumer for each core family, using only exported targets and public headers. Trace input semantic operation to chosen candidate, prepared stage, and actual callback/kernel. Include a source-language variant for the subset it claims to compile. Distinguish declaration, compilation, linking, execution, numerical correctness, and measured performance as separate statuses.</p>
+<p><strong>Decision:</strong> no capability is “complete” merely because a constexpr table names it. Failure identifies the exact package/lowering/registration boundary to repair.</p>
+<h3 id="e2-one-mathematical-contract-across-layers">E2. One mathematical contract across layers</h3>
+<p><strong>Question:</strong> do semantic IR, decomposition, CPU reference, and GPU implementation compute the same object?</p>
+<p>Use support contraction with multiple edges and K=1,2,17,32; compare whole-K versus split-K assembly. Add an edge-channel product case to prove it is different. Test duplicate relationships, empty support, zero-size segments, high-bit-different identities, signed/zero weights, NaN/infinity policies, and cancellation-sensitive accumulation.</p>
+<p>For rectangular WMMA, exercise legal and illegal strides/alignment explicitly. For sparse updates, distinguish unique from repeated indices. For runtime reuse, change one identity/generation at a time and verify only valid artifacts survive.</p>
+<p><strong>Decision:</strong> shared semantics must pass before broader adapters or compiler lowering are considered sound.</p>
+<h3 id="e3-preparation-scaling-at-fixed-sparsity">E3. Preparation scaling at fixed sparsity</h3>
+<p><strong>Question:</strong> does geometry preparation scale with actual support or empty domain area?</p>
+<p>Hold E approximately fixed while increasing source/destination domain sizes and occupied-tile dispersion. Compare the current census, occupied-tile hashing, sort-and-reduce, and any reused greedy index. Measure wall time, allocation count, peak bytes, exact-cover validation, and total cost over reuse horizons 1, 10, 100, and longer realistic runs.</p>
+<p><strong>Decision:</strong> use the simplest preparation algorithm whose lifetime cost wins. Reject an elaborate search that consumes more than it can repay.</p>
+<h3 id="e4-sparse-exchange-without-redundant-score-work">E4. Sparse exchange without redundant score work</h3>
+<p><strong>Question:</strong> when should the three stages share a kernel or materialize scores?</p>
+<p>Vary K, V, edge count, degree skew, nonfinite policy, and whether edge probabilities are externally observed. Compare current unfused/current fused, staged-score plus fused tail, shared-memory scheduling, and online partial-state designs. Count effective score evaluations as well as time, bytes, registers, spills, and launch overhead.</p>
+<p><strong>Decision:</strong> retain multiple candidates with explicit conditions. A fewer-launch implementation that performs materially more arithmetic must win measured lifetime cost, not win by its name.</p>
+<h3 id="e5-fair-cold-prepared-and-resident-comparisons">E5. Fair cold, prepared, and resident comparisons</h3>
+<p><strong>Question:</strong> what is the real reuse crossover between sparse, hybrid, and vendor implementations?</p>
+<p>Separate process/context creation, vendor handle creation, topology preparation, packing, transfers, resident kernels, and readout. Use matching input/output accuracy contracts and document storage differences. Compare relevant vendor algorithms, not only one default. Randomize or alternate measurement order appropriately, use repeated independent runs, and report distributions.</p>
+<p><strong>Decision:</strong> identify crossover regions, not a single universal winner. Reproduce the retained synthetic fixture, then move to biological structures with provenance.</p>
+<h3 id="e6-persistent-layout-across-a-real-consumer-boundary">E6. Persistent layout across a real consumer boundary</h3>
+<p><strong>Question:</strong> do physical-order savings survive the whole computation?</p>
+<p>Compare canonicalization after every operation with persistent order through forward, epilogue, transpose, edge gradient, update, and one final biological readout. Include the actual consumer's tensor layout, allocator, and streams. Measure value refresh, peak memory, and any extra transpose representation.</p>
+<p><strong>Decision:</strong> retain persistent order where net savings remain. A fast internal kernel is insufficient if every boundary repacks its output.</p>
+<h3 id="e7-planner-regret-and-state-sufficiency">E7. Planner regret and state sufficiency</h3>
+<p><strong>Question:</strong> are the existing DP and Pareto decisions close to the best feasible schedule?</p>
+<p>Construct small measured graphs with two or three alternatives per operation, shared preparation, fanout, and memory constraints. Exhaustively enumerate or solve them with a small optimization oracle. Compare current chain DP, a k-best variant, and selected richer-state variants on held-out costs.</p>
+<p><strong>Decision:</strong> add only state/search complexity that reduces measured regret. This avoids rebuilding a sophisticated optimizer before its actual failure modes are known.</p>
+<h3 id="e8-biological-information-ablation">E8. Biological information ablation</h3>
+<p><strong>Question:</strong> does biological meaning add execution value beyond generic structural statistics?</p>
+<p>Compare identical computations with: structure-only features; biological annotation hints; and exact model-construction facts such as factorized gates or product structure. Use matched numerical semantics. Hold out whole donors, conditions, developmental regimes, species, or relation families where appropriate—not random edges from the same prepared object.</p>
+<p><strong>Decision:</strong> distinguish biology as a locality hint from biology enabling a new legal algorithm. A negative annotation result does not invalidate identity/reuse benefits, but it should stop claims of annotation-driven speedup.</p>
+<h3 id="e9-generated-versus-catalog-execution">E9. Generated versus catalog execution</h3>
+<p><strong>Question:</strong> can structural specialization repay its cost?</p>
+<p>Choose repeated small motifs, stable degree classes, or exact reaction/rule patterns. Compare a tuned generic candidate, AOT-specialized code, and optional JIT-generated code. Measure compile latency, executable size, register pressure, cache reuse, update invalidation, and remaining-use break-even. Include a structure-changing negative case.</p>
+<p><strong>Decision:</strong> introduce JIT only for families with demonstrated net gain. Otherwise retain candidate-based preparation.</p>
+<h3 id="e10-one-architecture-independent-semantic-test">E10. One architecture-independent semantic test</h3>
+<p><strong>Question:</strong> is the computation model portable without forcing the same physical algorithm everywhere?</p>
+<p>Use one relation/segment composition and one tree or implicit-support workload. Implement or evaluate CPU and GPU realizations independently; an FPGA/SAM-style realization can remain a later bounded experiment. Verify identity and numerical contracts while allowing entirely different layouts and schedules.</p>
+<p><strong>Decision:</strong> preserve useful semantics, not a universal physical tile representation. Portability should not mean emulating Volta everywhere.</p>
+<h3 id="e11-related-structures-and-sparse-edits">E11. Related structures and sparse edits</h3>
+<p><strong>Question:</strong> does a family/base-plus-delta representation save work after maintenance costs?</p>
+<p>Use controlled and biological examples with known exact relationships between structures. Sweep edit rates, value update rates, and reuse after each edit. Include independent-weight cases where only index/preparation reuse is legal. Compare rebuild-all, reuse-common-geometry, and incremental affected-fragment execution.</p>
+<p><strong>Decision:</strong> promote family preparation only in regions where its maintenance and decoding costs are repaid.</p>
+<hr/>
+<h2 id="20-questions-that-remain-genuinely-open">20. Questions that remain genuinely open</h2>
+<p>The implementation and research evidence do not yet determine a single optimal final architecture. The following questions need real workload or execution evidence rather than another planning document.</p>
+<p><strong>Biology and workload:</strong> Which relations actually persist across GlassHelix computations, and for how many calls? Which values vary independently versus through exact source/destination gates or a small basis? How common are reusable support motifs, stable hierarchies, or sparse edits? Which outputs must remain individually observable? Are sequence-derived predicates reused across enough states to dominate their preparation?</p>
+<p><strong>Numerical meaning:</strong> What accuracy and reproducibility contracts do the scientific consumers require? When are reassociation, atomics, half storage, masked dense padding, approximate mechanisms, or reduced models acceptable? Can one reference backend define these policies without silently computing a different operation?</p>
+<p><strong>Architecture:</strong> How much benefit does visible composition produce beyond well-designed prepared C++ primitives? Does the existing multi-level IR preserve useful distinctions, or mostly duplicate identities and validation? Which current typed paths should become the shared implementation rather than be adapted through the older generic core? How much of the new <code>library/</code> already expresses useful compositions, once its bodies are accessible?</p>
+<p><strong>Algorithms:</strong> Does occupied-tile preparation solve the main scale barrier? Which degree/width regions favor sparse, hybrid, or vendor kernels? When does exchange need staged scores rather than online fusion? Can gradients share physical preparation without paying excessive value mapping? Are exact biological family representations common enough to justify structural code generation?</p>
+<p><strong>Execution and systems:</strong> What is the correct concurrency ownership of prepared state and changing values? Which buffer versions may coexist? How often do cross-device or external-consumer boundaries erase layout gains? Which CPU workloads are faster without GPU preparation/transfer? What is the actual remaining reuse horizon for JIT or FPGA specialization?</p>
+<p><strong>Final judgment:</strong> Cellerator's current engineering contains real computational assets and substantial unfinished integration. Its most promising future is not established by either preserving or abandoning the compiler. It is established by making biological meaning reach executable decisions—and then proving that those decisions eliminate work, reduce memory traffic, amortize preparation, or improve hardware use on real biological computations.</p>
+<p>A generic system could exploit many of the same algebraic facts if it were given them. Cellerator's potential advantage is to make those facts natural, explicit, persistent, and operationally useful in biological programs. That is a stronger goal than attaching biological names to sparse kernels, and a more testable one than declaring any particular language or compiler architecture the destination in advance.</p>
+<hr/>
+<h2 id="appendix-a-source-evidence-ledger">Appendix A. Source evidence ledger</h2>
+<p>Unless otherwise stated, paths are relative to Cellerator at commit <code>b3340736c8c7b17266bd825c9f079d86e42a5639</code>, in the working-tree snapshot described above. Ranges identify inspected evidence, not a claim that unlisted code does not exist.</p>
+<h3 id="s01">S01 — Installed SDK and root build boundary</h3>
+<p><code>cmake/compiler/CelleratorHostSdk.cmake:1–44</code>; <code>CMakeLists.txt:1–627</code>; <code>stdlib/manifest.json:1–12</code>. Evidence: named library contents, installation/export rules, host/CUDA boundary, resource manifest. The new <code>.cell</code>/<code>.ceh</code> bodies were not accessible.</p>
+<h3 id="s02">S02 — Installed driver and tooling implementation</h3>
+<p><code>src/compiler/driver/deliver_the_driver_passthrough_milestone.cc:1–8</code>; <code>tools/cellerator/deliver_the_driver_passthrough_milestone.cc:1–3</code>; <code>src/compiler/tooling/freeze_the_celleratord_architecture.cc:1–47</code>. Evidence: actual passthrough execution and tooling route/architecture validation.</p>
+<h3 id="s03">S03 — Compiler target and acceptance boundaries</h3>
+<p><code>cmake/compiler/create_compiler_component_target_boundaries.cmake:1–33</code>; <code>src/compiler/CMakeLists.txt:1–31</code>; <code>cmake/compiler/create_host_only_compiler_smoke_targets.cmake:1–12</code>; <code>tests/compiler/b01/create_host_only_compiler_smoke_targets_test.cc:1–14</code>; <code>cmake/compiler/CelleratorPartOneAcceptance.cmake:1–37</code>; <code>cmake/compiler/part_one_acceptance_v1.hh:1–109</code>; <code>tests/compiler/j03/{validate_all_final_part_one_capabilities,integrate_central_compiler_targets_and_registries,reconcile_language_specification_with_implementation,run_final_performance_and_regression_review}_test.cc</code>; <code>bench/compiler/part_one_performance_receipt_v1.json:1–31</code>.</p>
+<h3 id="s04">S04 — Frontend and AST</h3>
+<p><code>src/compiler/frontend/parser/parse_non_relation_operation_families.cc:1–98</code>; <code>expose_parser_library_and_parse_tree_dump_apis.cc:1–197</code> and <code>deliver_full_grammar_conformance.cc:1–141</code> in the same directory; <code>include/Cellerator/compiler/frontend/parser/parser_v1.hh:1–11</code>; <code>include/Cellerator/compiler/ast/freeze_ast_node_ownership_and_lifetime_v1.hh:1–130</code>; <code>src/compiler/ast/define_source_level_ast_node_families.cc:1–159</code>.</p>
+<h3 id="s05">S05 — Sema, effects, and representative-profile policy</h3>
+<p><code>src/compiler/sema/implement_operation_kind_resolution.cc:1–41</code>; <code>include/Cellerator/compiler/sema/freeze_compiler_semantic_type_categories_v1.hh:1–50</code>; <code>src/compiler/sema/field/implement_missing_profile_failure_policy.cc:1–31</code>; <code>implement_named_representative_profile_binding.cc:1–73</code>; <code>implement_automatic_lifetime_and_generation_transfer.cc:1–85</code> in that field directory.</p>
+<h3 id="s06">S06 — Semantic IR implementation and demonstrators</h3>
+<p><code>src/compiler/ir/semantic/deliver_source_to_semantic_ir_vertical_slice.cc:1–322</code>; <code>implement_bundle_chain_moments_hierarchy_and_exchange_op.cc:1–107</code>; <code>implement_contraction_segment_and_normalization_operatio.cc:1–142</code> in that directory. Evidence: separately implemented scalar/reference semantics and high-level composition mappings.</p>
+<h3 id="s07">S07 — Source-to-selected-plan demonstrator</h3>
+<p><code>src/compiler/planning/deliver_source_to_selected_plan_vertical_slice.cc:1–226</code>; <code>include/Cellerator/compiler/ir/planning/implement_decomposition_alternative_nodes_v1.hh:1–40</code>. Evidence: bounded selected-plan slice and imports of real decomposition contracts.</p>
+<h3 id="s08">S08 — Realization and prepared reference execution</h3>
+<p><code>src/compiler/ir/realization/deliver_selected_plan_to_prepared_program_slice.cc:1–217</code>; <code>include/Cellerator/compiler/api/expose_realization_and_backend_apis_v1.hh:1–14</code>. Important symbols: <code>lower_selected_relation_plan_v1</code>, <code>launch_reference_relation</code>, <code>execute_prepared_relation_slice_v1</code>.</p>
+<h3 id="s09">S09 — CPU/object/PTX backend work</h3>
+<p><code>src/compiler/backend/implement_cpu_transpose_and_contraction.cc:1–143</code>; <code>deliver_the_first_cpu_object_milestone.cc:1–82</code>; <code>compile_generated_c_into_ordinary_objects.cc:1–83</code>; <code>implement_generated_c_representation.cc:1–60</code>; <code>src/compiler/backend/nvptx/deliver_a_direct_ptx_hot_path_demonstration.cc:1–68</code>; <code>implement_ptx_emission_and_ptxas_assembly.cc:1–189</code> in that nvptx directory.</p>
+<h3 id="s10">S10 — Profile artifacts</h3>
+<p><code>src/compiler/profile/implement_sectioned_binary_profile_storage.cc:1–251</code>; <code>include/Cellerator/compiler/profile/profile_artifact_v1.hh:1–30</code>. Evidence: actual sectioned artifact encoding, validation, checksums, bounds, and mapped views.</p>
+<h3 id="s11">S11 — Native build ownership</h3>
+<p><code>src/compute/CMakeLists.txt:1–582</code>; <code>src/compute/foundation_targets.cmake:1–29</code>; <code>src/compute/current_targets.cmake:1–116</code>; <code>src/execution/CMakeLists.txt:1–49</code>; <code>src/runtime/CMakeLists.txt:1–58</code>; <code>src/planner/CMakeLists.txt:1–63</code>; root <code>CMakeLists.txt:395–627</code>. Evidence includes production source fan-in for CE-GEO/CE-EXOP and JBC.</p>
+<h3 id="s12">S12 — Operation semantics and schemas</h3>
+<p><code>include/Cellerator/compute/operation/operation_core.hh:1–256</code>; <code>include/Cellerator/compute/operation/operation_core_v2/schema.hh:1–217</code>; <code>src/compute/operation/operation_core_v2/schema.cc:1–167</code>; <code>v1_adapter.cc:1–147</code> in that v2 directory.</p>
+<h3 id="s13">S13 — Candidate catalogs and preparation interfaces</h3>
+<p><code>src/compute/operation/builtin_catalog.cc:1–326</code>; <code>relation_algebra_catalog.cc:1–288</code>; <code>ce_geo_catalog_assembly.cc:1–25</code>; <code>ce_exop_operation_portfolio.cc:1–68</code>; <code>candidate_catalog/catalog_v3.cc:1–35</code>; <code>preparation_factory.cc:1–344</code> under <code>src/compute/operation/</code>. Also <code>src/compute/architecture/providers/nvidia/sm70/relation_apply/apply_inventory_v1.cc:1–175</code> and <code>apply_registration_v1.cu:1–117</code>.</p>
+<h3 id="s14">S14 — Planner, cost, and Pareto implementation</h3>
+<p><code>src/planner/end_to_end_planner.cc:1–910</code>; <code>src/planner/end_to_end_planner/connected_economics_v1.cc:1–166</code>; <code>src/planner/portfolio/pareto_portfolio_v1.cc:1–200</code>; <code>candidate_workspace_v1.cc:1–81</code> in that portfolio directory. The Pareto helper is a cost/total-memory frontier, not an absent feature and not a complete DAG optimizer.</p>
+<h3 id="s15">S15 — Prepared execution and readiness</h3>
+<p><code>src/execution/program.cc:1–480</code>; <code>src/execution/program/program_v2.cc:1–55</code>; <code>src/runtime/value_readiness.cu:1–121</code>; <code>src/execution/training_program_v2/program.cc:1–137</code>; <code>graph_capture.cc:1–86</code> in that directory. Actual graph-instantiation references were located in <code>tests/ce_geo/validation/hot_path_test.cu:577</code>, <code>tests/execution/ce_live_concurrency_test.cu:203</code>, and <code>tests/tensor_core/sm70/prepared_reuse_graph_test.cu:161</code>; these references are not a claim to have audited those entire tests.</p>
+<h3 id="s16">S16 — Geometry and exact coverage</h3>
+<p><code>src/geometry/CMakeLists.txt</code>; <code>src/geometry/owned_targets.cmake</code>; <code>src/geometry/semantic_geometry.cc:1–286</code>; <code>src/geometry/compiler/compile_geometry.cc:1–114</code>; <code>optimizer_portfolio.cc:1–31</code>; <code>relation_cover.cc:1–123</code> in that compiler directory. Evidence: semantic/physical distinction, explicit strategy selection, exact coverage, and compatibility ownership.</p>
+<h3 id="s17">S17 — Geometry preparation algorithms</h3>
+<p><code>src/compute/architecture/providers/nvidia/common/exact_rectangle_census.cc:1–129</code>; <code>src/geometry/optimizer/greedy/joint_greedy.cc:1–299</code>; <code>src/geometry/strategy/support_multiresolution.cc:1–317</code>. Evidence: dense census scaling, existing sparse incremental alternative, and support-derived grouping.</p>
+<h3 id="s18">S18 — Decomposition and partial-result algebras</h3>
+<p><code>include/Cellerator/compute/decomposition/decomposition_v1.hh:1–114</code>; <code>partial_result_algebra_v1.hh:1–79</code>; <code>support_embedding_v1.hh:1–69</code> in that include directory; <code>src/compute/decomposition/provider_registry_v1.cc:1–248</code>; <code>support_embedding_v1.cc:1–80</code>; <code>source_k_v1.cc:1–78</code>; <code>log_sum_exp_state_v1.cc:1–75</code>; <code>moments_state_v1.cc:1–77</code>. Also <code>bench/jbc/multi_extent/assembly_vs_direct_v1.cc:1–107</code> for the limited assembly benchmark.</p>
+<h3 id="s19">S19 — Apply, WMMA, residual, and vendor kernels</h3>
+<p>Under <code>src/compute/architecture/providers/nvidia/sm70/</code>: <code>provider.cc:1–100</code>; <code>relation_apply/apply_n64_v1.cu:1–230</code>; <code>apply_wide_panels_v1.cu:1–123</code>; <code>apply_wmma_shapes_v1.cu:1–124</code>; <code>apply_ptx_m8n8k4_experiment_v1.cu:1–80</code>; <code>relation_apply_hybrid.cu:1–105</code>; <code>residual/residual_kernels.cu:1–106</code>; <code>residual/same_owner_fused.cu:1–75</code>. Also <code>src/compute/candidate/tensor_core/v100_dense_fragment_candidate.cu:1–334</code>; <code>src/compute/candidate/cusparse_csr_candidate.cu:1–270</code>. Build-listed adjacent N16/N32/transpose source ownership is in S11.</p>
+<h3 id="s20">S20 — Contraction, transpose, and edge gradients</h3>
+<p>Under <code>src/compute/architecture/providers/nvidia/sm70/</code>: <code>contract/sparse_contract_v1.cu:1–126</code>; <code>contract/rectangular_mma_contract_v1.cu:1–94</code>; <code>contract/contract_catalog_v1.cc:1–63</code>; <code>edge_value_gradient/direct_edge_gradient_v1.cu:1–39</code>; <code>transpose/transpose_candidates_v1.cu</code> and associated CMake-listed preparation/value-map units. <code>include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh:1–109</code> specifies the inspected request contract.</p>
+<h3 id="s21">S21 — Segments and normalization</h3>
+<p><code>src/compute/candidate/segment/reduce_v2.cu:1–290</code>; <code>normalize_v2.cu:1–353</code>; <code>CMakeLists.txt</code> in that directory. Evidence: real reduction/normalization computation and numerical-policy behavior.</p>
+<h3 id="s22">S22 — Masks and sparse updates</h3>
+<p><code>src/compute/candidate/edge/dynamic_support_mask_v1.cu:1–64</code>; <code>src/compute/candidate/sparse_axis_update/sparse_axis_update_v1.cu:1–88</code>; typed edge/gate source ownership in S11. Evidence: masking mechanics, unique-index update requirements, generation checks, and local-index limits.</p>
+<h3 id="s23">S23 — Fusion and composition kernels</h3>
+<p><code>src/compute/candidate/fusion/sparse_exchange_v1.cu:1–180</code>; <code>contract_compositions_v1.cu:1–130</code>; <code>bundle_moments_v1.cu:1–157</code>; <code>mma_same_owner_residual_v1.cu:1–75</code>; <code>src/compute/candidate/relation_bundle.cc:1–127</code>. Evidence: exact fusion boundaries and redundant score computation.</p>
+<h3 id="s24">S24 — Actual native training path</h3>
+<p><code>src/execution/training_program.cu:1–149</code>; <code>src/compute/training/native_training_slice.cu:1–441</code>. Important symbols: <code>compile_training_program</code>, <code>run_training_program</code>, <code>prepare_native_training_slice</code>, <code>run_native_training_step</code>. Tiny performance comparison is reported in a source comment, not newly measured here.</p>
+<h3 id="s25">S25 — Sequence-derived biological execution</h3>
+<p><code>src/interop/CMakeLists.txt:1–24</code>; <code>src/interop/baseplane/baseplane_strategy.cc:1–135</code>; <code>src/interop/baseplane/baseplane_integration.cu:1–260,620–850</code>. Important functionality: <code>run_sequence_regulatory_operation</code>, native preparation, predicate/materialization/fused alternatives, cache identity and readiness. Tiny performance comparison is reported in source comments.</p>
+<h3 id="s26">S26 — Retained performance evidence and methodology</h3>
+<p><code>bench/ce_geo/evidence/micro/final_volta_microarchitecture.json:1–400,2400–2603</code>; <code>bench/ce_geo/finalize_microarchitecture.py:1–135</code>; <code>bench/tensor_core/ce_geo/hybrid_forward.cu:1–398</code>; <code>bench/ce_geo/evidence/full_volta_validation.json</code>; <code>bench/ce_geo/evidence/sanitizer/campaign.json:1–230</code>; <code>bench/ce_exop/profiler_readiness_acceptance_v1.json:1–38</code>; <code>bench/ce_exop/deferred_profiling_requirements_v1.json:1–60</code>; <code>tests/profiling/ce_exop/validate_acceptance.py:1–29</code>. <code>bench/ce_live/catalog/candidate_inventory_v1.json:1–116</code> is an older inventory contradicted on sequence-operation reachability by newer source; it was not treated as current authority.</p>
+<h3 id="s27">S27 — Limited GlassHelix consumer check</h3>
+<p>GlassHelix commit <code>5b9dfeb050448a772db5b4e35dbc14b744588b6e</code>, <code>CMakeLists.txt:1–133</code>, plus bounded Cellerator/relation/trajectory source searches. The build includes native C++20/CUDA20 sm70 prototypes. No Cellerator link target was present in that reviewed build. Search misses are not proof of repository-wide absence.</p>
+<h3 id="s28">S28 — JBC and profiling contracts</h3>
+<p>Root <code>CMakeLists.txt:420–480</code>; <code>src/execution/joint_compiler/lowering_resumption_v1.cc:1–131</code>; <code>atom_fragment_result_v1.cc:1–161</code>; <code>include/Cellerator/execution/joint_compiler/atom_fragment_result_v1.hh:1–146</code>; <code>include/Cellerator/compiler/ir/planning/implement_decomposition_alternative_nodes_v1.hh:1–40</code>; <code>src/profiling/mechanism_manifest.cc:1–34</code>; <code>resource_receipt.cc:1–35</code>. These are actual validators and imported contracts; they do not alone establish a full joint code generator.</p>
+<h3 id="s29">S29 — Adjacent and legacy computation ownership</h3>
+<p><code>src/compute/current_targets.cmake:1–116</code>; <code>src/compute/foundation_targets.cmake:1–29</code>; root and native CMake files in S11. Evidence establishes build ownership of adjacent support/feature/grouping/sparse-base/ML-related facilities, not a full algorithmic audit of each such kernel.</p>
+<hr/>
+<h2 id="appendix-b-primary-source-research-bibliography">Appendix B. Primary-source research bibliography</h2>
+<p>Research was consulted on 5 September 2026. These sources provide precedent or specific technical contracts, not predicted Cellerator speedups. This is a focused research set, not an exhaustive novelty search.</p>
+<p id="r01"><strong><a href="https://arxiv.org/abs/1804.10112">R01</a>.</strong> Chou, Kjolstad, and Amarasinghe, <em>Format Abstraction for Sparse Tensor Algebra Compilers</em>, arXiv:1804.10112v2. Relevant distinction: sparse format/level capabilities versus computation and traversal.</p>
+<p id="r02"><strong><a href="https://arxiv.org/abs/2207.04606">R02</a>.</strong> Ye et al., <em>SparseTIR: Composable Abstractions for Sparse Compilation in Deep Learning</em>, arXiv:2207.04606; ASPLOS 2023. Relevant distinction: composable formats and transformations rather than one fixed sparse format.</p>
+<p id="r03"><strong><a href="https://arxiv.org/abs/2208.14610">R03</a>.</strong> Hsu et al., <em>The Sparse Abstract Machine</em>, arXiv:2208.14610; ASPLOS 2023, DOI 10.1145/3582016.3582051. Relevant precedent: streaming sparse dataflow realization for spatial accelerators.</p>
+<p id="r04"><strong><a href="https://arxiv.org/abs/2205.14135">R04</a>.</strong> Dao et al., <em>FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</em>, arXiv:2205.14135. Relevant precedent: tiled IO-aware computation and normalization-state reasoning; not a claim that dense attention kernels directly solve arbitrary biological support.</p>
+<p id="r05"><strong><a href="https://arxiv.org/html/2411.16127v1">R05</a>.</strong> Liu et al., <em>DF-GNN: Dynamic Fusion Framework for Attention Graph Neural Networks on GPUs</em>, arXiv:2411.16127v1. Relevant precedent: changing thread schedules across contraction, normalization, and aggregation; shared-memory versus parallelism-oriented fusion.</p>
+<p id="r06"><strong><a href="https://arxiv.org/abs/1307.6209">R06</a>.</strong> Kreutzer et al., <em>A unified sparse matrix data format for efficient general sparse matrix-vector multiply on modern processors with wide SIMD units</em>, arXiv:1307.6209. Relevant precedent: SELL-C-sigma and controlled local sorting/padding for SIMD.</p>
+<p id="r07"><strong><a href="https://docs.nvidia.com/cuda/archive/13.0.3/cuda-toolkit-release-notes/index.html">R07</a>.</strong> NVIDIA, <em>CUDA Toolkit 13.0 Update 3 Release Notes</em>, section “Deprecated Architectures,” archive 13.0.3. Documents removal of offline compilation/library support for Maxwell/Pascal/Volta in CUDA 13.0 and continued 12.x build support for those targets.</p>
+<p id="r08"><strong><a href="https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/cpp-language-extensions.html">R08</a>.</strong> NVIDIA, <em>CUDA Programming Guide</em>, C/C++ language extensions, WMMA <code>load_matrix_sync</code> / <code>store_matrix_sync</code>. Documents 256-bit pointer alignment, half leading-dimension multiples of eight, and collective warp requirements.</p>
+<p id="r09"><strong><a href="https://tskit.dev/tutorials/incremental_algorithms.html">R09</a>.</strong> tskit developers, <em>Tree Sequence Tutorials: Incremental algorithms</em>. Relevant precedent: updating computations using differences between related trees rather than reconstructing every structure independently.</p>
+<p id="r10"><strong><a href="https://arxiv.org/abs/1507.03572">R10</a>.</strong> Harris et al., <em>BioNetGen 2.2: Advances in Rule-Based Modeling</em>, arXiv:1507.03572; Bioinformatics 2016. Relevant precedent: rule-structured biological model representation.</p>
+<p id="r11"><strong><a href="https://arxiv.org/abs/1301.6854">R11</a>.</strong> Hogg et al., <em>Exact hybrid particle/population simulation of rule-based models of biochemical systems</em>, arXiv:1301.6854. Relevant precedent: different representations and simulation strategies while preserving specified exact model semantics.</p>
+<p id="r12"><strong><a href="https://arxiv.org/abs/1901.07454">R12</a>.</strong> Arbor developers, <em>Matrix Solvers</em>, official developer documentation; and <em>Arbor – a morphologically-detailed neural network simulation library for contemporary high-performance computing architectures</em>, arXiv:1901.07454. Relevant precedent: static/dynamic separation and biology-derived tree/Hines structure.</p>
+<p id="r13"><strong><a href="https://doi.org/10.1093/bioinformatics/btaa777">R13</a>.</strong> Marco-Sola and collaborators, <em>WFA2-lib</em>, author-maintained implementation and documentation; original <em>Fast gap-affine pairwise alignment using the wavefront algorithm</em>, Bioinformatics, DOI 10.1093/bioinformatics/btaa777. Relevant precedent: recurrence/frontier algorithms where sequence similarity affects useful execution, with exact and heuristic modes kept distinct.</p>
+<p id="r14"><strong><a href="https://github.com/DEShawResearch/random123">R14</a>.</strong> D. E. Shaw Research, <em>Random123</em>, official C/C++/CUDA implementation and documentation. Relevant precedent: counter-based random generation; identity-keyed reproducibility is the proposed Cellerator integration, not a new RNG claim.</p>
+<p id="r15"><strong><a href="https://arxiv.org/abs/2603.05451v1">R15</a>.</strong> Zadouri et al., <em>FlashAttention-4: Algorithm and Kernel Pipelining Co-Design for Asymmetric Hardware Scaling</em>, arXiv:2603.05451v1, submitted 5 March 2026. Relevant precedent: hardware-generation changes can alter the profitable algorithm/pipeline decomposition, not merely launch parameters.</p>
+<div class="footer">Review artifact only. The project repository and execution state were not modified. Source snapshot final check: 2026-09-05 18:02:06 UTC.</div></main></div></body></html>

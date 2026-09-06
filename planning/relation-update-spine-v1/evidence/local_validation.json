@@ -1,0 +1,134 @@
+{
+  "record_kind": "local_planning_package_validation_v1",
+  "recorded_at": "2026-09-06T15:20:18.293670Z",
+  "status": "passed_with_explicit_execution_limits",
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "remote_project_mounted": false
+  },
+  "checks": {
+    "package_unit_tests": {
+      "passed": 37,
+      "failed": 0,
+      "scope": "Local validation/approval/gate tests, including isolated service doubles; no live Todo mutation.",
+      "log": "local_logs/package_tests.log"
+    },
+    "native_projection": {
+      "passed": true,
+      "command": "python3 -B scripts/compile_plan.py --check"
+    },
+    "offline_graph_and_integrity": {
+      "status": "offline_validated",
+      "leaf_tasks": 34,
+      "todo_records": 35,
+      "lanes": 8,
+      "explicit_edges": 45,
+      "queue_edges": 27,
+      "topological_order": [
+        "CE-RU1-0000",
+        "CE-RU1-I01",
+        "CE-RU1-C01",
+        "CE-RU1-C02",
+        "CE-RU1-C03",
+        "CE-RU1-I02",
+        "CE-RU1-F01",
+        "CE-RU1-N01",
+        "CE-RU1-R01",
+        "CE-RU1-V01",
+        "CE-RU1-W01",
+        "CE-RU1-F02",
+        "CE-RU1-N02",
+        "CE-RU1-R02",
+        "CE-RU1-W02",
+        "CE-RU1-F03",
+        "CE-RU1-N03",
+        "CE-RU1-R03",
+        "CE-RU1-W03",
+        "CE-RU1-F04",
+        "CE-RU1-N04",
+        "CE-RU1-W04",
+        "CE-RU1-W05",
+        "CE-RU1-V02",
+        "CE-RU1-N05",
+        "CE-RU1-N06",
+        "CE-RU1-V03",
+        "CE-RU1-V04",
+        "CE-RU1-V05",
+        "CE-RU1-I03",
+        "CE-RU1-I04",
+        "CE-RU1-I05",
+        "CE-RU1-I06",
+        "CE-RU1-I07",
+        "CE-RU1-I08"
+      ],
+      "integrity_checked": true,
+      "native_authority_validation": false,
+      "gpu_executed": false
+    },
+    "consumer_declaration_syntax": {
+      "passed": true,
+      "temporary_declarations_only": true,
+      "real_cuda_headers": false,
+      "linked": false,
+      "log": "local_logs/syntax_result.json"
+    },
+    "reference_cmake_build": {
+      "passed": true,
+      "option": "CELLERATOR_RU1_REFERENCE_ONLY=ON",
+      "log": "local_logs/cmake.log"
+    },
+    "reference_ctest": {
+      "passed": 1,
+      "failed": 0,
+      "log": "local_logs/ctest.log"
+    },
+    "reference_program": {
+      "passed": true,
+      "losses": [
+        0.003025651247,
+        0.002780993234,
+        0.002562196663
+      ],
+      "max_continuous_finite_difference_error": 2.369790475e-11,
+      "max_mixed_vjp_difference": 8.90577212e-07,
+      "log": "local_logs/reference_output.txt"
+    },
+    "normal_mode_without_core": {
+      "passed_expected_refusal": true,
+      "option": "CELLERATOR_RU1_REFERENCE_ONLY=OFF",
+      "log": "local_logs/normal_missing_core.log"
+    }
+  },
+  "separate_live_read_only_native_validation": "native_plan_validation.json",
+  "tested_input_sha256": {
+    "examples/relation_update_spine_v1/CMakeLists.txt": "b8e7aa039e3876c8b78a2ba715de7cac8b14122e6b6d6f7f79338b3a8647a431",
+    "examples/relation_update_spine_v1/README.md": "9132ea14740aab30e08f418f4f338ceb03484e71a7919f83318a9f4b35a40944",
+    "examples/relation_update_spine_v1/reference.hh": "0d535985e2e63c9736ddecb3f958b324c34ed3713f840d3cd80071ebdecca356",
+    "examples/relation_update_spine_v1/regulatory_learning.cc": "7646689c153fd84a811dff5c1b7754b47a4f3c1d084425ef6a1df27c08f95c90",
+    "planning/relation-update-spine-v1/contracts/relation_calculus.hh": "9feca513786e3feeae1a4e35f0f1f26eaf845702c8c146653bb526d0c2e71b84",
+    "planning/relation-update-spine-v1/contracts/relation_update.hh": "607162fb5d1eb828c514e4c2d71f0c8c9bfabe625197901d9b50906bc84ee418",
+    "planning/relation-update-spine-v1/contracts/relation_update_spine_bridge.hh": "814cd7c98e024e872216f08bb3adf19fb758141cc2e6a4dadede4bbe47d7931d",
+    "planning/relation-update-spine-v1/machine/relation-update-spine-v1.todo-plan.json": "86644b6e00b6644d169f20137695a51a987f4edcd5058fbb2037909a2f808e3d",
+    "planning/relation-update-spine-v1/scripts/check_demo_syntax.py": "dda04f164bef4a5dd68e1a3b3c7cc4ae54be1af1cb8bcc136c0d5d87297ee947",
+    "planning/relation-update-spine-v1/scripts/compile_plan.py": "de03b187b2b44baeed682bf39391c26812b3947bbd99d838ae1845276262e17c",
+    "planning/relation-update-spine-v1/scripts/native_bridge.py": "2c85d648de36436918aab2e18c756f4addbf682649de08ded73f08ffdc93c78c",
+    "planning/relation-update-spine-v1/scripts/run_gate.py": "d79d40a779dbcbf01302f9330fc44063f9b397bd701e92a775fc09dbc752e5d9",
+    "planning/relation-update-spine-v1/scripts/run_sanitizer.py": "4f890815f337c77dc4f19b7cc44b96b5897ab2fd46c8cda09dc3431c40d9ce6a",
+    "planning/relation-update-spine-v1/scripts/test_package.py": "f4b4331ccd18bf8d717c6c0120679808126fe0fe4bd63227ced1f2cf15ae4147",
+    "planning/relation-update-spine-v1/scripts/todo_bootstrap.py": "2a0f1c45fc302f40f8a0945025aa597a32d6829014206590a30419b90f625f4f",
+    "planning/relation-update-spine-v1/scripts/validate_package.py": "afcda52c97662cf57162ba85e66f536d6541a2650726c2e87fec1ba90e038f47"
+  },
+  "not_executed": {
+    "todo_apply": true,
+    "run_activation": true,
+    "implementation_dispatch": true,
+    "production_core_implementation": true,
+    "real_cuda_compile": true,
+    "real_core_link": true,
+    "gpu_execution": true,
+    "compute_sanitizer": true,
+    "performance_benchmark": true
+  },
+  "interpretation": "Local mathematical/reference and packaging validation only. The normal demo awaits the implementation epic. Real V100, sanitizer and performance gates remain mandatory future work."
+}

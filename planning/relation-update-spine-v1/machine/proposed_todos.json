@@ -1,0 +1,2116 @@
+{
+  "format": "cellerator-relation-update-preledger",
+  "authority_to_apply": false,
+  "native_schema_version": 3,
+  "project": {
+    "name": "Cellerator",
+    "workspace": "cellerator",
+    "repository": "cellerator",
+    "baseline_commit": "c2830e3420ddae5c5ea92fa270cb3574fc19cd36",
+    "objective": "One prepared biological relation: N16 forward, transpose, VJP, delta/gradient update, true readiness and reuse; exact WMMA plus sparse execution.",
+    "program_document": "planning/relation-update-spine-v1/01_SCOPE_AND_DECISIONS.md"
+  },
+  "root_record": {
+    "id": "CE-RU1-0000",
+    "kind": "epic",
+    "title": "Relation Update Spine v1",
+    "status": "planned",
+    "priority": 100,
+    "parallel_policy": "serial",
+    "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-0000.md",
+    "completion_contract": {
+      "required": [
+        "All 34 leaf tasks and I08 integrated acceptance pass; no activation from plan ingestion."
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "code": "I01",
+      "id": "CE-RU1-I01",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Revalidate the completed spine and execution baseline",
+      "depends_on": [],
+      "write_scope": [
+        "docs/relation_update_spine_v1/baseline.json",
+        "docs/relation_update_spine_v1/source_disposition.json"
+      ],
+      "mechanism": "Reobserve Cellerator and Todo independently; preserve every unrelated branch and pending patch. Verify the actual N1 spine test targets, one-owner-stream contract, FMP1 and CTP1 bindings, CUDA 12.x toolchain and sm70 device through source and an execution baseline. Inventory callers of old native training and gradient-publication IR before assigning disposition. Record current failures rather than silently repairing unrelated projects.",
+      "acceptance": [
+        "Record exact source hashes, worktree and authority cursor, CUDA/compiler/device identity, commands, exits and pre-existing failures.",
+        "No historical campaign is reopened; useful kernels and all on-path consumers have a named preserve/move/replace/retire decision."
+      ],
+      "tests": [
+        "Existing Semantic Spine N1 acceptance and graph test discovery; baseline on the required V100 when hardware lease is available."
+      ],
+      "principal_risk": "Obsolete run pointers and historical artifacts are not empty authority and not permission to clean it.",
+      "native_record": {
+        "id": "CE-RU1-I01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Revalidate the completed spine and execution baseline",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "docs/relation_update_spine_v1/baseline.json",
+            "docs/relation_update_spine_v1/source_disposition.json"
+          ]
+        },
+        "depends_on": [],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "checkpoints": [
+          {
+            "id": "CE-RU1-CP-BASELINE",
+            "title": "Baseline accepted"
+          }
+        ],
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "C01",
+      "id": "CE-RU1-C01",
+      "lane": "CE-RU1-L-CORE",
+      "title": "Specify relation calculus and explicit arithmetic profiles",
+      "depends_on": [
+        "CE-RU1-I01"
+      ],
+      "write_scope": [
+        "include/Cellerator/compute/operation/relation_calculus.hh",
+        "docs/relation_update_spine_v1/calculus.md"
+      ],
+      "mechanism": "Extend the canonical relation semantics with a small calculus descriptor, not a generic graph. Specify scalar support VJP, orientation and cotangent axes, overwrite gradient output, f32 accumulation, and two explicit contraction profiles: f32 operands, or f32 operands rounded once to binary16 nearest-even before either sparse or WMMA multiplication. Retain N1 public semantics. An update is a separately ordered effect with old/new generation bindings; a compiler or candidate identity is not mathematical equivalence.",
+      "acceptance": [
+        "Native and compiler-origin descriptors compare every mathematical field while excluding runtime bindings/provenance.",
+        "Scalar contraction split-K sums partials; no edge-channel concatenation or implicit normalization is introduced.",
+        "Mixed-profile semantics and straight-line real-valued VJP versus storage rounding are explicitly distinguished."
+      ],
+      "tests": [
+        "Same extents/different biological axes; orientation reversal; profile mismatch; unknown effect kind; edge-channel rejection."
+      ],
+      "principal_risk": "An f16 provider must never silently round operands requested as full f32.",
+      "native_record": {
+        "id": "CE-RU1-C01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Specify relation calculus and explicit arithmetic profiles",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compute/operation/relation_calculus.hh",
+            "docs/relation_update_spine_v1/calculus.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "C02",
+      "id": "CE-RU1-C02",
+      "lane": "CE-RU1-L-CORE",
+      "title": "Define prepared value, gradient and reader lifetime contracts",
+      "depends_on": [
+        "CE-RU1-C01"
+      ],
+      "write_scope": [
+        "include/Cellerator/compute/operation/relation_update.hh",
+        "include/Cellerator/compute/operation/prepared_relation.hh",
+        "docs/relation_update_spine_v1/lifetime.md"
+      ],
+      "mechanism": "Evolve prepared_relation_pair. Define caller-owned gradient/delta buffers tagged by topology, epoch, physical order and count; separate input identity/version from raw pointer rebinding. Add bounded gradient preparation/forcing options and reusable scratch budgets. Define one external read lease at a time for v1, usable sequentially on any same-device consumer stream, backed by precreated ready/done events. No shared host-thread calls or other-stream relation execution. Publication is observable readiness, not historical value storage.",
+      "acceptance": [
+        "State transitions, invalidation, generation overflow, lease replay, reader-return and teardown behavior are complete.",
+        "Update and publication share one mechanism; delta add and gradient-step convenience do not create separate storage owners.",
+        "Public declaration sketch and demo agree; no declaration is installed without real implementation."
+      ],
+      "tests": [
+        "State-machine table covers uninitialized, published, borrowed, returned, updating and poisoned states."
+      ],
+      "principal_risk": "Waiting for producer readiness does not protect a reader from the next in-place write.",
+      "native_record": {
+        "id": "CE-RU1-C02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Define prepared value, gradient and reader lifetime contracts",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compute/operation/relation_update.hh",
+            "include/Cellerator/compute/operation/prepared_relation.hh",
+            "docs/relation_update_spine_v1/lifetime.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-C01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "C03",
+      "id": "CE-RU1-C03",
+      "lane": "CE-RU1-L-CORE",
+      "title": "Implement host semantic and effect-order validation",
+      "depends_on": [
+        "CE-RU1-C02"
+      ],
+      "write_scope": [
+        "src/compute/operation/relation_calculus.cc",
+        "tests/relation_update_spine_v1/calculus_test.cc"
+      ],
+      "mechanism": "Implement value-owned canonical validation, equivalence and bounded effect sequencing. Reject wrong axes, width, numeric permission, reversed dependencies, duplicate stage identities and update-before-old-value-consumers. Specify conservative pointer-alias rules in binding validation, not semantic hashing. Keep runtime generations as effect bindings rather than relation mathematical identity. No fallback of unknown enum to forward application.",
+      "acceptance": [
+        "Tests execute validation and equivalence, not only name tables.",
+        "Wrong order/profile is rejected before dispatch; valid native and compiler descriptors share the same validator."
+      ],
+      "tests": [
+        "Host positive and adversarial calculus tests; copy/move of descriptors does not leave self-referential pointers."
+      ],
+      "principal_risk": "Presence of forward/transpose/gradient/publication stages is not proof they are correctly ordered.",
+      "native_record": {
+        "id": "CE-RU1-C03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Implement host semantic and effect-order validation",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/relation_calculus.cc",
+            "tests/relation_update_spine_v1/calculus_test.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-C02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I02",
+      "id": "CE-RU1-I02",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Integrate the contract and publish the common interface",
+      "depends_on": [
+        "CE-RU1-C03"
+      ],
+      "write_scope": [
+        "CMakeLists.txt",
+        "src/compute/CMakeLists.txt",
+        "tests/relation_update_spine_v1/CMakeLists.txt",
+        "docs/relation_update_spine_v1/foundation.json"
+      ],
+      "mechanism": "Wire the host contract implementation and targeted test directory into actual build reachability. Publish the internal RU1 contract only after host tests and header compile. Central build files remain integrator-owned throughout. Downstream lane files may build through their scoped local CMake fragments, but cannot silently redefine installed SDK targets. Refresh exact test invocations in acceptance records as targets become real.",
+      "acceptance": [
+        "One canonical relation/calculus contract links with existing spine and passes host tests.",
+        "Internal interface checkpoint published with exact headers and test evidence; no broad SDK or language work."
+      ],
+      "tests": [
+        "Host compilation and calculus test."
+      ],
+      "principal_risk": "Freezing a planning header without compiling it would repeat the previous architecture problem.",
+      "native_record": {
+        "id": "CE-RU1-I02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Integrate the contract and publish the common interface",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "CMakeLists.txt",
+            "src/compute/CMakeLists.txt",
+            "tests/relation_update_spine_v1/CMakeLists.txt",
+            "docs/relation_update_spine_v1/foundation.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-C03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "checkpoints": [
+          {
+            "id": "CE-RU1-CP-FOUNDATION",
+            "title": "Foundation accepted"
+          }
+        ],
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N01",
+      "id": "CE-RU1-N01",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Admit N16 forward through the prepared spine",
+      "depends_on": [
+        "CE-RU1-I02"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/relation_update_spine_v1/forward_n16_test.cu"
+      ],
+      "mechanism": "Lift the N1 wrapper restriction without weakening its semantic checks. Reuse feature_major_small_n_candidate for N16 f16 relation values and f32 dense input/output. Validate N*extent sizes overflow-safely and zero work explicitly; preserve N1 counters and graph replay. The supported portfolio remains N1 and N16, not every width that happens to compile.",
+      "acceptance": [
+        "N16 forward reaches the actual FMP1 kernel with correct non-square axes and element capacities.",
+        "N1 semantics and rejection behavior remain unchanged; empty support overwrites output with zero."
+      ],
+      "tests": [
+        "Widths 1,16 succeed; unsupported intermediate widths fail honestly; zero rows, empty rows, irregular support."
+      ],
+      "principal_risk": "Provider names and counts must describe actual launches, not inherited N1 metadata.",
+      "native_record": {
+        "id": "CE-RU1-N01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Admit N16 forward through the prepared spine",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/relation_update_spine_v1/forward_n16_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N02",
+      "id": "CE-RU1-N02",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Move useful N16 transpose computation into core ownership",
+      "depends_on": [
+        "CE-RU1-N01"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu",
+        "include/Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh",
+        "tests/relation_update_spine_v1/transpose_n16_test.cu"
+      ],
+      "mechanism": "Extract the N16 transpose arithmetic from native_training_slice without carrying bias/ReLU/RMS semantics. Traverse CTP1 source-owned rows referencing the authoritative forward physical values. Keep independently prepared traversal identity and one logical topology. Supply accurate typed provider registration and attribution; do not label an N16 launch as the old N1 candidate.",
+      "acceptance": [
+        "Transpose reads the same physical weights as forward and produces source-axis N16 results.",
+        "Non-square adjoint calculation is correct and no logical weight repack is required per transpose."
+      ],
+      "tests": [
+        "Irregular/isolated sources; mixed sign weights; forward/transpose adjoint against independent loops."
+      ],
+      "principal_risk": "Copying the old training object instead of extracting the kernel would create another semantic authority.",
+      "native_record": {
+        "id": "CE-RU1-N02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Move useful N16 transpose computation into core ownership",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu",
+            "include/Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh",
+            "tests/relation_update_spine_v1/transpose_n16_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N03",
+      "id": "CE-RU1-N03",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Prepare physical edge gradients and full-f32 sparse VJP",
+      "depends_on": [
+        "CE-RU1-N02"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cu",
+        "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cuh",
+        "tests/relation_update_spine_v1/sparse_gradient_test.cu"
+      ],
+      "mechanism": "Prepare logical-to-physical and inverse edge maps once, using FMP1 positions as the default authoritative order. Implement or adapt a bounded N16 f32-operand sparse dot path with f32 accumulation. Keep the existing half-operand sparse contraction for the mixed profile. Bind input/cotangent versions and output plane identity, check overlap/capacity, and stamp gradient production only after accepted enqueue. Reuse maps for observation without applying them every hot call.",
+      "acceptance": [
+        "Every logical edge has exactly one physical gradient slot and inverse mapping; missing/duplicate endpoints remain the established explicit rejection.",
+        "Full-f32 profile executes without half conversion; mixed-profile sparse result uses exactly the same operand quantization as WMMA."
+      ],
+      "tests": [
+        "Distinct edge sentinels, randomized logical input ordering, independent VJP, gradient input-version mismatch."
+      ],
+      "principal_risk": "Gradient arithmetic does not depend on w, but its relationship to a forward snapshot still must not be silently mixed.",
+      "native_record": {
+        "id": "CE-RU1-N03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Prepare physical edge gradients and full-f32 sparse VJP",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cu",
+            "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cuh",
+            "tests/relation_update_spine_v1/sparse_gradient_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N04",
+      "id": "CE-RU1-N04",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Implement delta-add and gradient-step updates on physical values",
+      "depends_on": [
+        "CE-RU1-N03"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu",
+        "tests/relation_update_spine_v1/value_update_test.cu"
+      ],
+      "mechanism": "Implement w_next=RNE_f16(f32(w)+delta), and w_next=RNE_f16(f32(w)-alpha*g) using one update engine in persistent order. Match the requested f32 FMA policy explicitly in the gradient-step operation. All edges are overwritten exactly once; absent/padded positions are not parameters. Stale metadata, illegal aliases and counts fail before launch. Do not expose an unrestricted external mutation pointer or add master weights/optimizer state.",
+      "acceptance": [
+        "Both update styles change the authoritative physical plane, not a throwaway logical copy.",
+        "Small updates, ties-to-even, signed zeros and overflow behavior are tested against the stated rounding policy.",
+        "No topology reconstruction and no implicit canonicalization or hidden f32 master weights."
+      ],
+      "tests": [
+        "Delta versus step with equivalent delta; alpha zero; update generation overflow; shifted overlap; f16 rounding boundary."
+      ],
+      "principal_risk": "In-place update is not transactionally rollbackable after a device failure.",
+      "native_record": {
+        "id": "CE-RU1-N04",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Implement delta-add and gradient-step updates on physical values",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu",
+            "tests/relation_update_spine_v1/value_update_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n04.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N05",
+      "id": "CE-RU1-N05",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Connect updates to readiness and generation publication",
+      "depends_on": [
+        "CE-RU1-N04",
+        "CE-RU1-R02",
+        "CE-RU1-W04"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/relation_update_spine_v1/update_publication_test.cu"
+      ],
+      "mechanism": "Integrate the runtime readiness component, sparse/hybrid gradient dispatch and updates into the pair. Owner stream performs old-generation work, waits for registered reader completion, updates values, then records publication. A successful metadata transition means publication enqueued; completion is checked through event/stream observation. Initial publish and external replacement obey the same reader discipline. No cudaDeviceSynchronize or per-step allocation.",
+      "acceptance": [
+        "Publication happens after all writes; newly published generation is consumed on another nonblocking stream.",
+        "Owner can update after reader-return enqueues completion without host-wide synchronization.",
+        "No false generation advancement or successful-receipt emission after rejected/failed enqueue."
+      ],
+      "tests": [
+        "Two update styles across at least three generations; delayed reader; immediate next forward; stale-generation rejection."
+      ],
+      "principal_risk": "Reusing an event does not preserve the previous generation storage contents.",
+      "native_record": {
+        "id": "CE-RU1-N05",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Connect updates to readiness and generation publication",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/relation_update_spine_v1/update_publication_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-R02"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W04"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n05.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "N06",
+      "id": "CE-RU1-N06",
+      "lane": "CE-RU1-L-NATIVE",
+      "title": "Finish rebinding, failure, capture and instrumentation boundaries",
+      "depends_on": [
+        "CE-RU1-N05"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "docs/relation_update_spine_v1/native_runtime.md",
+        "tests/relation_update_spine_v1/native_failure_test.cu"
+      ],
+      "mechanism": "Make checked destruction drain only owned work and registered reader completion; refuse unreleased borrows. Keep existing destroy safe by a documented no-borrow precondition or a status-returning close path. On partial submission errors poison the pair; do not claim recovery through counter rollback. Reject full mutable capture before the first side effect while preserving N1 read-only graph replay. Report real prep, refresh, update, map/pack, sparse/WMMA/residual launches and canonicalization counts.",
+      "acceptance": [
+        "New mutable operations cannot be accidentally captured into an unsupported graph.",
+        "Fault-injection and ownership tests cover rejected metadata, partial enqueue and asynchronous-error observation.",
+        "Statistics are evidence counters updated from actual branches, not projected or constant expected values."
+      ],
+      "tests": [
+        "Stale pointer/version; busy lease close; same-device wrong stream; empty relation; capture refusal; N1 graph regression."
+      ],
+      "principal_risk": "Freeing borrowed storage or converting a poisoned state to success would invalidate the whole spine.",
+      "native_record": {
+        "id": "CE-RU1-N06",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Finish rebinding, failure, capture and instrumentation boundaries",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "docs/relation_update_spine_v1/native_runtime.md",
+            "tests/relation_update_spine_v1/native_failure_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N05"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n06.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "R01",
+      "id": "CE-RU1-R01",
+      "lane": "CE-RU1-L-READINESS",
+      "title": "Build a reusable generation readiness component",
+      "depends_on": [
+        "CE-RU1-I02"
+      ],
+      "write_scope": [
+        "include/Cellerator/runtime/relation_value_readiness.hh",
+        "src/runtime/relation_value_readiness.cu",
+        "tests/relation_update_spine_v1/readiness_component_test.cu"
+      ],
+      "mechanism": "Reuse value_readiness.cu semantics and event-backed runtime machinery. Create ready and reader-done events at cold preparation with disable-timing, track exact structure epoch, generation and device, and keep host calls serialized. Provide a component consumed by the pair, not another runtime session. Reject waits on unrecorded, stale, future or foreign generation tokens.",
+      "acceptance": [
+        "Event-backed ready wait works on explicit nonblocking streams with no legacy-default-stream crutch.",
+        "No per-generation event allocation and no silent wait on an unrecorded event."
+      ],
+      "tests": [
+        "Initial unready, monotonic generation, wrong epoch/device and failed producer enqueue."
+      ],
+      "principal_risk": "An unrecorded CUDA event can appear complete, so runtime metadata must guard it.",
+      "native_record": {
+        "id": "CE-RU1-R01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Build a reusable generation readiness component",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/runtime/relation_value_readiness.hh",
+            "src/runtime/relation_value_readiness.cu",
+            "tests/relation_update_spine_v1/readiness_component_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "R02",
+      "id": "CE-RU1-R02",
+      "lane": "CE-RU1-L-READINESS",
+      "title": "Add bounded consumer read leases and writer join",
+      "depends_on": [
+        "CE-RU1-R01"
+      ],
+      "write_scope": [
+        "include/Cellerator/runtime/relation_value_readiness.hh",
+        "src/runtime/relation_value_readiness.cu",
+        "tests/relation_update_spine_v1/read_lease_test.cu"
+      ],
+      "mechanism": "Implement one outstanding const value-read lease for v1, recyclable after end_read records consumer completion and submits owner-stream wait. This small bound permits sequential consumers on arbitrary same-device streams without adding concurrent prepared execution. The next writer rejects an unreturned lease rather than blocking the host indefinitely. Tickets carry identity, generation and nonce; duplicate return, wrong stream and old token replay fail. Do not reuse an event until its relevant waits have been submitted in the serialized protocol.",
+      "acceptance": [
+        "Producer-ready and consumer-done edges are both explicit and tested without host/device-global sync.",
+        "A stale lease cannot release a newer reader; next mutation joins the correct completion event.",
+        "Pool exhaustion is explicit; the one-lease limit is documented as a bounded runtime policy, not mathematics."
+      ],
+      "tests": [
+        "Delayed D2D reader; begin/begin rejection; stale return; return then immediate update; repeat on two distinct consumer streams."
+      ],
+      "principal_risk": "Allowing unrestricted concurrent borrowing would require a larger reclamation design outside this epic.",
+      "native_record": {
+        "id": "CE-RU1-R02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Add bounded consumer read leases and writer join",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/runtime/relation_value_readiness.hh",
+            "src/runtime/relation_value_readiness.cu",
+            "tests/relation_update_spine_v1/read_lease_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-R01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "R03",
+      "id": "CE-RU1-R03",
+      "lane": "CE-RU1-L-READINESS",
+      "title": "Validate event retirement and runtime failure semantics",
+      "depends_on": [
+        "CE-RU1-R02"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/readiness_adversarial_test.cu",
+        "docs/relation_update_spine_v1/readiness.md"
+      ],
+      "mechanism": "Stress repeated ready/done event reuse, stale token attempts, failed record/wait and reader return ordering. Supply deterministic adversarial scheduling with a small test-only delay kernel; do not use CUDA API calls from host callbacks or spinlocks that can deadlock occupancy. Document the API cannot protect raw pointers used after lease return and cannot prove successful asynchronous execution from enqueue alone.",
+      "acceptance": [
+        "Tests distinguish enqueue, ready and observed completion, including failure outcomes.",
+        "No use-after-free under valid leases; invalid borrower behavior is rejected where observable and documented otherwise."
+      ],
+      "tests": [
+        "Long repeated-generation run; fault-injected event API; stream-local synchronization only at observation boundaries."
+      ],
+      "principal_risk": "Sanitizer alone does not prove the synchronization protocol; dependency tests are also required.",
+      "native_record": {
+        "id": "CE-RU1-R03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Validate event retirement and runtime failure semantics",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/readiness_adversarial_test.cu",
+            "docs/relation_update_spine_v1/readiness.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-R02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "W01",
+      "id": "CE-RU1-W01",
+      "lane": "CE-RU1-L-WMMA",
+      "title": "Repair rectangular WMMA legality and capacities",
+      "depends_on": [
+        "CE-RU1-I02"
+      ],
+      "write_scope": [
+        "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
+        "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
+        "tests/relation_update_spine_v1/wmma_legality_test.cu"
+      ],
+      "mechanism": "Repair the existing rectangular request rather than replacing it with a name-only capability. Decouple logical K from physical operand stride, require 32-byte WMMA base alignment and valid 16-byte ldm increments, and prove each tile pointer/output range and arithmetic product. Use checked host preparation for device tile descriptors; no hot GPU descriptor readback. Preserve valid existing tails only when all prefix WMMA accesses remain legal. Unsupported direct widths must fail explicitly; a packed wrapper may support them later.",
+      "acceptance": [
+        "Legal N16 executes actual WMMA; unaligned pointers, short capacities, bad tile starts and K17 direct-ldm request are rejected or legally repacked before launch.",
+        "Every warp collectively reaches each WMMA instruction with uniform arguments; output scratch alignment is validated."
+      ],
+      "tests": [
+        "K16 legal; K17 and K24 adversarial stride/offset; zero tile work; overflow; last tile at source/destination boundary."
+      ],
+      "principal_risk": "A scalar tail does not legalize an invalid leading dimension in the WMMA prefix.",
+      "native_record": {
+        "id": "CE-RU1-W01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Repair rectangular WMMA legality and capacities",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
+            "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
+            "tests/relation_update_spine_v1/wmma_legality_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "W02",
+      "id": "CE-RU1-W02",
+      "lane": "CE-RU1-L-WMMA",
+      "title": "Prepare exact rectangular support plus sparse residual",
+      "depends_on": [
+        "CE-RU1-W01"
+      ],
+      "write_scope": [
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.cc",
+        "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.hh",
+        "tests/relation_update_spine_v1/gradient_cover_test.cc"
+      ],
+      "mechanism": "Use existing support/projection knowledge to prepare bounded 16x16 candidate fragments and exact residual. Accept explicit candidate tile hints and a conservative occupied-group fallback, not a new global geometry optimizer. Gather arbitrary source/destination identities into tile panels, track valid output edge slots, and validate exactly-once union coverage in O(E + tile slots), with a declared memory cap. No density threshold changes support. Duplicates retain spine rejection.",
+      "acceptance": [
+        "Dense fragments plus residual cover every supported edge once, with no writes to fictitious padded-edge parameters.",
+        "Logical/physical/per-tile mappings are invertible on support; allocation sizes and tile amplification are accounted."
+      ],
+      "tests": [
+        "Dense module plus irregular residual; partial tile holes; shuffled IDs; sparse-only; empty; overlapping hint rejection."
+      ],
+      "principal_risk": "Full Cartesian-product census would turn this bounded follow-on into a geometry scaling epic.",
+      "native_record": {
+        "id": "CE-RU1-W02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Prepare exact rectangular support plus sparse residual",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.cc",
+            "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.hh",
+            "tests/relation_update_spine_v1/gradient_cover_test.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "W03",
+      "id": "CE-RU1-W03",
+      "lane": "CE-RU1-L-WMMA",
+      "title": "Pack explicit half-rounded operands with reusable scratch",
+      "depends_on": [
+        "CE-RU1-W02"
+      ],
+      "write_scope": [
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu",
+        "tests/relation_update_spine_v1/gradient_pack_test.cu"
+      ],
+      "mechanism": "Materialize half-rounded source and cotangent operands into aligned reusable panels only when the semantic profile permits it. Use CUDA nearest-even conversion, zero padding, independently sized strides and uint64-safe offset checks. Sparse residual consumes the same rounded values, not full-f32 leftovers. Cache pack results only against explicit operand identity/version/layout, never pointer equality. Refresh values changing at the same address. Strict-f32 requests remain outside WMMA eligibility.",
+      "acceptance": [
+        "Pack and sparse fallback agree on the exact quantized input values and tail initialization.",
+        "Same-address new version forces refresh; same version may reuse only under the documented immutable-through-completion contract.",
+        "No hot allocation or canonical edge-value packing."
+      ],
+      "tests": [
+        "Rounding ties, subnormal/overflow policy, reused pointers, NaN/inf propagation, poisoned padding sentinels."
+      ],
+      "principal_risk": "A mixed gradient without explicit quantization semantics is not the same mathematical request.",
+      "native_record": {
+        "id": "CE-RU1-W03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Pack explicit half-rounded operands with reusable scratch",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu",
+            "tests/relation_update_spine_v1/gradient_pack_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "W04",
+      "id": "CE-RU1-W04",
+      "lane": "CE-RU1-L-WMMA",
+      "title": "Execute N16 hybrid edge gradients in persistent edge order",
+      "depends_on": [
+        "CE-RU1-W03",
+        "CE-RU1-N03"
+      ],
+      "write_scope": [
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu",
+        "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh",
+        "tests/relation_update_spine_v1/hybrid_gradient_test.cu"
+      ],
+      "mechanism": "Launch repaired WMMA over prepared panels, extract valid score entries directly to authoritative physical edge slots, and execute sparse residual over disjoint slots. Reuse existing sparse half contraction arithmetic, not a second gradient semantic operation. Full sparse fallback computes the same rounded request. Score tile scratch and extraction are explicit stages; no claim of accumulator-residual fusion. Gradients remain f32 for update.",
+      "acceptance": [
+        "Dense, sparse-only and mixed covers agree with independent quantized-input VJP; required dense and mixed fixtures actually launch WMMA.",
+        "Residual writes cannot overlap rectangular output ownership; every gradient slot is initialized each invocation."
+      ],
+      "tests": [
+        "Forced sparse versus forced hybrid; exact cover partition; cancellation, nonfinite and empty cases."
+      ],
+      "principal_risk": "Calling a sparse kernel while reporting WMMA is not a fallback success.",
+      "native_record": {
+        "id": "CE-RU1-W04",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Execute N16 hybrid edge gradients in persistent edge order",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu",
+            "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh",
+            "tests/relation_update_spine_v1/hybrid_gradient_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W03"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w04.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "W05",
+      "id": "CE-RU1-W05",
+      "lane": "CE-RU1-L-WMMA",
+      "title": "Expose truthful bounded forcing and lifetime cost evidence",
+      "depends_on": [
+        "CE-RU1-W04"
+      ],
+      "write_scope": [
+        "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_dispatch.cc",
+        "docs/relation_update_spine_v1/wmma_policy.md"
+      ],
+      "mechanism": "Add a small prepared choice: strict-f32 sparse, half-profile sparse or exact packed/hybrid. Forcing bypasses profitability, never numerical/coverage/alignment checks. Default remains conservative until measured crossover evidence; do not tune on live mutable weights. Include pack/extract/residual work, scratch peak, preparation reuse and operand-version refresh in cost accounting. Publish actual kernel attribution and record broader WMMA follow-up explicitly.",
+      "acceptance": [
+        "Unsupported forced paths fail with a reason; sparse fallback is actually called where selected.",
+        "Mechanism availability and benchmark promotion are separate statuses.",
+        "No graph-wide planner, arbitrary-N family, Ampere pipeline or new precision portfolio is introduced."
+      ],
+      "tests": [
+        "Dispatch negative controls; phase-attribution counters; forced-ineligible requests."
+      ],
+      "principal_risk": "Tensor Core mechanism alone is not evidence of lower end-to-end latency.",
+      "native_record": {
+        "id": "CE-RU1-W05",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Expose truthful bounded forcing and lifetime cost evidence",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_dispatch.cc",
+            "docs/relation_update_spine_v1/wmma_policy.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W04"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w05.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "F01",
+      "id": "CE-RU1-F01",
+      "lane": "CE-RU1-L-FRONTEND",
+      "title": "Reconcile gradient and publication IR with canonical calculus",
+      "depends_on": [
+        "CE-RU1-I02"
+      ],
+      "write_scope": [
+        "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
+        "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc"
+      ],
+      "mechanism": "Replace the older training_v2-dependent semantic authority with the common calculus/effect contract. Preserve compiler source identities as provenance. Separate update/delta, gradient step and publication stages; delete caller_update_boundary-to-publication alias and unknown-kind-to-forward fallback. Validate dependencies, axes, numeric permission and symbolic generation transitions, not just presence flags.",
+      "acceptance": [
+        "Compiler semantics no longer depend on an independent training object to establish mathematical meaning.",
+        "Update, publication and observation are distinct effects; unknown and misordered stages fail closed."
+      ],
+      "tests": [
+        "IR copy/move; illegal stage order; wrong relation/gradient order; numeric mismatch."
+      ],
+      "principal_risk": "Fix the remaining real IR alias without repeating already completed source operation classification repairs.",
+      "native_record": {
+        "id": "CE-RU1-F01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Reconcile gradient and publication IR with canonical calculus",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
+            "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "F02",
+      "id": "CE-RU1-F02",
+      "lane": "CE-RU1-L-FRONTEND",
+      "title": "Extend the bounded parser and Sema bridge for the closure",
+      "depends_on": [
+        "CE-RU1-F01"
+      ],
+      "write_scope": [
+        "include/Cellerator/compiler/sema/relation_update_spine_bridge.hh",
+        "src/compiler/sema/relation_update_spine_bridge.cc",
+        "tests/relation_update_spine_v1/source_bridge_test.cc"
+      ],
+      "mechanism": "Support a deliberately bounded embedded sequence for forward, transpose, edge gradient, delta/gradient update and publication using existing parser/Sema mechanics. Loaded metadata supplies names, biological identities, widths and numeric policy, not prebuilt native operations. Preserve precise diagnostics/provenance and explicitly reject general translation units, imports and unrelated expressions. The core should not parse source strings.",
+      "acceptance": [
+        "The supplied closure source independently lowers into canonical descriptors equivalent to native construction.",
+        "Wrong symbols, shadowed identities, axis flips, undeclared outputs, unsupported syntax and ambiguous update order yield diagnostic failure."
+      ],
+      "tests": [
+        "Positive demo source and multiple rejection cases; not a string-equality stub recognizing only the demo."
+      ],
+      "principal_risk": "A compiler-origin flag attached to a native descriptor is not a second semantic origin.",
+      "native_record": {
+        "id": "CE-RU1-F02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Extend the bounded parser and Sema bridge for the closure",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compiler/sema/relation_update_spine_bridge.hh",
+            "src/compiler/sema/relation_update_spine_bridge.cc",
+            "tests/relation_update_spine_v1/source_bridge_test.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-F01"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "F03",
+      "id": "CE-RU1-F03",
+      "lane": "CE-RU1-L-FRONTEND",
+      "title": "Lower both origins to the same prepared operations and effects",
+      "depends_on": [
+        "CE-RU1-F02"
+      ],
+      "write_scope": [
+        "include/Cellerator/compiler/ir/realization/relation_update_spine.hh",
+        "src/compiler/ir/realization/relation_update_spine.cc",
+        "tests/relation_update_spine_v1/dual_origin_test.cc"
+      ],
+      "mechanism": "Expose lowered value-owned closure descriptors and binding recipe for the existing prepared pair. Runtime pointers/streams remain bind-time facts. Canonical validation is shared and each implemented stage maps to a real core entry point; no private CPU reference substitutes for selected GPU work. Permit native consumer access to the same descriptors without constructing compiler IR.",
+      "acceptance": [
+        "Native and compiler-origin requests share operation semantics, physical preparation and actual provider dispatch.",
+        "Generation/effect dependencies survive lowering; no compiler-specific execution engine or candidate semantics."
+      ],
+      "tests": [
+        "Exact field equivalence; mutate one semantic field then reject; verify actual provider attribution in final GPU acceptance."
+      ],
+      "principal_risk": "An apparently executable lowering that always invokes a host callback would regress the first spine.",
+      "native_record": {
+        "id": "CE-RU1-F03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Lower both origins to the same prepared operations and effects",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compiler/ir/realization/relation_update_spine.hh",
+            "src/compiler/ir/realization/relation_update_spine.cc",
+            "tests/relation_update_spine_v1/dual_origin_test.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-F02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "F04",
+      "id": "CE-RU1-F04",
+      "lane": "CE-RU1-L-FRONTEND",
+      "title": "Close compiler conformance and remove on-path duplicate mappings",
+      "depends_on": [
+        "CE-RU1-F03"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/compiler_conformance_test.cc",
+        "docs/relation_update_spine_v1/compiler_boundary.md"
+      ],
+      "mechanism": "Consolidate targeted negative and positive tests and document what the embedded source bridge does not compile. Identify dead adapters to retire at integration only after references/builds are audited. Record deferred full .cell/import/cross-TU/IR work without creating another epic or changing Todo authority.",
+      "acceptance": [
+        "All supported closure effects have conformance tests tied to shared semantics; no fabricated substitute primitive remains on this path.",
+        "Deferred language features are explicitly listed and not advertised as working."
+      ],
+      "tests": [
+        "Contract suite for both delta and gradient-step source forms; unsupported syntax remains failure."
+      ],
+      "principal_risk": "Broad syntax completion would dilute this computation-focused epic.",
+      "native_record": {
+        "id": "CE-RU1-F04",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Close compiler conformance and remove on-path duplicate mappings",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/compiler_conformance_test.cc",
+            "docs/relation_update_spine_v1/compiler_boundary.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-F03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f04.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "V01",
+      "id": "CE-RU1-V01",
+      "lane": "CE-RU1-L-VERIFY",
+      "title": "Author independent VJP and storage-rounding oracles",
+      "depends_on": [
+        "CE-RU1-I02"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/reference_math.hh",
+        "tests/relation_update_spine_v1/reference_test.cc"
+      ],
+      "mechanism": "Create independent logical-edge CPU loops, not a call back into production maps. Check forward, transpose, scalar edge VJP and f16 update rounding. Use finite differences on the continuous real-valued extension of stored weights with quantization disabled during perturbation, then test quantized update separately. Check mixed gradient against exactly rounded operands and report discrepancy from full-f32 VJP separately. Reuse the demo fixture data but not its implementation as the sole oracle.",
+      "acceptance": [
+        "Adjoint and finite-difference checks catch transposed axes, missing K sums and wrong edge mapping.",
+        "Zero/isolated support and deterministic f16 rounding cases are independent of GPU implementation."
+      ],
+      "tests": [
+        "N1 and N16; high-bit identity differences; stable fixed seeds; signed weights and cancellation."
+      ],
+      "principal_risk": "Finite differences through a half-rounded parameter store produce misleading zero derivatives.",
+      "native_record": {
+        "id": "CE-RU1-V01",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Author independent VJP and storage-rounding oracles",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/reference_math.hh",
+            "tests/relation_update_spine_v1/reference_test.cc"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I02"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v01.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "V02",
+      "id": "CE-RU1-V02",
+      "lane": "CE-RU1-L-VERIFY",
+      "title": "Author GPU numerical and exact-cover acceptance",
+      "depends_on": [
+        "CE-RU1-V01",
+        "CE-RU1-N03",
+        "CE-RU1-W04"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/gpu_numerics_test.cu"
+      ],
+      "mechanism": "Compare actual GPU sparse, forced hybrid and mixed covers with independent oracles on non-square supports, shuffled physical mappings, empty/isolated rows and high-degree stress. Separate full-f32 accumulation tolerance from quantized operand error. Check every logical gradient, not aggregate loss alone. Register executable assertions for WMMA launch attribution and residual coverage.",
+      "acceptance": [
+        "All per-edge and dense results meet declared policy-specific tolerances.",
+        "Forced hybrid dense/mixed fixtures record actual WMMA execution; fallback fixtures record actual sparse execution."
+      ],
+      "tests": [
+        "N16 arbitrary input rebinding; residue mask/padding sentinels; instruction legality adversarial fixture."
+      ],
+      "principal_risk": "Loss reduction alone cannot detect gradients assigned to the wrong biological edges.",
+      "native_record": {
+        "id": "CE-RU1-V02",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Author GPU numerical and exact-cover acceptance",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/gpu_numerics_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-V01"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N03"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W04"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v02.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "V03",
+      "id": "CE-RU1-V03",
+      "lane": "CE-RU1-L-VERIFY",
+      "title": "Author mutable binding and generation adversarial acceptance",
+      "depends_on": [
+        "CE-RU1-V02",
+        "CE-RU1-N06"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/gpu_bindings_test.cu"
+      ],
+      "mechanism": "Attack stale topology/epoch/order/generation, wrong dense axes, capacity products, offset overlap, repeated generation, invalid update scalar, wrong stream/device and rejected capture. Compare sentinels and execution counters before/after metadata rejection. Exercise both delta and step, multiple input versions at the same device pointer, and failure injection without pretending device memory rollback.",
+      "acceptance": [
+        "Prelaunch rejection leaves outputs/values/counters unchanged; post-submission failures poison state and never report a fresh ready generation.",
+        "No topology rebuild or mandatory logical-order traffic occurs across updates."
+      ],
+      "tests": [
+        "Single-field metadata mutations; count overflow; stale gradient stamp; no-op alpha; zero support."
+      ],
+      "principal_risk": "These tests must execute real validators and branches, not inspect source spellings.",
+      "native_record": {
+        "id": "CE-RU1-V03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Author mutable binding and generation adversarial acceptance",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/gpu_bindings_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-V02"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N06"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "V04",
+      "id": "CE-RU1-V04",
+      "lane": "CE-RU1-L-VERIFY",
+      "title": "Author asynchronous consumer and N1 graph regressions",
+      "depends_on": [
+        "CE-RU1-V03",
+        "CE-RU1-R03"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/gpu_lifecycle_test.cu"
+      ],
+      "mechanism": "Test owner computation plus external const value reads through nonblocking streams and explicit lease return. Delay writer and reader to expose both missing ordering edges. Verify sequential use of two consumer streams is allowed and same pair execution from either remains rejected. Retain existing N1 read-only graph replay and require new mutable capture refusal before side effects.",
+      "acceptance": [
+        "Repeated updates cannot overtake a valid reader; returned lease cannot be reused.",
+        "No global synchronization is needed for hot publication; only observation and teardown may wait on documented streams.",
+        "Existing N1 graph replay still computes correct values and new capture behavior is truthful."
+      ],
+      "tests": [
+        "Ready-wait, reader-done, teardown, event reuse, wrong stream, replay; Compute Sanitizer final run."
+      ],
+      "principal_risk": "A default stream would accidentally hide ordering mistakes in the test.",
+      "native_record": {
+        "id": "CE-RU1-V04",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Author asynchronous consumer and N1 graph regressions",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/gpu_lifecycle_test.cu"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-V03"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-R03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v04.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "V05",
+      "id": "CE-RU1-V05",
+      "lane": "CE-RU1-L-VERIFY",
+      "title": "Define executable evidence and benchmark negative controls",
+      "depends_on": [
+        "CE-RU1-V04",
+        "CE-RU1-W05"
+      ],
+      "write_scope": [
+        "tests/relation_update_spine_v1/evidence_contract_test.py",
+        "bench/relation_update_spine_v1/lifetime_bench.cu",
+        "bench/relation_update_spine_v1/README.md"
+      ],
+      "mechanism": "Provide a bounded lifetime harness and receipt checker. Separate topology prepare, operand pack, gradient kernel, score extraction, residual, update, publication, transfers and observation. Compare forced sparse and hybrid under identical arithmetic profiles and reuse horizons. Include a sparse adversarial case and the preexisting N1 baseline. Performance checks report outcomes, not fixed speedup requirements; correctness/reachability are hard gates.",
+      "acceptance": [
+        "No missing GPU, skipped sanitizer or source-only capability record can be interpreted as a passed device acceptance.",
+        "Benchmarks preserve warm/cold distinction, live mutation state reset and exact fixture/seed/numeric provenance."
+      ],
+      "tests": [
+        "Receipt tamper tests; dense-heavy, irregular sparse and mixed covers; multiple reuse horizons."
+      ],
+      "principal_risk": "Choosing the fastest isolated MMA kernel while excluding pack/update cost misstates the benefit.",
+      "native_record": {
+        "id": "CE-RU1-V05",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Define executable evidence and benchmark negative controls",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "tests/relation_update_spine_v1/evidence_contract_test.py",
+            "bench/relation_update_spine_v1/lifetime_bench.cu",
+            "bench/relation_update_spine_v1/README.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-V04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W05"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v05.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I03",
+      "id": "CE-RU1-I03",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Integrate runtime, providers, compiler and test targets",
+      "depends_on": [
+        "CE-RU1-N06",
+        "CE-RU1-R03",
+        "CE-RU1-W05",
+        "CE-RU1-F04",
+        "CE-RU1-V05"
+      ],
+      "write_scope": [
+        "CMakeLists.txt",
+        "src/compute/CMakeLists.txt",
+        "src/runtime/CMakeLists.txt",
+        "src/compiler/CMakeLists.txt",
+        "tests/relation_update_spine_v1/CMakeLists.txt",
+        "docs/relation_update_spine_v1/integration.json"
+      ],
+      "mechanism": "Merge the independent owned changes, wire actual core/provider/compiler symbols and all RU1 executable tests, and build with verified CUDA 12.x sm70. Use meaningful internal targets; do not stabilize the installed SDK. Resolve link and scope conflicts at the integration boundary, preserving every useful implementation. Confirm source-to-semantic and native requests reach identical math functions.",
+      "acceptance": [
+        "Host and CUDA targets link without adding planning/contracts to production include paths.",
+        "Every advertised RU1 provider has an actual symbol and executable test; no uncompiled code-only completion."
+      ],
+      "tests": [
+        "Host tests plus build of exact CTest inventory specified in the acceptance matrix."
+      ],
+      "principal_risk": "An INTERFACE target or installed header is not an implemented computational capability.",
+      "native_record": {
+        "id": "CE-RU1-I03",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Integrate runtime, providers, compiler and test targets",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "CMakeLists.txt",
+            "src/compute/CMakeLists.txt",
+            "src/runtime/CMakeLists.txt",
+            "src/compiler/CMakeLists.txt",
+            "tests/relation_update_spine_v1/CMakeLists.txt",
+            "docs/relation_update_spine_v1/integration.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-N06"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-R03"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-W05"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-F04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-RU1-V05"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i03.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "checkpoints": [
+          {
+            "id": "CE-RU1-CP-INTEGRATED",
+            "title": "Integrated accepted"
+          }
+        ],
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I04",
+      "id": "CE-RU1-I04",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Complete and run the dual-origin regulatory learning demo",
+      "depends_on": [
+        "CE-RU1-I03"
+      ],
+      "write_scope": [
+        "examples/relation_update_spine_v1",
+        "docs/relation_update_spine_v1/demo.json"
+      ],
+      "mechanism": "Bind the delivered prospective program to the integrated core API; spelling changes are allowed but preserve all assertions and document them. One 20-source/19-destination synthetic regulatory topology has a dense module, irregular residual, isolated source and empty row. Execute native/compiler forward and VJP equality, a delta update and gradient-step update, publication/read lease, stale-generation rejection and reuse. All new arithmetic stays in core, not demo-local CUDA kernels.",
+      "acceptance": [
+        "Normal demo links real Cellerator and sm70 implementations, not planning stubs or reference mode.",
+        "Exactly one topology preparation; both update styles and generations 1,2,3 demonstrated; real sparse/WMMA attribution printed.",
+        "The fixture is labelled synthetic and loss decrease is not a scientific learning-performance claim."
+      ],
+      "tests": [
+        "Post-epic normal GPU demo, reference-only fixture run as separately labelled control."
+      ],
+      "principal_risk": "The demo must not become a private implementation that lets unfinished core tasks pass.",
+      "native_record": {
+        "id": "CE-RU1-I04",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Complete and run the dual-origin regulatory learning demo",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "examples/relation_update_spine_v1",
+            "docs/relation_update_spine_v1/demo.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I03"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i04.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I05",
+      "id": "CE-RU1-I05",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Run required V100 correctness and sanitizer acceptance",
+      "depends_on": [
+        "CE-RU1-I04"
+      ],
+      "write_scope": [
+        "docs/relation_update_spine_v1/evidence/gpu_acceptance.json",
+        "docs/relation_update_spine_v1/evidence/sanitizer.json",
+        "docs/relation_update_spine_v1/evidence/commands.json"
+      ],
+      "mechanism": "Acquire the existing project GPU lease, select an actual sm70 device and run all host/device suites, demo and relevant N1 regressions. Run Compute Sanitizer memcheck on all device binaries and racecheck/synccheck on packed WMMA and lifecycle tests as supported. Capture commands, exits, source hashes, GPU UUID and tool versions. Missing tooling/hardware is a blocked acceptance, not a pass. Distinguish sanitizer coverage from synchronization proof.",
+      "acceptance": [
+        "Every required test executed with zero failures and no skipped device substitution.",
+        "Required memcheck has zero reported errors; racecheck/synccheck findings are resolved or an explicit bounded tool limitation blocks relevant completion.",
+        "No root closure on build-only evidence."
+      ],
+      "tests": [
+        "Host contract/bridge; GPU numerical/binding/lifecycle; normal demo; N1 graph regressions."
+      ],
+      "principal_risk": "Only final integrated hardware evidence establishes the new executable closure.",
+      "native_record": {
+        "id": "CE-RU1-I05",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Run required V100 correctness and sanitizer acceptance",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "docs/relation_update_spine_v1/evidence/gpu_acceptance.json",
+            "docs/relation_update_spine_v1/evidence/sanitizer.json",
+            "docs/relation_update_spine_v1/evidence/commands.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I04"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i05.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "checkpoints": [
+          {
+            "id": "CE-RU1-CP-DEVICE",
+            "title": "Device accepted"
+          }
+        ],
+        "parallel_policy": "parallel_safe",
+        "gates": [
+          {
+            "id": "CE-RU1-I05-EXECUTE",
+            "type": "command",
+            "required": true,
+            "argv": [
+              "python3",
+              "planning/relation-update-spine-v1/scripts/run_gate.py",
+              "--build-dir",
+              "build/relation-update-spine-v1",
+              "--group",
+              "all"
+            ],
+            "cwd": "."
+          },
+          {
+            "id": "CE-RU1-I05-SANITIZE",
+            "type": "command",
+            "required": true,
+            "argv": [
+              "python3",
+              "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
+              "--binary-dir",
+              "build/relation-update-spine-v1/bin"
+            ],
+            "cwd": "."
+          }
+        ]
+      }
+    },
+    {
+      "code": "I06",
+      "id": "CE-RU1-I06",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Measure sparse versus hybrid lifetime crossover",
+      "depends_on": [
+        "CE-RU1-I05"
+      ],
+      "write_scope": [
+        "docs/relation_update_spine_v1/evidence/performance.json",
+        "docs/relation_update_spine_v1/evidence/performance_analysis.md"
+      ],
+      "mechanism": "Run the lifetime harness with fair profiles, cold preparation and repeated update/reuse phases. Record distributions, memory footprint, packing refresh and counter attribution. Select conservative default policy from evidence; keep forcing and sparse fallback. A working hybrid path remains implemented even when not the default on a tiny or irregular fixture. Do not expand scope to search every GPU/candidate.",
+      "acceptance": [
+        "Performance report separates mechanism correctness, reachability and promotion.",
+        "Dense, irregular and mixed workloads reveal costs and at least one negative control; no fabricated universal WMMA claim.",
+        "If no hybrid win is found, document evidence and dispatch consequences rather than hiding the path or launching a new optimization campaign."
+      ],
+      "tests": [
+        "Repeated independent samples, identical rounded operands, own-state reset outside timed step, declared reuse horizons."
+      ],
+      "principal_risk": "User preference for WMMA is a reason to investigate it seriously, not to manufacture a speedup.",
+      "native_record": {
+        "id": "CE-RU1-I06",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Measure sparse versus hybrid lifetime crossover",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "docs/relation_update_spine_v1/evidence/performance.json",
+            "docs/relation_update_spine_v1/evidence/performance_analysis.md"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I05"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i06.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I07",
+      "id": "CE-RU1-I07",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Retire superseded on-path duplication without losing good code",
+      "depends_on": [
+        "CE-RU1-I06"
+      ],
+      "write_scope": [
+        "src/compute/training/native_training_slice.cu",
+        "include/Cellerator/compute/training/native_training_slice.hh",
+        "src/execution/training_program.cu",
+        "src/compute/CMakeLists.txt",
+        "src/execution/CMakeLists.txt",
+        "docs/relation_update_spine_v1/source_disposition.json"
+      ],
+      "mechanism": "Use the I01 caller audit and now-tested core replacement to remove duplicated forward/transpose/edge-gradient/update ownership where it is superseded. Preserve useful bias/ReLU/RMS/other algorithms in appropriate core facilities or leave their existing consumers connected; do not delete them merely because this epic does not expose them. Compatibility wrappers need not survive without a real consumer. Any additional affected path requires explicit recorded scope handoff, not a stealth repository purge.",
+      "acceptance": [
+        "Every moved/removed implementation has a destination or reason and preserved regression coverage.",
+        "No duplicate canonical semantics remain on the new path; no unrelated adapter or model functionality is silently discarded.",
+        "Integrated relevant tests rerun after pruning."
+      ],
+      "tests": [
+        "Reference/caller audit, link tests of remaining consumers and full RU1 regression."
+      ],
+      "principal_risk": "Legacy API removal can be justified; losing its only performant algorithm cannot.",
+      "native_record": {
+        "id": "CE-RU1-I07",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Retire superseded on-path duplication without losing good code",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/training/native_training_slice.cu",
+            "include/Cellerator/compute/training/native_training_slice.hh",
+            "src/execution/training_program.cu",
+            "src/compute/CMakeLists.txt",
+            "src/execution/CMakeLists.txt",
+            "docs/relation_update_spine_v1/source_disposition.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I06"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i07.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "parallel_policy": "parallel_safe"
+      }
+    },
+    {
+      "code": "I08",
+      "id": "CE-RU1-I08",
+      "lane": "CE-RU1-L-INTEGRATE",
+      "title": "Close the bounded epic with truthful capability and deferral records",
+      "depends_on": [
+        "CE-RU1-I07"
+      ],
+      "write_scope": [
+        "docs/relation_update_spine_v1/completion.json",
+        "docs/relation_update_spine_v1/capabilities.md",
+        "docs/relation_update_spine_v1/deferred_work.md",
+        "docs/relation_update_spine_v1/evidence/final_commands.json"
+      ],
+      "mechanism": "Rerun the full required gate after any pruning/build change and record accepted commit, actual task evidence and final fixture results. Update capability documentation for N1/N16, precision profiles, both origins, exact hybrid coverage and one-owner/one-reader lifetime limit. Carry near-term WMMA generalization and the broader biology-aligned ML scope forward as deferred issues without applying another plan. Root closes only after all leaves and all hard acceptance conditions.",
+      "acceptance": [
+        "All leaf tasks have reviewed evidence and required post-pruning hardware gates pass at the recorded source.",
+        "No full .cell, arbitrary-N, optimizer framework, graph-wide planner or mutable graph-capture claims.",
+        "Completion distinguishes actual measured performance from unresolved research and does not activate follow-on work."
+      ],
+      "tests": [
+        "Final host/device/sanitizer suite and dual-origin demo; machine receipt coherence review."
+      ],
+      "principal_risk": "Completion must report measured limits, not erase inconvenient results.",
+      "native_record": {
+        "id": "CE-RU1-I08",
+        "parent_id": "CE-RU1-0000",
+        "kind": "task",
+        "title": "Close the bounded epic with truthful capability and deferral records",
+        "status": "planned",
+        "scope": {
+          "exclusive_paths": [
+            "docs/relation_update_spine_v1/completion.json",
+            "docs/relation_update_spine_v1/capabilities.md",
+            "docs/relation_update_spine_v1/deferred_work.md",
+            "docs/relation_update_spine_v1/evidence/final_commands.json"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-RU1-I07"
+          }
+        ],
+        "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i08.md",
+        "completion_contract": {
+          "required": [
+            "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+          ]
+        },
+        "checkpoints": [
+          {
+            "id": "CE-RU1-CP-COMPLETE",
+            "title": "Complete accepted"
+          }
+        ],
+        "parallel_policy": "parallel_safe",
+        "gates": [
+          {
+            "id": "CE-RU1-I08-EXECUTE",
+            "type": "command",
+            "required": true,
+            "argv": [
+              "python3",
+              "planning/relation-update-spine-v1/scripts/run_gate.py",
+              "--build-dir",
+              "build/relation-update-spine-v1",
+              "--group",
+              "all"
+            ],
+            "cwd": "."
+          },
+          {
+            "id": "CE-RU1-I08-SANITIZE",
+            "type": "command",
+            "required": true,
+            "argv": [
+              "python3",
+              "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
+              "--binary-dir",
+              "build/relation-update-spine-v1/bin"
+            ],
+            "cwd": "."
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "CE-RU1-INV-SCOPE",
+      "rule": "Extend one canonical prepared relation through N16 VJP, update, publication and reuse; retain N1. No broad compiler, planner, geometry, SDK or ML framework program.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-SEMANTICS",
+      "rule": "One mathematical meaning from native and compiler origins. Biological axes, topology and exact support persist; pointers, streams, generations, provenance and selected kernels are binding/realization facts.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-NUMERIC",
+      "rule": "f16 relation values with f32 accumulation. Half rounding of gradient operands requires explicit profile permission and is identical for sparse and WMMA. No silent conversion or gradient-through-rounding claim.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-IDENTITY",
+      "rule": "Keep persistent edge order through gradient/update. Changing values never rebuilds topology. Observe logical order only at an explicit boundary.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-LIFETIME",
+      "rule": "One owner execution stream and serialized host API; one bounded external const reader lease. Producer readiness and reader completion are both ordered before in-place mutation; no historical immutable generation illusion.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-WMMA",
+      "rule": "Required repaired and executable sm70 N16 WMMA plus exact sparse residual/fallback. Force overrides profitability only. Selection and performance claims require phase-complete evidence.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-PRESERVE",
+      "rule": "Move useful algorithms into shared core. Compatibility has no entitlement, but no useful code or unrelated consumer is lost by pruning.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-EVIDENCE",
+      "rule": "No mock, reference-only run, skipped GPU, capability name or unlinked declaration may satisfy accelerator acceptance. Enqueue is not observed completion.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-AUTHORITY",
+      "rule": "Package ingestion does not activate a run or authorize implementation. Preserve unrelated worktrees, authority, runs and pending patches; local workers are not first-class lanes.",
+      "severity": "error"
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-ru1-accelerator-evidence",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Serialize this epic evidence; also acquire the existing project GPU lease at execution. Not a substitute for that lease."
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "CE-RU1-IF-CALCULUS",
+      "owner_task_id": "CE-RU1-I02",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/relation_calculus.hh",
+        "include/Cellerator/compute/operation/relation_update.hh",
+        "include/Cellerator/compute/operation/prepared_relation.hh"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CE-RU1-B-FOUNDATION",
+      "title": "Foundation barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-FOUNDATION",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-RU1-B-INTEGRATED",
+      "title": "Integrated barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-INTEGRATED",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-RU1-B-COMPLETE",
+      "title": "Complete barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-COMPLETE",
+          "state": "reached"
+        }
+      ]
+    }
+  ],
+  "resource_classes": [],
+  "run": {
+    "id": "CE-RU1-RUN-V1",
+    "root_task_id": "CE-RU1-0000",
+    "charter": {
+      "objective": "One prepared biological relation: N16 forward, transpose, VJP, delta/gradient update, true readiness and reuse; exact WMMA plus sparse execution.",
+      "boundaries": [
+        "Planning/application/activation/implementation are separate permissions.",
+        "Use first-class lanes with serialized queues and exact scopes; no other-project dependency.",
+        "All charter invariants apply to every task; no task-count target."
+      ],
+      "acceptance_conditions": [
+        "All 34 leaves complete and CE-RU1-CP-COMPLETE reached with real sm70 evidence."
+      ],
+      "invariants": [
+        "CE-RU1-INV-SCOPE",
+        "CE-RU1-INV-SEMANTICS",
+        "CE-RU1-INV-NUMERIC",
+        "CE-RU1-INV-IDENTITY",
+        "CE-RU1-INV-LIFETIME",
+        "CE-RU1-INV-WMMA",
+        "CE-RU1-INV-PRESERVE",
+        "CE-RU1-INV-EVIDENCE",
+        "CE-RU1-INV-AUTHORITY"
+      ]
+    },
+    "lanes": [
+      {
+        "id": "CE-RU1-L-COORD",
+        "role": "coordinator",
+        "tasks": [
+          "CE-RU1-0000"
+        ],
+        "workspace": {
+          "mode": "read_shared"
+        }
+      },
+      {
+        "id": "CE-RU1-L-CORE",
+        "role": "implementer",
+        "tasks": [
+          "CE-RU1-C01",
+          "CE-RU1-C02",
+          "CE-RU1-C03"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-NATIVE",
+        "role": "implementer",
+        "tasks": [
+          "CE-RU1-N01",
+          "CE-RU1-N02",
+          "CE-RU1-N03",
+          "CE-RU1-N04",
+          "CE-RU1-N05",
+          "CE-RU1-N06"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-READINESS",
+        "role": "implementer",
+        "tasks": [
+          "CE-RU1-R01",
+          "CE-RU1-R02",
+          "CE-RU1-R03"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-WMMA",
+        "role": "specialist",
+        "tasks": [
+          "CE-RU1-W01",
+          "CE-RU1-W02",
+          "CE-RU1-W03",
+          "CE-RU1-W04",
+          "CE-RU1-W05"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-FRONTEND",
+        "role": "implementer",
+        "tasks": [
+          "CE-RU1-F01",
+          "CE-RU1-F02",
+          "CE-RU1-F03",
+          "CE-RU1-F04"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-VERIFY",
+        "role": "validator",
+        "tasks": [
+          "CE-RU1-V01",
+          "CE-RU1-V02",
+          "CE-RU1-V03",
+          "CE-RU1-V04",
+          "CE-RU1-V05"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      },
+      {
+        "id": "CE-RU1-L-INTEGRATE",
+        "role": "integrator",
+        "tasks": [
+          "CE-RU1-I01",
+          "CE-RU1-I02",
+          "CE-RU1-I03",
+          "CE-RU1-I04",
+          "CE-RU1-I05",
+          "CE-RU1-I06",
+          "CE-RU1-I07",
+          "CE-RU1-I08"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-RU1-L-COORD"
+      }
+    ],
+    "rendezvous": [],
+    "context_fragments": []
+  }
+}

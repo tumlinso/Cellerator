@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "CE-RU1-RUN-V1",
+  "lanes": [
+    {
+      "id": "CE-RU1-L-COORD",
+      "role": "coordinator",
+      "tasks": [
+        "CE-RU1-0000"
+      ],
+      "workspace": {
+        "mode": "read_shared"
+      }
+    },
+    {
+      "id": "CE-RU1-L-CORE",
+      "role": "implementer",
+      "tasks": [
+        "CE-RU1-C01",
+        "CE-RU1-C02",
+        "CE-RU1-C03"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-NATIVE",
+      "role": "implementer",
+      "tasks": [
+        "CE-RU1-N01",
+        "CE-RU1-N02",
+        "CE-RU1-N03",
+        "CE-RU1-N04",
+        "CE-RU1-N05",
+        "CE-RU1-N06"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-READINESS",
+      "role": "implementer",
+      "tasks": [
+        "CE-RU1-R01",
+        "CE-RU1-R02",
+        "CE-RU1-R03"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-WMMA",
+      "role": "specialist",
+      "tasks": [
+        "CE-RU1-W01",
+        "CE-RU1-W02",
+        "CE-RU1-W03",
+        "CE-RU1-W04",
+        "CE-RU1-W05"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-FRONTEND",
+      "role": "implementer",
+      "tasks": [
+        "CE-RU1-F01",
+        "CE-RU1-F02",
+        "CE-RU1-F03",
+        "CE-RU1-F04"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-VERIFY",
+      "role": "validator",
+      "tasks": [
+        "CE-RU1-V01",
+        "CE-RU1-V02",
+        "CE-RU1-V03",
+        "CE-RU1-V04",
+        "CE-RU1-V05"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    },
+    {
+      "id": "CE-RU1-L-INTEGRATE",
+      "role": "integrator",
+      "tasks": [
+        "CE-RU1-I01",
+        "CE-RU1-I02",
+        "CE-RU1-I03",
+        "CE-RU1-I04",
+        "CE-RU1-I05",
+        "CE-RU1-I06",
+        "CE-RU1-I07",
+        "CE-RU1-I08"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-RU1-L-COORD"
+    }
+  ],
+  "requires_manual_activation": true,
+  "local_worker_children_are_lanes": false
+}

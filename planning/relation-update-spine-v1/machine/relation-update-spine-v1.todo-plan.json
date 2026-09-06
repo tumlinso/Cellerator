@@ -1,0 +1,1319 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator",
+    "workspace": "cellerator",
+    "repository": "cellerator",
+    "baseline_commit": "c2830e3420ddae5c5ea92fa270cb3574fc19cd36",
+    "objective": "One prepared biological relation: N16 forward, transpose, VJP, delta/gradient update, true readiness and reuse; exact WMMA plus sparse execution.",
+    "program_document": "planning/relation-update-spine-v1/01_SCOPE_AND_DECISIONS.md"
+  },
+  "tasks": [
+    {
+      "id": "CE-RU1-0000",
+      "kind": "epic",
+      "title": "Relation Update Spine v1",
+      "status": "planned",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-0000.md",
+      "completion_contract": {
+        "required": [
+          "All 34 leaf tasks and I08 integrated acceptance pass; no activation from plan ingestion."
+        ]
+      }
+    },
+    {
+      "id": "CE-RU1-I01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Revalidate the completed spine and execution baseline",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "docs/relation_update_spine_v1/baseline.json",
+          "docs/relation_update_spine_v1/source_disposition.json"
+        ]
+      },
+      "depends_on": [],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CE-RU1-CP-BASELINE",
+          "title": "Baseline accepted"
+        }
+      ],
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-C01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Specify relation calculus and explicit arithmetic profiles",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/relation_calculus.hh",
+          "docs/relation_update_spine_v1/calculus.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-C02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Define prepared value, gradient and reader lifetime contracts",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/relation_update.hh",
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "docs/relation_update_spine_v1/lifetime.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-C01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-C03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Implement host semantic and effect-order validation",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/relation_calculus.cc",
+          "tests/relation_update_spine_v1/calculus_test.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-C02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-c03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Integrate the contract and publish the common interface",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "src/compute/CMakeLists.txt",
+          "tests/relation_update_spine_v1/CMakeLists.txt",
+          "docs/relation_update_spine_v1/foundation.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-C03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CE-RU1-CP-FOUNDATION",
+          "title": "Foundation accepted"
+        }
+      ],
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Admit N16 forward through the prepared spine",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "tests/relation_update_spine_v1/forward_n16_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Move useful N16 transpose computation into core ownership",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh",
+          "tests/relation_update_spine_v1/transpose_n16_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Prepare physical edge gradients and full-f32 sparse VJP",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cuh",
+          "tests/relation_update_spine_v1/sparse_gradient_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N04",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Implement delta-add and gradient-step updates on physical values",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu",
+          "tests/relation_update_spine_v1/value_update_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n04.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N05",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Connect updates to readiness and generation publication",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "tests/relation_update_spine_v1/update_publication_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N04"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-R02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W04"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n05.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-N06",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Finish rebinding, failure, capture and instrumentation boundaries",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/operation/prepared_relation.cu",
+          "docs/relation_update_spine_v1/native_runtime.md",
+          "tests/relation_update_spine_v1/native_failure_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N05"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-n06.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-R01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Build a reusable generation readiness component",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/runtime/relation_value_readiness.hh",
+          "src/runtime/relation_value_readiness.cu",
+          "tests/relation_update_spine_v1/readiness_component_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-R02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Add bounded consumer read leases and writer join",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/runtime/relation_value_readiness.hh",
+          "src/runtime/relation_value_readiness.cu",
+          "tests/relation_update_spine_v1/read_lease_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-R01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-R03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Validate event retirement and runtime failure semantics",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/readiness_adversarial_test.cu",
+          "docs/relation_update_spine_v1/readiness.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-R02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-r03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-W01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Repair rectangular WMMA legality and capacities",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
+          "tests/relation_update_spine_v1/wmma_legality_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-W02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Prepare exact rectangular support plus sparse residual",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.cc",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.hh",
+          "tests/relation_update_spine_v1/gradient_cover_test.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-W03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Pack explicit half-rounded operands with reusable scratch",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu",
+          "tests/relation_update_spine_v1/gradient_pack_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-W04",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Execute N16 hybrid edge gradients in persistent edge order",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh",
+          "tests/relation_update_spine_v1/hybrid_gradient_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w04.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-W05",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Expose truthful bounded forcing and lifetime cost evidence",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_dispatch.cc",
+          "docs/relation_update_spine_v1/wmma_policy.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W04"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-w05.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-F01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Reconcile gradient and publication IR with canonical calculus",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
+          "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-F02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Extend the bounded parser and Sema bridge for the closure",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compiler/sema/relation_update_spine_bridge.hh",
+          "src/compiler/sema/relation_update_spine_bridge.cc",
+          "tests/relation_update_spine_v1/source_bridge_test.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-F01"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-F03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Lower both origins to the same prepared operations and effects",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compiler/ir/realization/relation_update_spine.hh",
+          "src/compiler/ir/realization/relation_update_spine.cc",
+          "tests/relation_update_spine_v1/dual_origin_test.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-F02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-F04",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Close compiler conformance and remove on-path duplicate mappings",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/compiler_conformance_test.cc",
+          "docs/relation_update_spine_v1/compiler_boundary.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-F03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-f04.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-V01",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Author independent VJP and storage-rounding oracles",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/reference_math.hh",
+          "tests/relation_update_spine_v1/reference_test.cc"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I02"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v01.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-V02",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Author GPU numerical and exact-cover acceptance",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/gpu_numerics_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-V01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W04"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v02.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-V03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Author mutable binding and generation adversarial acceptance",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/gpu_bindings_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-V02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N06"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-V04",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Author asynchronous consumer and N1 graph regressions",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/gpu_lifecycle_test.cu"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-V03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-R03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v04.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-V05",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Define executable evidence and benchmark negative controls",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "tests/relation_update_spine_v1/evidence_contract_test.py",
+          "bench/relation_update_spine_v1/lifetime_bench.cu",
+          "bench/relation_update_spine_v1/README.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-V04"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W05"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-v05.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I03",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Integrate runtime, providers, compiler and test targets",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "src/compute/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "src/compiler/CMakeLists.txt",
+          "tests/relation_update_spine_v1/CMakeLists.txt",
+          "docs/relation_update_spine_v1/integration.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-N06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-R03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-W05"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-F04"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-RU1-V05"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i03.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CE-RU1-CP-INTEGRATED",
+          "title": "Integrated accepted"
+        }
+      ],
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I04",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Complete and run the dual-origin regulatory learning demo",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "examples/relation_update_spine_v1",
+          "docs/relation_update_spine_v1/demo.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I03"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i04.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I05",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Run required V100 correctness and sanitizer acceptance",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "docs/relation_update_spine_v1/evidence/gpu_acceptance.json",
+          "docs/relation_update_spine_v1/evidence/sanitizer.json",
+          "docs/relation_update_spine_v1/evidence/commands.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I04"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i05.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CE-RU1-CP-DEVICE",
+          "title": "Device accepted"
+        }
+      ],
+      "parallel_policy": "parallel_safe",
+      "gates": [
+        {
+          "id": "CE-RU1-I05-EXECUTE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/relation-update-spine-v1/scripts/run_gate.py",
+            "--build-dir",
+            "build/relation-update-spine-v1",
+            "--group",
+            "all"
+          ],
+          "cwd": "."
+        },
+        {
+          "id": "CE-RU1-I05-SANITIZE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
+            "--binary-dir",
+            "build/relation-update-spine-v1/bin"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-RU1-I06",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Measure sparse versus hybrid lifetime crossover",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "docs/relation_update_spine_v1/evidence/performance.json",
+          "docs/relation_update_spine_v1/evidence/performance_analysis.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I05"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i06.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I07",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Retire superseded on-path duplication without losing good code",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "src/compute/training/native_training_slice.cu",
+          "include/Cellerator/compute/training/native_training_slice.hh",
+          "src/execution/training_program.cu",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "docs/relation_update_spine_v1/source_disposition.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I06"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i07.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "parallel_policy": "parallel_safe"
+    },
+    {
+      "id": "CE-RU1-I08",
+      "parent_id": "CE-RU1-0000",
+      "kind": "task",
+      "title": "Close the bounded epic with truthful capability and deferral records",
+      "status": "planned",
+      "scope": {
+        "exclusive_paths": [
+          "docs/relation_update_spine_v1/completion.json",
+          "docs/relation_update_spine_v1/capabilities.md",
+          "docs/relation_update_spine_v1/deferred_work.md",
+          "docs/relation_update_spine_v1/evidence/final_commands.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-RU1-I07"
+        }
+      ],
+      "notes": "planning/relation-update-spine-v1/proposed-todos/ce-ru1-i08.md",
+      "completion_contract": {
+        "required": [
+          "All acceptance conditions in the referenced task sheet pass; required execution evidence is not skipped."
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "CE-RU1-CP-COMPLETE",
+          "title": "Complete accepted"
+        }
+      ],
+      "parallel_policy": "parallel_safe",
+      "gates": [
+        {
+          "id": "CE-RU1-I08-EXECUTE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/relation-update-spine-v1/scripts/run_gate.py",
+            "--build-dir",
+            "build/relation-update-spine-v1",
+            "--group",
+            "all"
+          ],
+          "cwd": "."
+        },
+        {
+          "id": "CE-RU1-I08-SANITIZE",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
+            "--binary-dir",
+            "build/relation-update-spine-v1/bin"
+          ],
+          "cwd": "."
+        }
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "CE-RU1-INV-SCOPE",
+      "rule": "Extend one canonical prepared relation through N16 VJP, update, publication and reuse; retain N1. No broad compiler, planner, geometry, SDK or ML framework program.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-SEMANTICS",
+      "rule": "One mathematical meaning from native and compiler origins. Biological axes, topology and exact support persist; pointers, streams, generations, provenance and selected kernels are binding/realization facts.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-NUMERIC",
+      "rule": "f16 relation values with f32 accumulation. Half rounding of gradient operands requires explicit profile permission and is identical for sparse and WMMA. No silent conversion or gradient-through-rounding claim.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-IDENTITY",
+      "rule": "Keep persistent edge order through gradient/update. Changing values never rebuilds topology. Observe logical order only at an explicit boundary.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-LIFETIME",
+      "rule": "One owner execution stream and serialized host API; one bounded external const reader lease. Producer readiness and reader completion are both ordered before in-place mutation; no historical immutable generation illusion.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-WMMA",
+      "rule": "Required repaired and executable sm70 N16 WMMA plus exact sparse residual/fallback. Force overrides profitability only. Selection and performance claims require phase-complete evidence.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-PRESERVE",
+      "rule": "Move useful algorithms into shared core. Compatibility has no entitlement, but no useful code or unrelated consumer is lost by pruning.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-EVIDENCE",
+      "rule": "No mock, reference-only run, skipped GPU, capability name or unlinked declaration may satisfy accelerator acceptance. Enqueue is not observed completion.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-RU1-INV-AUTHORITY",
+      "rule": "Package ingestion does not activate a run or authorize implementation. Preserve unrelated worktrees, authority, runs and pending patches; local workers are not first-class lanes.",
+      "severity": "error"
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-ru1-accelerator-evidence",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Serialize this epic evidence; also acquire the existing project GPU lease at execution. Not a substitute for that lease."
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "CE-RU1-IF-CALCULUS",
+      "owner_task_id": "CE-RU1-I02",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/relation_calculus.hh",
+        "include/Cellerator/compute/operation/relation_update.hh",
+        "include/Cellerator/compute/operation/prepared_relation.hh"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CE-RU1-B-FOUNDATION",
+      "title": "Foundation barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-FOUNDATION",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-RU1-B-INTEGRATED",
+      "title": "Integrated barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-INTEGRATED",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-RU1-B-COMPLETE",
+      "title": "Complete barrier",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-RU1-CP-COMPLETE",
+          "state": "reached"
+        }
+      ]
+    }
+  ],
+  "resource_classes": [],
+  "runs": [
+    {
+      "id": "CE-RU1-RUN-V1",
+      "root_task_id": "CE-RU1-0000",
+      "charter": {
+        "objective": "One prepared biological relation: N16 forward, transpose, VJP, delta/gradient update, true readiness and reuse; exact WMMA plus sparse execution.",
+        "boundaries": [
+          "Planning/application/activation/implementation are separate permissions.",
+          "Use first-class lanes with serialized queues and exact scopes; no other-project dependency.",
+          "All charter invariants apply to every task; no task-count target."
+        ],
+        "acceptance_conditions": [
+          "All 34 leaves complete and CE-RU1-CP-COMPLETE reached with real sm70 evidence."
+        ],
+        "invariants": [
+          "CE-RU1-INV-SCOPE",
+          "CE-RU1-INV-SEMANTICS",
+          "CE-RU1-INV-NUMERIC",
+          "CE-RU1-INV-IDENTITY",
+          "CE-RU1-INV-LIFETIME",
+          "CE-RU1-INV-WMMA",
+          "CE-RU1-INV-PRESERVE",
+          "CE-RU1-INV-EVIDENCE",
+          "CE-RU1-INV-AUTHORITY"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-RU1-L-COORD",
+          "role": "coordinator",
+          "tasks": [
+            "CE-RU1-0000"
+          ],
+          "workspace": {
+            "mode": "read_shared"
+          }
+        },
+        {
+          "id": "CE-RU1-L-CORE",
+          "role": "implementer",
+          "tasks": [
+            "CE-RU1-C01",
+            "CE-RU1-C02",
+            "CE-RU1-C03"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-NATIVE",
+          "role": "implementer",
+          "tasks": [
+            "CE-RU1-N01",
+            "CE-RU1-N02",
+            "CE-RU1-N03",
+            "CE-RU1-N04",
+            "CE-RU1-N05",
+            "CE-RU1-N06"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-READINESS",
+          "role": "implementer",
+          "tasks": [
+            "CE-RU1-R01",
+            "CE-RU1-R02",
+            "CE-RU1-R03"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-WMMA",
+          "role": "specialist",
+          "tasks": [
+            "CE-RU1-W01",
+            "CE-RU1-W02",
+            "CE-RU1-W03",
+            "CE-RU1-W04",
+            "CE-RU1-W05"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-FRONTEND",
+          "role": "implementer",
+          "tasks": [
+            "CE-RU1-F01",
+            "CE-RU1-F02",
+            "CE-RU1-F03",
+            "CE-RU1-F04"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-VERIFY",
+          "role": "validator",
+          "tasks": [
+            "CE-RU1-V01",
+            "CE-RU1-V02",
+            "CE-RU1-V03",
+            "CE-RU1-V04",
+            "CE-RU1-V05"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        },
+        {
+          "id": "CE-RU1-L-INTEGRATE",
+          "role": "integrator",
+          "tasks": [
+            "CE-RU1-I01",
+            "CE-RU1-I02",
+            "CE-RU1-I03",
+            "CE-RU1-I04",
+            "CE-RU1-I05",
+            "CE-RU1-I06",
+            "CE-RU1-I07",
+            "CE-RU1-I08"
+          ],
+          "workspace": {
+            "mode": "contract_split"
+          },
+          "parent_lane_id": "CE-RU1-L-COORD"
+        }
+      ],
+      "rendezvous": [],
+      "context_fragments": []
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "consulted_on": "2026-09-06",
+  "source_type": "primary research and official vendor contracts",
+  "sources": [
+    {
+      "id": "R1",
+      "title": "NVIDIA CUDA Programming Guide, C/C++ Language Extensions",
+      "url": "https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/cpp-language-extensions.html",
+      "use": "WMMA requires aligned pointers, admissible leading dimensions and cooperative warp behavior. Repair legality of the actual called path, including derived subpointers; logical width alone is not a physical stride."
+    },
+    {
+      "id": "R2",
+      "title": "NVIDIA CUDA 12.0 Runtime API, Event Management",
+      "url": "https://docs.nvidia.com/cuda/archive/12.0.0/cuda-runtime-api/group__CUDART__EVENT.html",
+      "use": "A recorded event captures preceding stream work; subsequent re-recording and previously submitted waits require careful lifetime reasoning. The reader-done protocol is our design derived from these rules, not a feature automatically supplied by a generation counter."
+    },
+    {
+      "id": "R3",
+      "title": "NVIDIA CUDA 12.8.1 Runtime API, Stream synchronization behavior",
+      "url": "https://docs.nvidia.com/cuda/archive/12.8.1/cuda-runtime-api/stream-sync-behavior.html",
+      "use": "Use nonblocking test streams and explicit dependencies so legacy default-stream synchronization cannot mask a missing edge."
+    },
+    {
+      "id": "R4",
+      "title": "NVIDIA CUDA 13.0.3 Release Notes",
+      "url": "https://docs.nvidia.com/cuda/archive/13.0.3/cuda-toolkit-release-notes/index.html",
+      "use": "CUDA 13 removed offline compilation/library support for Volta. This epic uses a supported CUDA 12.x sm70 toolchain rather than an unqualified latest-toolkit requirement."
+    },
+    {
+      "id": "R5",
+      "title": "Shi et al., FlashSparse: Minimizing Computation Redundancy for Fast Sparse Matrix Multiplications on Tensor Cores",
+      "url": "https://arxiv.org/abs/2412.11007",
+      "use": "Research motivation to account for redundant dense work and data movement instead of promoting a path solely because it uses Tensor Cores. Its reported target results are not V100 predictions and are not used as Cellerator acceptance."
+    },
+    {
+      "id": "R6",
+      "title": "NVIDIA CUDA 12.6.3 Math API, half conversion functions",
+      "url": "https://docs.nvidia.com/cuda/archive/12.6.3/cuda-math-api/cuda_math_api/group__CUDA__MATH____HALF__MISC.html",
+      "use": "Nearest-even conversion is explicit in operand packing and value storage. The package reference checks storage rounding separately from the continuous derivative."
+    }
+  ]
+}
