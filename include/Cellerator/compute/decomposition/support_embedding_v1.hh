@@ -2,6 +2,8 @@
 
 #include <Cellerator/compute/decomposition/dense_width_v1.hh>
 
+#include <Cellerator/compute/operation/support_product_semantics.hh>
+
 #include <cstdint>
 #include <type_traits>
 
@@ -9,9 +11,9 @@ namespace cellerator::compute::decomposition {
 
 inline constexpr std::uint32_t support_embedding_schema_version_v1 = 1u;
 
-// Embedding coordinates are independent outputs of support contraction.
-// Exact channel slices therefore need concatenation/view assembly, not a
-// numerical partial-result algebra.
+// K intervals partition input work. Scalar dots sum their partial outputs;
+// edge-channel products assemble disjoint output panels. The ambiguous
+// historical operation kind does not imply either law.
 struct support_embedding_decomposition_v1 {
     std::uint32_t schema_version = support_embedding_schema_version_v1;
     std::uint32_t reserved = 0u;
@@ -25,6 +27,10 @@ struct support_embedding_decomposition_v1 {
     bool produces_partial_results = false;
     bool requires_partial_algebra = false;
     std::uint8_t reserved2[3]{};
+    operation::support_product_result result =
+        operation::support_product_result::unspecified;
+    operation::support_product_assembly assembly =
+        operation::support_product_assembly::unspecified;
 };
 
 enum class support_embedding_validation_code_v1 : std::uint8_t {
