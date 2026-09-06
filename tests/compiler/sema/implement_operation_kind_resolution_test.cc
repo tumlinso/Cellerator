@@ -13,7 +13,9 @@ int main() {
         assert(covered.insert(entry.source).second);
         assert(resolve_operation_kind(entry.source) == &entry);
     }
-    assert(resolve_operation_kind(source_operation_kind::relation_apply)->core ==
+    assert(resolve_operation_kind(source_operation_kind::relation_apply)->primitive() ==
         cellerator::compute::operation::v2::operation_kind::relation_apply);
-    assert(resolve_operation_kind(source_operation_kind::relation_chain)->requires_composite_lowering);
+    assert(!resolve_operation_kind(source_operation_kind::relation_chain)->primitive());
+    assert(std::holds_alternative<composition_kind>(
+        resolve_operation_kind(source_operation_kind::relation_chain)->meaning));
 }

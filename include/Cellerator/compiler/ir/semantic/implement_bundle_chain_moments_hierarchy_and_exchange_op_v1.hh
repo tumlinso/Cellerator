@@ -64,7 +64,8 @@ validate_semantic_operation_graph_v1(const semantic_operation_graph_v1& graph) n
 [[nodiscard]] std::optional<semantic_operation_graph_v1>
 round_trip_operation_portfolio_graph_v1(const semantic_operation_graph_v1& graph) noexcept;
 
-[[nodiscard]] cellerator::compute::operation::v2::composition_kind
+// Unsupported source compositions retain their source graph meaning.
+[[nodiscard]] std::optional<cellerator::compute::operation::v2::composition_kind>
 lower_semantic_graph_kind_v1(semantic_graph_operation_kind_v1 kind) noexcept;
 
 }  // namespace Cellerator::compiler::ir::semantic

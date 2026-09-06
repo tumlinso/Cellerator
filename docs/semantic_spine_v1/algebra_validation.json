@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-06",
+  "lane": "CE-SS1-L-ALGEBRA",
+  "task": "CE-SS1-A04",
+  "implementation_commit": "e71b774e",
+  "foundation_commit": "6543a9115d1f528d1e559c8200fe999d365f4b85",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "language": "C++17",
+  "assertions_enabled": true,
+  "cuda": "Not used by these host-only algebra tests. Epic accelerator validation must use CUDA12.9.",
+  "tests": [
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/semantic_spine/algebra/support_product_test.cc src/compute/decomposition/support_embedding_v1.cc src/compute/operation/operation_core_v2/schema.cc src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc -o /tmp/ss1-support-product && /tmp/ss1-support-product",
+      "exit_code": 0,
+      "stdout": "K=2 whole_dot=-9 split_dot=-9 edge_channels=2\nK=17 whole_dot=2261 split_dot=2261 edge_channels=17\n"
+    },
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/semantic_spine/algebra/classification_test.cc src/compiler/sema/implement_operation_kind_resolution.cc src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc -o /tmp/ss1-classification && /tmp/ss1-classification",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/compiler/sema/implement_operation_kind_resolution_test.cc src/compiler/sema/implement_operation_kind_resolution.cc -o /tmp/ss1-legacy-classification && /tmp/ss1-legacy-classification",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/jbc/decomposition/test_support_embedding_v1.cc src/compute/decomposition/support_embedding_v1.cc src/compute/operation/operation_core_v2/schema.cc -o /tmp/ss1-legacy-support && /tmp/ss1-legacy-support",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/compiler/semantic_ir/implement_bundle_chain_moments_hierarchy_and_exchange_op_test.cc src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc -o /tmp/ss1-legacy-graph && /tmp/ss1-legacy-graph",
+      "exit_code": 0,
+      "stdout": "portfolio_kinds=6 explicit_intermediate_axes=true\n"
+    },
+    {
+      "command": "g++ -std=c++17 -Iinclude tests/compiler/semantic_ir/implement_contraction_segment_and_normalization_operatio_test.cc src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc -o /tmp/ss1-legacy-aggregate && /tmp/ss1-legacy-aggregate",
+      "exit_code": 0,
+      "stdout": "contraction=10 segments=2 softmax_reference=matched\n"
+    }
+  ],
+  "relation_interface_unchanged": true,
+  "relation_header_sha256": "b55ee11b9a21c4f5c337dedfea4ec29858c6c1949395b9e77fa4d676f88d706c",
+  "prepared_header_sha256": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491",
+  "hardware_evidence": "Not claimed; independent native and final integration lanes own accelerator acceptance.",
+  "numerics": "Exact comparison of small integer products accumulated in double; no universal floating-point reassociation promise."
+}

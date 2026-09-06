@@ -52,8 +52,12 @@ validate_support_embedding_decomposition_v1(
         || decomposition.kind != decomposition_kind_v1::disjoint
         || decomposition.fragment_role != fragment_role_v1::owned)
         return failure(code::invalid_vocabulary);
-    if (decomposition.produces_partial_results
-        || decomposition.requires_partial_algebra)
+    const bool scalar = decomposition.result
+        == operation::support_product_result::scalar_dot;
+    if (!operation::valid_support_product_assembly(
+            decomposition.result, decomposition.assembly)
+        || decomposition.produces_partial_results != scalar
+        || decomposition.requires_partial_algebra != scalar)
         return failure(code::invalid_partial_result_contract);
 
     std::uint32_t expected_begin = 0u;

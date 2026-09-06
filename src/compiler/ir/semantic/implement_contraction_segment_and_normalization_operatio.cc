@@ -20,6 +20,10 @@ aggregate_operation_status_ir_v1 validate_aggregate_operation_ir_v1(
     if (operation.operation == aggregate_operation_ir_v1::support_contraction) {
         if (!operation.support_identity.valid())
             return aggregate_operation_status_ir_v1::invalid_support;
+        // Scalar dot partials must have additive identity zero. A per-panel
+        // offset would make split-K evaluation depend on the panel count.
+        if (operation.neutral_element != 0.0)
+            return aggregate_operation_status_ir_v1::invalid_neutral_element;
     } else if (!operation.segment_identity.valid()) {
         return aggregate_operation_status_ir_v1::invalid_segments;
     }

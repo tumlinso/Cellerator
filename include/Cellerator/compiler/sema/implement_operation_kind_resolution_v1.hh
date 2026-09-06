@@ -3,6 +3,8 @@
 #include <Cellerator/compute/operation/operation_core_v2/schema.hh>
 
 #include <cstdint>
+#include <optional>
+#include <variant>
 
 namespace cellerator::compiler::sema::v1 {
 
@@ -23,11 +25,26 @@ enum class source_operation_kind : std::uint8_t {
     publication
 };
 
+enum class composition_kind : std::uint8_t {
+    relation_chain, moments, hierarchy, exchange, gradient
+};
+
+enum class effect_kind : std::uint8_t { publication };
+
+using operation_meaning = std::variant<compute::operation::v2::operation_kind,
+    composition_kind, effect_kind>;
+
 struct operation_kind_resolution {
     source_operation_kind source{};
     const char *syntax = nullptr;
-    compute::operation::v2::operation_kind core{};
-    bool requires_composite_lowering = false;
+    operation_meaning meaning;
+
+    // Compositions/effects contain no representative executable opcode.
+    std::optional<compute::operation::v2::operation_kind> primitive() const noexcept {
+        const auto *kind = std::get_if<compute::operation::v2::operation_kind>(
+            &meaning);
+        return kind ? std::optional{*kind} : std::nullopt;
+    }
 };
 
 const operation_kind_resolution *operation_kind_coverage_table() noexcept;
