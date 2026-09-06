@@ -57,6 +57,8 @@ int main() {
     const decomposition::dense_width_interval_v1 intervals[] = {
         {0u, 4u}, {4u, 12u}};
     decomposition::support_embedding_decomposition_v1 value{};
+    value.result = cellerator::compute::operation::support_product_result::edge_channel_product;
+    value.assembly = cellerator::compute::operation::support_product_assembly::concatenate_channels;
     value.decomposition_identity = {60u, 61u};
     value.problem = &operation_problem;
     value.embedding_intervals = intervals;

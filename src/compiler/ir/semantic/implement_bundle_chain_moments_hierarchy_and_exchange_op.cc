@@ -19,6 +19,9 @@ semantic_graph_validation_code_v1 validate_semantic_operation_graph_v1(
     std::unordered_map<std::uint64_t, std::size_t> node_index;
     for (std::size_t index = 0; index < graph.nodes.size(); ++index) {
         const auto& node = graph.nodes[index];
+        if (node.kind < semantic_graph_operation_kind_v1::relation_bundle
+            || node.kind > semantic_graph_operation_kind_v1::typed_exchange)
+            return semantic_graph_validation_code_v1::invalid_node;
         if (!node.identity.valid() || !node_index.emplace(node.identity.low, index).second)
             return semantic_graph_validation_code_v1::invalid_node;
         if (node.input_axes.empty() || node.output_axes.empty() ||
@@ -84,24 +87,24 @@ round_trip_operation_portfolio_graph_v1(const semantic_operation_graph_v1& graph
     return graph;
 }
 
-cellerator::compute::operation::v2::composition_kind
+std::optional<cellerator::compute::operation::v2::composition_kind>
 lower_semantic_graph_kind_v1(semantic_graph_operation_kind_v1 kind) noexcept {
     using result = cellerator::compute::operation::v2::composition_kind;
     switch (kind) {
     case semantic_graph_operation_kind_v1::relation_bundle:
         return result::bundle_to_shared_destination;
     case semantic_graph_operation_kind_v1::relation_chain:
-        return result::normalization_to_relation_apply;
+        return std::nullopt;
     case semantic_graph_operation_kind_v1::paired_moments:
         return result::relation_moments_pair;
     case semantic_graph_operation_kind_v1::incidence_pool:
-        return result::contraction_to_segment;
+        return std::nullopt;
     case semantic_graph_operation_kind_v1::incidence_broadcast:
-        return result::normalization_to_relation_apply;
+        return std::nullopt;
     case semantic_graph_operation_kind_v1::typed_exchange:
         return result::sparse_exchange;
     }
-    return result::relation_apply_to_epilogue;
+    return std::nullopt;
 }
 
 }  // namespace Cellerator::compiler::ir::semantic

@@ -1,4 +1,5 @@
 #include <Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh>
+#include <Cellerator/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op_v1.hh>
 #include <cassert>
 
 using namespace cellerator::compiler::sema::v1;
@@ -29,6 +30,18 @@ int main() {
             assert(std::get_if<primitive_kind>(&entry->meaning) == nullptr);
         }
     }
+    namespace ir = Cellerator::compiler::ir::semantic;
+    using graph_kind = ir::semantic_graph_operation_kind_v1;
+    using composition = cellerator::compute::operation::v2::composition_kind;
+    assert(ir::lower_semantic_graph_kind_v1(graph_kind::relation_bundle)
+        == composition::bundle_to_shared_destination);
+    assert(ir::lower_semantic_graph_kind_v1(graph_kind::paired_moments)
+        == composition::relation_moments_pair);
+    assert(ir::lower_semantic_graph_kind_v1(graph_kind::typed_exchange)
+        == composition::sparse_exchange);
+    for (auto kind : {graph_kind::relation_chain, graph_kind::incidence_pool,
+            graph_kind::incidence_broadcast, static_cast<graph_kind>(255)})
+        assert(!ir::lower_semantic_graph_kind_v1(kind));
     assert(!resolve_operation_kind(static_cast<source_operation_kind>(0)));
     assert(!resolve_operation_kind(static_cast<source_operation_kind>(255)));
 }
