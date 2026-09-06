@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-F04: Publish a source-origin conformance test artifact
 
-Task revision: `6826`; current project revision is in `todo-status.md`.
+Task revision: `6830`; current project revision is in `todo-status.md`.
 
 ## Objective
 Provide a real origin-parity test route and candid language capability status.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.

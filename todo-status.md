@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6827`
+Project revision: `6830`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1028,11 +1028,11 @@ Project revision: `6827`
 - `CE-SS1-A01` | status: done | execution: closed | next: Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.
 - `CE-SS1-A02` | status: done | execution: closed | next: Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.
 - `CE-SS1-A03` | status: done | execution: closed | next: Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.
-- `CE-SS1-A04` | status: in_progress | execution: claimed | next: Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.
+- `CE-SS1-A04` | status: done | execution: closed | next: Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.
 - `CE-SS1-F01` | status: done | execution: closed | next: Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.
 - `CE-SS1-F02` | status: done | execution: closed | next: Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.
 - `CE-SS1-F03` | status: done | execution: closed | next: Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.
-- `CE-SS1-F04` | status: in_progress | execution: claimed | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
+- `CE-SS1-F04` | status: done | execution: closed | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
 - `CE-SS1-I03` | status: done | execution: closed | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
 - `CE-SS1-I04` | status: planned | execution: ready | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: planned | execution: ready | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
