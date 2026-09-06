@@ -86,6 +86,7 @@ def validate(receipt, expected, base):
         require(type(run['exit_code']) is int and run['exit_code'] == 0, 'nonzero/invalid exit')
         require(run['fixture_identity'] == want['fixture_identity'] and run['numerical_policy'] == want['numerical_policy'], 'fixture/profile mismatch')
         binary = artifact(run['binary'], base, want['binary_sha256'])
+        require(run['argv'] == want['argv'], 'run command differs from external expectation')
         require(run['argv'] and str(binary.resolve()) in run['argv'], 'argv does not name tested binary')
         require(run['tool'] in ('memcheck', 'racecheck', 'synccheck'), 'unsupported sanitizer claim')
         require('--tool' in run['argv'] and run['argv'][run['argv'].index('--tool') + 1] == run['tool'], 'argv/tool mismatch')
@@ -107,6 +108,7 @@ def validate_samples(samples):
         require(row['reset'] == 'logical_f16_upload_outside_timing', 'missing reset outside timing')
         require(row['fixture_fnv1a64'] and row['seed'], 'missing fixture provenance')
         require(row['profile'] in ('half', 'full_f32'), 'unknown numerical policy')
+        require(row['width'] in (1, 16) and (row['width'] != 1 or row['route'] == 'sparse'), 'unsupported width/route')
         require(row['route'] in ('sparse', 'hybrid') and (row['route'] != 'hybrid' or row['profile'] == 'half'), 'ineligible route/profile')
         identity_key = (row['fixture'], row['modules'], row['width'])
         identity = (row['fixture_fnv1a64'], row['seed'])
@@ -121,7 +123,7 @@ def validate_samples(samples):
         group.append(row)
         if row['width'] == 16:
             require(row['updates'] == row['gradient_launches'] == row['horizon'], 'missing actual mutation')
-            if row['route'] == 'hybrid' and row['fixture'] != 'irregular':
+            if row['route'] == 'hybrid':
                 require(row['wmma_launches'] > 0, 'missing actual WMMA')
                 if row['fixture'] == 'mixed':
                     require(row['residual_launches'] > 0, 'missing mixed residual')
@@ -144,10 +146,10 @@ class TamperTests(unittest.TestCase):
         self.expected = {'kind': 'device_acceptance', 'source_commit': 'a' * 40, 'source_dirty_paths': {}, 'gpu_uuid': 'GPU-test', 'build_config': 'Release-sm70', 'required_runs': []}
         self.receipt = dict(self.expected, gpu_compute_capability='7.0', gpu_name='Tesla V100', device_executed=True, skipped=False, tool_versions=dict(compiler='g++12', cuda='12.9', driver='580', compute_sanitizer='12.9'), build_argv=['nvcc', '-arch=sm_70'], controller_lease={'path': 'lease.json', 'sha256': digest(lease)}, controller_log={'path': 'mutex.log', 'sha256': digest(mutex)}, runs=[])
         for tool in ('memcheck', 'racecheck', 'synccheck'):
-            want = dict(test='numerics', tool=tool, binary_sha256=binary_sha, fixture_identity='dense-v1', numerical_policy='half')
+            want = dict(test='numerics', tool=tool, binary_sha256=binary_sha, fixture_identity='dense-v1', numerical_policy='half', argv=['compute-sanitizer', '--tool', tool, str(self.base / 'binary')])
             self.expected['required_runs'].append(want)
             log = '========= COMPUTE-SANITIZER\n' + ('========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n' if tool == 'racecheck' else '========= ERROR SUMMARY: 0 errors\n')
-            self.receipt['runs'].append(dict(want, status='completed', executed=True, skipped=False, exit_code=0, binary={'path': 'binary', 'sha256': binary_sha}, argv=['compute-sanitizer', '--tool', tool, str(self.base / 'binary')], log=log, log_sha256=digest(log.encode()), stdout='checks PASS\n', stdout_sha256=digest(b'checks PASS\n'), stderr='', stderr_sha256=digest(b'')))
+            self.receipt['runs'].append(dict(want, status='completed', executed=True, skipped=False, exit_code=0, binary={'path': 'binary', 'sha256': binary_sha}, log=log, log_sha256=digest(log.encode()), stdout='checks PASS\n', stdout_sha256=digest(b'checks PASS\n'), stderr='', stderr_sha256=digest(b'')))
 
     def reject(self, mutation):
         candidate = copy.deepcopy(self.receipt)
@@ -172,6 +174,9 @@ class TamperTests(unittest.TestCase):
         for field, value in [('exit_code', 1), ('exit_code', False), ('status', 'timeout'), ('skipped', True), ('executed', False), ('numerical_policy', 'full_f32'), ('fixture_identity', 'other'), ('log', 'source says WMMA'), ('log_sha256', '0' * 64), ('argv', ['true'])]:
             with self.subTest(field=field):
                 self.reject(lambda r: r['runs'][0].update({field: value, 'passed': True}))
+
+    def test_changed_executable(self):
+        self.reject(lambda r: r['runs'][0].update(argv=['echo', '--tool', 'memcheck', str(self.base / 'binary')]))
 
     def test_conflicting_and_missing_summaries(self):
         for text in ['COMPUTE-SANITIZER\n', 'COMPUTE-SANITIZER\nERROR SUMMARY: 0 errors\nERROR SUMMARY: 1 errors\n', 'COMPUTE-SANITIZER\nERROR SUMMARY: 0 errors\nSKIPPED no GPU\n']:
@@ -205,9 +210,10 @@ class TamperTests(unittest.TestCase):
         for key in ('topology_prepare_ms', 'gradient_prepare_ms', 'resident_gpu_ms', 'resident_wall_ms', 'reset_ms', 'h2d_ms', 'observation_d2d_d2h_ms'):
             row[key] = 1.0
         self.assertTrue(validate_samples([row]))
-        for field, value in [('reset', 'no_reset'), ('repeats', 2), ('correct', False), ('wmma_launches', 0), ('residual_launches', 0), ('updates', 15), ('resident_gpu_ms', float('nan'))]:
+        for field, value in [('reset', 'no_reset'), ('repeats', 2), ('correct', False), ('wmma_launches', 0), ('residual_launches', 0), ('updates', 15), ('width', 32), ('width', 1), ('resident_gpu_ms', float('nan'))]:
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate_samples([dict(row, **{field: value})])
+        with self.assertRaises(ValueError): validate_samples([dict(row, fixture='irregular', wmma_launches=0)])
         with self.assertRaises(ValueError): validate_samples([row, row])
         with self.assertRaises(ValueError): validate_samples([row, dict(row, route='sparse', fixture_fnv1a64='changed')])
 
