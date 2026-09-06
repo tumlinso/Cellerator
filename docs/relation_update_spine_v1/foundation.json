@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task_id": "CE-RU1-I02",
+  "observed_at": "2026-09-06T16:14:46.297541+00:00",
+  "source_commit": "708b8465d9312c1c085fcb66a13a2e8a09add1de",
+  "source_dirty_paths": [
+    " M CMakeLists.txt",
+    "?? tests/relation_update_spine_v1/CMakeLists.txt"
+  ],
+  "accepted_core_commits": [
+    "79d4ec6b",
+    "3f35f757",
+    "708b8465"
+  ],
+  "contract_hashes": {
+    "include/Cellerator/compute/operation/relation_calculus.hh": "57284dc46d870122fbd9e5ab0f69417f86f49daf33ec4c8765f99d67fb55f152",
+    "include/Cellerator/compute/operation/relation_update.hh": "ad485b055c07dadacfeca815fd236799cab95bda817355b7e98ad160f4b49f7f",
+    "include/Cellerator/compute/operation/prepared_relation.hh": "821c747c04c2a7a9fd972472044ab04fe28d100790e34ed212c90594ce1b0662"
+  },
+  "tool_versions": {
+    "cmake": "cmake version 3.28.3",
+    "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+  },
+  "commands": [
+    {
+      "argv": "cmake -S . -B build-ru1-host -DCELLERATOR_ENABLE_CUDA=OFF -DCELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1=ON -DCMAKE_BUILD_TYPE=Release",
+      "exit_code": 0
+    },
+    {
+      "argv": "cmake --build build-ru1-host -j $(nproc) --target ceRu1CalculusTest ceSpineCoreTest",
+      "exit_code": 0
+    },
+    {
+      "argv": "ctest --test-dir build-ru1-host -R '^ru1_calculus$' --output-on-failure",
+      "exit_code": 0,
+      "test_count": 1,
+      "skipped": 0
+    },
+    {
+      "argv": "./build-ru1-host/ceSpineCoreTest",
+      "exit_code": 0
+    },
+    {
+      "argv": "g++ -std=c++17 -Wall -Wextra -Werror -Iinclude -I/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include -fsyntax-only /tmp/ce-ru1-i02-header.cc",
+      "exit_code": 0,
+      "input": "#include <Cellerator/compute/operation/relation_update.hh>\nint main() { return 0; }\n"
+    }
+  ],
+  "host_test_cases": 108,
+  "arithmetic_profiles": [
+    "full_f32",
+    "round_operands_f16_rne"
+  ],
+  "implementation_boundary": "Canonical validation/equivalence/effect sequencing links actual code; native update/readiness APIs are internal pending implementations, not advertised as executable by this host result.",
+  "build_boundary": "Opt-in RU1 enables existing semantic spine. No planning/contracts include path or installed SDK target.",
+  "gpu_execution_in_this_task": false,
+  "full_epic_complete": false
+}
