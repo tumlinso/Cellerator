@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6893`
+Project revision: `6935`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1559,10 +1559,10 @@ Project revision: `6893`
 - `CE-RU1-C01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-F01` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-F02` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-F03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-F04` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-F01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-F02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-F03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-F04` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-I01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-I02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-I03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
@@ -1571,24 +1571,24 @@ Project revision: `6893`
 - `CE-RU1-I06` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-I07` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-I08` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-N01` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-N02` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-N03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-N04` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-N01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-N02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-N03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-N04` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-N05` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-N06` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-R01` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-R02` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-R03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-V01` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-R01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-R02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-R03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-V01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-V02` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-V03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-V04` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-V05` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-W01` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-W02` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-W03` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
-- `CE-RU1-W04` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-W01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-W02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-W03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
+- `CE-RU1-W04` | kind: task | status: in_progress | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-W05` | kind: task | status: planned | parent: CE-RU1-0000 | objective: 
 - `CP-MATH-00` | kind: task | status: superseded | parent: - | objective: Superseded by CE-ARCH-00 biological execution recovery.
 - `CP-MATH-00A` | kind: integration_task | status: superseded | parent: - | objective: Reconcile the empty live v2 project and audited CP-BP source at historical baseline 8848f62254605025ac6e96f4cc6a8efbcc803d43; freeze the four consumed CP-BP interfaces without performance work or source changes.
