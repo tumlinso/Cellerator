@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.20)
+project(ce_spine_verification LANGUAGES CXX)
+get_filename_component(SPINE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_executable(ceSpineOracleTest oracle_test.cc)
+add_executable(ceSpineContractProbes contract_probes.cc "${SPINE_ROOT}/src/compute/operation/relation_semantics.cc")
+target_include_directories(ceSpineContractProbes PRIVATE "${SPINE_ROOT}/include")
+target_compile_features(ceSpineOracleTest PRIVATE cxx_std_17)
+target_compile_features(ceSpineContractProbes PRIVATE cxx_std_17)
