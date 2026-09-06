@@ -17,15 +17,31 @@ foreach(name transpose_backward_candidate feature_major_small_n_candidate transp
   endif()
   list(APPEND PROVIDER_LIBRARIES "${archive}")
 endforeach()
-add_library(spine_semantics STATIC "${SPINE_ROOT}/src/compute/operation/relation_semantics.cc")
+add_library(spine_semantics STATIC
+  "${SPINE_ROOT}/src/compute/operation/relation_semantics.cc"
+  "${SPINE_ROOT}/src/compute/operation/relation_calculus.cc")
 target_include_directories(spine_semantics PUBLIC "${SPINE_ROOT}/include")
+set(RU1_SM70 "${SPINE_ROOT}/src/compute/architecture/providers/nvidia/sm70")
+add_library(spine_update_support STATIC
+  "${SPINE_ROOT}/src/runtime/relation_value_readiness.cu"
+  "${RU1_SM70}/transpose/relation_n16.cu"
+  "${RU1_SM70}/edge_value_gradient/relation_gradient.cu"
+  "${RU1_SM70}/edge_value_gradient/relation_value_update.cu"
+  "${RU1_SM70}/edge_value_gradient/gradient_pack.cu"
+  "${RU1_SM70}/edge_value_gradient/hybrid_gradient.cu"
+  "${RU1_SM70}/edge_value_gradient/gradient_cover.cc"
+  "${RU1_SM70}/edge_value_gradient/gradient_dispatch.cc"
+  "${RU1_SM70}/contract/rectangular_mma_contract_v1.cu"
+  "${RU1_SM70}/contract/sparse_contract_v1.cu"
+  "${RU1_SM70}/contract/exact_validation_v1.cc")
+target_link_libraries(spine_update_support PUBLIC spine_semantics ${PROVIDER_LIBRARIES} CUDA::cudart)
 foreach(name adapter preparation generation forward transpose lifecycle overhead)
   add_executable(spine_${name}_test "${name}_test.cu")
   target_include_directories(spine_${name}_test PRIVATE "${SPINE_ROOT}/include")
   target_compile_options(spine_${name}_test PRIVATE -UNDEBUG)
-  target_link_libraries(spine_${name}_test PRIVATE spine_semantics ${PROVIDER_LIBRARIES} CUDA::cudart)
+  target_link_libraries(spine_${name}_test PRIVATE spine_update_support)
 endforeach()
 add_library(spine_native STATIC "${SPINE_ROOT}/src/compute/operation/prepared_relation.cu")
-target_link_libraries(spine_native PUBLIC spine_semantics ${PROVIDER_LIBRARIES} CUDA::cudart)
+target_link_libraries(spine_native PUBLIC spine_update_support)
 add_executable(spine_regulatory_reuse "${SPINE_ROOT}/examples/semantic_spine_v1/regulatory_reuse.cc")
 target_link_libraries(spine_regulatory_reuse PRIVATE spine_native)

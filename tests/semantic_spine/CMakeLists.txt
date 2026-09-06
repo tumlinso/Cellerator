@@ -77,7 +77,7 @@ spine_suite(ceSpineAlgebraTest 0 ceSpineAlgebra_support_product ceSpineAlgebra_c
 set(native_tests)
 foreach(name adapter preparation generation forward transpose lifecycle overhead)
     spine_test(ceSpineNative_${name} tests/semantic_spine/native/${name}_test.cu)
-    target_link_libraries(ceSpineNative_${name} PRIVATE Cellerator::relation_semantics
+    target_link_libraries(ceSpineNative_${name} PRIVATE cellerator_relation_update_support
         Cellerator::feature_major_small_n_candidate Cellerator::transpose_backward_candidate CUDA::cudart)
     list(APPEND native_tests ceSpineNative_${name})
 endforeach()

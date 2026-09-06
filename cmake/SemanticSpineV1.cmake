@@ -6,6 +6,27 @@ target_include_directories(cellerator_relation_semantics PUBLIC
     "${PROJECT_SOURCE_DIR}/include")
 target_compile_features(cellerator_relation_semantics PUBLIC cxx_std_17)
 
+# The prepared pair always consumes calculus and the RU1 runtime support.
+add_library(cellerator_relation_calculus STATIC src/compute/operation/relation_calculus.cc)
+add_library(Cellerator::relation_calculus ALIAS cellerator_relation_calculus)
+target_link_libraries(cellerator_relation_calculus PUBLIC Cellerator::relation_semantics)
+target_compile_features(cellerator_relation_calculus PUBLIC cxx_std_17)
+add_library(cellerator_relation_gradient_cover STATIC
+    src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.cc)
+target_include_directories(cellerator_relation_gradient_cover PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_compile_features(cellerator_relation_gradient_cover PUBLIC cxx_std_17)
+
+if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
+    add_library(cellerator_relation_update_compiler STATIC
+        src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc
+        src/compiler/sema/relation_update_spine_bridge.cc
+        src/compiler/ir/realization/relation_update_spine.cc
+        src/compiler/frontend/source/build_a_lossless_raw_token_stream.cc
+        src/compiler/frontend/parser/parse_relation_application.cc)
+    target_link_libraries(cellerator_relation_update_compiler PUBLIC Cellerator::relation_calculus)
+    target_compile_features(cellerator_relation_update_compiler PUBLIC cxx_std_17)
+endif()
+
 if(CELLERATOR_BUILD_TESTS)
     add_executable(ceSpineCoreTest tests/semantic_spine/core/descriptor_test.cc)
     target_link_libraries(ceSpineCoreTest PRIVATE Cellerator::relation_semantics)
@@ -21,11 +42,26 @@ endif()
 # Repository-local native execution and source-origin bridge.
 # The semantic foundation remains available to the host-only configuration.
 if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+    add_library(cellerator_relation_update_support STATIC
+        src/runtime/relation_value_readiness.cu
+        src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu
+        src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cu
+        src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu
+        src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu
+        src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cu
+        src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_dispatch.cc)
+    target_link_libraries(cellerator_relation_update_support PUBLIC
+        Cellerator::relation_calculus cellerator_relation_gradient_cover
+        Cellerator::architecture_provider Cellerator::transpose_backward_candidate
+        Cellerator::feature_major_small_n_candidate CUDA::cudart)
+    target_compile_features(cellerator_relation_update_support PUBLIC cxx_std_17)
+    set_target_properties(cellerator_relation_update_support PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
     add_library(cellerator_prepared_relation_cuda STATIC
         src/compute/operation/prepared_relation.cu)
     add_library(Cellerator::prepared_relation_cuda ALIAS cellerator_prepared_relation_cuda)
+    add_library(cellerator_relation_update_core ALIAS cellerator_prepared_relation_cuda)
     target_link_libraries(cellerator_prepared_relation_cuda PUBLIC
-        Cellerator::relation_semantics
+        cellerator_relation_update_support
         Cellerator::feature_major_small_n_candidate
         Cellerator::transpose_backward_candidate CUDA::cudart)
     target_compile_features(cellerator_prepared_relation_cuda PUBLIC cxx_std_17)

@@ -114,3 +114,5 @@ migrate that target to current conformance before the full build: the old test
 asserts the removed training authority and publication alias. Useful closure,
 identity, numerical and invalid-order checks are preserved and strengthened in
 the new suite. No wider training implementation or legacy kernel was removed.
+
+The immutable recipe header `relation_update_spine.hh` is CUDA-free. Runtime callers include `relation_update_spine_cuda.hh` for launch bindings and the stateless core adapter. Host-only compilation does not discover the CUDA toolkit.
