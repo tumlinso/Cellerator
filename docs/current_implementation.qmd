@@ -4,18 +4,28 @@ title: "Current Implementation"
 
 ## Current status — 2026-09-06
 
-Semantic Spine v1 is complete as a bounded witness: native C++ and the existing
-parser/Sema/IR source slice share a canonical relation descriptor. The V100 path
-executes real forward/transpose operations and reuses a prepared pair. The
-witness uses N1, f16 relation values, and f32 arithmetic, with explicit rejection
-of unsupported requests. It does not establish a universal performance win.
+Relation Update Spine v1 extends the retained Semantic Spine witness to a
+bounded N16 forward/transpose/VJP/update cycle on one prepared relation. Native
+C++ and an independently parsed/lowered closure use shared calculus and execute
+real sm70 kernels. One physical f16 value plane supports full-f32 or explicitly
+half-rounded gradient arithmetic, caller delta and FMA gradient-step updates,
+event-backed next-generation publication, and one external const read lease.
+The N1 read-only graph path remains supported.
 
-The [completion evidence](semantic_spine_v1/completion.json) and
-[deferred obligations](semantic_spine_v1/deferred.md) record the acceptance and
-limits. Full `.cell` source-to-device compilation, module loading, general
-contraction/gradient execution, broad dtype/width coverage, and SDK stabilization
-remain deferred. The preserved `.ceh` umbrella's conversion to `.cell` does not
-implement modules. No follow-on epic has been activated.
+The exact rectangular WMMA route, extraction and sparse residual execute and
+pass independent references, but the measured synthetic lifetimes show no
+hybrid crossover. Automatic dispatch remains sparse. Retained fused
+bias/ReLU/RMS training and Torch consumers remain connected; they share the
+core N16 transpose arithmetic.
+
+The [RU1 capability record](relation_update_spine_v1/capabilities.md),
+[completion evidence](relation_update_spine_v1/completion.json), and
+[performance analysis](relation_update_spine_v1/evidence/performance_analysis.md)
+record the accepted scope. Full `.cell` compilation/module loading, arbitrary N,
+a general optimizer framework, graph-wide planning and mutable-cycle graph
+capture remain deferred. The earlier
+[Semantic Spine acceptance](semantic_spine_v1/completion.json) remains historical
+evidence for the preserved N1 path. No follow-on epic is activated by RU1.
 
 ## Retained CE-ARCH/CE-LIVE snapshot
 
