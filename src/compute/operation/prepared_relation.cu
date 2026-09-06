@@ -392,7 +392,8 @@ bool overlaps(const void* a,std::uint64_t a_bytes,const void* b,std::uint64_t b_
 }
 bool protected_overlap(const prepared_relation_pair& p,const void* data,std::uint64_t bytes) noexcept {
     auto edges=p.forward.semantic.topology.edge_count;
-    return overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.logical_map,edges*4)
+    return (p.hybrid&&gradient_provider::overlaps_hybrid_storage(*p.hybrid,data,bytes))
+        || overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.logical_map,edges*4)
         || overlaps(data,bytes,p.forward_payload,p.forward_view.header.payload_bytes)
         || overlaps(data,bytes,p.transpose_payload,p.transpose_view.header.payload_bytes)
         || overlaps(data,bytes,p.device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
@@ -554,20 +555,22 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
         auto result=limit?gradient_provider::prepare_hybrid_gradient(p.physical_edges.data(),
             {edges,0,static_cast<std::uint32_t>(p.physical_edges.size()),
              static_cast<std::uint32_t>(calculus.forward.topology.source.extent),
-             static_cast<std::uint32_t>(calculus.forward.topology.destination.extent)},nullptr,0,limit,stream,&hybrid)
+             static_cast<std::uint32_t>(calculus.forward.topology.destination.extent)},nullptr,0,limit,stream,&hybrid,options.scratch_byte_limit?options.scratch_byte_limit-scratch:~std::uint64_t{0})
              :gradient_contract::status_v1::unsupported;
-        if(result==gradient_contract::status_v1::cuda_failure){cleanup();return {status_code::cuda_failure,"hybrid preparation failed"};}
-        if(hybrid)hybrid_report=gradient_provider::inspect_hybrid_gradient(*hybrid);
-        if(options.scratch_byte_limit && scratch+hybrid_report.scratch_bytes>options.scratch_byte_limit) {
-            gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};
+        if(result!=gradient_contract::status_v1::success) {
+            cleanup();
+            if(result==gradient_contract::status_v1::unsupported)return {status_code::insufficient_capacity,"hybrid cover or scratch exceeds preparation budget"};
+            if(result==gradient_contract::status_v1::invalid_argument)return {status_code::invalid_argument,"hybrid cover metadata is invalid"};
+            return {status_code::cuda_failure,"hybrid preparation failed"};
         }
+        if(hybrid)hybrid_report=gradient_provider::inspect_hybrid_gradient(*hybrid);
     }
     gradient_provider::gradient_selection selection{};
     auto choice=options.route==gradient_route::force_hybrid?gradient_provider::gradient_choice::force_hybrid:
         options.route==gradient_route::force_sparse?gradient_provider::gradient_choice::force_sparse:gradient_provider::gradient_choice::automatic;
     auto selected=gradient_provider::select_gradient_route(calculus.gradient==gradient_arithmetic::round_operands_f16_rne,
         choice,hybrid_report.tile_count,selection);
-    if(selected!=gradient_contract::status_v1::success){gradient_provider::destroy_hybrid_gradient(hybrid);cleanup();return {status_code::unsupported_semantics,"requested gradient route is ineligible"};}
+    if(selected!=gradient_contract::status_v1::success){gradient_provider::destroy_hybrid_gradient(hybrid);cleanup();return {status_code::unsupported_semantics,selection.reason?selection.reason:"requested gradient route is ineligible"};}
     // Conservative automatic selection may reject promotion after cold cover
     // discovery. Retain no unused panel storage in that case.
     if(!selection.use_hybrid){gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};}
