@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "task": "CE-RU1-I01",
+  "observed_at": "2026-09-06T16:04:12.591352+00:00",
+  "source_head": "f75c001ce819910efacfcc03d0b313f017a2598f",
+  "tested_root": "/home/tumlinson/Cellerator",
+  "artifact_workspace": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+  "authority": {
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "revision_at_claim": 6881,
+    "run": "CE-RU1-RUN-V1",
+    "lane": "CE-RU1-L-INTEGRATE"
+  },
+  "dirty_state_at_recording": "M .todo-orchestrator/state.snapshot.json\n M todo-status.md\n M todos.md\n M todos/ce-ru1-i01.md",
+  "worktrees": "worktree /home/tumlinson/Cellerator\nHEAD f75c001ce819910efacfcc03d0b313f017a2598f\nbranch refs/heads/main\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-crossop\nHEAD a8a6eeb3320bde7a8c0c6c135bcee1f9f0dd3822\nbranch refs/heads/jbc/ce-crossop\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-decomposition\nHEAD 4702972026f85bcf9ba47a252ac2fffca2a1a6bc\nbranch refs/heads/jbc/ce-decomposition\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-external-cost\nHEAD d4268d3f46d80e941fe4e5819fcc4cbd3803f219\nbranch refs/heads/jbc/ce-external-cost\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-fragment\nHEAD 8a9376598f86e2df33008726f40b7fbe4dc0c2c4\nbranch refs/heads/jbc/ce-fragment\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-interfaces\nHEAD f4afd1da624f23a6a9428a2b48bbcfe5fe99f3ba\nbranch refs/heads/jbc/ce-interfaces\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-multiatom\nHEAD 9dd38f34a25a37c5686bac095c783ed26bf7bb4e\nbranch refs/heads/jbc/ce-multiatom\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-planes\nHEAD 774a41977eeea757816af019e4f4c772106481ef\nbranch refs/heads/jbc/ce-planes\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-resumption\nHEAD f7f2015be3ea8a44d12cd4a9d6db37199f4509a1\nbranch refs/heads/jbc/ce-resumption\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-jbc-l-verify-integrate\nHEAD 3e3c674780b39b00843c9cd1fafbcc44f79ad3c5\nbranch refs/heads/jbc/ce-integrate\n\nworktree /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate\nHEAD f75c001ce819910efacfcc03d0b313f017a2598f\nbranch refs/heads/codex/ce-ru1-l-integrate",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/prepared_relation.hh": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491",
+    "src/compute/operation/prepared_relation.cu": "824b0814240e8e1c62f3d2b876caf4e906cd70a369a8071b5e04fcefc1ddcf28",
+    "src/runtime/value_readiness.cu": "818cef2a461d8983863fe61f682c67436652b0fcc80376c20a515d91884a9434",
+    "tests/semantic_spine/CMakeLists.txt": "094c6a3e9fcea98000097f8122e5731e8ab95309a0878722a8114ac3ce6077c6",
+    "tests/semantic_spine/native/lifecycle_test.cu": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93",
+    "src/compute/training/native_training_slice.cu": "40385c54f29e1453966312426d8bef1739625ce6af9867450c58180c2921778c"
+  },
+  "build": {
+    "build_argv": [
+      "cmake",
+      "--build",
+      "build-ss1",
+      "-j",
+      "80",
+      "--target",
+      "ceSpineCoreTest",
+      "ceSpineAlgebraTest",
+      "ceSpineFrontendTest",
+      "ceSpineNativeTest",
+      "ceSpineCrossOriginTest",
+      "ceSemanticSpineDemo"
+    ]
+  },
+  "build_exit": 0,
+  "build_mode": "Release sm70, assertions enabled in spine tests",
+  "commands": [
+    {
+      "argv": [
+        "nvidia-smi",
+        "--query-gpu=name,uuid,driver_version,compute_cap",
+        "--format=csv"
+      ],
+      "exit": 0,
+      "output": "name, uuid, driver_version, compute_cap\nTesla V100-SXM2-16GB, GPU-21131915-1488-23af-38dd-1743ae1f5cc8, 580.173.02, 7.0\nTesla V100-SXM2-16GB, GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505, 580.173.02, 7.0\nTesla V100-SXM2-16GB, GPU-d745da9c-7649-8334-41f1-483afa6f3206, 580.173.02, 7.0\nTesla V100-SXM2-16GB, GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a, 580.173.02, 7.0\n"
+    },
+    {
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0\n"
+    },
+    {
+      "argv": [
+        "c++",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSpineCoreTest"
+      ],
+      "exit": 0,
+      "output": "semantic descriptor tests passed\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSpineAlgebraTest"
+      ],
+      "exit": 0,
+      "output": "RUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_support_product\nK=2 whole_dot=-9 split_dot=-9 edge_channels=2\nK=17 whole_dot=2261 split_dot=2261 edge_channels=17\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_classification\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_support\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_classification\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_graph\nportfolio_kinds=6 explicit_intermediate_axes=true\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_aggregate\ncontraction=10 segments=2 softmax_reference=matched\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSpineFrontendTest"
+      ],
+      "exit": 0,
+      "output": "RUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_lowering\napply_and_transpose=typed format_independent=true\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_source_slice\nsource_slice: parser/Sema/IR canonical equivalence and negative inputs passed; full .cell execution deferred\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_diagnostic\ndiagnostics: identity high bits, order, effects, empty shapes, independent arithmetic, alias representation and source ranges passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_numeric_transport\nnumeric transport: canonical precision/nonfinite parity, independent output, restricted arithmetic unavailable, copy/move and reuse passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_legacy\napply_and_transpose=typed format_independent=true\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSpineNativeTest",
+        "--require-sm70"
+      ],
+      "exit": 0,
+      "output": "RUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_adapter\nadapter identities, orientation, numeric separation and capability rejection passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_preparation\nsm70 arbitrary nonsquare/partial-tile/singleton/empty preparation and real FMP1/CTP1 execution passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_generation\nsm70 device generation packing, stale/order/epoch rejection and two-generation FMP1/CTP1 math passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_forward\nsm70 checked forward dispatch, independent oracle and rejection sentinel preservation passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_transpose\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_lifecycle\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineNative_overhead\n{\"device\":\"Tesla V100-SXM2-16GB\",\"rows\":35,\"cols\":67,\"edges\":52,\"cold_us\":210.691,\"refresh\":{\"host_us\":3.03084375,\"event_us\":3.13599992,\"resident_us\":3.4409375},\"orientations\":[{\"direction\":\"forward\",\"direct\":[{\"host_us\":2.11291016,\"event_us\":16.5059986,\"resident_us\":16.5246309},{\"host_us\":2.10263867,\"event_us\":16.5040016,\"resident_us\":16.5174238},{\"host_us\":2.09093164,\"event_us\":16.5059986,\"resident_us\":16.5192617},{\"host_us\":1.97624414,\"event_us\":16.5059986,\"resident_us\":16.5180547},{\"host_us\":2.16509766,\"event_us\":16.5020008,\"resident_us\":16.5153633},{\"host_us\":2.09053125,\"event_us\":16.5040016,\"resident_us\":16.5183437},{\"host_us\":1.99047266,\"event_us\":16.5059986,\"resident_us\":16.520168},{\"host_us\":2.01942578,\"event_us\":16.5020008,\"resident_us\":16.5158594},{\"host_us\":1.98148242,\"event_us\":16.5059986,\"resident_us\":16.5198613}],\"adapter\":[{\"host_us\":2.69364648,\"event_us\":16.5079994,\"resident_us\":16.5217813},{\"host_us\":2.65691992,\"event_us\":16.5020008,\"resident_us\":16.5156484},{\"host_us\":2.55892383,\"event_us\":16.5040016,\"resident_us\":16.5206113},{\"host_us\":2.58104492,\"event_us\":16.5040016,\"resident_us\":16.5180547},{\"host_us\":2.58507031,\"event_us\":16.5020008,\"resident_us\":16.515623},{\"host_us\":2.64167969,\"event_us\":16.5020008,\"resident_us\":16.5168066},{\"host_us\":2.59241602,\"event_us\":16.5040016,\"resident_us\":16.5170488},{\"host_us\":2.58443164,\"event_us\":16.5020008,\"resident_us\":16.5175391},{\"host_us\":2.5791875,\"event_us\":16.5040016,\"resident_us\":16.5183984}]},{\"direction\":\"transpose\",\"direct\":[{\"host_us\":2.10444727,\"event_us\":2.67799997,\"resident_us\":2.69179688},{\"host_us\":2.14712695,\"event_us\":2.67400002,\"resident_us\":2.68980859},{\"host_us\":2.04945117,\"event_us\":2.6559999,\"resident_us\":2.66863281},{\"host_us\":1.98571484,\"event_us\":2.65400004,\"resident_us\":2.66684961},{\"host_us\":1.97304688,\"event_us\":2.66799998,\"resident_us\":2.68266016},{\"host_us\":1.99537109,\"event_us\":2.6559999,\"resident_us\":2.66807227},{\"host_us\":1.98238086,\"event_us\":2.64999986,\"resident_us\":2.66523437},{\"host_us\":1.9970918,\"event_us\":2.6559999,\"resident_us\":2.66776758},{\"host_us\":1.98920898,\"event_us\":2.65400004,\"resident_us\":2.66716797}],\"adapter\":[{\"host_us\":2.74222461,\"event_us\":2.79799986,\"resident_us\":2.81215625},{\"host_us\":2.56952148,\"event_us\":2.61000013,\"resident_us\":2.62323633},{\"host_us\":2.60908398,\"event_us\":2.61800003,\"resident_us\":2.63101758},{\"host_us\":2.83677734,\"event_us\":2.8440001,\"resident_us\":2.85766602},{\"host_us\":2.67431641,\"event_us\":2.69400001,\"resident_us\":2.70811719},{\"host_us\":2.55439648,\"event_us\":2.61599994,\"resident_us\":2.62882422},{\"host_us\":2.57407813,\"event_us\":2.60800004,\"resident_us\":2.62168359},{\"host_us\":2.64445508,\"event_us\":2.6960001,\"resident_us\":2.70845508},{\"host_us\":2.5623457,\"event_us\":2.62400007,\"resident_us\":2.63827734}]}],\"correctness\":true,\"topology_preparations\":1,\"value_refreshes\":33}\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSpineCrossOriginTest",
+        "--require-sm70"
+      ],
+      "exit": 0,
+      "output": "Device Tesla V100-SXM2-16GB sm_70\nnative origin candidates: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nsource origin candidates: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nnative origin candidates: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nsource origin candidates: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\ncross-origin real GPU conformance passed\n"
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Cellerator/build-ss1/ceSemanticSpineDemo",
+        "--require-sm70"
+      ],
+      "exit": 0,
+      "output": "Device: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n"
+    }
+  ],
+  "controller": {
+    "classification": "decision-result",
+    "evidence_id": "8a8308bb-c0c9-41b2-bbeb-8b8962da1b1f",
+    "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/4b450bc6-711c-4602-857e-5e6b78e42581/lease.json",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded",
+    "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/4b450bc6-711c-4602-857e-5e6b78e42581/foreground.stderr.txt",
+    "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/4b450bc6-711c-4602-857e-5e6b78e42581/foreground.stdout.txt"
+  },
+  "lease": {
+    "format": "CUDA-FOREGROUND-LEASE/1",
+    "owner_id": "foreground:a750e97c-e899-48dd-b00c-bf75d986447e",
+    "project_root": "/home/tumlinson/Cellerator",
+    "pid": 604803,
+    "resource_ids": [
+      "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ],
+    "observed_unix": 1788710567.7296548,
+    "state": "active"
+  },
+  "raw_stdout_sha256": "91681b82724b57de564beeb0a35852a34e40111cae518abe56ecffc1f5cd8230",
+  "numerical_profile": "N1 f16 relation weights, f32 input/multiply/accumulation; original oracle tolerances unchanged",
+  "graph_regression": {
+    "target": "ceSpineNative_lifecycle",
+    "source": "tests/semantic_spine/native/lifecycle_test.cu",
+    "covered": "32 generations, rejection of captured publication, fixed-value read-only capture/replay and exact output",
+    "exit": 0
+  },
+  "preexisting_failures": [
+    {
+      "kind": "observation_timeout",
+      "detail": "Initial GPU quiescence window expired with 2 of 3 required idle samples. Rerun with 60-second window retained 3-sample requirement and passed; no external code changed."
+    }
+  ],
+  "limitations": [
+    "No RU1 N16/update/WMMA/readiness execution claimed by N1 baseline.",
+    "Sanitizer not rerun for unchanged baseline; new device formats remain subject to later mandatory gates.",
+    "Historical JBC worktrees preserved.",
+    "Existing native timing output retained as raw evidence, not performance promotion."
+  ]
+}
