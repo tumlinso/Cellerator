@@ -58,6 +58,7 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
 #include <Cellerator/compute/operation/relation_update.hh>
 #include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cuh>
 #include <atomic>
+#include <cmath>
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -559,5 +560,50 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
     p.last_gradient={t.identity,t.epoch,p.physical_order,expected,input_version,cotangent_version,
         p.updates.gradient_launches,p.incarnation,calculus.gradient};
     p.last_gradient_output=output;*produced=p.last_gradient;return {};
+}
+} // namespace cellerator::compute::relation
+
+namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient {
+// Private provider seam; public update semantics remain relation_update.hh.
+cudaError_t enqueue_relation_value_update(void*,const float*,std::uint32_t,bool,float,cudaStream_t) noexcept;
+}
+namespace cellerator::compute::relation {
+namespace {
+bool same_version(operand_version a,operand_version b) noexcept {
+    return a.identity==b.identity&&a.version==b.version;
+}
+bool same_stamp(const gradient_stamp& a,const gradient_stamp& b) noexcept {
+    return a.producer_serial && a.producer_serial==b.producer_serial &&
+        a.pair_incarnation==b.pair_incarnation && execution::same_identity(a.structure,b.structure) &&
+        a.epoch.value==b.epoch.value && execution::same_identity(a.order,b.order) &&
+        a.forward_generation.value==b.forward_generation.value &&
+        same_version(a.input,b.input)&&same_version(a.cotangent,b.cotangent)&&a.arithmetic==b.arithmetic;
+}
+}
+status enqueue_value_update(prepared_relation_pair& p,const value_update_request& r,cudaStream_t stream) noexcept {
+    auto s=reject_capture(stream);if(!s)return s;
+    s=check_context(p,r.operand.device_ordinal,stream);if(!s)return s;
+    if(r.kind!=value_update_kind::delta_add&&r.kind!=value_update_kind::gradient_step)
+        return {status_code::invalid_argument,"unknown value update operation"};
+    if(!r.expected.value||r.expected.value!=p.report.latest_enqueued_generation.value||
+        !r.next.value||r.next.value<=r.expected.value)
+        return {status_code::stale_generation,"update requires exact current and strictly greater next generation"};
+    s=check_edge_plane(p,r.operand);if(!s)return s;
+    if(r.kind==value_update_kind::gradient_step) {
+        if(!std::isfinite(r.alpha)||r.alpha<0)
+            return {status_code::invalid_argument,"gradient step alpha must be finite and nonnegative"};
+        if(!p.gradient_prepared||!same_stamp(r.gradient,p.last_gradient)||
+            r.gradient.forward_generation.value!=r.expected.value||
+            r.operand.f32_data!=p.last_gradient_output.f32_data)
+            return {status_code::stale_generation,"gradient stamp or produced buffer is stale"};
+    }
+    auto result=gradient_provider::enqueue_relation_value_update(p.values,
+        static_cast<const float*>(r.operand.f32_data),
+        static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),
+        r.kind==value_update_kind::gradient_step,r.alpha,stream);
+    if(result!=cudaSuccess){p.poisoned=true;return cuda_status(result);}
+    // N05 connects this accepted submission to the reusable ready event.
+    p.report.latest_enqueued_generation=r.next;++p.updates.physical_updates;
+    p.last_gradient={};p.last_gradient_output={};return {};
 }
 } // namespace cellerator::compute::relation
