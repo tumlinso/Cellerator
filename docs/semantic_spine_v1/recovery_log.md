@@ -48,17 +48,22 @@ artifacts, and did not repair or modify another lane's integration destination.
 
 ## Remaining acceptance work
 
-N06's existing source and suite/sanitizer log hashes were verified. Its required
-direct-provider overhead comparison still needs execution and evidence. N06
-closure, I04-I07 integration/validation, root closure, and final cleanup remain
-pending until the authority and executable evidence establish completion.
+N06 completed at authoritative revision 6837. Its source and raw evidence hashes
+were verified, and its matched direct-provider overhead comparison ran on the
+leased V100. The full native suite passed (evidence
+`5d6e4132-1356-4108-b03f-718dec4fcdd4`); eight sanitizer runs passed
+(`41eeef30-f0dc-497f-8bee-a56b655a2cdf`). Native source/report commits
+`30f62f72` and `0498be36` are pushed. The automatic handoff captured the
+authority checkout's main HEAD instead of the lane HEAD; its completion note
+records the real lane commits, which integration must verify directly.
+I04-I07 integration/validation, root closure, and final cleanup remain pending.
 
 ## Internal acceptance audit corrections
 
 - Native preparation: a valid structure identity could XOR into a zero CTP1
   projection identity. The native lane reproduced rejection on a leased V100
-  and is correcting the derived ID under N06, with public forward/transpose
-  regression coverage. This does not change the biological identity.
+  and corrected the derived ID under N06, with public forward/transpose
+  regression coverage for both zero-forward and zero-transpose derivations. This does not change the biological identity.
 - Frontend lowering: canonical arithmetic retained f16 relation storage, but
   legacy operation/algebra transport incorrectly copied f32 input storage into
   that field and dropped nonfinite rejection. The source-level discrepancy was

@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6834`
+Project revision: `6838`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1033,7 +1033,7 @@ Project revision: `6834`
 - `CE-SS1-F02` | status: done | execution: closed | next: Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.
 - `CE-SS1-F03` | status: done | execution: closed | next: Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.
 - `CE-SS1-F04` | status: done | execution: closed | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
-- `CE-SS1-F05` | status: planned | execution: ready | next: Add failing frontend numeric parity regressions, derive retained numeric transport from canonical arithmetic, and fail closed for unrepresentable restricted arithmetic policies.
+- `CE-SS1-F05` | status: in_progress | execution: claimed | next: Add failing frontend numeric parity regressions, derive retained numeric transport from canonical arithmetic, and fail closed for unrepresentable restricted arithmetic policies.
 - `CE-SS1-I03` | status: done | execution: closed | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
 - `CE-SS1-I04` | status: planned | execution: ready | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: planned | execution: ready | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
@@ -1044,7 +1044,7 @@ Project revision: `6834`
 - `CE-SS1-N03` | status: done | execution: closed | next: Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.
 - `CE-SS1-N04` | status: done | execution: closed | next: Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.
 - `CE-SS1-N05` | status: done | execution: closed | next: Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.
-- `CE-SS1-N06` | status: in_progress | execution: claimed | next: Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.
+- `CE-SS1-N06` | status: done | execution: closed | next: Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.
 - `CE-SS1-V01` | status: done | execution: closed | next: Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.
 - `CE-SS1-V02` | status: done | execution: closed | next: Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.
 - `CE-SS1-V03` | status: done | execution: closed | next: Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.

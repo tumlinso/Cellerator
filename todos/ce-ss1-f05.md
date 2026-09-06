@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-F05: Repair numeric contract parity in retained relation lowering
 
-Task revision: `6834`; current project revision is in `todo-status.md`.
+Task revision: `6838`; current project revision is in `todo-status.md`.
 
 ## Objective
 Repair the audited divergence between canonical relation arithmetic and retained operation/algebra transport without expanding the executable portfolio.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

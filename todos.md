@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6834`
+Project revision: `6838`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1414,7 +1414,7 @@ Project revision: `6834`
 - `CE-SS1-F02` | kind: task | status: done | parent: CE-SS1-0000 | objective: Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.
 - `CE-SS1-F03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Prevent compiler wrappers from silently weakening the native contract.
 - `CE-SS1-F04` | kind: task | status: done | parent: CE-SS1-0000 | objective: Provide a real origin-parity test route and candid language capability status.
-- `CE-SS1-F05` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Repair the audited divergence between canonical relation arithmetic and retained operation/algebra transport without expanding the executable portfolio.
+- `CE-SS1-F05` | kind: task | status: in_progress | parent: CE-SS1-0000 | objective: Repair the audited divergence between canonical relation arithmetic and retained operation/algebra transport without expanding the executable portfolio.
 - `CE-SS1-I03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.
 - `CE-SS1-I04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.
 - `CE-SS1-I05` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove the epic’s central assertion with one complete execution witness.
@@ -1425,7 +1425,7 @@ Project revision: `6834`
 - `CE-SS1-N03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Publish changing values as stream-ordered generations while reusing the prepared structure.
 - `CE-SS1-N04` | kind: task | status: done | parent: CE-SS1-0000 | objective: Make canonical forward requests reach the existing device candidate through the prepared pair.
 - `CE-SS1-N05` | kind: task | status: done | parent: CE-SS1-0000 | objective: Prove reverse application uses the same biological relation and current values, not a second independent semantic model.
-- `CE-SS1-N06` | kind: task | status: in_progress | parent: CE-SS1-0000 | objective: Close the native lane with actual CUDA tests and a minimal, traceable execution report.
+- `CE-SS1-N06` | kind: task | status: done | parent: CE-SS1-0000 | objective: Close the native lane with actual CUDA tests and a minimal, traceable execution report.
 - `CE-SS1-V01` | kind: task | status: done | parent: CE-SS1-0000 | objective: Make correctness independent of physical packing and compiler lowering.
 - `CE-SS1-V02` | kind: task | status: done | parent: CE-SS1-0000 | objective: Exercise semantic invariants that a tiny numerical example alone can miss.
 - `CE-SS1-V03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.
