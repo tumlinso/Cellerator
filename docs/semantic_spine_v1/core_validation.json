@@ -1,0 +1,70 @@
+{
+  "task": "CE-SS1-C04",
+  "source_revision": "ff9faf517b27b18596f2f6a1fad5c9c10f8db6ef",
+  "branch": "codex/ce-ss1-l-core",
+  "compiler": "GNU C++ 13.3.0",
+  "cuda_headers": "/usr/local/cuda-12.9/include",
+  "evidence_kind": "host semantics and declaration compilation only",
+  "commands": [
+    {
+      "command": "cmake -S tests/semantic_spine/core -B /tmp/ce-ss1-core-build -DCMAKE_BUILD_TYPE=Release",
+      "exit_status": 0
+    },
+    {
+      "command": "cmake --build /tmp/ce-ss1-core-build -j \"$(nproc)\"",
+      "exit_status": 0
+    },
+    {
+      "command": "/tmp/ce-ss1-core-build/ceSpineCoreTest",
+      "exit_status": 0
+    },
+    {
+      "command": "/tmp/ce-ss1-core-build/ceSpineMathematicalDualityTest",
+      "exit_status": 0
+    },
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -pedantic -fsyntax-only -Iinclude -I/usr/local/cuda-12.9/include tests/semantic_spine/core/native_declarations.cc",
+      "exit_status": 0
+    },
+    {
+      "command": "g++ -std=c++17 -fsyntax-only -Iinclude -I/usr/local/cuda-12.9/include examples/semantic_spine_v1/regulatory_reuse.cc",
+      "exit_status": 0
+    },
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -pedantic -Iinclude -fsanitize=address,undefined -fno-omit-frame-pointer src/compute/operation/relation_semantics.cc tests/semantic_spine/core/descriptor_test.cc -o /tmp/ce-ss1-core-sanitized",
+      "exit_status": 0
+    },
+    {
+      "command": "/tmp/ce-ss1-core-sanitized",
+      "exit_status": 0
+    }
+  ],
+  "source_sha256": {
+    "include/Cellerator/compute/operation/relation_semantics.hh": "b55ee11b9a21c4f5c337dedfea4ec29858c6c1949395b9e77fa4d676f88d706c",
+    "include/Cellerator/compute/operation/prepared_relation.hh": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491",
+    "src/compute/operation/relation_semantics.cc": "466dea49f97c930bc342f6a8859940a6a92590d0a147f6eb8de73f3a1549a7f3",
+    "tests/semantic_spine/core/CMakeLists.txt": "7146c4f89e801e43a1a023d0a4981f52641d1b80fff8aacbb49a352d770e3f8e",
+    "tests/semantic_spine/core/descriptor_test.cc": "904d6cda811eb2a9dc14f5184bb7f87a60d18f44f66eb7209c94c0b841835c1d",
+    "tests/semantic_spine/core/mathematical_duality_test.cc": "f28a4ca1f4c40e636b03256a5a45437e407a741ef0651b2b7f42375c3a78312c",
+    "tests/semantic_spine/core/native_declarations.cc": "2c7a8bc11fd5cfb6fe267b431aab85bc0b6837b23ae849143fe2fe0a2aefdbda"
+  },
+  "coverage": [
+    "full fieldwise identity and high-bit differences",
+    "empty axes/support and storage-overflow validation",
+    "logical64 extent without local32 truncation",
+    "recognized capability-limited floating policies",
+    "undefined affine rejection",
+    "copy/move value ownership",
+    "independent non-square signed forward and transpose expected outputs",
+    "duplicate logical edges remain additive",
+    "adjoint check and incorrect order negative control",
+    "release-mode tests independent of assert/NDEBUG",
+    "ASan and UBSan host execution"
+  ],
+  "pending": [
+    "native implementation and real sm70 execution",
+    "runtime pointer overlap and generation rejection",
+    "cross-origin compiler/native integrated tests"
+  ],
+  "publication_note": "C02 descriptor test passed then was omitted by global ignore; force-added and published with C04 source artifact ff9faf51. This receipt is not accelerator evidence."
+}
