@@ -1,5 +1,6 @@
 #include <Cellerator/compute/operation/prepared_relation.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
+#include <limits>
 
 namespace cellerator::compute::relation {
 namespace {
@@ -18,8 +19,8 @@ struct native_contract {
 status adapt(const operation_descriptor& op, native_contract& out) noexcept {
     auto result = validate(op);
     if (!result) return result;
-    if (op.dense_width != 1)
-        return {status_code::unsupported_width, "native pair supports N1 only"};
+    if (op.dense_width != 1 && op.dense_width != 16)
+        return {status_code::unsupported_width, "native pair supports N1 and N16 only"};
     const auto& a = op.arithmetic;
     if (a.relation_storage != execution::numeric_type::f16
         || a.input_storage != execution::numeric_type::f32
@@ -43,7 +44,9 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
     out.structures.structures[0] = {op.topology.identity, {1,1}, op.topology.epoch};
     out.problem.operation = {1, op.direction == orientation::forward ? 1u : 2u};
     out.problem.input_count = out.problem.output_count = 1;
-    out.problem.logical_work_items = op.topology.edge_count;
+    if (op.topology.edge_count > std::numeric_limits<std::uint64_t>::max() / op.dense_width)
+        return {status_code::invalid_shape,"interaction count overflows 64 bits"};
+    out.problem.logical_work_items = op.topology.edge_count * op.dense_width;
     return {};
 }
 } // namespace
@@ -52,7 +55,6 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
 #include <algorithm>
-#include <limits>
 #include <map>
 #include <memory>
 #include <numeric>
@@ -196,7 +198,7 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         // also keeps the two pair-local projection identities distinct.
         if(!execution::valid_identity(report.transpose_projection))report.transpose_projection.low=1;
         report.forward_candidate=core::feature_major_small_n_candidate().name;
-        report.transpose_candidate=core::transpose_backward_n1_candidate().name;
+        report.transpose_candidate=forward.dense_width==1 ? core::transpose_backward_n1_candidate().name : nullptr;
         if(forward.topology.edge_count) {
             cold_tiles cold(forward.topology,topology);
             cm::feature_major_projection_build_request request{forward.topology.identity,{1,1},forward.topology.epoch,report.forward_projection,{1,1},cold.view};
@@ -233,10 +235,12 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             s=physical(cm::rebind_transpose_projection(tv,p->transpose_payload,th.size(),&p->transpose_view));if(!s)return s;
             core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
             core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->forward_view,current,1,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
             if(!fs)return {status_code::unsupported_semantics,fs.message};
-            auto ts=core::prepare_transpose_backward_n1_operation(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
-            if(!ts)return {status_code::unsupported_semantics,ts.message};
+            if (forward.dense_width == 1) {
+                auto ts=core::prepare_transpose_backward_n1_operation(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+                if(!ts)return {status_code::unsupported_semantics,ts.message};
+            }
         }
         if(!forward.topology.edge_count) {
             report.forward_projection={};report.transpose_projection={};
@@ -260,7 +264,7 @@ status submit(prepared_relation_pair& p,orientation direction,const void* input,
     const auto& op=contract.semantic;
     const auto count=result_axis(op).extent;
     if(!op.topology.edge_count)
-        return count?cuda_status(cudaMemsetAsync(output,0,count*sizeof(float),p.stream)):status{};
+        return count?cuda_status(cudaMemsetAsync(output,0,count*op.dense_width*sizeof(float),p.stream)):status{};
     execution::device_location location{execution::residency_kind::device,{},p.device,0};
     execution::relation_structure relation{{1,1},op.topology.epoch,contract.source,contract.destination,{1,1},op.topology.edge_count};
     execution::value_plane plane{};
@@ -274,7 +278,7 @@ status submit(prepared_relation_pair& p,orientation direction,const void* input,
     auto dense=[&](execution::biological_operand_view& view,void* pointer,execution::axis_identity major,std::uint64_t rows) {
         view.kind=execution::operand_kind::dense_tensor;auto& d=view.storage.dense;
         d.data=pointer;d.location=location;d.value_type=execution::numeric_type::f32;d.rank=2;
-        d.axes[0]=major;d.axes[1]=contract.column;d.shape[0]=rows;d.shape[1]=1;d.stride[0]=d.stride[1]=1;
+        d.axes[0]=major;d.axes[1]=contract.column;d.shape[0]=rows;d.shape[1]=op.dense_width;d.stride[0]=op.dense_width;d.stride[1]=1;
     };
     dense(in,const_cast<void*>(input),direction==orientation::forward?contract.source:contract.destination,input_axis(op).extent);
     dense(out,output,direction==orientation::forward?contract.destination:contract.source,count);
@@ -366,6 +370,8 @@ status check_launch(const prepared_relation_pair& p,const operation_descriptor& 
     auto s=check_context(p,input.device_ordinal,stream);if(!s)return s;
     if(output.device_ordinal!=p.device)return {status_code::incompatible_device,"output belongs to another device"};
     native_contract checked{};s=adapt(op,checked);if(!s)return s;
+    if (op.direction==orientation::transpose && op.dense_width==16)
+        return {status_code::unsupported_width,"N16 transpose implementation is not yet bound"};
     const auto& prepared=op.direction==orientation::forward?p.forward.semantic:p.transpose.semantic;
     if(!execution::same_identity(op.topology.identity,prepared.topology.identity) || op.topology.epoch.value!=prepared.topology.epoch.value)
         return {status_code::stale_structure,"launch topology identity or epoch is stale"};
@@ -374,7 +380,8 @@ status check_launch(const prepared_relation_pair& p,const operation_descriptor& 
         return {status_code::stale_generation,"launch must consume latest enqueued value generation"};
     if(!matching_axis(input.axis,input_axis(op)) || !matching_axis(output.axis,result_axis(op)))
         return {status_code::invalid_axis,"launch axis identity, order or extent is incompatible"};
-    auto input_count=input_axis(op).extent,output_count=result_axis(op).extent;
+    auto input_count=input_axis(op).extent*op.dense_width;
+    auto output_count=result_axis(op).extent*op.dense_width;
     if(input.count<input_count || output.count<output_count)
         return {status_code::insufficient_capacity,"state or result buffer count is too small"};
     s=check_pointer(input.data,input_count*4,p.device,4);if(!s)return s;
