@@ -124,7 +124,7 @@ The independently reviewed expectation manifest supplies `kind:device_acceptance
 `source_commit`, `source_dirty_paths` (path-to-SHA256 map), `gpu_uuid`,
 `build_config`, and `required_runs`. Each required run specifies `test`, `tool`
 (memcheck/racecheck/synccheck), `binary_sha256`, `fixture_identity`, and
-`numerical_policy`. For I05/I08 the expected inventory must come from the complete
+`numerical_policy`, and exact `argv`. For I05/I08 the expected inventory must come from the complete
 acceptance matrix: memcheck all GPU/demo binaries, and racecheck/synccheck for
 numerics, lifecycle and WMMA legality. A bounded local receipt is not that final
 inventory. Expectations must not be copied automatically from an unreviewed

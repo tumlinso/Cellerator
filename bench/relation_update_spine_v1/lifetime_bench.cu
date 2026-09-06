@@ -215,7 +215,7 @@ void run(const options& o) {
                 require(result[physical] == bits, "reset or resident physical update mismatch");
             }
             require(after.physical_updates - before.physical_updates == o.horizon, "update attribution missing");
-            if (o.route == "hybrid" && o.fixture != "irregular") require(after.wmma_launches - before.wmma_launches == o.horizon, "forced WMMA missing");
+            if (o.route == "hybrid") require(after.wmma_launches - before.wmma_launches == o.horizon, "forced WMMA missing");
             if (o.route == "hybrid" && o.fixture == "mixed") require(after.residual_launches > before.residual_launches, "mixed residual missing");
             if (o.route == "sparse") require(after.sparse_launches - before.sparse_launches == o.horizon, "forced sparse missing");
         } else {
