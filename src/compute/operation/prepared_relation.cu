@@ -278,3 +278,60 @@ status submit(prepared_relation_pair& p,orientation direction,const void* input,
 }
 } // namespace
 } // namespace cellerator::compute::relation
+
+namespace cellerator::compute::relation {
+namespace {
+status check_context(const prepared_relation_pair& p,int device,cudaStream_t stream) noexcept {
+    if(p.poisoned)return {status_code::invalid_state,"pair is poisoned by failed CUDA submission"};
+    if(stream!=p.stream)return {status_code::incompatible_stream,"pair belongs to one caller stream"};
+    int current=-1;auto s=cuda_status(cudaGetDevice(&current));if(!s)return s;
+    if(device!=p.device || current!=p.device)return {status_code::incompatible_device,"pair belongs to one current device"};
+    return {};
+}
+status check_pointer(const void* pointer,std::uint64_t bytes,int device,std::size_t alignment) noexcept {
+    if(!bytes)return {};
+    auto address=reinterpret_cast<std::uintptr_t>(pointer);
+    if(!pointer || address%alignment || bytes>std::numeric_limits<std::uintptr_t>::max()-address)
+        return {status_code::insufficient_capacity,"missing, misaligned or overflowing device range"};
+    cudaPointerAttributes attributes{};
+    auto error=cudaPointerGetAttributes(&attributes,pointer);
+    if(error!=cudaSuccess){cudaGetLastError();return {status_code::invalid_argument,"pointer is not accessible device storage"};}
+    if((attributes.type!=cudaMemoryTypeDevice && attributes.type!=cudaMemoryTypeManaged)
+        || attributes.device!=device)
+        return {status_code::incompatible_device,"pointer residency differs from pair device"};
+    return {};
+}
+bool overlaps(const void* a,std::uint64_t a_bytes,const void* b,std::uint64_t b_bytes) noexcept {
+    if(!a_bytes || !b_bytes)return false;
+    auto x=reinterpret_cast<std::uintptr_t>(a),y=reinterpret_cast<std::uintptr_t>(b);
+    return x<y+b_bytes && y<x+a_bytes;
+}
+__global__ void gather_values(const std::uint16_t* logical,const std::uint32_t* map,
+                             std::uint16_t* packed,std::uint32_t count) {
+    auto i=blockIdx.x*blockDim.x+threadIdx.x;
+    if(i<count)packed[i]=logical[map[i]];
+}
+} // namespace
+status publish_values(prepared_relation_pair& p,const device_values_binding& binding,cudaStream_t stream) noexcept {
+    auto s=check_context(p,binding.device_ordinal,stream);if(!s)return s;
+    const auto& topology=p.forward.semantic.topology;
+    if(!execution::same_identity(binding.structure,topology.identity) || binding.epoch.value!=topology.epoch.value)
+        return {status_code::stale_structure,"value structure or epoch differs from prepared topology"};
+    if(!execution::same_identity(binding.logical_edge_order,topology.logical_edge_order))
+        return {status_code::incompatible_order,"value logical edge order differs from prepared topology"};
+    if(!binding.generation.value || binding.generation.value<=p.report.latest_enqueued_generation.value)
+        return {status_code::stale_generation,"publication requires a strictly increasing nonzero generation"};
+    if(binding.count<topology.edge_count)return {status_code::insufficient_capacity,"value buffer count is too small"};
+    s=check_pointer(binding.f16_data,topology.edge_count*2,p.device,2);if(!s)return s;
+    if(overlaps(binding.f16_data,topology.edge_count*2,p.values,topology.edge_count*2))
+        return {status_code::invalid_argument,"logical input cannot alias packed value storage"};
+    if(topology.edge_count) {
+        gather_values<<<(topology.edge_count+255)/256,256,0,stream>>>(
+            static_cast<const std::uint16_t*>(binding.f16_data),p.logical_map,
+            static_cast<std::uint16_t*>(p.values),topology.edge_count);
+        s=cuda_status(cudaPeekAtLastError());
+        if(!s){p.poisoned=true;return s;}
+    }
+    p.report.latest_enqueued_generation=binding.generation;++p.report.value_refreshes;return {};
+}
+} // namespace cellerator::compute::relation
