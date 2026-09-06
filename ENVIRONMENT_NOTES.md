@@ -15,3 +15,7 @@ Keep this list short: recurring issue, verified fix, date. Recheck paths before 
 - **2026-09-06 — ctxpp reports stale metadata/missing compile database and
   intrinsic parse errors.** Use the skill's readable canonical-source fallback
   for bounded inspection; do not treat the stale index as semantic authority.
+- **2026-09-06 — Integrator-owned interface publication was denied.** Fixed in
+  Skills commit `a014959` with ownership/hash checks retained. After kernel updates,
+  rebuild Project Control with `scripts/install.py`, switch its candidate, and open
+  a fresh MCP session; restarting only the HTTP service leaves old stdio clients stale.
