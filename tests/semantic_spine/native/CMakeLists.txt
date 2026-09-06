@@ -19,7 +19,7 @@ foreach(name transpose_backward_candidate feature_major_small_n_candidate transp
 endforeach()
 add_library(spine_semantics STATIC "${SPINE_ROOT}/src/compute/operation/relation_semantics.cc")
 target_include_directories(spine_semantics PUBLIC "${SPINE_ROOT}/include")
-foreach(name adapter preparation generation forward transpose lifecycle)
+foreach(name adapter preparation generation forward transpose lifecycle overhead)
   add_executable(spine_${name}_test "${name}_test.cu")
   target_include_directories(spine_${name}_test PRIVATE "${SPINE_ROOT}/include")
   target_compile_options(spine_${name}_test PRIVATE -UNDEBUG)

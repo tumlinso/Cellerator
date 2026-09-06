@@ -13,8 +13,8 @@ static ce::axis_descriptor axis(unsigned base,unsigned count){
     a.identity.header={1,ex::serialized_record_kind::persistent_axis_identity,sizeof(a.identity)};
     a.identity.domain={base,99};a.identity.order={base+1,88};a.identity.geometry={base+2,77};a.identity.partition={base+3,66};return a;
 }
-static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& offsets,const std::vector<unsigned>& sources){
-    ce::operation_descriptor f{};f.topology.identity={101,202};f.topology.epoch={5};f.topology.logical_edge_order={303,404};
+static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& offsets,const std::vector<unsigned>& sources, ex::structure_id identity={101,202}){
+    ce::operation_descriptor f{};f.topology.identity=identity;f.topology.epoch={5};f.topology.logical_edge_order={303,404};
     f.topology.source=axis(10,cols);f.topology.destination=axis(20,rows);f.topology.edge_count=sources.size();
     auto t=f;t.direction=ce::orientation::transpose;
     cudaStream_t stream{};gpu(cudaStreamCreateWithFlags(&stream,cudaStreamNonBlocking));
@@ -22,6 +22,7 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
     std::vector<unsigned> mapping(sources.size());if(!mapping.empty())gpu(cudaMemcpy(mapping.data(),p->logical_map,mapping.size()*4,cudaMemcpyDeviceToHost));
     auto sorted=mapping;std::sort(sorted.begin(),sorted.end());for(unsigned i=0;i<sorted.size();++i)SPINE_REQUIRE(sorted[i]==i);
     auto projection=p->report.forward_projection;
+    if(!sources.empty()){SPINE_REQUIRE(ex::valid_identity(projection));SPINE_REQUIRE(ex::valid_identity(p->report.transpose_projection));SPINE_REQUIRE(!ex::same_identity(projection,p->report.transpose_projection));}
     for(unsigned generation=1;generation<=2;++generation){
         std::vector<__half> logical(sources.size());
         for(unsigned e=0;e<sources.size();++e)logical[e]=__float2half(float(int(e%7)-3)*generation/2);
@@ -71,6 +72,8 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
 int main(){
     gpu(cudaSetDevice(0));cudaDeviceProp prop{};gpu(cudaGetDeviceProperties(&prop,0));SPINE_REQUIRE(prop.major==7 && prop.minor==0);
     fixture(3,4,{0,2,2,4},{3,0,2,1});
+    fixture(3,4,{0,2,2,4},{3,0,2,1},{0x464d5031ULL,0x535331ULL ^ 0x43545031ULL});
+    fixture(3,4,{0,2,2,4},{3,0,2,1},{0x464d5031ULL,0x535331ULL});
     std::vector<unsigned> offsets{0},sources;
     for(unsigned r=0;r<35;++r){if(r%4){sources.push_back((r*7+33)%67);sources.push_back((r*7)%67);}offsets.push_back(sources.size());}
     fixture(35,67,offsets,sources);fixture(2,3,{0,0,1},{2});fixture(3,4,{0,0,0,0},{});fixture(0,0,{0},{});

@@ -12,9 +12,9 @@ build = args.build.resolve()
 if args.sanitize:
     sanitizer = Path('/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer')
     for tool in ('memcheck', 'initcheck'):
-        for name in ('spine_lifecycle_test', 'spine_transpose_test', 'spine_regulatory_reuse'):
+        for name in ('spine_lifecycle_test', 'spine_transpose_test', 'spine_regulatory_reuse', 'spine_overhead_test'):
             subprocess.run([str(sanitizer), '--tool', tool, '--error-exitcode', '99', str(build / name)], check=True)
 else:
-    for name in ('adapter', 'preparation', 'generation', 'forward', 'transpose', 'lifecycle'):
+    for name in ('adapter', 'preparation', 'generation', 'forward', 'transpose', 'lifecycle', 'overhead'):
         subprocess.run([str(build / f'spine_{name}_test')], check=True)
     subprocess.run([str(build / 'spine_regulatory_reuse'), '--require-sm70'], check=True)

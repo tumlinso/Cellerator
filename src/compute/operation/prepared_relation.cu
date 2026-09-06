@@ -191,6 +191,10 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         report.forward_projection={forward.topology.identity.low ^ 0x464d5031ULL,forward.topology.identity.high ^ 0x535331ULL};
         if(!execution::valid_identity(report.forward_projection))report.forward_projection.low=1;
         report.transpose_projection=report.forward_projection;report.transpose_projection.high^=0x43545031ULL;
+        // XOR can map a valid biological identity to the reserved zero ID.
+        // Here forward.low is zero and forward.high is nonzero, so low=1
+        // also keeps the two pair-local projection identities distinct.
+        if(!execution::valid_identity(report.transpose_projection))report.transpose_projection.low=1;
         report.forward_candidate=core::feature_major_small_n_candidate().name;
         report.transpose_candidate=core::transpose_backward_n1_candidate().name;
         if(forward.topology.edge_count) {
