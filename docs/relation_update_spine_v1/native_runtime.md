@@ -97,4 +97,13 @@ poisoned lease cleanup. `native_failure_test --async-error` is a separate proces
 mode that deliberately traps its CUDA context and checks failure observation and
 pointer preservation. That intentional-fault mode is run without sanitizer;
 normal mode and the retained N1 lifecycle binary must remain memcheck-clean.
-N06 execution is pending until its controller receipt is recorded below.
+N06 first execution passed in `3ca7e0ff-9e9f-4dd6-9d4c-402eac55ae37`.
+After review corrections, `0b187474-974a-4fca-8bb3-9a9713b1828f` passed
+normal failure tests and the retained N1 lifecycle under memcheck with zero errors,
+and the separate intentional asynchronous-fault mode passed. The reviewed source
+`379bd1de` adds preallocation hybrid scratch-cap enforcement, budget-specific
+rejection, opaque-storage overlap protection, empty half-sparse no-op support,
+and overflow-safe N16 grid rounding. The capacity regression rejects a budget
+that covers only whole-operand scratch and accepts the exact additional panel
+budget. These focused receipts are correctness evidence, not final integrated
+acceptance or a performance claim.
