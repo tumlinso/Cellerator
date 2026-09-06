@@ -62,8 +62,11 @@ struct relation_update_report {
     std::uint64_t ready_records = 0, reader_returns = 0;
 };
 // All entrypoints are externally host-serialized and owner-stream-only except
-// begin/end read. Gradient/delta pointers must not overlap values, state inputs,
-// outputs, immutable storage or internal scratch; reject before submission.
+// begin/end read. Operands must not overlap pair-owned values, immutable
+// storage or internal scratch. Gradient output must not overlap either supplied
+// dense input; dense-operation input/output ranges must be disjoint. A delta may
+// alias caller buffers read-only during its update. No earlier caller-buffer
+// lifetime is retained merely to forbid safe read/read aliasing.
 // Counts are element capacities checked with overflow-safe byte arithmetic.
 // Gradient stamps bind pair lifetime, generation, input versions and producer
 // serial; stamp replay after another gradient or update is rejected.

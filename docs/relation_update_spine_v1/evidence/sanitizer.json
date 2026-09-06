@@ -1,0 +1,473 @@
+{
+  "kind": "device_acceptance",
+  "source_commit": "3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+  "source_dirty_paths": {},
+  "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+  "build_config": {
+    "mode": "Release",
+    "cuda_standard": 17,
+    "architecture": "sm_70",
+    "cuda": "12.9.86",
+    "host_cuda_compiler": "g++-12"
+  },
+  "gpu_compute_capability": "7.0",
+  "gpu_name": "Tesla V100-SXM2-16GB",
+  "device_executed": true,
+  "skipped": false,
+  "tool_versions": {
+    "compiler": "g++-12 (Ubuntu 12.4.0-2ubuntu1~24.04.1) 12.4.0",
+    "cuda": "12.9.86",
+    "driver": "580.173.02",
+    "compute_sanitizer": "2025.2.1.0 (build35969825)"
+  },
+  "build_argv": [
+    "python3",
+    "/tmp/ce-ru1-i05/build.py"
+  ],
+  "controller_lease": {
+    "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/c03f4d9a-b251-4d2c-9ccf-0a4dbf790d5b/lease.json",
+    "sha256": "24c18277f8a3930f5eecb368a5cd293c0d36ec28ff97bd9feef6d84f3946f5f3"
+  },
+  "controller_log": {
+    "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/c03f4d9a-b251-4d2c-9ccf-0a4dbf790d5b/foreground.stderr.txt",
+    "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb"
+  },
+  "runs": [
+    {
+      "test": "ru1_gpu_numerics",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "fixture=0 profile=full-f32 route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=0 profile=half-rounded route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=full-f32 route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=half-rounded route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=full-f32 route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.17331e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=half-rounded route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.3411e-07 operand_quantization_difference=0.000745942 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=full-f32 route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=half-rounded route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000838972 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=4 profile=full-f32 route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=4 profile=half-rounded route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=0 profile=half-rounded route=hybrid edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=0 sparse_launches=0\nfixture=1 profile=half-rounded route=hybrid edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=2 sparse_launches=0\n73444 independent GPU numerical checks passed on Tesla V100-SXM2-16GB\n",
+      "stdout_sha256": "8b18b238906f36270e2c641fab2daa1255da0ec40cdd1f8dde836266d1f420a3",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_numerics",
+      "tool": "racecheck",
+      "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-racecheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "stdout": "fixture=0 profile=full-f32 route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=0 profile=half-rounded route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=full-f32 route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=half-rounded route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=full-f32 route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.17331e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=half-rounded route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.3411e-07 operand_quantization_difference=0.000745942 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=full-f32 route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=half-rounded route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000838972 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=4 profile=full-f32 route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=4 profile=half-rounded route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=0 profile=half-rounded route=hybrid edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=0 sparse_launches=0\nfixture=1 profile=half-rounded route=hybrid edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=2 sparse_launches=0\n73444 independent GPU numerical checks passed on Tesla V100-SXM2-16GB\n",
+      "stdout_sha256": "8b18b238906f36270e2c641fab2daa1255da0ec40cdd1f8dde836266d1f420a3",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_numerics",
+      "tool": "synccheck",
+      "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-synccheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+        "sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "fixture=0 profile=full-f32 route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=0 profile=half-rounded route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=full-f32 route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=half-rounded route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=full-f32 route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.17331e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=half-rounded route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.3411e-07 operand_quantization_difference=0.000745942 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=full-f32 route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=3 profile=half-rounded route=sparse edges=5654 max_dense_error=4.79107e-07 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000838972 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=4 profile=full-f32 route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=4 profile=half-rounded route=sparse edges=0 max_dense_error=0 max_gradient_error=0 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=0\nfixture=0 profile=half-rounded route=hybrid edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=0 sparse_launches=0\nfixture=1 profile=half-rounded route=hybrid edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.5332e-07 operand_quantization_difference=0.000869749 wmma_launches=2 residual_launches=2 sparse_launches=0\n73444 independent GPU numerical checks passed on Tesla V100-SXM2-16GB\n",
+      "stdout_sha256": "8b18b238906f36270e2c641fab2daa1255da0ec40cdd1f8dde836266d1f420a3",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_bindings",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_gpu_bindings@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_bindings-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuBindings",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuBindings",
+        "sha256": "36eb832f0f6176594e980dc1d2fa05ddae36daa2e54e301916fa9185d2a19cd1"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "243 binding checks, 37 metadata rejections, true partial-publication poison PASS\n",
+      "stdout_sha256": "86dc698681082412e2da309287873c8dcdb608ed8d403682f590cd0b592305a0",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_lifecycle",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "1163 lifecycle checks, 128 delayed generations, two consumers, N1 graph replay PASS\n",
+      "stdout_sha256": "1b2927d9415304fd30bd1ab71d699ded83672e7fc2d2dd323cc0e56d4edbe5c5",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_lifecycle",
+      "tool": "racecheck",
+      "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-racecheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "stdout": "1163 lifecycle checks, 128 delayed generations, two consumers, N1 graph replay PASS\n",
+      "stdout_sha256": "1b2927d9415304fd30bd1ab71d699ded83672e7fc2d2dd323cc0e56d4edbe5c5",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_gpu_lifecycle",
+      "tool": "synccheck",
+      "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-synccheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+        "sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "1163 lifecycle checks, 128 delayed generations, two consumers, N1 graph replay PASS\n",
+      "stdout_sha256": "1b2927d9415304fd30bd1ab71d699ded83672e7fc2d2dd323cc0e56d4edbe5c5",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_readiness",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_readiness@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_readiness-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1ReadinessTests",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1ReadinessTests",
+        "sha256": "3c5c1cc496eb83cc183572fa46b94f818d8bc61971e9e954db373a0e4b3e0b94"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "readiness_adversarial_test: sm70 PASS; 4096 generations, stable events, enqueue versus completion, five injected failures\n",
+      "stdout_sha256": "cf58338714f7a0556e30be288fcc38f3be7a076bdc56df2f9ff611054e4d5fa8",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_wmma_legality",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "WMMA legality actual m16n16k16 + legal tails PASS\n",
+      "stdout_sha256": "4e5c213fa5e681ba2e85780975c3ffb96f9c450867898105c3ced88d2dac96f9",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_wmma_legality",
+      "tool": "racecheck",
+      "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-racecheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)\n",
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+      "stdout": "WMMA legality actual m16n16k16 + legal tails PASS\n",
+      "stdout_sha256": "4e5c213fa5e681ba2e85780975c3ffb96f9c450867898105c3ced88d2dac96f9",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_wmma_legality",
+      "tool": "synccheck",
+      "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "synccheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-synccheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+        "sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "WMMA legality actual m16n16k16 + legal tails PASS\n",
+      "stdout_sha256": "4e5c213fa5e681ba2e85780975c3ffb96f9c450867898105c3ced88d2dac96f9",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_n1_regression",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_n1_regression@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_n1_regression-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1N1Regression",
+        "--require-sm70"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1N1Regression",
+        "sha256": "5ea26c1d52282b967bb4672b9b0b09acc7d71f8cf27f281557c921fe977c5d3e"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "sm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n",
+      "stdout_sha256": "d00f3c7a0f4d329872a91f5656c0fc42dfb6c571095045b02a03733dcb468d86",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_demo_hybrid",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_demo_hybrid@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_demo_hybrid-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+        "--route",
+        "hybrid"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+        "sha256": "2272923fd9b120f03489dc8217e88fc1286cb78a92b3ac4cd34d78cef0d5e86b"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "Device: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -> 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -> 0.002780993225 -> 0.002562196675\nTopology preparations=1; updates=2; WMMA=3; residual=3; sparse=0\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; not full .cell compilation or a performance-superiority claim.\n",
+      "stdout_sha256": "5cfe0c54bbd7155ecf01de82bdb0cd6cd65b323dc068b7f75df66b3f84ce0edc",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "test": "ru1_demo_sparse",
+      "tool": "memcheck",
+      "fixture_identity": "ru1_demo_sparse@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+      "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+      "argv": [
+        "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "--log-file",
+        "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_demo_sparse-memcheck.log",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+        "--route",
+        "sparse"
+      ],
+      "status": "completed",
+      "executed": true,
+      "skipped": false,
+      "exit_code": 0,
+      "binary": {
+        "path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+        "sha256": "2272923fd9b120f03489dc8217e88fc1286cb78a92b3ac4cd34d78cef0d5e86b"
+      },
+      "log": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n",
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "stdout": "Device: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -> 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -> 0.002780993225 -> 0.002562196675\nTopology preparations=1; updates=2; WMMA=0; residual=0; sparse=3\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; not full .cell compilation or a performance-superiority claim.\n",
+      "stdout_sha256": "8c166e3d1b5f9a4eefc99eae491c6bd70de0d7d6456847a9561cbec8eeed5249",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

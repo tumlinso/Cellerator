@@ -400,6 +400,7 @@ set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
 
 add_library(cellerator_transpose_backward_candidate STATIC
     src/compute/candidate/transpose_backward_candidate.cu
+    src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu
 )
 
 add_library(cellerator_native_training_slice STATIC
@@ -413,6 +414,7 @@ target_include_directories(cellerator_native_training_slice PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(cellerator_native_training_slice PUBLIC
+    cellerator_transpose_backward_candidate
     Cellerator::feature_major_projection
     Cellerator::transpose_projection
     Cellerator::runtime
@@ -533,7 +535,6 @@ target_link_libraries(cellerator_executable_core INTERFACE
     Cellerator::ce_geo_catalog
     Cellerator::cusparse_csr_candidate
     Cellerator::preparation_factory
-    Cellerator::native_training_slice
     Cellerator::ce_exop_operation_portfolio
 )
 

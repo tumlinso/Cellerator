@@ -13,6 +13,7 @@ backward, sparse/bias update, and value-generation work.
 */
 
 #include <Cellerator/compute/training/native_training_slice.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh>
 
 #include <cuda_fp16.h>
 #include <cuda_runtime_api.h>
@@ -139,31 +140,6 @@ __global__ void native_training_epilogue_backward_kernel(
         preactivation_gradient[offset + column] = active > 0.0f
             ? gradient : 0.0f;
     }
-}
-
-__global__ void native_training_input_backward_kernel(
-    transpose_projection_view projection, const __half *values,
-    const float *preactivation_gradient, float *input_gradient) {
-    const u32 feature = blockIdx.x * blockDim.x + threadIdx.x;
-    if (feature >= projection.header.feature_count) return;
-    float accum[native_training_dense_width]{};
-    for (u32 edge = projection.feature_offsets[feature];
-         edge < projection.feature_offsets[feature + 1u]; ++edge) {
-        const u32 row = projection.execution_row_ids[edge];
-        const float sparse = __half2float(values[
-            projection.forward_value_positions[edge]]);
-        const std::size_t row_offset = static_cast<std::size_t>(row)
-            * native_training_dense_width;
-        #pragma unroll
-        for (u32 column = 0u; column < native_training_dense_width; ++column)
-            accum[column] += sparse
-                * preactivation_gradient[row_offset + column];
-    }
-    const std::size_t output_offset = static_cast<std::size_t>(feature)
-        * native_training_dense_width;
-    #pragma unroll
-    for (u32 column = 0u; column < native_training_dense_width; ++column)
-        input_gradient[output_offset + column] = accum[column];
 }
 
 __global__ void native_training_sparse_update_kernel(
@@ -356,10 +332,9 @@ native_training_status run_native_training_step(
         header.row_count, workspace.activated, workspace.inverse_rms,
         static_cast<const float *>(launch.output_gradient.data),
         workspace.preactivation_gradient);
-    const u32 feature_blocks = (header.feature_count + 127u) / 128u;
-    native_training_input_backward_kernel<<<feature_blocks, 128u, 0u, stream>>>(
-        prepared.transpose, values, workspace.preactivation_gradient,
-        static_cast<float *>(launch.input_gradient.data));
+    core::launch_transpose_backward_n16(prepared.transpose, values,
+        workspace.preactivation_gradient,
+        static_cast<float *>(launch.input_gradient.data), stream);
     native_training_sparse_update_kernel<<<header.tile_count, 32u, 0u, stream>>>(
         prepared.forward, values, static_cast<const float *>(launch.input.data),
         workspace.preactivation_gradient, launch.learning_rate,

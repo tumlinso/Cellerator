@@ -1,5 +1,5 @@
-# May be included by the actual Cellerator root only after the RU1 core is linked.
-# This is a proposed test integration, not installed SDK stabilization.
+# Internal consumer of the linked relation core and bounded compiler adapter.
+# These build targets do not define an installed SDK.
 cmake_minimum_required(VERSION 3.21)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   project(RU1Reference LANGUAGES CXX)
@@ -16,7 +16,7 @@ if(CELLERATOR_RU1_REFERENCE_ONLY)
   add_test(NAME ru1_reference_fixture COMMAND ceRelationUpdateReference)
 else()
   if(NOT TARGET cellerator_relation_update_core OR NOT TARGET cellerator_relation_update_compiler)
-    message(FATAL_ERROR "RU1 requires real post-epic core/compiler targets; planning headers are not implementations")
+    message(FATAL_ERROR "RU1 requires the linked native core and compiler targets")
   endif()
   find_package(CUDAToolkit REQUIRED)
   add_executable(ceRelationUpdateDemo regulatory_learning.cc)

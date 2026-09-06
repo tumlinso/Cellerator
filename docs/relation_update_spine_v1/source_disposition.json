@@ -1,235 +1,438 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact_kind": "source_disposition",
-  "scope": "CE-RU1-I01 read-only source audit",
-  "source_root": "/home/tumlinson/Cellerator",
-  "source_head": "f75c001ce819910efacfcc03d0b313f017a2598f",
-  "created_utc": "2026-09-06T16:03:35.562578+00:00",
-  "task_owner_mapping_authority": "Proposed follow-up ownership only; live task scope must be inspected before editing. I01 authorizes this disposition record, not those mutations.",
-  "verification_limit": "Read-only source inspection; no tests or GPU execution performed by this audit. Caller lists are bounded inspected matches, not a proof of absence of dynamically selected users.",
-  "records": [
+  "scope": "CE-RU1-I07 accepted core reuse and retained consumer regression",
+  "source_head_before_commit": "aa5dde4a99caacc3d8b1eabcf54d6eb1e2940773",
+  "source_sha256": {
+    "include/Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh": "3bbff3a69ed7818c741534e2f9f88049ae6fe2bb8b71fb8735b49a8fff297ed3",
+    "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu": "37ecf6cfff6c528b3d28b20259326c4cd8f2bccd03cd3f813886b9a6eb535c08",
+    "src/compute/training/native_training_slice.cu": "93d6e1820c34fbf30622fccb9d28954ad2b3168af4a023838b81f560a5bc9e73",
+    "src/compute/CMakeLists.txt": "57c82be63b542477b3e5d46fbbe848452561af7e53544d1f3f3a9516bfb88eb0",
+    "ENVIRONMENT_NOTES.md": "2011fefbfce8dba34df176acb2c9d01aff82fa6b5eb30c96d834044fd374cff4"
+  },
+  "initial_audit": {
+    "schema_version": 1,
+    "artifact_kind": "source_disposition",
+    "scope": "CE-RU1-I01 read-only source audit",
+    "source_root": "/home/tumlinson/Cellerator",
+    "source_head": "f75c001ce819910efacfcc03d0b313f017a2598f",
+    "created_utc": "2026-09-06T16:03:35.562578+00:00",
+    "task_owner_mapping_authority": "Proposed follow-up ownership only; live task scope must be inspected before editing. I01 authorizes this disposition record, not those mutations.",
+    "verification_limit": "Read-only source inspection; no tests or GPU execution performed by this audit. Caller lists are bounded inspected matches, not a proof of absence of dynamically selected users.",
+    "records": [
+      {
+        "sources": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "sha256": "824b0814240e8e1c62f3d2b876caf4e906cd70a369a8071b5e04fcefc1ddcf28"
+          },
+          {
+            "path": "include/Cellerator/compute/operation/prepared_relation.hh",
+            "sha256": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491"
+          }
+        ],
+        "disposition": "preserve_and_extend",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-C02",
+          "CE-RU1-N01",
+          "CE-RU1-N02",
+          "CE-RU1-N03",
+          "CE-RU1-N04",
+          "CE-RU1-N05",
+          "CE-RU1-N06"
+        ],
+        "preserved_mechanics_and_required_change": "Pair is sole owner of cold FMP1/CTP1, physical f16 plane, logical map, stream and poison state. adapt rejects N != 1. publish_values gathers and increments metadata without an event. Extend same pair; retain N1 read-only graph replay.",
+        "live_callers": [
+          "tests/semantic_spine/native/preparation_test.cu",
+          "tests/semantic_spine/native/forward_test.cu",
+          "tests/semantic_spine/native/transpose_test.cu",
+          "tests/semantic_spine/native/generation_test.cu",
+          "tests/semantic_spine/native/lifecycle_test.cu"
+        ],
+        "regression_evidence_paths": [
+          "tests/semantic_spine/native/lifecycle_test.cu",
+          "tests/semantic_spine/native/overhead_test.cu"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "include/Cellerator/compute/projection/physical_feature_major.hh",
+            "sha256": "a92a43f4008350ec8cec79171e169786e2bb160868d8e24f0723d8f7d1b9b805"
+          },
+          {
+            "path": "include/Cellerator/compute/projection/physical_transpose.hh",
+            "sha256": "5d3344cedb9577eccf5ec9d3e486a5ba9f02760ba61612f8915e03f1826a1010"
+          }
+        ],
+        "disposition": "preserve",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-N01",
+          "CE-RU1-N02",
+          "CE-RU1-N03"
+        ],
+        "preserved_mechanics_and_required_change": "FMP source_value_positions retains logical recovery. Pair composes cold CP-BP positions with CSR positions before CTP build. CTP forward_value_positions addresses the same mutable weight plane.",
+        "live_callers": [
+          "src/compute/operation/prepared_relation.cu",
+          "src/compute/training/native_training_slice.cu"
+        ],
+        "regression_evidence_paths": [
+          "tests/semantic_spine/native/forward_test.cu",
+          "tests/semantic_spine/native/transpose_test.cu"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "src/compute/training/native_training_slice.cu",
+            "sha256": "40385c54f29e1453966312426d8bef1739625ce6af9867450c58180c2921778c"
+          },
+          {
+            "path": "include/Cellerator/compute/training/native_training_slice.hh",
+            "sha256": "b2e0c916e6941525af88241344b86c55b9170803b090430466557a3265e18360"
+          },
+          {
+            "path": "include/Cellerator/compute/math/native_training_slice.hh",
+            "sha256": "8d12a54622aeed7253e6429066f9dc0cbd049fd911421800facc9d41376c9f2f"
+          }
+        ],
+        "disposition": "extract_reusable_arithmetic_preserve_epilogues_then_retire_redundant_on_path_ownership",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-N01",
+          "CE-RU1-N02",
+          "CE-RU1-N03",
+          "CE-RU1-N04",
+          "CE-RU1-I07"
+        ],
+        "preserved_mechanics_and_required_change": "Forward kernel at line 67 traverses FMP masks and shares f32 feature vectors; additionally performs bias/ReLU/RMS. Transpose at line 144 accumulates N16 f32 via CTP physical weight references. Sparse update at line 169 sums channels into physical-order scalar gradient then mutates weights. Extract transpose and split VJP from mutation with explicit FMA/RNE policy. Preserve epilogue backward at line 120 and bias update at line 202 and their live consumer behavior. math header is a forwarder.",
+        "live_callers": [
+          "src/execution/training_program.cu:72 prepare_native_training_slice",
+          "src/execution/training_program.cu:121 run_native_training_step",
+          "components/CelleraTorch/src/autograd_ops.cu:221 indirect run_training_program"
+        ],
+        "regression_evidence_paths": [
+          "tests/math_core/native_training_slice_test.cu",
+          "tests/execution/training_program_test.cu",
+          "tests/execution/ce_live_concurrency_test.cu"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "src/execution/training_program.cu",
+            "sha256": "6ff3164e795d13a41f363e3bcd426816e27ba5c7268eef1883abae9dd5bffc60"
+          },
+          {
+            "path": "include/Cellerator/execution/training_program.hh",
+            "sha256": "e04bc80e7b598c4cd2cf09cd9d472f23f84e279fbf539d02c3bf47be6aa80b5e"
+          },
+          {
+            "path": "components/CelleraTorch/src/autograd_ops.cu",
+            "sha256": "355878e3457d14a373d2e63a9ac887c8d5f4bb44af0e559b4bee26da7c5ea38c"
+          }
+        ],
+        "disposition": "preserve_live_consumers",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-I07"
+        ],
+        "preserved_mechanics_and_required_change": "Existing fused training orchestration and framework adapter remain useful. Retiring training_slice without a tested replacement breaks real callers.",
+        "live_callers": [
+          "components/CelleraTorch/src/autograd_ops.cu:221 run_training_program"
+        ],
+        "regression_evidence_paths": [
+          "tests/execution/training_program_test.cu",
+          "tests/execution/ce_live_concurrency_test.cu"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "src/runtime/value_readiness.cu",
+            "sha256": "818cef2a461d8983863fe61f682c67436652b0fcc80376c20a515d91884a9434"
+          },
+          {
+            "path": "include/Cellerator/runtime/value_readiness.cuh",
+            "sha256": "f373d3db5f5ebf2dce329fce4b5acd7cebb01abdeabf2c37f050e936122c62a0"
+          }
+        ],
+        "disposition": "preserve_primitive_extend_pair_lifetime_protocol",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-R01",
+          "CE-RU1-R02",
+          "CE-RU1-R03",
+          "CE-RU1-N05"
+        ],
+        "preserved_mechanics_and_required_change": "Existing precreated event records producer readiness and waits only after exact epoch/generation validation. It has no consumer-done lease or writer join. Add bounded ready/done protocol without claiming existing readiness protects in-place reader lifetime.",
+        "live_callers": [
+          "src/compute/training/native_training_slice.cu",
+          "src/execution/training_program.cu",
+          "src/execution/program.cc",
+          "src/execution/training_program_v2/program.cc"
+        ],
+        "regression_evidence_paths": [
+          "tests/runtime/value_readiness_test.cu",
+          "tests/execution/ce_live_concurrency_test.cu"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc",
+            "sha256": "eb72707883c19d304c827904d4d082b409386c6de9f36537a5e3dba1436aa288"
+          },
+          {
+            "path": "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
+            "sha256": "e9c2458b4094a5892ab4ab6f2abd63fc8306851d263dee23a4f285d0f3f59c42"
+          }
+        ],
+        "disposition": "replace_on_path_metadata_mapping_preserve_useful_validation",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-F01",
+          "CE-RU1-F02",
+          "CE-RU1-F03",
+          "CE-RU1-F04"
+        ],
+        "preserved_mechanics_and_required_change": "Current implementation validates stage presence/identity/numeric tuple/publication generation and compares stage kinds, but does not execute independently lowered semantics or prove matching axes/operands. caller_update_boundary and publish_generation map to same training stage. Shared calculus and executable bridge must supersede this as RU1 convergence evidence.",
+        "live_callers": [
+          "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc",
+          "include/Cellerator/compiler/ir/semantic/semantic_ir_v1.hh (umbrella exposure)"
+        ],
+        "regression_evidence_paths": [
+          "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc"
+        ]
+      },
+      {
+        "sources": [
+          {
+            "path": "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
+            "sha256": "7644b98a3cd7cdb320c172e91d9490aff79a69f31cf97a40036187b222be3462"
+          },
+          {
+            "path": "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
+            "sha256": "5693da747a711cee8bbf1a3dfab8945ebf8ffc2e2f8f631fa6081c0119db506d"
+          }
+        ],
+        "disposition": "repair_actual_provider_then_connect_hybrid",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-W01",
+          "CE-RU1-W02",
+          "CE-RU1-W03",
+          "CE-RU1-W04",
+          "CE-RU1-W05"
+        ],
+        "preserved_mechanics_and_required_change": "Actual m16n16k16 half/f32 WMMA followed by scalar K tail uses dense_width as ldm without pointer/derived offset/stride/output capacity proof. K17 tail does not repair illegal WMMA prefix. Need explicit aligned physical stride and exact support extraction plus sparse residual. Source search found declaration and definition, no existing direct invocations in src/include/tests.",
+        "live_callers": [],
+        "regression_evidence_paths": []
+      },
+      {
+        "sources": [
+          {
+            "path": "tests/semantic_spine/native/lifecycle_test.cu",
+            "sha256": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93"
+          }
+        ],
+        "disposition": "preserve_and_rerun",
+        "intended_ru1_owner_tasks": [
+          "CE-RU1-N06",
+          "CE-RU1-I05",
+          "CE-RU1-I08"
+        ],
+        "preserved_mechanics_and_required_change": "Lines 59-64 reject publication during capture without generation advance; lines 65-72 capture/replay N1 enqueue at fixed storage and generation 32. RU1 must retain this while rejecting new mutable capture before side effects.",
+        "live_callers": [],
+        "regression_evidence_paths": [
+          "tests/semantic_spine/native/lifecycle_test.cu"
+        ]
+      }
+    ]
+  },
+  "current_disposition": [
     {
-      "sources": [
-        {
-          "path": "src/compute/operation/prepared_relation.cu",
-          "sha256": "824b0814240e8e1c62f3d2b876caf4e906cd70a369a8071b5e04fcefc1ddcf28"
-        },
-        {
-          "path": "include/Cellerator/compute/operation/prepared_relation.hh",
-          "sha256": "2b6b593f1706d8ec752a54300505a5debd176669270f0d7d21a3fc77a3997491"
-        }
+      "removed": "native_training_input_backward_kernel",
+      "destination": "core::launch_transpose_backward_n16 in sm70/transpose/relation_n16.cu",
+      "consumers": [
+        "transpose_backward_n16_candidate",
+        "run_native_training_step"
       ],
-      "disposition": "preserve_and_extend",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-C02",
-        "CE-RU1-N01",
-        "CE-RU1-N02",
-        "CE-RU1-N03",
-        "CE-RU1-N04",
-        "CE-RU1-N05",
-        "CE-RU1-N06"
-      ],
-      "preserved_mechanics_and_required_change": "Pair is sole owner of cold FMP1/CTP1, physical f16 plane, logical map, stream and poison state. adapt rejects N != 1. publish_values gathers and increments metadata without an event. Extend same pair; retain N1 read-only graph replay.",
-      "live_callers": [
-        "tests/semantic_spine/native/preparation_test.cu",
-        "tests/semantic_spine/native/forward_test.cu",
-        "tests/semantic_spine/native/transpose_test.cu",
-        "tests/semantic_spine/native/generation_test.cu",
-        "tests/semantic_spine/native/lifecycle_test.cu"
-      ],
-      "regression_evidence_paths": [
-        "tests/semantic_spine/native/lifecycle_test.cu",
-        "tests/semantic_spine/native/overhead_test.cu"
-      ]
+      "preserved": "Same CTP1 feature traversal and FMP1 physical f16 plane, row-major N16 f32 cotangent and output, 128-thread launch, 16 accumulators. Input gradient executes before sparse weight update. No allocation, preparation, copy, reconstruction, extra device launch, or error-state consumption added."
     },
     {
-      "sources": [
-        {
-          "path": "include/Cellerator/compute/projection/physical_feature_major.hh",
-          "sha256": "a92a43f4008350ec8cec79171e169786e2bb160868d8e24f0723d8f7d1b9b805"
-        },
-        {
-          "path": "include/Cellerator/compute/projection/physical_transpose.hh",
-          "sha256": "5d3344cedb9577eccf5ec9d3e486a5ba9f02760ba61612f8915e03f1826a1010"
-        }
-      ],
-      "disposition": "preserve",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-N01",
-        "CE-RU1-N02",
-        "CE-RU1-N03"
-      ],
-      "preserved_mechanics_and_required_change": "FMP source_value_positions retains logical recovery. Pair composes cold CP-BP positions with CSR positions before CTP build. CTP forward_value_positions addresses the same mutable weight plane.",
-      "live_callers": [
-        "src/compute/operation/prepared_relation.cu",
-        "src/compute/training/native_training_slice.cu"
-      ],
-      "regression_evidence_paths": [
-        "tests/semantic_spine/native/forward_test.cu",
-        "tests/semantic_spine/native/transpose_test.cu"
-      ]
+      "removed": "Unconditional native_training_slice dependency from Cellerator::executable_core",
+      "destination": "Existing explicit Cellerator::training_program link retains native_training_slice",
+      "preserved": "CelleraTorch autograd -> run_training_program -> run_native_training_step remains linked and executed."
     },
     {
-      "sources": [
-        {
-          "path": "src/compute/training/native_training_slice.cu",
-          "sha256": "40385c54f29e1453966312426d8bef1739625ce6af9867450c58180c2921778c"
-        },
-        {
-          "path": "include/Cellerator/compute/training/native_training_slice.hh",
-          "sha256": "b2e0c916e6941525af88241344b86c55b9170803b090430466557a3265e18360"
-        },
-        {
-          "path": "include/Cellerator/compute/math/native_training_slice.hh",
-          "sha256": "8d12a54622aeed7253e6429066f9dc0cbd049fd911421800facc9d41376c9f2f"
-        }
-      ],
-      "disposition": "extract_reusable_arithmetic_preserve_epilogues_then_retire_redundant_on_path_ownership",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-N01",
-        "CE-RU1-N02",
-        "CE-RU1-N03",
-        "CE-RU1-N04",
-        "CE-RU1-I07"
-      ],
-      "preserved_mechanics_and_required_change": "Forward kernel at line 67 traverses FMP masks and shares f32 feature vectors; additionally performs bias/ReLU/RMS. Transpose at line 144 accumulates N16 f32 via CTP physical weight references. Sparse update at line 169 sums channels into physical-order scalar gradient then mutates weights. Extract transpose and split VJP from mutation with explicit FMA/RNE policy. Preserve epilogue backward at line 120 and bias update at line 202 and their live consumer behavior. math header is a forwarder.",
-      "live_callers": [
-        "src/execution/training_program.cu:72 prepare_native_training_slice",
-        "src/execution/training_program.cu:121 run_native_training_step",
-        "components/CelleraTorch/src/autograd_ops.cu:221 indirect run_training_program"
-      ],
-      "regression_evidence_paths": [
-        "tests/math_core/native_training_slice_test.cu",
-        "tests/execution/training_program_test.cu",
-        "tests/execution/ce_live_concurrency_test.cu"
-      ]
+      "retained": "native_training_forward_kernel; native_training_epilogue_backward_kernel; native_training_sparse_update_kernel; native_training_bias_update_kernel",
+      "reason": "Live fused bias/ReLU/RMS training consumer. Splitting these to call standalone RU1 primitives would add unmeasured launch/materialization cost and lose existing fusion. They do not define the new RU1 calculus or own its prepared relation."
     },
     {
-      "sources": [
-        {
-          "path": "src/execution/training_program.cu",
-          "sha256": "6ff3164e795d13a41f363e3bcd426816e27ba5c7268eef1883abae9dd5bffc60"
-        },
-        {
-          "path": "include/Cellerator/execution/training_program.hh",
-          "sha256": "e04bc80e7b598c4cd2cf09cd9d472f23f84e279fbf539d02c3bf47be6aa80b5e"
-        },
-        {
-          "path": "components/CelleraTorch/src/autograd_ops.cu",
-          "sha256": "355878e3457d14a373d2e63a9ac887c8d5f4bb44af0e559b4bee26da7c5ea38c"
-        }
-      ],
-      "disposition": "preserve_live_consumers",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-I07"
-      ],
-      "preserved_mechanics_and_required_change": "Existing fused training orchestration and framework adapter remain useful. Retiring training_slice without a tested replacement breaks real callers.",
-      "live_callers": [
-        "components/CelleraTorch/src/autograd_ops.cu:221 run_training_program"
-      ],
-      "regression_evidence_paths": [
-        "tests/execution/training_program_test.cu",
-        "tests/execution/ce_live_concurrency_test.cu"
-      ]
+      "replaced_in_prior_lanes": "RU1 gradient/publication compiler semantics formerly mapped to training_program_v2 stage metadata",
+      "destination": "Shared relation_calculus, independent effect-sequence comparison, executable relation_update_spine recipe and CUDA action bindings",
+      "preserved": "Legacy metadata program remains for its separate validation consumers. Migrated semantic gradient test and dual-origin demo use actual shared calculus; no training_program_v2 ownership on the new path."
     },
     {
-      "sources": [
-        {
-          "path": "src/runtime/value_readiness.cu",
-          "sha256": "818cef2a461d8983863fe61f682c67436652b0fcc80376c20a515d91884a9434"
-        },
-        {
-          "path": "include/Cellerator/runtime/value_readiness.cuh",
-          "sha256": "f373d3db5f5ebf2dce329fce4b5acd7cebb01abdeabf2c37f050e936122c62a0"
-        }
-      ],
-      "disposition": "preserve_primitive_extend_pair_lifetime_protocol",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-R01",
-        "CE-RU1-R02",
-        "CE-RU1-R03",
-        "CE-RU1-N05"
-      ],
-      "preserved_mechanics_and_required_change": "Existing precreated event records producer readiness and waits only after exact epoch/generation validation. It has no consumer-done lease or writer join. Add bounded ready/done protocol without claiming existing readiness protects in-place reader lifetime.",
-      "live_callers": [
-        "src/compute/training/native_training_slice.cu",
-        "src/execution/training_program.cu",
-        "src/execution/program.cc",
-        "src/execution/training_program_v2/program.cc"
-      ],
-      "regression_evidence_paths": [
-        "tests/runtime/value_readiness_test.cu",
-        "tests/execution/ce_live_concurrency_test.cu"
-      ]
-    },
-    {
-      "sources": [
-        {
-          "path": "src/compiler/ir/semantic/implement_gradient_and_publication_operations.cc",
-          "sha256": "eb72707883c19d304c827904d4d082b409386c6de9f36537a5e3dba1436aa288"
-        },
-        {
-          "path": "include/Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh",
-          "sha256": "e9c2458b4094a5892ab4ab6f2abd63fc8306851d263dee23a4f285d0f3f59c42"
-        }
-      ],
-      "disposition": "replace_on_path_metadata_mapping_preserve_useful_validation",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-F01",
-        "CE-RU1-F02",
-        "CE-RU1-F03",
-        "CE-RU1-F04"
-      ],
-      "preserved_mechanics_and_required_change": "Current implementation validates stage presence/identity/numeric tuple/publication generation and compares stage kinds, but does not execute independently lowered semantics or prove matching axes/operands. caller_update_boundary and publish_generation map to same training stage. Shared calculus and executable bridge must supersede this as RU1 convergence evidence.",
-      "live_callers": [
-        "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc",
-        "include/Cellerator/compiler/ir/semantic/semantic_ir_v1.hh (umbrella exposure)"
-      ],
-      "regression_evidence_paths": [
-        "tests/compiler/semantic_ir/implement_gradient_and_publication_operations_test.cc"
-      ]
-    },
-    {
-      "sources": [
-        {
-          "path": "src/compute/architecture/providers/nvidia/sm70/contract/rectangular_mma_contract_v1.cu",
-          "sha256": "7644b98a3cd7cdb320c172e91d9490aff79a69f31cf97a40036187b222be3462"
-        },
-        {
-          "path": "include/Cellerator/compute/architecture/providers/nvidia/sm70/contract/contract_portfolio_v1.cuh",
-          "sha256": "5693da747a711cee8bbf1a3dfab8945ebf8ffc2e2f8f631fa6081c0119db506d"
-        }
-      ],
-      "disposition": "repair_actual_provider_then_connect_hybrid",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-W01",
-        "CE-RU1-W02",
-        "CE-RU1-W03",
-        "CE-RU1-W04",
-        "CE-RU1-W05"
-      ],
-      "preserved_mechanics_and_required_change": "Actual m16n16k16 half/f32 WMMA followed by scalar K tail uses dense_width as ldm without pointer/derived offset/stride/output capacity proof. K17 tail does not repair illegal WMMA prefix. Need explicit aligned physical stride and exact support extraction plus sparse residual. Source search found declaration and definition, no existing direct invocations in src/include/tests.",
-      "live_callers": [],
-      "regression_evidence_paths": []
-    },
-    {
-      "sources": [
-        {
-          "path": "tests/semantic_spine/native/lifecycle_test.cu",
-          "sha256": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93"
-        }
-      ],
-      "disposition": "preserve_and_rerun",
-      "intended_ru1_owner_tasks": [
-        "CE-RU1-N06",
-        "CE-RU1-I05",
-        "CE-RU1-I08"
-      ],
-      "preserved_mechanics_and_required_change": "Lines 59-64 reject publication during capture without generation advance; lines 65-72 capture/replay N1 enqueue at fixed storage and generation 32. RU1 must retain this while rejecting new mutable capture before side effects.",
-      "live_callers": [],
-      "regression_evidence_paths": [
-        "tests/semantic_spine/native/lifecycle_test.cu"
-      ]
+      "retained": "N1 candidate and prepared pair capture/replay",
+      "reason": "Existing useful path; full RU1 regression includes N1 lifecycle. New mutable operations remain capture-rejected."
     }
-  ]
+  ],
+  "validation": {
+    "native": [
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/celleratorNativeTrainingSliceTest"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "binary_sha256": "db110d98b5c3a59f35f9c4af2d90f9ca2c1f63560bdf9c8f674adb91282c6ea3"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/celleratorTrainingProgramTest"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "binary_sha256": "c477e478f66febd67bc73dbd5cd4f50d2ce2f7af3590921a63e7a84a5a3a4568"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/celleratorCeLiveConcurrencyTest"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "binary_sha256": "5b2d6171a33299aa66a4c5278afdb43c999ef49102be85925f3295dd34d69570"
+      }
+    ],
+    "full": [
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1-torch/celleraTorchAutogradOpsTest"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "ctest",
+          "--test-dir",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1",
+          "-R",
+          "^ru1_",
+          "--output-on-failure",
+          "--output-junit",
+          "/tmp/ce-ru1-i07/ru1.xml"
+        ],
+        "exit_code": 0,
+        "stdout": "Internal ctest changing into directory: /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1\nTest project /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1\n      Start 14: ru1_calculus\n 1/25 Test #14: ru1_calculus .....................   Passed    0.00 sec\n      Start 15: ru1_reference\n 2/25 Test #15: ru1_reference ....................   Passed    0.01 sec\n      Start 16: ru1_cover\n 3/25 Test #16: ru1_cover ........................   Passed    0.00 sec\n      Start 17: ru1_compiler\n 4/25 Test #17: ru1_compiler .....................   Passed    0.00 sec\n      Start 18: ru1_source_bridge\n 5/25 Test #18: ru1_source_bridge ................   Passed    0.00 sec\n      Start 19: ru1_dual_origin\n 6/25 Test #19: ru1_dual_origin ..................   Passed    0.00 sec\n      Start 20: ru1_evidence_contract\n 7/25 Test #20: ru1_evidence_contract ............   Passed    0.09 sec\n      Start 21: ru1_gpu_numerics\n 8/25 Test #21: ru1_gpu_numerics .................   Passed    2.52 sec\n      Start 22: ru1_gpu_bindings\n 9/25 Test #22: ru1_gpu_bindings .................   Passed    2.49 sec\n      Start 23: ru1_gpu_lifecycle\n10/25 Test #23: ru1_gpu_lifecycle ................   Passed    2.56 sec\n      Start 24: ru1_readiness\n11/25 Test #24: ru1_readiness ....................   Passed    3.30 sec\n      Start 25: ru1_wmma_legality\n12/25 Test #25: ru1_wmma_legality ................   Passed    2.48 sec\n      Start 26: ru1_n1_regression\n13/25 Test #26: ru1_n1_regression ................   Passed    2.49 sec\n      Start 27: ru1_forward_n16\n14/25 Test #27: ru1_forward_n16 ..................   Passed    2.48 sec\n      Start 28: ru1_transpose_n16\n15/25 Test #28: ru1_transpose_n16 ................   Passed    2.49 sec\n      Start 29: ru1_sparse_gradient\n16/25 Test #29: ru1_sparse_gradient ..............   Passed    2.49 sec\n      Start 30: ru1_value_update\n17/25 Test #30: ru1_value_update .................   Passed    2.51 sec\n      Start 31: ru1_update_publication\n18/25 Test #31: ru1_update_publication ...........   Passed    2.49 sec\n      Start 32: ru1_native_failure\n19/25 Test #32: ru1_native_failure ...............   Passed    2.50 sec\n      Start 33: ru1_gradient_pack\n20/25 Test #33: ru1_gradient_pack ................   Passed    2.50 sec\n      Start 34: ru1_hybrid_gradient\n21/25 Test #34: ru1_hybrid_gradient ..............   Passed    2.49 sec\n      Start 35: ru1_readiness_component\n22/25 Test #35: ru1_readiness_component ..........   Passed    2.48 sec\n      Start 36: ru1_read_lease\n23/25 Test #36: ru1_read_lease ...................   Passed    2.51 sec\n      Start 43: ru1_demo_hybrid\n24/25 Test #43: ru1_demo_hybrid ..................   Passed    2.49 sec\n      Start 44: ru1_demo_sparse\n25/25 Test #44: ru1_demo_sparse ..................   Passed    2.52 sec\n\n100% tests passed, 0 tests failed out of 25\n\nTotal Test time (real) =  45.91 sec\n",
+        "stderr": ""
+      }
+    ],
+    "junit": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuite name=\"(empty)\"\n\ttests=\"25\"\n\tfailures=\"0\"\n\tdisabled=\"0\"\n\tskipped=\"0\"\n\thostname=\"\"\n\ttime=\"45\"\n\ttimestamp=\"2026-09-06T18:29:07\"\n\t>\n\t<testcase name=\"ru1_calculus\" classname=\"ru1_calculus\" time=\"0.00382872\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>ru1_calculus: 108 host checks passed (full_f32, round_operands_f16_rne)\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_reference\" classname=\"ru1_reference\" time=\"0.0101797\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>width=1 max_continuous_fd_error=7.06235e-12 max_operand_quantization_difference=0.000871181\nwidth=16 max_continuous_fd_error=1.95115e-10 max_operand_quantization_difference=0.00284268\n159629 independent reference checks passed; seed=0x52553117\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_cover\" classname=\"ru1_cover\" time=\"0.00198023\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>gradient cover exact support/inverse maps/budget PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_compiler\" classname=\"ru1_compiler\" time=\"0.00247525\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>232 compiler conformance checks passed\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_source_bridge\" classname=\"ru1_source_bridge\" time=\"0.00229459\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>55 source bridge checks passed\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_dual_origin\" classname=\"ru1_dual_origin\" time=\"0.00340389\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>24 dual-origin recipe checks passed\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_evidence_contract\" classname=\"ru1_evidence_contract\" time=\"0.0934446\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>...........\n----------------------------------------------------------------------\nRan 11 tests in 0.020s\n\nOK\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_gpu_numerics\" classname=\"ru1_gpu_numerics\" time=\"2.51581\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>fixture=0 profile=full-f32 route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=0 profile=half-rounded route=sparse edges=256 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=full-f32 route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=2.16864e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=1 profile=half-rounded route=sparse edges=262 max_dense_error=9.33651e-08 max_gradient_error=1.86265e-07 operand_quantization_difference=0.000869749 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 profile=full-f32 route=sparse edges=50 max_dense_error=1.49012e-08 max_gradient_error=1.17331e-07 operand_quantization_difference=0 wmma_launches=0 residual_launches=0 sparse_launches=2\nfixture=2 pr...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_gpu_bindings\" classname=\"ru1_gpu_bindings\" time=\"2.49338\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>243 binding checks, 37 metadata rejections, true partial-publication poison PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_gpu_lifecycle\" classname=\"ru1_gpu_lifecycle\" time=\"2.55905\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>1163 lifecycle checks, 128 delayed generations, two consumers, N1 graph replay PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_readiness\" classname=\"ru1_readiness\" time=\"3.29674\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>readiness_adversarial_test: sm70 PASS; 4096 generations, stable events, enqueue versus completion, five injected failures\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_wmma_legality\" classname=\"ru1_wmma_legality\" time=\"2.48423\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>WMMA legality actual m16n16k16 + legal tails PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_n1_regression\" classname=\"ru1_n1_regression\" time=\"2.49004\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>sm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_forward_n16\" classname=\"ru1_forward_n16\" time=\"2.48409\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>N1/N16 FMP1 forward, capacities, empty support, rebinding and oracle PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_transpose_n16\" classname=\"ru1_transpose_n16\" time=\"2.48981\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>N16 CTP1 transpose, isolated sources, shared values, non-square adjoint and provider identity PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_sparse_gradient\" classname=\"ru1_sparse_gradient\" time=\"2.48858\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>N16 full-f32 and half-rounded sparse gradient, physical bijection, stamps and rejected bindings PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_value_update\" classname=\"ru1_value_update\" time=\"2.5093\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>physical delta and FMA step updates, RNE boundaries, nonfinites, provenance and generation rejection PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_update_publication\" classname=\"ru1_update_publication\" time=\"2.49048\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>public hybrid gradient, two updates, three ready generations and delayed cross-stream leases PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_native_failure\" classname=\"ru1_native_failure\" time=\"2.49508\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>native capture, stale pointer, empty support, partial publication and poisoned lease cleanup PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_gradient_pack\" classname=\"ru1_gradient_pack\" time=\"2.50436\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>gradient pack RNE bits/nonfinite/padding/same-address refresh PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_hybrid_gradient\" classname=\"ru1_hybrid_gradient\" time=\"2.48566\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>fixture=0 edges=256 tiles=1 residual=0 WMMA=2 sparse=2 pack=12 scratch=2048 PASS\nfixture=1 edges=261 tiles=1 residual=6 WMMA=2 sparse=2 pack=12 scratch=2048 PASS\nfixture=2 edges=6 tiles=0 residual=6 WMMA=0 sparse=2 pack=4 scratch=0 PASS\nhybrid independent rounded VJP/exact physical writes/nonfinite/empty PASS\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_readiness_component\" classname=\"ru1_readiness_component\" time=\"2.47739\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>readiness_component_test: sm70 PASS; ready edge, metadata, overflow, poison\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_read_lease\" classname=\"ru1_read_lease\" time=\"2.50704\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>read_lease_test: sm70 PASS; 128 delayed readers, two streams, exact tickets and writer joins\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_demo_hybrid\" classname=\"ru1_demo_hybrid\" time=\"2.48834\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>Device: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -&gt; 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -&gt; 0.002780993225 -&gt; 0.002562196675\nTopology preparations=1; updates=2; WMMA=3; residual=3; sparse=0\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; no...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_demo_sparse\" classname=\"ru1_demo_sparse\" time=\"2.51685\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>Device: Tesla V100-SXM2-16GB; synthetic regulatory module, 20 -&gt; 19, 262 edges, N16\nforward max_abs_error=0\ncompiler forward max_abs_error=0\nnative transpose max_abs_error=1.236912794e-10\ncompiler transpose max_abs_error=1.236912794e-10\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=8.90577212e-07 (explicitly permitted)\ncompiler generation-2 forward max_abs_error=7.450580597e-09\ncompiler generation-2 transpose max_abs_error=9.886996777e-11\nhalf-profile VJP max_abs_error=0\nMixed versus full-f32 VJP max_abs_difference=9.703799151e-07 (explicitly permitted)\nforward max_abs_error=7.450580597e-09\nLoss: 0.003025651247 -&gt; 0.002780993225 -&gt; 0.002562196675\nTopology preparations=1; updates=2; WMMA=0; residual=0; sparse=3\nCompiler actions=10; reader returns=3\nRU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\nSynthetic correctness witness; no...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n</system-out>\n\t</testcase>\n</testsuite>\n",
+    "full_ru1_tests": 25,
+    "controllers": {
+      "native": {
+        "classification": "decision-result",
+        "evidence_id": "e1fc8c95-c8c1-4a22-a7ec-568d616b218c",
+        "lease_receipt": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/d0b135b3-9ba0-450f-903a-f9c9cee145e6/lease.json",
+        "message": "No action-worthy result; evidence stored.",
+        "ok": true,
+        "returncode": 0,
+        "status": "succeeded",
+        "stderr_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/d0b135b3-9ba0-450f-903a-f9c9cee145e6/foreground.stderr.txt",
+        "stdout_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/d0b135b3-9ba0-450f-903a-f9c9cee145e6/foreground.stdout.txt",
+        "lease_receipt_contents": "{\n  \"format\": \"CUDA-FOREGROUND-LEASE/1\",\n  \"owner_id\": \"foreground:2a3cb3f7-f4d4-4010-a26d-a324b2ac62cf\",\n  \"project_root\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate\",\n  \"pid\": 789822,\n  \"resource_ids\": [\n    \"accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8\"\n  ],\n  \"observed_unix\": 1788719030.5751991,\n  \"state\": \"active\"\n}\n",
+        "stdout_path_contents": "celleratorNativeTrainingSliceTest 0  \ncelleratorTrainingProgramTest 0  \ncelleratorCeLiveConcurrencyTest 0  \n",
+        "stderr_path_contents": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+      },
+      "torch_and_ru1": {
+        "classification": "decision-result",
+        "evidence_id": "1c49753d-6564-4c0e-9799-b7eb29568170",
+        "lease_receipt": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/df2d3127-71d7-4706-91f8-0f3ffc7ae92e/lease.json",
+        "message": "No action-worthy result; evidence stored.",
+        "ok": true,
+        "returncode": 0,
+        "status": "succeeded",
+        "stderr_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/df2d3127-71d7-4706-91f8-0f3ffc7ae92e/foreground.stderr.txt",
+        "stdout_path": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/.todo-orchestrator/runtime/background-artifacts/foreground/df2d3127-71d7-4706-91f8-0f3ffc7ae92e/foreground.stdout.txt",
+        "lease_receipt_contents": "{\n  \"format\": \"CUDA-FOREGROUND-LEASE/1\",\n  \"owner_id\": \"foreground:be4d02b6-8559-428e-9ecd-e70240f15f14\",\n  \"project_root\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate\",\n  \"pid\": 792258,\n  \"resource_ids\": [\n    \"accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8\"\n  ],\n  \"observed_unix\": 1788719344.2525704,\n  \"state\": \"active\"\n}\n",
+        "stdout_path_contents": " \nInternal ctest changing into directory: /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1\nTest project /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1\n      Start 14: ru1_calculus\n 1/25 Test #14: ru1_calculus .....................   Passed    0.00 sec\n      Start 15: ru1_reference\n 2/25 Test #15: ru1_reference ....................   Passed    0.01 sec\n      Start 16: ru1_cover\n 3/25 Test #16: ru1_cover ........................   Passed    0.00 sec\n      Start 17: ru1_compiler\n 4/25 Test #17: ru1_compiler .....................   Passed    0.00 sec\n      Start 18: ru1_source_bridge\n 5/25 Test #18: ru1_source_bridge ................   Passed    0.00 sec\n      Start 19: ru1_dual_origin\n 6/25 Test #19: ru1_dual_origin ..................   Passed    0.00 sec\n      Start 20: ru1_evidence_contract\n 7/25 Test #20: ru1_evidence_contract ............   Passed    0.09 sec\n      Start 21: ru1_gpu_numerics\n 8/25 Test #21: ru1_gpu_numerics .................   Passed    2.52 sec\n      Start 22: ru1_gpu_bindings\n 9/25 Test #22: ru1_gpu_bindings .................   Passed    2.49 sec\n      Start 23: ru1_gpu_lifecycle\n10/25 Test #23: ru1_gpu_lifecycle ................   Passed    2.56 sec\n      Start 24: ru1_readiness\n11/25 Test #24: ru1_readiness ....................   Passed    3.30 sec\n      Start 25: ru1_wmma_legality\n12/25 Test #25: ru1_wmma_legality ................   Passed    2.48 sec\n      Start 26: ru1_n1_regression\n13/25 Test #26: ru1_n1_regression ................   Passed    2.49 sec\n      Start 27: ru1_forward_n16\n14/25 Test #27: ru1_forward_n16 ..................   Passed    2.48 sec\n      Start 28: ru1_transpose_n16\n15/25 Test #28: ru1_transpose_n16 ................   Passed    2.49 sec\n      Start 29: ru1_sparse_gradient\n16/25 Test #29: ru1_sparse_gradient ..............   Passed    2.49 sec\n      Start 30: ru1_value_update\n17/25 Test #30: ru1_value_update .................   Passed    2.51 sec\n      Start 31: ru1_update_publication\n18/25 Test #31: ru1_update_publication ...........   Passed    2.49 sec\n      Start 32: ru1_native_failure\n19/25 Test #32: ru1_native_failure ...............   Passed    2.50 sec\n      Start 33: ru1_gradient_pack\n20/25 Test #33: ru1_gradient_pack ................   Passed    2.50 sec\n      Start 34: ru1_hybrid_gradient\n21/25 Test #34: ru1_hybrid_gradient ..............   Passed    2.49 sec\n      Start 35: ru1_readiness_component\n22/25 Test #35: ru1_readiness_component ..........   Passed    2.48 sec\n      Start 36: ru1_read_lease\n23/25 Test #36: ru1_read_lease ...................   Passed    2.51 sec\n      Start 43: ru1_demo_hybrid\n24/25 Test #43: ru1_demo_hybrid ..................   Passed    2.49 sec\n      Start 44: ru1_demo_sparse\n25/25 Test #44: ru1_demo_sparse ..................   Passed    2.52 sec\n\n100% tests passed, 0 tests failed out of 25\n\nTotal Test time (real) =  45.91 sec\n \n",
+        "stderr_path_contents": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+      }
+    },
+    "builds": {
+      "native": {
+        "exit_code": 0,
+        "stdout": "-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Cellerator providers: selection=baseline, tuning=precise\n-- Cellerator default real: storage=f16, compute=f32, accum=f32\n-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)\n-- Cellerator host vector level: avx2\n-- Cellerator hardware probe disabled\n-- Cellerator CUDA mode: generic\n-- Configuring done (0.7s)\n-- Generating done (1.0s)\n-- Build files have been written to: /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1\n[  0%] Built target cellerator_runtime\n[ 33%] Built target cellpack\n[ 66%] Built target cellerator_operation_core\n[ 66%] Built target cellpack_local_cell_ordering\n[ 66%] Built target cellpack_apply_plan\n[ 66%] Built target cellpack_warp_tiles\n[100%] Built target cellpack_feature_weighted_row_reduction\n[100%] Built target cellpack_persistent_packing_payload\n[100%] Built target cellerator_feature_major_projection\n[100%] Built target cellerator_transpose_projection\n[100%] Building CUDA object CMakeFiles/cellerator_transpose_backward_candidate.dir/src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu.o\n[100%] Linking CXX static library libcellerator_transpose_backward_candidate.a\n[100%] Built target cellerator_transpose_backward_candidate\n[100%] Building CUDA object CMakeFiles/cellerator_native_training_slice.dir/src/compute/training/native_training_slice.cu.o\n[100%] Linking CXX static library libcellerator_native_training_slice.a\n[100%] Built target cellerator_native_training_slice\n[100%] Building CUDA object CMakeFiles/celleratorNativeTrainingSliceTest.dir/tests/math_core/native_training_slice_test.cu.o\n[100%] Linking CXX executable celleratorNativeTrainingSliceTest\n[100%] Built target celleratorNativeTrainingSliceTest\n[ 33%] Built target cellpack\n[ 33%] Built target cellerator_runtime\n[ 33%] Built target cellpack_local_cell_ordering\n[ 33%] Built target cellpack_apply_plan\n[ 66%] Built target cellerator_operation_core\n[ 66%] Built target cellpack_warp_tiles\n[100%] Built target cellpack_feature_weighted_row_reduction\n[100%] Built target cellpack_persistent_packing_payload\n[100%] Built target cellerator_feature_major_projection\n[100%] Built target cellerator_transpose_projection\n[100%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_native_training_slice\n[100%] Building CUDA object CMakeFiles/cellerator_training_program.dir/src/execution/training_program.cu.o\n[100%] Linking CXX static library libcellerator_training_program.a\n[100%] Built target cellerator_training_program\n[100%] Building CUDA object CMakeFiles/celleratorTrainingProgramTest.dir/tests/execution/training_program_test.cu.o\n[100%] Linking CXX executable celleratorTrainingProgramTest\n[100%] Built target celleratorTrainingProgramTest\n[ 33%] Built target cellpack\n[ 33%] Built target cellerator_runtime\n[ 66%] Built target cellerator_operation_core\n[ 66%] Built target cellpack_local_cell_ordering\n[ 66%] Built target cellpack_apply_plan\n[ 66%] Built target cellpack_warp_tiles\n[100%] Built target cellpack_feature_weighted_row_reduction\n[100%] Built target cellpack_persistent_packing_payload\n[100%] Built target cellerator_feature_major_projection\n[100%] Built target cellerator_transpose_projection\n[100%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_native_training_slice\n[100%] Built target cellerator_training_program\n[100%] Building CUDA object CMakeFiles/celleratorCeLiveConcurrencyTest.dir/tests/execution/ce_live_concurrency_test.cu.o\n[100%] Linking CXX executable celleratorCeLiveConcurrencyTest\n[100%] Built target celleratorCeLiveConcurrencyTest\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_relation_gradient_cover\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellpack_local_cell_ordering\n[ 18%] Built target cellpack_apply_plan\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_transpose_backward_candidate\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/cellerator_prepared_relation_cuda.dir/src/compute/operation/prepared_relation.cu.o\n[100%] Linking CXX static library libcellerator_prepared_relation_cuda.a\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Building CUDA object CMakeFiles/ceRU1GpuNumerics.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1GpuNumerics\n[100%] Built target ceRU1GpuNumerics\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_runtime\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_relation_calculus\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellpack_semantic_geometry\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_provider_common\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1N1Regression.dir/ru1_sm70_guard.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1N1Regression.dir/tests/semantic_spine/native/lifecycle_test.cu.o\n[100%] Linking CXX executable ceRU1N1Regression\n[100%] Built target ceRU1N1Regression\n",
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n"
+      },
+      "torch_and_ru1": [
+        {
+          "argv": [
+            "cmake",
+            "--build",
+            "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1-torch",
+            "--target",
+            "celleraTorchAutogradOpsTest",
+            "-j",
+            "80"
+          ],
+          "exit_code": 0,
+          "stdout": "[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/candidate_relation.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/cell_block_records.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/gating.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/layout_metrics.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/layout_selector.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/evaluator.cc.o\n[  0%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/optimizer.cc.o\n[  0%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/device_descriptor.cu.o\n[  0%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/runtime.cu.o\n[  0%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/allocation.cc.o\n[ 20%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/packing_plan.cc.o\n[ 20%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/pack.cc.o\n[ 40%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/copy.cu.o\n[ 40%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/planner.cc.o\n[ 40%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/generation_marks.cc.o\n[ 40%] Building CXX object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/image.cc.o\n[ 40%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/memory/session_memory.cu.o\n[ 40%] Building CUDA object CMakeFiles/cellerator_runtime.dir/src/runtime/value_readiness.cu.o\n[ 40%] Building CXX object src/geometry/CMakeFiles/cellpack.dir/merge_cost.cc.o\n[ 40%] Linking CXX static library libcellpack.a\n[ 40%] Built target cellpack\n[ 40%] Building CXX object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan.cc.o\n[ 40%] Building CUDA object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering_cuda.cu.o\n[ 40%] Building CXX object CMakeFiles/cellpack_local_cell_ordering.dir/src/geometry/local_cell_ordering.cc.o\n[ 40%] Building CUDA object CMakeFiles/cellpack_apply_plan.dir/src/geometry/apply_plan_cuda.cu.o\n[ 40%] Linking CXX static library libcellerator_runtime.a\n[ 40%] Built target cellerator_runtime\n[ 60%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core_v2/composition.cc.o\n[ 60%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core.cc.o\n[ 60%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core_v2/relation_algebra.cc.o\n[ 60%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core_v2/v1_adapter.cc.o\n[ 60%] Building CXX object CMakeFiles/cellerator_operation_core.dir/src/compute/operation/operation_core_v2/schema.cc.o\n[ 60%] Linking CXX static library libcellerator_operation_core.a\n[ 60%] Built target cellerator_operation_core\n[ 60%] Linking CXX static library libcellpack_apply_plan.a\n[ 60%] Built target cellpack_apply_plan\n[ 60%] Linking CXX static library libcellpack_local_cell_ordering.a\n[ 60%] Built target cellpack_local_cell_ordering\n[ 60%] Building CXX object src/geometry/CMakeFiles/cellpack_warp_tiles.dir/warp_tiles.cc.o\n[ 60%] Linking CXX static library libcellpack_warp_tiles.a\n[ 60%] Built target cellpack_warp_tiles\n[ 60%] Building CXX object CMakeFiles/cellpack_feature_weighted_row_reduction.dir/src/geometry/feature_weighted_row_reduction.cc.o\n[ 60%] Linking CXX static library libcellpack_feature_weighted_row_reduction.a\n[ 60%] Built target cellpack_feature_weighted_row_reduction\n[ 60%] Building CXX object CMakeFiles/cellpack_persistent_packing_payload.dir/src/geometry/persistent_packing_payload.cc.o\n[ 60%] Linking CXX static library libcellpack_persistent_packing_payload.a\n[ 60%] Built target cellpack_persistent_packing_payload\n[ 60%] Building CXX object CMakeFiles/cellerator_feature_major_projection.dir/src/compute/projection/physical_feature_major.cc.o\n[ 60%] Linking CXX static library libcellerator_feature_major_projection.a\n[ 60%] Built target cellerator_feature_major_projection\n[ 60%] Building CXX object CMakeFiles/cellerator_transpose_projection.dir/src/compute/projection/physical_transpose.cc.o\n[ 80%] Linking CXX static library libcellerator_transpose_projection.a\n[ 80%] Built target cellerator_transpose_projection\n[ 80%] Building CUDA object CMakeFiles/cellerator_transpose_backward_candidate.dir/src/compute/candidate/transpose_backward_candidate.cu.o\n[ 80%] Building CUDA object CMakeFiles/cellerator_transpose_backward_candidate.dir/src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu.o\n[ 80%] Linking CXX static library libcellerator_transpose_backward_candidate.a\n[ 80%] Built target cellerator_transpose_backward_candidate\n[ 80%] Building CUDA object CMakeFiles/cellerator_native_training_slice.dir/src/compute/training/native_training_slice.cu.o\n[ 80%] Linking CXX static library libcellerator_native_training_slice.a\n[ 80%] Built target cellerator_native_training_slice\n[ 80%] Building CUDA object CMakeFiles/cellerator_training_program.dir/src/execution/training_program.cu.o\n[ 80%] Linking CXX static library libcellerator_training_program.a\n[ 80%] Built target cellerator_training_program\n[ 80%] Building CUDA object components/CelleraTorch/CMakeFiles/cellera_torch_autograd_ops.dir/src/autograd_ops.cu.o\n[100%] Linking CXX static library libcellera_torch_autograd_ops.a\n[100%] Built target cellera_torch_autograd_ops\n[100%] Building CXX object components/CelleraTorch/CMakeFiles/celleraTorchAutogradOpsTest.dir/tests/autograd_ops_test.cc.o\n[100%] Linking CXX executable ../../celleraTorchAutogradOpsTest\n[100%] Built target celleraTorchAutogradOpsTest\n",
+          "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nIn static member function \u2018static _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = long unsigned int; _Up = long unsigned int; bool _IsMove = false]\u2019,\n    inlined from \u2018_OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]\u2019 at /usr/include/c++/12/bits/stl_algobase.h:500:141,\n    inlined from \u2018_OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]\u2019 at /usr/include/c++/12/bits/stl_algobase.h:528:40,\n    inlined from \u2018_OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = long unsigned int*; _OI = long unsigned int*]\u2019 at /usr/include/c++/12/bits/stl_algobase.h:535:25,\n    inlined from \u2018_OI std::copy(_II, _II, _OI) [with _II = long unsigned int*; _OI = long unsigned int*]\u2019 at /usr/include/c++/12/bits/stl_algobase.h:625:64,\n    inlined from \u2018std::vector<bool, _Alloc>::iterator std::vector<bool, _Alloc>::_M_copy_aligned(const_iterator, const_iterator, iterator) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/stl_bvector.h:1293:32,\n    inlined from \u2018void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/vector.tcc:845:34,\n    inlined from \u2018void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/stl_bvector.h:1081:14,\n    inlined from \u2018static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = celleratorch::autograd::native_training_autograd_function; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, const std::shared_ptr<celleratorch::autograd::native_training_binding>&}; T = celleratorch::autograd::native_training_autograd_function]\u2019 at /usr/local/include/torch/csrc/autograd/custom_function.h:480:35:\n/usr/include/c++/12/bits/stl_algobase.h:434:25: warning: \u2018void* __builtin_memmove(void*, const void*, long unsigned int)\u2019 writing between 9 and 9223372036854775807 bytes into a region of size 8 overflows the destination [-Wstringop-overflow=]\n  434 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);\n      |             ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nIn member function \u2018_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = long unsigned int]\u2019,\n    inlined from \u2018static _Tp* std::allocator_traits<std::allocator<_Tp1> >::allocate(allocator_type&, size_type) [with _Tp = long unsigned int]\u2019 at /usr/include/c++/12/bits/alloc_traits.h:464:22,\n    inlined from \u2018std::_Bvector_base<_Alloc>::_Bit_pointer std::_Bvector_base<_Alloc>::_M_allocate(std::size_t) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/stl_bvector.h:631:47,\n    inlined from \u2018void std::vector<bool, _Alloc>::_M_reallocate(size_type) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/vector.tcc:843:37,\n    inlined from \u2018void std::vector<bool, _Alloc>::reserve(size_type) [with _Alloc = std::allocator<bool>]\u2019 at /usr/include/c++/12/bits/stl_bvector.h:1081:14,\n    inlined from \u2018static std::enable_if_t<is_same_v<X, T>, decltype (X::forward(nullptr, (declval<Args>)()...))> torch::autograd::Function<T>::apply(Args&& ...) [with X = celleratorch::autograd::native_training_autograd_function; Args = {const at::Tensor&, const at::Tensor&, const at::Tensor&, const at::Tensor&, const std::shared_ptr<celleratorch::autograd::native_training_binding>&}; T = celleratorch::autograd::native_training_autograd_function]\u2019 at /usr/local/include/torch/csrc/autograd/custom_function.h:480:35:\n/usr/include/c++/12/bits/new_allocator.h:148:49: note: destination object of size 8 allocated by \u2018operator new\u2019\n  148 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));\n      |                                   ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~\n"
+        },
+        {
+          "argv": [
+            "cmake",
+            "--build",
+            "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1",
+            "--target",
+            "ceRU1HostTests",
+            "ceRU1ReferenceTests",
+            "ceRU1CoverTests",
+            "ceRU1CompilerTests",
+            "ceRU1_source_bridge",
+            "ceRU1_dual_origin",
+            "ceRU1GpuNumerics",
+            "ceRU1GpuBindings",
+            "ceRU1GpuLifecycle",
+            "ceRU1ReadinessTests",
+            "ceRU1WmmaLegality",
+            "ceRU1N1Regression",
+            "ceRelationUpdateDemo",
+            "ceRU1_forward_n16",
+            "ceRU1_transpose_n16",
+            "ceRU1_sparse_gradient",
+            "ceRU1_value_update",
+            "ceRU1_update_publication",
+            "ceRU1_native_failure",
+            "ceRU1_gradient_pack",
+            "ceRU1_hybrid_gradient",
+            "ceRU1_readiness_component",
+            "ceRU1_read_lease",
+            "-j",
+            "80"
+          ],
+          "exit_code": 0,
+          "stdout": "[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_calculus\n[100%] Built target ceRU1HostTests\nBuilt target cellerator_relation_semantics\nBuilt target ceRU1ReferenceTests\n[  0%] Built target cellerator_relation_gradient_cover\n[100%] Built target ceRU1CoverTests\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_calculus\n[100%] Built target cellerator_relation_update_compiler\n[100%] Built target ceRU1CompilerTests\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_calculus\n[100%] Built target cellerator_relation_update_compiler\n[100%] Built target ceRU1_source_bridge\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_calculus\n[100%] Built target cellerator_relation_update_compiler\n[100%] Built target ceRU1_dual_origin\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  9%] Built target cellpack\n[  9%] Built target cellerator_compute_sampling\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_provider_common\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Built target ceRU1GpuNumerics\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  0%] Built target cellerator_runtime\n[  9%] Built target cellpack\n[  9%] Built target cellerator_relation_calculus\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellpack_semantic_geometry\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_projection\n[ 72%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1GpuBindings.dir/tests/relation_update_spine_v1/gpu_bindings_test.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1GpuBindings.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1GpuBindings\n[100%] Built target ceRU1GpuBindings\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellpack_semantic_geometry\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_transpose_backward_candidate\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Building CUDA object CMakeFiles/ceRU1GpuLifecycle.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1GpuLifecycle\n[100%] Built target ceRU1GpuLifecycle\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 45%] Built target cellerator_semantic_geometry_v1\n[ 45%] Built target cellpack_local_cell_ordering\n[ 45%] Built target cellpack_apply_plan\n[ 54%] Built target cellerator_operation_core\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_provider_common\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Building CUDA object CMakeFiles/ceRU1ReadinessTests.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1ReadinessTests\n[100%] Built target ceRU1ReadinessTests\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  8%] Built target cellerator_runtime\n[  8%] Built target cellpack\n[  8%] Built target cellerator_relation_calculus\n[ 16%] Built target cellerator_operation_core\n[ 16%] Built target cellpack_semantic_geometry\n[ 50%] Built target cellerator_semantic_geometry_v1\n[ 50%] Built target cellpack_apply_plan\n[ 50%] Built target cellpack_local_cell_ordering\n[ 50%] Built target cellpack_warp_tiles\n[ 58%] Built target cellpack_feature_weighted_row_reduction\n[ 58%] Built target cellpack_persistent_packing_payload\n[ 58%] Built target cellpack_execution_image_v2\n[ 58%] Built target cellerator_feature_major_projection\n[ 58%] Built target cellerator_feature_major_small_n_candidate\n[ 58%] Built target cellerator_transpose_projection\n[ 66%] Built target cellerator_provider_sm70\n[ 66%] Built target cellerator_provider_common\n[ 66%] Built target cellerator_transpose_backward_candidate\n[ 91%] Built target cellerator_architecture_provider\n[ 91%] Built target cellerator_relation_update_support\n[ 91%] Built target cellerator_prepared_relation_cuda\n[ 91%] Building CUDA object CMakeFiles/ceRU1WmmaLegality.dir/ru1_sm70_guard.cu.o\n[ 91%] Linking CXX executable ceRU1WmmaLegality\n[100%] Built target ceRU1WmmaLegality\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target ceRU1N1Regression\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  0%] Built target cellerator_runtime\n[  8%] Built target cellpack\n[  8%] Built target cellerator_relation_calculus\n[ 16%] Built target cellerator_operation_core\n[ 16%] Built target cellpack_semantic_geometry\n[ 50%] Built target cellerator_semantic_geometry_v1\n[ 50%] Built target cellpack_local_cell_ordering\n[ 58%] Built target cellerator_relation_update_compiler\n[ 58%] Built target cellpack_apply_plan\n[ 58%] Built target cellpack_warp_tiles\n[ 66%] Built target cellpack_feature_weighted_row_reduction\n[ 66%] Built target cellpack_persistent_packing_payload\n[ 66%] Built target cellerator_feature_major_projection\n[ 66%] Built target cellpack_execution_image_v2\n[ 66%] Built target cellerator_transpose_projection\n[ 66%] Built target cellerator_feature_major_small_n_candidate\n[ 66%] Built target cellerator_provider_common\n[ 75%] Built target cellerator_provider_sm70\n[ 75%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Linking CXX executable ../../ceRelationUpdateDemo\n[100%] Built target ceRelationUpdateDemo\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_provider_common\n[ 63%] Built target cellerator_transpose_projection\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1_forward_n16.dir/tests/relation_update_spine_v1/forward_n16_test.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_forward_n16.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_forward_n16\n[100%] Built target ceRU1_forward_n16\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 45%] Built target cellerator_semantic_geometry_v1\n[ 45%] Built target cellpack_apply_plan\n[ 45%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellerator_operation_core\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1_transpose_n16.dir/ru1_sm70_guard.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_transpose_n16.dir/tests/relation_update_spine_v1/transpose_n16_test.cu.o\n[100%] Linking CXX executable ceRU1_transpose_n16\n[100%] Built target ceRU1_transpose_n16\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 45%] Built target cellerator_semantic_geometry_v1\n[ 45%] Built target cellpack_local_cell_ordering\n[ 45%] Built target cellpack_apply_plan\n[ 54%] Built target cellerator_operation_core\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1_sparse_gradient.dir/tests/relation_update_spine_v1/sparse_gradient_test.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_sparse_gradient.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_sparse_gradient\n[100%] Built target ceRU1_sparse_gradient\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  8%] Built target cellpack\n[  8%] Built target cellerator_runtime\n[  8%] Built target cellerator_relation_calculus\n[  8%] Built target cellpack_semantic_geometry\n[ 16%] Built target cellerator_operation_core\n[ 16%] Built target cellpack_local_cell_ordering\n[ 50%] Built target cellerator_semantic_geometry_v1\n[ 50%] Built target cellpack_apply_plan\n[ 50%] Built target cellpack_warp_tiles\n[ 58%] Built target cellpack_feature_weighted_row_reduction\n[ 58%] Built target cellpack_persistent_packing_payload\n[ 58%] Built target cellpack_execution_image_v2\n[ 58%] Built target cellerator_feature_major_projection\n[ 58%] Built target cellerator_provider_common\n[ 58%] Built target cellerator_feature_major_small_n_candidate\n[ 58%] Built target cellerator_transpose_projection\n[ 66%] Built target cellerator_provider_sm70\n[ 66%] Built target cellerator_transpose_backward_candidate\n[ 91%] Built target cellerator_architecture_provider\n[ 91%] Built target cellerator_relation_update_support\n[ 91%] Building CUDA object CMakeFiles/ceRU1_value_update.dir/ru1_sm70_guard.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_value_update.dir/tests/relation_update_spine_v1/value_update_test.cu.o\n[100%] Linking CXX executable ceRU1_value_update\n[100%] Built target ceRU1_value_update\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_runtime\n[  9%] Built target cellpack\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellerator_relation_calculus\n[ 18%] Built target cellpack_semantic_geometry\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_projection\n[ 72%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1_update_publication.dir/tests/relation_update_spine_v1/update_publication_test.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_update_publication.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_update_publication\n[100%] Built target ceRU1_update_publication\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Building CUDA object CMakeFiles/ceRU1_native_failure.dir/tests/relation_update_spine_v1/native_failure_test.cu.o\n[100%] Building CUDA object CMakeFiles/ceRU1_native_failure.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_native_failure\n[100%] Built target ceRU1_native_failure\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_runtime\n[  9%] Built target cellpack\n[  9%] Built target cellerator_relation_calculus\n[  9%] Built target cellpack_semantic_geometry\n[ 18%] Built target cellerator_operation_core\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 63%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Building CUDA object CMakeFiles/ceRU1_gradient_pack.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_gradient_pack\n[100%] Built target ceRU1_gradient_pack\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_compute_sampling\n[  8%] Built target cellpack\n[  8%] Built target cellerator_runtime\n[  8%] Built target cellerator_relation_calculus\n[  8%] Built target cellpack_semantic_geometry\n[ 41%] Built target cellerator_semantic_geometry_v1\n[ 41%] Built target cellpack_local_cell_ordering\n[ 41%] Built target cellpack_apply_plan\n[ 50%] Built target cellerator_operation_core\n[ 50%] Built target cellpack_warp_tiles\n[ 58%] Built target cellpack_feature_weighted_row_reduction\n[ 58%] Built target cellpack_persistent_packing_payload\n[ 58%] Built target cellerator_feature_major_projection\n[ 58%] Built target cellpack_execution_image_v2\n[ 58%] Built target cellerator_feature_major_small_n_candidate\n[ 58%] Built target cellerator_transpose_projection\n[ 66%] Built target cellerator_provider_sm70\n[ 66%] Built target cellerator_provider_common\n[ 66%] Built target cellerator_transpose_backward_candidate\n[ 91%] Built target cellerator_architecture_provider\n[ 91%] Built target cellerator_relation_update_support\n[ 91%] Built target cellerator_prepared_relation_cuda\n[ 91%] Building CUDA object CMakeFiles/ceRU1_hybrid_gradient.dir/ru1_sm70_guard.cu.o\n[ 91%] Linking CXX executable ceRU1_hybrid_gradient\n[100%] Built target ceRU1_hybrid_gradient\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  8%] Built target cellpack\n[  8%] Built target cellerator_runtime\n[  8%] Built target cellerator_relation_calculus\n[ 16%] Built target cellerator_operation_core\n[ 16%] Built target cellpack_semantic_geometry\n[ 50%] Built target cellerator_semantic_geometry_v1\n[ 50%] Built target cellpack_apply_plan\n[ 50%] Built target cellpack_local_cell_ordering\n[ 50%] Built target cellpack_warp_tiles\n[ 58%] Built target cellpack_feature_weighted_row_reduction\n[ 58%] Built target cellpack_persistent_packing_payload\n[ 58%] Built target cellerator_feature_major_projection\n[ 58%] Built target cellpack_execution_image_v2\n[ 58%] Built target cellerator_transpose_projection\n[ 58%] Built target cellerator_feature_major_small_n_candidate\n[ 58%] Built target cellerator_provider_common\n[ 66%] Built target cellerator_provider_sm70\n[ 66%] Built target cellerator_transpose_backward_candidate\n[ 91%] Built target cellerator_architecture_provider\n[ 91%] Built target cellerator_relation_update_support\n[ 91%] Built target cellerator_prepared_relation_cuda\n[ 91%] Building CUDA object CMakeFiles/ceRU1_readiness_component.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_readiness_component\n[100%] Built target ceRU1_readiness_component\n[  0%] Built target cellerator_relation_gradient_cover\n[  0%] Built target cellerator_relation_semantics\n[  0%] Built target cellerator_compute_sampling\n[  9%] Built target cellpack\n[  9%] Built target cellerator_runtime\n[  9%] Built target cellerator_relation_calculus\n[ 18%] Built target cellerator_operation_core\n[ 18%] Built target cellpack_semantic_geometry\n[ 54%] Built target cellerator_semantic_geometry_v1\n[ 54%] Built target cellpack_apply_plan\n[ 54%] Built target cellpack_local_cell_ordering\n[ 54%] Built target cellpack_warp_tiles\n[ 63%] Built target cellpack_feature_weighted_row_reduction\n[ 63%] Built target cellpack_persistent_packing_payload\n[ 63%] Built target cellpack_execution_image_v2\n[ 63%] Built target cellerator_feature_major_projection\n[ 63%] Built target cellerator_transpose_projection\n[ 63%] Built target cellerator_feature_major_small_n_candidate\n[ 72%] Built target cellerator_provider_sm70\n[ 72%] Built target cellerator_provider_common\n[ 72%] Built target cellerator_transpose_backward_candidate\n[100%] Built target cellerator_architecture_provider\n[100%] Built target cellerator_relation_update_support\n[100%] Built target cellerator_prepared_relation_cuda\n[100%] Building CUDA object CMakeFiles/ceRU1_read_lease.dir/ru1_sm70_guard.cu.o\n[100%] Linking CXX executable ceRU1_read_lease\n[100%] Built target ceRU1_read_lease\n",
+          "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nnvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n"
+        }
+      ]
+    },
+    "configuration_logs": {
+      "torch-config.log": "-- The CXX compiler identification is GNU 13.3.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version \"12.9.86\") \n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE  \n-- The CUDA compiler identification is NVIDIA 12.9.86\n-- Detecting CUDA compiler ABI info\n-- Detecting CUDA compiler ABI info - done\n-- Check for working CUDA compiler: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc - skipped\n-- Detecting CUDA compile features\n-- Detecting CUDA compile features - done\n-- Performing Test HAVE_FFI_CALL\n-- Performing Test HAVE_FFI_CALL - Success\n-- Found FFI: /usr/lib/x86_64-linux-gnu/libffi.so  \n-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Performing Test Terminfo_LINKABLE\n-- Performing Test Terminfo_LINKABLE - Success\n-- Found Terminfo: /usr/lib/x86_64-linux-gnu/libtinfo.so  \n-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version \"1.3\")  \n-- Found zstd: /usr/lib/x86_64-linux-gnu/libzstd.so  \n-- Found LibXml2: /usr/lib/x86_64-linux-gnu/libxml2.so (found version \"2.9.14\") \n-- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version \"8.5.0\")  \n-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Cellerator providers: selection=baseline, tuning=precise\n-- Cellerator default real: storage=f16, compute=f32, accum=f32\n-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)\n-- Cellerator host vector level: avx2\n-- Cellerator hardware probe disabled\n-- Cellerator CUDA mode: generic\n-- Defaulting Torch_DIR to source-built libtorch at /usr/local/share/cmake/Torch\n-- Defaulting Caffe2_DIR to source-built libtorch at /usr/local/share/cmake/Caffe2\n-- Found CUDA: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 (found version \"12.9\") \n-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version \"12.9.86\") \n-- PyTorch: CUDA detected: 12.9\n-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\n-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9\n-- PyTorch: Header version is: 12.9\n-- Found Python: /home/tumlinson/Software/miniconda3/bin/python3 (found version \"3.13.11\") found components: Interpreter \nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:140 (message):\n  Failed to compute shorthash for libnvrtc.so\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\nCMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):\n  The package name passed to `find_package_handle_standard_args` (nvtx3) does\n  not match the name of the calling package (Caffe2).  This can lead to\n  problems in calling code that expects `find_package` result variables\n  (e.g., `_FOUND`) to follow a certain pattern.\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\nThis warning is for project developers.  Use -Wno-dev to suppress it.\n\n-- Could NOT find nvtx3 (missing: nvtx3_dir) \nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:184 (message):\n  Cannot find NVTX3, find old NVTX instead\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\n-- USE_CUDNN is set to 0. Compiling without cuDNN support\n-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support\n-- USE_CUDSS is set to 0. Compiling without cuDSS support\n-- USE_CUFILE is set to 0. Compiling without cuFile support\n-- Autodetected CUDA architecture(s):  7.0 7.0 7.0 7.0\n-- Added CUDA NVCC flags for: -gencode;arch=compute_70,code=sm_70\n-- Found Torch: /usr/local/lib/libtorch.so  \n-- Configuring done (8.1s)\nCMake Error at components/CelleraTorch/CMakeLists.txt:62 (target_link_libraries):\n  The link interface of target \"cellera_torch_bindings\" contains:\n\n    CellShard::runtime\n\n  but the target was not found.  Possible reasons include:\n\n    * There is a typo in the target name.\n    * A find_package call is missing for an IMPORTED target.\n    * An ALIAS target is missing.\n\n\n\nCMake Error at components/CelleraTorch/CMakeLists.txt:174 (target_link_libraries):\n  The link interface of target \"cellera_torch_dense_reduce\" contains:\n\n    CellShard::runtime\n\n  but the target was not found.  Possible reasons include:\n\n    * There is a typo in the target name.\n    * A find_package call is missing for an IMPORTED target.\n    * An ALIAS target is missing.\n\n\n\nCMake Error at components/CelleraTorch/CMakeLists.txt:221 (target_link_libraries):\n  Target \"celleraTorchModelCustomOpsTest\" links to:\n\n    CellShard::runtime\n\n  but the target was not found.  Possible reasons include:\n\n    * There is a typo in the target name.\n    * A find_package call is missing for an IMPORTED target.\n    * An ALIAS target is missing.\n\n\n\n-- Generating done (0.9s)\nCMake Generate step failed.  Build files cannot be regenerated correctly.\n",
+      "torch-config-with-storage.log": "-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/targets/x86_64-linux/include;/usr/include (found version \"12.9.86\") \n-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Could NOT find LibEdit (missing: LibEdit_INCLUDE_DIRS LibEdit_LIBRARIES) \n-- Cellerator providers: selection=baseline, tuning=precise\n-- Cellerator default real: storage=f16, compute=f32, accum=f32\n-- Cellerator compatibility sparse fallback: blocked_ell (operation projections remain planner-selected)\n-- Cellerator host vector level: avx2\n-- Cellerator hardware probe disabled\n-- CellShard CUDA mode: generic\n-- Found HDF5: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so;/usr/lib/x86_64-linux-gnu/libcrypto.so;/usr/lib/x86_64-linux-gnu/libcurl.so;/usr/lib/x86_64-linux-gnu/libpthread.a;/usr/lib/x86_64-linux-gnu/libsz.so;/usr/lib/x86_64-linux-gnu/libz.so;/usr/lib/x86_64-linux-gnu/libdl.a;/usr/lib/x86_64-linux-gnu/libm.so (found version \"1.10.10\") found components: C \n-- Cellerator CUDA mode: generic\n-- Found CUDAToolkit: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/include (found version \"12.9.86\") \n-- PyTorch: CUDA detected: 12.9\n-- PyTorch: CUDA nvcc is: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc\n-- PyTorch: CUDA toolkit directory: /opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9\n-- PyTorch: Header version is: 12.9\nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:140 (message):\n  Failed to compute shorthash for libnvrtc.so\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\nCMake Warning (dev) at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:438 (message):\n  The package name passed to `find_package_handle_standard_args` (nvtx3) does\n  not match the name of the calling package (Caffe2).  This can lead to\n  problems in calling code that expects `find_package` result variables\n  (e.g., `_FOUND`) to follow a certain pattern.\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/public/cuda.cmake:178 (find_package_handle_standard_args)\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\nThis warning is for project developers.  Use -Wno-dev to suppress it.\n\n-- Could NOT find nvtx3 (missing: nvtx3_dir) \nCMake Warning at /usr/local/share/cmake/Caffe2/public/cuda.cmake:184 (message):\n  Cannot find NVTX3, find old NVTX instead\nCall Stack (most recent call first):\n  /usr/local/share/cmake/Caffe2/Caffe2Config.cmake:86 (include)\n  /usr/local/share/cmake/Torch/TorchConfig.cmake:68 (find_package)\n  components/CelleraTorch/CMakeLists.txt:34 (find_package)\n\n\n-- USE_CUDNN is set to 0. Compiling without cuDNN support\n-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support\n-- USE_CUDSS is set to 0. Compiling without cuDSS support\n-- USE_CUFILE is set to 0. Compiling without cuFile support\n-- Autodetected CUDA architecture(s):  7.0 7.0 7.0 7.0\n-- Added CUDA NVCC flags for: -gencode;arch=compute_70,code=sm_70\n-- Configuring done (4.7s)\n-- Generating done (1.0s)\n-- Build files have been written to: /home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1-torch\n"
+    },
+    "runner_sources": {
+      "build.py": "import subprocess,json\nfrom pathlib import Path\nr=Path.cwd()\nn=subprocess.check_output([\"nproc\"],text=True).strip()\ntargets=['celleratorNativeTrainingSliceTest', 'celleratorTrainingProgramTest', 'celleratorCeLiveConcurrencyTest']\np=subprocess.run(['cmake','--build',str(r/'build-ru1'),'--target',*targets,'ceRU1GpuNumerics','ceRU1N1Regression','-j',n],capture_output=True,text=True)\nPath('/tmp/ce-ru1-i07/build.json').write_text(json.dumps({'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr},indent=2))\nprint(p.stdout);print(p.stderr);p.check_returncode()\n",
+      "run.py": "import subprocess,json,hashlib\nfrom pathlib import Path\nr=Path.cwd();rows=[]\ntargets=['celleratorNativeTrainingSliceTest', 'celleratorTrainingProgramTest', 'celleratorCeLiveConcurrencyTest']\nfor name in targets:\n cmd=[str(r/'build-ru1'/name)];p=subprocess.run(cmd,capture_output=True,text=True);rows.append({'argv':cmd,'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr,'binary_sha256':hashlib.sha256(Path(cmd[0]).read_bytes()).hexdigest()});Path('/tmp/ce-ru1-i07/native.json').write_text(json.dumps(rows,indent=2));print(name,p.returncode,p.stdout,p.stderr,flush=True);p.check_returncode()\n",
+      "spec.json": "{\n  \"schema_version\": 1,\n  \"project_root\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate\",\n  \"argv\": [\n    \"python3\",\n    \"/tmp/ce-ru1-i07/run.py\"\n  ],\n  \"benchmark\": {\n    \"build_argv\": [\n      \"python3\",\n      \"/tmp/ce-ru1-i07/build.py\"\n    ]\n  },\n  \"toolchain\": {\n    \"root\": \"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9\"\n  },\n  \"resources\": {\n    \"gpus\": 1\n  },\n  \"quiescence\": {\n    \"timeout_seconds\": 60\n  },\n  \"binary_paths\": [\n    \"build-ru1/celleratorNativeTrainingSliceTest\",\n    \"build-ru1/celleratorTrainingProgramTest\",\n    \"build-ru1/celleratorCeLiveConcurrencyTest\"\n  ]\n}",
+      "full-build.py": "import subprocess,json\nfrom pathlib import Path\nr=Path.cwd();n=subprocess.check_output(['nproc'],text=True).strip();rows=[]\ntargets=['ceRU1HostTests','ceRU1ReferenceTests','ceRU1CoverTests','ceRU1CompilerTests','ceRU1_source_bridge','ceRU1_dual_origin','ceRU1GpuNumerics','ceRU1GpuBindings','ceRU1GpuLifecycle','ceRU1ReadinessTests','ceRU1WmmaLegality','ceRU1N1Regression','ceRelationUpdateDemo']+['ceRU1_'+x for x in ['forward_n16','transpose_n16','sparse_gradient','value_update','update_publication','native_failure','gradient_pack','hybrid_gradient','readiness_component','read_lease']]\nfor cmd in [['cmake','--build',str(r/'build-ru1-torch'),'--target','celleraTorchAutogradOpsTest','-j',n],['cmake','--build',str(r/'build-ru1'),'--target',*targets,'-j',n]]:\n p=subprocess.run(cmd,capture_output=True,text=True);rows.append({'argv':cmd,'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr});Path('/tmp/ce-ru1-i07/full-build.json').write_text(json.dumps(rows,indent=2));print(p.stdout);print(p.stderr);p.check_returncode()\n",
+      "full-run.py": "import subprocess,json,hashlib\nfrom pathlib import Path\nr=Path.cwd();rows=[]\ncommands=[[str(r/'build-ru1-torch/celleraTorchAutogradOpsTest')],['ctest','--test-dir',str(r/'build-ru1'),'-R','^ru1_','--output-on-failure','--output-junit','/tmp/ce-ru1-i07/ru1.xml']]\nfor cmd in commands:\n p=subprocess.run(cmd,capture_output=True,text=True);rows.append({'argv':cmd,'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr});Path('/tmp/ce-ru1-i07/full-tests.json').write_text(json.dumps(rows,indent=2));print(p.stdout,p.stderr,flush=True);p.check_returncode()\n",
+      "full-spec.json": "{\n  \"schema_version\": 1,\n  \"project_root\": \"/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate\",\n  \"argv\": [\n    \"python3\",\n    \"/tmp/ce-ru1-i07/full-run.py\"\n  ],\n  \"benchmark\": {\n    \"build_argv\": [\n      \"python3\",\n      \"/tmp/ce-ru1-i07/full-build.py\"\n    ]\n  },\n  \"toolchain\": {\n    \"root\": \"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9\"\n  },\n  \"resources\": {\n    \"gpus\": 1\n  },\n  \"quiescence\": {\n    \"timeout_seconds\": 60\n  },\n  \"binary_paths\": [\n    \"build-ru1-torch/celleraTorchAutogradOpsTest\",\n    \"build-ru1/ceRU1GpuNumerics\"\n  ]\n}"
+    },
+    "torch_binary_sha256": "630fc9e4b2ef49630503dd7cfb64cd9121d0b1aa9e29edd0908811eb94a0d854"
+  },
+  "limits": "No new performance claim for the mechanical reuse. I08 performs final mandatory post-pruning sanitizers. External CellShard/Baseplane and installed Torch were read as dependencies; their source was not changed."
 }

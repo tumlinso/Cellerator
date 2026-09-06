@@ -1,4 +1,4 @@
-// Prospective post-epic consumer. Normal mode needs real RU1 core implementation.
+// Synthetic dual-origin witness using the actual native core and compiler adapter.
 #include "reference.hh"
 #include <algorithm>
 #include <cstring>
@@ -9,13 +9,14 @@
 #ifndef CELLERATOR_RU1_REFERENCE_ONLY
 #include <cuda_runtime_api.h>
 #include <Cellerator/compute/operation/relation_update.hh>
-#include <Cellerator/compiler/sema/relation_update_spine_bridge.hh>
+#include <Cellerator/compiler/ir/realization/relation_update_spine_cuda.hh>
 #endif
 namespace rd=ru1_demo;
 #ifndef CELLERATOR_RU1_REFERENCE_ONLY
 namespace ce=cellerator::compute::relation;
 namespace ex=cellerator::execution;
 namespace cs=Cellerator::compiler::sema;
+namespace cr=Cellerator::compiler::ir::realization;
 namespace {
 void cuda_check(cudaError_t x,const char* where) {
     if(x!=cudaSuccess)throw std::runtime_error(std::string(where)+": "+cudaGetErrorString(x));
@@ -102,16 +103,35 @@ dX = ce::transpose(R, dY);
 g = ce::contract_on(R, X, dY);
 ce::apply_value_delta(R, delta);
 ce::publish_generation(R);
+ce::observe_generation(R);
 )cell",env);
+    env.initial_generation=2;env.next_generation=3;
     const auto compiler_step=cs::lower_relation_update_source_slice_v1(R"cell(
 Y = X -[R]-> Genes;
 dX = ce::transpose(R, dY);
 g = ce::contract_on(R, X, dY);
 ce::gradient_step(R, g, alpha);
 ce::publish_generation(R);
+ce::observe_generation(R);
 )cell",env);
     rd::require(compiler_delta.accepted()&&compiler_step.accepted(),"bounded compiler source did not lower");
     rd::require(ce::equivalent(native_delta,compiler_delta.semantic)&&ce::equivalent(native_step,compiler_step.semantic),"semantic origins differ");
+    cr::lowered_relation_update delta_recipe{},step_recipe{};
+    check(cr::lower_relation_update(compiler_delta,&delta_recipe),"lower compiler delta actions");
+    check(cr::lower_relation_update(compiler_step,&step_recipe),"lower compiler step actions");
+    auto native_recipe=[&](const ce::relation_calculus_descriptor& semantic,std::uint64_t generation){
+        ce::relation_effect_sequence effects{};effects.initial_generation={generation};effects.count=5;
+        const ce::relation_effect_kind kinds[]={ce::relation_effect_kind::forward,
+            ce::relation_effect_kind::transpose,ce::relation_effect_kind::edge_gradient,
+            ce::relation_effect_kind::value_update,ce::relation_effect_kind::publication};
+        for(unsigned i=0;i<5;++i)effects.stages[i]={i+1,kinds[i],(1u<<i)-1,
+            {i==4?generation+1:generation},{i==3?generation+1:0}};
+        cr::lowered_relation_update result{};
+        check(cr::lower_relation_update(semantic,effects,1u<<4,&result),"lower independent native effect sequence");
+        return result;
+    };
+    rd::require(cr::equivalent(native_recipe(native_delta,1),delta_recipe)&&
+        cr::equivalent(native_recipe(native_step,2),step_recipe),"native/source actions differ");
     pair_owner p;
     check(ce::prepare_relation_pair(native_step.forward,native_step.transpose,
         {f.offsets.data(),f.offsets.size(),f.source.data(),f.source.size()},
@@ -132,16 +152,37 @@ ce::publish_generation(R);
         check(ce::enqueue(*p.value,op,input,output,{generation},owner.value),"forward");
         auto a=observe<float,rd::destinations*rd::width>(y.value,owner.value);near(a,rd::forward(f,weights),2e-6,"forward");return a;
     };
-    auto yn=forward(native_step.forward,1,f.weights);auto yc=forward(compiler_step.semantic.forward,1,f.weights);
+    cr::relation_action_bindings bindings{};
+    bindings.input=input;bindings.cotangent=cot;bindings.output=output;bindings.adjoint=input_result;
+    bindings.gradient=plane(g_compiler.value);bindings.delta=plane(delta.value);
+    bindings.input_version={101,1};bindings.cotangent_version={102,1};
+    bindings.owner=owner.value;bindings.consumer=consumer.value;
+    unsigned compiler_actions=0;
+    auto action=[&](const cr::lowered_relation_update& recipe,unsigned index){
+        check(cr::enqueue_relation_action(*p.value,recipe,index,bindings),"compiler action dispatch");
+        ++compiler_actions;
+    };
+    auto yn=forward(native_step.forward,1,f.weights);
+    action(delta_recipe,0);
+    auto yc=observe<float,rd::destinations*rd::width>(y.value,owner.value);
+    near(yc,rd::forward(f,f.weights),2e-6,"compiler forward");
     for(std::size_t i=0;i<yn.size();++i)rd::require(yn[i]==yc[i],"same provider differs by semantic origin");
     auto cot0=rd::cotangent(f,yn);upload(dy,cot0,owner.value);
-    for(const auto* op:std::array<const ce::operation_descriptor*,2>{&native_step.transpose,&compiler_step.semantic.transpose}) {
-        check(ce::enqueue(*p.value,*op,cot,input_result,{1},owner.value),"transpose");
-        near(observe<float,rd::sources*rd::width>(dx.value,owner.value),rd::transpose(f,f.weights,cot0),2e-6,"transpose");
-    }
+    check(ce::enqueue(*p.value,native_step.transpose,cot,input_result,{1},owner.value),"native transpose");
+    const auto dx_native=observe<float,rd::sources*rd::width>(dx.value,owner.value);
+    near(dx_native,rd::transpose(f,f.weights,cot0),2e-6,"native transpose");
+    action(delta_recipe,1);
+    const auto dx_compiler=observe<float,rd::sources*rd::width>(dx.value,owner.value);
+    near(dx_compiler,rd::transpose(f,f.weights,cot0),2e-6,"compiler transpose");
+    rd::require(dx_native==dx_compiler,"transpose differs by semantic origin");
     ce::gradient_stamp stamp_native{},stamp_compiler{};
+    auto invalid_update=native_step;invalid_update.update=static_cast<ce::value_update_kind>(255);
+    const auto invalid_status=ce::enqueue_edge_gradient(*p.value,invalid_update,input,cot,
+        {101,1},{102,1},{1},plane(g_compiler.value),&stamp_compiler,owner.value);
+    rd::require(invalid_status.code==ce::status_code::unsupported_semantics,
+        "unknown subsequent update accepted by gradient binding");
     check(ce::enqueue_edge_gradient(*p.value,native_step,input,cot,{101,1},{102,1},{1},plane(g_native.value),&stamp_native,owner.value),"native VJP");
-    check(ce::enqueue_edge_gradient(*p.value,compiler_step.semantic,input,cot,{101,1},{102,1},{1},plane(g_compiler.value),&stamp_compiler,owner.value),"compiler-origin VJP");
+    bindings.stamp=&stamp_compiler;action(delta_recipe,2);
     auto gn=observe<float,rd::edges>(g_native.value,owner.value),gc=observe<float,rd::edges>(g_compiler.value,owner.value);
     auto check_gradient=[&](const auto& physical,const auto& c){std::array<float,rd::edges> logical{};
         for(std::size_t e=0;e<rd::edges;++e)logical[e]=physical[layout.logical_to_physical[e]];
@@ -164,27 +205,34 @@ ce::publish_generation(R);
             rd::edges*sizeof(std::uint16_t),cudaMemcpyDeviceToHost,consumer.value),"consumer value observation");
         read.finish(); // submits owner wait on the consumer completion event
     }
-    ce::value_update_request add{};add.kind=compiler_delta.semantic.update;add.operand=plane(delta.value);add.expected={1};add.next={2};
-    check(ce::enqueue_value_update(*p.value,add,owner.value),"caller delta and publish generation 2");
+    action(delta_recipe,3); // actual delta write and ready publication through the core adapter
     cuda_check(cudaStreamSynchronize(consumer.value),"observe completed generation-1 read");
     for(std::size_t e=0;e<rd::edges;++e)rd::require(physical_observation.value[layout.logical_to_physical[e]]==f.weights[e],"next writer overtook the reader");
-    auto y2=forward(compiler_step.semantic.forward,2,expected2);auto cot2=rd::cotangent(f,y2);upload(dy,cot2,owner.value);
+    ce::value_read_lease compiler_lease{};bindings.lease=&compiler_lease;
+    action(delta_recipe,4);
+    cuda_check(cudaMemcpyAsync(physical_observation.value,compiler_lease.physical_f16_values,
+        rd::edges*sizeof(std::uint16_t),cudaMemcpyDeviceToHost,consumer.value),"compiler generation-2 observation");
+    check(ce::end_value_read(*p.value,compiler_lease,consumer.value),"return compiler generation-2 lease");
+    action(step_recipe,0);
+    auto y2=observe<float,rd::destinations*rd::width>(y.value,owner.value);
+    near(y2,rd::forward(f,expected2),2e-6,"compiler generation-2 forward");
+    for(std::size_t e=0;e<rd::edges;++e)rd::require(
+        physical_observation.value[layout.logical_to_physical[e]]==expected2[e],"compiler delta publication mismatch");
+    auto cot2=rd::cotangent(f,y2);upload(dy,cot2,owner.value);
+    action(step_recipe,1);
+    near(observe<float,rd::sources*rd::width>(dx.value,owner.value),
+        rd::transpose(f,expected2,cot2),2e-6,"compiler generation-2 transpose");
     ce::gradient_stamp stamp2{};
-    check(ce::enqueue_edge_gradient(*p.value,compiler_step.semantic,input,cot,{101,1},{102,2},{2},plane(g_compiler.value),&stamp2,owner.value),"generation-2 VJP");
+    bindings.cotangent_version={102,2};bindings.stamp=&stamp2;action(step_recipe,2);
     const auto g2=observe<float,rd::edges>(g_compiler.value,owner.value);check_gradient(g2,cot2);
     auto expected3=expected2;
     for(std::size_t e=0;e<rd::edges;++e)expected3[e]=rd::to_half(std::fma(-alpha,g2[layout.logical_to_physical[e]],rd::from_half(expected2[e])));
-    ce::value_update_request step{};step.kind=compiler_step.semantic.update;step.operand=plane(g_compiler.value);
-    step.expected={2};step.next={3};step.alpha=alpha;step.gradient=stamp2;
-    check(ce::enqueue_value_update(*p.value,step,owner.value),"gradient step and publish generation 3");
-    // Consume the newly updated generation on another stream while its producer
-    // may still be running. The readiness event, not a host fence, orders this read.
-    {
-        lease_owner read(*p.value,3,consumer.value);
-        cuda_check(cudaMemcpyAsync(physical_observation.value,read.lease.physical_f16_values,
-            rd::edges*sizeof(std::uint16_t),cudaMemcpyDeviceToHost,consumer.value),"consumer generation-3 observation");
-        read.finish();
-    }
+    bindings.alpha=alpha;action(step_recipe,3);
+    // The source observation is lowered to the real cross-stream ready wait.
+    action(step_recipe,4);
+    cuda_check(cudaMemcpyAsync(physical_observation.value,compiler_lease.physical_f16_values,
+        rd::edges*sizeof(std::uint16_t),cudaMemcpyDeviceToHost,consumer.value),"compiler generation-3 observation");
+    check(ce::end_value_read(*p.value,compiler_lease,consumer.value),"return compiler generation-3 lease");
     auto y3=forward(native_step.forward,3,expected3); // owner's wait also completes observation
     for(std::size_t e=0;e<rd::edges;++e)
         rd::require(physical_observation.value[layout.logical_to_physical[e]]==expected3[e],"new generation was read before its producer completed");
@@ -205,6 +253,8 @@ ce::publish_generation(R);
     std::cout<<"Loss: "<<l0<<" -> "<<l2<<" -> "<<l3<<'\n'
              <<"Topology preparations="<<after.relation.topology_preparations<<"; updates="<<after.physical_updates
              <<"; WMMA="<<after.wmma_launches<<"; residual="<<after.residual_launches<<"; sparse="<<after.sparse_launches<<'\n';
+    rd::require(compiler_actions==10&&after.reader_returns==3,"compiler actions or lease returns missing");
+    std::cout<<"Compiler actions="<<compiler_actions<<"; reader returns="<<after.reader_returns<<'\n';
     check(ce::close_relation_pair(&p.value),"checked pair close");
     std::cout<<"RU1_GPU_PASS: dual-origin N16 relation learning, physical updates, readiness, reuse.\n"
              <<"Synthetic correctness witness; not full .cell compilation or a performance-superiority claim.\n";

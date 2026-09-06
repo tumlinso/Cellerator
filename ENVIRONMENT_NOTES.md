@@ -32,3 +32,26 @@ remain in `docs/semantic_spine_v1/recovery_log.md`.
   The GCC-private-header injection causing the earlier intrinsic errors is fixed
   in both translation paths; the descriptor-test semantic probe now parses cleanly.
   Use readable canonical-source inspection when other parsing remains unavailable.
+
+### RU1 worktree builds and sanitizer selection (2026-09-06)
+
+Managed worktrees are nested below `.git`, so sibling discovery does not find
+Baseplane. Configure with `-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane`;
+build output remains in the Cellerator worktree. CUDA 12.9 sm70 builds use
+`/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc` with
+`-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12` and `-DCMAKE_CUDA_ARCHITECTURES=70`.
+
+A controller sanitizer recipe resolved an absent CUDA 13.1 tool while returning
+an outer success status. Invoke the verified executable
+`/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer`
+explicitly, set a nonzero `--error-exitcode`, and require the raw sanitizer
+summary as well as the actual test output. The corrected readiness and native
+runs reported zero memcheck errors. Controller quiescence uses a 60-second
+budget to fit all three required idle samples; retain the samples and mutex.
+
+The explicit Torch compatibility configuration also needs the storage component:
+`-DCELLERATOR_ENABLE_CELLSHARD=ON` and, in nested worktrees,
+`-DCELLERATOR_CELLSHARD_SOURCE_DIR=/home/tumlinson/CellShard`. Without these,
+Torch configuration fails on the existing `CellShard::runtime` links. With them
+the native adapter configuration generates successfully; dependency source trees
+are read only and all build products stay under the Cellerator build directory.
