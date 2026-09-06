@@ -37,9 +37,17 @@ void destroy_hybrid_gradient(hybrid_gradient *p) noexcept {
     cudaFree(p->descriptors);cudaFree(p->panels);cudaFree(p->scores);delete p;
 }
 hybrid_report inspect_hybrid_gradient(const hybrid_gradient &p) noexcept{return p.report;}
+bool overlaps_hybrid_storage(const hybrid_gradient& p,const void* data,std::uint64_t size) noexcept {
+    const void* owned[]={p.panels,p.scores,p.gather,p.slots,p.descriptors,p.residual};
+    const std::uint64_t bytes[]={p.report.tile_count*1024,p.report.tile_count*1024,
+        p.report.tile_count*128,p.report.tile_count*1024,p.report.tile_count*sizeof(contract::rectangular_tile_v1),
+        p.report.residual_count*sizeof(contract::edge_ref_v1)};
+    for(unsigned i=0;i<6;++i)if(overlap(data,size,owned[i],bytes[i]))return true;
+    return false;
+}
 contract::status_v1 prepare_hybrid_gradient(const contract::edge_ref_v1 *host,
     contract::support_view_v1 support,const tile_hint *hints,std::uint64_t hint_count,
-    std::uint64_t limit,cudaStream_t stream,hybrid_gradient **out) noexcept {
+    std::uint64_t limit,cudaStream_t stream,hybrid_gradient **out,std::uint64_t scratch_byte_limit) noexcept {
     using contract::status_v1;
     if(!out||*out|| (support.local_edge_count&&(!host||!support.edges)))return status_v1::invalid_argument;
     cudaStreamCaptureStatus capture;
@@ -66,7 +74,7 @@ contract::status_v1 prepare_hybrid_gradient(const contract::edge_ref_v1 *host,
         const std::uint64_t scratch=tiles*256u*(2*sizeof(__half)+sizeof(float));
         const std::uint64_t preparation=cover.preparation_byte_bound+count*sizeof(gradient_edge)
             +persistent*2+scratch+sizeof(hybrid_gradient);
-        if(preparation>limit)return status_v1::unsupported;
+        if(preparation>limit || scratch>scratch_byte_limit)return status_v1::unsupported;
         p=new hybrid_gradient;p->support=support;p->stream=stream;
         p->report.tile_count=tiles;p->report.residual_count=residual;
         p->report.persistent_bytes=persistent+sizeof(hybrid_gradient);
@@ -118,7 +126,7 @@ contract::status_v1 enqueue_hybrid_gradient(hybrid_gradient &p,
     if(r.source_capacity<nx||r.cotangent_capacity<ny||r.output_capacity<p.support.local_edge_count
         ||(nx&&!r.source)||(ny&&!r.cotangent)||(p.support.local_edge_count&&!r.output)
         ||(r.half_rounded&&(r.source_scratch_capacity<nx||r.cotangent_scratch_capacity<ny
-            ||!r.source_scratch||!r.cotangent_scratch)))return status_v1::invalid_argument;
+            ||(nx&&!r.source_scratch)||(ny&&!r.cotangent_scratch))))return status_v1::invalid_argument;
     if (reinterpret_cast<std::uintptr_t>(r.source)%alignof(float)
         || reinterpret_cast<std::uintptr_t>(r.cotangent)%alignof(float)
         || reinterpret_cast<std::uintptr_t>(r.output)%alignof(float)

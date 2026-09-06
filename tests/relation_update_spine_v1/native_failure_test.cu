@@ -92,7 +92,27 @@ int main(int argc,char** argv){
         SPINE_REQUIRE(!ce::begin_value_read(*f.pair,{1},f.consumer,&lease));
     }
     {
-        fixture f(true);ce::value_read_lease lease{};check(ce::begin_value_read(*f.pair,{1},f.consumer,&lease));
+        fixture base;auto f=base.f;f.topology.source=axis(30,16);f.topology.destination=axis(40,16);f.topology.edge_count=256;
+        auto t=f;t.direction=ce::orientation::transpose;
+        std::vector<unsigned> offsets{0},sources;
+        for(unsigned row=0;row<16;++row){for(unsigned col=0;col<16;++col)sources.push_back(col);offsets.push_back(sources.size());}
+        ce::prepared_relation_pair* pair=nullptr;
+        check(ce::prepare_relation_pair(f,t,{offsets.data(),offsets.size(),sources.data(),sources.size()},{0,1<<24},base.owner,&pair));
+        ce::relation_calculus_descriptor c{};c.forward=f;c.transpose=t;c.gradient=ce::gradient_arithmetic::round_operands_f16_rne;
+        auto rejected=ce::prepare_relation_gradient(*pair,c,{ce::gradient_route::force_hybrid,1024},base.owner);
+        SPINE_REQUIRE(rejected.code==ce::status_code::insufficient_capacity&&!pair->gradient_prepared&&!pair->hybrid);
+        check(ce::prepare_relation_gradient(*pair,c,{ce::gradient_route::force_hybrid,3072},base.owner));
+        SPINE_REQUIRE(pair->updates.scratch_bytes==3072&&pair->hybrid_selected);
+        check(ce::close_relation_pair(&pair));
+    }
+    {
+        fixture f(true);
+        ce::gradient_provider::hybrid_gradient* empty=nullptr;
+        SPINE_REQUIRE(ce::gradient_provider::prepare_hybrid_gradient(nullptr,{},nullptr,0,1<<20,f.owner,&empty,0)==ce::gradient_contract::status_v1::success);
+        ce::gradient_provider::relation_gradient_request request{};request.stream=f.owner;request.half_rounded=true;
+        SPINE_REQUIRE(ce::gradient_provider::enqueue_hybrid_gradient(*empty,request,false)==ce::gradient_contract::status_v1::success);
+        ce::gradient_provider::destroy_hybrid_gradient(empty);
+        ce::value_read_lease lease{};check(ce::begin_value_read(*f.pair,{1},f.consumer,&lease));
         SPINE_REQUIRE(!lease.count&&!lease.physical_f16_values);check(ce::end_value_read(*f.pair,lease,f.consumer));check(f.update());
         ce::relation_update_report report{};check(ce::inspect_updates(*f.pair,&report));
         SPINE_REQUIRE(report.ready_records==2&&report.physical_updates==1&&!report.sparse_launches&&!report.operand_pack_refreshes);
