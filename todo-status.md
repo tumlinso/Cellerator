@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6994`
+Project revision: `6995`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -978,7 +978,7 @@ Project revision: `6994`
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
-- `CE-RU1-0000` | status: in_progress | execution: inactive | next: 
+- `CE-RU1-0000` | status: done | execution: closed | next: 
 - `CE-SS1-0000` | status: done | execution: closed | next: Coordinate first-class lane work only after a separate execution go-ahead; this plan application does not activate the run.
 - `CE-ARCH-70B` | status: done | execution: closed | next: Implement independent recorded persistent allocations, accounting and exhaustion checks, pointer alignment validation, focused CUDA correctness, and Compute Sanitizer if available; do not redesign transient workspace.
 - `CE-ARCH-82` | status: done | execution: closed | next: Audit the existing CPE2 implementation against every Phase 4 exit criterion, implement only missing runtime/compatibility pieces, and add direct-execution regression coverage.
