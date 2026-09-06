@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I01: Establish the bounded execution baseline and protected edit inventory
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6760`; current project revision is in `todo-status.md`.
 
 ## Objective
 Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Read the delivered review and decisions, and inspect only the affected execution, compiler and decomposition paths. Record precise hashes and current HEAD; do not interpret unavailable Todo health as an empty ledger.

@@ -1,0 +1,24 @@
+{
+  "task": "CE-SS1-I01",
+  "source_head": "95688c0d30fcaa6155373290e2851804903a101a",
+  "active_ceh_files": [
+    {
+      "path": "library/cellerator/cellerator.ceh",
+      "sha256": "d16bc4ec43107e11b351d0242b157943a89cbc8bcb741bd7090779305e738c0d",
+      "content": "#pragma cellerator\n\n// Installed stable umbrella for the allocation-free Cellerator source library.\n#include \"../core/core.cell\"\n#include \"../core/builders.cell\"\n#include \"../core/operations.cell\"\n#include \"../core/profile.cell\"\n#include \"../core/planning.cell\"\n#include \"../core/reflection.cell\"\n",
+      "disposition": "Preserve all six core .cell includes during I03 conversion; not converted by I01."
+    }
+  ],
+  "protected_original_edits": {
+    "library/cellerator/cellerator.ceh": "Previously dirty content committed in 30ec292d9fbc68932a0527e61736f23f72a5101b; currently clean.",
+    "library/cellerator.cell": "Already deleted in 30ec292d9fbc68932a0527e61736f23f72a5101b; historical body was #pragma cellerator and a blank line, retained in Git."
+  },
+  "demo_present": true,
+  "demo_sha256": "e528a1d25daa6aca5677181e413fc9bd43648755c59fd5329e2ffd473238c296",
+  "semantic_disposition": {
+    "persistent_identities": "Preserve full low/high identities and independent epoch/generation.",
+    "legacy_core_records": "Retain as checked provider adaptation, not competing relation authority.",
+    "physical_candidates": "Preserve existing FMP1/CTP1 arithmetic and value position maps."
+  },
+  "no_source_conversion_performed": true
+}
