@@ -57,6 +57,8 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
 #include <Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh>
 #include <Cellerator/compute/operation/relation_update.hh>
 #include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cuh>
+#include <Cellerator/runtime/relation_value_readiness.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/hybrid_gradient.cuh>
 #include <atomic>
 #include <cmath>
 #include <algorithm>
@@ -75,6 +77,20 @@ status physical(cm::physical_view_status s) {
 }
 status cuda_status(cudaError_t s) {
     return s == cudaSuccess ? status{} : status{status_code::cuda_failure, cudaGetErrorString(s)};
+}
+status readiness_status(runtime::relation_readiness_status value) noexcept {
+    using code=runtime::relation_readiness_status;
+    switch(value) {
+    case code::success:return {};
+    case code::stale_generation:return {status_code::stale_generation,"readiness generation mismatch"};
+    case code::identity_mismatch:return {status_code::stale_structure,"readiness identity mismatch"};
+    case code::device_mismatch:return {status_code::incompatible_device,"readiness device mismatch"};
+    case code::wrong_stream:return {status_code::incompatible_stream,"readiness stream mismatch"};
+    case code::capture_unsupported:return {status_code::unsupported_semantics,"mutable readiness cannot be captured"};
+    case code::cuda_failure:case code::producer_enqueue_failed:return {status_code::cuda_failure,"readiness submission failed"};
+    case code::busy:case code::invalid_state:case code::poisoned:return {status_code::invalid_state,"readiness busy, closed or poisoned"};
+    default:return {status_code::invalid_argument,"invalid readiness argument or ticket"};
+    }
 }
 status check_topology(const topology_descriptor& t, const csr_host_view& csr) {
     // Leave room for terminal indices and candidate grid rounding.
@@ -170,6 +186,11 @@ struct prepared_relation_pair {
     core::prepared_operation forward_operation{},transpose_operation{};
     preparation_report report{};
     relation_update_report updates{};
+    runtime::relation_value_readiness readiness;
+    runtime::relation_read_ticket reader_ticket{};
+    value_read_lease active_lease{};
+    gradient_provider::hybrid_gradient* hybrid=nullptr;
+    bool hybrid_selected=false;
     std::uint64_t persistent_limit = 0, incarnation = 0;
     std::vector<std::uint32_t> logical_to_physical, physical_to_logical;
     std::vector<gradient_contract::edge_ref_v1> physical_edges;
@@ -184,7 +205,9 @@ struct prepared_relation_pair {
     ~prepared_relation_pair() {
         int prior=-1;cudaGetDevice(&prior);
         if(prior!=device)cudaSetDevice(device);
+        (void)readiness.close();
         cudaStreamSynchronize(stream);
+        gradient_provider::destroy_hybrid_gradient(hybrid);
         if(device_edges)cudaFree(device_edges);
         if(source_scratch)cudaFree(source_scratch);if(cotangent_scratch)cudaFree(cotangent_scratch);
         if(values)cudaFree(values);if(logical_map)cudaFree(logical_map);
@@ -289,6 +312,8 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             report.forward_candidate=forward.topology.destination.extent?"device-zero-fill":"device-no-op";
             report.transpose_candidate=forward.topology.source.extent?"device-zero-fill":"device-no-op";
         }
+        s=readiness_status(p->readiness.initialize(forward.topology.identity,forward.topology.epoch,current,stream));
+        if(!s)return s;
         report.topology_preparations=1;*out=p.release();return {};
     }catch(const std::bad_alloc&){return {status_code::insufficient_capacity,"cold preparation allocation failed"};}
     catch(...){return {status_code::invalid_argument,"cold projection construction failed"};}
@@ -296,7 +321,11 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
 status inspect(const prepared_relation_pair& p,preparation_report* out) noexcept {
     if(!out)return {status_code::invalid_argument,"report is null"};*out=p.report;return {};
 }
-void destroy(prepared_relation_pair* p) noexcept {delete p;}
+void destroy(prepared_relation_pair* p) noexcept {
+    // Compatibility path cannot report busy. Preserve the pair and its borrow;
+    // mutable callers use close_relation_pair to observe teardown status.
+    (void)close_relation_pair(&p);
+}
 } // namespace cellerator::compute::relation
 
 namespace cellerator::compute::relation {
@@ -395,13 +424,17 @@ status publish_values(prepared_relation_pair& p,const device_values_binding& bin
     s=check_pointer(binding.f16_data,topology.edge_count*2,p.device,2);if(!s)return s;
     if(protected_overlap(p,binding.f16_data,topology.edge_count*2))
         return {status_code::invalid_argument,"logical input cannot alias packed value storage"};
+    s=readiness_status(p.readiness.validate_write(p.report.latest_enqueued_generation,binding.generation,stream));if(!s)return s;
+    cudaError_t submitted=cudaSuccess;
     if(topology.edge_count) {
         gather_values<<<(topology.edge_count+255)/256,256,0,stream>>>(
             static_cast<const std::uint16_t*>(binding.f16_data),p.logical_map,
             static_cast<std::uint16_t*>(p.values),topology.edge_count);
-        s=cuda_status(cudaPeekAtLastError());
-        if(!s){p.poisoned=true;return s;}
+        submitted=cudaPeekAtLastError();
     }
+    s=readiness_status(p.readiness.publish(binding.generation,stream,submitted));
+    if(submitted!=cudaSuccess||!s){p.poisoned=true;return submitted!=cudaSuccess?cuda_status(submitted):s;}
+    p.last_gradient={};p.last_gradient_output={};
     p.report.latest_enqueued_generation=binding.generation;++p.report.value_refreshes;return {};
 }
 } // namespace cellerator::compute::relation
@@ -481,7 +514,8 @@ status inspect_edge_layout(const prepared_relation_pair& p,edge_layout_view* out
 }
 status inspect_updates(const prepared_relation_pair& p,relation_update_report* out) noexcept {
     if(!out)return {status_code::invalid_argument,"update report output absent"};
-    *out=p.updates;out->relation=p.report;return {};
+    *out=p.updates;out->relation=p.report;
+    out->ready_records=p.readiness.ready_records();out->reader_returns=p.readiness.reader_returns();return {};
 }
 status prepare_relation_gradient(prepared_relation_pair& p,const relation_calculus_descriptor& calculus,
     const gradient_preparation_options& options,cudaStream_t stream) noexcept {
@@ -491,8 +525,10 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
     if(!equivalent(calculus.forward,p.forward.semantic)||!equivalent(calculus.transpose,p.transpose.semantic))
         return {status_code::invalid_argument,"gradient calculus differs from prepared relation"};
     if(calculus.forward.dense_width!=16)return {status_code::unsupported_width,"gradient provider requires N16"};
-    if(options.route!=gradient_route::automatic && options.route!=gradient_route::force_sparse)
-        return {status_code::unsupported_semantics,"hybrid gradient provider not yet integrated"};
+    if(options.route!=gradient_route::automatic && options.route!=gradient_route::force_sparse && options.route!=gradient_route::force_hybrid)
+        return {status_code::invalid_argument,"unknown gradient route"};
+    if(options.route==gradient_route::force_hybrid && calculus.gradient!=gradient_arithmetic::round_operands_f16_rne)
+        return {status_code::unsupported_semantics,"full-f32 semantics cannot use WMMA"};
     if(p.gradient_prepared)return {status_code::invalid_state,"gradient already prepared"};
     auto nx=calculus.forward.topology.source.extent*16,ny=calculus.forward.topology.destination.extent*16;
     auto bytes=p.physical_edges.size()*sizeof(gradient_contract::edge_ref_v1);
@@ -510,9 +546,36 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
         auto completed=cudaStreamSynchronize(stream);
         s=cuda_status(submitted==cudaSuccess?completed:submitted);if(!s){cleanup();return s;}
     }
+    gradient_provider::hybrid_gradient* hybrid=nullptr;
+    gradient_provider::hybrid_report hybrid_report{};
+    if(options.route==gradient_route::force_hybrid &&
+        calculus.gradient==gradient_arithmetic::round_operands_f16_rne && !p.physical_edges.empty()) {
+        auto limit=p.persistent_limit?p.persistent_limit-p.updates.persistent_bytes-bytes-scratch:std::uint64_t(256)*1024*1024;
+        auto result=limit?gradient_provider::prepare_hybrid_gradient(p.physical_edges.data(),
+            {edges,0,static_cast<std::uint32_t>(p.physical_edges.size()),
+             static_cast<std::uint32_t>(calculus.forward.topology.source.extent),
+             static_cast<std::uint32_t>(calculus.forward.topology.destination.extent)},nullptr,0,limit,stream,&hybrid)
+             :gradient_contract::status_v1::unsupported;
+        if(result==gradient_contract::status_v1::cuda_failure){cleanup();return {status_code::cuda_failure,"hybrid preparation failed"};}
+        if(hybrid)hybrid_report=gradient_provider::inspect_hybrid_gradient(*hybrid);
+        if(options.scratch_byte_limit && scratch+hybrid_report.scratch_bytes>options.scratch_byte_limit) {
+            gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};
+        }
+    }
+    gradient_provider::gradient_selection selection{};
+    auto choice=options.route==gradient_route::force_hybrid?gradient_provider::gradient_choice::force_hybrid:
+        options.route==gradient_route::force_sparse?gradient_provider::gradient_choice::force_sparse:gradient_provider::gradient_choice::automatic;
+    auto selected=gradient_provider::select_gradient_route(calculus.gradient==gradient_arithmetic::round_operands_f16_rne,
+        choice,hybrid_report.tile_count,selection);
+    if(selected!=gradient_contract::status_v1::success){gradient_provider::destroy_hybrid_gradient(hybrid);cleanup();return {status_code::unsupported_semantics,"requested gradient route is ineligible"};}
+    // Conservative automatic selection may reject promotion after cold cover
+    // discovery. Retain no unused panel storage in that case.
+    if(!selection.use_hybrid){gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};}
     p.device_edges=edges;p.source_scratch=x;p.cotangent_scratch=y;
+    p.hybrid=hybrid;p.hybrid_selected=selection.use_hybrid;
     p.calculus=calculus;p.gradient_options=options;p.gradient_prepared=true;
-    p.updates.persistent_bytes+=bytes;p.updates.scratch_bytes=scratch;++p.updates.gradient_preparations;
+    p.updates.persistent_bytes+=bytes+hybrid_report.persistent_bytes;
+    p.updates.scratch_bytes=scratch+hybrid_report.scratch_bytes;++p.updates.gradient_preparations;
     return {};
 }
 status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_descriptor& calculus,
@@ -551,12 +614,20 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
     request.half_rounded=calculus.gradient==gradient_arithmetic::round_operands_f16_rne;
     request.source_scratch=p.source_scratch;request.cotangent_scratch=p.cotangent_scratch;
     request.source_scratch_capacity=nx;request.cotangent_scratch_capacity=ny;request.stream=stream;
-    auto result=gradient_provider::enqueue_relation_gradient(request);
+    auto before=p.hybrid?gradient_provider::inspect_hybrid_gradient(*p.hybrid):gradient_provider::hybrid_report{};
+    auto result=p.hybrid?gradient_provider::enqueue_hybrid_gradient(*p.hybrid,request,p.hybrid_selected):
+        gradient_provider::enqueue_relation_gradient(request);
     if(result!=gradient_contract::status_v1::success) {
         p.poisoned=true;return {status_code::cuda_failure,"gradient provider submission failed"};
     }
     ++p.updates.gradient_launches;
-    if(t.edge_count) {++p.updates.sparse_launches;if(request.half_rounded)++p.updates.operand_pack_refreshes;}
+    if(p.hybrid) {
+        auto after=gradient_provider::inspect_hybrid_gradient(*p.hybrid);
+        p.updates.sparse_launches+=after.sparse_launches-before.sparse_launches;
+        p.updates.wmma_launches+=after.wmma_launches-before.wmma_launches;
+        p.updates.residual_launches+=after.residual_launches-before.residual_launches;
+        p.updates.operand_pack_refreshes+=after.pack_refreshes-before.pack_refreshes;
+    } else if(t.edge_count) {++p.updates.sparse_launches;if(request.half_rounded)++p.updates.operand_pack_refreshes;}
     p.last_gradient={t.identity,t.epoch,p.physical_order,expected,input_version,cotangent_version,
         p.updates.gradient_launches,p.incarnation,calculus.gradient};
     p.last_gradient_output=output;*produced=p.last_gradient;return {};
@@ -597,13 +668,52 @@ status enqueue_value_update(prepared_relation_pair& p,const value_update_request
             r.operand.f32_data!=p.last_gradient_output.f32_data)
             return {status_code::stale_generation,"gradient stamp or produced buffer is stale"};
     }
+    s=readiness_status(p.readiness.validate_write(r.expected,r.next,stream));if(!s)return s;
     auto result=gradient_provider::enqueue_relation_value_update(p.values,
         static_cast<const float*>(r.operand.f32_data),
         static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),
         r.kind==value_update_kind::gradient_step,r.alpha,stream);
-    if(result!=cudaSuccess){p.poisoned=true;return cuda_status(result);}
-    // N05 connects this accepted submission to the reusable ready event.
+    s=readiness_status(p.readiness.publish(r.next,stream,result));
+    if(result!=cudaSuccess||!s){p.poisoned=true;return result!=cudaSuccess?cuda_status(result):s;}
     p.report.latest_enqueued_generation=r.next;++p.updates.physical_updates;
     p.last_gradient={};p.last_gradient_output={};return {};
+}
+} // namespace cellerator::compute::relation
+
+namespace cellerator::compute::relation {
+status begin_value_read(prepared_relation_pair& p,execution::value_generation generation,
+    cudaStream_t consumer,value_read_lease* out) noexcept {
+    if(!out)return {status_code::invalid_argument,"lease output absent"};
+    if(p.poisoned)return {status_code::invalid_state,"pair poisoned"};
+    const auto& t=p.forward.semantic.topology;
+    runtime::relation_read_ticket ticket{};
+    auto s=readiness_status(p.readiness.begin_read(t.identity,t.epoch,generation,p.device,consumer,&ticket));
+    if(!s){if(p.readiness.poisoned())p.poisoned=true;return s;}
+    p.reader_ticket=ticket;
+    p.active_lease={p.values,t.edge_count,p.physical_order,generation,ticket.nonce,p.incarnation,t.identity,t.epoch,p.device};
+    *out=p.active_lease;return {};
+}
+status end_value_read(prepared_relation_pair& p,value_read_lease& lease,cudaStream_t consumer) noexcept {
+    const auto& a=p.active_lease;
+    if(!lease.nonce||lease.nonce!=a.nonce||lease.pair_incarnation!=a.pair_incarnation||
+        lease.physical_f16_values!=a.physical_f16_values||lease.count!=a.count||
+        !execution::same_identity(lease.order,a.order)||!execution::same_identity(lease.structure,a.structure)||
+        lease.epoch.value!=a.epoch.value||lease.generation.value!=a.generation.value||lease.device_ordinal!=a.device_ordinal)
+        return {status_code::invalid_argument,"lease does not match outstanding reader"};
+    auto s=readiness_status(p.readiness.end_read(p.reader_ticket,consumer));
+    if(!s){if(p.readiness.poisoned())p.poisoned=true;return s;}
+    lease={};p.active_lease={};return {};
+}
+status close_relation_pair(prepared_relation_pair** slot) noexcept {
+    if(!slot)return {status_code::invalid_argument,"close slot absent"};
+    auto* p=*slot;if(!p)return {};
+    if(p->readiness.active_reader())return {status_code::invalid_state,"unreturned value lease prevents close"};
+    int prior=-1;auto s=cuda_status(cudaGetDevice(&prior));if(!s)return s;
+    if(prior!=p->device){s=cuda_status(cudaSetDevice(p->device));if(!s)return s;}
+    s=readiness_status(p->readiness.close());
+    if(s){delete p;*slot=nullptr;}
+    else if(p->readiness.poisoned())p->poisoned=true;
+    if(prior>=0){auto restored=cuda_status(cudaSetDevice(prior));if(s&&!restored)s=restored;}
+    return s;
 }
 } // namespace cellerator::compute::relation
