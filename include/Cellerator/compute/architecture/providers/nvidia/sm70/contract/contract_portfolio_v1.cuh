@@ -96,10 +96,33 @@ struct rectangular_request_v1 {
     std::uint32_t source_count = 0u;
     std::uint32_t destination_count = 0u;
     float *projection_output = nullptr;
+    // Element strides/capacities are independent of logical contraction width.
+    std::uint32_t source_stride = 0u;
+    std::uint32_t destination_stride = 0u;
+    std::uint64_t source_capacity = 0u;
+    std::uint64_t destination_capacity = 0u;
+    std::uint64_t output_capacity = 0u;
     std::uint64_t global_projection_begin = 0u;
     std::uint64_t profiler_correlation_id = 0u;
     cudaStream_t stream = nullptr;
 };
+
+// Checked cold preparation uploads descriptors. Caller keeps descriptor storage,
+// operands and output alive and immutable in layout until all launches complete.
+class prepared_rectangular_v1 {
+    rectangular_request_v1 request_{};
+    bool valid_ = false;
+    friend status_v1 prepare_rectangular_v1(const rectangular_request_v1 &,
+        const rectangular_tile_v1 *, rectangular_tile_v1 *, std::uint64_t,
+        prepared_rectangular_v1 &) noexcept;
+    friend status_v1 enqueue_rectangular_mma_residual_v1(
+        const prepared_rectangular_v1 &) noexcept;
+};
+status_v1 prepare_rectangular_v1(const rectangular_request_v1 &request,
+    const rectangular_tile_v1 *host_tiles, rectangular_tile_v1 *device_tiles,
+    std::uint64_t device_tile_capacity, prepared_rectangular_v1 &output) noexcept;
+status_v1 enqueue_rectangular_mma_residual_v1(
+    const prepared_rectangular_v1 &request) noexcept;
 
 // Produces one 16x16 physical score tile per descriptor. The tail components
 // not representable by m16n16k16 are accumulated by an exact scalar residual.
