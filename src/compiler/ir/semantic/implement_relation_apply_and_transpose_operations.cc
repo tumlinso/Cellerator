@@ -24,7 +24,7 @@ lowered_relation_apply_v1::lowered_relation_apply_v1() noexcept { refresh_views(
 
 lowered_relation_apply_v1::lowered_relation_apply_v1(
     const lowered_relation_apply_v1& other) noexcept
-    : relation(other.relation), binding(other.binding), value_binding(other.value_binding),
+    : semantic(other.semantic), relation(other.relation), binding(other.binding), value_binding(other.value_binding),
       operation(other.operation), algebra(other.algebra) {
     refresh_views();
 }
@@ -32,6 +32,7 @@ lowered_relation_apply_v1::lowered_relation_apply_v1(
 lowered_relation_apply_v1& lowered_relation_apply_v1::operator=(
     const lowered_relation_apply_v1& other) noexcept {
     if (this != &other) {
+        semantic = other.semantic;
         relation = other.relation;
         binding = other.binding;
         value_binding = other.value_binding;
@@ -103,6 +104,34 @@ relation_apply_ir_validation_code_v1 lower_relation_apply_operation_v1(
     if (!relation) return relation_apply_ir_validation_code_v1::invalid_relation;
 
     lowered_relation_apply_v1 result;
+    namespace canonical = cellerator::compute::relation;
+    const auto& source_axis = operation.relation.source_axis;
+    const auto& destination_axis = operation.relation.destination_axis;
+    if (source_axis.extent.kind != extent_knowledge_kind_v1::exact ||
+        destination_axis.extent.kind != extent_knowledge_kind_v1::exact)
+        return relation_apply_ir_validation_code_v1::axis_mismatch;
+    result.semantic.topology = {
+        {operation.relation.structure_identity.low, operation.relation.structure_identity.high},
+        {operation.relation.structure_epoch},
+        {relation->source_axis, source_axis.extent.upper_bound},
+        {relation->destination_axis, destination_axis.extent.upper_bound},
+        {operation.relation.logical_edge_order.low, operation.relation.logical_edge_order.high},
+        operation.relation.logical_edge_count};
+    result.semantic.direction = operation.relation.orientation == relation_orientation_ir_v1::forward
+        ? canonical::orientation::forward : canonical::orientation::transpose;
+    result.semantic.arithmetic = {operation.relation_storage, operation.source.numeric.storage,
+        operation.source.numeric.compute, operation.source.numeric.accumulation,
+        operation.result.numeric.output, operation.permit_fma, operation.permit_reassociation,
+        operation.nonfinite};
+    result.semantic.dense_width = operation.source.dense_width;
+    if (operation.update == cellerator::compute::operation::v2::destination_update::overwrite)
+        result.semantic.update = canonical::output_update::overwrite;
+    else if (operation.update == cellerator::compute::operation::v2::destination_update::accumulate)
+        result.semantic.update = canonical::output_update::accumulate;
+    else return relation_apply_ir_validation_code_v1::invalid_update;
+    result.semantic.input_output_aliasing_legal = operation.result.alias.may_alias_input;
+    if (!canonical::validate(result.semantic))
+        return relation_apply_ir_validation_code_v1::numeric_mismatch;
     result.relation = *relation;
     result.operation.schema_version = cellerator::compute::operation::v2::operation_core_schema_version;
     result.operation.kind = operation.relation.orientation == relation_orientation_ir_v1::forward
