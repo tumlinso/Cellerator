@@ -476,7 +476,8 @@
       "scope": {
         "exclusive_paths": [
           "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu",
-          "tests/relation_update_spine_v1/gradient_pack_test.cu"
+          "tests/relation_update_spine_v1/gradient_pack_test.cu",
+          "include/Cellerator/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cuh"
         ]
       },
       "depends_on": [
@@ -639,7 +640,8 @@
       "scope": {
         "exclusive_paths": [
           "tests/relation_update_spine_v1/compiler_conformance_test.cc",
-          "docs/relation_update_spine_v1/compiler_boundary.md"
+          "docs/relation_update_spine_v1/compiler_boundary.md",
+          "src/compiler/sema/relation_update_spine_bridge.cc"
         ]
       },
       "depends_on": [
