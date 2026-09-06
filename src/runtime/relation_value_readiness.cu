@@ -47,9 +47,10 @@ result relation_value_readiness::initialize(execution::structure_id structure,
     api_ = api; incarnation_ = candidate;
     return result::success;
 }
-result relation_value_readiness::check_stream(cudaStream_t stream) const noexcept {
+result relation_value_readiness::check_stream(cudaStream_t stream,
+    bool allow_poison) const noexcept {
     if (!initialized()) return result::invalid_state;
-    if (poisoned_) return result::poisoned;
+    if (poisoned_ && !allow_poison) return result::poisoned;
     // Query capture first: other runtime queries may reject an active capture.
     cudaStreamCaptureStatus capture{};
     if (cudaStreamIsCapturing(stream, &capture) != cudaSuccess) return result::cuda_failure;
@@ -99,6 +100,50 @@ result relation_value_readiness::wait_current(execution::structure_id structure,
     if (consumer != owner_ && api_.wait(consumer, ready_, 0) != cudaSuccess) {
         poisoned_ = true; return result::cuda_failure;
     }
+    return result::success;
+}
+result relation_value_readiness::begin_read(execution::structure_id structure,
+    execution::structure_epoch epoch, execution::value_generation generation,
+    int device, cudaStream_t consumer, relation_read_ticket* out) noexcept {
+    if (!out) return result::invalid_argument;
+    if (active_reader()) return result::busy;
+    if (nonce_ == std::numeric_limits<std::uint64_t>::max()) return result::invalid_state;
+    // Reject either capture before device queries on the other stream.
+    cudaStreamCaptureStatus capture{};
+    if (cudaStreamIsCapturing(consumer, &capture) != cudaSuccess) return result::cuda_failure;
+    if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
+    const auto owner_checked = check_stream(owner_);
+    if (owner_checked != result::success) return owner_checked;
+    const auto checked = wait_current(structure, epoch, generation, device, consumer);
+    if (checked != result::success) return checked;
+    active_nonce_ = ++nonce_; consumer_ = consumer;
+    *out = {structure_, epoch_, generation_, incarnation_, active_nonce_, device_};
+    return result::success;
+}
+result relation_value_readiness::end_read(relation_read_ticket& ticket,
+    cudaStream_t consumer) noexcept {
+    // Identity rejection is side-effect-free even on a poisoned component.
+    if (!active_reader() || !equal(ticket.structure, structure_) ||
+        ticket.epoch.value != epoch_.value || ticket.generation.value != generation_.value ||
+        ticket.incarnation != incarnation_ || ticket.nonce != active_nonce_ ||
+        ticket.device != device_) return result::invalid_ticket;
+    if (consumer != consumer_) return result::wrong_stream;
+    cudaStreamCaptureStatus capture{};
+    if (cudaStreamIsCapturing(owner_, &capture) != cudaSuccess) return result::cuda_failure;
+    if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
+    auto checked = check_stream(consumer, true);
+    if (checked != result::success) return checked;
+    checked = check_stream(owner_, true);
+    if (checked != result::success) return checked;
+    if (api_.record(done_, consumer) != cudaSuccess) {
+        poisoned_ = true; return result::cuda_failure;
+    }
+    if (api_.wait(owner_, done_, 0) != cudaSuccess) {
+        poisoned_ = true; return result::cuda_failure;
+    }
+    // Submitted waits capture the existing event record, so re-recording done
+    // for the next serialized borrower cannot redirect this owner's wait.
+    active_nonce_ = 0; consumer_ = nullptr; ++reader_returns_; ticket = {};
     return result::success;
 }
 result relation_value_readiness::close() noexcept {
