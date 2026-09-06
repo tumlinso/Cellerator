@@ -1,0 +1,68 @@
+{
+  "task": "CE-SS1-V04",
+  "source_base": "da40eee1",
+  "validated": [
+    {
+      "argv": [
+        "/tmp/ce-ss1-verify-host/ceSpineOracleTest"
+      ],
+      "exit": 0,
+      "stdout": "independent logical-edge oracle and negative controls passed\n"
+    },
+    {
+      "argv": [
+        "/tmp/ce-ss1-verify-host/ceSpineContractProbes"
+      ],
+      "exit": 0,
+      "stdout": "independent semantic metadata probes passed\n"
+    },
+    {
+      "control": "missing native implementation",
+      "expected": "link fails for missing real symbol",
+      "exit": 1,
+      "stderr": "/usr/bin/ld: /tmp/ccyWCmc4.o: in function `main':\n<stdin>:(.text+0x1c): undefined reference to `cellerator::compute::relation::destroy(cellerator::compute::relation::prepared_relation_pair*)'\ncollect2: error: ld returned 1 exit status\n"
+    },
+    {
+      "control": "missing integrated executable",
+      "exit": 1,
+      "stderr": "missing integrated implementation executable\n"
+    }
+  ],
+  "source_hashes": {
+    "tests/semantic_spine/verification/CMakeLists.txt": "6e26b657dc668b88e77128c09337df9e737689ab3319575b05a1e6e029ececc0",
+    "tests/semantic_spine/verification/oracle.hh": "6626469ac9e657d37f873abdd3fe3adfed68e5c7d52931e636474c2ee8e113ca",
+    "tests/semantic_spine/verification/fixtures.hh": "269820e0519cc4b15f511a98ae9fac7ad6d1088e6ae4744a60257bff505b09f5",
+    "tests/semantic_spine/verification/evidence_requirements.json": "e2dc8afd6094a966c47a3815a9bc66fd4fba0d2d3dc3aef346551ae2a2ccede0",
+    "tests/semantic_spine/verification/oracle_test.cc": "dfa851d03b5d55131cc9423875f5996f5eaac4f73050a88878b5cfdfe1accc66",
+    "tests/semantic_spine/verification/integrated_probe.cc": "1f97b98040af79f16d4262c8e5f51dbc2b424129167e5ba9db773ab2454a76fb",
+    "tests/semantic_spine/verification/run_controls.py": "833cb9dbf8dce76705ff8352fed708b16f7395d80f0729580b587ffdc46237bc",
+    "tests/semantic_spine/verification/contract_probes.cc": "cdd25820713057379c84db86cd6258686a414a9d58a144d22c0565bdbfb228bc"
+  },
+  "integrated_gpu_status": "pending I04 linkage and I05 execution",
+  "pending_controls": [
+    "real executable CUDA_VISIBLE_DEVICES empty",
+    "real executable wrong-output injection"
+  ],
+  "host_negative_controls": [
+    "wrong-index",
+    "old-generation expected result",
+    "NaN/Inf comparison",
+    "bad exact endpoint"
+  ],
+  "link_instructions": {
+    "cross_origin_sources": [
+      "integrated_probe.cc",
+      "contract_probes.cc"
+    ],
+    "compile_definitions": [
+      "CELLERATOR_SPINE_DEVICE_PROBES=1",
+      "CELLERATOR_SPINE_PROBES_LIBRARY=1"
+    ],
+    "dependencies": [
+      "canonical relation_semantics",
+      "native prepared_relation CUDA",
+      "frontend relation_spine_bridge real parser/Sema/IR"
+    ]
+  },
+  "performance_claim": false
+}
