@@ -1003,7 +1003,8 @@
           "src/execution/CMakeLists.txt",
           "docs/relation_update_spine_v1/source_disposition.json",
           "include/Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh",
-          "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu"
+          "src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu",
+          "ENVIRONMENT_NOTES.md"
         ]
       },
       "depends_on": [
@@ -1060,11 +1061,11 @@
           "required": true,
           "argv": [
             "python3",
-            "planning/relation-update-spine-v1/scripts/run_gate.py",
-            "--build-dir",
-            "build/relation-update-spine-v1",
-            "--group",
-            "all"
+            "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+            "run",
+            "--spec",
+            "/tmp/ce-ru1-i08/execute-spec.json",
+            "--json"
           ],
           "cwd": "."
         },
@@ -1074,9 +1075,11 @@
           "required": true,
           "argv": [
             "python3",
-            "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
-            "--binary-dir",
-            "build/relation-update-spine-v1/bin"
+            "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+            "run",
+            "--spec",
+            "/tmp/ce-ru1-i08/sanitize-spec.json",
+            "--json"
           ],
           "cwd": "."
         }
