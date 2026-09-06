@@ -78,3 +78,12 @@ cleanup remain pending.
   dtype, copy/move, and unavailable legacy FMA/reassociation transport. Canonical
   mathematics stays valid when legacy transport cannot represent its restrictions.
   Commit `57c6a60c` was pushed and F05 closed at revision 6839.
+
+## Required-gate completion lease
+
+The conformance gate passed under the live CUDA controller lease, but the first
+completion call ran outside that lease. Source inspection confirmed that
+`finish_task` reruns required executable gates; its rerun correctly rejected the
+missing lease receipt. Completion calls for I05-I07 therefore run inside the
+controller and benchmark mutex too. This is an invocation correction, with no
+workflow-source edit, fabricated lease, skipped gate, or weakened test.
