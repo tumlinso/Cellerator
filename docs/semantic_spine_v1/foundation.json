@@ -1,0 +1,37 @@
+{
+  "task": "CE-SS1-I02",
+  "core_artifact": "a485a01a2a70313fae1a0332480c7215d7559cff",
+  "foundation_source_commit": "ce28f2e1bfa641b8915a1258ad88e6f57ee33848",
+  "interface_id": "CE-SS1-I-RELATION",
+  "interface_version": "1",
+  "interface_sha256": "924b92b4a129638dc6a4ea45c6f743b33d17a99939d490639e7b58e7da0a25cf",
+  "project_control_gate": {
+    "id": "CE-SS1-G-I02",
+    "status": "passed",
+    "evidence_id": "21e7e740-2c42-4851-bd85-b4a73d5ccd22"
+  },
+  "clean_committed_source_test": {
+    "source_archive": "/tmp/ce-ss1-foundation-rhmq4q_h",
+    "source_selection": [
+      "include",
+      "src/compute/operation/relation_semantics.cc",
+      "tests/semantic_spine/core"
+    ],
+    "configure": "cmake -S <archive>/tests/semantic_spine/core -B <archive>/build -DCMAKE_BUILD_TYPE=Release",
+    "build": "cmake --build <archive>/build --parallel 80",
+    "executed": [
+      "ceSpineCoreTest",
+      "ceSpineMathematicalDualityTest"
+    ],
+    "exit_status": 0
+  },
+  "consumer_heads": [
+    "CE-SS1-N01",
+    "CE-SS1-F01",
+    "CE-SS1-A01",
+    "CE-SS1-V01"
+  ],
+  "workspace_policy": "Prepare all four from the same clean committed main foundation after I02 completion; record actual base via Project Control admin output.",
+  "gpu_execution_claim": false,
+  "full_language_completion": false
+}
