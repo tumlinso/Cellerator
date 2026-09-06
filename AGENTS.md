@@ -499,6 +499,11 @@ See `style_hint.md` for local file-shape guidance.
 
 ## Build and Test
 
+Consult [ENVIRONMENT_NOTES.md](ENVIRONMENT_NOTES.md) for recurring environment
+issues. When one interrupts implementation, briefly add the issue and the
+verified quick fix there so future agents can reuse it. Keep entries concise,
+check that older fixes still apply, and stay focused on the current task.
+
 Default to all available processors for parallel compilation. On Linux, use
 `-j "$(nproc)"` unless a real memory, toolchain-stability,
 benchmark-isolation, resource-reservation, or serialized-gate/interlock
