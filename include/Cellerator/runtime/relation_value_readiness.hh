@@ -46,6 +46,15 @@ public:
     relation_readiness_status wait_current(execution::structure_id,
         execution::structure_epoch, execution::value_generation, int device,
         cudaStream_t consumer) noexcept;
+    // One outstanding host lease is a bounded runtime policy, not mathematics.
+    // Failure preserves *out; successful acquisition installs an exact ticket.
+    relation_readiness_status begin_read(execution::structure_id,
+        execution::structure_epoch, execution::value_generation, int device,
+        cudaStream_t consumer, relation_read_ticket* out) noexcept;
+    // Successful return records done and submits the owner wait before recycle.
+    // Event failure retains the ticket and poisons. A matching return may retry
+    // solely for safe cleanup; no operation makes a poisoned generation usable.
+    relation_readiness_status end_read(relation_read_ticket&, cudaStream_t consumer) noexcept;
     // Cold teardown fences owner work only. Never frees an unreturned borrow.
     relation_readiness_status close() noexcept;
     bool initialized() const noexcept { return ready_ != nullptr; }
@@ -56,7 +65,7 @@ public:
     std::uint64_t ready_records() const noexcept { return ready_records_; }
     std::uint64_t reader_returns() const noexcept { return reader_returns_; }
 private:
-    relation_readiness_status check_stream(cudaStream_t) const noexcept;
+    relation_readiness_status check_stream(cudaStream_t, bool allow_poison = false) const noexcept;
     cudaEvent_t ready_ = nullptr, done_ = nullptr;
     cudaStream_t owner_ = nullptr, consumer_ = nullptr;
     execution::structure_id structure_{};
