@@ -54,6 +54,7 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
 
 #include <Cellerator/compute/candidate/feature_major_small_n_candidate.hh>
 #include <Cellerator/compute/candidate/transpose_backward_candidate.hh>
+#include <Cellerator/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cuh>
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -198,7 +199,7 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         // also keeps the two pair-local projection identities distinct.
         if(!execution::valid_identity(report.transpose_projection))report.transpose_projection.low=1;
         report.forward_candidate=core::feature_major_small_n_candidate().name;
-        report.transpose_candidate=forward.dense_width==1 ? core::transpose_backward_n1_candidate().name : nullptr;
+        report.transpose_candidate=forward.dense_width==1 ? core::transpose_backward_n1_candidate().name : core::transpose_backward_n16_candidate().name;
         if(forward.topology.edge_count) {
             cold_tiles cold(forward.topology,topology);
             cm::feature_major_projection_build_request request{forward.topology.identity,{1,1},forward.topology.epoch,report.forward_projection,{1,1},cold.view};
@@ -237,8 +238,9 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
             auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
             if(!fs)return {status_code::unsupported_semantics,fs.message};
-            if (forward.dense_width == 1) {
-                auto ts=core::prepare_transpose_backward_n1_operation(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+            {
+                auto prepare_transpose = forward.dense_width == 1 ? core::prepare_transpose_backward_n1_operation : core::prepare_transpose_backward_n16_operation;
+                auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
                 if(!ts)return {status_code::unsupported_semantics,ts.message};
             }
         }
@@ -370,8 +372,6 @@ status check_launch(const prepared_relation_pair& p,const operation_descriptor& 
     auto s=check_context(p,input.device_ordinal,stream);if(!s)return s;
     if(output.device_ordinal!=p.device)return {status_code::incompatible_device,"output belongs to another device"};
     native_contract checked{};s=adapt(op,checked);if(!s)return s;
-    if (op.direction==orientation::transpose && op.dense_width==16)
-        return {status_code::unsupported_width,"N16 transpose implementation is not yet bound"};
     const auto& prepared=op.direction==orientation::forward?p.forward.semantic:p.transpose.semantic;
     if(!execution::same_identity(op.topology.identity,prepared.topology.identity) || op.topology.epoch.value!=prepared.topology.epoch.value)
         return {status_code::stale_structure,"launch topology identity or epoch is stale"};
