@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6936`
+Project revision: `6940`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1194,13 +1194,13 @@ Project revision: `6936`
 - `CE-RU1-N02` | status: done | execution: closed | next: 
 - `CE-RU1-N03` | status: done | execution: closed | next: 
 - `CE-RU1-N04` | status: done | execution: closed | next: 
-- `CE-RU1-N05` | status: planned | execution: ready | next: 
+- `CE-RU1-N05` | status: in_progress | execution: claimed | next: 
 - `CE-RU1-N06` | status: planned | execution: ready | next: 
 - `CE-RU1-R01` | status: done | execution: closed | next: 
 - `CE-RU1-R02` | status: done | execution: closed | next: 
 - `CE-RU1-R03` | status: done | execution: closed | next: 
 - `CE-RU1-V01` | status: done | execution: closed | next: 
-- `CE-RU1-V02` | status: planned | execution: ready | next: 
+- `CE-RU1-V02` | status: in_progress | execution: claimed | next: 
 - `CE-RU1-V03` | status: planned | execution: ready | next: 
 - `CE-RU1-V04` | status: planned | execution: ready | next: 
 - `CE-RU1-V05` | status: planned | execution: ready | next: 
@@ -1208,7 +1208,7 @@ Project revision: `6936`
 - `CE-RU1-W02` | status: done | execution: closed | next: 
 - `CE-RU1-W03` | status: done | execution: closed | next: 
 - `CE-RU1-W04` | status: done | execution: closed | next: 
-- `CE-RU1-W05` | status: planned | execution: ready | next: 
+- `CE-RU1-W05` | status: done | execution: closed | next: 
 - `CP-MATH-00` | status: superseded | execution: closed | next: Superseded by CE-ARCH-00 biological execution recovery.
 - `CP-MATH-00A` | status: superseded | execution: closed | next: Reconcile the empty live v2 project and audited CP-BP source at historical baseline 8848f62254605025ac6e96f4cc6a8efbcc803d43; freeze the four consumed CP-BP interfaces without performance work or source changes.
 - `CP-MATH-01` | status: superseded | execution: closed | next: Implement backend-neutral SpMM MathRequest/OperationSignature, alpha/beta, transpose, dtype/compute, determinism, workspace, reuse, epilogue, stable identity and pointer-free ExecutionPlan metadata separation with zero/trivial semantics.
