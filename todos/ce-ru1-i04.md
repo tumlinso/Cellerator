@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-I04: Complete and run the dual-origin regulatory learning demo
 
-Task revision: `6922`; current project revision is in `todo-status.md`.
+Task revision: `6982`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
@@ -20,6 +20,7 @@ _None._
 ## Ownership
 - `exclusive`: `docs/relation_update_spine_v1/demo.json`
 - `exclusive`: `examples/relation_update_spine_v1`
+- `exclusive`: `src/compute/operation/prepared_relation.cu`
 
 ## Dependencies
 - `task`: `CE-RU1-I03`

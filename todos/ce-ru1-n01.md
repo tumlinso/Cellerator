@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-N01: Admit N16 forward through the prepared spine
 
-Task revision: `6922`; current project revision is in `todo-status.md`.
+Task revision: `6982`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._

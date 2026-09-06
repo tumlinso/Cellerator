@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-F03: Lower both origins to the same prepared operations and effects
 
-Task revision: `6922`; current project revision is in `todo-status.md`.
+Task revision: `6982`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-RU1-I08: Close the bounded epic with truthful capability and deferral records
 
-Task revision: `6922`; current project revision is in `todo-status.md`.
+Task revision: `6982`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
@@ -18,6 +18,9 @@ _None._
 _None._
 
 ## Ownership
+- `exclusive`: `docs/core_execution_cp_math.qmd`
+- `exclusive`: `docs/current_implementation.qmd`
+- `exclusive`: `docs/migration_roadmap.qmd`
 - `exclusive`: `docs/relation_update_spine_v1/capabilities.md`
 - `exclusive`: `docs/relation_update_spine_v1/completion.json`
 - `exclusive`: `docs/relation_update_spine_v1/deferred_work.md`
