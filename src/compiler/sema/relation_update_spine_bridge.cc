@@ -67,7 +67,14 @@ relation_update_source_result lower_relation_update_source_slice_v1(
         // consumption below closes its intentionally permissive prefix behavior.
         if (std::find(t.begin(), t.end(), "[") != t.end()) {
             std::string normalized;
-            for (const auto& token : t) normalized += token;
+            bool split_identifier = false;
+            for (std::size_t i = 0; i < t.size(); ++i) {
+                if (i && identifier(t[i-1]) && identifier(t[i])) split_identifier = true;
+                normalized += t[i];
+            }
+            if (split_identifier) {
+                error("separate identifier tokens cannot form one symbol", begin, end); break;
+            }
             const auto parsed = parser::parse_relation_applications_v1(normalized);
             if (!parsed.accepted() || parsed.applications.size() != 1) {
                 error("invalid bounded relation application", begin, end); break;
