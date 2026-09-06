@@ -1,0 +1,379 @@
+{
+  "source_commit": "3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+  "source_dirty_paths": {},
+  "note": "Source tree was committed before gates; workflow projection changes caused by gate recording are not source modifications. I08 supersedes this pre-pruning receipt.",
+  "gate_evidence": {
+    "CE-RU1-I05-EXECUTE": "62614e33-ba8b-4ae3-8820-7d907eeadeae",
+    "CE-RU1-I05-SANITIZE": "a8967091-9608-4d38-9ffa-b2041ce4b046"
+  },
+  "reviewed_expectation": {
+    "kind": "device_acceptance",
+    "source_commit": "3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+    "source_dirty_paths": {},
+    "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "build_config": {
+      "mode": "Release",
+      "cuda_standard": 17,
+      "architecture": "sm_70",
+      "cuda": "12.9.86",
+      "host_cuda_compiler": "g++-12"
+    },
+    "required_runs": [
+      {
+        "test": "ru1_gpu_numerics",
+        "tool": "memcheck",
+        "binary_sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b",
+        "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_numerics",
+        "tool": "racecheck",
+        "binary_sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b",
+        "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-racecheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_numerics",
+        "tool": "synccheck",
+        "binary_sha256": "91a53881c7ed2a657726466e10f84396c8248139363df56c328631dbd8febe3b",
+        "fixture_identity": "ru1_gpu_numerics@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_numerics-synccheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuNumerics",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_bindings",
+        "tool": "memcheck",
+        "binary_sha256": "36eb832f0f6176594e980dc1d2fa05ddae36daa2e54e301916fa9185d2a19cd1",
+        "fixture_identity": "ru1_gpu_bindings@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_bindings-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuBindings",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_lifecycle",
+        "tool": "memcheck",
+        "binary_sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5",
+        "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_lifecycle",
+        "tool": "racecheck",
+        "binary_sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5",
+        "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-racecheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_gpu_lifecycle",
+        "tool": "synccheck",
+        "binary_sha256": "e1337cc70fb186bff9fe3aa55e35302b81aa7b26bb3835df6edb31c453fd55a5",
+        "fixture_identity": "ru1_gpu_lifecycle@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_gpu_lifecycle-synccheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1GpuLifecycle",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_readiness",
+        "tool": "memcheck",
+        "binary_sha256": "3c5c1cc496eb83cc183572fa46b94f818d8bc61971e9e954db373a0e4b3e0b94",
+        "fixture_identity": "ru1_readiness@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_readiness-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1ReadinessTests",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_wmma_legality",
+        "tool": "memcheck",
+        "binary_sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467",
+        "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_wmma_legality",
+        "tool": "racecheck",
+        "binary_sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467",
+        "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-racecheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_wmma_legality",
+        "tool": "synccheck",
+        "binary_sha256": "83103836ff6ad519a23183eb9b472f1d45977bc93d9db65925795b73b59b0467",
+        "fixture_identity": "ru1_wmma_legality@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_wmma_legality-synccheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1WmmaLegality",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_n1_regression",
+        "tool": "memcheck",
+        "binary_sha256": "5ea26c1d52282b967bb4672b9b0b09acc7d71f8cf27f281557c921fe977c5d3e",
+        "fixture_identity": "ru1_n1_regression@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_n1_regression-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRU1N1Regression",
+          "--require-sm70"
+        ]
+      },
+      {
+        "test": "ru1_demo_hybrid",
+        "tool": "memcheck",
+        "binary_sha256": "2272923fd9b120f03489dc8217e88fc1286cb78a92b3ac4cd34d78cef0d5e86b",
+        "fixture_identity": "ru1_demo_hybrid@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_demo_hybrid-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+          "--route",
+          "hybrid"
+        ]
+      },
+      {
+        "test": "ru1_demo_sparse",
+        "tool": "memcheck",
+        "binary_sha256": "2272923fd9b120f03489dc8217e88fc1286cb78a92b3ac4cd34d78cef0d5e86b",
+        "fixture_identity": "ru1_demo_sparse@3df938bf8ac11e67ce6cce84b5fd7945f33128b1",
+        "numerical_policy": "independent assertions in pinned binary; f16 storage/f32 execution, full_f32 and explicit rounded VJP profiles where applicable",
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "--log-file",
+          "/tmp/ce-ru1-sanitizer-m0htv0ra/ru1_demo_sparse-memcheck.log",
+          "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1/ceRelationUpdateDemo",
+          "--route",
+          "sparse"
+        ]
+      }
+    ]
+  },
+  "controller_specs": {
+    "execute": {
+      "schema_version": 1,
+      "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+      "toolchain": {
+        "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+        "require_sanitizer": true
+      },
+      "resources": {
+        "gpus": 1
+      },
+      "quiescence": {
+        "timeout_seconds": 60
+      },
+      "binary_paths": [
+        "build-ru1/ceRU1GpuNumerics",
+        "build-ru1/ceRU1GpuBindings",
+        "build-ru1/ceRU1GpuLifecycle",
+        "build-ru1/ceRU1ReadinessTests",
+        "build-ru1/ceRU1WmmaLegality",
+        "build-ru1/ceRU1N1Regression",
+        "build-ru1/ceRelationUpdateDemo"
+      ],
+      "argv": [
+        "python3",
+        "/tmp/ce-ru1-i05/execute.py"
+      ],
+      "benchmark": {
+        "build_argv": [
+          "python3",
+          "/tmp/ce-ru1-i05/build.py"
+        ]
+      }
+    },
+    "sanitize": {
+      "schema_version": 1,
+      "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+      "toolchain": {
+        "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+        "require_sanitizer": true
+      },
+      "resources": {
+        "gpus": 1
+      },
+      "quiescence": {
+        "timeout_seconds": 60
+      },
+      "binary_paths": [
+        "build-ru1/ceRU1GpuNumerics",
+        "build-ru1/ceRU1GpuBindings",
+        "build-ru1/ceRU1GpuLifecycle",
+        "build-ru1/ceRU1ReadinessTests",
+        "build-ru1/ceRU1WmmaLegality",
+        "build-ru1/ceRU1N1Regression",
+        "build-ru1/ceRelationUpdateDemo"
+      ],
+      "argv": [
+        "python3",
+        "/tmp/ce-ru1-i05/sanitize.py"
+      ]
+    }
+  },
+  "runner_sources": {
+    "execute": "import subprocess,os\nos.environ[\"PATH\"]=\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer:\"+os.environ[\"PATH\"]\nsubprocess.run(['python3', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/planning/relation-update-spine-v1/scripts/run_gate.py', '--build-dir', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1', '--group', 'all', '--receipt', '/tmp/ce-ru1-i05/ctest.json'],check=True)\n",
+    "sanitize": "import subprocess,os\nos.environ[\"PATH\"]=\"/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer:\"+os.environ[\"PATH\"]\nsubprocess.run(['python3', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/planning/relation-update-spine-v1/scripts/run_sanitizer.py', '--binary-dir', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1', '--receipt', '/tmp/ce-ru1-i05/sanitizer.json'],check=True)\n",
+    "build": "import subprocess,os\nsubprocess.run(['cmake', '--build', '/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate/build-ru1', '-j', '80', '--target', 'ceRU1HostTests', 'ceRU1CompilerTests', 'ceRU1ReferenceTests', 'ceRU1CoverTests', 'ceRU1GpuNumerics', 'ceRU1GpuBindings', 'ceRU1GpuLifecycle', 'ceRU1ReadinessTests', 'ceRU1WmmaLegality', 'ceRU1N1Regression', 'ceRelationUpdateDemo', 'ceRU1LifetimeBench', 'ceSpineNativeTest', 'ceSpineFrontendTest', 'ceSpineCrossOriginTest'],check=True)\n"
+  },
+  "leases": {
+    "execute": {
+      "format": "CUDA-FOREGROUND-LEASE/1",
+      "owner_id": "foreground:6de379d7-7c42-422b-a3bd-d0c709d26722",
+      "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+      "pid": 755330,
+      "resource_ids": [
+        "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+      ],
+      "observed_unix": 1788717439.8090177,
+      "state": "active"
+    },
+    "sanitize": {
+      "format": "CUDA-FOREGROUND-LEASE/1",
+      "owner_id": "foreground:9be15ab6-fdf7-451f-a059-bc7ea12ca8b5",
+      "project_root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+      "pid": 758543,
+      "resource_ids": [
+        "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+      ],
+      "observed_unix": 1788717517.3791764,
+      "state": "active"
+    }
+  },
+  "mutex_logs": {
+    "execute": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n",
+    "sanitize": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+  },
+  "tool_versions": {
+    "compiler": "g++-12 (Ubuntu 12.4.0-2ubuntu1~24.04.1) 12.4.0",
+    "cuda": "12.9.86",
+    "driver": "580.173.02",
+    "compute_sanitizer": "2025.2.1.0 (build35969825)"
+  }
+}
