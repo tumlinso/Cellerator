@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6961`
+Project revision: `6978`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1186,8 +1186,8 @@ Project revision: `6961`
 - `CE-RU1-I02` | status: done | execution: closed | next: 
 - `CE-RU1-I03` | status: done | execution: closed | next: 
 - `CE-RU1-I04` | status: done | execution: closed | next: 
-- `CE-RU1-I05` | status: in_progress | execution: claimed | next: 
-- `CE-RU1-I06` | status: planned | execution: ready | next: 
+- `CE-RU1-I05` | status: done | execution: closed | next: 
+- `CE-RU1-I06` | status: in_progress | execution: claimed | next: 
 - `CE-RU1-I07` | status: planned | execution: ready | next: 
 - `CE-RU1-I08` | status: planned | execution: ready | next: 
 - `CE-RU1-N01` | status: done | execution: closed | next: 
