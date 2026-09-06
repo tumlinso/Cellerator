@@ -96,7 +96,7 @@ operation_status run_impl(const prepared_operation &prepared,
             "transpose backward order, shape, value, or residency is incompatible");
     constexpr std::uint32_t threads = 128u;
     const std::uint32_t blocks =
-        (projection.header.feature_count + threads - 1u) / threads;
+        (std::uint64_t(projection.header.feature_count) + threads - 1u) / threads;
     transpose_backward_n16_kernel<<<blocks, threads, 0u,
         static_cast<cudaStream_t>(launch.stream.stream)>>>(projection,
         static_cast<const __half *>(values.values),
