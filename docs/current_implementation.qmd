@@ -2,7 +2,22 @@
 title: "Current Implementation"
 ---
 
-## Snapshot
+## Current status — 2026-09-06
+
+Semantic Spine v1 is complete as a bounded witness: native C++ and the existing
+parser/Sema/IR source slice share a canonical relation descriptor. The V100 path
+executes real forward/transpose operations and reuses a prepared pair. The
+witness uses N1, f16 relation values, and f32 arithmetic, with explicit rejection
+of unsupported requests. It does not establish a universal performance win.
+
+The [completion evidence](semantic_spine_v1/completion.json) and
+[deferred obligations](semantic_spine_v1/deferred.md) record the acceptance and
+limits. Full `.cell` source-to-device compilation, module loading, general
+contraction/gradient execution, broad dtype/width coverage, and SDK stabilization
+remain deferred. The preserved `.ceh` umbrella's conversion to `.cell` does not
+implement modules. No follow-on epic has been activated.
+
+## Retained CE-ARCH/CE-LIVE snapshot
 
 This page records the validated CE-ARCH/CE-LIVE semantic baseline and the
 completed physical repository consolidation against baseline commit:

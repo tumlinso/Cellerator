@@ -124,3 +124,39 @@ after owner maintenance; no database or generated projection was hand-edited.
 The database integrity and foreign-key checks pass. General historical audit
 notices about tasks without structured per-task gates are not new failed tests;
 this epic retains the independent lane evidence and required integrated gates.
+
+## Post-epic maintenance — 2026-09-06
+
+Owner authorized durable fixes across Cellerator, Skills, and Project Control.
+This maintenance does not reopen CE-SS1-RUN-V1.
+
+Implemented frozen release identity, reviewed contract-split recovery/cleanup,
+producer-worktree completion provenance, role/interface plan validation,
+controller-owned CUDA gates including completion reruns, build/toolkit/binary
+provenance, and the ctxpp GCC-intrinsic-header correction. External code and test
+records live in Skills `MAINTENANCE_LOG.md` and Project Control `docs/MIGRATION.md`.
+
+Cellerator's ignore rules now admit Semantic Spine evidence and stop hiding
+nested `core` paths. The newly visible core planning handoff is explicitly
+historical. Current Implementation now leads with the completed, bounded SS1
+witness and its deferred obligations. ENVIRONMENT_NOTES describes the durable
+contracts; temporary outer-controller wrappers above remain historical evidence.
+The ctxpp configuration selects the refreshed build-ss1 compile database and
+uses all available processors for its verification commands. No full-repository
+semantic-index freshness is claimed; canonical source remains authoritative.
+
+Real V100 controller smoke passed with evidence
+`90423b53-022e-4b9f-a90e-54dd03d60a2a`, after building ceSpineNativeTest with 80
+jobs under CUDA 12.9. A separate real MCP lifecycle test passed concurrent
+claims, publication and producer completion; its GPU variant passed explicit
+validation and automatic completion validation with controller leases.
+
+The installed-package smoke found and fixed one additional boundary: Todo's
+older exact-path identity guard rejected a matching wheel/frozen snapshot.
+Skills `eccaefe` now validates that pair against the pinned release manifest;
+source-mode identity remains strict. The rebuilt installed GPU lifecycle passed.
+Project Control `5866689` and Skills `eccaefe` were promoted together through the
+shared launcher, with rollback retained. Both profiles observe UUID
+`0ccaac37-dbbf-448e-a5f8-def197a70aba`, revision `6877`, and the same semantic
+fingerprint. Detailed counts and release identity are in
+[maintenance_validation.json](maintenance_validation.json).

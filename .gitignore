@@ -4,6 +4,8 @@ docs/*
 !docs/_quarto.yml
 !docs/*.qmd
 !docs/preamble.tex
+!docs/semantic_spine_v1/
+!docs/semantic_spine_v1/**
 !docs/pipeline/
 docs/pipeline/*
 !docs/pipeline/README.md
@@ -86,8 +88,8 @@ __pycache__/
 *.cpp4.ii
 
 # Debugger / crash output
-core
-core.*
+/core
+/core.[0-9]*
 !include/Cellerator/core/
 !include/Cellerator/core/**
 !include/Cellerator/compute/core/

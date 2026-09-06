@@ -1,24 +1,34 @@
 # Environment quick fixes
 
-Keep this list short: recurring issue, verified fix, date. Recheck paths before use.
+Current operational guidance, checked 2026-09-06. Historical incident details
+remain in `docs/semantic_spine_v1/recovery_log.md`.
 
-- **2026-09-06 — CUDA wrappers select missing 13.1 tools.** Use CUDA **12.9**:
-  `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc` and
-  `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer`.
-  Set `CUDACXX` to that nvcc and put those two directories first on `PATH`.
-- **2026-09-06 — Shared Project Control MCP session can resume another lane.**
-  Pass the assigned lane's explicit current queue-head `task_id` to `next_task`,
-  verify the returned lane, and retain its own workflow handle.
-- **2026-09-06 — Git ignores `docs/` evidence and directories named `core`.**
-  Use `git add -f` for exact authorized paths (including `tests/semantic_spine/core`)
-  and inspect the staged diff; an existing test file may otherwise stay untracked.
-- **2026-09-06 — ctxpp reports stale metadata/missing compile database and
-  intrinsic parse errors.** Use the skill's readable canonical-source fallback
-  for bounded inspection; do not treat the stale index as semantic authority.
-- **2026-09-06 — Integrator-owned interface publication was denied.** Fixed in
-  Skills commit `a014959` with ownership/hash checks retained. After kernel updates,
-  rebuild Project Control with `scripts/install.py`, switch its candidate, and open
-  a fresh MCP session; restarting only the HTTP service leaves old stdio clients stale.
-- **2026-09-06 — Foreground CUDA controller ignores top-level `build_argv`.**
-  Build explicitly before `run`, then hash the tested binary. Put background builds
-  in the documented `benchmark.build_argv`; do not mistake a stale binary for a rebuild.
+- **CUDA toolkit:** local wrappers can select missing 13.1 tools. The verified
+  toolkit is `/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9`. Controller specs
+  accept `toolchain: {root: <path>, require_sanitizer: true}` and resolve compiler
+  and sanitizer together. An invalid explicit selection fails closed.
+- **Build before execution:** foreground controller builds use one structured
+  `benchmark.build_argv`, before GPU reservation. Top-level `build_argv` is now
+  rejected. Declare `binary_paths` to record the tested files' SHA-256 values.
+- **GPU workflow gates:** new command gates should declare `cuda` resources and
+  toolkit settings. Explicit gate calls and completion reruns then acquire the
+  controller reservation/mutex themselves. The SS1 log's temporary outer wrapper
+  describes historical recovery, not the new gate contract.
+- **Lane selection:** pass the assigned queue-head `task_id` to `next_task`,
+  verify its returned lane, and retain that lane's workflow handle. One session
+  cannot claim a different active lane. Completion records the producer worktree
+  commit separately from authority/main; declared artifacts must exist there.
+- **Runtime updates:** build a candidate with Project Control's installer. New
+  releases contain a frozen Skills snapshot and digest-pinned release manifest;
+  development source edits do not invalidate a deployed release. Promote HTTP
+  and stdio together. Existing MCP clients require a fresh connection.
+- **Git:** Semantic Spine evidence and `tests/semantic_spine/core` no longer need
+  force-add. Crash-dump patterns are root-scoped. Other historical documentation
+  directories retain explicit ignore policy; inspect exact staged paths.
+- **ctxpp:** `.ctxpp.toml` selects `build-ss1/compile_commands.json`. Refresh it with
+  `cmake -S . -B build-ss1 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`, then run the skill's
+  `init`, `doctor`, and `status`. Retrieval refreshes stale translation units;
+  missing compile commands or parse failures prohibit semantic rewrite claims.
+  The GCC-private-header injection causing the earlier intrinsic errors is fixed
+  in both translation paths; the descriptor-test semantic probe now parses cleanly.
+  Use readable canonical-source inspection when other parsing remains unavailable.

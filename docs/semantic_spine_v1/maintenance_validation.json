@@ -1,0 +1,67 @@
+{
+  "date": "2026-09-06",
+  "scope": "post-epic workflow and environment maintenance",
+  "project_control_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e",
+  "skills_commit": "eccaefe8a8a2f4adb03d3191d26ef8a1a38a6367",
+  "tests": {
+    "todo_full": {
+      "run": 392,
+      "passed": 392
+    },
+    "todo_added_missing_artifact": {
+      "run": 2,
+      "passed": 2
+    },
+    "todo_release_identity_and_runtime": {
+      "run": 17,
+      "passed": 17
+    },
+    "todo_background_release": {
+      "run": 14,
+      "passed": 14
+    },
+    "cuda": {
+      "run": 51,
+      "passed": 51
+    },
+    "ctxpp": {
+      "run": 60,
+      "passed": 60
+    },
+    "project_control": {
+      "run": 263,
+      "passed": 262,
+      "skipped": 1
+    },
+    "installed_real_gpu_mcp_lifecycle": {
+      "run": 2,
+      "passed": 2
+    }
+  },
+  "ctxpp_semantic_probe": {
+    "source": "tests/semantic_spine/core/descriptor_test.cc",
+    "returncode": 0,
+    "diagnostics": 0,
+    "full_index_freshness_claimed": false
+  },
+  "gpu_smoke_evidence_id": "90423b53-022e-4b9f-a90e-54dd03d60a2a",
+  "promotion": {
+    "status": "promoted",
+    "candidate": "/home/tumlinson/.local/state/project-control/venvs/project-control-maintenance-5866689-eccaefe",
+    "rollback": "/home/tumlinson/.local/state/project-control/rollbacks/maintenance-20260906T134127Z",
+    "release_digest": "1e7a77e40e3d9de5e7d8574a99b3e94aee4d9008ddd6bf50dfa10c759074af4e",
+    "ready": {
+      "status": "ready",
+      "workspaces": 9
+    },
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "revision": 6877,
+    "authority_fingerprint": "ceb0eb25d03f03694b44466dd0fb6aac1e2c2d1abb7c33e79a2a5256957fdd55",
+    "codex_tools": 20,
+    "observer_tools": 15
+  },
+  "remaining_observer_warnings": [
+    "cuda_evidence_unavailable",
+    "stale_legacy_state_filtered"
+  ]
+}
