@@ -1,0 +1,131 @@
+{
+  "task": "CE-SS1-I04",
+  "status": "passed",
+  "observed_utc": "2026-09-06T12:35:54.785670+00:00",
+  "merged_source_head": "f6eae363b7dcec5e20f2d9314f70d9a3f7c17cf9",
+  "accepted_lane_heads": {
+    "core": "a485a01a2a70313fae1a0332480c7215d7559cff",
+    "native": "0498be36f5831bc6b9551e430dfce7bb9dbc0ff4",
+    "frontend": "70dfc093fdf9b59dca06aae5841a8ec6fd481330",
+    "frontend-repair": "57c6a60c0d1a3eecb072fe609a9ab635eaaeff7f",
+    "algebra": "3a05b73fb78e53132a6245a60d78ebe6990b3a25",
+    "verify": "ea10cf87fa9a7675b54cf5d4e6d30295e9240a23"
+  },
+  "all_lane_heads_ancestors": true,
+  "build_directory": "/home/tumlinson/Cellerator/build-ss1",
+  "configuration_command": [
+    "cmake",
+    "-S",
+    ".",
+    "-B",
+    "build-ss1",
+    "-DCELLERATOR_BUILD_TESTS=ON",
+    "-DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON",
+    "-DCELLERATOR_ENABLE_CUDA=ON",
+    "-DCMAKE_CUDA_ARCHITECTURES=70",
+    "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF",
+    "-DCMAKE_BUILD_TYPE=Release"
+  ],
+  "build_command": [
+    "cmake",
+    "--build",
+    "build-ss1",
+    "--parallel",
+    "80",
+    "--target",
+    "ceSpineCoreTest",
+    "ceSpineMathematicalDualityTest",
+    "ceSpineAlgebraTest",
+    "ceSpineFrontendTest",
+    "ceSpineNativeTest",
+    "ceSpineCrossOriginTest",
+    "ceSpineOracleTest",
+    "ceSpineContractProbes",
+    "ceSemanticSpineDemo",
+    "ceSemanticSpineReferenceFixture"
+  ],
+  "configure_and_build_exit": 0,
+  "logs": {
+    "/tmp/ss1-i04-configure.log": {
+      "sha256": "add7dd741ab66e97c090534bd421290329e3966bcd361f6ccb3a4e21dac5ba6f"
+    },
+    "/tmp/ss1-i04-build.log": {
+      "sha256": "ea4f8b3525d656aa9d8cabecf8a6d689d344c680a0cb6bb5fcbad21f2dce7fbb"
+    }
+  },
+  "build_source_sha256": {
+    "cmake/SemanticSpineV1.cmake": "d17007a62c4d23b8db028681b2bb40755282ba2f1e859c56ad8a272a23dd5e07",
+    "tests/semantic_spine/CMakeLists.txt": "094c6a3e9fcea98000097f8122e5731e8ab95309a0878722a8114ac3ce6077c6",
+    "examples/semantic_spine_v1/CMakeLists.txt": "c987ddf9116c9c4a1a16a96436e93fee68d8c735ef2c7cf08ceda92dd0b32bd3"
+  },
+  "binary_sha256": {
+    "ceSpineCoreTest": "af1ba3cc507086a2c3fd89a1b592529abb81a334cd52367c10fc25709d809c81",
+    "ceSpineMathematicalDualityTest": "f25e418aee4d27854d60afad3952e8c3ced64b13ac3c93adbe50a273fb349906",
+    "ceSpineAlgebraTest": "35bdbe4f7b799ddc8a88a20d045221bc56806f447bf1da5794c7f053779c5102",
+    "ceSpineFrontendTest": "a1373af893f735e2ea8e89c75a9f00aa0051ffad71bd73ec1b2886aea77bfda9",
+    "ceSpineNativeTest": "7bee8f4fda47da0f32acdd692256381a31c48fb4ceb1b47d89b3ccd876ae5c72",
+    "ceSpineCrossOriginTest": "62b9b465f09855657604ec4764011658a3cd3d1f19f7fb1023e2a4564728a896",
+    "ceSpineOracleTest": "4a7401d527f4e2b4eb9018cb7d7598d61b3eaab159f64499c8e5355f7a57492d",
+    "ceSpineContractProbes": "b561df7391da1f41028e8569801da9056697f6620033e58439952b5656c9d700",
+    "ceSemanticSpineDemo": "3e46a85acf3ce9733f4d2a270e9dce4ca0c13d35f20c52b9197ed5a4c083101d",
+    "ceSemanticSpineReferenceFixture": "8fba66a59c7e18d94ff6e1d40989999d495a5092b2af8e5979c4f355f68352ca"
+  },
+  "host_results": [
+    {
+      "target": "ceSpineCoreTest",
+      "returncode": 0,
+      "stdout": "semantic descriptor tests passed\n",
+      "stderr": "",
+      "binary_sha256": "af1ba3cc507086a2c3fd89a1b592529abb81a334cd52367c10fc25709d809c81"
+    },
+    {
+      "target": "ceSpineMathematicalDualityTest",
+      "returncode": 0,
+      "stdout": "host exact-support duality and order controls passed\n",
+      "stderr": "",
+      "binary_sha256": "f25e418aee4d27854d60afad3952e8c3ced64b13ac3c93adbe50a273fb349906"
+    },
+    {
+      "target": "ceSpineAlgebraTest",
+      "returncode": 0,
+      "stdout": "RUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_support_product\nK=2 whole_dot=-9 split_dot=-9 edge_channels=2\nK=17 whole_dot=2261 split_dot=2261 edge_channels=17\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_classification\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_support\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_classification\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_graph\nportfolio_kinds=6 explicit_intermediate_axes=true\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineAlgebra_legacy_aggregate\ncontraction=10 segments=2 softmax_reference=matched\n",
+      "stderr": "",
+      "binary_sha256": "35bdbe4f7b799ddc8a88a20d045221bc56806f447bf1da5794c7f053779c5102"
+    },
+    {
+      "target": "ceSpineFrontendTest",
+      "returncode": 0,
+      "stdout": "RUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_lowering\napply_and_transpose=typed format_independent=true\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_source_slice\nsource_slice: parser/Sema/IR canonical equivalence and negative inputs passed; full .cell execution deferred\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_diagnostic\ndiagnostics: identity high bits, order, effects, empty shapes, independent arithmetic, alias representation and source ranges passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_numeric_transport\nnumeric transport: canonical precision/nonfinite parity, independent output, restricted arithmetic unavailable, copy/move and reuse passed\nRUN /home/tumlinson/Cellerator/build-ss1/ceSpineFrontend_legacy\napply_and_transpose=typed format_independent=true\n",
+      "stderr": "",
+      "binary_sha256": "a1373af893f735e2ea8e89c75a9f00aa0051ffad71bd73ec1b2886aea77bfda9"
+    },
+    {
+      "target": "ceSpineOracleTest",
+      "returncode": 0,
+      "stdout": "independent logical-edge oracle and negative controls passed\n",
+      "stderr": "",
+      "binary_sha256": "4a7401d527f4e2b4eb9018cb7d7598d61b3eaab159f64499c8e5355f7a57492d"
+    },
+    {
+      "target": "ceSpineContractProbes",
+      "returncode": 0,
+      "stdout": "independent semantic metadata probes passed\n",
+      "stderr": "",
+      "binary_sha256": "b561df7391da1f41028e8569801da9056697f6620033e58439952b5656c9d700"
+    },
+    {
+      "target": "ceSemanticSpineReferenceFixture",
+      "returncode": 0,
+      "stdout": "REFERENCE_ONLY_FIXTURE_PASS: no Cellerator or GPU execution was tested.\nGeneration-2 forward: 1 0.75 -0.5 0 1.5\nGeneration-2 transpose: 1.25 -3 0.75 -0.125\n",
+      "stderr": "",
+      "binary_sha256": "8fba66a59c7e18d94ff6e1d40989999d495a5092b2af8e5979c4f355f68352ca"
+    }
+  ],
+  "assertions_enabled": true,
+  "native_tests": "Seven independent real CUDA executables dispatched with exit/signal propagation. Native programs require real sm70.",
+  "frontend_tests": "Five independent real parser/Sema/IR and canonical numeric transport executables.",
+  "algebra_tests": "Two new algebra tests and four retained regression executables.",
+  "runtime_ownership": "Existing FMP1/CTP1 candidates, native session and CUDA runtime; no new runtime or installed SDK.",
+  "accelerator_execution": "Not claimed in I04; required I05/I06/I07 gates follow.",
+  "shared_build_changes": "Only opt-in SemanticSpineV1, test and example CMake files. Root option and CUDA setup retained."
+}

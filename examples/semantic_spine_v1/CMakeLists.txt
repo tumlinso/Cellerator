@@ -1,7 +1,6 @@
-# Repository-local post-epic example. I04 supplies Cellerator::prepared_relation_cuda.
-# This file is intentionally not added to the current root build by package extraction.
+# Repository-local example included by the opt-in Semantic Spine build.
 if(NOT TARGET Cellerator::prepared_relation_cuda)
-    message(FATAL_ERROR "Semantic Spine v1 implementation target is absent; complete the epic first")
+    message(FATAL_ERROR "Semantic Spine native execution target is required")
 endif()
 add_executable(ceSemanticSpineDemo examples/semantic_spine_v1/regulatory_reuse.cc)
 target_compile_features(ceSemanticSpineDemo PRIVATE cxx_std_17)

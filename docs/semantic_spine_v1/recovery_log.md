@@ -56,7 +56,9 @@ leased V100. The full native suite passed (evidence
 `30f62f72` and `0498be36` are pushed. The automatic handoff captured the
 authority checkout's main HEAD instead of the lane HEAD; its completion note
 records the real lane commits, which integration must verify directly.
-I04-I07 integration/validation, root closure, and final cleanup remain pending.
+All accepted lane branches were merged into main and pushed at `f6eae363`.
+I04 build integration, I05-I07 execution validation, root closure, and final
+cleanup remain pending.
 
 ## Internal acceptance audit corrections
 
@@ -71,5 +73,8 @@ I04-I07 integration/validation, root closure, and final cleanup remain pending.
   `CE-SS1-F05` in `CE-SS1-L-FRONTEND-REPAIR`; I04 now depends on it. The original
   frontend lane is closed, and the kernel forbids appending to closed lanes.
   This correction restores the original single-contract requirement, adds no
-  operation family, and does not start another epic. Implementation and numeric
-  parity regressions remain required before F05 closure.
+  operation family, and does not start another epic. The original regression failed before the fix; all five host tests then passed
+  with assertions enabled, including numeric/nonfinite parity, independent output
+  dtype, copy/move, and unavailable legacy FMA/reassociation transport. Canonical
+  mathematics stays valid when legacy transport cannot represent its restrictions.
+  Commit `57c6a60c` was pushed and F05 closed at revision 6839.
