@@ -29,7 +29,7 @@ struct device_values_binding {
 };
 struct device_state_view {
     const void* data = nullptr;
-    std::uint64_t count = 0; // f32 elements in the supported N1 path
+    std::uint64_t count = 0; // f32 element capacity, including dense width
     axis_descriptor axis{};
     int device_ordinal = 0;
 };
@@ -72,6 +72,8 @@ status enqueue(prepared_relation_pair&, const operation_descriptor&,
                execution::value_generation expected_values,
                cudaStream_t stream) noexcept;
 status inspect(const prepared_relation_pair&, preparation_report*) noexcept;
+// Once external read leases are enabled, use close_relation_pair for checked
+// teardown. destroy must not free storage protected by an unreturned lease.
 // Host calls on one pair are externally serialized. inspect does not synchronize.
 // Teardown may fence the pair's stream; repeated enqueue/refresh must not globally synchronize.
 void destroy(prepared_relation_pair*) noexcept;
