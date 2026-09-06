@@ -42,6 +42,21 @@ int main() {
     for (auto kind : {graph_kind::relation_chain, graph_kind::incidence_pool,
             graph_kind::incidence_broadcast, static_cast<graph_kind>(255)})
         assert(!ir::lower_semantic_graph_kind_v1(kind));
+    ir::semantic_operation_graph_v1 graph;
+    graph.identity = {1, 2};
+    ir::semantic_graph_node_v1 node;
+    node.identity = {3, 4};
+    node.kind = graph_kind::relation_chain;
+    node.input_axes = {{5, 6}};
+    node.output_axes = {{7, 8}};
+    node.intermediate_axes = {{9, 10}};
+    graph.nodes = {node};
+    auto preserved = ir::round_trip_operation_portfolio_graph_v1(graph);
+    assert(preserved && preserved->nodes.front().kind == graph_kind::relation_chain);
+    assert(!ir::lower_semantic_graph_kind_v1(preserved->nodes.front().kind));
+    graph.nodes.front().kind = static_cast<graph_kind>(255);
+    assert(ir::validate_semantic_operation_graph_v1(graph)
+        == ir::semantic_graph_validation_code_v1::invalid_node);
     assert(!resolve_operation_kind(static_cast<source_operation_kind>(0)));
     assert(!resolve_operation_kind(static_cast<source_operation_kind>(255)));
 }

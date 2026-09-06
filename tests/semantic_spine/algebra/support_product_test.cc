@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstdint>
 #include <vector>
+#include <iostream>
 
 namespace decomposition = cellerator::compute::decomposition;
 namespace operation = cellerator::compute::operation::v2;
@@ -98,7 +99,7 @@ int main() {
             double partial = 0;
             for (unsigned j = panel.begin; j < panel.begin + panel.count; ++j) {
                 partial += expected[j];
-                assembled.push_back(expected[j]);
+                assembled.push_back(left[j] * right[j]);
             }
             split += partial;
         }
@@ -114,6 +115,9 @@ int main() {
             interpreted_split += partial;
         }
         assert(interpreted_split == interpreted);
+        std::cout << "K=" << k << " whole_dot=" << whole
+            << " split_dot=" << interpreted_split
+            << " edge_channels=" << assembled.size() << "\n";
         definition.neutral_element = 1;
         double untouched = 42;
         assert(ir::interpret_support_contraction_ir_v1(definition, left, right,
