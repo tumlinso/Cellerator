@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse,hashlib,json,sys
 sys.dont_write_bytecode=True
 CONFIRM='APPLY-CE-RU1-RUN-V1'
-PIN='477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d'
+PIN='3d8558670bb66a3d03614126236582f27649d91b16589a615e379fa4f74282a9'
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def runtime():
     import project_control.mutation as mutation

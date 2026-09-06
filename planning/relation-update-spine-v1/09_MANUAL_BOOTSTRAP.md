@@ -22,18 +22,20 @@ Replace `STAGING` with the actual extraction directory. Validation checks the co
 
 To copy the inspected files, ensure neither destination directory already exists. The only additions should be `planning/relation-update-spine-v1/` and `examples/relation_update_spine_v1/`. Do not overwrite an existing package or demo. No production source file is included. Review the resulting Git diff, then commit those two directories as a planning-only commit through your ordinary workflow. No branch/worktree creation is necessary for ingestion. Keep the repository clean before native preview.
 
+The reviewed bootstrap baseline is `45b965123d1d7ae4d10b0ac59e1714fcb7990d02`, the package-install commit. Reinspection covered its removal of the old top-level `semantic_spine_v1/` example; the canonical `examples/semantic_spine_v1/` remains present. The original source evidence retains its historical baseline.
+
 The bootstrap checks that the baseline commit is an ancestor of the reviewed HEAD and that intervening content changes are restricted to those two directories. Other implementation changes require re-review/rebase of the package, not a force flag. Paths should not be symlinks.
 
 ## 2. Select the actual Project Control runtime
 
-Set `PCPY` to the Python interpreter used by the installed Project Control environment. This is intentionally explicit rather than guessing a historical candidate directory. Confirm it imports `project_control` and inspect the bridge's runtime identity:
+Set `PCPY` to the Python interpreter used by the installed Project Control environment. This is intentionally explicit rather than guessing a historical candidate directory. Use the same `PROJECT_CONTROL_SKILLS_ROOT`, `PROJECT_CONTROL_RELEASE_MANIFEST` and `PROJECT_CONTROL_RELEASE_DIGEST` as its installed release launcher. Confirm it imports `project_control` and inspect the bridge's runtime identity:
 
 ```sh
 export PCPY=/absolute/path/to/the/configured/project-control/bin/python
 "$PCPY" -B planning/relation-update-spine-v1/scripts/native_bridge.py inspect-runtime
 ```
 
-The bridge pins the reviewed `project_control.mutation` source identity. It records paths/hashes for the relevant modules and interpreter. A mismatch means the runtime needs reinspection and a coherent package revision. It does not justify editing just the pin or bypassing freshness checks. No native apply was exercised while constructing this package; its public Python API signatures and transaction preconditions were source-verified, and local approval behavior was tested with isolated doubles.
+The bridge pins the reviewed `project_control.mutation` source identity. The 2026-09-06 reinspection corrected the recorded hash to `3d8558670bb66a3d03614126236582f27649d91b16589a615e379fa4f74282a9`; the installed module is byte-identical to the cited Project Control commit. See `evidence/tooling_contract.json` for the review. It records paths/hashes for the relevant modules and interpreter. A mismatch means the runtime needs reinspection and a coherent package revision. It does not justify editing just the pin or bypassing freshness checks. No native apply was exercised while constructing this package; its public Python API signatures and transaction preconditions were source-verified, and local approval behavior was tested with isolated doubles.
 
 The current CLI also accepts `project-control plan validate --project cellerator --file PATH`. However, this package uses its bridge for application so that the exact previously reviewed preconditions, rather than a silently refreshed snapshot, are supplied to the atomic transaction.
 

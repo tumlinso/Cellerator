@@ -14,7 +14,7 @@
     "project_control.models.ObservationPreconditions.model_validate",
     "project_control.models.ProposalEnvelope.create"
   ],
-  "verified_mutation_module_sha256": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
+  "verified_mutation_module_sha256": "3d8558670bb66a3d03614126236582f27649d91b16589a615e379fa4f74282a9",
   "signature_verification": "Source inspected; apply not executed. Isolated doubles test receipt/cursor behavior, not live mutation.",
   "approval_binding": "Saved reviewed ObservationPreconditions carried into native apply transaction; fresh CLI snapshot is not substituted.",
   "later_manual_steps": [
@@ -25,5 +25,12 @@
     "explicit confirmed apply",
     "read-only postcondition inspection",
     "separate activation authorization"
-  ]
+  ],
+  "bootstrap_reinspection": {
+    "date": "2026-09-06",
+    "previous_recorded_mutation_sha256": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
+    "finding": "Installed mutation.py is byte-identical to src/project_control/mutation.py at the cited 5866689e425056b3171f7fc13b2b9d20a9494a1e commit; the original recorded hash was incorrect. Reinspected validate_native_plan, apply_proposal, inert ProposalEnvelope creation, saved-precondition freshness checks and transaction expected-revision check.",
+    "reviewed_bootstrap_baseline": "45b965123d1d7ae4d10b0ac59e1714fcb7990d02",
+    "baseline_review": "Install commit adds the relation package/demo and deletes the old top-level semantic_spine_v1 example plus AppleDouble metadata. Canonical examples/semantic_spine_v1 remains present. No production implementation changes. Future changes remain limited to the relation package/demo."
+  }
 }
