@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6757`
+Project revision: `6758`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1359,6 +1359,7 @@ Project revision: `6757`
 - `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
 - `CE-PTR` | kind: epic | status: done | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
 - `CE-PTR-00` | kind: task | status: done | parent: CE-PTR | objective: Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.
+- `CE-SS1-0000` | kind: epic | status: planned | parent: - | objective: Coordinate the bounded semantic-unification epic; close only after I07 and all execution evidence. No broad compiler, library or packaging campaign.
 - `CE-ARCH-70B` | kind: workstream | status: done | parent: CE-ARCH-70 | objective: Replace monolithic persistent scratch ownership with fixed-capacity independent stable CUDA allocations while preserving the pre-reserved transient arena and allocation-free sealed launch binding.
 - `CE-ARCH-82` | kind: workstream | status: done | parent: CE-ARCH-80 | objective: Complete Phase 4 so CPK1 compatibility, sectioned semantic structure, schema-extensible projections, multiple value planes, opaque relocation, and direct prepared execution are one tested path.
 - `CE-PTR-01` | kind: workstream | status: done | parent: CE-PTR | objective: Create the authoritative live production-core inventory, explicit allowlist policy, permanent source enforcement, and before-migration CPU/GPU allocation, memory, transfer, synchronization, latency, and kernel baseline evidence.
@@ -1379,6 +1380,12 @@ Project revision: `6757`
 - `CE-ARCH-61` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Version the retirement of obsolete CP-Math runtime interfaces and refresh operation-core documentation identity without restoring deleted implementation.
 - `CE-ARCH-71` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing CP-BP v1 native row-masked N=1 kernel as a real operation-core and planner candidate without changing its projection or kernel semantics.
 - `CE-ARCH-91` | kind: integration_task | status: done | parent: CE-ARCH-80 | objective: Consume the completed CellShard foundation to persist, validate, place, upload, and directly execute opaque Cellerator images without CellShard interpreting execution semantics or Cellerator owning storage transport.
+- `CE-SS1-C01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.
+- `CE-SS1-C02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Both native and compiler callers must use the same relation semantics checks and equality rules.
+- `CE-SS1-C03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.
+- `CE-SS1-C04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.
+- `CE-SS1-I01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.
+- `CE-SS1-I02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make the tested canonical contract available in one shared source base and publish its internal interface.
 - `CE-ARCH-72` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing legal CSR implementation as the first conventional operation-core/planner fallback.
 - `CE-ARCH-92` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Run the final fair real-data and adversarial evidence campaign, identify both Cellerator wins and fallback regimes, verify every migration exit criterion, and leave documentation and ledgers truthful.
 - `CE-ARCH-73` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Measure projection preparation, input ordering, prepared execution, candidate-private output, referee, all total-cost phases, and winner preparation for real registered candidates.
@@ -1399,6 +1406,29 @@ Project revision: `6757`
 - `CE-PTR-14` | kind: workstream | status: done | parent: CE-PTR | objective: Preserve CPK1, FMP1, CTP1, and related pointer-free projection contracts while replacing only generic STL-heavy construction scratch with queried caller-owned prepared workspaces where useful.
 - `CE-PTR-06` | kind: workstream | status: done | parent: CE-PTR | objective: Replace map, set, vector-heavy proposal, shortlist, conflict, blacklist, snapshot, and rollback mechanics with packed keys, flat sort-compact deduplication, direct counters, generation marks, explicit bounded blacklists, and mutation journals.
 - `CE-PTR-08` | kind: workstream | status: done | parent: CE-PTR | objective: Replace nested vectors and hash maps or sets in statistical validation with sorted group-row relations, offsets, row-unit maps, packed edge keys, exact flat membership, and generation-mark workspaces without changing statistical or provenance semantics.
+- `CE-SS1-A01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Remove the concrete contraction ambiguity without integrating the entire contraction portfolio.
+- `CE-SS1-A02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.
+- `CE-SS1-A03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.
+- `CE-SS1-A04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Close the semantic repair lane with executable tests and an explicit list of remaining operation work.
+- `CE-SS1-F01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Replace the selected relation-family duplicate semantic interpretation with the canonical descriptor.
+- `CE-SS1-F02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.
+- `CE-SS1-F03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prevent compiler wrappers from silently weakening the native contract.
+- `CE-SS1-F04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Provide a real origin-parity test route and candid language capability status.
+- `CE-SS1-I03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.
+- `CE-SS1-I04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.
+- `CE-SS1-I05` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove the epic’s central assertion with one complete execution witness.
+- `CE-SS1-I06` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.
+- `CE-SS1-I07` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Publish an evidence-backed completion receipt and stop at the agreed boundary.
+- `CE-SS1-N01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.
+- `CE-SS1-N02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Construct one reusable topology asset with both physical views using existing packing/projection builders.
+- `CE-SS1-N03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Publish changing values as stream-ordered generations while reusing the prepared structure.
+- `CE-SS1-N04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make canonical forward requests reach the existing device candidate through the prepared pair.
+- `CE-SS1-N05` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove reverse application uses the same biological relation and current values, not a second independent semantic model.
+- `CE-SS1-N06` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Close the native lane with actual CUDA tests and a minimal, traceable execution report.
+- `CE-SS1-V01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make correctness independent of physical packing and compiler lowering.
+- `CE-SS1-V02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Exercise semantic invariants that a tiny numerical example alone can miss.
+- `CE-SS1-V03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.
+- `CE-SS1-V04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Give integration a compact test harness and prove it detects wrong output and missing hardware.
 - `CE-PTR-13` | kind: integration_task | status: done | parent: CE-PTR | objective: After consumers migrate, remove obsolete host_buffer, shared-owned device buffers, duplicate graph-local buffers, grow-by-reallocation scratch arenas, and blocking copy helpers, converging on session allocation handles, explicit views and streams, prepared scratch, and stable addresses.
 - `CE-PTR-15` | kind: validation_task | status: done | parent: CE-PTR | objective: Converge CE-PTR by removing obsolete generic infrastructure and stale owners, resolving the production inventory to documented exceptions, running comprehensive semantic, allocation, synchronization, transfer, performance, compiler, persistence, sanitizer, and source-tooling acceptance, and updating durable architecture documentation.
 - `CP-BP-00` | kind: epic | status: done | parent: CE-ARCH-00 | objective: Preserve the completed CP-BP v1 coordinator as validated historical evidence.
