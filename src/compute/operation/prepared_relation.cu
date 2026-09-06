@@ -588,7 +588,14 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
     gradient_stamp* produced,cudaStream_t stream) noexcept {
     auto s=reject_capture(stream);if(!s)return s;
     s=check_context(p,input.device_ordinal,stream);if(!s)return s;
-    if(!p.gradient_prepared||!equivalent(calculus,p.calculus))
+    if(calculus.update!=value_update_kind::delta_add &&
+        calculus.update!=value_update_kind::gradient_step)
+        return {status_code::unsupported_semantics,"unknown subsequent value update"};
+    // The later update style does not change this prepared VJP. Preserve every
+    // gradient/axis/numeric contract while allowing both updates on one pair.
+    auto gradient_calculus=calculus;
+    gradient_calculus.update=p.calculus.update;
+    if(!p.gradient_prepared||!equivalent(gradient_calculus,p.calculus))
         return {status_code::invalid_state,"gradient calculus not prepared"};
     if(!produced || !input_version.identity || !input_version.version ||
         !cotangent_version.identity || !cotangent_version.version)

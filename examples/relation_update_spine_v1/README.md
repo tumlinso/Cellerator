@@ -1,8 +1,16 @@
-# Regulatory relation learning: RU1 prospective demo
+# Regulatory relation learning: RU1 synthetic demo
 
-This program is written now against the **proposed post-epic** Cellerator API. It is not evidence that the new implementation already exists. The planning package contains matching declaration sketches; never add those sketches or the syntax-test shims to production include paths.
+This consumer links the native relation core and the bounded source-to-action
+compiler adapter. It contains no private CUDA arithmetic. See the authoritative
+[execution model](../../docs/biological_execution_model.qmd) and the measured
+[RU1 demo receipt](../../docs/relation_update_spine_v1/demo.json).
 
-The ordinary build must link real `cellerator_relation_update_core` and `cellerator_relation_update_compiler` targets established by the integration tasks, using the repaired sm70 WMMA path and exact sparse residual. An implementing agent may revise API spelling coherently, but may not replace actual computation with a demo-local kernel or reference fallback. The CMake names are proposed in-tree integration targets, not an installed SDK claim.
+Native descriptors and independently parsed closures produce equivalent value-owned
+recipes. Ten compiler actions reach the real forward, transpose, gradient, update,
+publication and read-lease entrypoints. One prepared topology and one gradient
+preparation serve both caller delta and gradient-step updates, at generations
+1, 2 and 3. The later update style does not change the prepared gradient math.
+Unknown update kinds still fail before submission.
 
 ## Run the independent fixture today
 
@@ -14,7 +22,7 @@ c++ -std=c++20 -O2 -Wall -Wextra -Werror -ffp-contract=off \
 
 Or configure this directory independently with CMake. The output explicitly says no Cellerator or GPU was run. It checks all finite half roundtrips, tie/overflow cases, forward/transpose adjoint, continuous-model edge finite differences and the bounded mixed-precision update fixture.
 
-## Run after implementation
+## Run the native demo
 
 Build from the integrated repository, without `CELLERATOR_RU1_REFERENCE_ONLY`, then run `ceRelationUpdateDemo --device 0 --route hybrid` and `--route sparse` using the existing project GPU lease. The binary requires an actual sm70 device and fails rather than skipping when it is unavailable.
 
