@@ -70,6 +70,10 @@ option(CELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES "Use the probed CUDA SM as the 
 # before the legacy runtime targets below are declared.
 include(src/compiler/CMakeLists.txt)
 include(cmake/compiler/CelleratorHostSdk.cmake)
+option(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 "Build the bounded Semantic Spine v1 conformance suite" OFF)
+if(CELLERATOR_BUILD_SEMANTIC_SPINE_V1)
+    include(cmake/SemanticSpineV1.cmake)
+endif()
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     return()
 endif()
