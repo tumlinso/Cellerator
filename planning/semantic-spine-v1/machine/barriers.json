@@ -1,0 +1,58 @@
+[
+  {
+    "id": "CE-SS1-B-FOUNDATION",
+    "title": "Validated foundation is integrated, not merely declared",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "CE-SS1-CP-FOUNDATION",
+        "state": "reached"
+      }
+    ]
+  },
+  {
+    "id": "CE-SS1-B-FANIN",
+    "title": "All independent lane artifacts ready for integrated acceptance",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "task",
+        "id": "CE-SS1-N06",
+        "state": "done"
+      },
+      {
+        "type": "task",
+        "id": "CE-SS1-F04",
+        "state": "done"
+      },
+      {
+        "type": "task",
+        "id": "CE-SS1-A04",
+        "state": "done"
+      },
+      {
+        "type": "task",
+        "id": "CE-SS1-V04",
+        "state": "done"
+      },
+      {
+        "type": "task",
+        "id": "CE-SS1-I03",
+        "state": "done"
+      }
+    ]
+  },
+  {
+    "id": "CE-SS1-B-COMPLETE",
+    "title": "Bounded epic complete",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "CE-SS1-CP-COMPLETE",
+        "state": "reached"
+      }
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "consulted_date": "2026-09-06",
+  "primary_sources": [
+    {
+      "id": "R01",
+      "title": "NVIDIA Floating Point and IEEE 754",
+      "url": "https://docs.nvidia.com/cuda/floating-point/index.html",
+      "used_for": "FMA/association differences justify explicit policy and tolerance-based cross-device checks, not a blanket precision waiver."
+    },
+    {
+      "id": "R02",
+      "title": "CUDA Runtime API 12.9.1: Stream Management",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-runtime-api/group__CUDART__STREAM.html",
+      "used_for": "Stream ownership and explicit completion/readback reasoning."
+    },
+    {
+      "id": "R03",
+      "title": "CUDA Toolkit 13.0 Release Notes",
+      "url": "https://docs.nvidia.com/cuda/archive/13.0.0/cuda-toolkit-release-notes/index.html",
+      "used_for": "Volta offline build/library support removed in13; retain12.x toolchain for sm70."
+    }
+  ],
+  "scope": "Focused technical clarification, not an expanded algorithm research program."
+}

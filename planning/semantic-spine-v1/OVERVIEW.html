@@ -1,0 +1,2010 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cellerator Semantic Spine v1: planning and manual bootstrap</title><style>
+:root{--ink:#202b37;--muted:#566577;--border:#d8dfe5;--bg:#f4f6f8;--link:#174c78;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,sans-serif}
+.layout{display:grid;grid-template-columns:245px minmax(0,1080px);max-width:1380px;margin:auto;min-height:100vh}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:30px 22px;font-size:13px;line-height:1.5;border-right:1px solid var(--border)}
+nav strong{display:block;margin-bottom:18px;font-size:16px}nav a{display:block;margin-bottom:13px;color:var(--muted);text-decoration:none}
+main{background:white;padding:42px 48px;min-width:0}section{padding-bottom:20px}section+section{border-top:2px solid var(--border);padding-top:30px}
+h1{font-size:1.9rem;line-height:1.25}h2{font-size:1.3rem;margin-top:28px}h3{font-size:1.1rem}a{color:var(--link)}
+code{font:0.88em ui-monospace,monospace;background:#f0f3f6;padding:.1em .25em;overflow-wrap:anywhere}
+pre{background:#f0f3f6;padding:18px;border:1px solid var(--border);overflow:auto}pre code{padding:0;overflow-wrap:normal}
+table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5;display:block;overflow:auto;margin:20px 0}th,td{padding:10px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}th{background:#e9eff4}
+.notice{padding:18px 22px;background:#edf3f8;border-left:4px solid var(--link);margin-bottom:28px}
+details{border:1px solid var(--border);padding:14px 18px;margin:12px 0}summary{font-weight:650;cursor:pointer}li{margin-bottom:7px}
+@media(max-width:850px){.layout{display:block}nav{position:relative;height:auto;border-bottom:1px solid var(--border)}nav a{display:inline-block;margin-right:15px}main{padding:25px 20px}}
+@media print{nav{display:none}.layout{display:block}main{padding:0}details{display:block}body{font-size:10pt}}
+</style></head><body><div class="layout"><nav><strong>SEMANTIC SPINE V1</strong><p>6 September 2026<br>30 records · 7 lanes</p><a href="#doc-0">Semantic Spine v1: planning, manual bootstrap and small accelerator demo</a><a href="#doc-1">1. Scope and design decisions</a><a href="#doc-2">2. Semantic authority and provisional native contract</a><a href="#doc-3">3. First-class parallel lanes and integration</a><a href="#doc-4">4. Validation, execution evidence and the small program</a><a href="#doc-5">5. Manual Todo bootstrap</a><a href="#doc-6">6. Deferred obligations, not silently completed capabilities</a><a href="#doc-7">7. Evidence, source authority and limitations</a><a href="#doc-8">8. Task index</a><a href="#doc-9">9. User decision trace</a><a href="#task-details">Individual task sheets</a></nav><main><div class="notice"><strong>Planning package, not implementation.</strong><br>Offline checks and the reference fixture pass. Live native Todo validation remains unavailable. The default demo requires the post-epic Cellerator implementation. No Todo application or agents were started.</div><section id="doc-0"><h1>Semantic Spine v1: planning, manual bootstrap and small accelerator demo</h1>
+<p><strong>Delivered 6 September 2026. Planning artifacts only. Nothing has been applied or implemented.</strong></p>
+<p>This package defines <strong>29 atomic tasks plus one epic record, 30 Todo records total</strong>, in <strong>seven first-class lanes</strong>. After a short common-contract phase, native execution, compiler lowering, algebra repair and independent validation proceed concurrently. The narrow witness is forward and transpose application of one biological relation on an actual <strong>sm70 GPU</strong>, with reusable topology and changing values.</p>
+<h2>Important readiness distinction</h2>
+<p>The package has an internally checked native <strong>schema-3</strong> plan. <strong>Live Cellerator Todo authority was unavailable during construction. Native validator acceptance, live ID collision checks, and the additive application diff therefore are not certified.</strong> The supplied wrapper refuses application until the installed native validator and coherent workflow authority are available. Do not downgrade to schema 2 to bypass this: schema 2 loses first-class run/lane semantics.</p>
+<p>The example is a <strong>post-epic acceptance program</strong>. Its normal build intentionally requires the proposed Cellerator API that these tasks implement. No fake backend or silent CPU fallback is provided. A separate reference-only mode has been executed locally to check fixture mathematics; that is not a Cellerator/GPU test.</p>
+<h2>Copy into the repository</h2>
+<p>The archive contains two repository-relative directories:</p>
+<pre><code class="language-text">planning/semantic-spine-v1/
+examples/semantic_spine_v1/
+</code></pre>
+<p>The main program belongs at <strong><code>examples/semantic_spine_v1/regulatory_reuse.cc</code></strong>, beside its <code>fixture.hh</code>, <code>CMakeLists.txt</code> and <code>README.md</code>. An <code>examples/</code> hierarchy already exists; there is no need for a new top-level <code>demo/</code> directory. Extraction does not edit the root build. I04 adds the minimal opt-in wiring later.</p>
+<p>Preserve and review the pre-existing <code>library/cellerator.cell</code> and <code>library/cellerator/cellerator.ceh</code> edits. Commit the reviewed package, demo and preserved edits before a live preview. This does not implement the epic. The <code>.ceh</code> conversion is an implementation task, not permission for package extraction to delete source.</p>
+<h2>Read in this order</h2>
+<ol>
+<li><code>01_SCOPE_AND_DECISIONS.md</code>: the scope, choices and stop line.</li>
+<li><code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>: concrete mathematical and provisional native contracts.</li>
+<li><code>03_PARALLEL_LANES_AND_INTEGRATION.md</code>: ownership, first-class agents and actual dependency graph.</li>
+<li><code>04_VALIDATION_AND_DEMO.md</code>: meaningful tests and accelerator acceptance.</li>
+<li><code>05_MANUAL_BOOTSTRAP.md</code>: safe installation, preview, separate application and stop.</li>
+<li><code>06_DEFERRED_WORK.md</code> and <code>07_SOURCE_LEDGER.md</code>: what is not done and what supports the design.</li>
+</ol>
+<p><code>proposed-todos/</code> contains a substantive task sheet for every record. <code>handoff/</code> contains per-lane playbooks and an execution prompt, which is <strong>not</strong> an instruction to execute now. <code>contracts/</code> contains declaration-only sketches to make the expected endpoint concrete without prematurely installing a new public API. The unmodified comprehensive review is retained in <code>basis/architecture-review.html</code>.</p>
+<h2>Machine files</h2>
+<p><strong>The only native plan file to apply is:</strong></p>
+<pre><code class="language-text">planning/semantic-spine-v1/machine/semantic-spine-v1.todo-plan.json
+</code></pre>
+<p><code>machine/proposed_todos.json</code> is a richer <strong>non-authoritative pre-ledger</strong>, not native Todo input. The CSVs and other JSON catalogs are consistency-checked views. <code>external_dependency_receipts.csv</code> deliberately has only a header: this epic does not mutate or depend on another project's authority.</p>
+<p>Do not use <code>project-control plan compile</code> on this package. The inspected generic pre-ledger compiler emits schema 2. This package's <code>scripts/compile_plan.py</code> preserves native schema-3 runs and lanes.</p>
+<h2>First command after placing the files</h2>
+<p>From the repository root:</p>
+<pre><code class="language-bash">python3 planning/semantic-spine-v1/scripts/todo_bootstrap.py validate --source-root .
+</code></pre>
+<p>This checks package integrity and placement, not live Todo readiness. Follow <code>05_MANUAL_BOOTSTRAP.md</code> for the separate native preview and explicit application. <strong>Application does not authorize activation, implementation worktrees, agent dispatch or source changes.</strong></p>
+<h2>Completion will mean</h2>
+<p>C++ and the bounded parser/Sema/IR route construct one authoritative relation meaning; actual forward and transpose GPU implementations consume it; two generations reuse prepared structure; false primitive/composition equivalences and the contraction split law are corrected; the small demo works; and full <code>.cell</code> execution is still clearly marked as future work. It will not mean full compiler, installed SDK, general algebra or broad performance completion.</p>
+</section><section id="doc-1"><h1>1. Scope and design decisions</h1>
+<h2>Fixed purpose, limited commitment</h2>
+<p>Cellerator's goal is to make biological mathematics and computation as fast as practically possible by exploiting biological meaning, stable structure, identities, representative data and target hardware. This epic improves the trustworthiness of the path carrying that information into execution. It is not a miniature version of the entire review roadmap.</p>
+<p>The comprehensive review is the authoritative design basis, qualified by the user's subsequent decisions. Current source is implementation evidence, not an immutable specification. JBC and CCP are mechanical planning precedents, not reasons to keep their old architectural choices.</p>
+<p>The allocation is <strong>29 atomic tasks, one root epic, seven lanes</strong>. The small size is achieved by limiting computation and integration, not by concealing many unbounded features inside a single task. There is no promised elapsed completion time. A material prerequisite failure should be surfaced rather than expanding this into a new compiler campaign.</p>
+<h2>Concrete choices</h2>
+<table>
+<thead>
+<tr>
+  <th>Choice</th>
+  <th>Decision for this epic</th>
+  <th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Executable family</td>
+  <td>Relation apply and transpose</td>
+  <td>Exercises direction, exact support, axis identity, values and reusable preparation</td>
+</tr>
+<tr>
+  <td>Required hardware witness</td>
+  <td>Real sm70 device; existing kernels</td>
+  <td>Makes semantic unification cross the accelerator boundary without a new kernel project</td>
+</tr>
+<tr>
+  <td>Required width</td>
+  <td>N1, with multiple independently bound state vectors</td>
+  <td>Existing builtin forward/transpose routes share this regime; wider kernels are not a prerequisite</td>
+</tr>
+<tr>
+  <td>Required numerical tuple</td>
+  <td>f16 relation storage, f32 input/multiply/accumulation/output</td>
+  <td>Matches existing narrow candidate contracts; not a global Cellerator precision policy</td>
+</tr>
+<tr>
+  <td>Numerical checks</td>
+  <td>Explicit absolute+relative tolerance on matching stored inputs</td>
+  <td>Avoids requiring CPU/GPU bitwise equality while preserving exact structure and type policies</td>
+</tr>
+<tr>
+  <td>Native exposure</td>
+  <td>Provisional prepared forward/transpose pair</td>
+  <td>Enough for a real consumer-shaped program without an SDK overhaul</td>
+</tr>
+<tr>
+  <td>Compiler exposure</td>
+  <td>Real parser/Sema/IR-origin descriptor and common validator</td>
+  <td>Tests semantic authority without promising a functioning full <code>.cell</code> driver</td>
+</tr>
+<tr>
+  <td>Runtime lifetime</td>
+  <td>One device and one caller stream per pair</td>
+  <td>Avoids a multi-reader/multi-stream ownership redesign in the first epic</td>
+</tr>
+<tr>
+  <td>Support changes</td>
+  <td>Topology and order fixed for a prepared pair; value generation changes</td>
+  <td>Demonstrates the most useful existing reuse boundary</td>
+</tr>
+<tr>
+  <td>Physical selection</td>
+  <td>A truthful existing narrow portfolio; no new planner search</td>
+  <td>Proves actual reachability rather than optimization research</td>
+</tr>
+<tr>
+  <td>Compatibility</td>
+  <td>No promise to preserve bad interfaces; useful code preserved</td>
+  <td>There is no external consumer to justify maintaining semantic mistakes</td>
+</tr>
+<tr>
+  <td><code>.ceh</code></td>
+  <td>Remove redundant content or convert meaningful content to <code>.cell</code></td>
+  <td>Avoids a permanent duplicate Cellerator header format</td>
+</tr>
+<tr>
+  <td>Cross-unit semantics</td>
+  <td>Record future commitment only</td>
+  <td>Modules, implicit <code>.cell</code> dialect and whole-program optimization remain outside the executable milestone</td>
+</tr>
+</tbody>
+</table>
+<p>N1 is an execution-regime limit, not a semantic cardinality limit. Keep 64-bit logical extents/counts and reject unimplemented local-index ranges before narrowing. Similarly, a mathematically valid update or duplicate-edge relation may be unsupported by the selected physical candidate. That distinction must remain visible.</p>
+<h2>What to preserve</h2>
+<p>Retain the useful persistent identity, structure epoch, logical/physical order, existing packing/projection constructors, forward/transpose value-position mapping, numerical type separation and stream/readiness work. Avoid creating new generic storage containers, a second runtime session, or another parallel scalar interpreter.</p>
+<p>Preserve the source language's useful low-level philosophy and familiar relation expression. Do not use this task as an opportunity to rewrite the language grammar. Native C++ is a first-class user, not a compiler-embedding workaround.</p>
+<h2>Source changes which are justified</h2>
+<p>A small canonical relation descriptor and validator; checked legacy/native adapters; bounded changes to existing relation IR lowering; a real source-to-descriptor test bridge; narrowly scoped contraction/classification repairs; the provisional prepared-pair implementation; meaningful tests; minimal opt-in build integration; and content-preserving <code>.ceh</code> conversion.</p>
+<p>The integrated source should have one authority for relation meaning. Legacy structures that remain at provider boundaries are transport/adaptation records, not competing definitions of the mathematics. A removed contract needs an explicit disposition and regression evidence, not an assertion that a newer version must be better.</p>
+<h2>Explicit exclusions</h2>
+<p>No full <code>.cell</code> executable compilation, implicit-dialect parser rollout, module/import loader, cross-TU optimizer, installed SDK packaging, public API freeze, new MMA/WMMA/PTX strategy, general gradient/training program, contraction provider portfolio, exchange optimization, geometry-search optimization, learned planner, JIT, multi-device runtime, full standard library or general repository cleanup.</p>
+<p>The <code>.ceh</code> decision is a deliberate narrow exception to “no cleanup”: preserve and relocate its content, not redesign the library. Historical text mentioning <code>.ceh</code> need not be erased. Ordinary <code>.hh</code> files remain appropriate for native C++.</p>
+<h2>Hard completion boundary</h2>
+<p>Finish only when both origins reach one canonical semantic contract; real forward and transpose accelerator execution is correct on independent fixtures; structure survives two value generations; stale/incompatible requests fail before output mutation; the contraction and classification counterexamples are addressed; no active <code>.ceh</code> remains; and the delivered example passes.</p>
+<p>Then stop. Do not automatically start the next epic, retire unrelated worktrees, merge all branches, activate another campaign or claim that full language support is complete.</p>
+</section><section id="doc-2"><h1>2. Semantic authority and provisional native contract</h1>
+<h2>The mathematical object</h2>
+<p>For logical edge e from source s(e) to destination d(e), forward application is</p>
+<pre><code class="language-text">Y[d,n] = sum over edges e with d(e)=d of W[e] * X[s(e),n]
+</code></pre>
+<p>Transpose application is</p>
+<pre><code class="language-text">Z[s,n] = sum over edges e with s(e)=s of W[e] * U[d(e),n]
+</code></pre>
+<p>Transpose changes the direction of application, not the underlying biological edge identity. It is not a matrix inverse, and not the complete meaning of a gradient composition. Every logical edge contributes once. Different edge identities with identical endpoints are distinct additive contributions; no silent deduplication or f16 weight coalescing is legal merely because a sparse format stores unique endpoints. A provider that cannot preserve that case may reject it explicitly.</p>
+<p>Zero-degree destinations or sources produce zero under overwrite. Empty support remains well-defined. Native realization may use device zero-fill/no-op for empty support; it may not call an existing kernel outside its preconditions. Wider shapes and update modes remain representable only where their meaning is explicit, with capability rejection rather than fake execution.</p>
+<h2>Three different classes of information</h2>
+<p><strong>Mathematical contract:</strong> topology identity and epoch; source and destination identities and extents; logical edge order/count; direction; input, relation, multiplication, accumulation and output types; numerical permissions; output update and alias rules.</p>
+<p><strong>Source provenance:</strong> source location, field/function symbol, AST/IR ownership and diagnostic context. These can differ between a C++-origin and source-origin operation without making their mathematics unequal.</p>
+<p><strong>Prepared/launch state:</strong> geometry/projection, candidate, device, caller stream, actual pointers and capacities, current value-generation publication and readiness. This changes at its own lifetime. Do not bake a changing generation into the immutable topology key or compare pointer addresses as biological identity.</p>
+<p>Reuse <code>execution::persistent_identity&lt;Tag&gt;</code>, <code>persistent_axis_identity</code>, <code>structure_epoch</code> and <code>value_generation</code> where they already carry the right information [S04]. The descriptor is value-owned without pointers back into itself. Comparison is fieldwise; serialization/hash must not include C++ padding. No new monolithic operation-core v3 is needed just to provide a small canonical relation descriptor.</p>
+<p>Semantic identity must distinguish an identity/order change from merely rebinding equivalent data at another address. The initial supported physical order can be the input's declared order; this epic need not create a layout optimizer. Explicitly recover biological order when a projection differs.</p>
+<h2>Numerical meaning versus acceptance tolerance</h2>
+<p>The required witness uses binary16 relation values and float32 state/multiply/accumulation/output, round-to-nearest conventions and separately specified FMA/reassociation permission. The oracle uses the same rounded/stored values, then accumulates small fixtures in double. For the provided finite toy fixture, compare with <code>abs(actual-expected) &lt;= 1e-5 + 1e-5*abs(expected)</code>.</p>
+<p>This tolerance is a test criterion for that fixture, not a universal scientific error budget, permission to change dtypes, or a waiver of support/identity correctness. Additional cancellation or high-degree tests must justify their numerical bounds from the accumulation length/data and selected policy rather than blindly reusing one threshold. Check NaN/Inf deliberately: a false comparison involving NaN must never pass a finite expected result. A nonfinite rejection policy that requires an unsupported device scan should be rejected as a capability, not pretend to have validated values on the host. FMA and association can legitimately change floating-point results [R01].</p>
+<h2>Concrete provisional API</h2>
+<p><code>contracts/relation_semantics.hh</code> and <code>contracts/prepared_relation.hh</code> are declaration sketches for C01/C03. They are planning artifacts, not a replacement native library. The demo targets their proposed eventual public paths:</p>
+<pre><code class="language-text">include/Cellerator/compute/operation/relation_semantics.hh
+include/Cellerator/compute/operation/prepared_relation.hh
+</code></pre>
+<p>The internal published interface can be refined before I02; changes then require coordinated updates to the demo and all lane consumers. It does not freeze the final public SDK.</p>
+<p>The principal functions are <code>validate</code>, <code>equivalent</code>, <code>prepare_relation_pair</code>, <code>publish_values</code>, <code>enqueue</code>, <code>inspect</code> and <code>destroy</code> in <code>cellerator::compute::relation</code>.</p>
+<p><code>prepare_relation_pair</code> takes canonical forward and transpose descriptors for the same topology/arithmetic, a bounded host-CSR view and explicit device/stream. It builds using existing packing/projection machinery, including FMP1 and CTP1 where applicable [S05–S07]. It must work from the supplied support, not manufacture a prevalidated fixture-specific image. Cold host work is allowed; the hot math remains accelerator execution. Check CSR extents, monotonic offsets, terminal nnz count, source bounds and duplicate limitations before narrowing into physical indices.</p>
+<p>Preparation failure leaves the output handle null and releases any partial allocation. Host CSR arrays are consumed during preparation; any asynchronous upload must either retain owned staging or document that the caller keeps those arrays alive until the preparation stream completes. No later hot enqueue may depend on caller-owned host CSR remaining alive.</p>
+<p>The narrow native implementation owns its preparation state and fixed-capacity projection/value buffers. Input/output views borrow storage. No generic allocator/container framework is required. A caller may replace pointers between launches under the declared ordering/lifetime contract.</p>
+<h2>Generation and stream protocol</h2>
+<p>A pair begins with no published values. <code>publish_values</code> accepts device binary16 data, logical edge order, structure identity/epoch, count, device ordinal and a <strong>strictly increasing nonzero generation</strong>. Re-publishing the same or older generation is an explicit stale-generation error in this first version. This deliberately small protocol is not a universal future API restriction.</p>
+<p>The publication operation can enqueue value packing on the pair's caller stream and update its latest <strong>enqueued</strong> generation after successful submission. Same-stream consumers execute after those writes. The report is not a claim that the GPU has already completed the work. Caller buffers remain valid until completion. If enqueue partially fails, make the pair's error state explicit; do not report a new generation ready with incomplete device storage.</p>
+<p><code>enqueue</code> validates the full relevant descriptor, axes, capacities, device, stream, alias prohibition and expected generation before changing output. Stale/mismatched requests leave output and accepted-launch counters unchanged. Native entry points do not silently drop an unsupported numerical or update policy.</p>
+<p>For this epic, one pair belongs to one device and one caller stream. Concurrent use through another stream is rejected rather than given a falsely safe event protocol. The implementation may use existing readiness events [S08]; it must not invent global synchronization to cover missing ownership reasoning. Destruction may fence that pair's stream to release its own memory safely. Host readback in the demo is an explicit observation, outside the resident hot path [R02].</p>
+<h2>Honest reporting and reuse</h2>
+<p>The inspection report identifies actual bound candidates and projections, number of topology preparations, value refreshes, accepted directional launches and latest enqueued generation. The native demo expects one preparation, two refreshes, three forward launches and two transpose launches. Counters are cross-checked against actual calls and runtime tests; strings/counters alone are not hardware evidence.</p>
+<p>No performance-selection promise is attached to this initial pair API. N1 sparse execution is a deliberate small witness. The existing narrow candidates are computationally real [S05–S07]; this epic does not need to force Tensor Cores into a width regime where they are not the point.</p>
+<h2>Compiler-origin path</h2>
+<p>Use the existing parser/Sema/IR and <code>lower_relation_apply_operation_v1</code> seam [S09]. The test environment may supply runtime identities and loaded relation metadata, but may not simply return the descriptor expected by the test. Changing the source direction/symbol/type must change the parsed meaning or trigger a diagnostic.</p>
+<p>The compiler-origin descriptor is compared fieldwise with an independently constructed C++ descriptor, then passed through the <strong>same</strong> prepared accelerator path in integrated tests. No separate host-reference launch or hand-coded demo interpreter can satisfy this requirement. This proves a bounded embedded source-origin route, not the installed <code>.cell</code> command-line pipeline.</p>
+<h2>Bounded algebra repairs</h2>
+<p>Scalar support dot: <code>dot[e] = sum_k A[s(e),k]*B[d(e),k]</code>; splitting k produces partial sums. Edge-channel product: <code>product[e,k] = A[s(e),k]*B[d(e),k]</code>; splitting k produces disjoint output panels. The current support-embedding validator accepts concatenation for the ambiguous contraction kind [S10]. Correct the law and its consumers, not only the comment.</p>
+<p>A primitive/composition/effect classification must not carry a valid substitute primitive which a caller can accidentally execute. Preserve the operation's real meaning even when lowering is unavailable. Publication is an effect, chain/exchange/hierarchy/gradient remain explicit compositions, and unsupported lowering returns unsupported [S11]. This is not authorization to implement their full execution in this epic.</p>
+</section><section id="doc-3"><h1>3. First-class parallel lanes and integration</h1>
+<h2>Topology</h2>
+<p>One native schema-3 run, <code>CE-SS1-RUN-V1</code>, contains the following lanes. The parent lane is <code>CE-SS1-L-COORD</code>. All work queues are serial within a lane; task-level <code>parallel_safe</code> allows different lanes to advance together.</p>
+<table>
+<thead>
+<tr>
+  <th>Lane</th>
+  <th>Role</th>
+  <th>Tasks</th>
+  <th>Owned responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>COORD</td>
+  <td>coordinator</td>
+  <td>root epic</td>
+  <td>Dispatch/observe/coordinate; no source implementation</td>
+</tr>
+<tr>
+  <td>CORE</td>
+  <td>implementer</td>
+  <td>C01–C04</td>
+  <td>Shared mathematical descriptor, validation and provisional signatures</td>
+</tr>
+<tr>
+  <td>NATIVE</td>
+  <td>implementer</td>
+  <td>N01–N06</td>
+  <td>Prepared forward/transpose pair, value refresh and existing GPU adapters</td>
+</tr>
+<tr>
+  <td>FRONTEND</td>
+  <td>implementer</td>
+  <td>F01–F04</td>
+  <td>Existing parser/Sema/IR relation bridge and source-specific tests</td>
+</tr>
+<tr>
+  <td>ALGEBRA</td>
+  <td>specialist</td>
+  <td>A01–A04</td>
+  <td>Contraction split law and truthful composition/effect classification</td>
+</tr>
+<tr>
+  <td>VERIFY</td>
+  <td>validator</td>
+  <td>V01–V04</td>
+  <td>Independent oracle, negative controls and integrated test probes</td>
+</tr>
+<tr>
+  <td>INTEGRATE</td>
+  <td>integrator</td>
+  <td>I01–I07</td>
+  <td>Baseline, shared build wiring, .ceh conversion, joins and final hardware acceptance</td>
+</tr>
+</tbody>
+</table>
+<p>The graph is:</p>
+<pre><code class="language-text">I01 -&gt; C01 -&gt; C02 -&gt; C03 -&gt; C04 -&gt; I02 (integrated foundation)
+                                         |
+             +---------------------------+-------------------------+
+             |                 |                 |                 |
+          N01..N06          F01..F04          A01..A04          V01..V04
+             |                 |                 |                 |
+             +-----------------+-----------------+-----------------+
+                                         |
+                                I04 -&gt; I05 -&gt; I06 -&gt; I07
+
+I02 -&gt; I03 (.ceh conversion, independent of the four lanes) -&gt; I04
+</code></pre>
+<p>The root epic has no outgoing prerequisite edge to children. It closes only after I07. Neither NATIVE nor FRONTEND waits for VERIFY's entire lane, and VERIFY does not wait for their completed implementation to write independent probes. Linking/running those integrated probes occurs at I04/I05. This is deliberate useful parallelism, not labels attached to a serial task graph.</p>
+<h2>JBC mechanics retained, campaign scale not retained</h2>
+<p>The JBC planning map specifies serial task queues inside first-class lanes, a few genuine interface/checkpoint barriers, independent provider work and explicit integration [S01]. Use those mechanics here. The much larger CCP plan supplies a native schema-3 shape and useful catalogs, but neither its phase hierarchy nor its heavy serial dependencies are copied.</p>
+<p>Only one internal interface is published: <code>CE-SS1-I-RELATION</code>, owned by I02 and hashed from the two real shared headers. The publication freezes a working interface for consumers of this epic. It is not public API stabilization. Consumers must invalidate assumptions and reconcile if that interface is revised.</p>
+<h2>First-class Codex agents are not local-worker children</h2>
+<p>Applying a native plan creates records, not running subagents. An execution-authorized coordinator must use the installed first-class agent/run/lane facilities to start or bind one Codex agent per ready lane. Each agent uses the canonical <code>next_task</code>, <code>inspect_task</code>, <code>coordinate_task</code> and <code>finish_task</code> workflow for its actual assigned lane.</p>
+<p>In the inspected Project Control protocol, <code>delegate_task</code> starts a bounded subordinate local worker; it does not create an independent first-class lane [S15]. It must not be used as a substitute. This package supplies lane identities, scopes, queues and playbooks, but does not invent an unverified command-line <code>spawn</code> interface or dispatch anything now. Resolve the exact installed first-class agent binding surface at execution authorization and record the agent-to-run/lane mapping.</p>
+<h2>Workspace decision</h2>
+<p>The native plan uses <strong>contract_split</strong> for the five implementation/verification lanes, <strong>exclusive</strong> for the integrator, and <strong>read_shared</strong> for the coordinator. This is an accepted native-v3 pattern with explicit per-task file ownership [S02]. It avoids making this small epic depend on an unverified new automatic merge scheduler.</p>
+<p>The modes express authority and isolation intent; they do not create Git worktrees. The execution owner must prepare/register workspaces using the installed canonical mechanism. In isolated worktree deployments, all post-foundation consumers start from the integrated I02 revision. Do not initialize those worktrees at the pre-foundation revision and then let them silently compile stale headers. The owner should record base commit and interface hash in each lane's context.</p>
+<p>Every task's exclusive paths are in the native plan and detailed task sheet. Separate lanes do not edit the shared semantic headers after I02. The native lane owns its implementation, the frontend lane owns relation IR lowering, the algebra lane owns operation classification and contraction semantics, and verification owns its tests. The integrator alone edits root/central CMake and the example integration points. I03's <code>library/</code> and <code>stdlib/</code> scope is limited by its objective to <code>.ceh</code> content/reference disposition, not arbitrary library rewriting.</p>
+<h2>Handoff and joins</h2>
+<p>Core supplies a committed source artifact to I02. I02 verifies and integrates it before releasing downstream agents. Later each lane supplies its concrete revision/patch, tests and source hashes to I04. The coordinator can collect and inspect pending artifacts while a join task is waiting; it must not wait for integration-dependent closure before even examining an artifact.</p>
+<p>The native plan does not use <code>isolated_merge</code> with an unverified circular <code>integration_task_id</code> requirement. If the local execution configuration imposes an integration prerequisite on producer completion, use its canonical artifact-ready/queue-drain protocol before waiting for terminal task states. Do not mark tasks done artificially or edit the database to break a cycle. A needed change of workspace topology is a reviewed plan revision, not a silent executor reinterpretation.</p>
+<p>Final integrated tests run after the join. Leaf authors supply real local evidence, while pending integrated tests are explicitly pending. A shared-build conflict or new common contract change returns to its owner; an integrator should not quietly make divergent semantic choices to make a merge compile.</p>
+<h2>Hardware and resource coordination</h2>
+<p>This plan deliberately does not redefine the project's global GPU inventory from stale source. Existing GPU availability and leases must be resolved through the canonical live resource service at execution time. NATIVE validation, baseline GPU tests and final evidence require a real device lease. The named <code>ce-ss1-accelerator-evidence</code> lock serializes this epic's final evidence but does not itself exclude unrelated processes or lease a GPU.</p>
+<p>For the supplied gate runner, the execution owner sets <code>CELLERATOR_SS1_GPU_LEASE_RECEIPT</code> to the actual local lease receipt and configures the leased device mapping, for example through the existing launcher’s <code>CUDA_VISIBLE_DEVICES</code>. The file path is provenance, not a claim that an environment variable enforces a lease. A missing/unverifiable resource must block the hardware gate. CPU syntax/test preparation continues where independent.</p>
+<h2>Pause, commit and stop behavior</h2>
+<p>After each completed leaf, commit the scoped changes and evidence and push through the project's configured remote workflow when available. Do not claim a push succeeded if it did not. Preserve unrelated branches/worktrees. An execution instruction to pause takes precedence over “continue until done”: stop new claims/launches, preserve state, and report outstanding work. Finish this epic, publish the candid completion receipt, and stop before any next-epic work.</p>
+</section><section id="doc-4"><h1>4. Validation, execution evidence and the small program</h1>
+<h2>Evidence levels must stay separate</h2>
+<p>A schema that parses, an interface that compiles, a test that computes reference mathematics, a GPU kernel that executes, and a speedup measured on a workload are five different results. None substitutes for the next. Current package checks validate planning consistency; they do not validate future Cellerator implementation.</p>
+<p>The required integrated targets are proposed names to be wired by I04:</p>
+<table>
+<thead>
+<tr>
+  <th>Target</th>
+  <th>What it must actually test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>ceSpineCoreTest</code></td>
+  <td>Canonical validation/equivalence, direction, identities and metadata rejection</td>
+</tr>
+<tr>
+  <td><code>ceSpineAlgebraTest</code></td>
+  <td>Dot split-K sums versus edge-channel concatenation; no false primitive lowering</td>
+</tr>
+<tr>
+  <td><code>ceSpineFrontendTest</code></td>
+  <td>Real parser/Sema/IR-origin descriptors, altered-source and diagnostics tests</td>
+</tr>
+<tr>
+  <td><code>ceSpineNativeTest</code></td>
+  <td>Existing device implementations, preparation, refresh, both orientations, failure preservation</td>
+</tr>
+<tr>
+  <td><code>ceSpineCrossOriginTest</code></td>
+  <td>Native and source-derived descriptors submitted through the same GPU path</td>
+</tr>
+<tr>
+  <td><code>ceSemanticSpineDemo</code></td>
+  <td>The exact user-supplied small biological program, in normal CUDA mode</td>
+</tr>
+</tbody>
+</table>
+<p>GPU targets accept <code>--require-sm70</code> and fail when a suitable actual device is absent. Do not translate missing CUDA into a CTest skip that then passes the epic. The default example's terminal output is useful for a human, but a success phrase alone is not a test.</p>
+<h2>Required coverage</h2>
+<p>Use a non-square, asymmetric support relation and another structurally different one. Exercise empty rows/support, changed values, independent edge identities, wrong biological axes at equal extents, high-bit-only identity changes, stale structure/value/order, pointer rebinding, unsupported width/precision, aliasing and checked index conversion. Duplicate endpoint contributions must either execute exactly as represented or be explicitly rejected by a limited provider, never silently merged with changed rounding or identity.</p>
+<p>Forward and transpose have independent logical-edge oracles. Check the adjoint identity within justified tolerance as a useful additional relation, not as a replacement for both reference outputs. Test the contraction law at K=2 and K=17 to distinguish a contracted dimension from an output channel. Change source spelling/binding in the compiler test so it cannot pass by returning one canned descriptor.</p>
+<p>Required failing controls include wrong-index output, stale generation, NaN compared with finite expected output, missing implementation and missing device. Empty-math cases still obey the output/update contract and do not access null storage when no element is required.</p>
+<h2>Demo content and exact placement</h2>
+<p>Place all four files in <strong><code>examples/semantic_spine_v1/</code></strong>. The program is <code>regulatory_reuse.cc</code>; <code>fixture.hh</code> defines its tiny inputs. <code>CMakeLists.txt</code> is repository-local integration which I04 enables, not an installed SDK consumer.</p>
+<p>The fixture has four regulator identities, five gene identities and nine signed edges. Gene-D has no incoming edge. It is deliberately illustrative, not a fitted or biologically validated model. It runs:</p>
+<ol>
+<li>One shared topology preparation for forward and transpose.</li>
+<li>Generation 1 with two forward input states and one transpose gene signal.</li>
+<li>Generation 2 with changed weights and another forward/transpose pair.</li>
+<li>A deliberately stale generation-1 call, which must fail before touching sentinel output.</li>
+</ol>
+<p>The normal program checks three forward launches, two transpose launches, two value refreshes and one topology preparation. It prints the real bound candidate names. It does not contain a hidden implementation of the GPU operation and cannot pass by falling back to its oracle.</p>
+<p>Expected first-generation results for state A are <code>[0, 1.25, 0.5, 0, 1.5]</code>; the transpose signal gives <code>[0.75, -4, 0.75, 0.125]</code>. At generation 2 the corresponding outputs are <code>[1, 0.75, -0.5, 0, 1.5]</code> and <code>[1.25, -3, 0.75, -0.125]</code>. These are derived from the provided toy inputs, not external biological data.</p>
+<h2>What can run before implementation</h2>
+<p>A standalone reference-only build checks the fixture and hard-coded half encodings without Cellerator or CUDA:</p>
+<pre><code class="language-bash">c++ -std=c++17 -Wall -Wextra -pedantic   -DCELLERATOR_SPINE_REFERENCE_ONLY=1   examples/semantic_spine_v1/regulatory_reuse.cc -o /tmp/ce-spine-reference
+/tmp/ce-spine-reference
+</code></pre>
+<p>It prints <code>REFERENCE_ONLY_FIXTURE_PASS</code> and explicitly says no Cellerator/GPU execution was tested. It is excluded from the required hardware gate. This mode is provided for early sanity checking, not to weaken acceptance.</p>
+<p>The normal demo cannot build against the reviewed baseline because the proposed native pair API is not yet implemented. That is expected: it is an executable acceptance target for the epic, not a claim that those functions already exist.</p>
+<h2>Post-implementation build and run</h2>
+<p>The existing root build is CUDA-centric below its host-only early return [S03]. The small semantic tests can have standalone host builds; do not reorganize the full host SDK just to run them. The integrated suite uses the real CUDA build with a suitable CUDA 12.x compiler. CUDA 13 removed offline Volta compilation/library support [R03]. Supply the actually installed toolchain via the project's existing environment/settings rather than inventing a compiler path.</p>
+<pre><code class="language-bash">cmake -S . -B build-ss1   -DCELLERATOR_BUILD_TESTS=ON   -DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON   -DCELLERATOR_ENABLE_CUDA=ON   -DCMAKE_CUDA_ARCHITECTURES=70   -DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF
+cmake --build build-ss1 --parallel 4 --target ceSemanticSpineDemo
+./build-ss1/ceSemanticSpineDemo --require-sm70
+</code></pre>
+<p><code>CELLERATOR_BUILD_SEMANTIC_SPINE_V1</code> is the proposed opt-in switch I02/I04 add, not an existing baseline feature. The supplied <code>scripts/run_gate.py</code> runs actual build/execution commands and Compute Sanitizer for the demo/final groups. It requires the execution owner to acquire the canonical GPU lease first.</p>
+<h2>Performance observations, not a new optimization campaign</h2>
+<p>Record cold topology preparation, value refresh and resident repeated execution separately, plus copies and synchronization. Compare against the same existing direct candidate with matching numeric tuple and timing boundaries to expose accidental host fallback or repeated topology work. Do not impose an arbitrary speedup threshold, claim broad superiority, or turn a tiny fixture into a research benchmark. A material regression caused by the adapter should be diagnosed and corrected within scope; an existing slow kernel is a later algorithmic task.</p>
+<p>No hidden hot-path allocation, geometry search, host math, full support hashing or global synchronization may be disguised as “semantic validation.” Cold preparation and caller readback are explicit. Record exact hardware, compiler/build flags, source revision, candidate identity, tolerance and test commands. Evidence must originate from the actual run, not from a pre-generated acceptance JSON.</p>
+</section><section id="doc-5"><h1>5. Manual Todo bootstrap</h1>
+<h2>Two independent permissions</h2>
+<p>The present authorization permits creating this package and demonstration program. It does not permit mutating the live project. <strong>You manually apply the plan; execution/activation is a separate subsequent permission.</strong> The supplied wrapper has no activation, agent-launch, worktree-creation, source-patching or run-start operation.</p>
+<h2>Current readiness and exact native file</h2>
+<p>The native input is <code>machine/semantic-spine-v1.todo-plan.json</code>, schema 3. The rich <code>proposed_todos.json</code>, lane catalog and CSVs are not apply inputs. The local package validator checks their consistency but is not Todo's installed native validator.</p>
+<p>At construction, Cellerator source remained at <code>b3340736c8c7b17266bd825c9f079d86e42a5639</code> with two library edits. Cellerator's Todo revision/workflow/state/export were unavailable. <strong>A live native validation and collision-free additive diff must be obtained locally before applying.</strong> The wrapper stops if those are unavailable. Do not patch the plan to schema 2: first-class lanes would be lost.</p>
+<p>The inspected local Project Control CLI provides:</p>
+<pre><code class="language-text">project-control plan validate --project cellerator --file &lt;native-plan&gt;
+project-control plan apply    --project cellerator --file &lt;native-plan&gt;
+</code></pre>
+<p>It prints JSON automatically; the inspected parser does not accept a <code>--json</code> flag on these subcommands. <code>plan validate</code> already invokes native validation and diff. A distinct local <code>plan diff</code> was not verified and is not invented here [S13].</p>
+<h2>1. Place, protect and commit the inputs</h2>
+<p>Copy the archive's <code>planning/semantic-spine-v1/</code> and <code>examples/semantic_spine_v1/</code> into the repository. Do not overwrite existing different files without inspection. Preserve the two pre-existing library edits, especially the unread <code>.ceh</code> body. Review and commit them together with, or before, the supplied new files. No implementation change is required merely to install the plan.</p>
+<p>The wrapper requires a clean checkout. It allows only the new package/demo and those two already-reported library paths to differ from the inspected source baseline. Any other implementation changes require a new source review and plan reconciliation. This is intentionally not a <code>--force</code> workflow.</p>
+<pre><code class="language-bash">git status --short
+git diff -- library/cellerator.cell library/cellerator/cellerator.ceh
+# Review staged content and commit the preserved inputs using your normal Git workflow.
+git rev-parse HEAD
+</code></pre>
+<p>The commit containing the installed package is not the same as the source baseline. Both identities are recorded: the plan's design baseline stays fixed, while the reviewed bootstrap HEAD is supplied explicitly to the wrapper. The user must actually review this HEAD, not treat a fresh hash as evidence that arbitrary code drift is safe.</p>
+<h2>2. Validate package integrity and demo placement</h2>
+<pre><code class="language-bash">python3 planning/semantic-spine-v1/scripts/todo_bootstrap.py validate --source-root .
+</code></pre>
+<p>This verifies the SHA-256 manifest, native/rich projections, CSVs, ID uniqueness, parentage, checkpoints, interfaces, scopes, dependencies, serial lane order, all 30 records assigned exactly once, four-way fan-out, the strict task cap and the supplied demonstration's bytes. It performs no Todo mutation. Do not use <code>--without-manifest</code> to justify application.</p>
+<h2>3. Resolve the installed authority, not stale command guesses</h2>
+<p>Check the installed command help locally:</p>
+<pre><code class="language-bash">project-control plan validate --help
+project-control plan apply --help
+</code></pre>
+<p>If the executable or native runtime cannot reach Cellerator's existing authority, repair that connection using the project's normal administration. Do not create a new Todo database, initialize a replacement project, edit SQLite or a generated snapshot, change the UUID, reuse an old run, or downgrade this plan. The package records observed CLI source, not a claim that your current installation is healthy.</p>
+<h2>4. Obtain a fresh native preview</h2>
+<p>Set <code>REVIEWED_HEAD</code> to the literal 40-character commit you inspected, and choose a new receipt path outside the package and authority directories. The <code>--acknowledge-preserved-library-edits</code> flag is required only when those original dirty paths differ from the source baseline; it acknowledges their review, not permission to discard them.</p>
+<pre><code class="language-bash">REVIEWED_HEAD=&quot;$(git rev-parse HEAD)&quot;
+RECEIPT=&quot;$HOME/.cache/cellerator/ss1-native-preview.json&quot;
+python3 planning/semantic-spine-v1/scripts/todo_bootstrap.py preview   --source-root . --review-head &quot;$REVIEWED_HEAD&quot;   --acknowledge-preserved-library-edits --receipt &quot;$RECEIPT&quot;
+</code></pre>
+<p>The wrapper calls the native validator/diff and requires <code>valid=true</code>, the correct Cellerator UUID, a concrete revision, coherent first-class workflow authority and <strong>no modifications of existing records</strong>. It records the source, plan, package, executable and authority identities. Read <code>would_add</code>, <code>would_modify</code>, warnings and the native validation details. Use a fresh filename rather than overwrite an earlier preview receipt.</p>
+<p>Any unexpected existing <code>CE-SS1-*</code> record is a collision to inspect. This package does not silently reset done tasks, demote interfaces or reuse an active run. A true no-op means no application is needed. Cross-authority dependencies are not required.</p>
+<h2>5. Explicitly apply, then stop</h2>
+<p>Only after reviewing the preview:</p>
+<pre><code class="language-bash">python3 planning/semantic-spine-v1/scripts/todo_bootstrap.py apply   --source-root . --review-head &quot;$REVIEWED_HEAD&quot;   --acknowledge-preserved-library-edits --receipt &quot;$RECEIPT&quot;   --confirm APPLY-CE-SS1-RUN-V1
+</code></pre>
+<p>The wrapper revalidates immediately, compares material source/authority/diff identities to the reviewed receipt, checks that the preview is recent, and invokes the one observed native apply command. It does not retry automatically. A failure after a possible write requires inspecting current authority before trying again.</p>
+<p>The current CLI apply command builds its own fresh proposal and checks its own transaction preconditions [S13]. The wrapper's preview and apply are separate processes, not one externally locked transaction. Keep other Todo writers quiescent during the manual sequence. The wrapper checks for material drift immediately before apply; it does not claim to hold an authority lock across these commands or to provide a stronger atomic reviewed-revision guarantee than the installed service.</p>
+<h2>6. Verify the inert result</h2>
+<p>Using Project Control's read-only overview/coordination/inspection surfaces, verify the new run, all seven lanes, 30 records, draft interface and unreached checkpoints. No leaf should be claimed, no implementation agent should be launched and no workspace should have been created by this package. The root starts planned. Do not treat unavailable workflow inspection as a successful verification.</p>
+<p>Then stop. Only a separate execution authorization enables first-class lane setup and implementation. Follow <code>handoff/coordinator.md</code> and <code>03_PARALLEL_LANES_AND_INTEGRATION.md</code> at that point. There is no hidden “apply and start” helper.</p>
+<h2>Revisions and integrity</h2>
+<p><code>scripts/compile_plan.py --check</code> verifies that the native plan matches the richer catalog. Regeneration changes an artifact, not Todo. Any approved package edit requires regenerating consistent views and the integrity manifest before previewing again. Do not hand-edit only the native JSON and leave the richer task catalog, task sheets or lane map contradictory.</p>
+<p><code>evidence/</code> separates package checks performed here from native authority validation and future runtime evidence. Runtime preview/apply receipts must be stored outside the immutable package. A passed reference-only demo is never the GPU acceptance receipt.</p>
+</section><section id="doc-6"><h1>6. Deferred obligations, not silently completed capabilities</h1>
+<p>The following remain explicit obligations after a successful Semantic Spine v1. These are a deferred inventory, <strong>not applied Todos or permission to start additional epics</strong>.</p>
+<table>
+<thead>
+<tr>
+  <th>Obligation</th>
+  <th>What this epic leaves</th>
+  <th>What a later completion must prove</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Full <code>.cell</code> executable path</td>
+  <td>Bounded parser/Sema/IR-origin descriptor test</td>
+  <td>Ordinary <code>.cell</code> source traverses the actual driver, planning, preparation and accelerator execution</td>
+</tr>
+<tr>
+  <td>Implicit <code>.cell</code> dialect</td>
+  <td>Architectural commitment; converted content may still use existing pragma mechanics</td>
+  <td>Extension-driven syntax activation while ordinary C++ remains ordinary</td>
+</tr>
+<tr>
+  <td>Semantic modules/imports</td>
+  <td>No permanent <code>.ceh</code> twin; content preserved as <code>.cell</code></td>
+  <td>Self-describing interfaces, bodies/summaries, real dependency/link/build handling</td>
+</tr>
+<tr>
+  <td>Cross-translation-unit optimization</td>
+  <td>Default semantic visibility commitment, subject to effects and numerical law</td>
+  <td>Real on-demand IR import, joint optimization, cache invalidation and lawful boundaries</td>
+</tr>
+<tr>
+  <td>General relation coverage</td>
+  <td>Required N1, f16 weights/f32 arithmetic, single device/stream</td>
+  <td>More widths, types, output modes, concurrency and physical alternatives with tests</td>
+</tr>
+<tr>
+  <td>Contraction integration</td>
+  <td>Correct scalar-dot versus edge-channel law</td>
+  <td>Full semantic-to-provider execution and candidate/preparation chain</td>
+</tr>
+<tr>
+  <td>General compositions</td>
+  <td>Explicit nonprimitive meaning and fail-closed unavailable lowering</td>
+  <td>Real chain, hierarchy, moments, exchange, gradient and publication composition execution</td>
+</tr>
+<tr>
+  <td>Installed libCellerator and library</td>
+  <td>Repository-local provisional API/demo</td>
+  <td>Coherent exported native targets, actual <code>library/</code> installation and useful direct consumers</td>
+</tr>
+<tr>
+  <td>Public API stabilization</td>
+  <td>Temporary lane interface only</td>
+  <td>Evidence from real consumers before compatibility commitments</td>
+</tr>
+<tr>
+  <td>Performance work</td>
+  <td>Reachability, correctness, reuse and basic overhead observations</td>
+  <td>Representative preparation/reuse break-even, geometry scaling, exchange algorithms, stronger provider competition</td>
+</tr>
+<tr>
+  <td>JIT/family compiler</td>
+  <td>No new implementation</td>
+  <td>Demonstrated benefit from stable mechanisms, related supports or generated code after complete lifetime accounting</td>
+</tr>
+</tbody>
+</table>
+<p>No final receipt may infer full-language execution from compiler-origin descriptors being passed through C++ test code. No conversion of <code>.ceh</code> filenames proves import semantics or cross-TU optimization. No N1 sparse success proves that the best Tensor Core, contraction or exchange providers are integrated.</p>
+<p>The user favors automatic cross-unit visibility for <code>.cell</code>, no duplicated Cellerator-only header format, and accelerator-oriented optimization with native C++ retaining equal access to the same computation engine. Preserve these design directions without implementing them accidentally inside this small epic.</p>
+</section><section id="doc-7"><h1>7. Evidence, source authority and limitations</h1>
+<p>Cellerator: <code>b3340736c8c7b17266bd825c9f079d86e42a5639</code>, main worktree <code>wt-d3fea47b1244da16</code>. Project Control source: <code>9f4eca4efeada3b0bd3b05dc0ce3121a7099632c</code>, clean main worktree <code>wt-e8e946a37a2ee13e</code>. All reads were non-mutating. No live Cellerator build or CUDA test was run during package construction.</p>
+<p>The source review remains in <code>basis/architecture-review.html</code>. Its historical observations must not be presented as fresh benchmarks. The two dirty library bodies could not be retrieved; a local content-preservation task is required. Todo authority unavailable means unknown state, not an empty task list.</p>
+<h2>S01</h2>
+<p><code>cellerator:planning/jbc-preledger-v1/08_DEPENDENCY_INTEGRATION_AND_PARALLELISM_MAP.md:1–99</code></p>
+<p>Serial queues within lanes; only genuine interface/checkpoint barriers; independent provider work.</p>
+<h2>S02</h2>
+<p><code>cellerator:planning/cellerator-compiler-preledger-v1/evidence/audit_accepted_todo_plan_schemas_and_live_precedents.md:1–134</code></p>
+<p>Historical installed native schema audit; v3 first-class runs/lanes and accepted field shapes. Not current live validation.</p>
+<h2>S03</h2>
+<p><code>cellerator:CMakeLists.txt:1–119</code></p>
+<p>Host SDK before CUDA-off return; native targets below; architecture70/toolchain settings.</p>
+<h2>S04</h2>
+<p><code>cellerator:include/Cellerator/execution/identity.hh:1–209</code></p>
+<p>Existing typed persistent identities, axis identity header, structure epoch and value generation.</p>
+<h2>S05</h2>
+<p><code>cellerator:src/compute/operation/builtin_catalog.cc:1–164</code></p>
+<p>Narrow actual builtin candidate/preparation regimes; N1 overlap and f16/f32 tuple.</p>
+<h2>S06</h2>
+<p><code>cellerator:src/compute/candidate/transpose_backward_candidate.cu:1–131</code></p>
+<p>Actual transpose CUDA kernel uses forward_value_positions and f16 weights/f32 arithmetic.</p>
+<h2>S07</h2>
+<p><code>cellerator:tests/math_core/transpose_backward_candidate_test.cu:1–249</code></p>
+<p>Concrete FMP1/CTP1 preparation fixture and source symbols to reuse. Source inspected, not test executed here.</p>
+<h2>S08</h2>
+<p><code>cellerator:src/runtime/value_readiness.cu:1–121</code></p>
+<p>Read in the authoritative review; generation/event mechanism to preserve, not blanket concurrent-reader proof.</p>
+<h2>S09</h2>
+<p><code>cellerator:src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc:1–156</code></p>
+<p>Existing relation IR lowering to v2, orientation/axis checks and self-referential lowered views.</p>
+<h2>S10</h2>
+<p><code>cellerator:src/compute/decomposition/support_embedding_v1.cc:1–80</code></p>
+<p>Contraction kind currently accepted only as disjoint channel concatenation, rejecting partial algebra.</p>
+<h2>S11</h2>
+<p><code>cellerator:include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh:1–38</code></p>
+<p>Representative primitive core field plus requires_composite_lowering boolean; seam for explicit classification.</p>
+<h2>S12</h2>
+<p><code>cellerator:examples/CMakeLists.txt:1–27</code></p>
+<p>Existing repository-local examples hierarchy.</p>
+<h2>S13</h2>
+<p><code>project-control:src/project_control/mutation.py:120–346</code></p>
+<p>Native validate+diff; coherent authority prerequisites; transaction checking; no automatic implementation.</p>
+<h2>S14</h2>
+<p><code>project-control:src/project_control/cli.py:95–240</code></p>
+<p>Exact local plan validate/apply --project --file forms; no --json on these parsers.</p>
+<h2>S15</h2>
+<p><code>project-control:docs/TOOL_CONTRACTS.md:174–260</code></p>
+<p>First-class workflow protocol versus subordinate delegate_task workers; native plan application boundaries.</p>
+<h2>S16</h2>
+<p><code>project-control:src/project_control/preledger.py:308–554</code></p>
+<p>Generic preledger compiler emits schema2, not the required first-class lane graph.</p>
+<h2>S17</h2>
+<p><code>project-control:src/project_control/services/planning.py:1–202</code></p>
+<p>Context reports [2] when workflow unavailable as a fallback, not a native-v3 rejection.</p>
+<h2>S18</h2>
+<p><code>project-control:src/project_control/admin.py:140–320</code></p>
+<p>Workspace materialization separate from plan ingestion; needs active run, clean base and managed integration coordination.</p>
+<h2>S19</h2>
+<p><code>cellerator:.todo-orchestrator/ce-ptr-plan.json:170–400, 860–899</code></p>
+<p>Native task/checkpoint/interface-consumer shapes and contract_split lane precedent.</p>
+<h2>S20</h2>
+<p><code>cellerator:tests/planner_targets.cmake:125–185</code></p>
+<p>Existing candidate test target names and real linked libraries.</p>
+<h2>Primary external clarification</h2>
+<p><strong>R01: NVIDIA Floating Point and IEEE 754</strong></p>
+<p>https://docs.nvidia.com/cuda/floating-point/index.html</p>
+<p>FMA/association differences justify explicit policy and tolerance-based cross-device checks, not a blanket precision waiver.</p>
+<p><strong>R02: CUDA Runtime API 12.9.1: Stream Management</strong></p>
+<p>https://docs.nvidia.com/cuda/archive/12.9.1/cuda-runtime-api/group__CUDART__STREAM.html</p>
+<p>Stream ownership and explicit completion/readback reasoning.</p>
+<p><strong>R03: CUDA Toolkit 13.0 Release Notes</strong></p>
+<p>https://docs.nvidia.com/cuda/archive/13.0.0/cuda-toolkit-release-notes/index.html</p>
+<p>Volta offline build/library support removed in13; retain12.x toolchain for sm70.</p>
+<h2>Confidence boundary</h2>
+<p>The proposed descriptor, pair API, task graph, target names and design choices are recommendations derived from these sources and the user’s instructions. They are not claims that new APIs already exist. Offline package validation is independent of the native Todo validator. Native acceptance/collision status is not available until a successful live preview. A reference-only fixture run checks only the supplied toy arithmetic. No performance advantage or complete compiler implementation is inferred.</p>
+</section><section id="doc-8"><h1>8. Task index</h1>
+<p>29 atomic tasks, one epic record, seven first-class lanes. Every record starts planned; none is pre-completed.</p>
+<table>
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Lane</th>
+  <th>Objective</th>
+  <th>Prerequisites</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i01.md">I01</a></td>
+  <td>INTEGRATE</td>
+  <td>Establish the bounded execution baseline and protected edit inventory</td>
+  <td>Manual execution authorization</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-c01.md">C01</a></td>
+  <td>CORE</td>
+  <td>Define one value-owned relation application descriptor</td>
+  <td>I01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-c02.md">C02</a></td>
+  <td>CORE</td>
+  <td>Implement shared semantic validation and fieldwise equivalence</td>
+  <td>C01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-c03.md">C03</a></td>
+  <td>CORE</td>
+  <td>Specify provisional native pair preparation and bindings</td>
+  <td>C02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-c04.md">C04</a></td>
+  <td>CORE</td>
+  <td>Test the contract and publish the foundation artifact</td>
+  <td>C03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i02.md">I02</a></td>
+  <td>INTEGRATE</td>
+  <td>Integrate the foundation and release parallel lanes</td>
+  <td>C04</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n01.md">N01</a></td>
+  <td>NATIVE</td>
+  <td>Adapt the canonical descriptor to existing preparation</td>
+  <td>I02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n02.md">N02</a></td>
+  <td>NATIVE</td>
+  <td>Prepare reusable forward and transpose structure</td>
+  <td>N01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n03.md">N03</a></td>
+  <td>NATIVE</td>
+  <td>Refresh device values without rebuilding topology</td>
+  <td>N02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n04.md">N04</a></td>
+  <td>NATIVE</td>
+  <td>Execute canonical forward application on sm70</td>
+  <td>N03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n05.md">N05</a></td>
+  <td>NATIVE</td>
+  <td>Execute transpose with shared topology and value authority</td>
+  <td>N04</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-n06.md">N06</a></td>
+  <td>NATIVE</td>
+  <td>Prove native reuse and hand off executable evidence</td>
+  <td>N05</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-f01.md">F01</a></td>
+  <td>FRONTEND</td>
+  <td>Lower existing relation semantic IR through the shared contract</td>
+  <td>I02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-f02.md">F02</a></td>
+  <td>FRONTEND</td>
+  <td>Connect the real parser/Sema relation slice</td>
+  <td>F01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-f03.md">F03</a></td>
+  <td>FRONTEND</td>
+  <td>Preserve effects and diagnostics without losing equivalence</td>
+  <td>F02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-f04.md">F04</a></td>
+  <td>FRONTEND</td>
+  <td>Publish a source-origin conformance test artifact</td>
+  <td>F03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-a01.md">A01</a></td>
+  <td>ALGEBRA</td>
+  <td>Separate scalar support dot from edge-channel product</td>
+  <td>I02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-a02.md">A02</a></td>
+  <td>ALGEBRA</td>
+  <td>Make primitive, composition and effect classifications explicit</td>
+  <td>A01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-a03.md">A03</a></td>
+  <td>ALGEBRA</td>
+  <td>Update affected consumers and negative conformance tests</td>
+  <td>A02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-a04.md">A04</a></td>
+  <td>ALGEBRA</td>
+  <td>Publish bounded algebra conformance and migration disposition</td>
+  <td>A03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-v01.md">V01</a></td>
+  <td>VERIFY</td>
+  <td>Create an independent logical-edge oracle and adversarial fixtures</td>
+  <td>I02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-v02.md">V02</a></td>
+  <td>VERIFY</td>
+  <td>Build contract and identity regression probes</td>
+  <td>V01</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-v03.md">V03</a></td>
+  <td>VERIFY</td>
+  <td>Specify integrated origin and GPU acceptance probes</td>
+  <td>V02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-v04.md">V04</a></td>
+  <td>VERIFY</td>
+  <td>Deliver validation harness and adversarial controls</td>
+  <td>V03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i03.md">I03</a></td>
+  <td>INTEGRATE</td>
+  <td>Retire .ceh files without expanding the language milestone</td>
+  <td>I02</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i04.md">I04</a></td>
+  <td>INTEGRATE</td>
+  <td>Integrate all four lanes and repository-local targets</td>
+  <td>N06, F04, A04, V04, I03</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i05.md">I05</a></td>
+  <td>INTEGRATE</td>
+  <td>Run cross-origin semantic and real sm70 conformance</td>
+  <td>I04</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i06.md">I06</a></td>
+  <td>INTEGRATE</td>
+  <td>Run the supplied biological demo and CUDA memory checks</td>
+  <td>I05</td>
+</tr>
+<tr>
+  <td><a href="proposed-todos/ce-ss1-i07.md">I07</a></td>
+  <td>INTEGRATE</td>
+  <td>Close the limited epic and preserve deferred obligations</td>
+  <td>I06</td>
+</tr>
+</tbody>
+</table>
+<p>The detailed task sheets carry implementation actions, source scope, concrete acceptance and failure limits. Read them rather than treating this index as the entire task specification.</p>
+</section><section id="doc-9"><h1>9. User decision trace</h1>
+<table>
+<thead>
+<tr>
+  <th>User commitment</th>
+  <th>Package realization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Limited first epic; about 20–40 tasks, strictly below 100</td>
+  <td>29 atomic leaves, 30 records total; package validator enforces the cap</td>
+</tr>
+<tr>
+  <td>JBC-style real first-class parallelism</td>
+  <td>Seven native-v3 lanes; four concurrent post-foundation queues; explicit ownership and serial lane graph validation</td>
+</tr>
+<tr>
+  <td>One shared semantic authority, no wholesale v2 canonization</td>
+  <td>C01–C04, F01–F04, N01; neutral relation descriptor with checked adapters</td>
+</tr>
+<tr>
+  <td>Forward and transpose, not a broad algebra epic</td>
+  <td>Native pair N01–N06; operation and type-regime scope fixed</td>
+</tr>
+<tr>
+  <td>Correct contraction foundations now</td>
+  <td>A01/A03 dot versus edge-channel split-law tests; full provider integration deferred</td>
+</tr>
+<tr>
+  <td>Remove misleading primitive/composition equivalences early</td>
+  <td>A02/A03 classify primitive, composition and effect with fail-closed unavailable lowering</td>
+</tr>
+<tr>
+  <td>Preserve valuable work; compatibility not paramount</td>
+  <td>Reuse candidates/projection/generation code, document replaced contracts and retain independent regressions</td>
+</tr>
+<tr>
+  <td>Accelerator-first, tolerance-based tests</td>
+  <td>Real sm70 gates and normal demo; conservative tiny host oracle is not a performance backend</td>
+</tr>
+<tr>
+  <td>Compiler semantics parity, but full .cell execution later</td>
+  <td>F02 source-origin binding test; I05 executes returned descriptors through native API; explicit deferred inventory</td>
+</tr>
+<tr>
+  <td>Small demo, repository-local, provided before bootstrap</td>
+  <td>examples/semantic_spine_v1/regulatory_reuse.cc and companions; normal build requires epic implementation</td>
+</tr>
+<tr>
+  <td>No SDK/public API freeze</td>
+  <td>Declaration-only planning sketches; internal interface publication for lanes only</td>
+</tr>
+<tr>
+  <td>Remove/convert all active .ceh</td>
+  <td>I03 content-preserving disposition; original unread dirty files protected in preflight</td>
+</tr>
+<tr>
+  <td>.cell self-describing and cross-unit semantic visibility</td>
+  <td>Architectural commitment recorded; parser/import/LTO implementation expressly deferred</td>
+</tr>
+<tr>
+  <td>Complete manual bootstrap, not automatic application</td>
+  <td>Rich catalog, native3 plan, CSV projections, lane/barrier/interface/checkpoint catalogs, integrity and safe native preview/apply wrapper</td>
+</tr>
+<tr>
+  <td>No implementation during package construction</td>
+  <td>Artifacts only; no source patches, Todo apply, activation, worktrees or workers</td>
+</tr>
+<tr>
+  <td>Explicit go-ahead for implementation later; pause when requested</td>
+  <td>Inert handoff prompts, no start command in bootstrap, stop after I07</td>
+</tr>
+</tbody>
+</table>
+<p>This trace records scope agreements, not evidence of future implementation completion.</p>
+</section><section id="task-details"><h1>Individual task sheets</h1><details><summary>CE-SS1-0000: Semantic Spine v1: one relation meaning and real accelerator reuse</summary><h1>CE-SS1-0000: Semantic Spine v1: one relation meaning and real accelerator reuse</h1>
+<p>Coordinate the bounded semantic-unification epic; close only after I07 and all execution evidence. No broad compiler, library or packaging campaign.</p>
+<p>Coordinate the six work lanes. Do not claim an implementation leaf on behalf of another first-class agent. No leaf depends on this hierarchy record. Close it only after all 29 leaves and CE-SS1-I07 are complete. Application does not authorize activation.</p>
+</details><details><summary>CE-SS1-A01: Separate scalar support dot from edge-channel product</summary><h1>CE-SS1-A01: Separate scalar support dot from edge-channel product</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-ALGEBRA</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Remove the concrete contraction ambiguity without integrating the entire contraction portfolio.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/compute/architecture/providers/nvidia/sm70/contract/sparse_contract_v1.cu</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>include/Cellerator/compute/decomposition/support_embedding_v1.hh</code></li>
+<li><code>src/compute/decomposition/support_embedding_v1.cc</code></li>
+<li><code>include/Cellerator/compute/operation/support_product_semantics.hh</code></li>
+<li><code>tests/semantic_spine/algebra/support_product_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.</p>
+</li>
+<li><p>Change the inspected support-embedding validator so a scalar dot cannot be accepted with concatenate-only assembly.</p>
+</li>
+<li><p>Retain the meaningful edge-channel decomposition under its truthful name/semantics. Existing scalar contraction kernels keep their dot-product meaning.</p>
+</li>
+<li><p>Reject legacy ambiguous descriptors until the caller specifies the missing meaning.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>For K=2 and K=17, whole dot equals split-K partial sums; concatenating partial dots is rejected.</p>
+</li>
+<li><p>Edge-channel outputs concatenate disjoint K panels and retain their shape.</p>
+</li>
+<li><p>No contraction GPU provider is newly integrated or deleted.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-A02: Make primitive, composition and effect classifications explicit</summary><h1>CE-SS1-A02: Make primitive, composition and effect classifications explicit</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-ALGEBRA</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-A01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh</code></li>
+<li><code>src/compiler/sema/implement_operation_kind_resolution.cc</code></li>
+<li><code>tests/semantic_spine/algebra/classification_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.</p>
+</li>
+<li><p>Keep chain, exchange, hierarchy, moments and gradient distinguishable from a primitive. Publication is an effect; it must not silently become sparse arithmetic.</p>
+</li>
+<li><p>Preserve useful source spellings and existing flags only where they do not permit accidental execution as the wrong operation.</p>
+</li>
+<li><p>Mark lowering availability separately from semantic recognition. Do not enumerate an entire future algebra or implement all compositions.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Asking for a primitive from a composition/effect fails explicitly, rather than returning sparse_axis_update or apply.</p>
+</li>
+<li><p>Existing directly supported apply/transpose resolution remains usable.</p>
+</li>
+<li><p>All 14 currently represented source families receive an explicit, truthful classification.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-A03: Update affected consumers and negative conformance tests</summary><h1>CE-SS1-A03: Update affected consumers and negative conformance tests</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-ALGEBRA</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-A02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc</code></li>
+<li><code>src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc</code></li>
+<li><code>tests/semantic_spine/algebra</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.</p>
+</li>
+<li><p>Unknown/unimplemented composition lowering must retain composition meaning or return unsupported, never use a convenient substitute primitive.</p>
+</li>
+<li><p>Update old tests that asserted the wrong law with explicit migration rationale, retaining negative counterexamples.</p>
+</li>
+<li><p>Keep working sequence-predicate and other v1 implementations reachable; absence from a new enum is not deletion authorization.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>A test which previously accepted dot split-K concatenation now fails for the right reason.</p>
+</li>
+<li><p>A chain/exchange/gradient cannot reach an apply/update launch by merely erasing its composition tag.</p>
+</li>
+<li><p>No opcode renumbering or schema replacement affects unrelated native implementations.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-A04: Publish bounded algebra conformance and migration disposition</summary><h1>CE-SS1-A04: Publish bounded algebra conformance and migration disposition</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-ALGEBRA</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Close the semantic repair lane with executable tests and an explicit list of remaining operation work.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-A03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/algebra</code></li>
+<li><code>docs/semantic_spine_v1/algebra_validation.json</code></li>
+<li><code>docs/semantic_spine_v1/algebra_disposition.md</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.</p>
+</li>
+<li><p>Document each scoped changed symbol, retained implementation and rejection case.</p>
+</li>
+<li><p>Explicitly defer full contraction candidate plumbing, general composition lowering and algebra redesign.</p>
+</li>
+<li><p>Hand I04 a committed artifact that does not require edits to the native/frontend lane-owned files.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>The tests compute and compare actual partial results, not text labels.</p>
+</li>
+<li><p>All intentional behavior changes are tied to counterexamples.</p>
+</li>
+<li><p>The foundational apply interface remains unchanged or any necessary revision has been coordinated with every consumer.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-C01: Define one value-owned relation application descriptor</summary><h1>CE-SS1-C01: Define one value-owned relation application descriptor</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-CORE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>include/Cellerator/execution/identity.hh</code></li>
+<li><code>include/Cellerator/compute/operation/relation_algebra_v2/relation_algebra.hh</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>include/Cellerator/compute/operation/relation_semantics.hh</code></li>
+<li><code>docs/semantic_spine_v1/contract.md</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.</p>
+</li>
+<li><p>Retain typed source/destination domain-and-order identities, extents, topology ID/epoch, edge order/count, orientation and separate relation/input/multiply/accumulation/output types.</p>
+</li>
+<li><p>Define each logical edge as an additive contribution, including distinct duplicate endpoint edges. Empty rows sum to zero; transpose reverses traversal, not biological identities.</p>
+</li>
+<li><p>Specify overwrite and recognized-but-unsupported update/alias modes honestly. Describe topology reuse and exact support separately from floating-point equivalence.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>A minimal C++ compile verifies the descriptor is value-owned without self-referential pointers.</p>
+</li>
+<li><p>A non-square asymmetric fixture determines unambiguous input/result axes for both orientations.</p>
+</li>
+<li><p>No new generic graph system, blanket v2 migration, or physics-dependent identity is introduced.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-C02: Implement shared semantic validation and fieldwise equivalence</summary><h1>CE-SS1-C02: Implement shared semantic validation and fieldwise equivalence</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-CORE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Both native and compiler callers must use the same relation semantics checks and equality rules.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-C01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/relation_semantics.cc</code></li>
+<li><code>tests/semantic_spine/core/descriptor_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.</p>
+</li>
+<li><p>Separate invalid semantics from valid-but-unimplemented physical capability. Recognize higher width or alternate arithmetic without silently executing the N1 contract.</p>
+</li>
+<li><p>Define reduction/FMA permissions independently from test tolerances. Do not convert tolerance-based testing into blanket permission to lower storage precision.</p>
+</li>
+<li><p>Check extents/count arithmetic and orientation consistency. Do not scan device values or support during hot validation.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Reject altered high identity bits, mismatched axes/order/epoch and illegal aliases; accept permitted equivalent descriptors from independent construction.</p>
+</li>
+<li><p>Distinguish zero dimensions/empty support from invalid pointers, with no unchecked 64-to-32-bit truncation.</p>
+</li>
+<li><p>Changing runtime value generation does not alter the topology preparation key.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-C03: Specify provisional native pair preparation and bindings</summary><h1>CE-SS1-C03: Specify provisional native pair preparation and bindings</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-CORE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-C02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>include/Cellerator/compute/operation/prepared_relation.hh</code></li>
+<li><code>docs/semantic_spine_v1/native_contract.md</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.</p>
+</li>
+<li><p>Initially support N1, f16 relation storage and f32 state/multiply/accumulation/output using existing kernels. No Tensor Core requirement and no CPU success fallback in accelerator acceptance.</p>
+</li>
+<li><p>Make value publication monotonic per pair and stream-ordered; distinguish latest enqueued generation from device completion. Pair use is single-device/single-stream in v1 and rejects conflicting stream/device.</p>
+</li>
+<li><p>Allow host topology preparation, allocate required projection/packing capacity before enqueue, and expose actual preparation/refresh/launch evidence. Define same-generation behavior, failure-state preservation and required caller fences.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Every demo call has a declared contract and explicit failure behavior; no implementation or fake backend is supplied by this task.</p>
+</li>
+<li><p>Host-only semantic headers do not include CUDA merely to express an operation.</p>
+</li>
+<li><p>The native interface has no hidden hot-path allocation, geometry discovery or canonicalization promise.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-C04: Test the contract and publish the foundation artifact</summary><h1>CE-SS1-C04: Test the contract and publish the foundation artifact</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-CORE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-C03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/core</code></li>
+<li><code>docs/semantic_spine_v1/core_validation.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Add a standalone, small host contract test build and declaration compilation checks for native/compiler consumers. Keep CPU code as an oracle/validation facility.</p>
+</li>
+<li><p>Test forward/transpose duality at the mathematical level, identity permutations, exact support, and recognized unsupported modes. Cover fieldwise copy/move and comparison.</p>
+</li>
+<li><p>Commit the core artifact and hand it to I02 with source hashes and real commands. Publish no installed/public ABI stability claim.</p>
+</li>
+<li><p>Report ambiguities now; do not let each downstream lane invent its own descriptor.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Contract tests run, not merely compile or search for names.</p>
+</li>
+<li><p>Core artifact contains both headers and validator implementation; all downstream signatures are visible.</p>
+</li>
+<li><p>I02 receives a concrete source revision; no consumer starts from an unpublished draft.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-F01: Lower existing relation semantic IR through the shared contract</summary><h1>CE-SS1-F01: Lower existing relation semantic IR through the shared contract</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-FRONTEND</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Replace the selected relation-family duplicate semantic interpretation with the canonical descriptor.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh</code></li>
+<li><code>src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc</code></li>
+<li><code>src/compiler/sema/implement_operation_kind_resolution.cc</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh</code></li>
+<li><code>src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc</code></li>
+<li><code>tests/semantic_spine/compiler/lowering_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.</p>
+</li>
+<li><p>Map both orientations to the canonical descriptor. Preserve relation storage separately from state type, order identities, output policy and arithmetic permissions.</p>
+</li>
+<li><p>Delegate common semantic validation to the shared validator; compiler-specific diagnostics may wrap it.</p>
+</li>
+<li><p>Restrict legacy result objects/adapters to required existing consumers, accounting for self-referential view lifetime.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>An existing IR forward and transpose yield the same mathematical descriptors as independently built C++ calls.</p>
+</li>
+<li><p>f16 relation/f32 state does not become an all-f32 or all-f16 descriptor.</p>
+</li>
+<li><p>No duplicate scalar interpreter is added as execution proof.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-F02: Connect the real parser/Sema relation slice</summary><h1>CE-SS1-F02: Connect the real parser/Sema relation slice</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-FRONTEND</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-F01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/compiler/frontend/parser/parse_non_relation_operation_families.cc</code></li>
+<li><code>src/compiler/frontend/parser/expose_parser_library_and_parse_tree_dump_apis.cc</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compiler/sema/relation_spine_bridge.cc</code></li>
+<li><code>include/Cellerator/compiler/sema/relation_spine_bridge.hh</code></li>
+<li><code>tests/semantic_spine/compiler/source_slice_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.</p>
+</li>
+<li><p>A fixture may supply runtime identities because source alone cannot know the loaded dataset; it may not precompute or substitute the expected operation descriptor.</p>
+</li>
+<li><p>Keep this an embedding/test route, not a replacement command-line compiler. Report unsupported source honestly.</p>
+</li>
+<li><p>If a narrow parse-to-IR connection is missing, add that connection without broad grammar completion.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Changing direction, symbol binding or numeric declaration in the source changes the descriptor or produces a relevant error.</p>
+</li>
+<li><p>The negative source fixture cannot pass through a hard-coded operation table or name-only assertion.</p>
+</li>
+<li><p>The full .cell executable route is still explicitly incomplete.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-F03: Preserve effects and diagnostics without losing equivalence</summary><h1>CE-SS1-F03: Preserve effects and diagnostics without losing equivalence</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-FRONTEND</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prevent compiler wrappers from silently weakening the native contract.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-F02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc</code></li>
+<li><code>src/compiler/sema/relation_spine_bridge.cc</code></li>
+<li><code>tests/semantic_spine/compiler/diagnostic_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.</p>
+</li>
+<li><p>Source provenance may differ between native and source-origin requests; the canonical mathematical key must not depend on where a request was spelled.</p>
+</li>
+<li><p>Record relevant read/write effects and keep publication/generation facts out of the static topology key.</p>
+</li>
+<li><p>Test copy/move of lowered records and returned borrowed views so tests do not succeed through dangling stack references.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Both origins reject the same mathematical invalidities with source-context diagnostics on the compiler side.</p>
+</li>
+<li><p>A new value binding does not require reparsing or changing canonical topology semantics.</p>
+</li>
+<li><p>No full execution-field/LTO/driver implementation sneaks into this task.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-F04: Publish a source-origin conformance test artifact</summary><h1>CE-SS1-F04: Publish a source-origin conformance test artifact</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-FRONTEND</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Provide a real origin-parity test route and candid language capability status.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-F03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/compiler</code></li>
+<li><code>docs/semantic_spine_v1/compiler_validation.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.</p>
+</li>
+<li><p>Compare fieldwise native/source descriptors for forward and transpose using a non-square relation fixture.</p>
+</li>
+<li><p>Provide I05 with a function that returns the source-derived descriptor for execution through the same native prepared pair. Do not add an independent reference launch path.</p>
+</li>
+<li><p>Record full .cell executable compilation, implicit .cell mode and cross-TU composition as deferred, separately from this passing embedding test.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Meaningful altered-source and wrong-binding tests fail rather than only checking operation names.</p>
+</li>
+<li><p>No language-complete or installed-SDK-complete claim appears in the receipt.</p>
+</li>
+<li><p>The I04 artifact contains all necessary source-facing changes and focused tests.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I01: Establish the bounded execution baseline and protected edit inventory</summary><h1>CE-SS1-I01: Establish the bounded execution baseline and protected edit inventory</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.</p>
+<h2>Prerequisites</h2>
+<p>None beyond manual execution authorization and the valid applied run.</p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>tests/planner_targets.cmake</code></li>
+<li><code>tests/math_core/feature_major_small_n_candidate_test.cu</code></li>
+<li><code>tests/math_core/transpose_backward_candidate_test.cu</code></li>
+<li><code>library/cellerator/cellerator.ceh</code></li>
+<li><code>library/cellerator.cell</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>docs/semantic_spine_v1/baseline.json</code></li>
+<li><code>docs/semantic_spine_v1/source_disposition.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Read the delivered review and decisions, and inspect only the affected execution, compiler and decomposition paths. Record precise hashes and current HEAD; do not interpret unavailable Todo health as an empty ledger.</p>
+</li>
+<li><p>Verify the example and package have been committed as the reviewed bootstrap input. Read and hash every current .ceh and the existing dirty-library content before any future conversion.</p>
+</li>
+<li><p>Resolve the installed CUDA 12.x toolchain and an actual sm70 device. Build and run existing feature-major and transpose tests under an exclusive device lease; record genuine pre-existing failures rather than disabling tests.</p>
+</li>
+<li><p>Record the anticipated C01/I02 contract publication and non-overlapping lane ownership. Escalate a missing GPU or broken prerequisite without starting a broad repair campaign.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Baseline names actual compiler, GPU capability, test command/exit status, source hashes and any pre-existing failure.</p>
+</li>
+<li><p>The provided demo is present at examples/semantic_spine_v1/regulatory_reuse.cc; no .ceh content has been lost.</p>
+</li>
+<li><p>No implementation dependency is marked complete from campaign status or capability-name tests.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I02: Integrate the foundation and release parallel lanes</summary><h1>CE-SS1-I02: Integrate the foundation and release parallel lanes</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Make the tested canonical contract available in one shared source base and publish its internal interface.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-C04</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>include/Cellerator/compute/operation/relation_semantics.hh</code></li>
+<li><code>src/compute/operation/relation_semantics.cc</code></li>
+<li><code>include/Cellerator/compute/operation/prepared_relation.hh</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>CMakeLists.txt</code></li>
+<li><code>cmake/SemanticSpineV1.cmake</code></li>
+<li><code>docs/semantic_spine_v1/foundation.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Integrate C04, add only the opt-in build wiring for the semantic contract, and verify its leaf tests.</p>
+</li>
+<li><p>Record the integrated foundation commit in the checkpoint. Materialize or reconcile downstream lane workspaces from this commit only after integration, never from stale pre-foundation work.</p>
+</li>
+<li><p>Publish CE-SS1-I-RELATION version 1 from the actual header files. This freezes an internal working agreement for this epic, not the future public API.</p>
+</li>
+<li><p>Release N01, F01, A01 and V01 together; I03 may proceed independently on library file disposition.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>A clean checkout of the foundation compiles the real shared validator.</p>
+</li>
+<li><p>The four downstream lanes are simultaneously ready in the combined dependency/serial-queue graph.</p>
+</li>
+<li><p>Every consumer sees the same interface hash and foundation revision.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I03: Retire .ceh files without expanding the language milestone</summary><h1>CE-SS1-I03: Retire .ceh files without expanding the language milestone</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>library</code></li>
+<li><code>stdlib</code></li>
+<li><code>docs/semantic_spine_v1/cell_units.md</code></li>
+<li><code>docs/semantic_spine_v1/ceh_disposition.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.</p>
+</li>
+<li><p>Remove only truly redundant files; convert meaningful definitions to .cell and update direct references. Do not duplicate definitions already in an umbrella.</p>
+</li>
+<li><p>Retain ordinary .hh headers. Do not implement a module loader, implicit-dialect frontend or cross-TU optimizer here.</p>
+</li>
+<li><p>Record .cell as the desired self-describing/importable source format, and mark full .cell execution/implicit mode/cross-TU infrastructure as future work. Only narrowly related references/manifests may change.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>No active project-owned .ceh file remains; every previous file has a content-preservation or redundancy disposition.</p>
+</li>
+<li><p>Historical review/planning mentions need not be erased.</p>
+</li>
+<li><p>No library expansion, public SDK redesign or broad resource-layout migration occurred.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>If a .ceh contains substantial inseparable implementation, preserve it as .cell first and document missing language support. Never delete unread content. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I04: Integrate all four lanes and repository-local targets</summary><h1>CE-SS1-I04: Integrate all four lanes and repository-local targets</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N06</code>, <code>CE-SS1-F04</code>, <code>CE-SS1-A04</code>, <code>CE-SS1-V04</code>, <code>CE-SS1-I03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc</code></li>
+<li><code>src/compiler/sema/implement_operation_kind_resolution.cc</code></li>
+<li><code>examples/CMakeLists.txt</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>CMakeLists.txt</code></li>
+<li><code>cmake/SemanticSpineV1.cmake</code></li>
+<li><code>examples/CMakeLists.txt</code></li>
+<li><code>examples/semantic_spine_v1/CMakeLists.txt</code></li>
+<li><code>tests/semantic_spine/CMakeLists.txt</code></li>
+<li><code>docs/semantic_spine_v1/integration.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.</p>
+</li>
+<li><p>Define opt-in CE-SS1 test/demo targets using real objects and existing CUDA providers. Avoid installing/exporting an SDK as part of this change.</p>
+</li>
+<li><p>Link the actual parser/Sema subset needed by the source-origin probe, not every nominal compiler interface.</p>
+</li>
+<li><p>Check that algebra classification changes and compiler relation lowering coexist and every intended target resolves symbols.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>All target definitions refer to real source units, not INTERFACE-only placeholders for computation.</p>
+</li>
+<li><p>No broad root-CMake/CUDA backend restructuring was necessary; any prerequisite exception is documented.</p>
+</li>
+<li><p>No pending artifact is mistaken for integrated code.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I05: Run cross-origin semantic and real sm70 conformance</summary><h1>CE-SS1-I05: Run cross-origin semantic and real sm70 conformance</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prove the epic’s central assertion with one complete execution witness.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I04</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>docs/semantic_spine_v1/origin_execution.json</code></li>
+<li><code>tests/semantic_spine/integration</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.</p>
+</li>
+<li><p>Execute both origins through the same prepared accelerator implementation for forward and transpose at two value generations.</p>
+</li>
+<li><p>Verify dimensions, edge identity, result numerical tolerances, stale failure, projection reuse and source/launch provenance.</p>
+</li>
+<li><p>Record actual GPU/toolchain and compare direct native candidate baselines to ensure the adapter has not silently moved work to CPU or added full scans/synchronizations.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Real GPU arithmetic results pass, not merely descriptor serialization.</p>
+</li>
+<li><p>Wrong source bindings and stale generations fail; valid high-width unsupported cases do not fake success.</p>
+</li>
+<li><p>The full .cell driver is still reported deferred, even though source-derived descriptors execute via the native API.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I06: Run the supplied biological demo and CUDA memory checks</summary><h1>CE-SS1-I06: Run the supplied biological demo and CUDA memory checks</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I05</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>examples/semantic_spine_v1</code></li>
+<li><code>docs/semantic_spine_v1/demo_execution.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.</p>
+</li>
+<li><p>Run Compute Sanitizer memcheck on the tiny demo and relevant native tests. A missing sanitizer/device is an explicit acceptance blocker, not a skip pass.</p>
+</li>
+<li><p>Confirm one topology preparation, two value publications, correct forward/transpose results, actual bound candidate names and rejection of a stale call before output changes.</p>
+</li>
+<li><p>Keep the reference-only fixture mode visibly distinct and exclude it from GPU completion. Describe normal run/build commands and the small scope.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Demo exits zero on real sm70 with no memory errors.</p>
+</li>
+<li><p>The default program never provides a dummy or reference fallback to pass.</p>
+</li>
+<li><p>The demo remains small: no optimizer step, training, new dataset, broad planner inspection or performance promotion.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-I07: Close the limited epic and preserve deferred obligations</summary><h1>CE-SS1-I07: Close the limited epic and preserve deferred obligations</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-INTEGRATE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Publish an evidence-backed completion receipt and stop at the agreed boundary.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I06</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>docs/semantic_spine_v1/completion.json</code></li>
+<li><code>docs/semantic_spine_v1/deferred.md</code></li>
+<li><code>docs/semantic_spine_v1/source_disposition.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.</p>
+</li>
+<li><p>List implemented semantics versus recognized-but-unimplemented operations and record every touched legacy implementation’s retained/adapted/replaced disposition.</p>
+</li>
+<li><p>Keep explicit obligations for full .cell-to-device execution, implicit .cell mode/imports/cross-TU optimization, broader dtype/width handling, full contraction/compositions, packaging, public API and performance work.</p>
+</li>
+<li><p>Commit/push completed work and integrate this epic only under later execution authorization; do not delete unrelated branches or auto-start another epic. Stop promptly on the user’s pause request.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>All required real executable gates pass with exact provenance; no missing GPU evidence is papered over.</p>
+</li>
+<li><p>No active .ceh remains and useful code has not been discarded without a justified equivalent.</p>
+</li>
+<li><p>The completion statement explicitly denies full-language/SDK completion and performance supremacy.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N01: Adapt the canonical descriptor to existing preparation</summary><h1>CE-SS1-N01: Adapt the canonical descriptor to existing preparation</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/compute/operation/builtin_catalog.cc</code></li>
+<li><code>src/compute/operation/preparation_factory.cc</code></li>
+<li><code>src/compute/candidate/feature_major_small_n_candidate.cu</code></li>
+<li><code>src/compute/candidate/transpose_backward_candidate.cu</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>tests/semantic_spine/native/adapter_test.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.</p>
+</li>
+<li><p>Use actual candidate/preparation entry points. Retain the canonical descriptor for validation; temporary legacy views are mechanism adapters, not a second authority.</p>
+</li>
+<li><p>Reject unsupported width/numeric/update/alias policy before any launch, preserving output and pair state. Do not reinterpret a composition as an apply.</p>
+</li>
+<li><p>Reuse useful legacy code; limit modifications to adapter ownership unless a demonstrated bug requires an explicitly scoped integration edit.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Descriptor fields round-trip through the adapter without low/high-bit loss or swapped biological identities.</p>
+</li>
+<li><p>A valid but unsupported request returns a capability error instead of a success stub or fallback CPU calculation.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N02: Prepare reusable forward and transpose structure</summary><h1>CE-SS1-N02: Prepare reusable forward and transpose structure</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Construct one reusable topology asset with both physical views using existing packing/projection builders.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/compute/projection/physical_feature_major.cc</code></li>
+<li><code>src/compute/projection/physical_transpose.cc</code></li>
+<li><code>tests/math_core/transpose_backward_candidate_test.cu</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>tests/semantic_spine/native/preparation_test.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.</p>
+</li>
+<li><p>Do not fabricate valid-looking packing headers from the tiny fixture. Preparation must depend on supplied endpoints, dimensions and identities.</p>
+</li>
+<li><p>Share forward value positions with transpose where supported. Allocate all fixed-capacity device buffers and scratch before execution.</p>
+</li>
+<li><p>Handle empty support via a legal device zero-fill/no-op or reject physical unsupported cases explicitly without changing the mathematical law. Check all local-index bounds.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Two structurally different non-square relations prepare and execute correctly; no fixture-specific canned topology.</p>
+</li>
+<li><p>Zero-degree rows, singleton and empty-support cases are covered. Duplicate endpoint contributions either preserve their exact meaning or are explicitly rejected by this limited physical provider; never silently coalesce weights.</p>
+</li>
+<li><p>Forward/transpose preparation identity is stable across subsequent value publications.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N03: Refresh device values without rebuilding topology</summary><h1>CE-SS1-N03: Refresh device values without rebuilding topology</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Publish changing values as stream-ordered generations while reusing the prepared structure.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<ul>
+<li><code>src/runtime/value_readiness.cu</code></li>
+<li><code>src/runtime/value_readiness.cu</code></li>
+</ul>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>tests/semantic_spine/native/generation_test.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.</p>
+</li>
+<li><p>Refresh only value-dependent storage. Transpose consumes the corresponding forward-position values rather than independently rebuilding support.</p>
+</li>
+<li><p>Reject stale/non-monotonic generations and incompatible keys before enqueue. Advance the accepted-generation metadata only after required enqueues succeed; on partial CUDA failure mark the pair unusable until a documented recovery/destruction, not falsely ready.</p>
+</li>
+<li><p>Constrain v1 to one caller stream; values and operands remain alive until the caller fences. Do not insert a global device synchronization.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Gen1 and gen2 yield different correct results with one topology preparation.</p>
+</li>
+<li><p>A stale generation or changed edge order is rejected before output mutation; counters/generation remain coherent.</p>
+</li>
+<li><p>Refresh traffic is distinguished from topology construction and no host readback computes relation results.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N04: Execute canonical forward application on sm70</summary><h1>CE-SS1-N04: Execute canonical forward application on sm70</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Make canonical forward requests reach the existing device candidate through the prepared pair.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>tests/semantic_spine/native/forward_test.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.</p>
+</li>
+<li><p>Keep reusable physical layout internal. Do not allocate, hash the full relation, discover candidates or transfer output to host during enqueue.</p>
+</li>
+<li><p>Track evidence from the actual selected and launched implementation, not a catalog label entered by the caller.</p>
+</li>
+<li><p>Test two input states and both value generations, with explicit synchronization only at host observation boundaries.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>GPU forward output matches the independent logical-edge oracle within the declared tolerance.</p>
+</li>
+<li><p>Wrong input domain/order/device, alias or stale generation does not enqueue computation.</p>
+</li>
+<li><p>Existing forward candidate regression tests retain their assertions.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N05: Execute transpose with shared topology and value authority</summary><h1>CE-SS1-N05: Execute transpose with shared topology and value authority</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prove reverse application uses the same biological relation and current values, not a second independent semantic model.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N04</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+<li><code>tests/semantic_spine/native/transpose_test.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.</p>
+</li>
+<li><p>Reuse forward value positions at the current generation. Verify transpose is neither an inverse nor a substitute for the full gradient composition.</p>
+</li>
+<li><p>Reject unsupported directions/policies before launch. Preserve distinct domain identities even when extents happen to match.</p>
+</li>
+<li><p>Handle caller ownership/destruction safely with no hidden global synchronization in repeated execution.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Non-square transpose matches an independent scatter-add oracle at both generations.</p>
+</li>
+<li><p>The dot-product adjoint identity holds within tolerance for multiple vectors.</p>
+</li>
+<li><p>Forward/transpose topology/projection counters stay unchanged after refresh.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-N06: Prove native reuse and hand off executable evidence</summary><h1>CE-SS1-N06: Prove native reuse and hand off executable evidence</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-NATIVE</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Close the native lane with actual CUDA tests and a minimal, traceable execution report.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-N05</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/native</code></li>
+<li><code>docs/semantic_spine_v1/native_validation.json</code></li>
+<li><code>src/compute/operation/prepared_relation.cu</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.</p>
+</li>
+<li><p>Run the new adapter, preparation, generations, forward and transpose cases on an actual sm70 device under a lease. Include a direct-provider comparison as an overhead control, not a speedup promotion.</p>
+</li>
+<li><p>Record numeric tuple, device, source/toolchain, selected symbols, transfers, synchronizations, preparation/refresh counts and all real test commands.</p>
+</li>
+<li><p>Commit and hand off the artifact. Missing hardware is a blocker, never a skipped successful completion.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>No CPU/reference success is reported as accelerator execution.</p>
+</li>
+<li><p>No out-of-scope MMA, optimizer, JIT, training or broad candidate rewrite was added.</p>
+</li>
+<li><p>I04 receives actual implementation plus tests, not only a descriptive registration.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-V01: Create an independent logical-edge oracle and adversarial fixtures</summary><h1>CE-SS1-V01: Create an independent logical-edge oracle and adversarial fixtures</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-VERIFY</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Make correctness independent of physical packing and compiler lowering.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-I02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/verification/oracle.hh</code></li>
+<li><code>tests/semantic_spine/verification/fixtures.hh</code></li>
+<li><code>tests/semantic_spine/verification/oracle_test.cc</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.</p>
+</li>
+<li><p>Include the demo fixture plus a second non-square relation, empty destination rows, duplicate endpoint edges, zero support, permutations and cancellation cases.</p>
+</li>
+<li><p>Supply an explicit absolute+relative tolerance rule with finite/nonfinite handling. Nonfinite comparisons never pass just because a NaN comparison is false.</p>
+</li>
+<li><p>Keep fixed arrays/contiguous fixtures; no generic framework or biological dataset download.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Hand-computed fixture outputs match the oracle and transpose is verified independently of the forward implementation.</p>
+</li>
+<li><p>A deliberately transposed/wrong-index result is rejected.</p>
+</li>
+<li><p>Exact edge/identity checks are not weakened by numerical tolerance.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-V02: Build contract and identity regression probes</summary><h1>CE-SS1-V02: Build contract and identity regression probes</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-VERIFY</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Exercise semantic invariants that a tiny numerical example alone can miss.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-V01</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/verification/contract_probes.cc</code></li>
+<li><code>tests/semantic_spine/verification/CMakeLists.txt</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.</p>
+</li>
+<li><p>Test exact support permutation recovery without requiring a new layout optimizer.</p>
+</li>
+<li><p>Cover invalid input capacities and 64-bit cardinality/local-index boundaries using metadata-only rejection tests, not enormous allocations.</p>
+</li>
+<li><p>Do not couple these tests to native or frontend implementation source; both later import the same independent fixtures.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Malformed descriptors fail before access; valid-but-unsupported physical sizes return an explicit status.</p>
+</li>
+<li><p>Inputs/outputs cannot alias in the supported execution regime.</p>
+</li>
+<li><p>Checks operate on values/contracts rather than searching source for desired words.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-V03: Specify integrated origin and GPU acceptance probes</summary><h1>CE-SS1-V03: Specify integrated origin and GPU acceptance probes</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-VERIFY</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-V02</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/verification/integrated_probe.cc</code></li>
+<li><code>tests/semantic_spine/verification/evidence_requirements.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.</p>
+</li>
+<li><p>Require generation-reuse and stale-generation rejection checks; verify accepted launch counts and untouched sentinel output on failure.</p>
+</li>
+<li><p>Record genuine device capability and actual launch witness. Host-only or unavailable CUDA is not a successful GPU gate.</p>
+</li>
+<li><p>Specify per-run provenance and accepted evidence fields. These tests may be link-incomplete until I04; no stub backend may satisfy them.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>The tests are ready to link against published interfaces without editing lane-owned production files.</p>
+</li>
+<li><p>Both orientations and both value generations are demanded from both origins.</p>
+</li>
+<li><p>No pre-generated pass receipt or expected-output echo is present.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details><details><summary>CE-SS1-V04: Deliver validation harness and adversarial controls</summary><h1>CE-SS1-V04: Deliver validation harness and adversarial controls</h1>
+<p><strong>Status:</strong> proposed; not applied or implemented.</p>
+<p><strong>First-class lane:</strong> <code>CE-SS1-L-VERIFY</code>. <strong>Repository:</strong> Cellerator.</p>
+<h2>Objective</h2>
+<p>Give integration a compact test harness and prove it detects wrong output and missing hardware.</p>
+<h2>Prerequisites</h2>
+<p><code>CE-SS1-V03</code></p>
+<h2>Read before editing</h2>
+<p>Read <code>01_SCOPE_AND_DECISIONS.md</code>, <code>02_SEMANTIC_AND_NATIVE_CONTRACT.md</code>, the lane playbook, and the task-specific sources below. The review is the design basis; current source is evidence.</p>
+<h2>Exclusive write scope</h2>
+<ul>
+<li><code>tests/semantic_spine/verification</code></li>
+<li><code>docs/semantic_spine_v1/verification_handoff.json</code></li>
+</ul>
+<h2>Implementation actions</h2>
+<ol>
+<li><p>Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.</p>
+</li>
+<li><p>Exercise negative result vectors, stale generation, NaN comparison logic and missing implementation/hardware controls.</p>
+</li>
+<li><p>Keep performance observations informational in this epic, while making correctness, no-hidden-work promises and GPU execution non-negotiable.</p>
+</li>
+<li><p>Commit and hand off tests for I04/I05/I06. Do not claim final accelerator validation from this preparatory lane.</p>
+</li>
+</ol>
+<h2>Completion evidence</h2>
+<ol>
+<li><p>Wrong-index and wrong-generation controls fail.</p>
+</li>
+<li><p>Standalone oracle completion and pending integrated execution are separately recorded.</p>
+</li>
+<li><p>The verification lane has no dependency on the native/frontend tail, so its useful work runs concurrently.</p>
+</li>
+</ol>
+<p>Record the actual command, exit status, test cases, source revision and artifact hashes. A planned assertion, file existence or name-bearing receipt is not a passed test. Keep runtime/GPU evidence distinct from metadata-only checks.</p>
+<h2>Scope limit and failure policy</h2>
+<p>Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier. No full language/SDK/JIT/planner expansion. No unrelated branch or Todo cleanup. Block or hand off the specific issue rather than silently weakening tests.</p>
+<h2>Coordination</h2>
+<p>Use <code>next_task</code>, <code>inspect_task</code> and <code>coordinate_task</code> through the installed first-class workflow. The coordinator must bind the subagent to this exact run/lane. Do not use <code>delegate_task</code> to impersonate a first-class lane. Commit after the task, preserve evidence, and hand off only a real source artifact. Pause immediately on the user’s instruction. Shared contract revisions require notifying every consumer before resumption.</p>
+</details></section></main></div></body></html>

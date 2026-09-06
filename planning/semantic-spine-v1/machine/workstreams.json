@@ -1,0 +1,112 @@
+[
+  {
+    "id": "CE-SS1-WS-COORD",
+    "lane_id": "CE-SS1-L-COORD",
+    "role": "coordinator",
+    "task_ids": [
+      "CE-SS1-0000"
+    ],
+    "entry_prerequisites": [],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/coord.md"
+  },
+  {
+    "id": "CE-SS1-WS-CORE",
+    "lane_id": "CE-SS1-L-CORE",
+    "role": "implementer",
+    "task_ids": [
+      "CE-SS1-C01",
+      "CE-SS1-C02",
+      "CE-SS1-C03",
+      "CE-SS1-C04"
+    ],
+    "entry_prerequisites": [
+      "CE-SS1-I01"
+    ],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/core.md"
+  },
+  {
+    "id": "CE-SS1-WS-NATIVE",
+    "lane_id": "CE-SS1-L-NATIVE",
+    "role": "implementer",
+    "task_ids": [
+      "CE-SS1-N01",
+      "CE-SS1-N02",
+      "CE-SS1-N03",
+      "CE-SS1-N04",
+      "CE-SS1-N05",
+      "CE-SS1-N06"
+    ],
+    "entry_prerequisites": [
+      "CE-SS1-I02"
+    ],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/native.md"
+  },
+  {
+    "id": "CE-SS1-WS-FRONTEND",
+    "lane_id": "CE-SS1-L-FRONTEND",
+    "role": "implementer",
+    "task_ids": [
+      "CE-SS1-F01",
+      "CE-SS1-F02",
+      "CE-SS1-F03",
+      "CE-SS1-F04"
+    ],
+    "entry_prerequisites": [
+      "CE-SS1-I02"
+    ],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/frontend.md"
+  },
+  {
+    "id": "CE-SS1-WS-ALGEBRA",
+    "lane_id": "CE-SS1-L-ALGEBRA",
+    "role": "specialist",
+    "task_ids": [
+      "CE-SS1-A01",
+      "CE-SS1-A02",
+      "CE-SS1-A03",
+      "CE-SS1-A04"
+    ],
+    "entry_prerequisites": [
+      "CE-SS1-I02"
+    ],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/algebra.md"
+  },
+  {
+    "id": "CE-SS1-WS-VERIFY",
+    "lane_id": "CE-SS1-L-VERIFY",
+    "role": "validator",
+    "task_ids": [
+      "CE-SS1-V01",
+      "CE-SS1-V02",
+      "CE-SS1-V03",
+      "CE-SS1-V04"
+    ],
+    "entry_prerequisites": [
+      "CE-SS1-I02"
+    ],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/verify.md"
+  },
+  {
+    "id": "CE-SS1-WS-INTEGRATE",
+    "lane_id": "CE-SS1-L-INTEGRATE",
+    "role": "integrator",
+    "task_ids": [
+      "CE-SS1-I01",
+      "CE-SS1-I02",
+      "CE-SS1-I03",
+      "CE-SS1-I04",
+      "CE-SS1-I05",
+      "CE-SS1-I06",
+      "CE-SS1-I07"
+    ],
+    "entry_prerequisites": [],
+    "integration_owner": "CE-SS1-L-INTEGRATE",
+    "handoff": "handoff/integrate.md"
+  }
+]

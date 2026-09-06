@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "run_id": "CE-SS1-RUN-V1",
+  "lanes": [
+    {
+      "id": "CE-SS1-L-COORD",
+      "role": "coordinator",
+      "tasks": [
+        "CE-SS1-0000"
+      ],
+      "workspace": {
+        "mode": "read_shared"
+      }
+    },
+    {
+      "id": "CE-SS1-L-CORE",
+      "role": "implementer",
+      "tasks": [
+        "CE-SS1-C01",
+        "CE-SS1-C02",
+        "CE-SS1-C03",
+        "CE-SS1-C04"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    },
+    {
+      "id": "CE-SS1-L-NATIVE",
+      "role": "implementer",
+      "tasks": [
+        "CE-SS1-N01",
+        "CE-SS1-N02",
+        "CE-SS1-N03",
+        "CE-SS1-N04",
+        "CE-SS1-N05",
+        "CE-SS1-N06"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    },
+    {
+      "id": "CE-SS1-L-FRONTEND",
+      "role": "implementer",
+      "tasks": [
+        "CE-SS1-F01",
+        "CE-SS1-F02",
+        "CE-SS1-F03",
+        "CE-SS1-F04"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    },
+    {
+      "id": "CE-SS1-L-ALGEBRA",
+      "role": "specialist",
+      "tasks": [
+        "CE-SS1-A01",
+        "CE-SS1-A02",
+        "CE-SS1-A03",
+        "CE-SS1-A04"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    },
+    {
+      "id": "CE-SS1-L-VERIFY",
+      "role": "validator",
+      "tasks": [
+        "CE-SS1-V01",
+        "CE-SS1-V02",
+        "CE-SS1-V03",
+        "CE-SS1-V04"
+      ],
+      "workspace": {
+        "mode": "contract_split"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    },
+    {
+      "id": "CE-SS1-L-INTEGRATE",
+      "role": "integrator",
+      "tasks": [
+        "CE-SS1-I01",
+        "CE-SS1-I02",
+        "CE-SS1-I03",
+        "CE-SS1-I04",
+        "CE-SS1-I05",
+        "CE-SS1-I06",
+        "CE-SS1-I07"
+      ],
+      "workspace": {
+        "mode": "exclusive"
+      },
+      "parent_lane_id": "CE-SS1-L-COORD"
+    }
+  ],
+  "execution_engine": "first-class Codex agents",
+  "requires_manual_activation": true,
+  "local_worker_children_are_lanes": false
+}

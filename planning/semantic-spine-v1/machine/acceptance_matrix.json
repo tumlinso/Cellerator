@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "planned_not_implemented",
+  "requirements": [
+    {
+      "id": "one-relation-meaning",
+      "tasks": [
+        "C01",
+        "C02",
+        "F01",
+        "F02",
+        "I05"
+      ],
+      "gate": "ceSpineCrossOriginTest",
+      "required": true
+    },
+    {
+      "id": "forward-transpose-sm70",
+      "tasks": [
+        "N04",
+        "N05",
+        "I05"
+      ],
+      "gate": "ceSpineNativeTest",
+      "required": true
+    },
+    {
+      "id": "reuse-generation-stale-rejection",
+      "tasks": [
+        "N02",
+        "N03",
+        "N06",
+        "I06"
+      ],
+      "gate": "ceSemanticSpineDemo",
+      "required": true
+    },
+    {
+      "id": "support-dot-versus-edge-product",
+      "tasks": [
+        "A01",
+        "A03",
+        "A04"
+      ],
+      "gate": "ceSpineAlgebraTest",
+      "required": true
+    },
+    {
+      "id": "primitive-composition-effect-separation",
+      "tasks": [
+        "A02",
+        "A03",
+        "A04"
+      ],
+      "gate": "ceSpineAlgebraTest",
+      "required": true
+    },
+    {
+      "id": "ceh-content-preserved-and-retired",
+      "tasks": [
+        "I01",
+        "I03",
+        "I07"
+      ],
+      "gate": "source disposition review plus no active .ceh scan",
+      "required": true
+    },
+    {
+      "id": "full-cell-driver",
+      "tasks": [],
+      "gate": null,
+      "required": false,
+      "status": "explicitly_deferred"
+    },
+    {
+      "id": "public-sdk-stability",
+      "tasks": [],
+      "gate": null,
+      "required": false,
+      "status": "explicitly_deferred"
+    }
+  ]
+}

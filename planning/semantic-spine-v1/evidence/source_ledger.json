@@ -1,0 +1,203 @@
+[
+  {
+    "id": "S01",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "planning/jbc-preledger-v1/08_DEPENDENCY_INTEGRATION_AND_PARALLELISM_MAP.md",
+    "lines": "1\u201399",
+    "source_reader_file_identity": "aab3e6b53032bc205a71cb5f990e0e0ce28b6188bde3df0ab25de06c3e519b8f",
+    "supports": "Serial queues within lanes; only genuine interface/checkpoint barriers; independent provider work.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S02",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "planning/cellerator-compiler-preledger-v1/evidence/audit_accepted_todo_plan_schemas_and_live_precedents.md",
+    "lines": "1\u2013134",
+    "source_reader_file_identity": "c16bdec2ddae8f86e0b2d53b877f6c28500961d9c6b1050131c3c0686574ec5d",
+    "supports": "Historical installed native schema audit; v3 first-class runs/lanes and accepted field shapes. Not current live validation.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S03",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "CMakeLists.txt",
+    "lines": "1\u2013119",
+    "source_reader_file_identity": "147d9d36570138b33eb929a0a08528fa97a9776f1b5320aa072c0da94a0ceff6",
+    "supports": "Host SDK before CUDA-off return; native targets below; architecture70/toolchain settings.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S04",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "include/Cellerator/execution/identity.hh",
+    "lines": "1\u2013209",
+    "source_reader_file_identity": "4d71b98bb9a641053a5a8bcc72c369fd53cf27984160d5de5254b9cd4101f8ae",
+    "supports": "Existing typed persistent identities, axis identity header, structure epoch and value generation.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S05",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "src/compute/operation/builtin_catalog.cc",
+    "lines": "1\u2013164",
+    "source_reader_file_identity": "c240cf9dd4d80f847afa89a81888f6e6032ada02deacb3c4fb1b5f56bacf88b1",
+    "supports": "Narrow actual builtin candidate/preparation regimes; N1 overlap and f16/f32 tuple.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S06",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "src/compute/candidate/transpose_backward_candidate.cu",
+    "lines": "1\u2013131",
+    "source_reader_file_identity": "6fea0014b3528c32911b4ef10651e54d340075c0ba54e84151f57da54d53d2c9",
+    "supports": "Actual transpose CUDA kernel uses forward_value_positions and f16 weights/f32 arithmetic.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S07",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "tests/math_core/transpose_backward_candidate_test.cu",
+    "lines": "1\u2013249",
+    "source_reader_file_identity": "e9cfd176ca381d1ef5386ec5fadf039d8bd31a39a026838e52b1006efbb14851",
+    "supports": "Concrete FMP1/CTP1 preparation fixture and source symbols to reuse. Source inspected, not test executed here.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S08",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "src/runtime/value_readiness.cu",
+    "lines": "1\u2013121",
+    "source_reader_file_identity": null,
+    "supports": "Read in the authoritative review; generation/event mechanism to preserve, not blanket concurrent-reader proof.",
+    "status": "review_basis_prior_inspection"
+  },
+  {
+    "id": "S09",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+    "lines": "1\u2013156",
+    "source_reader_file_identity": "d4a9e765d06950f58faf6b31ab7fd8e29617c2f4c8a36edecc73872b36107fe7",
+    "supports": "Existing relation IR lowering to v2, orientation/axis checks and self-referential lowered views.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S10",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "src/compute/decomposition/support_embedding_v1.cc",
+    "lines": "1\u201380",
+    "source_reader_file_identity": "956c48a7f166cbc4d9d01cf61e8664b2582ef63741ac8aa697e910427e3a6a6f",
+    "supports": "Contraction kind currently accepted only as disjoint channel concatenation, rejecting partial algebra.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S11",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh",
+    "lines": "1\u201338",
+    "source_reader_file_identity": "6ef17283c64db222b5a7befc0a6939f39fd89f02edd84acc21276426357ebc3e",
+    "supports": "Representative primitive core field plus requires_composite_lowering boolean; seam for explicit classification.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S12",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "examples/CMakeLists.txt",
+    "lines": "1\u201327",
+    "source_reader_file_identity": "758cf2a146ea2e61581027ef2681e3c101cdba81b71ac3f89dbc1f281b8888aa",
+    "supports": "Existing repository-local examples hierarchy.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S13",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "src/project_control/mutation.py",
+    "lines": "120\u2013346",
+    "source_reader_file_identity": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
+    "supports": "Native validate+diff; coherent authority prerequisites; transaction checking; no automatic implementation.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S14",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "src/project_control/cli.py",
+    "lines": "95\u2013240",
+    "source_reader_file_identity": "82e577afee96158f156cdbe41cfa00d758feccdfd2d6f43678377291c77ed70a",
+    "supports": "Exact local plan validate/apply --project --file forms; no --json on these parsers.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S15",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "docs/TOOL_CONTRACTS.md",
+    "lines": "174\u2013260",
+    "source_reader_file_identity": null,
+    "supports": "First-class workflow protocol versus subordinate delegate_task workers; native plan application boundaries.",
+    "status": "source_inspected_this_task",
+    "hash_note": "Hash not retained here; do not treat this as a byte-level fingerprint."
+  },
+  {
+    "id": "S16",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "src/project_control/preledger.py",
+    "lines": "308\u2013554",
+    "source_reader_file_identity": "27296c2f13c137a6d25934627a5105bf9869472bf9bf707544a9e9dedcb94bec",
+    "supports": "Generic preledger compiler emits schema2, not the required first-class lane graph.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S17",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "src/project_control/services/planning.py",
+    "lines": "1\u2013202",
+    "source_reader_file_identity": "462492200fc78545f9f76ed77fee9c407672261e5a340c7c7f8d64b3b0ea6aef",
+    "supports": "Context reports [2] when workflow unavailable as a fallback, not a native-v3 rejection.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S18",
+    "repository": "project-control",
+    "commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+    "path": "src/project_control/admin.py",
+    "lines": "140\u2013320",
+    "source_reader_file_identity": "6f537cb5f5c28f93416f7415b31b38f4065db82cf9e190588ad0dc5c897f05ab",
+    "supports": "Workspace materialization separate from plan ingestion; needs active run, clean base and managed integration coordination.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S19",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": ".todo-orchestrator/ce-ptr-plan.json",
+    "lines": "170\u2013400, 860\u2013899",
+    "source_reader_file_identity": "30bb7e3c5cb0d51f8707a417955c750903b0c50af2a971cb9388f7a5143ce1a1",
+    "supports": "Native task/checkpoint/interface-consumer shapes and contract_split lane precedent.",
+    "status": "source_inspected_this_task"
+  },
+  {
+    "id": "S20",
+    "repository": "cellerator",
+    "commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "path": "tests/planner_targets.cmake",
+    "lines": "125\u2013185",
+    "source_reader_file_identity": "89bfcf02947ee2f4ffa0e73fccb339b4ac3cc52cda92f07ca1375cec092358d0",
+    "supports": "Existing candidate test target names and real linked libraries.",
+    "status": "source_inspected_this_task"
+  }
+]

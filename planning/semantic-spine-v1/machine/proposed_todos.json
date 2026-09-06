@@ -1,0 +1,3689 @@
+{
+  "schema_version": 1,
+  "format": "cellerator-semantic-spine-preledger",
+  "authority_to_apply": false,
+  "native_schema_version": 3,
+  "project": {
+    "name": "Cellerator",
+    "workspace": "cellerator",
+    "repository": "cellerator",
+    "baseline_commit": "b3340736c8c7b17266bd825c9f079d86e42a5639",
+    "objective": "Coordinate the bounded semantic-unification epic; close only after I07 and all execution evidence. No broad compiler, library or packaging campaign.",
+    "program_document": "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md"
+  },
+  "root_record": {
+    "id": "CE-SS1-0000",
+    "kind": "epic",
+    "title": "Semantic Spine v1: one relation meaning and real accelerator reuse",
+    "objective": "Coordinate the bounded semantic-unification epic; close only after I07 and all execution evidence. No broad compiler, library or packaging campaign.",
+    "status": "planned",
+    "priority": 100,
+    "parallel_policy": "serial",
+    "invariants": [
+      "CE-SS1-INV-LIMIT",
+      "CE-SS1-INV-SEMANTICS",
+      "CE-SS1-INV-PRESERVE",
+      "CE-SS1-INV-DEVICE",
+      "CE-SS1-INV-PARALLEL",
+      "CE-SS1-INV-BOUNDARY",
+      "CE-SS1-INV-CEH",
+      "CE-SS1-INV-HONEST"
+    ],
+    "next_action": "Coordinate first-class lane work only after a separate execution go-ahead; this plan application does not activate the run.",
+    "completion_contract": {
+      "required": [
+        "All 29 leaf tasks complete with accepted evidence",
+        "CE-SS1-I07 completion receipt and required GPU gates pass"
+      ]
+    },
+    "scope": {
+      "exclusive_paths": [],
+      "read_paths": [
+        "planning/semantic-spine-v1"
+      ],
+      "forbidden_paths": [
+        "src",
+        "include",
+        "components"
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "id": "CE-SS1-I01",
+      "short_id": "I01",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Establish the bounded execution baseline and protected edit inventory",
+      "purpose": "Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.",
+      "depends_on": [],
+      "write_scope": [
+        "docs/semantic_spine_v1/baseline.json",
+        "docs/semantic_spine_v1/source_disposition.json"
+      ],
+      "existing_source_paths": [
+        "tests/planner_targets.cmake",
+        "tests/math_core/feature_major_small_n_candidate_test.cu",
+        "tests/math_core/transpose_backward_candidate_test.cu",
+        "library/cellerator/cellerator.ceh",
+        "library/cellerator.cell"
+      ],
+      "implementation_steps": [
+        "Read the delivered review and decisions, and inspect only the affected execution, compiler and decomposition paths. Record precise hashes and current HEAD; do not interpret unavailable Todo health as an empty ledger.",
+        "Verify the example and package have been committed as the reviewed bootstrap input. Read and hash every current .ceh and the existing dirty-library content before any future conversion.",
+        "Resolve the installed CUDA 12.x toolchain and an actual sm70 device. Build and run existing feature-major and transpose tests under an exclusive device lease; record genuine pre-existing failures rather than disabling tests.",
+        "Record the anticipated C01/I02 contract publication and non-overlapping lane ownership. Escalate a missing GPU or broken prerequisite without starting a broad repair campaign."
+      ],
+      "acceptance": [
+        "Baseline names actual compiler, GPU capability, test command/exit status, source hashes and any pre-existing failure.",
+        "The provided demo is present at examples/semantic_spine_v1/regulatory_reuse.cc; no .ceh content has been lost.",
+        "No implementation dependency is marked complete from campaign status or capability-name tests."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "docs/semantic_spine_v1/baseline.json",
+        "docs/semantic_spine_v1/source_disposition.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Establish the bounded execution baseline and protected edit inventory",
+        "objective": "Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "docs/semantic_spine_v1/baseline.json",
+            "docs/semantic_spine_v1/source_disposition.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "tests/planner_targets.cmake",
+            "tests/math_core/feature_major_small_n_candidate_test.cu",
+            "tests/math_core/transpose_backward_candidate_test.cu",
+            "library/cellerator/cellerator.ceh",
+            "library/cellerator.cell"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i01.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Read the delivered review and decisions, and inspect only the affected execution, compiler and decomposition paths. Record precise hashes and current HEAD; do not interpret unavailable Todo health as an empty ledger.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Baseline names actual compiler, GPU capability, test command/exit status, source hashes and any pre-existing failure.",
+            "The provided demo is present at examples/semantic_spine_v1/regulatory_reuse.cc; no .ceh content has been lost.",
+            "No implementation dependency is marked complete from campaign status or capability-name tests."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "docs/semantic_spine_v1/baseline.json",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/source_disposition.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-BASELINE",
+            "title": "Pre-implementation baseline and protected input recorded"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-C01",
+      "short_id": "C01",
+      "repository": "Cellerator",
+      "lane": "CORE",
+      "title": "Define one value-owned relation application descriptor",
+      "purpose": "Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.",
+      "depends_on": [
+        "CE-SS1-I01"
+      ],
+      "write_scope": [
+        "include/Cellerator/compute/operation/relation_semantics.hh",
+        "docs/semantic_spine_v1/contract.md"
+      ],
+      "existing_source_paths": [
+        "include/Cellerator/execution/identity.hh",
+        "include/Cellerator/compute/operation/relation_algebra_v2/relation_algebra.hh"
+      ],
+      "implementation_steps": [
+        "Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.",
+        "Retain typed source/destination domain-and-order identities, extents, topology ID/epoch, edge order/count, orientation and separate relation/input/multiply/accumulation/output types.",
+        "Define each logical edge as an additive contribution, including distinct duplicate endpoint edges. Empty rows sum to zero; transpose reverses traversal, not biological identities.",
+        "Specify overwrite and recognized-but-unsupported update/alias modes honestly. Describe topology reuse and exact support separately from floating-point equivalence."
+      ],
+      "acceptance": [
+        "A minimal C++ compile verifies the descriptor is value-owned without self-referential pointers.",
+        "A non-square asymmetric fixture determines unambiguous input/result axes for both orientations.",
+        "No new generic graph system, blanket v2 migration, or physics-dependent identity is introduced."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "include/Cellerator/compute/operation/relation_semantics.hh",
+        "docs/semantic_spine_v1/contract.md"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-C01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Define one value-owned relation application descriptor",
+        "objective": "Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compute/operation/relation_semantics.hh",
+            "docs/semantic_spine_v1/contract.md"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "include/Cellerator/compute/operation/relation_algebra_v2/relation_algebra.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-c01.md. Lane CE-SS1-L-CORE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "A minimal C++ compile verifies the descriptor is value-owned without self-referential pointers.",
+            "A non-square asymmetric fixture determines unambiguous input/result axes for both orientations.",
+            "No new generic graph system, blanket v2 migration, or physics-dependent identity is introduced."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "include/Cellerator/compute/operation/relation_semantics.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/contract.md",
+            "kind": "source_or_validation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-C02",
+      "short_id": "C02",
+      "repository": "Cellerator",
+      "lane": "CORE",
+      "title": "Implement shared semantic validation and fieldwise equivalence",
+      "purpose": "Both native and compiler callers must use the same relation semantics checks and equality rules.",
+      "depends_on": [
+        "CE-SS1-C01"
+      ],
+      "write_scope": [
+        "src/compute/operation/relation_semantics.cc",
+        "tests/semantic_spine/core/descriptor_test.cc"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.",
+        "Separate invalid semantics from valid-but-unimplemented physical capability. Recognize higher width or alternate arithmetic without silently executing the N1 contract.",
+        "Define reduction/FMA permissions independently from test tolerances. Do not convert tolerance-based testing into blanket permission to lower storage precision.",
+        "Check extents/count arithmetic and orientation consistency. Do not scan device values or support during hot validation."
+      ],
+      "acceptance": [
+        "Reject altered high identity bits, mismatched axes/order/epoch and illegal aliases; accept permitted equivalent descriptors from independent construction.",
+        "Distinguish zero dimensions/empty support from invalid pointers, with no unchecked 64-to-32-bit truncation.",
+        "Changing runtime value generation does not alter the topology preparation key."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/relation_semantics.cc",
+        "tests/semantic_spine/core/descriptor_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-C02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Implement shared semantic validation and fieldwise equivalence",
+        "objective": "Both native and compiler callers must use the same relation semantics checks and equality rules.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/relation_semantics.cc",
+            "tests/semantic_spine/core/descriptor_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-C01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-c02.md. Lane CE-SS1-L-CORE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Reject altered high identity bits, mismatched axes/order/epoch and illegal aliases; accept permitted equivalent descriptors from independent construction.",
+            "Distinguish zero dimensions/empty support from invalid pointers, with no unchecked 64-to-32-bit truncation.",
+            "Changing runtime value generation does not alter the topology preparation key."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/relation_semantics.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/core/descriptor_test.cc",
+            "kind": "source_or_validation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-C03",
+      "short_id": "C03",
+      "repository": "Cellerator",
+      "lane": "CORE",
+      "title": "Specify provisional native pair preparation and bindings",
+      "purpose": "Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.",
+      "depends_on": [
+        "CE-SS1-C02"
+      ],
+      "write_scope": [
+        "include/Cellerator/compute/operation/prepared_relation.hh",
+        "docs/semantic_spine_v1/native_contract.md"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.",
+        "Initially support N1, f16 relation storage and f32 state/multiply/accumulation/output using existing kernels. No Tensor Core requirement and no CPU success fallback in accelerator acceptance.",
+        "Make value publication monotonic per pair and stream-ordered; distinguish latest enqueued generation from device completion. Pair use is single-device/single-stream in v1 and rejects conflicting stream/device.",
+        "Allow host topology preparation, allocate required projection/packing capacity before enqueue, and expose actual preparation/refresh/launch evidence. Define same-generation behavior, failure-state preservation and required caller fences."
+      ],
+      "acceptance": [
+        "Every demo call has a declared contract and explicit failure behavior; no implementation or fake backend is supplied by this task.",
+        "Host-only semantic headers do not include CUDA merely to express an operation.",
+        "The native interface has no hidden hot-path allocation, geometry discovery or canonicalization promise."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "include/Cellerator/compute/operation/prepared_relation.hh",
+        "docs/semantic_spine_v1/native_contract.md"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-C03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Specify provisional native pair preparation and bindings",
+        "objective": "Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compute/operation/prepared_relation.hh",
+            "docs/semantic_spine_v1/native_contract.md"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-C02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-c03.md. Lane CE-SS1-L-CORE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Every demo call has a declared contract and explicit failure behavior; no implementation or fake backend is supplied by this task.",
+            "Host-only semantic headers do not include CUDA merely to express an operation.",
+            "The native interface has no hidden hot-path allocation, geometry discovery or canonicalization promise."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "include/Cellerator/compute/operation/prepared_relation.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/native_contract.md",
+            "kind": "source_or_validation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-C04",
+      "short_id": "C04",
+      "repository": "Cellerator",
+      "lane": "CORE",
+      "title": "Test the contract and publish the foundation artifact",
+      "purpose": "Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.",
+      "depends_on": [
+        "CE-SS1-C03"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/core",
+        "docs/semantic_spine_v1/core_validation.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Add a standalone, small host contract test build and declaration compilation checks for native/compiler consumers. Keep CPU code as an oracle/validation facility.",
+        "Test forward/transpose duality at the mathematical level, identity permutations, exact support, and recognized unsupported modes. Cover fieldwise copy/move and comparison.",
+        "Commit the core artifact and hand it to I02 with source hashes and real commands. Publish no installed/public ABI stability claim.",
+        "Report ambiguities now; do not let each downstream lane invent its own descriptor."
+      ],
+      "acceptance": [
+        "Contract tests run, not merely compile or search for names.",
+        "Core artifact contains both headers and validator implementation; all downstream signatures are visible.",
+        "I02 receives a concrete source revision; no consumer starts from an unpublished draft."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/core",
+        "docs/semantic_spine_v1/core_validation.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-C04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Test the contract and publish the foundation artifact",
+        "objective": "Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/core",
+            "docs/semantic_spine_v1/core_validation.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-C03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-c04.md. Lane CE-SS1-L-CORE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Add a standalone, small host contract test build and declaration compilation checks for native/compiler consumers. Keep CPU code as an oracle/validation facility.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Contract tests run, not merely compile or search for names.",
+            "Core artifact contains both headers and validator implementation; all downstream signatures are visible.",
+            "I02 receives a concrete source revision; no consumer starts from an unpublished draft."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/core",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/core_validation.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-CORE-ARTIFACT",
+            "title": "Core contract artifact validated locally"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I02",
+      "short_id": "I02",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Integrate the foundation and release parallel lanes",
+      "purpose": "Make the tested canonical contract available in one shared source base and publish its internal interface.",
+      "depends_on": [
+        "CE-SS1-C04"
+      ],
+      "write_scope": [
+        "CMakeLists.txt",
+        "cmake/SemanticSpineV1.cmake",
+        "docs/semantic_spine_v1/foundation.json"
+      ],
+      "existing_source_paths": [
+        "include/Cellerator/compute/operation/relation_semantics.hh",
+        "src/compute/operation/relation_semantics.cc",
+        "include/Cellerator/compute/operation/prepared_relation.hh"
+      ],
+      "implementation_steps": [
+        "Integrate C04, add only the opt-in build wiring for the semantic contract, and verify its leaf tests.",
+        "Record the integrated foundation commit in the checkpoint. Materialize or reconcile downstream lane workspaces from this commit only after integration, never from stale pre-foundation work.",
+        "Publish CE-SS1-I-RELATION version 1 from the actual header files. This freezes an internal working agreement for this epic, not the future public API.",
+        "Release N01, F01, A01 and V01 together; I03 may proceed independently on library file disposition."
+      ],
+      "acceptance": [
+        "A clean checkout of the foundation compiles the real shared validator.",
+        "The four downstream lanes are simultaneously ready in the combined dependency/serial-queue graph.",
+        "Every consumer sees the same interface hash and foundation revision."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "CMakeLists.txt",
+        "cmake/SemanticSpineV1.cmake",
+        "docs/semantic_spine_v1/foundation.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Integrate the foundation and release parallel lanes",
+        "objective": "Make the tested canonical contract available in one shared source base and publish its internal interface.",
+        "status": "planned",
+        "priority": 90,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "CMakeLists.txt",
+            "cmake/SemanticSpineV1.cmake",
+            "docs/semantic_spine_v1/foundation.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "include/Cellerator/compute/operation/relation_semantics.hh",
+            "src/compute/operation/relation_semantics.cc",
+            "include/Cellerator/compute/operation/prepared_relation.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-C04"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i02.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Integrate C04, add only the opt-in build wiring for the semantic contract, and verify its leaf tests.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "A clean checkout of the foundation compiles the real shared validator.",
+            "The four downstream lanes are simultaneously ready in the combined dependency/serial-queue graph.",
+            "Every consumer sees the same interface hash and foundation revision."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "CMakeLists.txt",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "cmake/SemanticSpineV1.cmake",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/foundation.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-FOUNDATION",
+            "title": "Foundation integrated at a recorded source revision",
+            "publishes_interfaces": [
+              {
+                "id": "CE-SS1-I-RELATION",
+                "version": "1"
+              }
+            ]
+          }
+        ],
+        "gates": [
+          {
+            "id": "CE-SS1-G-I02",
+            "type": "command",
+            "argv": [
+              "python3",
+              "planning/semantic-spine-v1/scripts/run_gate.py",
+              "--group",
+              "core",
+              "--source-root",
+              "."
+            ],
+            "cwd": ".",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N01",
+      "short_id": "N01",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Adapt the canonical descriptor to existing preparation",
+      "purpose": "Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.",
+      "depends_on": [
+        "CE-SS1-I02"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/adapter_test.cu"
+      ],
+      "existing_source_paths": [
+        "src/compute/operation/builtin_catalog.cc",
+        "src/compute/operation/preparation_factory.cc",
+        "src/compute/candidate/feature_major_small_n_candidate.cu",
+        "src/compute/candidate/transpose_backward_candidate.cu"
+      ],
+      "implementation_steps": [
+        "Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.",
+        "Use actual candidate/preparation entry points. Retain the canonical descriptor for validation; temporary legacy views are mechanism adapters, not a second authority.",
+        "Reject unsupported width/numeric/update/alias policy before any launch, preserving output and pair state. Do not reinterpret a composition as an apply.",
+        "Reuse useful legacy code; limit modifications to adapter ownership unless a demonstrated bug requires an explicitly scoped integration edit."
+      ],
+      "acceptance": [
+        "Descriptor fields round-trip through the adapter without low/high-bit loss or swapped biological identities.",
+        "A valid but unsupported request returns a capability error instead of a success stub or fallback CPU calculation."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/adapter_test.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Adapt the canonical descriptor to existing preparation",
+        "objective": "Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/semantic_spine/native/adapter_test.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/compute/operation/builtin_catalog.cc",
+            "src/compute/operation/preparation_factory.cc",
+            "src/compute/candidate/feature_major_small_n_candidate.cu",
+            "src/compute/candidate/transpose_backward_candidate.cu"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n01.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Descriptor fields round-trip through the adapter without low/high-bit loss or swapped biological identities.",
+            "A valid but unsupported request returns a capability error instead of a success stub or fallback CPU calculation."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/native/adapter_test.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N02",
+      "short_id": "N02",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Prepare reusable forward and transpose structure",
+      "purpose": "Construct one reusable topology asset with both physical views using existing packing/projection builders.",
+      "depends_on": [
+        "CE-SS1-N01"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/preparation_test.cu"
+      ],
+      "existing_source_paths": [
+        "src/compute/projection/physical_feature_major.cc",
+        "src/compute/projection/physical_transpose.cc",
+        "tests/math_core/transpose_backward_candidate_test.cu"
+      ],
+      "implementation_steps": [
+        "Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.",
+        "Do not fabricate valid-looking packing headers from the tiny fixture. Preparation must depend on supplied endpoints, dimensions and identities.",
+        "Share forward value positions with transpose where supported. Allocate all fixed-capacity device buffers and scratch before execution.",
+        "Handle empty support via a legal device zero-fill/no-op or reject physical unsupported cases explicitly without changing the mathematical law. Check all local-index bounds."
+      ],
+      "acceptance": [
+        "Two structurally different non-square relations prepare and execute correctly; no fixture-specific canned topology.",
+        "Zero-degree rows, singleton and empty-support cases are covered. Duplicate endpoint contributions either preserve their exact meaning or are explicitly rejected by this limited physical provider; never silently coalesce weights.",
+        "Forward/transpose preparation identity is stable across subsequent value publications."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/preparation_test.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Prepare reusable forward and transpose structure",
+        "objective": "Construct one reusable topology asset with both physical views using existing packing/projection builders.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/semantic_spine/native/preparation_test.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/compute/projection/physical_feature_major.cc",
+            "src/compute/projection/physical_transpose.cc",
+            "tests/math_core/transpose_backward_candidate_test.cu"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n02.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Two structurally different non-square relations prepare and execute correctly; no fixture-specific canned topology.",
+            "Zero-degree rows, singleton and empty-support cases are covered. Duplicate endpoint contributions either preserve their exact meaning or are explicitly rejected by this limited physical provider; never silently coalesce weights.",
+            "Forward/transpose preparation identity is stable across subsequent value publications."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/native/preparation_test.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N03",
+      "short_id": "N03",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Refresh device values without rebuilding topology",
+      "purpose": "Publish changing values as stream-ordered generations while reusing the prepared structure.",
+      "depends_on": [
+        "CE-SS1-N02"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/generation_test.cu"
+      ],
+      "existing_source_paths": [
+        "src/runtime/value_readiness.cu"
+      ],
+      "implementation_steps": [
+        "Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.",
+        "Refresh only value-dependent storage. Transpose consumes the corresponding forward-position values rather than independently rebuilding support.",
+        "Reject stale/non-monotonic generations and incompatible keys before enqueue. Advance the accepted-generation metadata only after required enqueues succeed; on partial CUDA failure mark the pair unusable until a documented recovery/destruction, not falsely ready.",
+        "Constrain v1 to one caller stream; values and operands remain alive until the caller fences. Do not insert a global device synchronization."
+      ],
+      "acceptance": [
+        "Gen1 and gen2 yield different correct results with one topology preparation.",
+        "A stale generation or changed edge order is rejected before output mutation; counters/generation remain coherent.",
+        "Refresh traffic is distinguished from topology construction and no host readback computes relation results."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/generation_test.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Refresh device values without rebuilding topology",
+        "objective": "Publish changing values as stream-ordered generations while reusing the prepared structure.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/semantic_spine/native/generation_test.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/runtime/value_readiness.cu"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n03.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Gen1 and gen2 yield different correct results with one topology preparation.",
+            "A stale generation or changed edge order is rejected before output mutation; counters/generation remain coherent.",
+            "Refresh traffic is distinguished from topology construction and no host readback computes relation results."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/native/generation_test.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N04",
+      "short_id": "N04",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Execute canonical forward application on sm70",
+      "purpose": "Make canonical forward requests reach the existing device candidate through the prepared pair.",
+      "depends_on": [
+        "CE-SS1-N03"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/forward_test.cu"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.",
+        "Keep reusable physical layout internal. Do not allocate, hash the full relation, discover candidates or transfer output to host during enqueue.",
+        "Track evidence from the actual selected and launched implementation, not a catalog label entered by the caller.",
+        "Test two input states and both value generations, with explicit synchronization only at host observation boundaries."
+      ],
+      "acceptance": [
+        "GPU forward output matches the independent logical-edge oracle within the declared tolerance.",
+        "Wrong input domain/order/device, alias or stale generation does not enqueue computation.",
+        "Existing forward candidate regression tests retain their assertions."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/forward_test.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Execute canonical forward application on sm70",
+        "objective": "Make canonical forward requests reach the existing device candidate through the prepared pair.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/semantic_spine/native/forward_test.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n04.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "GPU forward output matches the independent logical-edge oracle within the declared tolerance.",
+            "Wrong input domain/order/device, alias or stale generation does not enqueue computation.",
+            "Existing forward candidate regression tests retain their assertions."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/native/forward_test.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N05",
+      "short_id": "N05",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Execute transpose with shared topology and value authority",
+      "purpose": "Prove reverse application uses the same biological relation and current values, not a second independent semantic model.",
+      "depends_on": [
+        "CE-SS1-N04"
+      ],
+      "write_scope": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/transpose_test.cu"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.",
+        "Reuse forward value positions at the current generation. Verify transpose is neither an inverse nor a substitute for the full gradient composition.",
+        "Reject unsupported directions/policies before launch. Preserve distinct domain identities even when extents happen to match.",
+        "Handle caller ownership/destruction safely with no hidden global synchronization in repeated execution."
+      ],
+      "acceptance": [
+        "Non-square transpose matches an independent scatter-add oracle at both generations.",
+        "The dot-product adjoint identity holds within tolerance for multiple vectors.",
+        "Forward/transpose topology/projection counters stay unchanged after refresh."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compute/operation/prepared_relation.cu",
+        "tests/semantic_spine/native/transpose_test.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N05",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Execute transpose with shared topology and value authority",
+        "objective": "Prove reverse application uses the same biological relation and current values, not a second independent semantic model.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compute/operation/prepared_relation.cu",
+            "tests/semantic_spine/native/transpose_test.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N04"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n05.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Non-square transpose matches an independent scatter-add oracle at both generations.",
+            "The dot-product adjoint identity holds within tolerance for multiple vectors.",
+            "Forward/transpose topology/projection counters stay unchanged after refresh."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/native/transpose_test.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-N06",
+      "short_id": "N06",
+      "repository": "Cellerator",
+      "lane": "NATIVE",
+      "title": "Prove native reuse and hand off executable evidence",
+      "purpose": "Close the native lane with actual CUDA tests and a minimal, traceable execution report.",
+      "depends_on": [
+        "CE-SS1-N05"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/native",
+        "docs/semantic_spine_v1/native_validation.json",
+        "src/compute/operation/prepared_relation.cu"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.",
+        "Run the new adapter, preparation, generations, forward and transpose cases on an actual sm70 device under a lease. Include a direct-provider comparison as an overhead control, not a speedup promotion.",
+        "Record numeric tuple, device, source/toolchain, selected symbols, transfers, synchronizations, preparation/refresh counts and all real test commands.",
+        "Commit and hand off the artifact. Missing hardware is a blocker, never a skipped successful completion."
+      ],
+      "acceptance": [
+        "No CPU/reference success is reported as accelerator execution.",
+        "No out-of-scope MMA, optimizer, JIT, training or broad candidate rewrite was added.",
+        "I04 receives actual implementation plus tests, not only a descriptive registration."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/native",
+        "docs/semantic_spine_v1/native_validation.json",
+        "src/compute/operation/prepared_relation.cu"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-N06",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Prove native reuse and hand off executable evidence",
+        "objective": "Close the native lane with actual CUDA tests and a minimal, traceable execution report.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/native",
+            "docs/semantic_spine_v1/native_validation.json",
+            "src/compute/operation/prepared_relation.cu"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N05"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-n06.md. Lane CE-SS1-L-NATIVE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "No CPU/reference success is reported as accelerator execution.",
+            "No out-of-scope MMA, optimizer, JIT, training or broad candidate rewrite was added.",
+            "I04 receives actual implementation plus tests, not only a descriptive registration."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/native",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/native_validation.json",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compute/operation/prepared_relation.cu",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-NATIVE",
+            "title": "NATIVE lane artifact and evidence ready"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-F01",
+      "short_id": "F01",
+      "repository": "Cellerator",
+      "lane": "FRONTEND",
+      "title": "Lower existing relation semantic IR through the shared contract",
+      "purpose": "Replace the selected relation-family duplicate semantic interpretation with the canonical descriptor.",
+      "depends_on": [
+        "CE-SS1-I02"
+      ],
+      "write_scope": [
+        "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "tests/semantic_spine/compiler/lowering_test.cc"
+      ],
+      "existing_source_paths": [
+        "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "src/compiler/sema/implement_operation_kind_resolution.cc"
+      ],
+      "implementation_steps": [
+        "Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.",
+        "Map both orientations to the canonical descriptor. Preserve relation storage separately from state type, order identities, output policy and arithmetic permissions.",
+        "Delegate common semantic validation to the shared validator; compiler-specific diagnostics may wrap it.",
+        "Restrict legacy result objects/adapters to required existing consumers, accounting for self-referential view lifetime."
+      ],
+      "acceptance": [
+        "An existing IR forward and transpose yield the same mathematical descriptors as independently built C++ calls.",
+        "f16 relation/f32 state does not become an all-f32 or all-f16 descriptor.",
+        "No duplicate scalar interpreter is added as execution proof."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "tests/semantic_spine/compiler/lowering_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-F01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Lower existing relation semantic IR through the shared contract",
+        "objective": "Replace the selected relation-family duplicate semantic interpretation with the canonical descriptor.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+            "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "tests/semantic_spine/compiler/lowering_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+            "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "src/compiler/sema/implement_operation_kind_resolution.cc"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-f01.md. Lane CE-SS1-L-FRONTEND. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "An existing IR forward and transpose yield the same mathematical descriptors as independently built C++ calls.",
+            "f16 relation/f32 state does not become an all-f32 or all-f16 descriptor.",
+            "No duplicate scalar interpreter is added as execution proof."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "include/Cellerator/compiler/ir/semantic/implement_relation_apply_and_transpose_operations_v1.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/compiler/lowering_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-F02",
+      "short_id": "F02",
+      "repository": "Cellerator",
+      "lane": "FRONTEND",
+      "title": "Connect the real parser/Sema relation slice",
+      "purpose": "Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.",
+      "depends_on": [
+        "CE-SS1-F01"
+      ],
+      "write_scope": [
+        "src/compiler/sema/relation_spine_bridge.cc",
+        "include/Cellerator/compiler/sema/relation_spine_bridge.hh",
+        "tests/semantic_spine/compiler/source_slice_test.cc"
+      ],
+      "existing_source_paths": [
+        "src/compiler/frontend/parser/parse_non_relation_operation_families.cc",
+        "src/compiler/frontend/parser/expose_parser_library_and_parse_tree_dump_apis.cc"
+      ],
+      "implementation_steps": [
+        "Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.",
+        "A fixture may supply runtime identities because source alone cannot know the loaded dataset; it may not precompute or substitute the expected operation descriptor.",
+        "Keep this an embedding/test route, not a replacement command-line compiler. Report unsupported source honestly.",
+        "If a narrow parse-to-IR connection is missing, add that connection without broad grammar completion."
+      ],
+      "acceptance": [
+        "Changing direction, symbol binding or numeric declaration in the source changes the descriptor or produces a relevant error.",
+        "The negative source fixture cannot pass through a hard-coded operation table or name-only assertion.",
+        "The full .cell executable route is still explicitly incomplete."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compiler/sema/relation_spine_bridge.cc",
+        "include/Cellerator/compiler/sema/relation_spine_bridge.hh",
+        "tests/semantic_spine/compiler/source_slice_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-F02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Connect the real parser/Sema relation slice",
+        "objective": "Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compiler/sema/relation_spine_bridge.cc",
+            "include/Cellerator/compiler/sema/relation_spine_bridge.hh",
+            "tests/semantic_spine/compiler/source_slice_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/compiler/frontend/parser/parse_non_relation_operation_families.cc",
+            "src/compiler/frontend/parser/expose_parser_library_and_parse_tree_dump_apis.cc"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-F01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-f02.md. Lane CE-SS1-L-FRONTEND. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Changing direction, symbol binding or numeric declaration in the source changes the descriptor or produces a relevant error.",
+            "The negative source fixture cannot pass through a hard-coded operation table or name-only assertion.",
+            "The full .cell executable route is still explicitly incomplete."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compiler/sema/relation_spine_bridge.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "include/Cellerator/compiler/sema/relation_spine_bridge.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/compiler/source_slice_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-F03",
+      "short_id": "F03",
+      "repository": "Cellerator",
+      "lane": "FRONTEND",
+      "title": "Preserve effects and diagnostics without losing equivalence",
+      "purpose": "Prevent compiler wrappers from silently weakening the native contract.",
+      "depends_on": [
+        "CE-SS1-F02"
+      ],
+      "write_scope": [
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "src/compiler/sema/relation_spine_bridge.cc",
+        "tests/semantic_spine/compiler/diagnostic_test.cc"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.",
+        "Source provenance may differ between native and source-origin requests; the canonical mathematical key must not depend on where a request was spelled.",
+        "Record relevant read/write effects and keep publication/generation facts out of the static topology key.",
+        "Test copy/move of lowered records and returned borrowed views so tests do not succeed through dangling stack references."
+      ],
+      "acceptance": [
+        "Both origins reject the same mathematical invalidities with source-context diagnostics on the compiler side.",
+        "A new value binding does not require reparsing or changing canonical topology semantics.",
+        "No full execution-field/LTO/driver implementation sneaks into this task."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "src/compiler/sema/relation_spine_bridge.cc",
+        "tests/semantic_spine/compiler/diagnostic_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-F03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Preserve effects and diagnostics without losing equivalence",
+        "objective": "Prevent compiler wrappers from silently weakening the native contract.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "src/compiler/sema/relation_spine_bridge.cc",
+            "tests/semantic_spine/compiler/diagnostic_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-F02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-f03.md. Lane CE-SS1-L-FRONTEND. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Both origins reject the same mathematical invalidities with source-context diagnostics on the compiler side.",
+            "A new value binding does not require reparsing or changing canonical topology semantics.",
+            "No full execution-field/LTO/driver implementation sneaks into this task."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compiler/sema/relation_spine_bridge.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/compiler/diagnostic_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-F04",
+      "short_id": "F04",
+      "repository": "Cellerator",
+      "lane": "FRONTEND",
+      "title": "Publish a source-origin conformance test artifact",
+      "purpose": "Provide a real origin-parity test route and candid language capability status.",
+      "depends_on": [
+        "CE-SS1-F03"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/compiler",
+        "docs/semantic_spine_v1/compiler_validation.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.",
+        "Compare fieldwise native/source descriptors for forward and transpose using a non-square relation fixture.",
+        "Provide I05 with a function that returns the source-derived descriptor for execution through the same native prepared pair. Do not add an independent reference launch path.",
+        "Record full .cell executable compilation, implicit .cell mode and cross-TU composition as deferred, separately from this passing embedding test."
+      ],
+      "acceptance": [
+        "Meaningful altered-source and wrong-binding tests fail rather than only checking operation names.",
+        "No language-complete or installed-SDK-complete claim appears in the receipt.",
+        "The I04 artifact contains all necessary source-facing changes and focused tests."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/compiler",
+        "docs/semantic_spine_v1/compiler_validation.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-F04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Publish a source-origin conformance test artifact",
+        "objective": "Provide a real origin-parity test route and candid language capability status.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/compiler",
+            "docs/semantic_spine_v1/compiler_validation.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-F03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-f04.md. Lane CE-SS1-L-FRONTEND. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Meaningful altered-source and wrong-binding tests fail rather than only checking operation names.",
+            "No language-complete or installed-SDK-complete claim appears in the receipt.",
+            "The I04 artifact contains all necessary source-facing changes and focused tests."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/compiler",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/compiler_validation.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-FRONTEND",
+            "title": "FRONTEND lane artifact and evidence ready"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-A01",
+      "short_id": "A01",
+      "repository": "Cellerator",
+      "lane": "ALGEBRA",
+      "title": "Separate scalar support dot from edge-channel product",
+      "purpose": "Remove the concrete contraction ambiguity without integrating the entire contraction portfolio.",
+      "depends_on": [
+        "CE-SS1-I02"
+      ],
+      "write_scope": [
+        "include/Cellerator/compute/decomposition/support_embedding_v1.hh",
+        "src/compute/decomposition/support_embedding_v1.cc",
+        "include/Cellerator/compute/operation/support_product_semantics.hh",
+        "tests/semantic_spine/algebra/support_product_test.cc"
+      ],
+      "existing_source_paths": [
+        "src/compute/architecture/providers/nvidia/sm70/contract/sparse_contract_v1.cu"
+      ],
+      "implementation_steps": [
+        "Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.",
+        "Change the inspected support-embedding validator so a scalar dot cannot be accepted with concatenate-only assembly.",
+        "Retain the meaningful edge-channel decomposition under its truthful name/semantics. Existing scalar contraction kernels keep their dot-product meaning.",
+        "Reject legacy ambiguous descriptors until the caller specifies the missing meaning."
+      ],
+      "acceptance": [
+        "For K=2 and K=17, whole dot equals split-K partial sums; concatenating partial dots is rejected.",
+        "Edge-channel outputs concatenate disjoint K panels and retain their shape.",
+        "No contraction GPU provider is newly integrated or deleted."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "include/Cellerator/compute/decomposition/support_embedding_v1.hh",
+        "src/compute/decomposition/support_embedding_v1.cc",
+        "include/Cellerator/compute/operation/support_product_semantics.hh",
+        "tests/semantic_spine/algebra/support_product_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-A01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Separate scalar support dot from edge-channel product",
+        "objective": "Remove the concrete contraction ambiguity without integrating the entire contraction portfolio.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compute/decomposition/support_embedding_v1.hh",
+            "src/compute/decomposition/support_embedding_v1.cc",
+            "include/Cellerator/compute/operation/support_product_semantics.hh",
+            "tests/semantic_spine/algebra/support_product_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/compute/architecture/providers/nvidia/sm70/contract/sparse_contract_v1.cu"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-a01.md. Lane CE-SS1-L-ALGEBRA. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "For K=2 and K=17, whole dot equals split-K partial sums; concatenating partial dots is rejected.",
+            "Edge-channel outputs concatenate disjoint K panels and retain their shape.",
+            "No contraction GPU provider is newly integrated or deleted."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "include/Cellerator/compute/decomposition/support_embedding_v1.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compute/decomposition/support_embedding_v1.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "include/Cellerator/compute/operation/support_product_semantics.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/algebra/support_product_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-A02",
+      "short_id": "A02",
+      "repository": "Cellerator",
+      "lane": "ALGEBRA",
+      "title": "Make primitive, composition and effect classifications explicit",
+      "purpose": "Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.",
+      "depends_on": [
+        "CE-SS1-A01"
+      ],
+      "write_scope": [
+        "include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh",
+        "src/compiler/sema/implement_operation_kind_resolution.cc",
+        "tests/semantic_spine/algebra/classification_test.cc"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.",
+        "Keep chain, exchange, hierarchy, moments and gradient distinguishable from a primitive. Publication is an effect; it must not silently become sparse arithmetic.",
+        "Preserve useful source spellings and existing flags only where they do not permit accidental execution as the wrong operation.",
+        "Mark lowering availability separately from semantic recognition. Do not enumerate an entire future algebra or implement all compositions."
+      ],
+      "acceptance": [
+        "Asking for a primitive from a composition/effect fails explicitly, rather than returning sparse_axis_update or apply.",
+        "Existing directly supported apply/transpose resolution remains usable.",
+        "All 14 currently represented source families receive an explicit, truthful classification."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh",
+        "src/compiler/sema/implement_operation_kind_resolution.cc",
+        "tests/semantic_spine/algebra/classification_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-A02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Make primitive, composition and effect classifications explicit",
+        "objective": "Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh",
+            "src/compiler/sema/implement_operation_kind_resolution.cc",
+            "tests/semantic_spine/algebra/classification_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-A01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-a02.md. Lane CE-SS1-L-ALGEBRA. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Asking for a primitive from a composition/effect fails explicitly, rather than returning sparse_axis_update or apply.",
+            "Existing directly supported apply/transpose resolution remains usable.",
+            "All 14 currently represented source families receive an explicit, truthful classification."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "include/Cellerator/compiler/sema/implement_operation_kind_resolution_v1.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compiler/sema/implement_operation_kind_resolution.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/algebra/classification_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-A03",
+      "short_id": "A03",
+      "repository": "Cellerator",
+      "lane": "ALGEBRA",
+      "title": "Update affected consumers and negative conformance tests",
+      "purpose": "Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.",
+      "depends_on": [
+        "CE-SS1-A02"
+      ],
+      "write_scope": [
+        "src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc",
+        "src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc",
+        "tests/semantic_spine/algebra"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.",
+        "Unknown/unimplemented composition lowering must retain composition meaning or return unsupported, never use a convenient substitute primitive.",
+        "Update old tests that asserted the wrong law with explicit migration rationale, retaining negative counterexamples.",
+        "Keep working sequence-predicate and other v1 implementations reachable; absence from a new enum is not deletion authorization."
+      ],
+      "acceptance": [
+        "A test which previously accepted dot split-K concatenation now fails for the right reason.",
+        "A chain/exchange/gradient cannot reach an apply/update launch by merely erasing its composition tag.",
+        "No opcode renumbering or schema replacement affects unrelated native implementations."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc",
+        "src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc",
+        "tests/semantic_spine/algebra"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-A03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Update affected consumers and negative conformance tests",
+        "objective": "Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc",
+            "src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc",
+            "tests/semantic_spine/algebra"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-A02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-a03.md. Lane CE-SS1-L-ALGEBRA. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "A test which previously accepted dot split-K concatenation now fails for the right reason.",
+            "A chain/exchange/gradient cannot reach an apply/update launch by merely erasing its composition tag.",
+            "No opcode renumbering or schema replacement affects unrelated native implementations."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/algebra",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-A04",
+      "short_id": "A04",
+      "repository": "Cellerator",
+      "lane": "ALGEBRA",
+      "title": "Publish bounded algebra conformance and migration disposition",
+      "purpose": "Close the semantic repair lane with executable tests and an explicit list of remaining operation work.",
+      "depends_on": [
+        "CE-SS1-A03"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/algebra",
+        "docs/semantic_spine_v1/algebra_validation.json",
+        "docs/semantic_spine_v1/algebra_disposition.md"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.",
+        "Document each scoped changed symbol, retained implementation and rejection case.",
+        "Explicitly defer full contraction candidate plumbing, general composition lowering and algebra redesign.",
+        "Hand I04 a committed artifact that does not require edits to the native/frontend lane-owned files."
+      ],
+      "acceptance": [
+        "The tests compute and compare actual partial results, not text labels.",
+        "All intentional behavior changes are tied to counterexamples.",
+        "The foundational apply interface remains unchanged or any necessary revision has been coordinated with every consumer."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/algebra",
+        "docs/semantic_spine_v1/algebra_validation.json",
+        "docs/semantic_spine_v1/algebra_disposition.md"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-A04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Publish bounded algebra conformance and migration disposition",
+        "objective": "Close the semantic repair lane with executable tests and an explicit list of remaining operation work.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/algebra",
+            "docs/semantic_spine_v1/algebra_validation.json",
+            "docs/semantic_spine_v1/algebra_disposition.md"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-A03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-a04.md. Lane CE-SS1-L-ALGEBRA. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "The tests compute and compare actual partial results, not text labels.",
+            "All intentional behavior changes are tied to counterexamples.",
+            "The foundational apply interface remains unchanged or any necessary revision has been coordinated with every consumer."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/algebra",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/algebra_validation.json",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/algebra_disposition.md",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-ALGEBRA",
+            "title": "ALGEBRA lane artifact and evidence ready"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-V01",
+      "short_id": "V01",
+      "repository": "Cellerator",
+      "lane": "VERIFY",
+      "title": "Create an independent logical-edge oracle and adversarial fixtures",
+      "purpose": "Make correctness independent of physical packing and compiler lowering.",
+      "depends_on": [
+        "CE-SS1-I02"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/verification/oracle.hh",
+        "tests/semantic_spine/verification/fixtures.hh",
+        "tests/semantic_spine/verification/oracle_test.cc"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.",
+        "Include the demo fixture plus a second non-square relation, empty destination rows, duplicate endpoint edges, zero support, permutations and cancellation cases.",
+        "Supply an explicit absolute+relative tolerance rule with finite/nonfinite handling. Nonfinite comparisons never pass just because a NaN comparison is false.",
+        "Keep fixed arrays/contiguous fixtures; no generic framework or biological dataset download."
+      ],
+      "acceptance": [
+        "Hand-computed fixture outputs match the oracle and transpose is verified independently of the forward implementation.",
+        "A deliberately transposed/wrong-index result is rejected.",
+        "Exact edge/identity checks are not weakened by numerical tolerance."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/verification/oracle.hh",
+        "tests/semantic_spine/verification/fixtures.hh",
+        "tests/semantic_spine/verification/oracle_test.cc"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-V01",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Create an independent logical-edge oracle and adversarial fixtures",
+        "objective": "Make correctness independent of physical packing and compiler lowering.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/verification/oracle.hh",
+            "tests/semantic_spine/verification/fixtures.hh",
+            "tests/semantic_spine/verification/oracle_test.cc"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-v01.md. Lane CE-SS1-L-VERIFY. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Hand-computed fixture outputs match the oracle and transpose is verified independently of the forward implementation.",
+            "A deliberately transposed/wrong-index result is rejected.",
+            "Exact edge/identity checks are not weakened by numerical tolerance."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/verification/oracle.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/verification/fixtures.hh",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/verification/oracle_test.cc",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-V02",
+      "short_id": "V02",
+      "repository": "Cellerator",
+      "lane": "VERIFY",
+      "title": "Build contract and identity regression probes",
+      "purpose": "Exercise semantic invariants that a tiny numerical example alone can miss.",
+      "depends_on": [
+        "CE-SS1-V01"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/verification/contract_probes.cc",
+        "tests/semantic_spine/verification/CMakeLists.txt"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.",
+        "Test exact support permutation recovery without requiring a new layout optimizer.",
+        "Cover invalid input capacities and 64-bit cardinality/local-index boundaries using metadata-only rejection tests, not enormous allocations.",
+        "Do not couple these tests to native or frontend implementation source; both later import the same independent fixtures."
+      ],
+      "acceptance": [
+        "Malformed descriptors fail before access; valid-but-unsupported physical sizes return an explicit status.",
+        "Inputs/outputs cannot alias in the supported execution regime.",
+        "Checks operate on values/contracts rather than searching source for desired words."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/verification/contract_probes.cc",
+        "tests/semantic_spine/verification/CMakeLists.txt"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-V02",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Build contract and identity regression probes",
+        "objective": "Exercise semantic invariants that a tiny numerical example alone can miss.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/verification/contract_probes.cc",
+            "tests/semantic_spine/verification/CMakeLists.txt"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-V01"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-v02.md. Lane CE-SS1-L-VERIFY. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Malformed descriptors fail before access; valid-but-unsupported physical sizes return an explicit status.",
+            "Inputs/outputs cannot alias in the supported execution regime.",
+            "Checks operate on values/contracts rather than searching source for desired words."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/verification/contract_probes.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/verification/CMakeLists.txt",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-V03",
+      "short_id": "V03",
+      "repository": "Cellerator",
+      "lane": "VERIFY",
+      "title": "Specify integrated origin and GPU acceptance probes",
+      "purpose": "Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.",
+      "depends_on": [
+        "CE-SS1-V02"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/verification/integrated_probe.cc",
+        "tests/semantic_spine/verification/evidence_requirements.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.",
+        "Require generation-reuse and stale-generation rejection checks; verify accepted launch counts and untouched sentinel output on failure.",
+        "Record genuine device capability and actual launch witness. Host-only or unavailable CUDA is not a successful GPU gate.",
+        "Specify per-run provenance and accepted evidence fields. These tests may be link-incomplete until I04; no stub backend may satisfy them."
+      ],
+      "acceptance": [
+        "The tests are ready to link against published interfaces without editing lane-owned production files.",
+        "Both orientations and both value generations are demanded from both origins.",
+        "No pre-generated pass receipt or expected-output echo is present."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/verification/integrated_probe.cc",
+        "tests/semantic_spine/verification/evidence_requirements.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-V03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Specify integrated origin and GPU acceptance probes",
+        "objective": "Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/verification/integrated_probe.cc",
+            "tests/semantic_spine/verification/evidence_requirements.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-V02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-v03.md. Lane CE-SS1-L-VERIFY. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "The tests are ready to link against published interfaces without editing lane-owned production files.",
+            "Both orientations and both value generations are demanded from both origins.",
+            "No pre-generated pass receipt or expected-output echo is present."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/verification/integrated_probe.cc",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/verification/evidence_requirements.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-V04",
+      "short_id": "V04",
+      "repository": "Cellerator",
+      "lane": "VERIFY",
+      "title": "Deliver validation harness and adversarial controls",
+      "purpose": "Give integration a compact test harness and prove it detects wrong output and missing hardware.",
+      "depends_on": [
+        "CE-SS1-V03"
+      ],
+      "write_scope": [
+        "tests/semantic_spine/verification",
+        "docs/semantic_spine_v1/verification_handoff.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.",
+        "Exercise negative result vectors, stale generation, NaN comparison logic and missing implementation/hardware controls.",
+        "Keep performance observations informational in this epic, while making correctness, no-hidden-work promises and GPU execution non-negotiable.",
+        "Commit and hand off tests for I04/I05/I06. Do not claim final accelerator validation from this preparatory lane."
+      ],
+      "acceptance": [
+        "Wrong-index and wrong-generation controls fail.",
+        "Standalone oracle completion and pending integrated execution are separately recorded.",
+        "The verification lane has no dependency on the native/frontend tail, so its useful work runs concurrently."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "tests/semantic_spine/verification",
+        "docs/semantic_spine_v1/verification_handoff.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-V04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Deliver validation harness and adversarial controls",
+        "objective": "Give integration a compact test harness and prove it detects wrong output and missing hardware.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "tests/semantic_spine/verification",
+            "docs/semantic_spine_v1/verification_handoff.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-V03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-v04.md. Lane CE-SS1-L-VERIFY. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Wrong-index and wrong-generation controls fail.",
+            "Standalone oracle completion and pending integrated execution are separately recorded.",
+            "The verification lane has no dependency on the native/frontend tail, so its useful work runs concurrently."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "tests/semantic_spine/verification",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/verification_handoff.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "consumes_interfaces": [
+          {
+            "id": "CE-SS1-I-RELATION",
+            "required_state": "frozen",
+            "required_version": "1"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-VERIFY",
+            "title": "VERIFY lane artifact and evidence ready"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I03",
+      "short_id": "I03",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Retire .ceh files without expanding the language milestone",
+      "purpose": "Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.",
+      "depends_on": [
+        "CE-SS1-I02"
+      ],
+      "write_scope": [
+        "library",
+        "stdlib",
+        "docs/semantic_spine_v1/cell_units.md",
+        "docs/semantic_spine_v1/ceh_disposition.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.",
+        "Remove only truly redundant files; convert meaningful definitions to .cell and update direct references. Do not duplicate definitions already in an umbrella.",
+        "Retain ordinary .hh headers. Do not implement a module loader, implicit-dialect frontend or cross-TU optimizer here.",
+        "Record .cell as the desired self-describing/importable source format, and mark full .cell execution/implicit mode/cross-TU infrastructure as future work. Only narrowly related references/manifests may change."
+      ],
+      "acceptance": [
+        "No active project-owned .ceh file remains; every previous file has a content-preservation or redundancy disposition.",
+        "Historical review/planning mentions need not be erased.",
+        "No library expansion, public SDK redesign or broad resource-layout migration occurred."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "library",
+        "stdlib",
+        "docs/semantic_spine_v1/cell_units.md",
+        "docs/semantic_spine_v1/ceh_disposition.json"
+      ],
+      "failure_policy": "If a .ceh contains substantial inseparable implementation, preserve it as .cell first and document missing language support. Never delete unread content.",
+      "native_record": {
+        "id": "CE-SS1-I03",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Retire .ceh files without expanding the language milestone",
+        "objective": "Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "library",
+            "stdlib",
+            "docs/semantic_spine_v1/cell_units.md",
+            "docs/semantic_spine_v1/ceh_disposition.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I02"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i03.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "No active project-owned .ceh file remains; every previous file has a content-preservation or redundancy disposition.",
+            "Historical review/planning mentions need not be erased.",
+            "No library expansion, public SDK redesign or broad resource-layout migration occurred."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "library",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "stdlib",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/cell_units.md",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/ceh_disposition.json",
+            "kind": "source_or_validation"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I04",
+      "short_id": "I04",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Integrate all four lanes and repository-local targets",
+      "purpose": "Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.",
+      "depends_on": [
+        "CE-SS1-N06",
+        "CE-SS1-F04",
+        "CE-SS1-A04",
+        "CE-SS1-V04",
+        "CE-SS1-I03"
+      ],
+      "write_scope": [
+        "CMakeLists.txt",
+        "cmake/SemanticSpineV1.cmake",
+        "examples/CMakeLists.txt",
+        "examples/semantic_spine_v1/CMakeLists.txt",
+        "tests/semantic_spine/CMakeLists.txt",
+        "docs/semantic_spine_v1/integration.json"
+      ],
+      "existing_source_paths": [
+        "src/compute/operation/prepared_relation.cu",
+        "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+        "src/compiler/sema/implement_operation_kind_resolution.cc",
+        "examples/CMakeLists.txt"
+      ],
+      "implementation_steps": [
+        "Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.",
+        "Define opt-in CE-SS1 test/demo targets using real objects and existing CUDA providers. Avoid installing/exporting an SDK as part of this change.",
+        "Link the actual parser/Sema subset needed by the source-origin probe, not every nominal compiler interface.",
+        "Check that algebra classification changes and compiler relation lowering coexist and every intended target resolves symbols."
+      ],
+      "acceptance": [
+        "All target definitions refer to real source units, not INTERFACE-only placeholders for computation.",
+        "No broad root-CMake/CUDA backend restructuring was necessary; any prerequisite exception is documented.",
+        "No pending artifact is mistaken for integrated code."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "CMakeLists.txt",
+        "cmake/SemanticSpineV1.cmake",
+        "examples/CMakeLists.txt",
+        "examples/semantic_spine_v1/CMakeLists.txt",
+        "tests/semantic_spine/CMakeLists.txt",
+        "docs/semantic_spine_v1/integration.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I04",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Integrate all four lanes and repository-local targets",
+        "objective": "Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "CMakeLists.txt",
+            "cmake/SemanticSpineV1.cmake",
+            "examples/CMakeLists.txt",
+            "examples/semantic_spine_v1/CMakeLists.txt",
+            "tests/semantic_spine/CMakeLists.txt",
+            "docs/semantic_spine_v1/integration.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+            "src/compute/operation/prepared_relation.cu",
+            "src/compiler/ir/semantic/implement_relation_apply_and_transpose_operations.cc",
+            "src/compiler/sema/implement_operation_kind_resolution.cc",
+            "examples/CMakeLists.txt"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-N06"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-SS1-F04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-SS1-A04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-SS1-V04"
+          },
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I03"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i04.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "All target definitions refer to real source units, not INTERFACE-only placeholders for computation.",
+            "No broad root-CMake/CUDA backend restructuring was necessary; any prerequisite exception is documented.",
+            "No pending artifact is mistaken for integrated code."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "CMakeLists.txt",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "cmake/SemanticSpineV1.cmake",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "examples/CMakeLists.txt",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "examples/semantic_spine_v1/CMakeLists.txt",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/CMakeLists.txt",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/integration.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-INTEGRATED",
+            "title": "All four artifacts integrated with real targets"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I05",
+      "short_id": "I05",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Run cross-origin semantic and real sm70 conformance",
+      "purpose": "Prove the epic\u2019s central assertion with one complete execution witness.",
+      "depends_on": [
+        "CE-SS1-I04"
+      ],
+      "write_scope": [
+        "docs/semantic_spine_v1/origin_execution.json",
+        "tests/semantic_spine/integration"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.",
+        "Execute both origins through the same prepared accelerator implementation for forward and transpose at two value generations.",
+        "Verify dimensions, edge identity, result numerical tolerances, stale failure, projection reuse and source/launch provenance.",
+        "Record actual GPU/toolchain and compare direct native candidate baselines to ensure the adapter has not silently moved work to CPU or added full scans/synchronizations."
+      ],
+      "acceptance": [
+        "Real GPU arithmetic results pass, not merely descriptor serialization.",
+        "Wrong source bindings and stale generations fail; valid high-width unsupported cases do not fake success.",
+        "The full .cell driver is still reported deferred, even though source-derived descriptors execute via the native API."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "docs/semantic_spine_v1/origin_execution.json",
+        "tests/semantic_spine/integration"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I05",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Run cross-origin semantic and real sm70 conformance",
+        "objective": "Prove the epic\u2019s central assertion with one complete execution witness.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "docs/semantic_spine_v1/origin_execution.json",
+            "tests/semantic_spine/integration"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I04"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i05.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Real GPU arithmetic results pass, not merely descriptor serialization.",
+            "Wrong source bindings and stale generations fail; valid high-width unsupported cases do not fake success.",
+            "The full .cell driver is still reported deferred, even though source-derived descriptors execute via the native API."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "docs/semantic_spine_v1/origin_execution.json",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "tests/semantic_spine/integration",
+            "kind": "source_or_validation"
+          }
+        ],
+        "gates": [
+          {
+            "id": "CE-SS1-G-I05",
+            "type": "command",
+            "argv": [
+              "python3",
+              "planning/semantic-spine-v1/scripts/run_gate.py",
+              "--group",
+              "conformance",
+              "--source-root",
+              "."
+            ],
+            "cwd": ".",
+            "required": true
+          }
+        ],
+        "claim_locks": [
+          "ce-ss1-accelerator-evidence"
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I06",
+      "short_id": "I06",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Run the supplied biological demo and CUDA memory checks",
+      "purpose": "Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.",
+      "depends_on": [
+        "CE-SS1-I05"
+      ],
+      "write_scope": [
+        "examples/semantic_spine_v1",
+        "docs/semantic_spine_v1/demo_execution.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.",
+        "Run Compute Sanitizer memcheck on the tiny demo and relevant native tests. A missing sanitizer/device is an explicit acceptance blocker, not a skip pass.",
+        "Confirm one topology preparation, two value publications, correct forward/transpose results, actual bound candidate names and rejection of a stale call before output changes.",
+        "Keep the reference-only fixture mode visibly distinct and exclude it from GPU completion. Describe normal run/build commands and the small scope."
+      ],
+      "acceptance": [
+        "Demo exits zero on real sm70 with no memory errors.",
+        "The default program never provides a dummy or reference fallback to pass.",
+        "The demo remains small: no optimizer step, training, new dataset, broad planner inspection or performance promotion."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "examples/semantic_spine_v1",
+        "docs/semantic_spine_v1/demo_execution.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I06",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Run the supplied biological demo and CUDA memory checks",
+        "objective": "Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "examples/semantic_spine_v1",
+            "docs/semantic_spine_v1/demo_execution.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I05"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i06.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "Demo exits zero on real sm70 with no memory errors.",
+            "The default program never provides a dummy or reference fallback to pass.",
+            "The demo remains small: no optimizer step, training, new dataset, broad planner inspection or performance promotion."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "examples/semantic_spine_v1",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/demo_execution.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "gates": [
+          {
+            "id": "CE-SS1-G-I06",
+            "type": "command",
+            "argv": [
+              "python3",
+              "planning/semantic-spine-v1/scripts/run_gate.py",
+              "--group",
+              "demo",
+              "--source-root",
+              "."
+            ],
+            "cwd": ".",
+            "required": true
+          }
+        ],
+        "claim_locks": [
+          "ce-ss1-accelerator-evidence"
+        ]
+      }
+    },
+    {
+      "id": "CE-SS1-I07",
+      "short_id": "I07",
+      "repository": "Cellerator",
+      "lane": "INTEGRATE",
+      "title": "Close the limited epic and preserve deferred obligations",
+      "purpose": "Publish an evidence-backed completion receipt and stop at the agreed boundary.",
+      "depends_on": [
+        "CE-SS1-I06"
+      ],
+      "write_scope": [
+        "docs/semantic_spine_v1/completion.json",
+        "docs/semantic_spine_v1/deferred.md",
+        "docs/semantic_spine_v1/source_disposition.json"
+      ],
+      "existing_source_paths": [],
+      "implementation_steps": [
+        "Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.",
+        "List implemented semantics versus recognized-but-unimplemented operations and record every touched legacy implementation\u2019s retained/adapted/replaced disposition.",
+        "Keep explicit obligations for full .cell-to-device execution, implicit .cell mode/imports/cross-TU optimization, broader dtype/width handling, full contraction/compositions, packaging, public API and performance work.",
+        "Commit/push completed work and integrate this epic only under later execution authorization; do not delete unrelated branches or auto-start another epic. Stop promptly on the user\u2019s pause request."
+      ],
+      "acceptance": [
+        "All required real executable gates pass with exact provenance; no missing GPU evidence is papered over.",
+        "No active .ceh remains and useful code has not been discarded without a justified equivalent.",
+        "The completion statement explicitly denies full-language/SDK completion and performance supremacy."
+      ],
+      "explicit_out_of_scope": [],
+      "outputs": [
+        "docs/semantic_spine_v1/completion.json",
+        "docs/semantic_spine_v1/deferred.md",
+        "docs/semantic_spine_v1/source_disposition.json"
+      ],
+      "failure_policy": "Do not broaden the operation portfolio or rewrite a working backend to make an adapter easier.",
+      "native_record": {
+        "id": "CE-SS1-I07",
+        "parent_id": "CE-SS1-0000",
+        "kind": "task",
+        "title": "Close the limited epic and preserve deferred obligations",
+        "objective": "Publish an evidence-backed completion receipt and stop at the agreed boundary.",
+        "status": "planned",
+        "priority": 70,
+        "parallel_policy": "parallel_safe",
+        "scope": {
+          "exclusive_paths": [
+            "docs/semantic_spine_v1/completion.json",
+            "docs/semantic_spine_v1/deferred.md",
+            "docs/semantic_spine_v1/source_disposition.json"
+          ],
+          "read_paths": [
+            "planning/semantic-spine-v1/01_SCOPE_AND_DECISIONS.md",
+            "planning/semantic-spine-v1/02_SEMANTIC_AND_NATIVE_CONTRACT.md",
+            "planning/semantic-spine-v1/03_PARALLEL_LANES_AND_INTEGRATION.md",
+            "planning/semantic-spine-v1/04_VALIDATION_AND_DEMO.md",
+            "AGENTS.md",
+            "include/Cellerator/execution/identity.hh",
+            "include/Cellerator/compute/operation/operation_core.hh",
+            "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+          ],
+          "forbidden_paths": [
+            "components",
+            "compat/legacy_sparse"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "CE-SS1-I06"
+          }
+        ],
+        "invariants": [
+          "CE-SS1-INV-LIMIT",
+          "CE-SS1-INV-SEMANTICS",
+          "CE-SS1-INV-PRESERVE",
+          "CE-SS1-INV-DEVICE",
+          "CE-SS1-INV-HONEST"
+        ],
+        "notes": "Full binding specification: planning/semantic-spine-v1/proposed-todos/ce-ss1-i07.md. Lane CE-SS1-L-INTEGRATE. Do not finish from a string/manifest check. Preserve evidence and tell the coordinator about scope conflicts.",
+        "next_action": "Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.",
+        "result_policy": {
+          "allowed_dispositions": [
+            "implemented",
+            "validated"
+          ]
+        },
+        "completion_contract": {
+          "required": [
+            "All required real executable gates pass with exact provenance; no missing GPU evidence is papered over.",
+            "No active .ceh remains and useful code has not been discarded without a justified equivalent.",
+            "The completion statement explicitly denies full-language/SDK completion and performance supremacy."
+          ]
+        },
+        "produced_artifacts": [
+          {
+            "path": "docs/semantic_spine_v1/completion.json",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/deferred.md",
+            "kind": "source_or_validation"
+          },
+          {
+            "path": "docs/semantic_spine_v1/source_disposition.json",
+            "kind": "source_or_validation"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "CE-SS1-CP-COMPLETE",
+            "title": "Bounded semantic and accelerator acceptance complete"
+          }
+        ],
+        "gates": [
+          {
+            "id": "CE-SS1-G-I07",
+            "type": "command",
+            "argv": [
+              "python3",
+              "planning/semantic-spine-v1/scripts/run_gate.py",
+              "--group",
+              "final",
+              "--source-root",
+              "."
+            ],
+            "cwd": ".",
+            "required": true
+          }
+        ],
+        "claim_locks": [
+          "ce-ss1-accelerator-evidence"
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "CE-SS1-INV-LIMIT",
+      "rule": "Only relation apply/transpose execute in this epic; N1 f16 weights/f32 arithmetic is the required witness. Full language, contraction execution, JIT, SDK and optimizer expansion remain deferred.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-SEMANTICS",
+      "rule": "One canonical mathematical relation contract serves both origins. Source provenance and runtime value generations do not become topology identity.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-PRESERVE",
+      "rule": "Preserve valuable implementations and pre-existing user edits. Replace misleading semantics using counterexamples, not blanket version migrations.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-DEVICE",
+      "rule": "Required accelerator gates run actual sm70 arithmetic and fail on unavailable hardware. Tolerances do not waive exact support, identity or explicit numerical contracts.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-PARALLEL",
+      "rule": "Serial queues within first-class Codex lanes; only genuine contract dependencies across lanes. Local-worker children are not lane substitutes.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-BOUNDARY",
+      "rule": "Only integrator edits central build files. No leaf silently edits a peer contract; interface changes invalidate and notify consumers.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-CEH",
+      "rule": "No active project-owned .ceh files remain after the scoped conversion. Preserve meaningful content as .cell; retain ordinary C++ .hh.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-SS1-INV-HONEST",
+      "rule": "A test must execute the claimed computation. No name/grep/capability receipts substitute for runtime correctness; missing or deferred features remain explicit.",
+      "severity": "error"
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-ss1-accelerator-evidence",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Serialize this epic\u2019s final evidence only; execution must ALSO acquire the existing project GPU lease. Does not invent hardware inventory or exclude unrelated workloads by itself."
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "CE-SS1-I-RELATION",
+      "owner_task_id": "CE-SS1-I02",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/relation_semantics.hh",
+        "include/Cellerator/compute/operation/prepared_relation.hh"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CE-SS1-B-FOUNDATION",
+      "title": "Validated foundation is integrated, not merely declared",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-SS1-CP-FOUNDATION",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-SS1-B-FANIN",
+      "title": "All independent lane artifacts ready for integrated acceptance",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "task",
+          "id": "CE-SS1-N06",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CE-SS1-F04",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CE-SS1-A04",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CE-SS1-V04",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CE-SS1-I03",
+          "state": "done"
+        }
+      ]
+    },
+    {
+      "id": "CE-SS1-B-COMPLETE",
+      "title": "Bounded epic complete",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-SS1-CP-COMPLETE",
+          "state": "reached"
+        }
+      ]
+    }
+  ],
+  "resource_classes": [],
+  "run": {
+    "id": "CE-SS1-RUN-V1",
+    "root_task_id": "CE-SS1-0000",
+    "charter": {
+      "objective": "Coordinate the bounded semantic-unification epic; close only after I07 and all execution evidence. No broad compiler, library or packaging campaign.",
+      "boundaries": [
+        "Plan ingestion alone does not activate this run, dispatch agents or materialize worktrees.",
+        "Single Cellerator authority; no dependency on unfinished JBC/CCP campaigns.",
+        "Use first-class Codex lane agents. delegate_task is a subordinate local worker, not another lane.",
+        "Full .cell execution remains deferred; .ceh conversion is bounded content preservation, not a modules implementation."
+      ],
+      "acceptance_conditions": [
+        "CE-SS1-I07 closes only after real sm70 tests and the supplied demo.",
+        "Root closes only after all 29 leaves; no follow-on epic is activated."
+      ],
+      "glossary": {
+        "contract_split": "First-class lane with exact non-overlapping file ownership. Managed workspaces require explicit execution-time setup; this JSON does not create them.",
+        "internal interface": "Versioned coordination contract, not a stable public API."
+      }
+    },
+    "lanes": [
+      {
+        "id": "CE-SS1-L-COORD",
+        "role": "coordinator",
+        "tasks": [
+          "CE-SS1-0000"
+        ],
+        "workspace": {
+          "mode": "read_shared"
+        }
+      },
+      {
+        "id": "CE-SS1-L-CORE",
+        "role": "implementer",
+        "tasks": [
+          "CE-SS1-C01",
+          "CE-SS1-C02",
+          "CE-SS1-C03",
+          "CE-SS1-C04"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      },
+      {
+        "id": "CE-SS1-L-NATIVE",
+        "role": "implementer",
+        "tasks": [
+          "CE-SS1-N01",
+          "CE-SS1-N02",
+          "CE-SS1-N03",
+          "CE-SS1-N04",
+          "CE-SS1-N05",
+          "CE-SS1-N06"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      },
+      {
+        "id": "CE-SS1-L-FRONTEND",
+        "role": "implementer",
+        "tasks": [
+          "CE-SS1-F01",
+          "CE-SS1-F02",
+          "CE-SS1-F03",
+          "CE-SS1-F04"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      },
+      {
+        "id": "CE-SS1-L-ALGEBRA",
+        "role": "specialist",
+        "tasks": [
+          "CE-SS1-A01",
+          "CE-SS1-A02",
+          "CE-SS1-A03",
+          "CE-SS1-A04"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      },
+      {
+        "id": "CE-SS1-L-VERIFY",
+        "role": "validator",
+        "tasks": [
+          "CE-SS1-V01",
+          "CE-SS1-V02",
+          "CE-SS1-V03",
+          "CE-SS1-V04"
+        ],
+        "workspace": {
+          "mode": "contract_split"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      },
+      {
+        "id": "CE-SS1-L-INTEGRATE",
+        "role": "integrator",
+        "tasks": [
+          "CE-SS1-I01",
+          "CE-SS1-I02",
+          "CE-SS1-I03",
+          "CE-SS1-I04",
+          "CE-SS1-I05",
+          "CE-SS1-I06",
+          "CE-SS1-I07"
+        ],
+        "workspace": {
+          "mode": "exclusive"
+        },
+        "parent_lane_id": "CE-SS1-L-COORD"
+      }
+    ],
+    "rendezvous": [],
+    "context_fragments": []
+  }
+}

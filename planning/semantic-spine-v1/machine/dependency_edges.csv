@@ -1,0 +1,33 @@
+task_id,depends_on_task_id,reason
+CE-SS1-C01,CE-SS1-I01,serial or integration prerequisite
+CE-SS1-C02,CE-SS1-C01,serial or integration prerequisite
+CE-SS1-C03,CE-SS1-C02,serial or integration prerequisite
+CE-SS1-C04,CE-SS1-C03,serial or integration prerequisite
+CE-SS1-I02,CE-SS1-C04,serial or integration prerequisite
+CE-SS1-N01,CE-SS1-I02,semantic/build prerequisite
+CE-SS1-N02,CE-SS1-N01,serial or integration prerequisite
+CE-SS1-N03,CE-SS1-N02,serial or integration prerequisite
+CE-SS1-N04,CE-SS1-N03,serial or integration prerequisite
+CE-SS1-N05,CE-SS1-N04,serial or integration prerequisite
+CE-SS1-N06,CE-SS1-N05,serial or integration prerequisite
+CE-SS1-F01,CE-SS1-I02,semantic/build prerequisite
+CE-SS1-F02,CE-SS1-F01,serial or integration prerequisite
+CE-SS1-F03,CE-SS1-F02,serial or integration prerequisite
+CE-SS1-F04,CE-SS1-F03,serial or integration prerequisite
+CE-SS1-A01,CE-SS1-I02,semantic/build prerequisite
+CE-SS1-A02,CE-SS1-A01,serial or integration prerequisite
+CE-SS1-A03,CE-SS1-A02,serial or integration prerequisite
+CE-SS1-A04,CE-SS1-A03,serial or integration prerequisite
+CE-SS1-V01,CE-SS1-I02,semantic/build prerequisite
+CE-SS1-V02,CE-SS1-V01,serial or integration prerequisite
+CE-SS1-V03,CE-SS1-V02,serial or integration prerequisite
+CE-SS1-V04,CE-SS1-V03,serial or integration prerequisite
+CE-SS1-I03,CE-SS1-I02,semantic/build prerequisite
+CE-SS1-I04,CE-SS1-N06,serial or integration prerequisite
+CE-SS1-I04,CE-SS1-F04,serial or integration prerequisite
+CE-SS1-I04,CE-SS1-A04,serial or integration prerequisite
+CE-SS1-I04,CE-SS1-V04,serial or integration prerequisite
+CE-SS1-I04,CE-SS1-I03,serial or integration prerequisite
+CE-SS1-I05,CE-SS1-I04,serial or integration prerequisite
+CE-SS1-I06,CE-SS1-I05,serial or integration prerequisite
+CE-SS1-I07,CE-SS1-I06,serial or integration prerequisite

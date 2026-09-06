@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "basis": "source-inspected CLI/native service plus historical accepted-schema audit",
+  "project_control_commit": "9f4eca4efeada3b0bd3b05dc0ce3121a7099632c",
+  "native_plan_schema": 3,
+  "current_live_schema_validation": false,
+  "commands": {
+    "validate": [
+      "project-control",
+      "plan",
+      "validate",
+      "--project",
+      "cellerator",
+      "--file",
+      "{native_plan}"
+    ],
+    "apply": [
+      "project-control",
+      "plan",
+      "apply",
+      "--project",
+      "cellerator",
+      "--file",
+      "{native_plan}"
+    ]
+  },
+  "automatic_json_output": true,
+  "separate_plan_diff_cli_verified": false,
+  "generic_preledger_compile_preserves_lanes": false,
+  "workflow_unavailable_context_schema2_is_fallback": true,
+  "apply_invocations_by_builder": 0,
+  "authority_required_before_apply": true,
+  "cannot_establish_live_id_collisions_now": true,
+  "activation_provided": false,
+  "first_class_agent_launcher_exact_schema": "resolve via installed canonical workflow on execution authorization; not guessed",
+  "local_delegate_task_is_first_class_lane": false
+}

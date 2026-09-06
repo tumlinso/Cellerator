@@ -1,0 +1,31 @@
+id,kind,lane,title,depends_on
+CE-SS1-0000,epic,CE-SS1-L-COORD,Semantic Spine v1: one relation meaning and real accelerator reuse,
+CE-SS1-I01,task,CE-SS1-L-INTEGRATE,Establish the bounded execution baseline and protected edit inventory,
+CE-SS1-C01,task,CE-SS1-L-CORE,Define one value-owned relation application descriptor,CE-SS1-I01
+CE-SS1-C02,task,CE-SS1-L-CORE,Implement shared semantic validation and fieldwise equivalence,CE-SS1-C01
+CE-SS1-C03,task,CE-SS1-L-CORE,Specify provisional native pair preparation and bindings,CE-SS1-C02
+CE-SS1-C04,task,CE-SS1-L-CORE,Test the contract and publish the foundation artifact,CE-SS1-C03
+CE-SS1-I02,task,CE-SS1-L-INTEGRATE,Integrate the foundation and release parallel lanes,CE-SS1-C04
+CE-SS1-N01,task,CE-SS1-L-NATIVE,Adapt the canonical descriptor to existing preparation,CE-SS1-I02
+CE-SS1-N02,task,CE-SS1-L-NATIVE,Prepare reusable forward and transpose structure,CE-SS1-N01
+CE-SS1-N03,task,CE-SS1-L-NATIVE,Refresh device values without rebuilding topology,CE-SS1-N02
+CE-SS1-N04,task,CE-SS1-L-NATIVE,Execute canonical forward application on sm70,CE-SS1-N03
+CE-SS1-N05,task,CE-SS1-L-NATIVE,Execute transpose with shared topology and value authority,CE-SS1-N04
+CE-SS1-N06,task,CE-SS1-L-NATIVE,Prove native reuse and hand off executable evidence,CE-SS1-N05
+CE-SS1-F01,task,CE-SS1-L-FRONTEND,Lower existing relation semantic IR through the shared contract,CE-SS1-I02
+CE-SS1-F02,task,CE-SS1-L-FRONTEND,Connect the real parser/Sema relation slice,CE-SS1-F01
+CE-SS1-F03,task,CE-SS1-L-FRONTEND,Preserve effects and diagnostics without losing equivalence,CE-SS1-F02
+CE-SS1-F04,task,CE-SS1-L-FRONTEND,Publish a source-origin conformance test artifact,CE-SS1-F03
+CE-SS1-A01,task,CE-SS1-L-ALGEBRA,Separate scalar support dot from edge-channel product,CE-SS1-I02
+CE-SS1-A02,task,CE-SS1-L-ALGEBRA,"Make primitive, composition and effect classifications explicit",CE-SS1-A01
+CE-SS1-A03,task,CE-SS1-L-ALGEBRA,Update affected consumers and negative conformance tests,CE-SS1-A02
+CE-SS1-A04,task,CE-SS1-L-ALGEBRA,Publish bounded algebra conformance and migration disposition,CE-SS1-A03
+CE-SS1-V01,task,CE-SS1-L-VERIFY,Create an independent logical-edge oracle and adversarial fixtures,CE-SS1-I02
+CE-SS1-V02,task,CE-SS1-L-VERIFY,Build contract and identity regression probes,CE-SS1-V01
+CE-SS1-V03,task,CE-SS1-L-VERIFY,Specify integrated origin and GPU acceptance probes,CE-SS1-V02
+CE-SS1-V04,task,CE-SS1-L-VERIFY,Deliver validation harness and adversarial controls,CE-SS1-V03
+CE-SS1-I03,task,CE-SS1-L-INTEGRATE,Retire .ceh files without expanding the language milestone,CE-SS1-I02
+CE-SS1-I04,task,CE-SS1-L-INTEGRATE,Integrate all four lanes and repository-local targets,CE-SS1-N06;CE-SS1-F04;CE-SS1-A04;CE-SS1-V04;CE-SS1-I03
+CE-SS1-I05,task,CE-SS1-L-INTEGRATE,Run cross-origin semantic and real sm70 conformance,CE-SS1-I04
+CE-SS1-I06,task,CE-SS1-L-INTEGRATE,Run the supplied biological demo and CUDA memory checks,CE-SS1-I05
+CE-SS1-I07,task,CE-SS1-L-INTEGRATE,Close the limited epic and preserve deferred obligations,CE-SS1-I06
