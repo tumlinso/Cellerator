@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-F02: Connect the real parser/Sema relation slice
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I01: Establish the bounded execution baseline and protected edit inventory
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.

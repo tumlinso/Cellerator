@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A03: Update affected consumers and negative conformance tests
 
-Task revision: `6817`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.

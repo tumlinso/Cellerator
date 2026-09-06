@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-F04: Publish a source-origin conformance test artifact
 
-Task revision: `6830`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Provide a real origin-parity test route and candid language capability status.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I05: Run cross-origin semantic and real sm70 conformance
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove the epic’s central assertion with one complete execution witness.

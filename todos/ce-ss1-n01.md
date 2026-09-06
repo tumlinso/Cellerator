@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-N01: Adapt the canonical descriptor to existing preparation
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.

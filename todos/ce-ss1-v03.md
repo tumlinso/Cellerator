@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-V03: Specify integrated origin and GPU acceptance probes
 
-Task revision: `6821`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.

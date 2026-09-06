@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I03: Retire .ceh files without expanding the language milestone
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.

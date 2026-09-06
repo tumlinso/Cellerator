@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A02: Make primitive, composition and effect classifications explicit
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.

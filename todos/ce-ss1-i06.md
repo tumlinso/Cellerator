@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I06: Run the supplied biological demo and CUDA memory checks
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.

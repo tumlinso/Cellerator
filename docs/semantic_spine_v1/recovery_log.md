@@ -52,3 +52,19 @@ N06's existing source and suite/sanitizer log hashes were verified. Its required
 direct-provider overhead comparison still needs execution and evidence. N06
 closure, I04-I07 integration/validation, root closure, and final cleanup remain
 pending until the authority and executable evidence establish completion.
+
+## Internal acceptance audit corrections
+
+- Native preparation: a valid structure identity could XOR into a zero CTP1
+  projection identity. The native lane reproduced rejection on a leased V100
+  and is correcting the derived ID under N06, with public forward/transpose
+  regression coverage. This does not change the biological identity.
+- Frontend lowering: canonical arithmetic retained f16 relation storage, but
+  legacy operation/algebra transport incorrectly copied f32 input storage into
+  that field and dropped nonfinite rejection. The source-level discrepancy was
+  found before integration. Project Control accepted supplemental task
+  `CE-SS1-F05` in `CE-SS1-L-FRONTEND-REPAIR`; I04 now depends on it. The original
+  frontend lane is closed, and the kernel forbids appending to closed lanes.
+  This correction restores the original single-contract requirement, adds no
+  operation family, and does not start another epic. Implementation and numeric
+  parity regressions remain required before F05 closure.

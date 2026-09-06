@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-C01: Define one value-owned relation application descriptor
 
-Task revision: `6812`; current project revision is in `todo-status.md`.
+Task revision: `6834`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.
