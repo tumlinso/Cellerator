@@ -1,0 +1,151 @@
+{
+  "task": "CE-SS1-I06",
+  "status": "passed",
+  "source_head": "844e64a3081d1c0001849446f3111c42267a4a97",
+  "gate": {
+    "protocol_version": 2,
+    "status": "claimed",
+    "gates": [
+      {
+        "gate_id": "CE-SS1-G-I06",
+        "status": "passed",
+        "evidence_id": "54da5307-ea02-404d-bc72-eaca27ebecca"
+      }
+    ],
+    "integration": [],
+    "task_id": "CE-SS1-I06",
+    "run_id": "CE-SS1-RUN-V1",
+    "lane_id": "CE-SS1-L-INTEGRATE",
+    "role": "integrator",
+    "operation_status": "passed",
+    "allowed_actions": [
+      "inspect_task",
+      "coordinate_task",
+      "delegate_task",
+      "finish_task"
+    ],
+    "recommended_next_call": "finish_task"
+  },
+  "controller": {
+    "classification": "decision-result",
+    "evidence_id": "9da9591a-0a36-4167-ad0c-d7883f27da84",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded"
+  },
+  "receipt": {
+    "status": "passed",
+    "group": "demo",
+    "source_head": "844e64a3081d1c0001849446f3111c42267a4a97",
+    "source_root": "/home/tumlinson/Cellerator",
+    "created_unix": 1788698518.174021,
+    "gpu_targets_executed": [
+      "ceSemanticSpineDemo"
+    ],
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.0015363693237304688,
+        "stdout_sha256": "8ab8bef389f533eea01fa7a9de978348499deb191465e3332c221e3fbec05272"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/tumlinson/Cellerator",
+          "-B",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "-DCELLERATOR_BUILD_TESTS=ON",
+          "-DCELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON",
+          "-DCELLERATOR_ENABLE_CUDA=ON",
+          "-DCMAKE_CUDA_ARCHITECTURES=70",
+          "-DCELLERATOR_AUTO_DETECT_CUDA_ARCHITECTURES=OFF"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 1.8153226375579834,
+        "stdout_sha256": "c8a30cdc57b35269b8999d74203d6569efa2771b983c41bb63cde07f5f79a99a"
+      },
+      {
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/tumlinson/Cellerator/build-ss1",
+          "--parallel",
+          "80",
+          "--target",
+          "ceSemanticSpineDemo"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.540257453918457,
+        "stdout_sha256": "4f2f8da612b0ece94afb11230644faa6b1477faa3dd9e97a91f68bba5bedb337"
+      },
+      {
+        "argv": [
+          "/home/tumlinson/Cellerator/build-ss1/ceSemanticSpineDemo",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.2076892852783203,
+        "stdout_sha256": "51e1200f28510a4bed3022dfd637aed020df44b7bc096ee4cb8ba04e563977d4"
+      },
+      {
+        "argv": [
+          "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "99",
+          "/home/tumlinson/Cellerator/build-ss1/ceSemanticSpineDemo",
+          "--require-sm70"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.36591339111328125,
+        "stdout_sha256": "07591d5b28dd8b6c62fb1d28d9245158a81c111eac52682701c8e7fcd6fdff34"
+      }
+    ],
+    "performance_promotion": false,
+    "full_cell_compilation_complete": false
+  },
+  "raw_stdout": {
+    "path": ".git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/evidence/54da5307-ea02-404d-bc72-eaca27ebecca/stdout.txt",
+    "sha256": "0cb7626d4191b8b5e80ddda578872108c1be61b9829d6e45415b20ff254125bc",
+    "acceptance_output": "Device: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= ERROR SUMMARY: 0 errors\n{\"gate\": \"passed\", \"receipt\": \"/home/tumlinson/Cellerator/build-ss1/semantic-spine-receipts/demo-1788698518174036358.json\"}\n"
+  },
+  "source_sha256": {
+    "examples/semantic_spine_v1/regulatory_reuse.cc": "e528a1d25daa6aca5677181e413fc9bd43648755c59fd5329e2ffd473238c296",
+    "examples/semantic_spine_v1/fixture.hh": "251559f9f3d60f0f57bc1489de04225805efe6ef74bcf36e51cf760dcc126155"
+  },
+  "binary_sha256": "a6c6b876860ea8275cefdb5f660f8f98bd59e945a7848828a4aac039777c2ab2",
+  "source_changes": "Demo and fixture source unchanged from supplied example; README tense updated for integrated build.",
+  "executed_contract": {
+    "topology_preparations": 1,
+    "value_refreshes": 2,
+    "forward_launches": 3,
+    "transpose_launches": 2,
+    "stale_generation": "rejected before launch; output sentinel unchanged",
+    "projection_ids": "stable across generation refresh",
+    "generation_2_forward": [
+      1,
+      0.75,
+      -0.5,
+      0,
+      1.5
+    ],
+    "generation_2_transpose": [
+      1.25,
+      -3,
+      0.75,
+      -0.125
+    ]
+  },
+  "memcheck_errors": 0,
+  "require_sm70": true,
+  "full_cell_compilation_complete": false,
+  "performance_promotion": false
+}
