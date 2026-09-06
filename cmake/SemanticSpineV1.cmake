@@ -44,7 +44,6 @@ endif()
 if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     add_library(cellerator_relation_update_support STATIC
         src/runtime/relation_value_readiness.cu
-        src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_gradient.cu
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu
         src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_pack.cu

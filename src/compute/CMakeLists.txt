@@ -400,6 +400,7 @@ set_target_properties(cellerator_feature_major_small_n_candidate PROPERTIES
 
 add_library(cellerator_transpose_backward_candidate STATIC
     src/compute/candidate/transpose_backward_candidate.cu
+    src/compute/architecture/providers/nvidia/sm70/transpose/relation_n16.cu
 )
 
 add_library(cellerator_native_training_slice STATIC
