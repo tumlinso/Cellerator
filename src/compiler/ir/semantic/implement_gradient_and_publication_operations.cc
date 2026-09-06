@@ -1,87 +1,95 @@
 #include <Cellerator/compiler/ir/semantic/implement_gradient_and_publication_operations_v1.hh>
 
-#include <algorithm>
-#include <unordered_set>
-
 namespace Cellerator::compiler::ir::semantic {
-
-gradient_publication_status_ir_v1 validate_gradient_publication_program_ir_v1(
-    const gradient_publication_program_ir_v1& program) noexcept {
-    if (program.program_identity == 0 || !program.structure_identity.valid() ||
-        program.structure_epoch == 0)
-        return gradient_publication_status_ir_v1::invalid_identity;
-    if (program.prepared_generation == 0)
-        return gradient_publication_status_ir_v1::invalid_generation;
-    if (validate_numeric_tuple_ir_v1(program.numerical) !=
-        state_value_ir_validation_code_v1::success)
-        return gradient_publication_status_ir_v1::invalid_numerical_policy;
-    if (!program.update_policy.owned_by_caller ||
-        program.update_policy.caller_policy_identity == 0 ||
-        program.update_policy.prepared_update_candidate_identity == 0)
-        return gradient_publication_status_ir_v1::update_policy_not_caller_owned;
-    bool forward = false;
-    bool transpose = false;
-    bool value_gradient = false;
-    bool publication = false;
-    std::unordered_set<std::uint64_t> identities;
-    for (const auto& stage : program.stages) {
-        if (stage.identity == 0 || !identities.insert(stage.identity).second ||
-            !stage.input_axis.valid() || !stage.output_axis.valid())
-            return gradient_publication_status_ir_v1::invalid_stage;
-        forward |= stage.kind == gradient_publication_operation_ir_v1::forward;
-        transpose |= stage.kind == gradient_publication_operation_ir_v1::transpose;
-        value_gradient |= stage.kind == gradient_publication_operation_ir_v1::value_gradient;
-        if (stage.kind == gradient_publication_operation_ir_v1::publish_generation) {
-            if (stage.consumed_generation == 0 ||
-                stage.published_generation <= stage.consumed_generation)
-                return gradient_publication_status_ir_v1::invalid_generation;
-            publication = true;
+namespace {
+using code = gradient_publication_status_ir_v1;
+using kind = gradient_publication_operation_ir_v1;
+using namespace cellerator::compute::relation;
+bool same_axis(const axis_descriptor& a, const axis_descriptor& b) noexcept {
+    // Reuse fieldwise canonical comparison, including all persistent axis tags.
+    operation_descriptor x{}, y{};
+    x.topology.source = a; y.topology.source = b;
+    return equivalent(x, y);
+}
+}
+code lower_gradient_publication_program_ir_v1(
+    const gradient_publication_program_ir_v1& p, relation_effect_sequence* output) noexcept {
+    if (!output || !p.program_identity) return code::invalid_identity;
+    *output = {};
+    if (!validate(p.calculus)) return code::invalid_numerical_policy;
+    if (!p.prepared_generation) return code::invalid_generation;
+    if (p.stages.empty() || p.stages.size() > max_relation_effects) return code::invalid_stage;
+    relation_effect_sequence effects{};
+    effects.initial_generation.value = p.prepared_generation;
+    std::array<std::uint32_t, max_relation_effects> ancestors{}, core_dependencies{};
+    std::uint64_t current = p.prepared_generation;
+    std::uint32_t last_publication = 0;
+    bool pending_update = false;
+    bool forward = false, transpose = false, gradient = false, update = false, publication = false;
+    for (std::uint32_t i = 0; i < p.stages.size(); ++i) {
+        const auto& s = p.stages[i];
+        if (!s.identity || (s.dependencies & ~((1u << i) - 1u))) return code::invalid_dependency;
+        for (std::uint32_t j = 0; j < i; ++j) {
+            if (s.identity == p.stages[j].identity) return code::invalid_identity;
+            if (s.dependencies & (1u << j)) {
+                ancestors[i] |= ancestors[j] | (1u << j);
+                core_dependencies[i] |= core_dependencies[j];
+            }
         }
-        if (stage.kind == gradient_publication_operation_ir_v1::canonicalize &&
-            !stage.explicit_order_transform)
-            return gradient_publication_status_ir_v1::invalid_canonicalization;
+        if (s.kind == kind::observe_generation) {
+            if (pending_update || !last_publication || !(ancestors[i] & last_publication) ||
+                s.consumed_generation != current || s.published_generation)
+                return code::invalid_generation;
+            continue;
+        }
+        relation_effect e{};
+        e.identity = s.identity;
+        e.dependencies = core_dependencies[i];
+        e.reads.value = s.consumed_generation;
+        e.writes.value = s.published_generation;
+        const auto& topology = p.calculus.forward.topology;
+        switch (s.kind) {
+        case kind::forward:
+        case kind::transpose: {
+            const auto& op = s.kind == kind::forward ? p.calculus.forward : p.calculus.transpose;
+            if (!same_axis(s.input_axis, input_axis(op)) || !same_axis(s.output_axis, result_axis(op)))
+                return code::invalid_axis;
+            e.kind = s.kind == kind::forward ? relation_effect_kind::forward : relation_effect_kind::transpose;
+            forward |= s.kind == kind::forward; transpose |= s.kind == kind::transpose;
+            break;
+        }
+        case kind::value_gradient:
+            if (!same_axis(s.input_axis, topology.source) || !same_axis(s.output_axis, topology.destination))
+                return code::invalid_axis;
+            if (s.gradient_order.low != topology.logical_edge_order.low ||
+                s.gradient_order.high != topology.logical_edge_order.high) return code::invalid_order;
+            e.kind = relation_effect_kind::edge_gradient; gradient = true;
+            break;
+        case kind::delta_add:
+        case kind::gradient_step:
+            if ((s.kind == kind::delta_add) != (p.calculus.update == value_update_kind::delta_add))
+                return code::invalid_stage;
+            if (s.gradient_order.low != topology.logical_edge_order.low ||
+                s.gradient_order.high != topology.logical_edge_order.high) return code::invalid_order;
+            e.kind = relation_effect_kind::value_update; update = true; pending_update = true;
+            break;
+        case kind::publish_generation:
+            e.kind = relation_effect_kind::publication; publication = true; pending_update = false;
+            current = s.consumed_generation; last_publication = 1u << i;
+            break;
+        default: return code::invalid_stage;
+        }
+        effects.stages[effects.count] = e;
+        core_dependencies[i] |= 1u << effects.count++;
     }
-    return forward && transpose && value_gradient && publication
-        ? gradient_publication_status_ir_v1::success
-        : gradient_publication_status_ir_v1::incomplete_gradient_closure;
+    if (!forward || !transpose || !gradient || !update || !publication)
+        return code::incomplete_gradient_closure;
+    if (!validate(effects)) return code::invalid_dependency;
+    *output = effects;
+    return code::success;
 }
-
-gradient_publication_status_ir_v1 compare_gradient_program_with_training_v2(
-    const gradient_publication_program_ir_v1& semantic,
-    const cellerator::execution::training_v2::training_program_v2& training) noexcept {
-    const auto status = validate_gradient_publication_program_ir_v1(semantic);
-    if (status != gradient_publication_status_ir_v1::success) return status;
-    if (training.schema_version !=
-            cellerator::execution::training_v2::training_program_schema_version_v2 ||
-        training.program_identity != semantic.program_identity ||
-        training.epoch.value != semantic.structure_epoch ||
-        training.prepared_generation.value != semantic.prepared_generation ||
-        training.stage_count != semantic.stages.size() || training.stages == nullptr)
-        return gradient_publication_status_ir_v1::training_contract_mismatch;
-    for (std::size_t index = 0; index < semantic.stages.size(); ++index) {
-        if (training.stages[index].stage_identity != semantic.stages[index].identity ||
-            training.stages[index].kind !=
-                lower_gradient_publication_stage_kind_v1(semantic.stages[index].kind))
-            return gradient_publication_status_ir_v1::training_contract_mismatch;
-    }
-    return gradient_publication_status_ir_v1::success;
+code validate_gradient_publication_program_ir_v1(const gradient_publication_program_ir_v1& p) noexcept {
+    relation_effect_sequence effects{};
+    return lower_gradient_publication_program_ir_v1(p, &effects);
 }
-
-cellerator::execution::training_v2::training_stage_kind_v2
-lower_gradient_publication_stage_kind_v1(
-    gradient_publication_operation_ir_v1 kind) noexcept {
-    using result = cellerator::execution::training_v2::training_stage_kind_v2;
-    switch (kind) {
-    case gradient_publication_operation_ir_v1::forward: return result::forward_relation_apply;
-    case gradient_publication_operation_ir_v1::transpose: return result::transpose_relation_apply;
-    case gradient_publication_operation_ir_v1::value_gradient: return result::logical_edge_gradient;
-    case gradient_publication_operation_ir_v1::publish_generation:
-    case gradient_publication_operation_ir_v1::caller_update_boundary:
-        return result::publish_value_generation;
-    case gradient_publication_operation_ir_v1::canonicalize:
-        return result::explicit_canonicalize;
-    }
-    return result::forward_relation_apply;
-}
-
-}  // namespace Cellerator::compiler::ir::semantic
+} // namespace Cellerator::compiler::ir::semantic
