@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6882`
+Project revision: `6893`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1175,15 +1175,15 @@ Project revision: `6882`
 - `CE-JBC-X06` | status: done | execution: closed | next: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | status: done | execution: closed | next: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
-- `CE-RU1-C01` | status: planned | execution: ready | next: 
-- `CE-RU1-C02` | status: planned | execution: ready | next: 
-- `CE-RU1-C03` | status: planned | execution: ready | next: 
+- `CE-RU1-C01` | status: done | execution: closed | next: 
+- `CE-RU1-C02` | status: done | execution: closed | next: 
+- `CE-RU1-C03` | status: done | execution: closed | next: 
 - `CE-RU1-F01` | status: planned | execution: ready | next: 
 - `CE-RU1-F02` | status: planned | execution: ready | next: 
 - `CE-RU1-F03` | status: planned | execution: ready | next: 
 - `CE-RU1-F04` | status: planned | execution: ready | next: 
 - `CE-RU1-I01` | status: done | execution: closed | next: 
-- `CE-RU1-I02` | status: planned | execution: ready | next: 
+- `CE-RU1-I02` | status: done | execution: closed | next: 
 - `CE-RU1-I03` | status: planned | execution: ready | next: 
 - `CE-RU1-I04` | status: planned | execution: ready | next: 
 - `CE-RU1-I05` | status: planned | execution: ready | next: 
