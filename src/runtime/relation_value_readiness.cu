@@ -21,15 +21,15 @@ result relation_value_readiness::initialize(execution::structure_id structure,
     if (initialized()) return result::invalid_state;
     if ((!structure.low && !structure.high) || !epoch.value || device < 0 ||
         !api.record || !api.wait) return result::invalid_argument;
+    cudaStreamCaptureStatus capture{};
+    if (cudaStreamIsCapturing(owner, &capture) != cudaSuccess) return result::cuda_failure;
+    if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
     int current = -1;
     if (cudaGetDevice(&current) != cudaSuccess) return result::cuda_failure;
     if (current != device) return result::device_mismatch;
     int stream_device = -1;
     if (cudaStreamGetDevice(owner, &stream_device) != cudaSuccess) return result::cuda_failure;
     if (stream_device != device) return result::device_mismatch;
-    cudaStreamCaptureStatus capture{};
-    if (cudaStreamIsCapturing(owner, &capture) != cudaSuccess) return result::cuda_failure;
-    if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
     // Saturating allocation never wraps and never reuses an earlier lifetime.
     auto candidate = next_incarnation.load(std::memory_order_relaxed);
     do {
@@ -50,15 +50,17 @@ result relation_value_readiness::initialize(execution::structure_id structure,
 result relation_value_readiness::check_stream(cudaStream_t stream) const noexcept {
     if (!initialized()) return result::invalid_state;
     if (poisoned_) return result::poisoned;
+    // Query capture first: other runtime queries may reject an active capture.
+    cudaStreamCaptureStatus capture{};
+    if (cudaStreamIsCapturing(stream, &capture) != cudaSuccess) return result::cuda_failure;
+    if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
     int current = -1;
     if (cudaGetDevice(&current) != cudaSuccess) return result::cuda_failure;
     if (current != device_) return result::device_mismatch;
     int stream_device = -1;
     if (cudaStreamGetDevice(stream, &stream_device) != cudaSuccess) return result::cuda_failure;
     if (stream_device != device_) return result::device_mismatch;
-    cudaStreamCaptureStatus capture{};
-    if (cudaStreamIsCapturing(stream, &capture) != cudaSuccess) return result::cuda_failure;
-    return capture == cudaStreamCaptureStatusNone ? result::success : result::capture_unsupported;
+    return result::success;
 }
 result relation_value_readiness::validate_write(execution::value_generation expected,
     execution::value_generation next, cudaStream_t owner) const noexcept {
