@@ -1,7 +1,7 @@
 // CE-SS1-N03 CUDA12.9 sm70 controller evidence: 9f74e7c9-6fbf-4343-875a-c922b1db7d34.
 #include "../../../src/compute/operation/prepared_relation.cu"
 #include <cuda_fp16.h>
-#include <cassert>
+#include "test_require.hh"
 #include <cmath>
 #include <iostream>
 namespace ce=cellerator::compute::relation;
@@ -20,7 +20,7 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
     cudaStream_t stream{};gpu(cudaStreamCreateWithFlags(&stream,cudaStreamNonBlocking));
     ce::prepared_relation_pair* p=nullptr;check(ce::prepare_relation_pair(f,t,{offsets.data(),offsets.size(),sources.data(),sources.size()},{0,1<<24},stream,&p));
     std::vector<unsigned> mapping(sources.size());if(!mapping.empty())gpu(cudaMemcpy(mapping.data(),p->logical_map,mapping.size()*4,cudaMemcpyDeviceToHost));
-    auto sorted=mapping;std::sort(sorted.begin(),sorted.end());for(unsigned i=0;i<sorted.size();++i)assert(sorted[i]==i);
+    auto sorted=mapping;std::sort(sorted.begin(),sorted.end());for(unsigned i=0;i<sorted.size();++i)SPINE_REQUIRE(sorted[i]==i);
     auto projection=p->report.forward_projection;
     for(unsigned generation=1;generation<=2;++generation){
         std::vector<__half> logical(sources.size());
@@ -29,13 +29,13 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
         if(!logical.empty()){gpu(cudaMalloc(&device_values,logical.size()*2));gpu(cudaMemcpyAsync(device_values,logical.data(),logical.size()*2,cudaMemcpyHostToDevice,stream));}
         ce::device_values_binding binding{device_values,logical.size(),f.topology.identity,f.topology.epoch,f.topology.logical_edge_order,{generation},0};
         check(ce::publish_values(*p,binding,stream));
-        assert(p->report.value_refreshes==generation && p->report.latest_enqueued_generation.value==generation);
-        assert(ce::publish_values(*p,binding,stream).code==ce::status_code::stale_generation);
+        SPINE_REQUIRE(p->report.value_refreshes==generation && p->report.latest_enqueued_generation.value==generation);
+        SPINE_REQUIRE(ce::publish_values(*p,binding,stream).code==ce::status_code::stale_generation);
         binding.generation.value++;binding.logical_edge_order.high++;
-        assert(ce::publish_values(*p,binding,stream).code==ce::status_code::incompatible_order);
+        SPINE_REQUIRE(ce::publish_values(*p,binding,stream).code==ce::status_code::incompatible_order);
         binding.logical_edge_order.high--;binding.epoch.value++;
-        assert(ce::publish_values(*p,binding,stream).code==ce::status_code::stale_structure);
-        assert(p->report.value_refreshes==generation && p->report.latest_enqueued_generation.value==generation);
+        SPINE_REQUIRE(ce::publish_values(*p,binding,stream).code==ce::status_code::stale_structure);
+        SPINE_REQUIRE(p->report.value_refreshes==generation && p->report.latest_enqueued_generation.value==generation);
         for(auto direction:{ce::orientation::forward,ce::orientation::transpose}){
             unsigned inputs=direction==ce::orientation::forward?cols:rows,outputs=direction==ce::orientation::forward?rows:cols;
             std::vector<float> x(inputs),y(outputs);std::vector<double> expected(outputs,0);
@@ -48,22 +48,22 @@ static void fixture(unsigned rows,unsigned cols,const std::vector<unsigned>& off
             if(inputs)gpu(cudaMemcpyAsync(dx,x.data(),inputs*4,cudaMemcpyHostToDevice,stream));
             check(ce::submit(*p,direction,dx,dy));gpu(cudaStreamSynchronize(stream));
             if(outputs)gpu(cudaMemcpy(y.data(),dy,outputs*4,cudaMemcpyDeviceToHost));
-            for(unsigned i=0;i<outputs;++i)assert(std::isfinite(y[i]) && std::abs(y[i]-expected[i])<=1e-5+1e-5*std::abs(expected[i]));
+            for(unsigned i=0;i<outputs;++i)SPINE_REQUIRE(std::isfinite(y[i]) && std::abs(y[i]-expected[i])<=1e-5+1e-5*std::abs(expected[i]));
             if(dx)gpu(cudaFree(dx));if(dy)gpu(cudaFree(dy));
         }
         if(device_values)gpu(cudaFree(device_values));
-        assert(ex::same_identity(projection,p->report.forward_projection));assert(p->report.topology_preparations==1);
+        SPINE_REQUIRE(ex::same_identity(projection,p->report.forward_projection));SPINE_REQUIRE(p->report.topology_preparations==1);
     }
     ce::destroy(p);gpu(cudaStreamDestroy(stream));
 }
 int main(){
-    gpu(cudaSetDevice(0));cudaDeviceProp prop{};gpu(cudaGetDeviceProperties(&prop,0));assert(prop.major==7 && prop.minor==0);
+    gpu(cudaSetDevice(0));cudaDeviceProp prop{};gpu(cudaGetDeviceProperties(&prop,0));SPINE_REQUIRE(prop.major==7 && prop.minor==0);
     fixture(3,4,{0,2,2,4},{3,0,2,1});
     std::vector<unsigned> offsets{0},sources;
     for(unsigned r=0;r<35;++r){if(r%4){sources.push_back((r*7+33)%67);sources.push_back((r*7)%67);}offsets.push_back(sources.size());}
     fixture(35,67,offsets,sources);fixture(2,3,{0,0,1},{2});fixture(3,4,{0,0,0,0},{});fixture(0,0,{0},{});
     ce::topology_descriptor topology{};topology.source.extent=3;topology.destination.extent=1;topology.edge_count=2;
-    unsigned row[]={0,2},duplicate[]={1,1};assert(ce::check_topology(topology,{row,2,duplicate,2}).code==ce::status_code::unsupported_semantics);
-    topology.source.extent=1ULL<<32;assert(ce::check_topology(topology,{}).code==ce::status_code::unsupported_semantics);
+    unsigned row[]={0,2},duplicate[]={1,1};SPINE_REQUIRE(ce::check_topology(topology,{row,2,duplicate,2}).code==ce::status_code::unsupported_semantics);
+    topology.source.extent=1ULL<<32;SPINE_REQUIRE(ce::check_topology(topology,{}).code==ce::status_code::unsupported_semantics);
     std::cout<<"sm70 device generation packing, stale/order/epoch rejection and two-generation FMP1/CTP1 math passed\n";
 }

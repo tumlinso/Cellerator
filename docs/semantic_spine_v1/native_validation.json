@@ -1,0 +1,147 @@
+{
+  "format": "CE-SS1-NATIVE-VALIDATION/1",
+  "date": "2026-09-06",
+  "status": "passed",
+  "task": "CE-SS1-N06",
+  "branch": "codex/ce-ss1-l-native",
+  "base_commit": "b30ccc5683c5b5aef8c950a184917f66f61e078e",
+  "source_sha256": {
+    "src/compute/operation/prepared_relation.cu": "892d1a020dae1b9c8f049c6fe31a2e7a76dd5e6a0adaa2ce21ccef1a671e99c2",
+    "tests/semantic_spine/native/CMakeLists.txt": "2282fb3a64efff8b4f424b20eecfbcca8033a0fa5e29eb75c561a47bfd1cd364",
+    "tests/semantic_spine/native/adapter_test.cu": "7d26bcecba1521faaeeab8ec299873bc444cd4e5db85b7e55ec48b987e7ebd93",
+    "tests/semantic_spine/native/forward_test.cu": "d38b101ea3b45436aa5f04642e5aee9c00f1860fc03c48b39deed4d704d4d766",
+    "tests/semantic_spine/native/generation_test.cu": "bae35bd7ed03369a7a24e332c6f942b3db81cff603320b101bb55d80a32f35db",
+    "tests/semantic_spine/native/lifecycle_test.cu": "7673780a907bc7a32f8b94b25cf2fea59b8bfbb668a701ad1fa8d95e78576b93",
+    "tests/semantic_spine/native/preparation_test.cu": "85a7600b68e0e93387b76334c1a64c926bc3cf1b995662444c73a5a4365ffc6d",
+    "tests/semantic_spine/native/run_suite.py": "4b93eb9fd7583e00fba92d86e4cfe139cc15d57364daf59c59f4d4f5f1224ce2",
+    "tests/semantic_spine/native/test_require.hh": "e1f6f8ec5d466314e2bb3e37b1fd6a387faa98f62f10a91cb3e83ade2662584d",
+    "tests/semantic_spine/native/transpose_test.cu": "007c44995fe733c706d977080268dc482a1301d65c09960d2922738d7baf68f5"
+  },
+  "hardware": {
+    "name": "Tesla V100-SXM2-16GB",
+    "sm": 70,
+    "uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "driver": "580.173.02",
+    "device_count_used": 1
+  },
+  "toolchain": {
+    "cuda": "12.9.86",
+    "host_compiler": "GNU 13.3.0",
+    "mode": "Release",
+    "language": "C++17/CUDA17",
+    "native_tests": "always-on SPINE_REQUIRE; -UNDEBUG also set"
+  },
+  "evidence": {
+    "N02": "c29f9f0d-1636-44b3-968e-8719d1f974dc",
+    "N03": "9f74e7c9-6fbf-4343-875a-c922b1db7d34",
+    "N04": "c4f10362-30e8-4db6-ad45-2163ec8a9394",
+    "N05": "707b24cb-4c39-47c3-8052-5fe3131930db",
+    "final_suite": "16d4dc55-bfb8-4370-97d3-83d25bb011ce",
+    "sanitizer": "62cf049c-cd53-4fb3-b5e7-deaaa4108017"
+  },
+  "provenance_note": "Controller resource authority is the main repository; its automatic snapshot records main HEAD. The lane source hashes above and its CMake build identify the implementation actually compiled. No performance claim is made.",
+  "build_commands": [
+    "cmake -S tests/semantic_spine/native -B /tmp/ce-ss1-native-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc -DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9 -DCELLERATOR_PROVIDER_BUILD=/home/tumlinson/Cellerator/build",
+    "cmake --build /tmp/ce-ss1-native-build -j \"$(nproc)\""
+  ],
+  "controller_argv_equivalents": [
+    [
+      "python3",
+      "tests/semantic_spine/native/run_suite.py",
+      "--build",
+      "/tmp/ce-ss1-native-build"
+    ],
+    [
+      "python3",
+      "tests/semantic_spine/native/run_suite.py",
+      "--build",
+      "/tmp/ce-ss1-native-build",
+      "--sanitize"
+    ]
+  ],
+  "resources": {
+    "foreground_cuda_controller_lease": true,
+    "benchmark_mutex": "/tmp/cuda_v100_benchmark.lock",
+    "foreign_activity": false
+  },
+  "coverage": [
+    "full low/high persistent identities and numeric separation",
+    "arbitrary 3x4 and 35x67 support, unsorted logical edges, partial 32-row tiles",
+    "singleton, zero degree, empty support and 0x0",
+    "duplicate endpoints explicitly unsupported, huge dimensions rejected before CSR dereference",
+    "two generations against independent stored-f16/double oracle",
+    "adjoint dot-product for three vectors at both generations",
+    "32 device-packed refreshes, pointer rebinding, device free-memory unchanged",
+    "stale generation/epoch/order, wrong device/stream/domain, capacities and partial overlap rejection",
+    "preparation consumes host CSR; failure keeps null output",
+    "enqueue-only CUDA Graph capture/replay; publication capture explicitly rejected",
+    "poison state rejection; real CUDA fault injection not performed"
+  ],
+  "sanitizer": {
+    "tools": [
+      "memcheck",
+      "initcheck"
+    ],
+    "targets": [
+      "spine_lifecycle_test",
+      "spine_transpose_test",
+      "spine_regulatory_reuse"
+    ],
+    "error_summaries": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "numerics": {
+    "relation": "f16",
+    "input_multiply_accumulate_output": "f32",
+    "oracle": "double on exactly stored f16 values",
+    "finite_fixture_tolerance": "1e-5 + 1e-5 * abs(expected)",
+    "nonfinite_reject": "unsupported; no device scan claimed"
+  },
+  "demo": {
+    "marker": "SPINE_DEMO_GPU_PASS",
+    "topology_preparations": 1,
+    "value_refreshes": 2,
+    "accepted_forward_launches": 3,
+    "accepted_transpose_launches": 2,
+    "forward_candidate": "cpbp-feature-major-small-n-f16-f32",
+    "transpose_candidate": "cpbp-transpose-backward-n1-f16-f32"
+  },
+  "scope_limits": [
+    "N1 only",
+    "one device and caller stream",
+    "overwrite and nonaliasing only",
+    "FMA/reassociation permission required",
+    "no compiler CLI completion, planner promotion, MMA, training, optimizer or general SDK changes",
+    "empty support reports device-zero-fill/device-no-op and absent projection IDs"
+  ],
+  "suite_logs": {
+    "foreground.stdout.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/26bdebb3-a4d7-4e79-8d4a-e4b55b45fc7a/foreground.stdout.txt",
+      "sha256": "4352fd15330fe19288cd70b505550f601d159abc680ae4d4796fe67fcb1580f4",
+      "text": "adapter identities, orientation, numeric separation and capability rejection passed\nsm70 arbitrary nonsquare/partial-tile/singleton/empty preparation and real FMP1/CTP1 execution passed\nsm70 device generation packing, stale/order/epoch rejection and two-generation FMP1/CTP1 math passed\nsm70 checked forward dispatch, independent oracle and rejection sentinel preservation passed\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n"
+    },
+    "foreground.stderr.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/26bdebb3-a4d7-4e79-8d4a-e4b55b45fc7a/foreground.stderr.txt",
+      "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb",
+      "text": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+    }
+  },
+  "sanitizer_logs": {
+    "foreground.stdout.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/7fdacc5d-4240-4220-b5e0-c574f82a49c5/foreground.stdout.txt",
+      "sha256": "9759d9db69e56115fe5996dc39fdb54b7a88e4b9b23f72797619a6cd0933f97e",
+      "text": "========= COMPUTE-SANITIZER\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 lifecycle: partial preparation rejection, borrowed topology consumed, 32 generations, pointer rebinding, stable device memory, capture replay and poison rejection passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nsm70 nonsquare transpose scatter-add and adjoint identity for three vectors/two generations passed\n========= ERROR SUMMARY: 0 errors\n========= COMPUTE-SANITIZER\nDevice: Tesla V100-SXM2-16GB (sm_70)\nForward: state A, generation 1\n  Gene-A: 0\n  Gene-B: 1.25\n  Gene-C: 0.5\n  Gene-D: 0\n  Gene-E: 1.5\nForward: state B, same prepared topology\n  Gene-A: 0\n  Gene-B: 3.5\n  Gene-C: 2.5\n  Gene-D: 0\n  Gene-E: -1.75\nTranspose: gene signal to regulator contributions (not an inverse)\n  Regulator-A: 0.75\n  Regulator-B: -4\n  Regulator-C: 0.75\n  Regulator-D: 0.125\nForward: changed weights, generation 2\n  Gene-A: 1\n  Gene-B: 0.75\n  Gene-C: -0.5\n  Gene-D: 0\n  Gene-E: 1.5\nTranspose: same new value generation\n  Regulator-A: 1.25\n  Regulator-B: -3\n  Regulator-C: 0.75\n  Regulator-D: -0.125\nBound implementations: cpbp-feature-major-small-n-f16-f32 / cpbp-transpose-backward-n1-f16-f32\nTopology preparations: 1; value refreshes: 2\nSPINE_DEMO_GPU_PASS: forward, transpose, reuse, generation change, stale rejection\nNot a full .cell compiler or a performance superiority claim.\n========= ERROR SUMMARY: 0 errors\n"
+    },
+    "foreground.stderr.txt": {
+      "path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/7fdacc5d-4240-4220-b5e0-c574f82a49c5/foreground.stderr.txt",
+      "sha256": "3373596d706ef6709d41f59bf7f7b78c2973606ba87dfa5ce4daeaaa2e7a10bb",
+      "text": "[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock\n"
+    }
+  }
+}

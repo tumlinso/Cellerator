@@ -1,6 +1,6 @@
 // Host adapter test: include the owning TU to inspect its deliberately private seam.
 #include "../../../src/compute/operation/prepared_relation.cu"
-#include <cassert>
+#include "test_require.hh"
 #include <iostream>
 namespace ce = cellerator::compute::relation;
 namespace ex = cellerator::execution;
@@ -20,17 +20,17 @@ int main() {
     op.topology.source=axis(4);op.topology.destination=axis(9);
     for(auto direction:{ce::orientation::forward,ce::orientation::transpose}) {
         op.direction=direction;ce::native_contract contract{};
-        assert(ce::adapt(op,contract));assert(ce::equivalent(op,contract.semantic));
-        assert(ex::same_identity(contract.structures.structures[0].persistent,op.topology.identity));
-        assert(contract.structures.structures[0].epoch.value==op.topology.epoch.value);
-        assert(contract.numeric.sparse_storage==ex::numeric_type::f16);
-        assert(contract.numeric.dense_storage==ex::numeric_type::f32);
-        assert(!ex::same_axis_identity(contract.source,contract.destination));
+        SPINE_REQUIRE(ce::adapt(op,contract));SPINE_REQUIRE(ce::equivalent(op,contract.semantic));
+        SPINE_REQUIRE(ex::same_identity(contract.structures.structures[0].persistent,op.topology.identity));
+        SPINE_REQUIRE(contract.structures.structures[0].epoch.value==op.topology.epoch.value);
+        SPINE_REQUIRE(contract.numeric.sparse_storage==ex::numeric_type::f16);
+        SPINE_REQUIRE(contract.numeric.dense_storage==ex::numeric_type::f32);
+        SPINE_REQUIRE(!ex::same_axis_identity(contract.source,contract.destination));
     }
     ce::native_contract out{};
-    op.dense_width=2;assert(ce::validate(op));assert(ce::adapt(op,out).code==ce::status_code::unsupported_width);
-    op.dense_width=1;op.arithmetic.permit_fma=false;assert(ce::adapt(op,out).code==ce::status_code::unsupported_numeric_policy);
+    op.dense_width=2;SPINE_REQUIRE(ce::validate(op));SPINE_REQUIRE(ce::adapt(op,out).code==ce::status_code::unsupported_width);
+    op.dense_width=1;op.arithmetic.permit_fma=false;SPINE_REQUIRE(ce::adapt(op,out).code==ce::status_code::unsupported_numeric_policy);
     op.arithmetic.permit_fma=true;op.update=ce::output_update::accumulate;
-    assert(ce::validate(op));assert(ce::adapt(op,out).code==ce::status_code::unsupported_semantics);
+    SPINE_REQUIRE(ce::validate(op));SPINE_REQUIRE(ce::adapt(op,out).code==ce::status_code::unsupported_semantics);
     std::cout<<"adapter identities, orientation, numeric separation and capability rejection passed\n";
 }

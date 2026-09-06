@@ -234,6 +234,11 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             auto ts=core::prepare_transpose_backward_n1_operation(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
             if(!ts)return {status_code::unsupported_semantics,ts.message};
         }
+        if(!forward.topology.edge_count) {
+            report.forward_projection={};report.transpose_projection={};
+            report.forward_candidate=forward.topology.destination.extent?"device-zero-fill":"device-no-op";
+            report.transpose_candidate=forward.topology.source.extent?"device-zero-fill":"device-no-op";
+        }
         report.topology_preparations=1;*out=p.release();return {};
     }catch(const std::bad_alloc&){return {status_code::insufficient_capacity,"cold preparation allocation failed"};}
     catch(...){return {status_code::invalid_argument,"cold projection construction failed"};}
@@ -314,6 +319,12 @@ __global__ void gather_values(const std::uint16_t* logical,const std::uint32_t* 
 } // namespace
 status publish_values(prepared_relation_pair& p,const device_values_binding& binding,cudaStream_t stream) noexcept {
     auto s=check_context(p,binding.device_ordinal,stream);if(!s)return s;
+    // Capturing a gather does not enqueue a generation. There is deliberately
+    // no publication-through-graph protocol in this bounded API.
+    cudaStreamCaptureStatus capture=cudaStreamCaptureStatusNone;
+    s=cuda_status(cudaStreamIsCapturing(stream,&capture));if(!s)return s;
+    if(capture!=cudaStreamCaptureStatusNone)
+        return {status_code::unsupported_semantics,"value publication during stream capture is unsupported"};
     const auto& topology=p.forward.semantic.topology;
     if(!execution::same_identity(binding.structure,topology.identity) || binding.epoch.value!=topology.epoch.value)
         return {status_code::stale_structure,"value structure or epoch differs from prepared topology"};
