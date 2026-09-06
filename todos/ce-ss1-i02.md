@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I02: Integrate the foundation and release parallel lanes
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6771`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make the tested canonical contract available in one shared source base and publish its internal interface.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6760`
+Project revision: `6771`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1380,12 +1380,12 @@ Project revision: `6760`
 - `CE-ARCH-61` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Version the retirement of obsolete CP-Math runtime interfaces and refresh operation-core documentation identity without restoring deleted implementation.
 - `CE-ARCH-71` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing CP-BP v1 native row-masked N=1 kernel as a real operation-core and planner candidate without changing its projection or kernel semantics.
 - `CE-ARCH-91` | kind: integration_task | status: done | parent: CE-ARCH-80 | objective: Consume the completed CellShard foundation to persist, validate, place, upload, and directly execute opaque Cellerator images without CellShard interpreting execution semantics or Cellerator owning storage transport.
-- `CE-SS1-C01` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.
-- `CE-SS1-C02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Both native and compiler callers must use the same relation semantics checks and equality rules.
-- `CE-SS1-C03` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.
-- `CE-SS1-C04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.
+- `CE-SS1-C01` | kind: task | status: done | parent: CE-SS1-0000 | objective: Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.
+- `CE-SS1-C02` | kind: task | status: done | parent: CE-SS1-0000 | objective: Both native and compiler callers must use the same relation semantics checks and equality rules.
+- `CE-SS1-C03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.
+- `CE-SS1-C04` | kind: task | status: done | parent: CE-SS1-0000 | objective: Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.
 - `CE-SS1-I01` | kind: task | status: done | parent: CE-SS1-0000 | objective: Capture the actual pre-implementation source, available accelerator/toolchain, user-supplied example, and minimal forward/transpose regression baseline. Protect the two existing library edits.
-- `CE-SS1-I02` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make the tested canonical contract available in one shared source base and publish its internal interface.
+- `CE-SS1-I02` | kind: task | status: in_progress | parent: CE-SS1-0000 | objective: Make the tested canonical contract available in one shared source base and publish its internal interface.
 - `CE-ARCH-72` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing legal CSR implementation as the first conventional operation-core/planner fallback.
 - `CE-ARCH-92` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Run the final fair real-data and adversarial evidence campaign, identify both Cellerator wins and fallback regimes, verify every migration exit criterion, and leave documentation and ledgers truthful.
 - `CE-ARCH-73` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Measure projection preparation, input ordering, prepared execution, candidate-private output, referee, all total-cost phases, and winner preparation for real registered candidates.

@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6760`
+Project revision: `6771`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -999,12 +999,12 @@ Project revision: `6760`
 - `CE-ARCH-61` | status: done | execution: closed | next: Complete: legacy CP-Math backend/runtime interfaces are versioned as retired evidence and the operation-core documentation identity is refreshed.
 - `CE-ARCH-71` | status: done | execution: closed | next: Register a truthful N=1 candidate adapter over the preserved CPK1/native-tile/direct-kernel path, add focused capability, binding, order, effect, and parity tests, then run the declared host and CUDA gates.
 - `CE-ARCH-91` | status: done | execution: closed | next: Wait only on the authoritative CS-FOUND interfaces, then add the narrow cross-repository opaque artifact vertical slice with one-copy caller-stream upload and direct CPE2 execution.
-- `CE-SS1-C01` | status: planned | execution: ready | next: Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.
-- `CE-SS1-C02` | status: planned | execution: ready | next: Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.
-- `CE-SS1-C03` | status: planned | execution: ready | next: Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.
-- `CE-SS1-C04` | status: planned | execution: ready | next: Add a standalone, small host contract test build and declaration compilation checks for native/compiler consumers. Keep CPU code as an oracle/validation facility.
+- `CE-SS1-C01` | status: done | execution: closed | next: Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.
+- `CE-SS1-C02` | status: done | execution: closed | next: Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.
+- `CE-SS1-C03` | status: done | execution: closed | next: Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.
+- `CE-SS1-C04` | status: done | execution: closed | next: Add a standalone, small host contract test build and declaration compilation checks for native/compiler consumers. Keep CPU code as an oracle/validation facility.
 - `CE-SS1-I01` | status: done | execution: closed | next: Read the delivered review and decisions, and inspect only the affected execution, compiler and decomposition paths. Record precise hashes and current HEAD; do not interpret unavailable Todo health as an empty ledger.
-- `CE-SS1-I02` | status: planned | execution: ready | next: Integrate C04, add only the opt-in build wiring for the semantic contract, and verify its leaf tests.
+- `CE-SS1-I02` | status: in_progress | execution: claimed | next: Integrate C04, add only the opt-in build wiring for the semantic contract, and verify its leaf tests.
 - `CE-ARCH-72` | status: done | execution: closed | next: Expose the existing validated CSR path as a legal fallback candidate with complete binding and output contracts.
 - `CE-ARCH-92` | status: done | execution: closed | next: Run only the declared serialized campaign, reconcile every exit criterion against evidence, and complete CE-ARCH-80 only if the migration definition is genuinely satisfied.
 - `CE-ARCH-73` | status: done | execution: closed | next: Implement the bounded real CUDA measurement harness for the registered CP-BP and CSR candidates with candidate-private outputs and a neutral referee.

@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-C03: Specify provisional native pair preparation and bindings
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6768`; current project revision is in `todo-status.md`.
 
 ## Objective
 Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.
