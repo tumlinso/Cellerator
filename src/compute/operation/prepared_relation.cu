@@ -373,10 +373,10 @@ status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
     const device_state_view& input,const device_result_view& output,
     execution::value_generation expected,cudaStream_t stream) noexcept {
     auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
-    if(op.direction!=orientation::forward)
-        return {status_code::unsupported_semantics,"transpose public dispatch is not enabled"};
     s=submit(p,op.direction,input.data,output.data);
     if(!s){p.poisoned=true;return s;}
-    ++p.report.accepted_forward_launches;return {};
+    if(op.direction==orientation::forward)++p.report.accepted_forward_launches;
+    else ++p.report.accepted_transpose_launches;
+    return {};
 }
 } // namespace cellerator::compute::relation
