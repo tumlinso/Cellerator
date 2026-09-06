@@ -938,11 +938,11 @@
           "required": true,
           "argv": [
             "python3",
-            "planning/relation-update-spine-v1/scripts/run_gate.py",
-            "--build-dir",
-            "build/relation-update-spine-v1",
-            "--group",
-            "all"
+            "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+            "run",
+            "--spec",
+            "/tmp/ce-ru1-i05/execute-spec.json",
+            "--json"
           ],
           "cwd": "."
         },
@@ -952,9 +952,11 @@
           "required": true,
           "argv": [
             "python3",
-            "planning/relation-update-spine-v1/scripts/run_sanitizer.py",
-            "--binary-dir",
-            "build/relation-update-spine-v1/bin"
+            "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+            "run",
+            "--spec",
+            "/tmp/ce-ru1-i05/sanitize-spec.json",
+            "--json"
           ],
           "cwd": "."
         }
