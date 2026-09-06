@@ -5,7 +5,7 @@
   "implementation_source_commit": "85e279ee8d2faee6b5a304e6b3ffa6ccf508e0c2",
   "main_commit_at_final_validation": "85e279ee8d2faee6b5a304e6b3ffa6ccf508e0c2",
   "implementation_accepted": true,
-  "authority_closure": "All34 leaf tasks, root epic and run completed through Project Control.",
+  "authority_closure": "All 34 leaf tasks, root epic and run completed through Project Control.",
   "tasks": [
     {
       "id": "CE-RU1-0000",
@@ -250,5 +250,65 @@
     "root_task_id": "CE-RU1-0000",
     "status": "completed",
     "updated_at": "2026-09-06T18:41:18Z"
+  },
+  "delivery": {
+    "history_preservation_commit": "77309a76cf93d1ab06f615c72a7e3fc0ce33becc",
+    "ru1_worktrees_and_local_branches_removed": [
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-core",
+        "branch": "codex/ce-ru1-l-core",
+        "removed": true,
+        "original_head": "d70e209f7fb4cfc0217b6a74eb19c53f0686ca12"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-native",
+        "branch": "codex/ce-ru1-l-native",
+        "removed": true,
+        "original_head": "0ff83811b98c579d6a8e5ea85dc01efe7fba7c20"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-readiness",
+        "branch": "codex/ce-ru1-l-readiness",
+        "removed": true,
+        "original_head": "28a4fe6b63d21a71d6b7a2348a474f3c0ddac3c4"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-wmma",
+        "branch": "codex/ce-ru1-l-wmma",
+        "removed": true,
+        "original_head": "945aefa7c370f16040bd38ee0528600ad318d117"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-frontend",
+        "branch": "codex/ce-ru1-l-frontend",
+        "removed": true,
+        "original_head": "ee43109fce281ae5b4a4b88639dd901351049e60"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-verify",
+        "branch": "codex/ce-ru1-l-verify",
+        "removed": true,
+        "original_head": "9dc7c91a1595ed6ac015be217c7a4788585919d4"
+      },
+      {
+        "root": "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-ru1-l-integrate",
+        "branch": "codex/ce-ru1-l-integrate",
+        "removed": true,
+        "original_head": "85e279ee8d2faee6b5a304e6b3ffa6ccf508e0c2"
+      }
+    ],
+    "temporary_remote_branches_removed": true,
+    "unrelated_jbc_worktrees_preserved": 9,
+    "accepted_source_unchanged_since_final_validation": true,
+    "source_comparison_paths": [
+      "include",
+      "src",
+      "cmake",
+      "tests",
+      "bench",
+      "examples",
+      "CMakeLists.txt"
+    ],
+    "evidence_durability": "Final raw test and sanitizer output, hashes, commands, lease and mutex logs are embedded in evidence/final_commands.json; I06 phase CSVs/raw samples are embedded in performance.json. Temporary build trees were removed after validation."
   }
 }
