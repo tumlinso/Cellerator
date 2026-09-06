@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-I03: Retire .ceh files without expanding the language milestone
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.

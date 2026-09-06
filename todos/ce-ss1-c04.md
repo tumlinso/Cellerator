@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-C04: Test the contract and publish the foundation artifact
 
-Task revision: `6770`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove the shared descriptor and provisional signatures are coherent before the parallel fan-out.

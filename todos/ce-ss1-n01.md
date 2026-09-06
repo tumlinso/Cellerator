@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-N01: Adapt the canonical descriptor to existing preparation
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Translate canonical semantics into the narrow existing executable candidate contracts without dropping meaning.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.

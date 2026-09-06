@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A01: Separate scalar support dot from edge-channel product
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Remove the concrete contraction ambiguity without integrating the entire contraction portfolio.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.

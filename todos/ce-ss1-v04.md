@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-V04: Deliver validation harness and adversarial controls
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6827`; current project revision is in `todo-status.md`.
 
 ## Objective
 Give integration a compact test harness and prove it detects wrong output and missing hardware.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.

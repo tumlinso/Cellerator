@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A02: Make primitive, composition and effect classifications explicit
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prevent high-level constructs from being mistaken for the representative primitive opcode used by an older mapping.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.

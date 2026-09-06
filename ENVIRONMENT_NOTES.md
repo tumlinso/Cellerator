@@ -19,3 +19,6 @@ Keep this list short: recurring issue, verified fix, date. Recheck paths before 
   Skills commit `a014959` with ownership/hash checks retained. After kernel updates,
   rebuild Project Control with `scripts/install.py`, switch its candidate, and open
   a fresh MCP session; restarting only the HTTP service leaves old stdio clients stale.
+- **2026-09-06 — Foreground CUDA controller ignores top-level `build_argv`.**
+  Build explicitly before `run`, then hash the tested binary. Put background builds
+  in the documented `benchmark.build_argv`; do not mistake a stale binary for a rebuild.

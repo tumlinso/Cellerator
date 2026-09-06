@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-C02: Implement shared semantic validation and fieldwise equivalence
 
-Task revision: `6766`; current project revision is in `todo-status.md`.
+Task revision: `6812`; current project revision is in `todo-status.md`.
 
 ## Objective
 Both native and compiler callers must use the same relation semantics checks and equality rules.

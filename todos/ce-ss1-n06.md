@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-N06: Prove native reuse and hand off executable evidence
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6825`; current project revision is in `todo-status.md`.
 
 ## Objective
 Close the native lane with actual CUDA tests and a minimal, traceable execution report.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

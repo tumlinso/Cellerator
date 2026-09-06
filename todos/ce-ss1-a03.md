@@ -1,23 +1,28 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A03: Update affected consumers and negative conformance tests
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6817`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make the scoped classification and contraction corrections active in real consumers rather than descriptive comments.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.
 
 ## Ownership
+- `exclusive`: `include/Cellerator/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op_v1.hh`
 - `exclusive`: `src/compiler/ir/semantic/implement_bundle_chain_moments_hierarchy_and_exchange_op.cc`
 - `exclusive`: `src/compiler/ir/semantic/implement_contraction_segment_and_normalization_operatio.cc`
+- `exclusive`: `tests/compiler/sema/implement_operation_kind_resolution_test.cc`
+- `exclusive`: `tests/jbc/decomposition/test_support_embedding_v1.cc`
 - `exclusive`: `tests/semantic_spine/algebra`
 - `forbidden`: `compat/legacy_sparse`
 - `forbidden`: `components`

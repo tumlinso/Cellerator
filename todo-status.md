@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6780`
+Project revision: `6827`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1025,29 +1025,29 @@ Project revision: `6780`
 - `CE-PTR-14` | status: done | execution: closed | next: Measure builder scratch and migrate only useful construction ownership while preserving existing pointer-free formats and direct rebound views.
 - `CE-PTR-06` | status: done | execution: closed | next: Consume CE-PTR-05 state contract, implement proposal relations and mutation journal, then validate exact optimizer behavior and memory reductions.
 - `CE-PTR-08` | status: done | execution: closed | next: Consume CE-PTR-07 identity contracts and migrate validation relations independently of unrelated GPU or runtime work.
-- `CE-SS1-A01` | status: planned | execution: ready | next: Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.
-- `CE-SS1-A02` | status: planned | execution: ready | next: Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.
-- `CE-SS1-A03` | status: planned | execution: ready | next: Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.
-- `CE-SS1-A04` | status: planned | execution: ready | next: Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.
-- `CE-SS1-F01` | status: planned | execution: ready | next: Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.
-- `CE-SS1-F02` | status: planned | execution: ready | next: Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.
-- `CE-SS1-F03` | status: planned | execution: ready | next: Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.
-- `CE-SS1-F04` | status: planned | execution: ready | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
-- `CE-SS1-I03` | status: planned | execution: ready | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
+- `CE-SS1-A01` | status: done | execution: closed | next: Define scalar dot[e]=sum_k A[s(e),k]B[d(e),k] separately from product[e,k]=A[s(e),k]B[d(e),k]. Prefer an explicit result-shape/reduction tag rather than another arbitrary global enum migration.
+- `CE-SS1-A02` | status: done | execution: closed | next: Replace the meaningful ambiguity in operation_kind_resolution with a tagged primitive/composition/effect result or equivalent non-ambiguous representation.
+- `CE-SS1-A03` | status: done | execution: closed | next: Find bounded actual readers of the changed resolution and support-embedding contracts. Update only those consumers; report broader fallout for integration rather than rewriting unrelated subsystems.
+- `CE-SS1-A04` | status: in_progress | execution: claimed | next: Run focused algebra tests, plus the affected existing decomposition/compiler tests after correcting their invalid mathematical assumptions.
+- `CE-SS1-F01` | status: done | execution: closed | next: Adapt the existing relation_apply_operation_ir_v1 lowering, not a new demo-only parser. Preserve source locations and symbol identity separately from mathematical equality.
+- `CE-SS1-F02` | status: done | execution: closed | next: Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.
+- `CE-SS1-F03` | status: done | execution: closed | next: Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.
+- `CE-SS1-F04` | status: in_progress | execution: claimed | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
+- `CE-SS1-I03` | status: done | execution: closed | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
 - `CE-SS1-I04` | status: planned | execution: ready | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: planned | execution: ready | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
 - `CE-SS1-I06` | status: planned | execution: ready | next: Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.
 - `CE-SS1-I07` | status: planned | execution: ready | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.
-- `CE-SS1-N01` | status: planned | execution: ready | next: Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.
-- `CE-SS1-N02` | status: planned | execution: ready | next: Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.
-- `CE-SS1-N03` | status: planned | execution: ready | next: Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.
-- `CE-SS1-N04` | status: planned | execution: ready | next: Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.
-- `CE-SS1-N05` | status: planned | execution: ready | next: Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.
-- `CE-SS1-N06` | status: planned | execution: ready | next: Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.
-- `CE-SS1-V01` | status: planned | execution: ready | next: Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.
-- `CE-SS1-V02` | status: planned | execution: ready | next: Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.
-- `CE-SS1-V03` | status: planned | execution: ready | next: Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.
-- `CE-SS1-V04` | status: planned | execution: ready | next: Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.
+- `CE-SS1-N01` | status: done | execution: closed | next: Write one checked adapter for the FMP1 N1 forward and CTP1 N1 transpose path. Compare numeric types separately: f16 weights must not be overwritten by f32 state metadata.
+- `CE-SS1-N02` | status: done | execution: closed | next: Use host CSR input only as the cold interchange for this slice. Retain edge identity/order and use the existing geometry/packing-to-FMP1 and CTP1 construction facilities.
+- `CE-SS1-N03` | status: done | execution: closed | next: Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.
+- `CE-SS1-N04` | status: done | execution: closed | next: Bind typed input/output axes and counts, validate arithmetic/output semantics, and invoke the bound forward candidate on the caller stream.
+- `CE-SS1-N05` | status: done | execution: closed | next: Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.
+- `CE-SS1-N06` | status: in_progress | execution: claimed | next: Build a lane-local test target against the integrated foundation and existing provider libraries; do not edit root/central build files.
+- `CE-SS1-V01` | status: done | execution: closed | next: Use small host double accumulation over logical edges for oracle values. Retain declared input quantization; compare GPU output to the same stored inputs, not an unrelated higher-precision problem.
+- `CE-SS1-V02` | status: done | execution: closed | next: Check high-bit-only identity changes, source/destination axis mistakes at equal extents, stale epochs/order, pointer changes and semantic equality across provenance.
+- `CE-SS1-V03` | status: done | execution: closed | next: Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.
+- `CE-SS1-V04` | status: done | execution: closed | next: Compile/run independent oracle and metadata tests locally. Mark integrated probes as pending linkage rather than passed.
 - `CE-PTR-13` | status: done | execution: closed | next: Reinventory all consumers after the implementation fan-in, remove only truly obsolete infrastructure, and run integration and graph-capture validation.
 - `CE-PTR-15` | status: done | execution: closed | next: After all prior workstreams and CE-PTR-13 are complete, run the project-exclusive convergence audit and close CE-PTR only on complete evidence.
 - `CP-BP-00` | status: done | execution: closed | next: Preserve the completed CP-BP v1 coordinator as validated historical evidence.

@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-N03: Refresh device values without rebuilding topology
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6814`; current project revision is in `todo-status.md`.
 
 ## Objective
 Publish changing values as stream-ordered generations while reusing the prepared structure.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Bind device f16 values with structure ID/epoch, logical edge order, generation and count. Use a device gather/packing path when mapping to persistent value positions.

@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-V03: Specify integrated origin and GPU acceptance probes
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6821`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prepare cross-origin and hardware probes against the published interfaces while implementation lanes progress independently.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Write tests that consume compiler-returned and native-constructed descriptors, compare semantics, and submit both through the same actual accelerator path after integration.

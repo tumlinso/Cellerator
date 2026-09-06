@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-N05: Execute transpose with shared topology and value authority
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6823`; current project revision is in `todo-status.md`.
 
 ## Objective
 Prove reverse application uses the same biological relation and current values, not a second independent semantic model.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Bind destination-axis input and source-axis output to CTP1; do not rewrite the relation IDs to mean the reverse graph.

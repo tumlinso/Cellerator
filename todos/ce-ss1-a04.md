@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-SS1-A04: Publish bounded algebra conformance and migration disposition
 
-Task revision: `6758`; current project revision is in `todo-status.md`.
+Task revision: `6818`; current project revision is in `todo-status.md`.
 
 ## Objective
 Close the semantic repair lane with executable tests and an explicit list of remaining operation work.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
