@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6838`
+Project revision: `6840`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1033,9 +1033,9 @@ Project revision: `6838`
 - `CE-SS1-F02` | status: done | execution: closed | next: Use existing parser/AST/Sema facilities for a small forward expression and transpose operation. Bind named domains, relations, state and exact identities through the existing environment or a narrowly defined binding adapter.
 - `CE-SS1-F03` | status: done | execution: closed | next: Check high identity bits, axis orientation, logical edge order, empty shapes, separate arithmetic types and unsupported output/alias modes.
 - `CE-SS1-F04` | status: done | execution: closed | next: Create the lane-local compile/run test harness and record actual parser, Sema and lowering symbols exercised.
-- `CE-SS1-F05` | status: in_progress | execution: claimed | next: Add failing frontend numeric parity regressions, derive retained numeric transport from canonical arithmetic, and fail closed for unrepresentable restricted arithmetic policies.
+- `CE-SS1-F05` | status: done | execution: closed | next: Add failing frontend numeric parity regressions, derive retained numeric transport from canonical arithmetic, and fail closed for unrepresentable restricted arithmetic policies.
 - `CE-SS1-I03` | status: done | execution: closed | next: Inspect all tracked/untracked project-owned .ceh files locally; source-reader failure is not evidence they are empty. Preserve pre-existing user bytes and compare with the I01 inventory.
-- `CE-SS1-I04` | status: planned | execution: ready | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
+- `CE-SS1-I04` | status: in_progress | execution: claimed | next: Integrate all lane artifacts against the same foundation. Resolve common build changes here only; substantive algorithm/semantic fixes go back to the owning lane.
 - `CE-SS1-I05` | status: planned | execution: ready | next: Run host contract/algebra checks and the source-origin/native-origin descriptor comparisons.
 - `CE-SS1-I06` | status: planned | execution: ready | next: Build and run the delivered regulatory_reuse.cc in its normal CUDA mode. Adjust only coordinated API spellings or necessary setup, never weaken assertions, expected values or required execution.
 - `CE-SS1-I07` | status: planned | execution: ready | next: Re-run the integrated acceptance target suite and inspect actual pending artifacts/lane status before closing the epic.

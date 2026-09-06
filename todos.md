@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6838`
+Project revision: `6840`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1414,9 +1414,9 @@ Project revision: `6838`
 - `CE-SS1-F02` | kind: task | status: done | parent: CE-SS1-0000 | objective: Demonstrate existing source parsing and semantic construction reach the shared descriptor for a bounded source fixture.
 - `CE-SS1-F03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Prevent compiler wrappers from silently weakening the native contract.
 - `CE-SS1-F04` | kind: task | status: done | parent: CE-SS1-0000 | objective: Provide a real origin-parity test route and candid language capability status.
-- `CE-SS1-F05` | kind: task | status: in_progress | parent: CE-SS1-0000 | objective: Repair the audited divergence between canonical relation arithmetic and retained operation/algebra transport without expanding the executable portfolio.
+- `CE-SS1-F05` | kind: task | status: done | parent: CE-SS1-0000 | objective: Repair the audited divergence between canonical relation arithmetic and retained operation/algebra transport without expanding the executable portfolio.
 - `CE-SS1-I03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Apply the agreed file-format decision while preserving valuable source and recording deferred language infrastructure.
-- `CE-SS1-I04` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.
+- `CE-SS1-I04` | kind: task | status: in_progress | parent: CE-SS1-0000 | objective: Join the independent native, compiler, algebra and verification artifacts without introducing a second runtime or broad build refactor.
 - `CE-SS1-I05` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Prove the epic’s central assertion with one complete execution witness.
 - `CE-SS1-I06` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Make the exact delivered example work with the implemented provisional API and demonstrate reuse without new performance claims.
 - `CE-SS1-I07` | kind: task | status: planned | parent: CE-SS1-0000 | objective: Publish an evidence-backed completion receipt and stop at the agreed boundary.
