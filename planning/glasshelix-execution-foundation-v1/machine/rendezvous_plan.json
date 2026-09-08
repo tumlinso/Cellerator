@@ -1,0 +1,88 @@
+{
+  "kind": "nf1-proposed-rendezvous-v1",
+  "native_apply_input": false,
+  "rendezvous": [
+    {
+      "id": "CE-NF1-RV-M00",
+      "join_task_id": "CE-NF1-M00",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-A04"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M00",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M10",
+      "join_task_id": "CE-NF1-M10",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M00",
+        "CE-NF1-C06"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M10",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M20",
+      "join_task_id": "CE-NF1-M20",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M10",
+        "CE-NF1-B06",
+        "CE-NF1-P07",
+        "CE-NF1-V07",
+        "CE-NF1-N06"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M20",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M30",
+      "join_task_id": "CE-NF1-M30",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M20",
+        "CE-NF1-H07",
+        "CE-NF1-S07"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M30",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M40",
+      "join_task_id": "CE-NF1-M40",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M30",
+        "CE-NF1-D08"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M40",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M50",
+      "join_task_id": "CE-NF1-M50",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M40",
+        "CE-NF1-T06",
+        "CE-NF1-O07"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M50",
+      "state": "proposed"
+    },
+    {
+      "id": "CE-NF1-RV-M90",
+      "join_task_id": "CE-NF1-M90",
+      "mode": "all",
+      "producer_tasks": [
+        "CE-NF1-M50",
+        "CE-NF1-X01"
+      ],
+      "checkpoint_id": "CE-NF1-CP-M90",
+      "state": "proposed"
+    }
+  ],
+  "semantics": "Native task prerequisites and ordered queues already enforce readiness; instantiate richer rendezvous with current workflow contracts if useful."
+}

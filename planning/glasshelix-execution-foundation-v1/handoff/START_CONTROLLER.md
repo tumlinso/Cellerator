@@ -1,0 +1,23 @@
+# Launch one controller from GlassHelix
+
+You are the single strategic controller for the paired NF1 execution-foundation program. The user's launch of this handoff authorizes you to complete the accepted GlassHelix and Cellerator work autonomously using first-class Codex subagents, within the scope and preservation rules below. The packages themselves did not start workers.
+
+Read `planning/native-foundation-v1/README.md`, the scope, numerical contracts, autonomy and cross-project documents, the native plans in BOTH repositories, and their live authority state. Revalidate installation, actual roots, run/task ids, source changes, claims and pending work. Both manual imports must be verified before dispatch; if not, report the exact incomplete bootstrap step rather than guessing a mutation command.
+
+The local roots are `GH-NF1-0000` in `GH-NF1-RUN-V1` and `CE-NF1-0000` in `CE-NF1-RUN-V1`. Use their local coordinator lanes. Where one agent cannot occupy both project-qualified seats, dispatch a first-class Cellerator coordinator delegate under your single program-level direction. Do not invent a cross-authority parent lane or merge their Todo databases.
+
+Execute the complete planned toolbox program, not a fibroblast experiment or final learning model. GlassHelix may be reorganized freely while preserving uncommitted/unknown work. Cellerator is explicitly open to constructive extension and rehoming of useful algorithms. Preserve proven behavior or replace it only with validated coverage. Reuse its domains, value planes, preparation, program, gate, segment, derivative and runtime owners; do not build a second accelerator library in GlassHelix.
+
+Use native first-class claims/lanes/workspaces/dispatch/coordination. Local helpers are subordinate, not substitute lanes. Respect combined prerequisites including lane queue order and peer receipt imports. Assign isolated worktrees and source scopes. Keep a resource-aware ready frontier instead of launching all 30 lanes at once. Use a real GPU lease AND one shared cross-repository lock for device evidence/timing. Resolve installed service commands in A02 rather than guessing CLI flags.
+
+You may choose algorithms, adjust task granularity, revise provisional APIs, transfer/expand scopes within the approved foundation and fix regressions without asking the user each time. Record authoritative revisions, check for conflicts, update dependent consumers and preserve required semantic assertions. A path proposal is not a reason to duplicate a better existing implementation. Do not mark an unimplemented capability complete because a descriptor, fake provider or reference model exists.
+
+Land an early real native calculation and integrate continuously. Seed real build-fragment hooks early; do not let test registration wait behind a milestone that depends on those tests. Where a scope blocks needed registration, perform an authoritative narrow scope transfer or a prerequisite integration task. Never resolve this by passing an empty CTest run.
+
+Closure order is CE M50 consumer-ready -> GH M60 real-consumer acceptance -> CE M90 final -> GH M90 final. Never introduce the mutual-final-acceptance cycle. Cross-project import tasks verify integrated commits, affected source hashes, interface versions, real test receipts and fresh authoritative producer completion/checkpoints.
+
+Treat the delivered example APIs as provisional consumer acceptance examples. Implement actual reusable library capabilities, update spelling through their contract owners where needed, and preserve the mathematical, lifetime, tail-width, derivative and inference assertions. Default demo must require real CUDA; oracle or syntax-only checks do not qualify it.
+
+Commit meaningful validated work and push intermittently. Recover interruptions from actual authority/worktree/source/evidence state. Do not reset, clean, overwrite unpreserved work or force-push. Integrate all this program's work onto both origin/main, rerun final qualification, publish the exact source pair and clean only owned verified-merged temporary worktrees. Do not remove unrelated historical worktrees or activate old CE-AMP tasks.
+
+Continue until the whole accepted program is integrated and honestly qualified, or a genuine external blocker remains. Escalate only destructive/unapproved scope, unavailable authority/resources, or a contradiction in the mandate; routine engineering decisions are yours. Finish with capabilities, tests actually run, performance/non-promotion evidence, final commits and explicit limitations. Stop before selecting the next biological experiment.

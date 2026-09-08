@@ -1,0 +1,15 @@
+{
+  "kind": "nf1-resource-policy-v1",
+  "named_lanes_in_pair": 30,
+  "maximum_coarse_ready_frontier": 8,
+  "initial_host_agents_recommendation": 4,
+  "actual_concurrency": "controller chooses from available resources and ready dependency graph",
+  "gpu_timing_concurrency": 1,
+  "shared_lock_scope": "both repositories, same host path",
+  "gpu_device_family_initial": "sm_70 V100",
+  "native_lease_required": true,
+  "lease_command": "discover in A02, unresolved until qualified",
+  "no_automatic_cpu_fallback_for_gpu_gates": true,
+  "no_hardware_purchase_or_cloud_spend": true,
+  "build_jobs": "budget jointly across active agents using live CPU/RAM rather than each taking all cores"
+}

@@ -1,0 +1,25 @@
+{
+  "native_schema": 3,
+  "apply_input": "machine/cellerator-execution-foundation-v1.todo-plan.json",
+  "project_control_source_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e",
+  "verified_api": [
+    "project_control.config.load_config",
+    "project_control.mutation.validate_native_plan",
+    "project_control.mutation.apply_proposal",
+    "project_control.mutation.build_mutation_snapshot",
+    "project_control.models.ObservationPreconditions.model_validate",
+    "project_control.models.ProposalEnvelope.create"
+  ],
+  "installed_mutation_pin_sha256": "3d8558670bb66a3d03614126236582f27649d91b16589a615e379fa4f74282a9",
+  "installed_pin_basis": "corrected RU1 evidence/tooling_contract.json; exact installed bytes not rerun in this container",
+  "repository_reader_file_identity": "477745bd7b6a8bfe9ac05b044b5149fb53b8135a7492e0af22cbe25196ab9c2d",
+  "pin_mismatch_policy": "fail closed; inspect installed code and deliberately revise tooling contract/manifest, never bypass transaction checks",
+  "minimum_python": "3.10",
+  "runtime_selection": "explicit configured Project Control Python, no guessed path",
+  "native_import_may_create_active_run_metadata": true,
+  "scripts_dispatch_workers": false,
+  "final_exact_plan_live_validated": false,
+  "application_executed": false,
+  "mutation_retry_policy": "never automatic after ambiguous outcome",
+  "receipt_policy": "external new receipt pinned to source pair, manifest, runtime and saved native preconditions"
+}

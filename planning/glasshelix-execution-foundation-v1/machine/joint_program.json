@@ -1,0 +1,112 @@
+{
+  "kind": "nf1-joint-program-v1",
+  "pair_id": "NF1-20260908-v1",
+  "authority_to_apply": false,
+  "entry_workspace": "glasshelix",
+  "program_controller": "GH-NF1-L-COORD",
+  "projects": [
+    {
+      "workspace": "cellerator",
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "repository": "cellerator",
+      "run_id": "CE-NF1-RUN-V1",
+      "root_task_id": "CE-NF1-0000",
+      "coordinator_lane_id": "CE-NF1-L-COORD",
+      "package_path": "planning/glasshelix-execution-foundation-v1",
+      "native_plan_file": "planning/glasshelix-execution-foundation-v1/machine/cellerator-execution-foundation-v1.todo-plan.json",
+      "baseline_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+    },
+    {
+      "workspace": "glasshelix",
+      "project_uuid": "b2c4b239-f18d-4252-b388-fb9889e75efd",
+      "repository": "glasshelix",
+      "run_id": "GH-NF1-RUN-V1",
+      "root_task_id": "GH-NF1-0000",
+      "coordinator_lane_id": "GH-NF1-L-COORD",
+      "package_path": "planning/native-foundation-v1",
+      "native_plan_file": "planning/native-foundation-v1/machine/glasshelix-native-foundation-v1.todo-plan.json",
+      "baseline_commit": "5b9dfeb050448a772db5b4e35dbc14b744588b6e"
+    }
+  ],
+  "controller_policy": {
+    "one_strategic_controller": true,
+    "separate_project_authorities": true,
+    "cross_authority_parent_lanes": false,
+    "first_class_lanes_required": true,
+    "local_children_are_not_lanes": true,
+    "dispatch_after_user_controller_launch_only": true,
+    "run_import_may_set_active_metadata": true,
+    "autonomous_scope_revision_within_program": true,
+    "no_per_task_confirmation": true,
+    "integration_branch": "main",
+    "remote": "origin",
+    "force_push": false,
+    "intermittent_push": true,
+    "cleanup_only_owned_verified_merged_worktrees": true
+  },
+  "global_gpu_serialization": "one external host-lock path plus actual native lease; never two unrelated project-local locks",
+  "cross_edges": [
+    {
+      "id": "NF1-CE-CONTRACTS",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M10",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X01",
+      "capability": "developmental-contracts"
+    },
+    {
+      "id": "NF1-CE-CORE",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M20",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X02",
+      "capability": "linked-core"
+    },
+    {
+      "id": "NF1-CE-NARY",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M30",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X03",
+      "capability": "nary-and-support"
+    },
+    {
+      "id": "NF1-CE-DIFFERENTIAL",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M40",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X04",
+      "capability": "differential"
+    },
+    {
+      "id": "NF1-CE-READY",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M50",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X05",
+      "capability": "consumer-ready"
+    },
+    {
+      "id": "NF1-GH-CONSUMER",
+      "producer_project": "glasshelix",
+      "producer_task": "GH-NF1-M60",
+      "consumer_project": "cellerator",
+      "consumer_task": "CE-NF1-X01",
+      "capability": "real-glasshelix-consumer"
+    },
+    {
+      "id": "NF1-CE-FINAL",
+      "producer_project": "cellerator",
+      "producer_task": "CE-NF1-M90",
+      "consumer_project": "glasshelix",
+      "consumer_task": "GH-NF1-X06",
+      "capability": "cellerator-final"
+    }
+  ],
+  "closure_order": [
+    "CE-NF1-M50",
+    "GH-NF1-M60",
+    "CE-NF1-M90",
+    "GH-NF1-M90"
+  ]
+}

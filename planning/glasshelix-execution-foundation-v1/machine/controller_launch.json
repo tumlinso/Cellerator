@@ -1,0 +1,29 @@
+{
+  "kind": "nf1-controller-launch-brief-v1",
+  "execute_now": false,
+  "entry_workspace": "glasshelix",
+  "entry_handoff": "planning/native-foundation-v1/handoff/START_CONTROLLER.md",
+  "coordinator_lane": "CE-NF1-L-COORD",
+  "paired_run_ids": [
+    "CE-NF1-RUN-V1",
+    "GH-NF1-RUN-V1"
+  ],
+  "runtime_dispatch_command": null,
+  "discovery_required": true,
+  "autonomy_after_user_launch": {
+    "one_strategic_controller": true,
+    "separate_project_authorities": true,
+    "cross_authority_parent_lanes": false,
+    "first_class_lanes_required": true,
+    "local_children_are_not_lanes": true,
+    "dispatch_after_user_controller_launch_only": true,
+    "run_import_may_set_active_metadata": true,
+    "autonomous_scope_revision_within_program": true,
+    "no_per_task_confirmation": true,
+    "integration_branch": "main",
+    "remote": "origin",
+    "force_push": false,
+    "intermittent_push": true,
+    "cleanup_only_owned_verified_merged_worktrees": true
+  }
+}

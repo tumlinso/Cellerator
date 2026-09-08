@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NF1 normalization of fresh raw authority observations",
+  "type": "object",
+  "required": [
+    "kind",
+    "workspace",
+    "project_uuid",
+    "task_id",
+    "effective_state",
+    "checkpoint_id",
+    "checkpoint_state",
+    "observed_at",
+    "revision",
+    "raw_observations"
+  ],
+  "properties": {
+    "kind": {
+      "const": "nf1-authority-observation-v1"
+    },
+    "workspace": {
+      "type": "string"
+    },
+    "project_uuid": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "effective_state": {
+      "const": "done"
+    },
+    "checkpoint_id": {
+      "type": "string"
+    },
+    "checkpoint_state": {
+      "const": "reached"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "raw_observations": {
+      "type": "array",
+      "minItems": 1
+    }
+  }
+}

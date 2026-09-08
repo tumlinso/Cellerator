@@ -1,0 +1,226 @@
+[
+  {
+    "id": "P01",
+    "workspace": "cellerator",
+    "path": "planning/jbc-preledger-v1/00_README.md",
+    "summary": "Rich pre-ledger JSON/CSV, interfaces and separate authorities; old scientific/compiler allocation superseded.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P02",
+    "workspace": "cellerator",
+    "path": "planning/jbc-preledger-v1/08_DEPENDENCY_INTEGRATION_AND_PARALLELISM_MAP.md",
+    "summary": "Mirrored version/hash receipts; central paths integration-only; separate worktrees and authority; do not mutate two projects in one ordinary task.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P03",
+    "workspace": "cellerator",
+    "path": "planning/cellerator-compiler-preledger-v1/README.md",
+    "summary": "Schema-3 native input separate from proposed_todos; 557 historical records and per-task sheets.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P04",
+    "workspace": "cellerator",
+    "path": "planning/cellerator-compiler-preledger-v1/17_DEPENDENCY_BARRIERS_LANES_AND_INTEGRATION.md",
+    "summary": "First-class isolated_merge lanes, ordered queues, task-owned checkpoints and integration barriers.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P05",
+    "workspace": "cellerator",
+    "path": "planning/cellerator-compiler-preledger-v1/21_MANUAL_TODO_BOOTSTRAP.md",
+    "summary": "Separate preview/import/verification; old CLI resolution was explicitly unavailable, not a command template to guess.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P06",
+    "workspace": "cellerator",
+    "path": "planning/semantic-spine-v1/README.md",
+    "summary": "No schema-2 downgrade; independent reference and prospective actual native/GPU consumer distinguished.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P07",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/README.md",
+    "summary": "Deterministic native projection, per-lane handoffs, scripts, declarations, delivery manifest and explicit acceptance.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P08",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/scripts/compile_plan.py",
+    "summary": "Pure schema-3 projection of rich catalog; no authority access.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P09",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/scripts/validate_package.py",
+    "summary": "Combined dependency and lane queue cycle detection, unordered write overlap checks, projection and hash validation.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P10",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/scripts/todo_bootstrap.py",
+    "summary": "Saved preview/source/runtime binding, explicit confirmation, external receipts and no auto-retry after ambiguous import.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P11",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/scripts/native_bridge.py",
+    "summary": "Configured Project Control Python API, not guessed CLI or direct SQLite.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P12",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/scripts/run_gate.py",
+    "summary": "Real exact CTest inventory and JUnit checking; missing/disabled/skipped tests fail.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P13",
+    "workspace": "cellerator",
+    "path": "planning/relation-update-spine-v1/evidence/tooling_contract.json",
+    "summary": "Corrected installed module pin and runtime fact: plan import creates active run metadata, with no task dispatch.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "P14",
+    "workspace": "project-control",
+    "path": "src/project_control/mutation.py",
+    "summary": "validate_native_plan and apply_proposal source inspected, including saved preconditions and expected revision within canonical mutation transaction.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e"
+  },
+  {
+    "id": "P15",
+    "workspace": "project-control",
+    "path": "src/project_control/models.py",
+    "summary": "ObservationPreconditions and inert ProposalEnvelope.create; authority_to_apply remains false in proposal content.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e"
+  },
+  {
+    "id": "P16",
+    "workspace": "project-control",
+    "path": "src/project_control/proposals.py",
+    "summary": "All precondition fields compared except observed_at/provider_skew.",
+    "basis": "project-control source_context; current-turn bootstrap review",
+    "source_commit": "5866689e425056b3171f7fc13b2b9d20a9494a1e"
+  },
+  {
+    "id": "R01",
+    "workspace": "glasshelix",
+    "path": "README.md",
+    "summary": "Scientific bootstrap, C++20/Python/CUDA roles; no mature model forced by history. Inspected in preceding architecture review.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "5b9dfeb050448a772db5b4e35dbc14b744588b6e"
+  },
+  {
+    "id": "R02",
+    "workspace": "glasshelix",
+    "path": "docs/repository-map.md",
+    "summary": "Legacy source is archaeological, not current ownership. Inspected in preceding architecture review.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "5b9dfeb050448a772db5b4e35dbc14b744588b6e"
+  },
+  {
+    "id": "R03",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+    "summary": "Numerical policy, identities, support requirements and output effects. Inspected in preceding architecture review.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R04",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/execution/program/program_v2.h",
+    "summary": "Current narrow prepared-stage program; extension must remain with existing numerical owner. Inspected in preceding architecture review.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R05",
+    "workspace": "cellerator",
+    "path": "src/execution/program/program_v2.cc",
+    "summary": "Late per-stage binding checks motivate whole-launch preflight. Inspected in preceding architecture review.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R06",
+    "workspace": "cellerator",
+    "path": "docs/relation_update_spine_v1/capabilities.md",
+    "summary": "Proven narrow N1/N16 f16/f32 and generation/update path; not arbitrary-width/JVP/n-ary capability. Inspected previously.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R07",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/runtime/session.cuh",
+    "summary": "Existing execution resource ownership, scratch, caches and accounting. Inspected previously.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R08",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/execution/projection_value_plane/value_plane_v1.hh",
+    "summary": "Independent structure/projection mapping and mutable value generations. Inspected previously.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R09",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh",
+    "summary": "Existing stable-superset activity masks. Inspected previously.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R10",
+    "workspace": "cellerator",
+    "path": "include/Cellerator/compute/operation/edge_map_or_gate.hh",
+    "summary": "Predicate writes positive zero even for masked NaN; no implicit multiply-by-zero equivalence. Inspected previously.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R11",
+    "workspace": "cellerator",
+    "path": "docs/relation_update_spine_v1/evidence/performance_analysis.md",
+    "summary": "Bounded sparse/hybrid comparison found no crossover; no new timing measurements here.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  },
+  {
+    "id": "R12",
+    "workspace": "cellerator",
+    "path": "docs/JBC/CE_JBC_B02_TRANSITION_MAP.md",
+    "summary": "Preserve, extend, generalize or retire after gates; do not give compatibility code new authority.",
+    "basis": "previous architecture-turn source inspection at same recorded repository HEAD",
+    "source_commit": "6bab131c8dec371e48d901dd1b842becd78fd702"
+  }
+]

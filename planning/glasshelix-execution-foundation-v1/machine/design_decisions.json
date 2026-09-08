@@ -1,0 +1,91 @@
+{
+  "kind": "nf1-design-decisions-v1",
+  "native_authority_records_applied": false,
+  "basis": "accepted user checkpoint and preceding architecture proposal",
+  "decisions": [
+    {
+      "id": "NF1-D-native-first",
+      "decision": "Use one C++20 native scientific surface and thin Python bindings to the same executor.",
+      "owner_task": "GH-NF1-B05",
+      "guard": "Do not introduce a Python numerical hot loop or let binding technology dictate ontology.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-current-owner",
+      "decision": "Generalize Cellerator numerical owners rather than create another GH runtime.",
+      "owner_task": "CE-NF1-P07",
+      "guard": "Preserve proven relations, gates, value planes and lifetimes; revise poor contracts with regression evidence.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-nary",
+      "decision": "Represent true role-ordered multi-input mechanisms; pairwise operations are specializations.",
+      "owner_task": "CE-NF1-H07",
+      "guard": "Do not enumerate every possible combination or reify a mechanism instance as an extra molecule.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-independent-state",
+      "decision": "Separate scientific, observation and inferential roles on shared numerical identity.",
+      "owner_task": "GH-NF1-E05",
+      "guard": "No measurement=state or marginal-only inference assumption.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-prepared-sharing",
+      "decision": "Share immutable structures with independent value/state instances.",
+      "owner_task": "CE-NF1-V07",
+      "guard": "Definition, topology, parameter tying and result reuse have different proofs.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-deterministic-first",
+      "decision": "Direct maps and forced RK4 first, with memory/stochastic extension capabilities explicit.",
+      "owner_task": "GH-NF1-D07",
+      "guard": "RK4 is not a universal solver and determinism is not a biological axiom.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-optional-differential",
+      "decision": "Use optional matrix-free JVP/VJP and selected second-direction capabilities.",
+      "owner_task": "CE-NF1-D08",
+      "guard": "Missing derivatives fail rather than returning zero; differentiated object and primal generations are explicit.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-support-choice",
+      "decision": "Use stable support plus activity baseline and measured compaction/epoch alternatives.",
+      "owner_task": "CE-NF1-S07",
+      "guard": "Activity zero, structural absence and approximate dropping are not synonyms.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-numerical-baseline",
+      "decision": "A real FP32 path and independent FP64 oracle precede qualified precision tradeoffs.",
+      "owner_task": "CE-NF1-N06",
+      "guard": "No native FP8-on-V100 claim, universal TensorCore win, or unrecorded quantization gradient.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-local-identification",
+      "decision": "Supply local scaled null diagnostics and explicit reduction checks, not universal mechanism discovery.",
+      "owner_task": "GH-NF1-Q07",
+      "guard": "Rank is context- and tolerance-dependent; named biology needs separate evidence.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-cross-authority",
+      "decision": "Two native schema3 graphs with local imports of seven peer capability receipts.",
+      "owner_task": "GH-NF1-M90",
+      "guard": "Never create native foreign dependencies or mutual-final-acceptance deadlock.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    },
+    {
+      "id": "NF1-D-autonomy",
+      "decision": "One GH controller directs first-class streams in both authorities and may revise scope within mandate.",
+      "owner_task": "GH-NF1-A04",
+      "guard": "Preserve unrelated work and native workflow/resource authority; no per-choice reapproval needed.",
+      "revisit": "Controller may revise through authoritative interface/scope changes with stronger evidence while preserving user goals."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "kind": "nf1-demo-witnesses-v1",
+  "prospective_real_program": true,
+  "declaration_header_is_implementation": false,
+  "independent_oracle_is_backend": false,
+  "witnesses": [
+    "genuine_three_input_nonlinearity",
+    "width_33_tail",
+    "shared_structure_independent_values",
+    "forced_RK4_interval_splitting",
+    "partial_observation",
+    "parameter_JVP_VJP",
+    "local_a_minus_b_null",
+    "changed_value_without_contamination",
+    "masked_compacted_equivalence",
+    "distinct_inferential_state_and_evidence_update"
+  ],
+  "source_tests": [
+    "ce_nf1_standalone_consumer_cuda",
+    "gh_nf1_demo_cpu",
+    "gh_nf1_demo_cuda",
+    "gh_nf1_python_parity"
+  ],
+  "current_validation_levels": [
+    "declaration_only_syntax",
+    "independent_cpu_reference"
+  ],
+  "future_required_levels": [
+    "linked_native_library",
+    "real_cpu_backend",
+    "actual_cuda_execution",
+    "python_native_parity"
+  ]
+}

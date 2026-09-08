@@ -1,0 +1,63 @@
+{
+  "kind": "nf1-performance-cases-v1",
+  "biological_experiment": false,
+  "axes": {
+    "dense_width": [
+      1,
+      16,
+      33,
+      64,
+      257
+    ],
+    "argument_arity": [
+      1,
+      2,
+      3,
+      5,
+      9
+    ],
+    "active_fraction": [
+      0,
+      0.01,
+      0.1,
+      0.5,
+      1
+    ],
+    "reuse_count": [
+      1,
+      16,
+      128,
+      1024
+    ],
+    "support_churn": [
+      "static",
+      "occasional",
+      "every_evaluation"
+    ],
+    "mechanism_candidates": [
+      "independent",
+      "shared_definition",
+      "shared_structure_independent_values"
+    ],
+    "numeric": [
+      "f32_baseline",
+      "qualified_mixed_if_supported"
+    ]
+  },
+  "sampling": "Select a bounded stratified subset; do not blindly run full Cartesian product. Controller may adjust sizes to real hardware while retaining boundary and negative controls.",
+  "required_records": [
+    "source_pair",
+    "build",
+    "device",
+    "math_and_numeric_policy",
+    "cold_preparation",
+    "resident_wall",
+    "amortized_cost",
+    "transfers",
+    "launches",
+    "peak_workspace",
+    "error",
+    "promotion_or_nonpromotion"
+  ],
+  "claim": "Measured regime-specific optimization, not universal speedup or predictive quality."
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "nf1-proposed-context-fragments-v1",
+  "native_apply_input": false,
+  "fragments": [
+    {
+      "id": "CE-NF1-CTX-FOUNDATION",
+      "version": 1,
+      "files": [
+        "01_SCOPE_AND_DECISIONS.md",
+        "02_SCIENTIFIC_AND_NUMERICAL_CONTRACTS.md",
+        "04_SINGLE_CONTROLLER_AND_PARALLELISM.md"
+      ],
+      "consumer_lanes": [
+        "CE-NF1-L-COORD",
+        "CE-NF1-L-A",
+        "CE-NF1-L-C",
+        "CE-NF1-L-B",
+        "CE-NF1-L-P",
+        "CE-NF1-L-V",
+        "CE-NF1-L-N",
+        "CE-NF1-L-H",
+        "CE-NF1-L-S",
+        "CE-NF1-L-D",
+        "CE-NF1-L-T",
+        "CE-NF1-L-O",
+        "CE-NF1-L-X",
+        "CE-NF1-L-M"
+      ]
+    },
+    {
+      "id": "CE-NF1-CTX-CROSS",
+      "version": 1,
+      "files": [
+        "05_CROSS_REPOSITORY_RECEIPTS.md"
+      ],
+      "consumer_lanes": [
+        "CE-NF1-L-X",
+        "CE-NF1-L-M",
+        "CE-NF1-L-COORD"
+      ]
+    }
+  ],
+  "update_policy": "Create/update through the discovered authoritative context workflow after execution authorization; never synthesize applied ids."
+}

@@ -1,0 +1,4007 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator",
+    "workspace": "cellerator",
+    "repository": "cellerator",
+    "baseline_commit": "6bab131c8dec371e48d901dd1b842becd78fd702",
+    "objective": "Cellerator native execution foundation for GlassHelix",
+    "program_document": "planning/glasshelix-execution-foundation-v1/01_SCOPE_AND_DECISIONS.md"
+  },
+  "tasks": [
+    {
+      "id": "CE-NF1-0000",
+      "kind": "epic",
+      "title": "Cellerator native execution foundation for GlassHelix",
+      "status": "planned",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-0000.md",
+      "completion_contract": {
+        "required": [
+          "All NF1 child tasks are authoritatively accepted and integrated; final paired-source receipt and required real execution evidence are present."
+        ]
+      }
+    },
+    {
+      "id": "CE-NF1-A01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Revalidate source and both planning precedents",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a01.json"
+        ]
+      },
+      "depends_on": [],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-A01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Resolve first-class dispatch and host evidence services",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a02.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-A02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Inventory native consumer reachability and numerical gaps",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a03.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-A03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Adopt constructive extension and regression boundary",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a04.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-A04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define multi-operand operation and effect contract",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c01.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define immutable preparation and independent bindings",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c02.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define derivative and differential provenance contract",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c03.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define support activity, epochs and accuracy contract",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c04.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define custom compiled block contract",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c05.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Freeze developmental native capability seam",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c06.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-C06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Partition host semantic and CUDA target dependencies",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Expose existing reusable operation targets",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make toolchain and architecture selection explicit",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Gate optional suites and provide CPU correctness target",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add relocatable build-tree consumer proof",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify build matrix and publish target receipt",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-B06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize stage bindings without a second runner",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preflight all dynamic launch bindings",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind sessions and independently reusable instances",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Plan scratch lifetimes and bounded state buffers",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement failure and poison semantics",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Map stage provenance and counters",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify linked composed-program boundary",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B05"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-P07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Extract reusable structural preparation ownership",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind value and gradient instances through current planes",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preserve asynchronous publication and read completion",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Support f32 authoritative values alongside f16 projections",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make epoch replacement and stale-ticket rejection explicit",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify value provenance under update and branching",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish executable shared-value capability",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-V07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide independent host f64 and executable f32 references",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize relation application across widths and tails",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize transpose and explicit destination effects",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide batched local arithmetic and gather/scatter",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize needed reductions and numeric diagnostics",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish general-width execution capability",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-N06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define argument incidence and output ownership",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement grouped native evaluator registration",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement independent CPU n-ary evaluation",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Execute n-ary groups on CUDA",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add exact inspectable compositions and custom block parity",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify deterministic assembly and nonfinite behavior",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish n-ary execution receipt",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-H07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Integrate existing mask and indexed gate kernels",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Distinguish shared and per-instance activity",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Build a compact active-projection alternative",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Separate primal and differential support",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement safe topology replacement at boundaries",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add approximate dropping with accuracy provenance",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify churn and reuse regimes",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-S07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide local arithmetic JVP and VJP",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Extend relation response through shared topology",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement n-ary evaluator derivatives",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Compose forward directional programs",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Compose reverse actions with explicit primal lifetime",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Support selected second-direction actions",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Validate nonsmooth boundaries and invalidation",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D08",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish differential execution receipt",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d08.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-D08-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d08"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author independent formula and indexing referees",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author shape, numerical and nonfinite stress cases",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author asynchronous lifetime and failure tests",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify external custom operations and capability honesty",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Run retained and new integrated conformance",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T04"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Run sanitizer and resource qualification",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "docs/glasshelix_execution_foundation_v1/validation"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-T06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Establish composed baseline and complete cost records",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Hoist reuse and preserve prepared orders",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o02.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Fuse indexed nonlinear evaluation and assembly",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O02"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o03.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Specialize legal batch and relation routes",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O03"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o04.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Measure active support crossover and precision tradeoffs",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o05.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify bounded read-only replay where supported",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O05"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o06.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish non-promotion or promotion decision",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o07.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-O07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o07"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-X01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Verify GlassHelix real-consumer receipt",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/imports"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M50"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-x01.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-X01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/verify_receipt.py",
+            "--edge",
+            "NF1-GH-CONSUMER"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M00",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Baseline and ownership accepted",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m00.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A04"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m00.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M00-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M00"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M00",
+          "title": "Baseline and ownership accepted"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M10",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Developmental contracts published",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m10.json"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m10.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M10-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M10"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M10",
+          "title": "Developmental contracts published"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M20",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Linked execution and numeric core published",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m20.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M20-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m20"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M20",
+          "title": "Linked execution and numeric core published"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M30",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Combinatorial and support execution published",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M20"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m30.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M30-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m30"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M30",
+          "title": "Combinatorial and support execution published"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M40",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Directional differential execution published",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D08"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m40.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M40-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m40"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M40",
+          "title": "Directional differential execution published"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M50",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Consumer-ready qualified capability bundle",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O07"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m50.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M50-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m50"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M50",
+          "title": "Consumer-ready qualified capability bundle"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M90",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Cellerator foundation closed and integrated",
+      "status": "planned",
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M50"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-X01"
+        }
+      ],
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m90.md",
+      "completion_contract": {
+        "required": [
+          "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-NF1-M90-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m90"
+          ],
+          "cwd": "."
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M90",
+          "title": "Cellerator foundation closed and integrated"
+        }
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "CE-NF1-INV-SCOPE",
+      "rule": "Execution toolbox only; no biological experiment, final learner, full compiler/JIT, distributed engine or sequence inference is implicitly activated.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-OWNERS",
+      "rule": "GlassHelix owns scientific roles/composition/interpretation; Cellerator owns reusable numerical and execution machinery. Improve current owners instead of duplicating engines.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-IDENTITY",
+      "rule": "Domain/order/structure/epoch/value identity is explicit. Scientific mechanism identity is not a kernel boundary; stable ids do not establish biological identifiability.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-OBSERVATION",
+      "rule": "Dynamical state, observations and inferential state are distinct. Missing values and zeros differ. Population snapshots are not fabricated individual trajectories.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-COMBINATORIAL",
+      "rule": "Mechanisms admit true n-ary nonlinear dependence and role-ordered arguments; pairwise execution specializations do not constrain scientific ontology.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-LIFETIME",
+      "rule": "Independent mutable bindings over shared structure; complete preflight; readiness differs from submission; stale and poisoned state cannot publish valid results.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-DIFFERENTIAL",
+      "rule": "Derivative capabilities are optional and explicit. Missing derivative is not zero. Preserve primal generations and distinct primal/parameter-response support.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-NUMERIC",
+      "rule": "Real f32 path and independent f64 oracle; qualify precision, pruning, fusion and error. Local null diagnostics are not global identifiability claims.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-EVIDENCE",
+      "rule": "No mock, syntax-only program, skipped/missing test, header declaration or CPU fallback satisfies real native/GPU acceptance.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-AUTONOMY",
+      "rule": "After controller launch, complete the accepted program autonomously using first-class project-qualified claims; revise scopes/contracts through authority when necessary, without repeated ordinary-choice confirmation.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-PRESERVE",
+      "rule": "Preserve unrelated dirty work, branches, runs, pending patches and consumers. No reset/clean/force rewrite or CE-AMP activation. Clean only owned verified-merged worktrees.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-AUTHORITY",
+      "rule": "Two independent additive schema-3 imports. Never write SQLite/generated authority directly. Import may create active run metadata but never dispatches through package scripts.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-CROSS",
+      "rule": "Cross-project work is gated by source/interface/test receipts and fresh authoritative producer completion. No fictitious foreign native dependency or cross-project parent lane.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-NF1-INV-PERFORMANCE",
+      "rule": "Whole-lifetime cost governs promotion. Preserve correct alternatives and negative results. One real GPU lease plus shared host lock across both authorities.",
+      "severity": "error"
+    }
+  ],
+  "locks": [
+    {
+      "name": "ce-nf1-evidence",
+      "capacity": 1,
+      "metadata": {
+        "purpose": "Local evidence serialization; additionally use actual GPU lease and ONE shared external lock across both projects."
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "CE-NF1-IF-NATIVE-OPERANDS",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-LIFETIME-VALUES",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/execution/launch_bindings.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-NARY",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_nary"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-DIFFERENTIAL",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_differential"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-SUPPORT",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_support"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-CONSUMER-BUILD",
+      "owner_task_id": "CE-NF1-M10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cmake/NativeFoundation.cmake"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CE-NF1-B-M00",
+      "title": "Baseline and ownership accepted",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M00",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M10",
+      "title": "Developmental contracts published",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M10",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M20",
+      "title": "Linked execution and numeric core published",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M20",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M30",
+      "title": "Combinatorial and support execution published",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M30",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M40",
+      "title": "Directional differential execution published",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M40",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M50",
+      "title": "Consumer-ready qualified capability bundle",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M50",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B-M90",
+      "title": "Cellerator foundation closed and integrated",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CE-NF1-CP-M90",
+          "state": "reached"
+        }
+      ]
+    }
+  ],
+  "resource_classes": [],
+  "runs": [
+    {
+      "id": "CE-NF1-RUN-V1",
+      "root_task_id": "CE-NF1-0000",
+      "charter": {
+        "objective": "Cellerator native execution foundation for GlassHelix; execute the approved toolbox program autonomously after user controller launch, not during manual import.",
+        "boundaries": [
+          "One GlassHelix strategic controller coordinates both independent authorities; every substantial worker is first class.",
+          "Read the paired scope and autonomy charter. Adjust scopes/interfaces through authority, preserve work, integrate and push incrementally.",
+          "No biological experiment, full learning model, CellShard program, broad compiler or old CE-AMP activation.",
+          "Import may create active run metadata but no worker dispatch; later user launch authorizes the whole accepted program."
+        ],
+        "acceptance_conditions": [
+          "Every child task accepted and integrated; CE-NF1-CP-M90 reached with real evidence and the exact final source pair."
+        ],
+        "invariants": [
+          "CE-NF1-INV-SCOPE",
+          "CE-NF1-INV-OWNERS",
+          "CE-NF1-INV-IDENTITY",
+          "CE-NF1-INV-OBSERVATION",
+          "CE-NF1-INV-COMBINATORIAL",
+          "CE-NF1-INV-LIFETIME",
+          "CE-NF1-INV-DIFFERENTIAL",
+          "CE-NF1-INV-NUMERIC",
+          "CE-NF1-INV-EVIDENCE",
+          "CE-NF1-INV-AUTONOMY",
+          "CE-NF1-INV-PRESERVE",
+          "CE-NF1-INV-AUTHORITY",
+          "CE-NF1-INV-CROSS",
+          "CE-NF1-INV-PERFORMANCE"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-NF1-L-COORD",
+          "role": "coordinator",
+          "tasks": [
+            "CE-NF1-0000"
+          ],
+          "workspace": {
+            "mode": "read_shared"
+          }
+        },
+        {
+          "id": "CE-NF1-L-A",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-A01",
+            "CE-NF1-A02",
+            "CE-NF1-A03",
+            "CE-NF1-A04"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-C",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-C01",
+            "CE-NF1-C02",
+            "CE-NF1-C03",
+            "CE-NF1-C04",
+            "CE-NF1-C05",
+            "CE-NF1-C06"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-B",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-B01",
+            "CE-NF1-B02",
+            "CE-NF1-B03",
+            "CE-NF1-B04",
+            "CE-NF1-B05",
+            "CE-NF1-B06"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-P",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-P01",
+            "CE-NF1-P02",
+            "CE-NF1-P03",
+            "CE-NF1-P04",
+            "CE-NF1-P05",
+            "CE-NF1-P06",
+            "CE-NF1-P07"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-V",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-V01",
+            "CE-NF1-V02",
+            "CE-NF1-V03",
+            "CE-NF1-V04",
+            "CE-NF1-V05",
+            "CE-NF1-V06",
+            "CE-NF1-V07"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-N",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-N01",
+            "CE-NF1-N02",
+            "CE-NF1-N03",
+            "CE-NF1-N04",
+            "CE-NF1-N05",
+            "CE-NF1-N06"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-H",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-H01",
+            "CE-NF1-H02",
+            "CE-NF1-H03",
+            "CE-NF1-H04",
+            "CE-NF1-H05",
+            "CE-NF1-H06",
+            "CE-NF1-H07"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-S",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-S01",
+            "CE-NF1-S02",
+            "CE-NF1-S03",
+            "CE-NF1-S04",
+            "CE-NF1-S05",
+            "CE-NF1-S06",
+            "CE-NF1-S07"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-D",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1-D01",
+            "CE-NF1-D02",
+            "CE-NF1-D03",
+            "CE-NF1-D04",
+            "CE-NF1-D05",
+            "CE-NF1-D06",
+            "CE-NF1-D07",
+            "CE-NF1-D08"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-T",
+          "role": "validator",
+          "tasks": [
+            "CE-NF1-T01",
+            "CE-NF1-T02",
+            "CE-NF1-T03",
+            "CE-NF1-T04",
+            "CE-NF1-T05",
+            "CE-NF1-T06"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-O",
+          "role": "specialist",
+          "tasks": [
+            "CE-NF1-O01",
+            "CE-NF1-O02",
+            "CE-NF1-O03",
+            "CE-NF1-O04",
+            "CE-NF1-O05",
+            "CE-NF1-O06",
+            "CE-NF1-O07"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-X",
+          "role": "integrator",
+          "tasks": [
+            "CE-NF1-X01"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        },
+        {
+          "id": "CE-NF1-L-M",
+          "role": "integrator",
+          "tasks": [
+            "CE-NF1-M00",
+            "CE-NF1-M10",
+            "CE-NF1-M20",
+            "CE-NF1-M30",
+            "CE-NF1-M40",
+            "CE-NF1-M50",
+            "CE-NF1-M90"
+          ],
+          "workspace": {
+            "mode": "isolated_merge"
+          },
+          "parent_lane_id": "CE-NF1-L-COORD"
+        }
+      ]
+    }
+  ]
+}

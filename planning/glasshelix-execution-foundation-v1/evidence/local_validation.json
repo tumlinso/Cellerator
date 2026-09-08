@@ -1,0 +1,511 @@
+{
+  "kind": "nf1-artifact-qualification-v1",
+  "status": "passed",
+  "created_at": "2026-09-08T15:23:22.781993+00:00",
+  "scope": "Artifact-local packaging, negative guards, declaration syntax, independent mathematics and disposable installation tests only. Not native Todo apply or product execution.",
+  "checks_passed": 30,
+  "offline_unit_tests": {
+    "glasshelix": 40,
+    "cellerator": 40
+  },
+  "tool_versions": {
+    "g++": "g++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "cmake": "cmake version 3.31.6\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+    "ctest": "ctest version 3.31.6\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+    "/opt/pyvenv/bin/python3": "Python 3.13.5"
+  },
+  "reference_values": {
+    "status": "reference_only_passed",
+    "production_or_gpu_test": false,
+    "batch_width": 33,
+    "final_y": 0.13843145130746862,
+    "parameter_gain": 0.08224782714110823,
+    "null_direction_response": 0,
+    "hidden_future_y": 0.22092223625542742,
+    "posterior_correct": 1,
+    "rk4_refinement_error": 1.4026918515597231e-11
+  },
+  "records": [
+    {
+      "label": "ce package+peer integrity",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/scripts/validate_package.py",
+        "--peer-package",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": true,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "ce deterministic native projection",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/scripts/compile_plan.py",
+        "--check"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\"native_projection_matches\": true, \"authority_validation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "ce 40 offline negative/positive tests",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/scripts/test_package.py"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": "test_15_missing_test (__main__.EvidenceTests.test_15_missing_test) ... ok\ntest_16_disabled_test (__main__.EvidenceTests.test_16_disabled_test) ... ok\ntest_17_skip_code_forbidden (__main__.EvidenceTests.test_17_skip_code_forbidden) ... ok\ntest_18_skip_regex_forbidden (__main__.EvidenceTests.test_18_skip_regex_forbidden) ... ok\ntest_19_junit_skip (__main__.EvidenceTests.test_19_junit_skip) ... ok\ntest_20_junit_missing (__main__.EvidenceTests.test_20_junit_missing) ... ok\ntest_21_junit_pass (__main__.EvidenceTests.test_21_junit_pass) ... ok\ntest_22_valid_native_shape_double (__main__.EvidenceTests.test_22_valid_native_shape_double) ... ok\ntest_23_native_collision (__main__.EvidenceTests.test_23_native_collision) ... ok\ntest_24_native_wrong_uuid (__main__.EvidenceTests.test_24_native_wrong_uuid) ... ok\ntest_25_native_digest (__main__.EvidenceTests.test_25_native_digest) ... ok\ntest_26_native_warning (__main__.EvidenceTests.test_26_native_warning) ... ok\ntest_27_reviewed_preview_expired (__main__.EvidenceTests.test_27_reviewed_preview_expired) ... ok\ntest_28_reviewed_source_drift (__main__.EvidenceTests.test_28_reviewed_source_drift) ... ok\ntest_29_receipt_cannot_overwrite (__main__.EvidenceTests.test_29_receipt_cannot_overwrite) ... ok\ntest_30_receipt_not_in_source (__main__.EvidenceTests.test_30_receipt_not_in_source) ... ok\ntest_31_no_tests_inventory (__main__.EvidenceTests.test_31_no_tests_inventory) ... ok\ntest_32_junit_failure (__main__.EvidenceTests.test_32_junit_failure) ... ok\ntest_33_wrong_manual_confirmation_no_runtime_import (__main__.EvidenceTests.test_33_wrong_manual_confirmation_no_runtime_import) ... ok\ntest_34_pending_cross_receipt_refused (__main__.EvidenceTests.test_34_pending_cross_receipt_refused) ... ok\ntest_35_early_validation_has_no_native_import (__main__.EvidenceTests.test_35_early_validation_has_no_native_import) ... ok\ntest_36_delivered_integrity (__main__.IntegrityTests.test_36_delivered_integrity) ... ok\ntest_37_manifest_tampering (__main__.IntegrityTests.test_37_manifest_tampering) ... ok\ntest_38_extra_package_file (__main__.IntegrityTests.test_38_extra_package_file) ... ok\ntest_39_delivery_tampering (__main__.IntegrityTests.test_39_delivery_tampering) ... ok\ntest_40_extra_example_file (__main__.IntegrityTests.test_40_extra_example_file) ... ok\ntest_01_actual_plan (__main__.PlanTests.test_01_actual_plan) ... ok\ntest_02_native_projection (__main__.PlanTests.test_02_native_projection) ... ok\ntest_03_duplicate_id (__main__.PlanTests.test_03_duplicate_id) ... ok\ntest_04_foreign_dependency (__main__.PlanTests.test_04_foreign_dependency) ... ok\ntest_05_self_cycle (__main__.PlanTests.test_05_self_cycle) ... ok\ntest_06_queue_cycle (__main__.PlanTests.test_06_queue_cycle) ... ok\ntest_07_duplicate_lane_owner (__main__.PlanTests.test_07_duplicate_lane_owner) ... ok\ntest_08_foreign_lane_parent (__main__.PlanTests.test_08_foreign_lane_parent) ... ok\ntest_09_unordered_scope_conflict (__main__.PlanTests.test_09_unordered_scope_conflict) ... ok\ntest_10_premature_done (__main__.PlanTests.test_10_premature_done) ... ok\ntest_11_missing_checkpoint (__main__.PlanTests.test_11_missing_checkpoint) ... ok\ntest_12_cross_closure_cycle (__main__.PlanTests.test_12_cross_closure_cycle) ... ok\ntest_13_safe_path (__main__.PlanTests.test_13_safe_path) ... ok\ntest_14_schema_two_refused (__main__.PlanTests.test_14_schema_two_refused) ... ok\n\n----------------------------------------------------------------------\nRan 40 tests in 1.075s\n\nOK\n"
+    },
+    {
+      "label": "gh package+peer integrity",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/scripts/validate_package.py",
+        "--peer-package",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": true,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "gh deterministic native projection",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/scripts/compile_plan.py",
+        "--check"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\"native_projection_matches\": true, \"authority_validation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "gh 40 offline negative/positive tests",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/scripts/test_package.py"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": "test_15_missing_test (__main__.EvidenceTests.test_15_missing_test) ... ok\ntest_16_disabled_test (__main__.EvidenceTests.test_16_disabled_test) ... ok\ntest_17_skip_code_forbidden (__main__.EvidenceTests.test_17_skip_code_forbidden) ... ok\ntest_18_skip_regex_forbidden (__main__.EvidenceTests.test_18_skip_regex_forbidden) ... ok\ntest_19_junit_skip (__main__.EvidenceTests.test_19_junit_skip) ... ok\ntest_20_junit_missing (__main__.EvidenceTests.test_20_junit_missing) ... ok\ntest_21_junit_pass (__main__.EvidenceTests.test_21_junit_pass) ... ok\ntest_22_valid_native_shape_double (__main__.EvidenceTests.test_22_valid_native_shape_double) ... ok\ntest_23_native_collision (__main__.EvidenceTests.test_23_native_collision) ... ok\ntest_24_native_wrong_uuid (__main__.EvidenceTests.test_24_native_wrong_uuid) ... ok\ntest_25_native_digest (__main__.EvidenceTests.test_25_native_digest) ... ok\ntest_26_native_warning (__main__.EvidenceTests.test_26_native_warning) ... ok\ntest_27_reviewed_preview_expired (__main__.EvidenceTests.test_27_reviewed_preview_expired) ... ok\ntest_28_reviewed_source_drift (__main__.EvidenceTests.test_28_reviewed_source_drift) ... ok\ntest_29_receipt_cannot_overwrite (__main__.EvidenceTests.test_29_receipt_cannot_overwrite) ... ok\ntest_30_receipt_not_in_source (__main__.EvidenceTests.test_30_receipt_not_in_source) ... ok\ntest_31_no_tests_inventory (__main__.EvidenceTests.test_31_no_tests_inventory) ... ok\ntest_32_junit_failure (__main__.EvidenceTests.test_32_junit_failure) ... ok\ntest_33_wrong_manual_confirmation_no_runtime_import (__main__.EvidenceTests.test_33_wrong_manual_confirmation_no_runtime_import) ... ok\ntest_34_pending_cross_receipt_refused (__main__.EvidenceTests.test_34_pending_cross_receipt_refused) ... ok\ntest_35_early_validation_has_no_native_import (__main__.EvidenceTests.test_35_early_validation_has_no_native_import) ... ok\ntest_36_delivered_integrity (__main__.IntegrityTests.test_36_delivered_integrity) ... ok\ntest_37_manifest_tampering (__main__.IntegrityTests.test_37_manifest_tampering) ... ok\ntest_38_extra_package_file (__main__.IntegrityTests.test_38_extra_package_file) ... ok\ntest_39_delivery_tampering (__main__.IntegrityTests.test_39_delivery_tampering) ... ok\ntest_40_extra_example_file (__main__.IntegrityTests.test_40_extra_example_file) ... ok\ntest_01_actual_plan (__main__.PlanTests.test_01_actual_plan) ... ok\ntest_02_native_projection (__main__.PlanTests.test_02_native_projection) ... ok\ntest_03_duplicate_id (__main__.PlanTests.test_03_duplicate_id) ... ok\ntest_04_foreign_dependency (__main__.PlanTests.test_04_foreign_dependency) ... ok\ntest_05_self_cycle (__main__.PlanTests.test_05_self_cycle) ... ok\ntest_06_queue_cycle (__main__.PlanTests.test_06_queue_cycle) ... ok\ntest_07_duplicate_lane_owner (__main__.PlanTests.test_07_duplicate_lane_owner) ... ok\ntest_08_foreign_lane_parent (__main__.PlanTests.test_08_foreign_lane_parent) ... ok\ntest_09_unordered_scope_conflict (__main__.PlanTests.test_09_unordered_scope_conflict) ... ok\ntest_10_premature_done (__main__.PlanTests.test_10_premature_done) ... ok\ntest_11_missing_checkpoint (__main__.PlanTests.test_11_missing_checkpoint) ... ok\ntest_12_cross_closure_cycle (__main__.PlanTests.test_12_cross_closure_cycle) ... ok\ntest_13_safe_path (__main__.PlanTests.test_13_safe_path) ... ok\ntest_14_schema_two_refused (__main__.PlanTests.test_14_schema_two_refused) ... ok\n\n----------------------------------------------------------------------\nRan 40 tests in 0.882s\n\nOK\n"
+    },
+    {
+      "label": "all delivered Python sources parse without bytecode generation",
+      "passed": true,
+      "file_count": 22
+    },
+    {
+      "label": "all delivered JSON files parse",
+      "passed": true,
+      "file_count": 68
+    },
+    {
+      "label": "GlassHelix prospective C++20 consumer syntax",
+      "argv": [
+        "g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-DGH_NF1_DECLARATION_CHECK_ONLY",
+        "-I/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/contracts/include",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/examples/native_foundation_v1/mechanistic_toolbox.cc"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "Cellerator prospective C++20 consumer syntax",
+      "argv": [
+        "g++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-DCE_NF1_DECLARATION_CHECK_ONLY",
+        "-I/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/contracts/include",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "GlassHelix planning header rejects production use",
+      "argv": [
+        "g++",
+        "-std=c++20",
+        "-fsyntax-only",
+        "-I/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/contracts/include",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/examples/native_foundation_v1/mechanistic_toolbox.cc"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "In file included from /mnt/data/glasshelix_foundation_bootstrap/GlassHelix/examples/native_foundation_v1/mechanistic_toolbox.cc:3:\n/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/planning/native-foundation-v1/contracts/include/GlassHelix/foundation.hh:3:2: error: #error \"Planning declarations only. Implement the actual library; never install or link this file.\"\n    3 | #error \"Planning declarations only. Implement the actual library; never install or link this file.\"\n      |  ^~~~~\n"
+    },
+    {
+      "label": "Cellerator planning header rejects production use",
+      "argv": [
+        "g++",
+        "-std=c++20",
+        "-fsyntax-only",
+        "-I/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/contracts/include",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "In file included from /mnt/data/glasshelix_foundation_bootstrap/Cellerator/examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc:1:\n/mnt/data/glasshelix_foundation_bootstrap/Cellerator/planning/glasshelix-execution-foundation-v1/contracts/include/Cellerator/native_foundation.hh:3:2: error: #error \"Planning declarations only. Implement real Cellerator facilities; do not install this file.\"\n    3 | #error \"Planning declarations only. Implement real Cellerator facilities; do not install this file.\"\n      |  ^~~~~\n"
+    },
+    {
+      "label": "configure independent reference only",
+      "argv": [
+        "cmake",
+        "-S",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/examples/native_foundation_v1",
+        "-B",
+        "/mnt/data/gh_bootstrap_work/checks/reference-build",
+        "-DGH_NF1_REFERENCE_ONLY=ON",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "-- The CXX compiler identification is GNU 14.2.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /mnt/data/gh_bootstrap_work/checks/reference-build\n",
+      "stderr": ""
+    },
+    {
+      "label": "build independent reference only",
+      "argv": [
+        "cmake",
+        "--build",
+        "/mnt/data/gh_bootstrap_work/checks/reference-build",
+        "-j",
+        "2"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "[ 50%] Building CXX object CMakeFiles/nf1_reference.dir/reference_main.cc.o\n[100%] Linking CXX executable nf1_reference\n[100%] Built target nf1_reference\n",
+      "stderr": ""
+    },
+    {
+      "label": "execute independent reference CTest",
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/mnt/data/gh_bootstrap_work/checks/reference-build",
+        "--output-on-failure",
+        "--no-tests=error"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "Internal ctest changing into directory: /mnt/data/gh_bootstrap_work/checks/reference-build\nTest project /mnt/data/gh_bootstrap_work/checks/reference-build\n    Start 1: nf1_reference_mathematics\n1/1 Test #1: nf1_reference_mathematics ........   Passed    0.00 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.00 sec\n",
+      "stderr": ""
+    },
+    {
+      "label": "independent reference values",
+      "argv": [
+        "/mnt/data/gh_bootstrap_work/checks/reference-build/nf1_reference"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\"status\":\"reference_only_passed\",\"production_or_gpu_test\":false,\"batch_width\":33,\"final_y\":0.13843145130746862,\"parameter_gain\":0.082247827141108232,\"null_direction_response\":0,\"hidden_future_y\":0.22092223625542742,\"posterior_correct\":1,\"rk4_refinement_error\":1.4026918515597231e-11}\n",
+      "stderr": ""
+    },
+    {
+      "label": "normal GH configure requires real future library",
+      "argv": [
+        "cmake",
+        "-S",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix/examples/native_foundation_v1",
+        "-B",
+        "/mnt/data/gh_bootstrap_work/checks/requires-real-gh",
+        "-DGH_NF1_REFERENCE_ONLY=OFF"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "-- The CXX compiler identification is GNU 14.2.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring incomplete, errors occurred!\n",
+      "stderr": "CMake Error at CMakeLists.txt:13 (find_package):\n  Could not find a package configuration file provided by \"GlassHelix\" with\n  any of the following names:\n\n    GlassHelixConfig.cmake\n    glasshelix-config.cmake\n\n  Add the installation prefix of \"GlassHelix\" to CMAKE_PREFIX_PATH or set\n  \"GlassHelix_DIR\" to a directory containing one of the above files.  If\n  \"GlassHelix\" provides a separate development package or SDK, be sure it has\n  been installed.\n\n\n"
+    },
+    {
+      "label": "normal CE configure requires real future library",
+      "argv": [
+        "cmake",
+        "-S",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator/examples/glasshelix_execution_foundation_v1",
+        "-B",
+        "/mnt/data/gh_bootstrap_work/checks/requires-real-ce"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "-- The CXX compiler identification is GNU 14.2.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring incomplete, errors occurred!\n",
+      "stderr": "CMake Error at CMakeLists.txt:6 (find_package):\n  Could not find a package configuration file provided by \"Cellerator\" with\n  any of the following names:\n\n    CelleratorConfig.cmake\n    cellerator-config.cmake\n\n  Add the installation prefix of \"Cellerator\" to CMAKE_PREFIX_PATH or set\n  \"Cellerator_DIR\" to a directory containing one of the above files.  If\n  \"Cellerator\" provides a separate development package or SDK, be sure it has\n  been installed.\n\n\n"
+    },
+    {
+      "label": "temporary local git init ce",
+      "argv": [
+        "git",
+        "init",
+        "-q",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "installer preview ce",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"cellerator\", \"files_to_copy\": 167, \"identical_existing\": 0, \"apply\": false, \"authority_mutation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer copy into disposable repository ce",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator",
+        "--apply"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"cellerator\", \"files_to_copy\": 167, \"identical_existing\": 0, \"apply\": true, \"authority_mutation\": false}\nOverlay copied. Inspect files and follow the manual bootstrap. No Git commit, Todo import, claim or dispatch occurred.\n",
+      "stderr": ""
+    },
+    {
+      "label": "installed copy integrity ce",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator/planning/glasshelix-execution-foundation-v1/scripts/validate_package.py"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer idempotent identical preview ce",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"cellerator\", \"files_to_copy\": 0, \"identical_existing\": 167, \"apply\": false, \"authority_mutation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer refuses changed existing file ce",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/Cellerator",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/Cellerator",
+        "--apply"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"cellerator\",\n  \"todo_records\": 80,\n  \"leaf_tasks\": 79,\n  \"lanes\": 14,\n  \"explicit_edges\": 105,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": "install_overlay: Conflicting existing file planning/glasshelix-execution-foundation-v1/README.md\n"
+    },
+    {
+      "label": "temporary local git init gh",
+      "argv": [
+        "git",
+        "init",
+        "-q",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "installer preview gh",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"glasshelix\", \"files_to_copy\": 182, \"identical_existing\": 0, \"apply\": false, \"authority_mutation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer copy into disposable repository gh",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix",
+        "--apply"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"glasshelix\", \"files_to_copy\": 182, \"identical_existing\": 0, \"apply\": true, \"authority_mutation\": false}\nOverlay copied. Inspect files and follow the manual bootstrap. No Git commit, Todo import, claim or dispatch occurred.\n",
+      "stderr": ""
+    },
+    {
+      "label": "installed copy integrity gh",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix/planning/native-foundation-v1/scripts/validate_package.py"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer idempotent identical preview gh",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix"
+      ],
+      "cwd": null,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n{\"workspace\": \"glasshelix\", \"files_to_copy\": 0, \"identical_existing\": 182, \"apply\": false, \"authority_mutation\": false}\n",
+      "stderr": ""
+    },
+    {
+      "label": "installer refuses changed existing file gh",
+      "argv": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "/mnt/data/glasshelix_foundation_bootstrap/install_overlay.py",
+        "--overlay",
+        "/mnt/data/glasshelix_foundation_bootstrap/GlassHelix",
+        "--repo",
+        "/tmp/nf1-overlay-qa-nzkulezm/GlassHelix",
+        "--apply"
+      ],
+      "cwd": null,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "passed": true,
+      "stdout": "{\n  \"status\": \"offline_validated\",\n  \"workspace\": \"glasshelix\",\n  \"todo_records\": 90,\n  \"leaf_tasks\": 89,\n  \"lanes\": 16,\n  \"explicit_edges\": 123,\n  \"native_schema\": 3,\n  \"queue_and_local_scope_checked\": true,\n  \"cross_repository_graph_checked\": false,\n  \"live_native_plan_validation\": false,\n  \"applied\": false\n}\n",
+      "stderr": "install_overlay: Conflicting existing file planning/native-foundation-v1/README.md\n"
+    }
+  ],
+  "live_native_final_plans_validated": false,
+  "representative_schema_probe_only": true,
+  "live_repository_source_modified": false,
+  "live_todo_authority_mutated": false,
+  "first_class_agents_started": false,
+  "real_product_linked": false,
+  "gpu_executed": false,
+  "post_epic_implementation_complete": false
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "nf1-risk-register-v1",
+  "risks": [
+    {
+      "id": "native-schema",
+      "risk": "Exact final plans not yet validated by installed native runtime",
+      "mitigation": "Mandatory fresh preview/diff, pinned runtime, no warnings/collisions and saved transaction preconditions before import",
+      "owner": "CE-NF1-A02"
+    },
+    {
+      "id": "runtime-pin",
+      "risk": "Installed module bytes may differ from corrected predecessor pin",
+      "mitigation": "Inspection command reports actual hashes; validate/apply refuse until reviewed contract is deliberately updated",
+      "owner": "CE-NF1-A02"
+    },
+    {
+      "id": "build-cycle",
+      "risk": "Provider gates need registration before final integrator prerequisites finish",
+      "mitigation": "Seed optional real build hooks early or authoritatively insert a narrow prerequisite integration task; never accept no tests",
+      "owner": "CE-NF1-M00"
+    },
+    {
+      "id": "source-drift",
+      "risk": "Source/interface may change between producer qualification and consumption",
+      "mitigation": "Exact source/interface fingerprints and fresh task/checkpoint observation; revised capability receipts for affected changes",
+      "owner": "CE-NF1-L-X"
+    },
+    {
+      "id": "fake-capability",
+      "risk": "Schema/header/example placeholders mistaken for working execution",
+      "mitigation": "Real separately linked consumer, exact CTest inventories, independent oracle, backend assertion and no skip fallback",
+      "owner": "CE-NF1-L-T"
+    },
+    {
+      "id": "scientific-scope",
+      "risk": "Toolbox work turns into a fitted biological experiment",
+      "mitigation": "Keep only synthetic correctness instruments and explicitly deferred research",
+      "owner": "GH-NF1-L-COORD"
+    },
+    {
+      "id": "parallel-resources",
+      "risk": "Many agents oversubscribe memory or contaminate GPU timings",
+      "mitigation": "Live resource budget, first-class isolated lanes, actual lease and shared host lock",
+      "owner": "GH-NF1-L-COORD"
+    },
+    {
+      "id": "receipt-cycle",
+      "risk": "Both projects wait for each other to be final",
+      "mitigation": "CE M50 -> GH M60 -> CE M90 -> GH M90",
+      "owner": "GH-NF1-L-COORD"
+    }
+  ]
+}

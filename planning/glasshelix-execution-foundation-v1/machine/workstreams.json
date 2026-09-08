@@ -1,0 +1,310 @@
+[
+  {
+    "id": "A",
+    "title": "Live baseline, preserved work and runtime qualification",
+    "scope": [
+      "docs/glasshelix_execution_foundation_v1/baseline",
+      "docs/glasshelix_execution_foundation_v1/ownership"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "AGENTS.md",
+      "scope.md",
+      "docs/JBC/CE_JBC_B02_TRANSITION_MAP.md",
+      "docs/relation_update_spine_v1/capabilities.md"
+    ],
+    "task_ids": [
+      "CE-NF1-A01",
+      "CE-NF1-A02",
+      "CE-NF1-A03",
+      "CE-NF1-A04"
+    ],
+    "lane_id": "CE-NF1-L-A"
+  },
+  {
+    "id": "C",
+    "title": "Numerical contracts and capabilities",
+    "scope": [
+      "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/compute/operation/operation_core_v2/schema.hh",
+      "include/Cellerator/execution/launch_bindings.hh"
+    ],
+    "task_ids": [
+      "CE-NF1-C01",
+      "CE-NF1-C02",
+      "CE-NF1-C03",
+      "CE-NF1-C04",
+      "CE-NF1-C05",
+      "CE-NF1-C06"
+    ],
+    "lane_id": "CE-NF1-L-C"
+  },
+  {
+    "id": "B",
+    "title": "Focused build and separate native consumer",
+    "scope": [
+      "cmake/NativeFoundation.cmake",
+      "cmake/SemanticSpineV1.cmake",
+      "src/compute/CMakeLists.txt",
+      "src/execution/CMakeLists.txt",
+      "src/runtime/CMakeLists.txt",
+      "tests/native_foundation/build"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "CMakeLists.txt",
+      "cmake/SemanticSpineV1.cmake"
+    ],
+    "task_ids": [
+      "CE-NF1-B01",
+      "CE-NF1-B02",
+      "CE-NF1-B03",
+      "CE-NF1-B04",
+      "CE-NF1-B05",
+      "CE-NF1-B06"
+    ],
+    "lane_id": "CE-NF1-L-B"
+  },
+  {
+    "id": "P",
+    "title": "Prepared program and launch execution",
+    "scope": [
+      "include/Cellerator/execution/program",
+      "src/execution/program",
+      "tests/native_foundation/program"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/execution/program/program_v2.h",
+      "src/execution/program/program_v2.cc"
+    ],
+    "task_ids": [
+      "CE-NF1-P01",
+      "CE-NF1-P02",
+      "CE-NF1-P03",
+      "CE-NF1-P04",
+      "CE-NF1-P05",
+      "CE-NF1-P06",
+      "CE-NF1-P07"
+    ],
+    "lane_id": "CE-NF1-L-P"
+  },
+  {
+    "id": "V",
+    "title": "Shared structure, value instances and readiness",
+    "scope": [
+      "include/Cellerator/compute/operation/prepared_relation.hh",
+      "src/compute/operation/prepared_relation.cu",
+      "include/Cellerator/execution/native_value_instance",
+      "src/execution/native_value_instance",
+      "tests/native_foundation/values"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "docs/relation_update_spine_v1/native_runtime.md",
+      "include/Cellerator/execution/projection_value_plane/value_plane_v1.hh"
+    ],
+    "task_ids": [
+      "CE-NF1-V01",
+      "CE-NF1-V02",
+      "CE-NF1-V03",
+      "CE-NF1-V04",
+      "CE-NF1-V05",
+      "CE-NF1-V06",
+      "CE-NF1-V07"
+    ],
+    "lane_id": "CE-NF1-L-V"
+  },
+  {
+    "id": "N",
+    "title": "General-width numeric operations and reference routes",
+    "scope": [
+      "include/Cellerator/compute/operation/native_numeric",
+      "src/compute/operation/native_numeric",
+      "tests/native_foundation/numeric"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/compute/decomposition/dense_width_v1.hh",
+      "include/Cellerator/compute/candidate/segment/segment_v2.hh"
+    ],
+    "task_ids": [
+      "CE-NF1-N01",
+      "CE-NF1-N02",
+      "CE-NF1-N03",
+      "CE-NF1-N04",
+      "CE-NF1-N05",
+      "CE-NF1-N06"
+    ],
+    "lane_id": "CE-NF1-L-N"
+  },
+  {
+    "id": "H",
+    "title": "Indexed n-ary mechanisms",
+    "scope": [
+      "include/Cellerator/compute/operation/indexed_mechanism",
+      "src/compute/operation/indexed_mechanism",
+      "tests/native_foundation/nary"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/compute/operation/relation_bundle.hh"
+    ],
+    "task_ids": [
+      "CE-NF1-H01",
+      "CE-NF1-H02",
+      "CE-NF1-H03",
+      "CE-NF1-H04",
+      "CE-NF1-H05",
+      "CE-NF1-H06",
+      "CE-NF1-H07"
+    ],
+    "lane_id": "CE-NF1-L-H"
+  },
+  {
+    "id": "S",
+    "title": "Support activity, compaction and structural epochs",
+    "scope": [
+      "include/Cellerator/compute/operation/active_projection",
+      "src/compute/operation/active_projection",
+      "tests/native_foundation/support"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh",
+      "include/Cellerator/compute/operation/edge/indexed_gates_v1.cuh"
+    ],
+    "task_ids": [
+      "CE-NF1-S01",
+      "CE-NF1-S02",
+      "CE-NF1-S03",
+      "CE-NF1-S04",
+      "CE-NF1-S05",
+      "CE-NF1-S06",
+      "CE-NF1-S07"
+    ],
+    "lane_id": "CE-NF1-L-S"
+  },
+  {
+    "id": "D",
+    "title": "Program-level directional differential execution",
+    "scope": [
+      "include/Cellerator/compute/operation/differential",
+      "src/compute/operation/differential",
+      "tests/native_foundation/differential"
+    ],
+    "role": "implementer",
+    "focus": "",
+    "inputs": [
+      "include/Cellerator/compute/operation/relation_update.hh",
+      "docs/relation_update_spine_v1/calculus.md"
+    ],
+    "task_ids": [
+      "CE-NF1-D01",
+      "CE-NF1-D02",
+      "CE-NF1-D03",
+      "CE-NF1-D04",
+      "CE-NF1-D05",
+      "CE-NF1-D06",
+      "CE-NF1-D07",
+      "CE-NF1-D08"
+    ],
+    "lane_id": "CE-NF1-L-D"
+  },
+  {
+    "id": "T",
+    "title": "Independent validation and regression qualification",
+    "scope": [
+      "tests/native_foundation/reference",
+      "tests/native_foundation/conformance",
+      "docs/glasshelix_execution_foundation_v1/validation"
+    ],
+    "role": "validator",
+    "focus": "",
+    "inputs": [
+      "tests/relation_update_spine_v1",
+      "tests/semantic_spine",
+      "tests/execution/program_test.cu"
+    ],
+    "task_ids": [
+      "CE-NF1-T01",
+      "CE-NF1-T02",
+      "CE-NF1-T03",
+      "CE-NF1-T04",
+      "CE-NF1-T05",
+      "CE-NF1-T06"
+    ],
+    "lane_id": "CE-NF1-L-T"
+  },
+  {
+    "id": "O",
+    "title": "Whole-program optimization and measured promotion",
+    "scope": [
+      "include/Cellerator/compute/operation/native_foundation_optimization",
+      "src/compute/operation/native_foundation_optimization",
+      "bench/native_foundation",
+      "docs/glasshelix_execution_foundation_v1/performance"
+    ],
+    "role": "specialist",
+    "focus": "",
+    "inputs": [
+      "docs/relation_update_spine_v1/evidence/performance_analysis.md",
+      "include/Cellerator/planner/end_to_end_planner.hh"
+    ],
+    "task_ids": [
+      "CE-NF1-O01",
+      "CE-NF1-O02",
+      "CE-NF1-O03",
+      "CE-NF1-O04",
+      "CE-NF1-O05",
+      "CE-NF1-O06",
+      "CE-NF1-O07"
+    ],
+    "lane_id": "CE-NF1-L-O"
+  },
+  {
+    "id": "X",
+    "title": "Cross-repository acceptance import",
+    "scope": [
+      "docs/glasshelix_execution_foundation_v1/imports"
+    ],
+    "role": "integrator",
+    "focus": "",
+    "inputs": [],
+    "task_ids": [
+      "CE-NF1-X01"
+    ],
+    "lane_id": "CE-NF1-L-X"
+  },
+  {
+    "id": "M",
+    "title": "Central integration and release",
+    "scope": [],
+    "role": "integrator",
+    "focus": "Own central registration, exports and build fan-in. Integrate source, not unbuilt declarations.",
+    "inputs": [],
+    "task_ids": [
+      "CE-NF1-M00",
+      "CE-NF1-M10",
+      "CE-NF1-M20",
+      "CE-NF1-M30",
+      "CE-NF1-M40",
+      "CE-NF1-M50",
+      "CE-NF1-M90"
+    ],
+    "lane_id": "CE-NF1-L-M"
+  }
+]
