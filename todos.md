@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `6995`
+Project revision: `6996`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1357,6 +1357,7 @@ Project revision: `6995`
 - `CE-ARCH-70A` | kind: integration_task | status: done | parent: CE-ARCH-70 | objective: Integrate the existing local predicate-plan work, expose and require one explicit sequence predicate ABI version, make validity authoritative, and fail incompatible sibling checkouts early.
 - `CE-ARCH-80` | kind: epic | status: done | parent: - | objective: Finish the implementation and evidence required by roadmap Phases 4 through 11 and the definition of migration completion, without erasing the bounded results of CE-ARCH-40 through CE-ARCH-79.
 - `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
+- `CE-NF1-0000` | kind: epic | status: planned | parent: - | objective: 
 - `CE-PTR` | kind: epic | status: done | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
 - `CE-PTR-00` | kind: task | status: done | parent: CE-PTR | objective: Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.
 - `CE-RU1-0000` | kind: epic | status: done | parent: - | objective: 
@@ -1556,6 +1557,85 @@ Project revision: `6995`
 - `CE-JBC-X06` | kind: task | status: done | parent: - | objective: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | kind: task | status: done | parent: - | objective: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | kind: task | status: done | parent: - | objective: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
+- `CE-NF1-A01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-A02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-A03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-A04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-B06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-C06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-D08` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-H07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M00` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M10` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M20` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M30` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M40` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M50` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-M90` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-N06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-O07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-P07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-S07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-T06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V02` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V03` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V04` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V05` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V06` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-V07` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
+- `CE-NF1-X01` | kind: task | status: planned | parent: CE-NF1-0000 | objective: 
 - `CE-RU1-C01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 

@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6995`
+Project revision: `6996`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -976,6 +976,7 @@ Project revision: `6995`
 - `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
+- `CE-NF1-0000` | status: planned | execution: inactive | next: 
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
 - `CE-RU1-0000` | status: done | execution: closed | next: 
@@ -1175,6 +1176,85 @@ Project revision: `6995`
 - `CE-JBC-X06` | status: done | execution: closed | next: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | status: done | execution: closed | next: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
+- `CE-NF1-A01` | status: planned | execution: ready | next: 
+- `CE-NF1-A02` | status: planned | execution: ready | next: 
+- `CE-NF1-A03` | status: planned | execution: ready | next: 
+- `CE-NF1-A04` | status: planned | execution: ready | next: 
+- `CE-NF1-B01` | status: planned | execution: ready | next: 
+- `CE-NF1-B02` | status: planned | execution: ready | next: 
+- `CE-NF1-B03` | status: planned | execution: ready | next: 
+- `CE-NF1-B04` | status: planned | execution: ready | next: 
+- `CE-NF1-B05` | status: planned | execution: ready | next: 
+- `CE-NF1-B06` | status: planned | execution: ready | next: 
+- `CE-NF1-C01` | status: planned | execution: ready | next: 
+- `CE-NF1-C02` | status: planned | execution: ready | next: 
+- `CE-NF1-C03` | status: planned | execution: ready | next: 
+- `CE-NF1-C04` | status: planned | execution: ready | next: 
+- `CE-NF1-C05` | status: planned | execution: ready | next: 
+- `CE-NF1-C06` | status: planned | execution: ready | next: 
+- `CE-NF1-D01` | status: planned | execution: ready | next: 
+- `CE-NF1-D02` | status: planned | execution: ready | next: 
+- `CE-NF1-D03` | status: planned | execution: ready | next: 
+- `CE-NF1-D04` | status: planned | execution: ready | next: 
+- `CE-NF1-D05` | status: planned | execution: ready | next: 
+- `CE-NF1-D06` | status: planned | execution: ready | next: 
+- `CE-NF1-D07` | status: planned | execution: ready | next: 
+- `CE-NF1-D08` | status: planned | execution: ready | next: 
+- `CE-NF1-H01` | status: planned | execution: ready | next: 
+- `CE-NF1-H02` | status: planned | execution: ready | next: 
+- `CE-NF1-H03` | status: planned | execution: ready | next: 
+- `CE-NF1-H04` | status: planned | execution: ready | next: 
+- `CE-NF1-H05` | status: planned | execution: ready | next: 
+- `CE-NF1-H06` | status: planned | execution: ready | next: 
+- `CE-NF1-H07` | status: planned | execution: ready | next: 
+- `CE-NF1-M00` | status: planned | execution: ready | next: 
+- `CE-NF1-M10` | status: planned | execution: ready | next: 
+- `CE-NF1-M20` | status: planned | execution: ready | next: 
+- `CE-NF1-M30` | status: planned | execution: ready | next: 
+- `CE-NF1-M40` | status: planned | execution: ready | next: 
+- `CE-NF1-M50` | status: planned | execution: ready | next: 
+- `CE-NF1-M90` | status: planned | execution: ready | next: 
+- `CE-NF1-N01` | status: planned | execution: ready | next: 
+- `CE-NF1-N02` | status: planned | execution: ready | next: 
+- `CE-NF1-N03` | status: planned | execution: ready | next: 
+- `CE-NF1-N04` | status: planned | execution: ready | next: 
+- `CE-NF1-N05` | status: planned | execution: ready | next: 
+- `CE-NF1-N06` | status: planned | execution: ready | next: 
+- `CE-NF1-O01` | status: planned | execution: ready | next: 
+- `CE-NF1-O02` | status: planned | execution: ready | next: 
+- `CE-NF1-O03` | status: planned | execution: ready | next: 
+- `CE-NF1-O04` | status: planned | execution: ready | next: 
+- `CE-NF1-O05` | status: planned | execution: ready | next: 
+- `CE-NF1-O06` | status: planned | execution: ready | next: 
+- `CE-NF1-O07` | status: planned | execution: ready | next: 
+- `CE-NF1-P01` | status: planned | execution: ready | next: 
+- `CE-NF1-P02` | status: planned | execution: ready | next: 
+- `CE-NF1-P03` | status: planned | execution: ready | next: 
+- `CE-NF1-P04` | status: planned | execution: ready | next: 
+- `CE-NF1-P05` | status: planned | execution: ready | next: 
+- `CE-NF1-P06` | status: planned | execution: ready | next: 
+- `CE-NF1-P07` | status: planned | execution: ready | next: 
+- `CE-NF1-S01` | status: planned | execution: ready | next: 
+- `CE-NF1-S02` | status: planned | execution: ready | next: 
+- `CE-NF1-S03` | status: planned | execution: ready | next: 
+- `CE-NF1-S04` | status: planned | execution: ready | next: 
+- `CE-NF1-S05` | status: planned | execution: ready | next: 
+- `CE-NF1-S06` | status: planned | execution: ready | next: 
+- `CE-NF1-S07` | status: planned | execution: ready | next: 
+- `CE-NF1-T01` | status: planned | execution: ready | next: 
+- `CE-NF1-T02` | status: planned | execution: ready | next: 
+- `CE-NF1-T03` | status: planned | execution: ready | next: 
+- `CE-NF1-T04` | status: planned | execution: ready | next: 
+- `CE-NF1-T05` | status: planned | execution: ready | next: 
+- `CE-NF1-T06` | status: planned | execution: ready | next: 
+- `CE-NF1-V01` | status: planned | execution: ready | next: 
+- `CE-NF1-V02` | status: planned | execution: ready | next: 
+- `CE-NF1-V03` | status: planned | execution: ready | next: 
+- `CE-NF1-V04` | status: planned | execution: ready | next: 
+- `CE-NF1-V05` | status: planned | execution: ready | next: 
+- `CE-NF1-V06` | status: planned | execution: ready | next: 
+- `CE-NF1-V07` | status: planned | execution: ready | next: 
+- `CE-NF1-X01` | status: planned | execution: ready | next: 
 - `CE-RU1-C01` | status: done | execution: closed | next: 
 - `CE-RU1-C02` | status: done | execution: closed | next: 
 - `CE-RU1-C03` | status: done | execution: closed | next: 
