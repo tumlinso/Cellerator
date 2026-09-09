@@ -111,6 +111,15 @@ def main():
             sidecar['executables'] = completed.get('executables')
             sidecar['cmake_cache_sha256'] = completed.get('cmake_cache_sha256')
             sidecar['passed'] = completed.get('passed')
+        children = []
+        for child in evidence.glob('leased-executable-*.json'):
+            child_bytes = child.read_bytes()
+            child_record = json.loads(child_bytes)
+            if child_record.get('bindings_sha256') == sidecar['bindings_sha256']:
+                children.append(dict(path=str(child), sha256=hashlib.sha256(child_bytes).hexdigest(),
+                                     executable_sha256=child_record.get('executable_sha256'),
+                                     sanitizer_sha256=child_record.get('sanitizer_sha256'), passed=child_record.get('passed')))
+        sidecar['child_executable_evidence'] = children
         sidepath = evidence / ('lease-evidence-' + stamp + '.json')
         with sidepath.open('x') as output:
             json.dump(sidecar, output, indent=2)

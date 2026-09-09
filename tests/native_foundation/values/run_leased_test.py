@@ -29,8 +29,9 @@ def main():
     bindings = json.loads(binding_path.read_bytes())
     receipt = Path(os.environ['TODO_GPU_LEASE_RECEIPT']).resolve()
     require(receipt == Path(bindings['gpu_lease_receipt']).resolve(), 'lease path mismatch')
-    # A successful nonblocking acquisition means the parent is not holding its
-    # lock. Never execute a GPU in that case, and never wait on a second lock.
+    # Contention alone does not identify the holder. The trusted sealed launch
+    # supplies parent context; the native verifier below independently checks
+    # lease ownership. Reject an uncontended lock and never wait on a second one.
     with open(bindings['shared_gpu_lock_file'], 'a') as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -38,7 +39,7 @@ def main():
             pass
         else:
             fcntl.flock(lock, fcntl.LOCK_UN)
-            raise ValueError('sealed parent must hold the shared GPU lock')
+            raise ValueError('shared GPU lock is uncontended despite trusted sealed-parent launch')
     verifier = [word.replace('{lease_receipt}', str(receipt)) for word in bindings['gpu_lease_verifier_argv']]
     verified = subprocess.run(verifier, text=True, capture_output=True, check=True, timeout=30)
     before = digest(args.executable)
