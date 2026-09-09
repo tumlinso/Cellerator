@@ -1,0 +1,198 @@
+{
+  "kind": "nf1-native-reachability-v1",
+  "source_commit": "c06d71d834459bd8511d79fe0338fee6eb253f7c",
+  "evidence_level": "source_implementation_and_cmake_wiring_inspection",
+  "entries": [
+    {
+      "capability": "prepared_program",
+      "header": "include/Cellerator/execution/program/program_v2.h",
+      "source": "src/execution/program/program_v2.cc",
+      "target": "Cellerator::executable_program",
+      "source_classification": "CPU orchestration invokes supplied stage launch function on caller stream; this alone is not a numerical backend",
+      "limits": "topological earlier-stage dependencies and binding/workspace bounds checked; current executor validates and executes serially",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/execution/program/program_v2.h": {
+          "exists": true,
+          "sha256": "1fbe5bf1f2f26b0e43dce54f43f256f7d2b5eabfe9547317777def6ce57c8fbb"
+        },
+        "src/execution/program/program_v2.cc": {
+          "exists": true,
+          "sha256": "b51ef149a8ba688ee52681a908af23fd2ec85a9a41bcdc244e5035e23135f7a3"
+        }
+      }
+    },
+    {
+      "capability": "projection_value_plane",
+      "header": "include/Cellerator/execution/projection_value_plane/value_plane_v1.hh",
+      "source": "src/execution/projection_value_plane/value_plane_v1.cc",
+      "target": "Cellerator::projection_value_plane_v1",
+      "source_classification": "host validation/publication and independent mutable generations",
+      "limits": "keep logical/physical map identity and generations; f32 runtime relation support is separately required",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/execution/projection_value_plane/value_plane_v1.hh": {
+          "exists": true,
+          "sha256": "963dd7ac539b61ef2eed2359b1698db7bb7a4133a7aa9d44cbc9f42f1b61b45c"
+        },
+        "src/execution/projection_value_plane/value_plane_v1.cc": {
+          "exists": true,
+          "sha256": "e8c011a000d9f97ee6eb936392e26033e838fb58134f5db9af1a816a968dc546"
+        }
+      }
+    },
+    {
+      "capability": "edge_gate",
+      "header": "include/Cellerator/compute/operation/edge_map_or_gate.hh",
+      "source": "src/compute/candidate/edge_map_or_gate.cu",
+      "target": "Cellerator::relation_algebra",
+      "source_classification": "real CUDA f32 kernel; map, multiplication and predicate branches have distinct semantics",
+      "limits": "logical or projection order explicitly mapped; predicate false emits zero; multiplication retains IEEE nonfinite effects",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/operation/edge_map_or_gate.hh": {
+          "exists": true,
+          "sha256": "74b5b526d41e4461af8b040836ab5d7befbed360b301c7c1fb0551b12774e0bd"
+        },
+        "src/compute/candidate/edge_map_or_gate.cu": {
+          "exists": true,
+          "sha256": "e0a289d9f34589d88054a984edafe99e4f4e0557b58b92d53320078dd75986db"
+        }
+      }
+    },
+    {
+      "capability": "segment_reduce",
+      "header": "include/Cellerator/compute/candidate/segment/reduce_v2.hh",
+      "source": "src/compute/candidate/segment/reduce_v2.cu",
+      "target": "Cellerator::relation_algebra",
+      "source_classification": "real CUDA block reductions across explicit segment offsets and dense columns",
+      "limits": "existing arbitrary column indexing is reusable but no new NF1 width33 test performed",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/candidate/segment/reduce_v2.hh": {
+          "exists": true,
+          "sha256": "6f38ea7973ff1afa6362dcd87811bc2f6b5e188229aae6ad83e805b5cfd6966a"
+        },
+        "src/compute/candidate/segment/reduce_v2.cu": {
+          "exists": true,
+          "sha256": "13131d40e69e7ab62d2cb99db458a4894dd705703659405669b8f417d0e4d697"
+        }
+      }
+    },
+    {
+      "capability": "segment_reference",
+      "header": "include/Cellerator/compute/candidate/segment/reduce_v2.hh",
+      "source": "src/compute/candidate/segment/reduce_v2_reference.cc",
+      "target": "Cellerator::relation_algebra",
+      "source_classification": "host reference arithmetic; not automatically an accepted NF1 production CPU route",
+      "limits": "independent FP64 oracle still required by NF1",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/candidate/segment/reduce_v2.hh": {
+          "exists": true,
+          "sha256": "6f38ea7973ff1afa6362dcd87811bc2f6b5e188229aae6ad83e805b5cfd6966a"
+        },
+        "src/compute/candidate/segment/reduce_v2_reference.cc": {
+          "exists": true,
+          "sha256": "378373929affb18ba2ea08183e1e76a2dcb5f58de9b6d488826aa4f321cc7c8d"
+        }
+      }
+    },
+    {
+      "capability": "relation_pair",
+      "header": "include/Cellerator/compute/operation/prepared_relation.hh",
+      "source": "src/compute/operation/prepared_relation.cu",
+      "target": "Cellerator::prepared_relation_cuda",
+      "source_classification": "real CUDA SS1/RU1 opt-in target",
+      "limits": "rejects widths outside N1/N16; f16 weights/f32 dense operands and arithmetic; requires permitted reassociation/FMA and propagating nonfinite semantics; duplicate endpoint edges rejected",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/operation/prepared_relation.hh": {
+          "exists": true,
+          "sha256": "821c747c04c2a7a9fd972472044ab04fe28d100790e34ed212c90594ce1b0662"
+        },
+        "src/compute/operation/prepared_relation.cu": {
+          "exists": true,
+          "sha256": "2ce64dd4ff49305697ccefb172b9fd1182a274aab01b2de49d558508baaefaa5"
+        }
+      }
+    },
+    {
+      "capability": "relation_calculus",
+      "header": "include/Cellerator/compute/operation/relation_calculus.hh",
+      "source": "src/compute/operation/relation_calculus.cc",
+      "target": "Cellerator::relation_calculus",
+      "source_classification": "host relation differential contract under opt-in SS1/RU1",
+      "limits": "not proof of arbitrary nonlinear JVP/VJP or second-direction execution",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/operation/relation_calculus.hh": {
+          "exists": true,
+          "sha256": "57284dc46d870122fbd9e5ab0f69417f86f49daf33ec4c8765f99d67fb55f152"
+        },
+        "src/compute/operation/relation_calculus.cc": {
+          "exists": true,
+          "sha256": "9f98ec9433f82c4acf36438113961cc5cc50422b58a571582bac9885a2507d2d"
+        }
+      }
+    },
+    {
+      "capability": "relation_update",
+      "header": "include/Cellerator/compute/operation/prepared_relation.hh",
+      "source": "src/runtime/relation_value_readiness.cu",
+      "target": "cellerator_relation_update_support",
+      "source_classification": "real event-backed GPU generation publication and external const reader lifetime",
+      "limits": "one external read lease; mutable capture rejected; N16 gradient provider; no f32 master plane",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "include/Cellerator/compute/operation/prepared_relation.hh": {
+          "exists": true,
+          "sha256": "821c747c04c2a7a9fd972472044ab04fe28d100790e34ed212c90594ce1b0662"
+        },
+        "src/runtime/relation_value_readiness.cu": {
+          "exists": true,
+          "sha256": "cba116d56e63c2410d12a3593f1ab68c1c86908ac9279f3b08644ef51bcce90a"
+        }
+      }
+    },
+    {
+      "capability": "nf1_consumer",
+      "header": "planning/glasshelix-execution-foundation-v1/contracts/include/Cellerator/native_foundation.hh",
+      "source": "examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc",
+      "target": "Cellerator::native_foundation",
+      "source_classification": "planned external target requested by standalone CMake consumer, not declared by current normal CMake",
+      "limits": "header/demo syntax cannot qualify a linked or executed native system",
+      "execution_in_this_review": "not_run",
+      "files": {
+        "planning/glasshelix-execution-foundation-v1/contracts/include/Cellerator/native_foundation.hh": {
+          "exists": true,
+          "sha256": "fd45acf20e3d22d11a31117041699864d5cc04cd9d45ecd2806480e6c3aae7d2"
+        },
+        "examples/glasshelix_execution_foundation_v1/combinatorial_consumer.cc": {
+          "exists": true,
+          "sha256": "c207479afd2d137432f19dd9da65db90a73b1443bbd7fdc50bbfd1ef7f65a2c6"
+        }
+      }
+    }
+  ],
+  "linkage_limits": [
+    "Normal source build wires operation/program/plane/relation algebra targets; this is CMake-definition evidence, not a freshly linked external consumer.",
+    "SemanticSpineV1 defines repository-local relation targets; no install export for them is present there. CelleratorHostSdk exports PartOne compiler tools/library, not native_foundation.",
+    "No A03 CUDA or CPU numerical run is claimed. Historical RU1/SS1 test receipts do not qualify NF1 additions."
+  ],
+  "nf1_gaps": [
+    "real external native_foundation target and build/test registration",
+    "general-width FP32 relation execution including width33, tails, empties",
+    "nonlinear n-ary evaluator with repeated argument/output assembly semantics",
+    "explicit arbitrary supported JVP/VJP and second-direction contracts with independent oracle",
+    "persistent/compact-active support realization and structural epoch replacement qualification",
+    "scientific forcing, observation and inference consumers owned by GlassHelix"
+  ],
+  "preserved_regressions": [
+    "SS1 N1 prepared relation lifecycle/capture",
+    "RU1 N16 arithmetic, gradient, publication and reader lease",
+    "existing edge predicate versus multiplicative gate semantics",
+    "segment empty/tail and nonfinite behavior",
+    "retained native and Torch training consumers"
+  ]
+}

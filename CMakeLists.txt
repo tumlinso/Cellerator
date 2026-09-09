@@ -84,6 +84,14 @@ if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
         include(tests/relation_update_spine_v1/CMakeLists.txt)
     endif()
 endif()
+# NF1 reference tests are independent of the optional CUDA runtime. The T lane
+# owns the required fragment and real test; enabling this option must never
+# silently succeed with an empty test inventory.
+option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 host reference tests" OFF)
+if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
+    enable_testing()
+    add_subdirectory(tests/native_foundation/reference)
+endif()
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     return()
 endif()
