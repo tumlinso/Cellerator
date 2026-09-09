@@ -42,3 +42,12 @@ macro expansion or all transitively included headers.
 The B02 executable reuses the retained segment reduction test, including empty
 segments, extrema and paired moments. Its companion boundary test configures an
 external project and verifies rejection of a private CUDA implementation include.
+
+B03 leaves compiler selection to CMake's toolchain files, `CXX`, `CUDACXX`,
+`CUDAHOSTCXX`, and explicit `CMAKE_*_COMPILER` cache inputs. Host consumers require
+C++20; compiled owner libraries retain C++17. sm70 remains the existing default
+when no architecture is supplied. Qualification on this machine explicitly used
+CUDA 12.9.86, g++-12 as CUDA host compiler, and `CMAKE_CUDA_ARCHITECTURES=70`.
+No CUDA 13 or V100 FP8 arithmetic is required or claimed. The B03 test independently
+compiles and executes a C++20 consumer, checks explicit compiler preservation,
+and verifies that an unavailable compiler produces a configuration error.

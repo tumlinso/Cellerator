@@ -15,3 +15,8 @@ add_test(NAME ce_nf1_b02_boundary COMMAND "${CMAKE_COMMAND}"
     "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/boundary"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/boundary.cmake")
 set_tests_properties(ce_nf1_b02_boundary PROPERTIES LABELS "nf1;host;negative" TIMEOUT 30)
+add_test(NAME ce_nf1_b03 COMMAND "${CMAKE_COMMAND}"
+    "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/toolchain"
+    "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/toolchain.cmake")
+set_tests_properties(ce_nf1_b03 PROPERTIES LABELS "nf1;host;toolchain" TIMEOUT 60)

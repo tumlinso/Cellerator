@@ -1,39 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Choose the CUDA toolchain before enabling the CUDA language.
-#
-# On this host CMake can resolve `/usr/bin/nvcc` from the distro CUDA 12.0
-# package even when a newer HPC SDK nvcc is earlier on PATH. That older nvcc
-# also trips over the default GCC 13 host compiler on Ubuntu 24.04, producing
-# the recurring `_Float32` / `_Float64` failures during compiler detection.
-#
-# Respect explicit user/tooling choices first:
-# - `-DCMAKE_CUDA_COMPILER=...`
-# - `-DCMAKE_CUDA_HOST_COMPILER=...`
-# - `CUDACXX`
-# - `CUDAHOSTCXX`
-#
-# Otherwise prefer the known-good local toolchain pair.
-if(NOT DEFINED CMAKE_CUDA_COMPILER)
-    if(DEFINED ENV{CUDACXX} AND NOT "$ENV{CUDACXX}" STREQUAL "")
-        set(CMAKE_CUDA_COMPILER "$ENV{CUDACXX}" CACHE FILEPATH "CUDA compiler" FORCE)
-    elseif(EXISTS "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc")
-        set(CMAKE_CUDA_COMPILER
-            "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc"
-            CACHE FILEPATH "CUDA compiler" FORCE)
-        message(STATUS "Defaulting CUDA compiler to the local HPC SDK nvcc")
-    endif()
-endif()
-
-if(NOT DEFINED CMAKE_CUDA_HOST_COMPILER)
-    if(DEFINED ENV{CUDAHOSTCXX} AND NOT "$ENV{CUDAHOSTCXX}" STREQUAL "")
-        set(CMAKE_CUDA_HOST_COMPILER "$ENV{CUDAHOSTCXX}" CACHE FILEPATH "CUDA host compiler" FORCE)
-    elseif(EXISTS "/usr/bin/g++-12")
-        set(CMAKE_CUDA_HOST_COMPILER "/usr/bin/g++-12" CACHE FILEPATH "CUDA host compiler" FORCE)
-        message(STATUS "Defaulting CUDA host compiler to /usr/bin/g++-12 for nvcc compatibility")
-    endif()
-endif()
-
+# Toolchains belong to the caller. CMake honors CXX, CUDACXX, CUDAHOSTCXX,
+# toolchain files and -D compiler settings before language initialization.
+# Do not select machine-local compilers or mutate CXX after project().
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
     set(CELLERATOR_CMAKE_CUDA_ARCHITECTURES_WAS_DEFAULTED 1)
     set(CMAKE_CUDA_ARCHITECTURES 70)

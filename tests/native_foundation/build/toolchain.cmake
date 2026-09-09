@@ -1,0 +1,28 @@
+file(MAKE_DIRECTORY "${TEST_ROOT}/source")
+file(WRITE "${TEST_ROOT}/source/main.cc" "#include <span>\n#include <Cellerator/execution/program/program_v2.h>\nint main(){ int a[2]={2,3}; std::span<int> s(a); cellerator::execution::program::prepared_program_v2 p; return s[0]+s[1]==5 && cellerator::execution::program::validate_prepared_program_v2(p)==cellerator::execution::program::program_status::success ? 0:1; }\n")
+file(WRITE "${TEST_ROOT}/source/CMakeLists.txt" "cmake_minimum_required(VERSION 3.20)\nproject(toolchain_consumer LANGUAGES CXX)\nset(CELLERATOR_ENABLE_CUDA OFF CACHE STRING \"\")\nset(CELLERATOR_NATIVE_FOUNDATION_ONLY ON CACHE BOOL \"\")\nadd_subdirectory(\"${REPO_ROOT}\" cellerator)\nadd_executable(consumer main.cc)\ncellerator_link_native_foundation(consumer)\n")
+execute_process(COMMAND "${CMAKE_COMMAND}" -S "${TEST_ROOT}/source" -B "${TEST_ROOT}/host"
+    "-DCMAKE_CXX_COMPILER=${CXX_COMPILER}" -DCMAKE_CUDA_COMPILER=/unavailable/nvcc
+    RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE error)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Explicit host compiler failed: ${output}${error}")
+endif()
+file(STRINGS "${TEST_ROOT}/host/CMakeCache.txt" compiler_line REGEX "^CMAKE_CXX_COMPILER:.*=")
+string(REGEX REPLACE "^[^=]*=" "" configured_compiler "${compiler_line}")
+if(NOT configured_compiler STREQUAL CXX_COMPILER)
+    message(FATAL_ERROR "Caller CXX compiler changed: ${compiler_line}")
+endif()
+execute_process(COMMAND "${CMAKE_COMMAND}" --build "${TEST_ROOT}/host" --target consumer -j 2
+    RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE error)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "C++20 consumer build failed: ${output}${error}")
+endif()
+execute_process(COMMAND "${TEST_ROOT}/host/consumer" RESULT_VARIABLE result)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Linked C++20 host execution failed")
+endif()
+execute_process(COMMAND "${CMAKE_COMMAND}" -S "${TEST_ROOT}/source" -B "${TEST_ROOT}/missing"
+    -DCMAKE_CXX_COMPILER=/unavailable/cxx RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE error)
+if(result EQUAL 0 OR NOT "${output}${error}" MATCHES "CMAKE_CXX_COMPILER")
+    message(FATAL_ERROR "Unavailable CXX compiler lacked actionable failure")
+endif()
