@@ -1,0 +1,40 @@
+{
+  "source_commit": "4564dce1cbd61e247c608d34288aad4cf32559a1",
+  "evidence_level": "retained_RU1_host_execution_only",
+  "configure_argv": [
+    "cmake",
+    "-S",
+    ".",
+    "-B",
+    "/tmp/ce-nf1-m00-host",
+    "-DCELLERATOR_ENABLE_CUDA=OFF",
+    "-DCELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1=ON",
+    "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF",
+    "-DCMAKE_BUILD_TYPE=Release"
+  ],
+  "build_targets": [
+    "ceRU1HostTests",
+    "ceRU1ReferenceTests"
+  ],
+  "argv": [
+    "ctest",
+    "--test-dir",
+    "/tmp/ce-nf1-m00-host",
+    "-R",
+    "^ru1_(calculus|reference)$",
+    "--output-on-failure",
+    "--output-junit",
+    "/tmp/ce-nf1-m00-host/qualification.xml"
+  ],
+  "returncode": 0,
+  "stdout": "Internal ctest changing into directory: /tmp/ce-nf1-m00-host\nTest project /tmp/ce-nf1-m00-host\n    Start 14: ru1_calculus\n1/2 Test #14: ru1_calculus .....................   Passed    0.00 sec\n    Start 15: ru1_reference\n2/2 Test #15: ru1_reference ....................   Passed    0.01 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.01 sec\n",
+  "stderr": "",
+  "binaries": {
+    "ceRU1HostTests": "89b1d1b49d4a84f9fc0d6c3a939536573bf3b2faaf1c705783bfba1429226627",
+    "ceRU1ReferenceTests": "89a272f23cc155725f5cdc3570e3021f68327a765241a4dc79da88d2b8a14147"
+  },
+  "cache_sha256": "dcfff0d1e2ba9b64c30563f3fe75ab42a0bfe476663a5f052645c81aed055273",
+  "junit_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuite name=\"(empty)\"\n\ttests=\"2\"\n\tfailures=\"0\"\n\tdisabled=\"0\"\n\tskipped=\"0\"\n\thostname=\"\"\n\ttime=\"0\"\n\ttimestamp=\"2026-09-09T11:07:06\"\n\t>\n\t<testcase name=\"ru1_calculus\" classname=\"ru1_calculus\" time=\"0.00204613\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>ru1_calculus: 108 host checks passed (full_f32, round_operands_f16_rne)\n</system-out>\n\t</testcase>\n\t<testcase name=\"ru1_reference\" classname=\"ru1_reference\" time=\"0.0085742\" status=\"run\">\n\t\t<properties/>\n\t\t<system-out>width=1 max_continuous_fd_error=7.06235e-12 max_operand_quantization_difference=0.000871181\nwidth=16 max_continuous_fd_error=1.95115e-10 max_operand_quantization_difference=0.00284268\n159629 independent reference checks passed; seed=0x52553117\n</system-out>\n\t</testcase>\n</testsuite>\n",
+  "gpu_evidence": false,
+  "limitations": "Two existing host tests do not prove native NF1 implementation, general-width execution, external SDK linkage or CUDA."
+}

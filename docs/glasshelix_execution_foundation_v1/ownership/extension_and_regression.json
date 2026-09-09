@@ -1,0 +1,351 @@
+{
+  "kind": "nf1-extension-regression-boundary-v1",
+  "source_commit": "29d4ed884bf11cd86cc46d29d68afb96522cfc5a",
+  "dispositions": [
+    {
+      "owner": "operation_core_v2 and relation_algebra_v2",
+      "action": "extend existing semantic contract owners",
+      "reason": "multi-operand effects, identities, snapshot/alias/output rules must not become a second runtime"
+    },
+    {
+      "owner": "execution/program/program_v2",
+      "action": "extend stage/binding program owner",
+      "reason": "use existing launch contract and topological dependency checks; new numerical stages reuse runtime resources"
+    },
+    {
+      "owner": "projection_value_plane and runtime relation_value_readiness",
+      "action": "preserve generation/lifetime semantics and constructively extend",
+      "reason": "values change without immutable support rebuild; exact next generation and reader-writer hazards remain testable"
+    },
+    {
+      "owner": "segment and edge candidates",
+      "action": "reuse or generalize existing direct CUDA implementations",
+      "reason": "f32 segment kernels and predicate/multiplicative gate distinctions already exist; do not duplicate them as NF1-specific engines"
+    },
+    {
+      "owner": "prepared_relation SS1/RU1 and sm70 gradient providers",
+      "action": "preserve bounded regression route while extending capabilities through correct owners",
+      "reason": "N1/N16 f16 weight restrictions are real; general-width FP32 required but neither old route deletion nor falsely broad promotion is warranted"
+    },
+    {
+      "owner": "geometry/compiler, exact covers, optimizer portfolios and semantic images",
+      "action": "reuse useful algorithms and version rehoming when justified",
+      "reason": "retain exact semantic identity and cover qualification; layout selection is not biological ontology"
+    },
+    {
+      "owner": "compat/cp_math_v1 and legacy sparse paths",
+      "action": "retain as measured compatibility/reference until validated replacement of live consumers",
+      "reason": "do not add new ownership to PreparedExecution or DeviceMathContext; no broad deletion"
+    },
+    {
+      "owner": "compiler and LLVM source",
+      "action": "leave broad language/compiler work deferred",
+      "reason": "small inspectable composition and precompiled blocks suffice; no schema-only compiler claim"
+    },
+    {
+      "owner": "GlassHelix",
+      "action": "consume Cellerator operations and runtime",
+      "reason": "scientific dynamics, forcing, observation and inference remain GH responsibilities; no second accelerator library"
+    }
+  ],
+  "central_scope_reservations": [
+    {
+      "task_id": "CE-NF1-B01",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B01",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B01",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B01",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B01",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B02",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B02",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B02",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B02",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B02",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B03",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B03",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B03",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B03",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B03",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B04",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B04",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B04",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B04",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B04",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B05",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B05",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B05",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B05",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B05",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B06",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/NativeFoundation.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B06",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "cmake/SemanticSpineV1.cmake"
+    },
+    {
+      "task_id": "CE-NF1-B06",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/compute/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B06",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/execution/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-B06",
+      "lane_id": "CE-NF1-L-B",
+      "mode": "exclusive",
+      "path": "src/runtime/CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M00",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M10",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M20",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M30",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M40",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M50",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "task_id": "CE-NF1-M90",
+      "lane_id": "CE-NF1-L-M",
+      "mode": "exclusive",
+      "path": "CMakeLists.txt"
+    }
+  ],
+  "native_target": {
+    "name": "Cellerator::native_foundation",
+    "status": "planned_source_linked_composition_target_not_a_new_runtime",
+    "language": "C++20 consumer, existing C++17 owner compatibility preserved",
+    "host": "semantic/CPU execution configure independently of CUDA discovery, Torch, CellShard and model suites",
+    "cuda": "real linked CUDA provider component; default demo requires it and fails if unavailable",
+    "owner": "CE-NF1-L-B build fragments; CE-NF1-L-M root wiring; CE-NF1-L-C semantic contracts",
+    "early_registration": "C01 is a governance review and has no required CTest. The early T01 host task does require ce_nf1_t01. M00 owns root CMake; controller must arrange real focused test registration through M00/M integration or an authoritative prerequisite/scope transfer before T01 completion. Never run empty CTest as acceptance."
+  },
+  "regression_obligations": [
+    {
+      "trigger": "prepared_relation, gradient providers or generation/readiness edits",
+      "required": [
+        "all affected ru1_ CTest cases",
+        "ceRU1N1Regression",
+        "ceRU1GpuNumerics",
+        "ceRU1ReadinessTests",
+        "independent oracle and negative numeric/lifetime cases",
+        "Compute Sanitizer for new device binding or layout"
+      ],
+      "scope": "live source rebuilt with SS1/RU1 opt-ins; old receipts are baseline only"
+    },
+    {
+      "trigger": "native training shared arithmetic or runtime resources",
+      "required": [
+        "celleratorNativeTrainingSliceTest",
+        "celleratorTrainingProgramTest",
+        "celleratorCeLiveConcurrencyTest"
+      ],
+      "cmake_owners": [
+        "tests/planner_targets.cmake",
+        "tests/CMakeLists.txt"
+      ]
+    },
+    {
+      "trigger": "shared native contract affects Torch adapter",
+      "required": [
+        "celleraTorchAutogradOpsTest"
+      ],
+      "cmake_owner": "components/CelleraTorch/CMakeLists.txt",
+      "configuration": "explicit compatibility build; do not make Torch dependency of host core"
+    },
+    {
+      "trigger": "segment or gate changes",
+      "required": [
+        "independent reduce/normalize/gate references",
+        "empty and tail cases",
+        "NaN and infinity cases",
+        "predicate exclusion versus zero multiplication",
+        "wrong identity/order and stale generation rejection"
+      ]
+    },
+    {
+      "trigger": "native foundation build/export changes",
+      "required": [
+        "clean host-only standalone link with CUDA disabled",
+        "actual separately linked CUDA consumer",
+        "nonempty named NF1 CTest inventory",
+        "minimal and optional regression configurations"
+      ]
+    }
+  ],
+  "preservation": [
+    "No reset, clean, force-push or unpreserved overwrite",
+    "No historical JBC worktree removal or old-run hijack",
+    "No CE-AMP activation",
+    "A-lane commits touch only assigned docs evidence and narrow read-only verifier",
+    "A01 initial finish source mismatch retained in installed_services.json; M00 must integrate actual aggregate source"
+  ],
+  "performance": "No speedup claim in A01-A04. Later evidence reserves native GPU and uses /tmp/nf1-20260908-v1-device-evidence.lock, exact source/binaries and full preparation/transfer/synchronization costs.",
+  "closure_order": [
+    "CE M50 consumer ready",
+    "GH M60 real consumer acceptance",
+    "CE M90 final",
+    "GH M90 final"
+  ]
+}
