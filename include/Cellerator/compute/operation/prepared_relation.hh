@@ -76,6 +76,13 @@ status prepare_relation_pair(const operation_descriptor& forward,
                              const preparation_options& options,
                              cudaStream_t stream,
                              prepared_relation_pair** out) noexcept;
+// Cold replacement of one owned instance at a strictly newer structural epoch.
+// Reject live borrows, preserve the old handle on preparation failure, drain its
+// pending work before retirement. Other shared instances retain their old epoch.
+// New values are unpublished; callers explicitly publish the new generation.
+status replace_relation_epoch(prepared_relation_pair**,
+    const operation_descriptor& forward,const operation_descriptor& transpose,
+    const csr_host_view&,const preparation_options&,cudaStream_t) noexcept;
 // Retain the existing immutable projections/maps on the same device, allocating
 // only a fresh value plane and independent readiness/counters for the new stream.
 // No publication is inherited. Caller serializes cold operations across siblings.

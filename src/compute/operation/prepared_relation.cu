@@ -940,3 +940,21 @@ status enqueue_derived_f16(prepared_relation_pair& p,const operation_descriptor&
     s=submit_half(p,op.direction,input.data,output.data);if(!s)p.poisoned=true;return s;
 }
 }
+
+namespace cellerator::compute::relation {
+status replace_relation_epoch(prepared_relation_pair** slot,const operation_descriptor& forward,
+    const operation_descriptor& transpose,const csr_host_view& topology,const preparation_options& options,cudaStream_t stream) noexcept {
+    if(!slot||!*slot)return {status_code::invalid_argument,"epoch replacement requires owned instance"};
+    auto& old=**slot;auto s=check_context(old,options.device_ordinal,stream);if(!s)return s;
+    s=reject_capture(stream);if(!s)return s;
+    if(old.readiness.active_reader())return {status_code::invalid_state,"live borrow prevents epoch replacement"};
+    if(!execution::same_identity(forward.topology.identity,old.forward.semantic.topology.identity) ||
+       forward.topology.epoch.value<=old.forward.semantic.topology.epoch.value)
+        return {status_code::stale_structure,"replacement requires same identity and strictly newer epoch"};
+    prepared_relation_pair* candidate=nullptr;
+    s=prepare_relation_pair(forward,transpose,topology,options,stream,&candidate);if(!s)return s;
+    std::unique_ptr<prepared_relation_pair> owned(candidate);
+    s=close_relation_pair(slot);if(!s)return s;
+    *slot=owned.release();return {};
+}
+}

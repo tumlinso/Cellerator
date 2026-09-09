@@ -49,3 +49,9 @@ set_target_properties(ce_nf1_v04 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUI
 add_test(NAME ce_nf1_v04 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIST_DIR}/run_leased_test.py"
   --executable $<TARGET_FILE:ce_nf1_v04> --sanitizer "${NF1_COMPUTE_SANITIZER}")
 set_tests_properties(ce_nf1_v04 PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 180)
+add_executable(ce_nf1_v05 v05.cu)
+target_link_libraries(ce_nf1_v05 PRIVATE Cellerator::native_value_instance)
+set_target_properties(ce_nf1_v05 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+add_test(NAME ce_nf1_v05 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIST_DIR}/run_leased_test.py"
+  --executable $<TARGET_FILE:ce_nf1_v05> --sanitizer "${NF1_COMPUTE_SANITIZER}")
+set_tests_properties(ce_nf1_v05 PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 180)
