@@ -1,0 +1,77 @@
+{
+  "source_revision": 7149,
+  "validation": {
+    "valid": true,
+    "task_count": 14,
+    "checkpoint_count": 2,
+    "gate_count": 13,
+    "barrier_count": 0,
+    "interface_count": 0
+  },
+  "selected_tasks": [
+    "CE-NF1-0000",
+    "CE-NF1-A01",
+    "CE-NF1-A02",
+    "CE-NF1-A03",
+    "CE-NF1-A04",
+    "CE-NF1-C01",
+    "CE-NF1-C02",
+    "CE-NF1-C03",
+    "CE-NF1-C04",
+    "CE-NF1-C05",
+    "CE-NF1-C06",
+    "CE-NF1-M00",
+    "CE-NF1-M10",
+    "CE-NF1-V01"
+  ],
+  "changed_semantic_tables": [
+    "gates"
+  ],
+  "changed_gates": [
+    "CE-NF1-V01-ACCEPT"
+  ],
+  "before_gate_config": {
+    "argv": [
+      "python3",
+      "-B",
+      "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+      "--group",
+      "v01"
+    ],
+    "cwd": ".",
+    "env": {
+      "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v01/bindings.json"
+    }
+  },
+  "after_gate_config": {
+    "argv": [
+      "python3",
+      "-B",
+      "tests/native_foundation/values/run_gpu_gate.py",
+      "--gate-script",
+      "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+      "--group",
+      "v01",
+      "--verifier",
+      "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+      "--gpu-uuid",
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ],
+    "cuda": {
+      "cpu_threads": 2,
+      "gpu_uuids": [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+      ],
+      "gpus": 1,
+      "toolchain": {
+        "require_sanitizer": false,
+        "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+      }
+    },
+    "cwd": ".",
+    "env": {
+      "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v01/bindings.json"
+    }
+  },
+  "preserved": "all other durable semantic rows, lifecycle, completion evidence, scopes, dependency conditions, run contexts, queues and workspaces; ignore revisions/timestamps/task versions and regenerated dependency row IDs"
+}
