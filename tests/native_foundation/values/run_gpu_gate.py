@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -89,9 +90,18 @@ def main():
         live = subprocess.run(verify_argv, check=True, text=True, capture_output=True, timeout=30)
         require(receipt_bytes == lease_path.read_bytes(), 'lease changed while waiting for lock')
         result = subprocess.run(command, check=False)
+        supplemental = []
+        for name in bindings.get('supplemental_ctest_names', []):
+            require(not group.get('requires_gpu'), 'supplemental GPU tests require adapter-owned lock')
+            require(isinstance(name, str) and re.fullmatch(r'[a-zA-Z0-9_]+', name), 'invalid supplemental test name')
+            argv = ['ctest', '--test-dir', bindings['build_dir'], '--no-tests=error',
+                    '-R', '^' + name + '$', '--verbose']
+            check = subprocess.run(argv, text=True, capture_output=True, timeout=150)
+            supplemental.append(dict(argv=argv, returncode=check.returncode, stdout=check.stdout, stderr=check.stderr))
+        final_returncode = result.returncode or (1 if any(x['returncode'] for x in supplemental) else 0)
         sidecar = dict(bindings['adapter_evidence'], live_verification=json.loads(live.stdout),
-                       bindings_path=derived, bindings_sha256=hashlib.sha256(Path(derived).read_bytes()).hexdigest(),
-                       test_receipt=str(test_receipt), returncode=result.returncode,
+                       supplemental_tests=supplemental, bindings_path=derived, bindings_sha256=hashlib.sha256(Path(derived).read_bytes()).hexdigest(),
+                       test_receipt=str(test_receipt), returncode=final_returncode,
                        test_receipt_sha256=hashlib.sha256(test_receipt.read_bytes()).hexdigest() if test_receipt.exists() else None)
         if test_receipt.exists():
             completed = json.loads(test_receipt.read_bytes())
@@ -105,7 +115,7 @@ def main():
             json.dump(sidecar, output, indent=2)
             output.write('\n')
         sidepath.chmod(0o444)
-        return result.returncode
+        return final_returncode
     # Exactly one owner for the NF1 lock: GPU-labelled sealed runner owns it;
     # stronger device qualification of a host-labelled group requires this adapter.
     if group.get('requires_gpu'):

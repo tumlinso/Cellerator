@@ -21,3 +21,8 @@ target_compile_features(ce_nf1_v01 PRIVATE cxx_std_17)
 set_target_properties(ce_nf1_v01 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
 add_test(NAME ce_nf1_v01 COMMAND ce_nf1_v01)
 set_tests_properties(ce_nf1_v01 PROPERTIES LABELS "nf1;cuda;values;sm70" TIMEOUT 60)
+find_program(NF1_COMPUTE_SANITIZER compute-sanitizer
+  HINTS "${CUDAToolkit_ROOT}/compute-sanitizer" REQUIRED)
+add_test(NAME ce_nf1_v01_memcheck COMMAND "${NF1_COMPUTE_SANITIZER}"
+  --tool memcheck --error-exitcode 99 $<TARGET_FILE:ce_nf1_v01>)
+set_tests_properties(ce_nf1_v01_memcheck PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 120)
