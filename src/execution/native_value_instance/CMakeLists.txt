@@ -1,7 +1,7 @@
 if(NOT TARGET cellerator_prepared_relation_cuda OR NOT TARGET Cellerator::jbc_v1)
   message(FATAL_ERROR "Native atom instances require existing relation and atom-plane owners")
 endif()
-target_link_libraries(cellerator_prepared_relation_cuda PUBLIC Cellerator::jbc_v1)
+target_link_libraries(cellerator_prepared_relation_cuda PUBLIC Cellerator::jbc_v1 cellerator_compute_sparse_project)
 add_library(cellerator_native_value_instance INTERFACE)
 add_library(Cellerator::native_value_instance ALIAS cellerator_native_value_instance)
 target_link_libraries(cellerator_native_value_instance INTERFACE Cellerator::prepared_relation_cuda)

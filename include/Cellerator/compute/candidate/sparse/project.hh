@@ -22,6 +22,15 @@ void csr_spmm_fwd_f16_f32(
     float *out,
     std::int64_t out_ld);
 
+// Allocation-free retained CSR traversal; value_indices optionally maps CSR
+// slots into a separately owned packed value plane. Null means CSR value order.
+void csr_spmm_fwd_f32(
+    const runtime::execution_context&, const std::uint32_t* major_ptr,
+    const std::uint32_t* minor_idx, const float* values,
+    std::uint32_t rows, std::uint32_t cols, const float* rhs,
+    std::int64_t rhs_ld, std::int64_t out_cols, float* out,
+    std::int64_t out_ld, const std::uint32_t* value_indices = nullptr);
+
 void csr_spmm_fwd_f32_lib(
     const runtime::execution_context &ctx,
     runtime::cusparse_cache *cache,

@@ -17,9 +17,19 @@ struct csr_host_view {
 struct preparation_options {
     int device_ordinal = 0;
     std::uint64_t persistent_byte_limit = 0; // zero: no extra user limit
+    bool derive_f16 = false; // explicit RNE projection of authoritative f32 values
 };
 struct device_values_binding {
     const void* f16_data = nullptr; // IEEE binary16 bytes in logical edge order
+    std::uint64_t count = 0;
+    execution::structure_id structure{};
+    execution::structure_epoch epoch{};
+    execution::order_id logical_edge_order{};
+    execution::value_generation generation{};
+    int device_ordinal = 0;
+};
+struct device_f32_values_binding {
+    const float* data = nullptr;
     std::uint64_t count = 0;
     execution::structure_id structure{};
     execution::structure_epoch epoch{};
@@ -54,6 +64,7 @@ struct preparation_report {
     std::uint64_t structural_instance_count = 0;
     std::uint64_t shared_structural_bytes = 0;
     std::uint64_t instance_value_bytes = 0;
+    execution::value_generation derived_f16_generation{};
     const char* forward_candidate = nullptr; // actual bound implementation
     const char* transpose_candidate = nullptr;
 };
@@ -75,6 +86,11 @@ status create_relation_instance(const prepared_relation_pair& source,
 // Successful submission publishes the enqueued generation, not GPU completion.
 status publish_values(prepared_relation_pair&, const device_values_binding&,
                       cudaStream_t stream) noexcept;
+status publish_f32_values(prepared_relation_pair&,const device_f32_values_binding&,cudaStream_t) noexcept;
+// Explicit lower-precision evaluation; only available when derive_f16 was set.
+// The operation still identifies the authoritative f32 relation semantics.
+status enqueue_derived_f16(prepared_relation_pair&,const operation_descriptor&,
+    const device_state_view&,const device_result_view&,execution::value_generation,cudaStream_t) noexcept;
 // Validate all metadata/capacities/overlap before submission. Metadata rejection
 // preserves output and counters. CUDA partial-submission failure poisons the pair.
 status enqueue(prepared_relation_pair&, const operation_descriptor&,

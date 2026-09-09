@@ -1,3 +1,4 @@
+#include <Cellerator/compute/candidate/sparse/project.hh>
 #include <Cellerator/execution/native_value_instance/atom_binding.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
@@ -23,7 +24,7 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
     if (op.dense_width != 1 && op.dense_width != 16)
         return {status_code::unsupported_width, "native pair supports N1 and N16 only"};
     const auto& a = op.arithmetic;
-    if (a.relation_storage != execution::numeric_type::f16
+    if ((a.relation_storage != execution::numeric_type::f16 && a.relation_storage != execution::numeric_type::f32)
         || a.input_storage != execution::numeric_type::f32
         || a.multiply != execution::numeric_type::f32
         || a.accumulation != execution::numeric_type::f32
@@ -181,6 +182,8 @@ struct prepared_relation_structure {
     int device=0;
     std::uint64_t identity=0,base_bytes=0;
     void* forward_payload=nullptr;void* transpose_payload=nullptr;
+    std::uint32_t *csr_forward=nullptr,*csr_transpose=nullptr;
+    std::uint64_t csr_forward_bytes=0,csr_transpose_bytes=0;
     std::uint32_t* logical_map=nullptr;
     cm::feature_major_projection_view forward_view{};
     cm::transpose_projection_view transpose_view{};
@@ -190,6 +193,7 @@ struct prepared_relation_structure {
     ~prepared_relation_structure(){
         int prior=-1;cudaGetDevice(&prior);if(prior!=device)cudaSetDevice(device);
         if(device_edges)cudaFree(device_edges);
+        if(csr_forward)cudaFree(csr_forward);if(csr_transpose)cudaFree(csr_transpose);
         if(logical_map)cudaFree(logical_map);
         if(transpose_payload)cudaFree(transpose_payload);
         if(forward_payload)cudaFree(forward_payload);
@@ -210,6 +214,7 @@ struct prepared_relation_pair {
     int device=0;cudaStream_t stream=nullptr;bool poisoned=false;
     std::shared_ptr<prepared_relation_structure> structure;
     void* values=nullptr;
+    float* authoritative_f32=nullptr;bool derive_f16=false;
     core::feature_major_small_n_prepared_state forward_state{};
     core::transpose_backward_prepared_state transpose_state{};
     core::prepared_operation forward_operation{},transpose_operation{};
@@ -236,7 +241,7 @@ struct prepared_relation_pair {
         cudaStreamSynchronize(stream);
         gradient_provider::destroy_hybrid_gradient(hybrid);
         if(source_scratch)cudaFree(source_scratch);if(cotangent_scratch)cudaFree(cotangent_scratch);
-        if(values)cudaFree(values);
+        if(values)cudaFree(values);if(authoritative_f32)cudaFree(authoritative_f32);
         structure.reset();
         if(prior>=0 && prior!=device)cudaSetDevice(prior);
     }
@@ -261,7 +266,7 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         p->structure=std::make_shared<prepared_relation_structure>();p->structure->device=current;
         auto id=next_pair_incarnation();
         if(!id)return {status_code::invalid_state,"pair incarnation exhausted"};
-        p->incarnation=id;p->structure->identity=id;p->persistent_limit=options.persistent_byte_limit;
+        p->incarnation=id;p->structure->identity=id;p->derive_f16=options.derive_f16;p->persistent_limit=options.persistent_byte_limit;
         p->physical_order=forward.topology.logical_edge_order;
         p->physical_order.high^=0x464d503147524144ULL;
         if(!execution::valid_identity(p->physical_order))p->physical_order.low=1;
@@ -301,15 +306,18 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             cm::transpose_projection_requirements rr{};s=physical(cm::query_transpose_projection_requirements_host(tr,&rr));if(!s)return s;
             std::vector<unsigned char> th(rr.payload_bytes);cm::transpose_projection_view tv{};
             s=physical(cm::build_transpose_projection_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
-            auto bytes=fr.payload_bytes+rr.payload_bytes+forward.topology.edge_count*26;
+            const bool f32=forward.arithmetic.relation_storage==execution::numeric_type::f32;
+            const auto value_bytes=forward.topology.edge_count*(f32?(4+(p->derive_f16?2:0)):2);
+            auto bytes=fr.payload_bytes+rr.payload_bytes+forward.topology.edge_count*24+value_bytes;
             p->updates.persistent_bytes=bytes;
-            p->structure->base_bytes=bytes-forward.topology.edge_count*2;
+            p->structure->base_bytes=bytes-value_bytes;
             if(options.persistent_byte_limit && bytes>options.persistent_byte_limit)
                 return {status_code::insufficient_capacity,"projection and mutable value storage exceed persistent limit"};
             s=cuda_status(cudaMalloc(&p->structure->forward_payload,fr.payload_bytes));if(!s)return s;
             s=cuda_status(cudaMalloc(&p->structure->transpose_payload,rr.payload_bytes));if(!s)return s;
             s=cuda_status(cudaMalloc(reinterpret_cast<void**>(&p->structure->logical_map),forward.topology.edge_count*4));if(!s)return s;
-            s=cuda_status(cudaMalloc(&p->values,forward.topology.edge_count*2));if(!s)return s;
+            if(!f32 || p->derive_f16){s=cuda_status(cudaMalloc(&p->values,forward.topology.edge_count*2));if(!s)return s;}
+            if(f32){s=cuda_status(cudaMalloc(&p->authoritative_f32,forward.topology.edge_count*4));if(!s)return s;}
             auto upload=[&](void* dst,const void* src,std::size_t bytes) {
                 auto submitted=cudaMemcpyAsync(dst,src,bytes,cudaMemcpyHostToDevice,stream);
                 auto completed=cudaStreamSynchronize(stream);
@@ -318,17 +326,41 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             s=upload(p->structure->forward_payload,fh.data(),fh.size());if(!s)return s;
             s=upload(p->structure->transpose_payload,th.data(),th.size());if(!s)return s;
             s=upload(p->structure->logical_map,map,forward.topology.edge_count*4);if(!s)return s;
+            if(f32){
+                auto build_csr=[&](bool transposed,std::uint32_t** device,std::uint64_t& footprint)->status {
+                    const auto rows=transposed?forward.topology.source.extent:forward.topology.destination.extent;
+                    const auto edges=forward.topology.edge_count;
+                    std::vector<std::uint32_t> payload(rows+1+edges*2,0);
+                    for(const auto& edge:p->structure->physical_edges)++payload[(transposed?edge.source_local:edge.destination_local)+1];
+                    for(std::uint64_t row=1;row<=rows;++row)payload[row]+=payload[row-1];
+                    std::vector<std::uint32_t> cursor(payload.begin(),payload.begin()+rows);
+                    for(std::uint32_t physical=0;physical<edges;++physical){const auto& edge=p->structure->physical_edges[physical];
+                        auto pos=cursor[transposed?edge.source_local:edge.destination_local]++;
+                        payload[rows+1+pos]=transposed?edge.destination_local:edge.source_local;
+                        payload[rows+1+edges+pos]=physical;}
+                    footprint=payload.size()*4;
+                    if(p->persistent_limit && footprint>p->persistent_limit-p->updates.persistent_bytes)
+                        return {status_code::insufficient_capacity,"f32 CSR projection exceeds persistent budget"};
+                    auto result=cuda_status(cudaMalloc(device,footprint));if(!result)return result;
+                    result=upload(*device,payload.data(),footprint);if(!result)return result;
+                    p->structure->base_bytes+=footprint;p->updates.persistent_bytes+=footprint;return {};
+                };
+                s=build_csr(false,&p->structure->csr_forward,p->structure->csr_forward_bytes);if(!s)return s;
+                s=build_csr(true,&p->structure->csr_transpose,p->structure->csr_transpose_bytes);if(!s)return s;
+                report.forward_candidate=report.transpose_candidate="retained-csr-f32";
+            }
             // Cold host arrays cease to be borrowed when preparation returns.
             s=cuda_status(cudaStreamSynchronize(stream));if(!s)return s;
             s=physical(cm::rebind_feature_major_projection(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
             s=physical(cm::rebind_transpose_projection(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
             core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
             core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+            auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
+            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
             if(!fs)return {status_code::unsupported_semantics,fs.message};
             {
                 auto prepare_transpose = forward.dense_width == 1 ? core::prepare_transpose_backward_n1_operation : core::prepare_transpose_backward_n16_operation;
-                auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+                auto ts=prepare_transpose(t.problem,t.structures,tk,projected_numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
                 if(!ts)return {status_code::unsupported_semantics,ts.message};
             }
         }
@@ -355,23 +387,25 @@ status create_relation_instance(const prepared_relation_pair& source,cudaStream_
         std::unique_ptr<prepared_relation_pair> p(new prepared_relation_pair);
         p->device=source.device;p->stream=stream;p->structure=source.structure;
         p->forward=source.forward;p->transpose=source.transpose;p->physical_order=source.physical_order;
-        p->persistent_limit=source.persistent_limit;p->incarnation=next_pair_incarnation();
+        p->persistent_limit=source.persistent_limit;p->derive_f16=source.derive_f16;p->incarnation=next_pair_incarnation();
         if(!p->incarnation)return {status_code::invalid_state,"pair incarnation exhausted"};
         p->report=source.report;p->report.latest_enqueued_generation={};
-        p->report.value_refreshes=0;p->report.accepted_forward_launches=0;p->report.accepted_transpose_launches=0;
+        p->report.derived_f16_generation={};p->report.value_refreshes=0;p->report.accepted_forward_launches=0;p->report.accepted_transpose_launches=0;
         auto edges=p->forward.semantic.topology.edge_count;
-        p->updates.persistent_bytes=p->structure->base_bytes+edges*2;
+        p->updates.persistent_bytes=p->structure->base_bytes+edges*(source.authoritative_f32?(4+(p->derive_f16?2:0)):2);
         if(edges){
-            s=cuda_status(cudaMalloc(&p->values,edges*2));if(!s)return s;
+            if(source.authoritative_f32){s=cuda_status(cudaMalloc(&p->authoritative_f32,edges*4));if(!s)return s;}
+            if(!source.authoritative_f32 || p->derive_f16){s=cuda_status(cudaMalloc(&p->values,edges*2));if(!s)return s;}
             // Candidate launch state points into the new instance, while views
             // refer to the one counted structure. No projection is rebuilt.
             const auto& f=p->forward;const auto& t=p->transpose;
             core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
             core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+            auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
+            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
             if(!fs)return {status_code::unsupported_semantics,fs.message};
             auto prepare_transpose=f.semantic.dense_width==1?core::prepare_transpose_backward_n1_operation:core::prepare_transpose_backward_n16_operation;
-            auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+            auto ts=prepare_transpose(t.problem,t.structures,tk,projected_numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
             if(!ts)return {status_code::unsupported_semantics,ts.message};
         }
         s=readiness_status(p->readiness.initialize(p->forward.semantic.topology.identity,
@@ -385,7 +419,7 @@ status inspect(const prepared_relation_pair& p,preparation_report* out) noexcept
     out->structural_instance_count=p.structure.use_count();
     out->shared_structural_bytes=p.structure->base_bytes+
         (p.structure->device_edges?p.structure->physical_edges.size()*sizeof(gradient_contract::edge_ref_v1):0);
-    out->instance_value_bytes=p.forward.semantic.topology.edge_count*2;
+    out->instance_value_bytes=p.forward.semantic.topology.edge_count*(p.authoritative_f32?(4+(p.derive_f16?2:0)):2);
     return {};
 }
 void destroy(prepared_relation_pair* p) noexcept {
@@ -397,7 +431,7 @@ void destroy(prepared_relation_pair* p) noexcept {
 
 namespace cellerator::compute::relation {
 namespace {
-status submit(prepared_relation_pair& p,orientation direction,const void* input,void* output) noexcept {
+status submit_half(prepared_relation_pair& p,orientation direction,const void* input,void* output) noexcept {
     const auto& contract=direction==orientation::forward?p.forward:p.transpose;
     const auto& op=contract.semantic;
     const auto count=result_axis(op).extent;
@@ -460,7 +494,8 @@ bool overlaps(const void* a,std::uint64_t a_bytes,const void* b,std::uint64_t b_
 bool protected_overlap(const prepared_relation_pair& p,const void* data,std::uint64_t bytes) noexcept {
     auto edges=p.forward.semantic.topology.edge_count;
     return (p.hybrid&&gradient_provider::overlaps_hybrid_storage(*p.hybrid,data,bytes))
-        || overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.structure->logical_map,edges*4)
+        || overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.authoritative_f32,edges*4)
+        || overlaps(data,bytes,p.structure->csr_forward,p.structure->csr_forward_bytes) || overlaps(data,bytes,p.structure->csr_transpose,p.structure->csr_transpose_bytes) || overlaps(data,bytes,p.structure->logical_map,edges*4)
         || overlaps(data,bytes,p.structure->forward_payload,p.structure->forward_view.header.payload_bytes)
         || overlaps(data,bytes,p.structure->transpose_payload,p.structure->transpose_view.header.payload_bytes)
         || overlaps(data,bytes,p.structure->device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
@@ -474,6 +509,7 @@ __global__ void gather_values(const std::uint16_t* logical,const std::uint32_t* 
 }
 } // namespace
 status publish_values(prepared_relation_pair& p,const device_values_binding& binding,cudaStream_t stream) noexcept {
+    if(p.forward.semantic.arithmetic.relation_storage!=execution::numeric_type::f16)return {status_code::unsupported_numeric_policy,"use explicit f32 publication"};
     auto s=check_context(p,binding.device_ordinal,stream);if(!s)return s;
     // Capturing a gather does not enqueue a generation. There is deliberately
     // no publication-through-graph protocol in this bounded API.
@@ -546,7 +582,16 @@ status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
     const device_state_view& input,const device_result_view& output,
     execution::value_generation expected,cudaStream_t stream) noexcept {
     auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
-    s=submit(p,op.direction,input.data,output.data);
+    if(op.arithmetic.relation_storage==execution::numeric_type::f32){
+        const auto& t=op.topology;const auto rows=result_axis(op).extent;
+        if(!t.edge_count)s=rows?cuda_status(cudaMemsetAsync(output.data,0,rows*op.dense_width*4,stream)):status{};
+        else try {
+            auto* csr=op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
+            runtime::execution_context context{};context.device=p.device;context.stream=stream;
+            compute::sparse::project::csr_spmm_fwd_f32(context,csr,csr+rows+1,p.authoritative_f32,rows,input_axis(op).extent,
+                static_cast<const float*>(input.data),op.dense_width,op.dense_width,static_cast<float*>(output.data),op.dense_width,csr+rows+1+t.edge_count);
+        }catch(...){s={status_code::invalid_state,"f32 candidate launch failed"};}
+    }else s=submit_half(p,op.direction,input.data,output.data);
     if(!s){p.poisoned=true;return s;}
     if(op.direction==orientation::forward)++p.report.accepted_forward_launches;
     else ++p.report.accepted_transpose_launches;
@@ -730,6 +775,7 @@ bool same_stamp(const gradient_stamp& a,const gradient_stamp& b) noexcept {
 }
 }
 status enqueue_value_update(prepared_relation_pair& p,const value_update_request& r,cudaStream_t stream) noexcept {
+    if(p.forward.semantic.arithmetic.relation_storage==execution::numeric_type::f32)return {status_code::unsupported_numeric_policy,"legacy update is f16-only"};
     auto s=reject_capture(stream);if(!s)return s;
     s=check_context(p,r.operand.device_ordinal,stream);if(!s)return s;
     if(r.kind!=value_update_kind::delta_add&&r.kind!=value_update_kind::gradient_step)
@@ -761,6 +807,7 @@ status enqueue_value_update(prepared_relation_pair& p,const value_update_request
 namespace cellerator::compute::relation {
 status begin_value_read(prepared_relation_pair& p,execution::value_generation generation,
     cudaStream_t consumer,value_read_lease* out) noexcept {
+    if(p.forward.semantic.arithmetic.relation_storage==execution::numeric_type::f32)return {status_code::unsupported_numeric_policy,"legacy lease is f16-only"};
     if(!out)return {status_code::invalid_argument,"lease output absent"};
     if(p.poisoned)return {status_code::invalid_state,"pair poisoned"};
     const auto& t=p.forward.semantic.topology;
@@ -853,5 +900,43 @@ status enqueue_atom_gradient(prepared_relation_pair& p,const relation_calculus_d
     if(count){scatter_atom_gradient<<<(count+255)/256,256,0,stream>>>(static_cast<const float*>(scratch.f32_data),p.structure->logical_map,static_cast<float*>(c.gradients),count);
         auto e=cudaPeekAtLastError();if(e!=cudaSuccess){p.poisoned=true;return cuda_status(e);}}
     return {};
+}
+}
+
+namespace cellerator::compute::relation {
+namespace {
+__global__ void gather_authoritative_f32(const float* logical,const std::uint32_t* map,float* packed,__half* derived,std::uint32_t count){
+    auto i=blockIdx.x*blockDim.x+threadIdx.x;if(i<count){float value=logical[map[i]];packed[i]=value;if(derived)derived[i]=__float2half_rn(value);}
+}
+}
+status publish_f32_values(prepared_relation_pair& p,const device_f32_values_binding& binding,cudaStream_t stream) noexcept {
+    if(p.forward.semantic.arithmetic.relation_storage!=execution::numeric_type::f32)
+        return {status_code::unsupported_numeric_policy,"instance does not own authoritative f32 values"};
+    auto s=check_context(p,binding.device_ordinal,stream);if(!s)return s;
+    cudaStreamCaptureStatus capture{};s=cuda_status(cudaStreamIsCapturing(stream,&capture));if(!s)return s;
+    if(capture!=cudaStreamCaptureStatusNone)return {status_code::unsupported_semantics,"publication capture unsupported"};
+    const auto& t=p.forward.semantic.topology;
+    if(!execution::same_identity(binding.structure,t.identity)||binding.epoch.value!=t.epoch.value)
+        return {status_code::stale_structure,"f32 publication topology differs"};
+    if(!execution::same_identity(binding.logical_edge_order,t.logical_edge_order))return {status_code::incompatible_order,"f32 logical order differs"};
+    if(binding.count<t.edge_count)return {status_code::insufficient_capacity,"f32 publication capacity too small"};
+    s=check_pointer(binding.data,t.edge_count*4,p.device,4);if(!s)return s;
+    if(protected_overlap(p,binding.data,t.edge_count*4))return {status_code::invalid_argument,"f32 input aliases instance storage"};
+    s=readiness_status(p.readiness.validate_write(p.report.latest_enqueued_generation,binding.generation,stream));if(!s)return s;
+    cudaError_t submitted=cudaSuccess;
+    if(t.edge_count){gather_authoritative_f32<<<(t.edge_count+255)/256,256,0,stream>>>(binding.data,p.structure->logical_map,p.authoritative_f32,static_cast<__half*>(p.values),t.edge_count);submitted=cudaPeekAtLastError();}
+    s=readiness_status(p.readiness.publish(binding.generation,stream,submitted));
+    if(submitted!=cudaSuccess||!s){p.poisoned=true;return submitted!=cudaSuccess?cuda_status(submitted):s;}
+    p.report.latest_enqueued_generation=binding.generation;++p.report.value_refreshes;
+    p.report.derived_f16_generation=p.derive_f16?binding.generation:execution::value_generation{};
+    p.last_gradient={};p.last_gradient_output={};return {};
+}
+status enqueue_derived_f16(prepared_relation_pair& p,const operation_descriptor& op,const device_state_view& input,
+    const device_result_view& output,execution::value_generation expected,cudaStream_t stream) noexcept {
+    if(op.arithmetic.relation_storage!=execution::numeric_type::f32||!p.derive_f16)
+        return {status_code::unsupported_numeric_policy,"derived f16 execution was not explicitly prepared"};
+    auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
+    if(p.report.derived_f16_generation.value!=expected.value)return {status_code::stale_generation,"derived projection generation differs"};
+    s=submit_half(p,op.direction,input.data,output.data);if(!s)p.poisoned=true;return s;
 }
 }
