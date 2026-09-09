@@ -1,5 +1,9 @@
 # Source-linked existing owners; no independent execution implementation.
 include_guard(GLOBAL)
+if(CELLERATOR_NATIVE_FOUNDATION_ONLY AND
+   (CELLERATOR_BUILD_SEMANTIC_SPINE_V1 OR CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1))
+    message(FATAL_ERROR "Retained spine regressions require CELLERATOR_NATIVE_FOUNDATION_ONLY=OFF; they are not silently omitted")
+endif()
 get_filename_component(_nf1_root "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 add_library(cellerator_operation_schema_v2 STATIC
     "${_nf1_root}/src/compute/operation/operation_core_v2/schema.cc")

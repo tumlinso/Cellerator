@@ -20,3 +20,12 @@ add_test(NAME ce_nf1_b03 COMMAND "${CMAKE_COMMAND}"
     "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/toolchain.cmake")
 set_tests_properties(ce_nf1_b03 PROPERTIES LABELS "nf1;host;toolchain" TIMEOUT 60)
+
+add_custom_target(cellerator_nf1_host_correctness
+    COMMAND "${CMAKE_CTEST_COMMAND}" --test-dir "${CMAKE_BINARY_DIR}"
+        -R "^ce_nf1_(t01|b01|b02)$" --output-on-failure --no-tests=error
+    DEPENDS ce_nf1_t01 ce_nf1_b01 ce_nf1_b02 USES_TERMINAL VERBATIM)
+add_test(NAME ce_nf1_b04 COMMAND "${CMAKE_COMMAND}"
+    "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/regressions"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/regressions.cmake")
+set_tests_properties(ce_nf1_b04 PROPERTIES LABELS "nf1;host;regression" TIMEOUT 90)

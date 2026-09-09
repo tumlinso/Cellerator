@@ -51,3 +51,11 @@ CUDA 12.9.86, g++-12 as CUDA host compiler, and `CMAKE_CUDA_ARCHITECTURES=70`.
 No CUDA 13 or V100 FP8 arithmetic is required or claimed. The B03 test independently
 compiles and executes a C++20 consumer, checks explicit compiler preservation,
 and verifies that an unavailable compiler produces a configuration error.
+
+B04 exposes `cellerator_nf1_host_correctness`, which builds and runs the real
+T01/B01/B02 executables. The `ce_nf1_b04` test independently configures minimal
+and retained RU1 host builds and builds/runs `ru1_calculus` and `ru1_reference`.
+Requesting retained suites together with the minimal-only option fails clearly,
+rather than silently excluding a requested regression. CUDA semantic-spine
+examples retain their default availability and can explicitly be disabled with
+`CELLERATOR_BUILD_SEMANTIC_SPINE_EXAMPLES=OFF`.
