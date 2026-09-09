@@ -1,0 +1,30 @@
+{
+  "kind": "nf1-governance-receipt-v1",
+  "task_id": "CE-NF1-A02",
+  "reviewed": true,
+  "source_commit": "7dff5f60b50fa25dc0e276b2886ee4e6ca82d4ec",
+  "reviewer_lane": "CE-NF1-L-A",
+  "topics": [
+    "source-reconciliation",
+    "ownership",
+    "acceptance-review",
+    "A02"
+  ],
+  "artifacts": [
+    {
+      "path": "docs/glasshelix_execution_foundation_v1/baseline/installed_services.json",
+      "sha256": "3835f23de3999702021daba41ce6ec4657be6381d3bf3d47ab938f530e341be7"
+    },
+    {
+      "path": "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+      "sha256": "3ccd3e64c60e3084d8ae959d73718575a1ce0c5cd2a7efa3dae8775109248f58"
+    },
+    {
+      "path": "docs/glasshelix_execution_foundation_v1/baseline/test_verify_gpu_lease.py",
+      "sha256": "3c9d8b06a4a1e0420f35a8a05fb89b26844afd8eb497e862fd5ea27d923dea24"
+    }
+  ],
+  "limitations": [
+    "Discovery and verifier policy tests do not constitute a held GPU lease or runtime qualification. External NF1_EXECUTION_BINDINGS must be populated with actual per-run paths and receipt."
+  ]
+}

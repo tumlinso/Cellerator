@@ -1,0 +1,144 @@
+{
+  "kind": "nf1-installed-service-contract-v1",
+  "status": "discovered_not_a_resource_lease",
+  "project": {
+    "id": "cellerator",
+    "uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "root": "/home/tumlinson/Cellerator",
+    "run": "CE-NF1-RUN-V1",
+    "coordinator_lane": "CE-NF1-L-COORD"
+  },
+  "peer": {
+    "id": "glasshelix",
+    "root": "/home/tumlinson/GlassHelix",
+    "run": "GH-NF1-RUN-V1",
+    "coordinator_lane": "GH-NF1-L-COORD"
+  },
+  "workflow": {
+    "next_task": {
+      "args": [
+        "repo_root",
+        "task_id"
+      ],
+      "behavior": "Claims lane/task and returns opaque handle; isolated_merge requires provisioned native workspace first"
+    },
+    "inspect_task": {
+      "args": [
+        "workflow_handle",
+        "kind",
+        "target",
+        "budget_bytes"
+      ],
+      "workspace_verified": "6539667c-73f5-45ae-b190-dd92b1f0bcf6"
+    },
+    "coordinate_task": {
+      "args": [
+        "workflow_handle",
+        "action",
+        "payload"
+      ],
+      "actions": [
+        "sync",
+        "fork",
+        "message",
+        "answer",
+        "arrive",
+        "publish_interface",
+        "run_gates",
+        "request_integration",
+        "accept_child",
+        "reject_child"
+      ],
+      "run_gates_roles": "validator or integrator; implementer receives workflow_role_forbidden"
+    },
+    "finish_task": {
+      "args": [
+        "workflow_handle",
+        "action",
+        "note"
+      ],
+      "behavior": "complete automatically runs required gates; source must already be committed and tracked"
+    },
+    "first_class_agent": "Codex collaboration.spawn_agent plus native next_task claim and dispatch; subprocess cannot be counted as lane",
+    "workspace_and_integration": "Coordinator resolves WorkspaceService maintenance front door and native integration owner; no direct SQLite updates"
+  },
+  "gpu": {
+    "inspect_argv": [
+      "python3",
+      "-B",
+      "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+      "inspect",
+      "--project",
+      "/home/tumlinson/Cellerator",
+      "--json"
+    ],
+    "run_argv": [
+      "python3",
+      "-B",
+      "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py",
+      "run",
+      "--spec",
+      "<caller-spec.json>",
+      "--json"
+    ],
+    "receipt_format": "CUDA-FOREGROUND-LEASE/1",
+    "receipt_environment": "TODO_GPU_LEASE_RECEIPT",
+    "lease_lifecycle": "RuntimeFacade.host.begin_foreground then activate_foreground; release in finally; receipt file active field alone is not liveness",
+    "native_read_api": "todo_orchestrator.background.host.HostCoordinator(create=False).owner(owner_id)",
+    "verifier_path": "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+    "verifier_argv": [
+      "python3",
+      "-B",
+      "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-a-v1/docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+      "--lease-receipt",
+      "{lease_receipt}",
+      "--project-root",
+      "<actual-reserving-root>",
+      "--gpu-uuid",
+      "<actual-reserved-GPU-UUID>"
+    ],
+    "verifier_status": "7 adversarial policy tests passed; no physical reservation acceptance run in A02",
+    "shared_lock": "/tmp/nf1-20260908-v1-device-evidence.lock",
+    "mutex_argv": [
+      "/home/tumlinson/.agents/skills/cuda/scripts/with_benchmark_mutex.sh",
+      "--lock-file",
+      "/tmp/nf1-20260908-v1-device-evidence.lock",
+      "--label",
+      "<label>",
+      "--",
+      "<command>"
+    ],
+    "double_lock_warning": "NF1 run_gate takes flock itself. Do not recursively acquire same exclusive lock by wrapping run_gate in mutex; acquire lease through controller and arrange exactly one lock owner for test command."
+  },
+  "tools": {
+    "compute_sanitizer": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+    "compute_sanitizer_version": "2025.2.1.0 build 35969825",
+    "ncu": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+    "ncu_version": "2025.2.1.0 build 35987062",
+    "path_wrapper_issue": "Unqualified compute-sanitizer and ncu wrappers target absent 13.1 installations; explicit 12.9 binaries answer version correctly."
+  },
+  "observed_hardware": {
+    "device_count": 4,
+    "name": "Tesla V100-SXM2-16GB",
+    "compute_capability": "7.0",
+    "driver": "580.173.02",
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "qualification": "read-only discovery; availability must be revalidated by controller reservation"
+  },
+  "installed_source_hashes": {
+    "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py": "f851ec2ba6f46f424cd763b879d1532a86e61fe1159efe9c34f29072c09108c2",
+    "/home/tumlinson/.agents/skills/cuda/scripts/with_benchmark_mutex.sh": "5fd7a1d8b4e78e0e129790159ca0af068707dcc30835c9958be790dc73ed5519",
+    "/home/tumlinson/.agents/skills/todo-orchestrator/todo_orchestrator/background/host.py": "05157e435ed8200c2b968d4f89aa5bda33566951cf125435cd707f2b2a48f80a"
+  },
+  "a01_source_correction": {
+    "initial_finish_revision": 7005,
+    "initial_producer_commit": "25460884334b5c061c2054dee331202c8cca982b",
+    "artifact_commit": "7dff5f60b50fa25dc0e276b2886ee4e6ca82d4ec",
+    "reason": "Exact owned baseline artifacts were ignored by global Git rules at initial finish. They were preserved, explicitly force-added and committed. Initial finish receipt is historical and does not prove source integration. M00 must integrate actual artifact commit."
+  }
+}
