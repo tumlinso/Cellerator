@@ -71,3 +71,17 @@ records the configure-time Git revision and hashes all public headers plus each
 exported compiled source. Final qualification must reconfigure after committing.
 `ce_nf1_b05` builds the producer independently, then builds and executes a fresh
 external consumer using only the package, supported headers, and imported targets.
+
+B06 uses `qualify_build_matrix.py` with explicit compiler, architecture, source,
+and external output-directory arguments. It builds the actual CUDA prepared
+relation, segment/gate, and runtime archives and runs the host correctness suite;
+it does not execute GPU code. `check_build_matrix.py` requires the current source
+commit, all archive hashes, configure/compile-command hashes, exact source
+fingerprints, successful commands, and CUDA12/sm70 qualification. Configure tests
+with `CELLERATOR_NF1_BUILD_MATRIX_RECEIPT` pointing to its external `matrix.json`.
+An absent or stale matrix fails `ce_nf1_b06`; it never silently skips.
+
+Historical B04 native completion at revision7135 preceded the source commit and
+misreported a convenience-target pass. The corrected target uses `VERBATIM`;
+commit7f628f70 and the subsequent B05 handoff record the correction. Integration
+must rerun B04 on integrated source; the old receipt is historical only.

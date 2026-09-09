@@ -33,3 +33,9 @@ add_test(NAME ce_nf1_b05 COMMAND "${CMAKE_COMMAND}"
     "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/external"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/external.cmake")
 set_tests_properties(ce_nf1_b05 PROPERTIES LABELS "nf1;host;external" TIMEOUT 90)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+set(CELLERATOR_NF1_BUILD_MATRIX_RECEIPT "" CACHE FILEPATH "External exact-source NF1 build matrix receipt")
+add_test(NAME ce_nf1_b06 COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/check_build_matrix.py"
+    "${CELLERATOR_NF1_BUILD_MATRIX_RECEIPT}" "${_nf1_root}")
+set_tests_properties(ce_nf1_b06 PROPERTIES LABELS "nf1;host;build-matrix" TIMEOUT 30)
