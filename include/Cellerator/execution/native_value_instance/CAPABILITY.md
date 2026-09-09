@@ -41,7 +41,7 @@ source-CSR destruction, sibling survival, delayed reader ordering, pending close
 FP32 precision, both update storage policies and optional projection branches.
 Wrong stream/device and captured mutation/preparation preserve output, generation,
 counters and an empty capture graph. The launcher runs Compute Sanitizer and all
-23 retained `ru1_` tests using their existing source targets, inside the same native
+25 retained `ru1_` tests (including both existing demos) using their existing source targets, inside the same native
 lease and sealed runner lock. It hashes the actual binaries and scripts in the
 external child evidence, which is cryptographically linked by the adapter receipt.
 No timing-based performance promotion, multi-device execution, broad widths,

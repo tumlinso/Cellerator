@@ -19,6 +19,8 @@ def prepare():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bindings", type=Path, required=True)
     parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02", "ce_nf1_v03", "ce_nf1_v04", "ce_nf1_v05", "ce_nf1_v06", "ce_nf1_v07"], default="ce_nf1_v01")
+    parser.add_argument("--reuse-clean-build-receipt", type=Path,
+                        help="Reuse a verified build only after test-list, launcher or documentation changes")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()
@@ -38,6 +40,25 @@ def prepare():
     dependency_head = run(["git", "rev-parse", "HEAD"], dependency)["stdout"].strip()
     if run(["git", "status", "--porcelain=v1", "--untracked-files=no"], dependency)["stdout"]:
         raise ValueError("Baseplane tracked dependency must be clean")
+    reused = None
+    if args.reuse_clean_build_receipt:
+        prior_bytes = args.reuse_clean_build_receipt.read_bytes()
+        prior = json.loads(prior_bytes)
+        if prior['source_root'] != str(source) or prior['build_dir'] != str(build) or prior['dependency_commit'] != dependency_head:
+            raise ValueError("prior clean build has different owners")
+        for file, key in [(build / args.target, 'executable_sha256'), (build / 'CMakeCache.txt', 'cmake_cache_sha256'),
+                          (build / 'compile_commands.json', 'compile_commands_sha256')]:
+            if hashlib.sha256(file.read_bytes()).hexdigest() != prior[key]:
+                raise ValueError("prior build artifact changed")
+        run(['git', 'merge-base', '--is-ancestor', prior['source_commit'], head], source)
+        changed = run(['git', 'diff', '--name-only', prior['source_commit'], head], source)['stdout'].splitlines()
+        for name in changed:
+            allowed = (name.startswith('tests/native_foundation/values/') and
+                       (name.endswith('.py') or name.endswith('/CMakeLists.txt')))
+            if not allowed and name != 'include/Cellerator/execution/native_value_instance/CAPABILITY.md':
+                raise ValueError("compiled-source changes require a clean-first build: " + name)
+        reused = {'path': str(args.reuse_clean_build_receipt.resolve()),
+                  'sha256': hashlib.sha256(prior_bytes).hexdigest(), 'source_commit': prior['source_commit']}
     commands = [run(["cmake", "--version"]),
                 run(["cmake", "-S", str(source / "tests/native_foundation/values"), "-B", str(build),
                      "-DCELLERATOR_ENABLE_CUDA=ON", "-DCMAKE_BUILD_TYPE=Release",
@@ -52,7 +73,8 @@ def prepare():
                    if "=" in line and not line.startswith(("#", "//")))
     if Path(entries["CMAKE_HOME_DIRECTORY:INTERNAL"]).resolve() != source / "tests/native_foundation/values":
         raise ValueError("build source differs from dispatched worktree")
-    commands.append(run(["cmake", "--build", str(build), "--target", args.target, "--clean-first", "--parallel", "2"]))
+    commands.append(run(["cmake", "--build", str(build), "--target", args.target] +
+                        ([] if reused else ["--clean-first"]) + ["--parallel", "2"]))
     commands.append(run(["ctest", "--test-dir", str(build), "--show-only=json-v1"]))
     if run(["git", "rev-parse", "HEAD"], source)["stdout"].strip() != head or run(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"], source)["stdout"]:
@@ -62,6 +84,7 @@ def prepare():
     if run(["git", "rev-parse", "HEAD"], dependency)["stdout"].strip() != dependency_head or run(["git", "status", "--porcelain=v1", "--untracked-files=no"], dependency)["stdout"]:
         raise ValueError("Baseplane changed during build")
     record = {"dependency_root": str(dependency), "dependency_commit": dependency_head,
+              "reused_clean_build_receipt": reused,
               "compile_commands_sha256": hashlib.sha256((build / "compile_commands.json").read_bytes()).hexdigest(),
               "executable_sha256": hashlib.sha256((build / args.target).read_bytes()).hexdigest(),"kind": "nf1-cuda-build-v1", "source_root": str(source), "source_commit": head,
               "source_clean": True, "build_dir": str(build), "bindings_sha256": hashlib.sha256(binding_bytes).hexdigest(),

@@ -77,10 +77,10 @@ if(TARGET ceRU1GpuNumerics)
   foreach(_target IN LISTS _nf1_ru1_targets)
     target_link_libraries(${_target} PRIVATE Cellerator::jbc_v1 cellerator_compute_sparse_project)
   endforeach()
-  add_dependencies(ce_nf1_v07 ${_nf1_ru1_targets})
+  add_dependencies(ce_nf1_v07 ${_nf1_ru1_targets} ceRelationUpdateDemo)
   foreach(_name calculus reference cover compiler source_bridge dual_origin evidence_contract gpu_numerics
       gpu_bindings gpu_lifecycle readiness wmma_legality n1_regression forward_n16 transpose_n16
-      sparse_gradient value_update update_publication native_failure gradient_pack hybrid_gradient readiness_component read_lease)
+      sparse_gradient value_update update_publication native_failure gradient_pack hybrid_gradient readiness_component read_lease demo_hybrid demo_sparse)
     list(APPEND _nf1_v07_regressions --regression-test ru1_${_name})
   endforeach()
 endif()
