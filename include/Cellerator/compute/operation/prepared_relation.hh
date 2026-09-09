@@ -57,7 +57,7 @@ struct preparation_report {
     const char* forward_candidate = nullptr; // actual bound implementation
     const char* transpose_candidate = nullptr;
 };
-// Failure clears *out (when out is nonnull) and releases partial preparation.
+// Failure preserves an already owned *out and releases only partial preparation.
 // Input *out must be null: replacing an existing owned handle is not supported.
 status prepare_relation_pair(const operation_descriptor& forward,
                              const operation_descriptor& transpose,

@@ -1,3 +1,4 @@
+#include <Cellerator/execution/native_value_instance/atom_binding.hh>
 #include <Cellerator/compute/operation/prepared_relation.hh>
 #include <Cellerator/compute/operation/operation_core.hh>
 #include <limits>
@@ -244,7 +245,7 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
     const csr_host_view& topology,const preparation_options& options,cudaStream_t stream,
     prepared_relation_pair** out) noexcept {
     if(!out)return {status_code::invalid_argument,"output slot is null"};
-    if(*out){*out=nullptr;return {status_code::invalid_argument,"output slot must initially be null"};}
+    if(*out)return {status_code::invalid_argument,"output slot must initially be null"};
     *out=nullptr;
     try {
         native_contract f{},t{};auto s=adapt(forward,f);if(!s)return s;s=adapt(transpose,t);if(!s)return s;
@@ -794,3 +795,60 @@ status close_relation_pair(prepared_relation_pair** slot) noexcept {
     return s;
 }
 } // namespace cellerator::compute::relation
+
+namespace cellerator::compute::relation {
+namespace {
+status check_logical_atom(const prepared_relation_pair& p,
+    const execution::atom_plane::relation_value_atom_plane_v1& atom, execution::structure_id expected_structure) noexcept {
+    namespace vp=execution::projection_value_plane;
+    if(!execution::atom_plane::validate_relation_value_atom_plane_v1(atom,{},nullptr))
+        return {status_code::invalid_argument,"invalid existing atom-plane contract"};
+    const auto& plane=*atom.values;const auto& component=plane.components[0];
+    const auto& topology=p.forward.semantic.topology;
+    if(plane.primary_mode!=vp::value_primary_mode_v1::logical || plane.component_count!=1)
+        return {status_code::unsupported_semantics,"native atom route requires logical primary ownership"};
+    if(!execution::same_identity(plane.logical_edge_order,topology.logical_edge_order) ||
+       plane.logical_edge_count!=topology.edge_count ||
+       plane.structure_epoch_value.value!=topology.epoch.value)
+        return {status_code::stale_structure,"atom topology differs from prepared structure"};
+    if(!execution::same_identity(expected_structure,topology.identity))
+        return {status_code::stale_structure,"explicit atom-to-native structure association differs"};
+    if(component.location.residency!=execution::residency_kind::device || component.location.device_ordinal!=p.device)
+        return {status_code::incompatible_device,"atom values must reside on instance device"};
+    if(plane.numeric.storage!=execution::numeric_type::f16 || plane.numeric.dequantized!=execution::numeric_type::f32 ||
+       plane.numeric.accumulation!=execution::numeric_type::f32 || plane.quantization.kind!=execution::quantization_kind::none)
+        return {status_code::unsupported_numeric_policy,"atom route requires unquantized f16/f32"};
+    if(component.value_bytes<topology.edge_count*2)return {status_code::insufficient_capacity,"atom value bytes too small"};
+    for(std::uint64_t i=0;i<topology.edge_count;++i)
+        if(component.slot_to_logical_edge[i]!=i)
+            return {status_code::incompatible_order,"logical atom cannot contain holes or permutations"};
+    return {};
+}
+__global__ void scatter_atom_gradient(const float* physical,const std::uint32_t* map,float* logical,std::uint32_t count){
+    auto i=blockIdx.x*blockDim.x+threadIdx.x;if(i<count)logical[map[i]]=physical[i];
+}
+}
+status publish_atom_values(prepared_relation_pair& p,const execution::atom_plane::relation_value_atom_plane_v1& atom,execution::structure_id expected_structure,cudaStream_t stream) noexcept {
+    auto s=check_logical_atom(p,atom,expected_structure);if(!s)return s;
+    const auto& t=p.forward.semantic.topology;const auto& c=atom.values->components[0];
+    return publish_values(p,{c.values,c.slot_count,t.identity,t.epoch,t.logical_edge_order,atom.expected_generation,p.device},stream);
+}
+status enqueue_atom_gradient(prepared_relation_pair& p,const relation_calculus_descriptor& calculus,
+    const device_state_view& input,const device_state_view& cotangent,operand_version input_version,operand_version cotangent_version,
+    const execution::atom_plane::gradient_atom_plane_v1& gradient,execution::structure_id expected_structure,const edge_plane_view& scratch,gradient_stamp* produced,cudaStream_t stream) noexcept {
+    if(!execution::atom_plane::validate_gradient_atom_plane_v1(gradient,{}))
+        return {status_code::invalid_argument,"invalid existing gradient atom contract"};
+    auto s=check_logical_atom(p,*gradient.primal,expected_structure);if(!s)return s;
+    if(gradient.component_count!=1)return {status_code::unsupported_semantics,"one trainable logical gradient required"};
+    const auto& c=gradient.components[0];auto count=p.forward.semantic.topology.edge_count;
+    if(c.gradient_bytes<count*4)return {status_code::insufficient_capacity,"logical gradient capacity too small"};
+    s=check_pointer(c.gradients,count*4,p.device,4);if(!s)return s;
+    if(protected_overlap(p,c.gradients,count*4) || overlaps(c.gradients,count*4,scratch.f32_data,count*4) ||
+       overlaps(c.gradients,count*4,input.data,input.count*4) || overlaps(c.gradients,count*4,cotangent.data,cotangent.count*4))
+        return {status_code::invalid_argument,"logical gradient overlaps protected operands"};
+    s=enqueue_edge_gradient(p,calculus,input,cotangent,input_version,cotangent_version,gradient.primal_generation,scratch,produced,stream);if(!s)return s;
+    if(count){scatter_atom_gradient<<<(count+255)/256,256,0,stream>>>(static_cast<const float*>(scratch.f32_data),p.structure->logical_map,static_cast<float*>(c.gradients),count);
+        auto e=cudaPeekAtLastError();if(e!=cudaSuccess){p.poisoned=true;return cuda_status(e);}}
+    return {};
+}
+}

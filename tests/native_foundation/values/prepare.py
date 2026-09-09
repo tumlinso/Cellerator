@@ -18,6 +18,7 @@ def run(argv, cwd=None):
 def prepare():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bindings", type=Path, required=True)
+    parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02"], default="ce_nf1_v01")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()
@@ -50,7 +51,7 @@ def prepare():
                    if "=" in line and not line.startswith(("#", "//")))
     if Path(entries["CMAKE_HOME_DIRECTORY:INTERNAL"]).resolve() != source / "tests/native_foundation/values":
         raise ValueError("build source differs from dispatched worktree")
-    commands.append(run(["cmake", "--build", str(build), "--target", "ce_nf1_v01", "--parallel", "2"]))
+    commands.append(run(["cmake", "--build", str(build), "--target", args.target, "--parallel", "2"]))
     commands.append(run(["ctest", "--test-dir", str(build), "--show-only=json-v1"]))
     if run(["git", "rev-parse", "HEAD"], source)["stdout"].strip() != head or run(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"], source)["stdout"]:
@@ -61,7 +62,7 @@ def prepare():
         raise ValueError("Baseplane changed during build")
     record = {"dependency_root": str(dependency), "dependency_commit": dependency_head,
               "compile_commands_sha256": hashlib.sha256((build / "compile_commands.json").read_bytes()).hexdigest(),
-              "executable_sha256": hashlib.sha256((build / "ce_nf1_v01").read_bytes()).hexdigest(),"kind": "nf1-cuda-build-v1", "source_root": str(source), "source_commit": head,
+              "executable_sha256": hashlib.sha256((build / args.target).read_bytes()).hexdigest(),"kind": "nf1-cuda-build-v1", "source_root": str(source), "source_commit": head,
               "source_clean": True, "build_dir": str(build), "bindings_sha256": hashlib.sha256(binding_bytes).hexdigest(),
               "cmake_cache_sha256": hashlib.sha256(cache.read_bytes()).hexdigest(),
               "commands": commands, "qualification": "prepared_for_native_gate_not_yet_passed"}
