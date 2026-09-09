@@ -1,4 +1,5 @@
 #include "Cellerator/execution/program/program_v2.h"
+#include <Cellerator/execution/launch_bindings.hh>
 
 namespace cellerator::execution::program {
 
@@ -43,9 +44,28 @@ program_status execute_prepared_program_v2(
             return program_status::insufficient_bindings;
         }
         const auto& binding = bindings[stage.binding_index];
-        if (binding.workspace_bytes < stage.required_workspace_bytes) {
+        if (binding.workspace_bytes < stage.required_workspace_bytes ||
+            (stage.required_workspace_bytes != 0 && binding.workspace == nullptr)) {
             return program_status::insufficient_bindings;
         }
+        if ((stage.binding_contract == nullptr) != (binding.typed == nullptr)) {
+            return program_status::invalid_typed_binding;
+        }
+        if (binding.typed != nullptr) {
+            const auto& typed = *binding.typed;
+            if (binding.input != nullptr || binding.output != nullptr ||
+                binding.values != nullptr || typed.stream.stream != caller_stream ||
+                typed.workspace.data != binding.workspace ||
+                typed.workspace.bytes != binding.workspace_bytes ||
+                execution::validate_launch_bindings(*stage.binding_contract, typed) !=
+                    execution::binding_validation_code::ok) {
+                return program_status::invalid_typed_binding;
+            }
+        }
+    }
+    for (std::uint64_t i = 0; i < program.stage_count; ++i) {
+        const auto& stage = program.stages[i];
+        const auto& binding = bindings[stage.binding_index];
         if (stage.launch(stage.prepared_state, binding, caller_stream) !=
             program_status::success) return program_status::launch_failed;
     }
