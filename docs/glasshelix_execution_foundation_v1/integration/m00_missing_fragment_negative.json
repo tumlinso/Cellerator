@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "cmake",
+    "-S",
+    ".",
+    "-B",
+    "/tmp/ce-nf1-m00-required-test",
+    "-DCELLERATOR_ENABLE_CUDA=OFF",
+    "-DCELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS=ON"
+  ],
+  "returncode": 1,
+  "stdout": "-- Defaulting CUDA compiler to the local HPC SDK nvcc\n-- Defaulting CUDA host compiler to /usr/bin/g++-12 for nvcc compatibility\n-- The CXX compiler identification is GNU 13.3.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring incomplete, errors occurred!\n",
+  "stderr": "CMake Error at CMakeLists.txt:93 (add_subdirectory):\n  add_subdirectory given source \"tests/native_foundation/reference\" which is\n  not an existing directory.\n\n\n",
+  "expected": "enabled suite rejects missing T01 fragment rather than empty CTest acceptance"
+}

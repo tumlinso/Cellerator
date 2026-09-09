@@ -1,15 +1,20 @@
 {
   "kind": "nf1-baseline-integration-review-v1",
-  "stage": "preflight_review_before_native_queue_apply",
+  "stage": "integrated_and_requalified",
   "reviewed_source_commit": "beef8a1bc0f5c1a0951a720feeeb2e16545efa4c",
   "producer_artifact": "8c2faea2-689d-47ee-b88d-5924bdef7ab5",
   "queue_id": "ff2f947c-4380-40dc-8693-a49a166f35f5",
-  "review": "A01-A04 baseline, source reachability, installed services and regression boundary reviewed at exact source. Native queue integration and integrated checker reruns follow; no runtime acceptance is asserted by this preflight record.",
+  "review": "A01-A04 aggregate source integrated by native queue. Four governance records verified again against integrated artifact hashes; seven verifier policy tests pass. Clean CUDA-OFF RU1 configure/build plus two real host numerical tests pass. No NF1 implementation or GPU qualification is claimed.",
   "a01_reconciliation": {
     "original_completion_revision": 7005,
     "artifact_commit": "7dff5f60",
     "native_reconciliation_handoff": "be265ad4-5e86-48d2-9905-d0272cd6d732",
-    "interpretation": "Original A01 completion producer was base before ignored artifact commit. Actual aggregate artifact includes preserved files; use integrated source and checker rerun for consumer evidence."
+    "interpretation": "Original A01 completion producer was base before ignored artifact commit. Actual aggregate artifact includes preserved files; use integrated source and checker rerun for consumer evidence.",
+    "verified_integrated_artifacts": [
+      "baseline/source_observation.json",
+      "baseline/source_review.md",
+      "records/ce-nf1-a01.json"
+    ]
   },
   "resource_contract": {
     "lease": "native CUDA foreground controller, verified via HostCoordinator read API",
@@ -21,7 +26,19 @@
     "option": "CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS",
     "fragment": "tests/native_foundation/reference/CMakeLists.txt",
     "owner": "CE-NF1-T01",
-    "behavior": "default OFF; ON requires existing fragment and real nonempty ce_nf1_t01 test; no fake fallback"
+    "behavior": "default OFF; ON requires existing fragment and real nonempty ce_nf1_t01 test; no fake fallback",
+    "verification": "Enabled suite correctly fails while required T01 fragment is absent; default-OFF retained host route configured, linked and executed. T01 must supply actual ce_nf1_t01 before its gate."
   },
-  "preservation": "Historical worktrees and unrelated main changes untouched."
+  "preservation": "Historical worktrees and unrelated main changes untouched.",
+  "integrated_commit": "4564dce1cbd61e247c608d34288aad4cf32559a1",
+  "native_queue_result": "integrated",
+  "integrated_source_hashes": {
+    "docs/glasshelix_execution_foundation_v1/baseline/installed_services.json": "3835f23de3999702021daba41ce6ec4657be6381d3bf3d47ab938f530e341be7",
+    "docs/glasshelix_execution_foundation_v1/baseline/native_reachability.json": "09d28076b8a7198cbccf0531918b29dc2722f75ee973175ba9307e0ee166990f",
+    "docs/glasshelix_execution_foundation_v1/baseline/source_observation.json": "f32b6ee8e40cdaf06ca5aa7569a134ba9c5002539117f5ea36ba6e8fc0f1c472",
+    "docs/glasshelix_execution_foundation_v1/baseline/source_review.md": "718b0881977c223cc0f49593b50393fd5a5b430fa0fb3fe9072a1c180d850221",
+    "docs/glasshelix_execution_foundation_v1/baseline/test_verify_gpu_lease.py": "3c9d8b06a4a1e0420f35a8a05fb89b26844afd8eb497e862fd5ea27d923dea24",
+    "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py": "3ccd3e64c60e3084d8ae959d73718575a1ce0c5cd2a7efa3dae8775109248f58",
+    "docs/glasshelix_execution_foundation_v1/ownership/extension_and_regression.json": "5816c884cafc14ca085e5771b16b29a243fd88cf27bc494cacde5d1291c21a4c"
+  }
 }
