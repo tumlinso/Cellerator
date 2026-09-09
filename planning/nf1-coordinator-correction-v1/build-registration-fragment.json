@@ -1,0 +1,37 @@
+{
+  "owner": {
+    "run_id": "CE-NF1-RUN-V1",
+    "lane_id": "CE-NF1-L-B",
+    "task_id": "CE-NF1-B01"
+  },
+  "kind": "task_brief",
+  "content": {
+    "completion_contract": {
+      "required": [
+        "Meet every acceptance condition and failure control in the referenced task sheet; provide actual evidence at its stated level."
+      ]
+    },
+    "forbidden_mutations": [],
+    "gates": [
+      "CE-NF1-B01-ACCEPT"
+    ],
+    "next_action": "Partition host semantic and CUDA target dependencies",
+    "objective": "Partition host semantic and CUDA target dependencies",
+    "scope": {
+      "exclusive_paths": [
+        "cmake/NativeFoundation.cmake",
+        "cmake/SemanticSpineV1.cmake",
+        "src/compute/CMakeLists.txt",
+        "src/execution/CMakeLists.txt",
+        "src/runtime/CMakeLists.txt",
+        "tests/native_foundation/build",
+        "CMakeLists.txt"
+      ]
+    },
+    "tests": [
+      "CE-NF1-B01-ACCEPT"
+    ]
+  },
+  "prior_id": "CE-NF1-RUN-V1:task_brief:CE-NF1-L-B:CE-NF1-B01:1",
+  "prior_version": 1
+}
