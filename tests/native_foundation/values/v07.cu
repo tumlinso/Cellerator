@@ -15,7 +15,8 @@ void rejection_test(bool f32){
     };ok(publish(1,0,owner.a));cuda_ok(cudaStreamSynchronize(owner.a));
     std::array<float,32> ones{},sentinel{};ones.fill(1);sentinel.fill(-123.5f);cuda_ok(cudaMemcpy(owner.input,ones.data(),128,cudaMemcpyHostToDevice));cuda_ok(cudaMemcpy(owner.output,sentinel.data(),128,cudaMemcpyHostToDevice));
     rel::device_state_view in{owner.input,32,f.topology.source,0};rel::device_result_view out{owner.output,32,f.topology.destination,0};
-    auto expect=[&](rel::status result,rel::status_code code){require(!result && result.code==code,"explicit unsupported status before effects");};
+    int rejection_case=0;
+    auto expect=[&](rel::status result,rel::status_code code){++rejection_case;if(result || result.code!=code)throw std::runtime_error("rejection case="+std::to_string(rejection_case)+" f32="+std::to_string(f32)+" expected="+std::to_string(int(code))+" actual="+std::to_string(int(result.code))+" message="+result.message);};
     expect(rel::enqueue(*owner.first,f,in,out,{1},owner.b),rel::status_code::incompatible_stream);
     auto foreign=in;foreign.device_ordinal=1;expect(rel::enqueue(*owner.first,f,foreign,out,{1},owner.a),rel::status_code::incompatible_device);
     expect(publish(2,0,owner.b),rel::status_code::incompatible_stream);expect(publish(2,1,owner.a),rel::status_code::incompatible_device);
