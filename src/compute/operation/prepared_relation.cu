@@ -261,6 +261,8 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         int current=-1;s=cuda_status(cudaGetDevice(&current));if(!s)return s;
         if(current!=options.device_ordinal)return {status_code::incompatible_device,"prepare on the caller current device"};
         unsigned flags=0;s=cuda_status(cudaStreamGetFlags(stream,&flags));if(!s)return s;
+        cudaStreamCaptureStatus capture{};s=cuda_status(cudaStreamIsCapturing(stream,&capture));if(!s)return s;
+        if(capture!=cudaStreamCaptureStatusNone)return {status_code::unsupported_semantics,"cold relation preparation cannot be captured"};
         std::unique_ptr<prepared_relation_pair> p(new prepared_relation_pair);
         p->forward=f;p->transpose=t;p->device=current;p->stream=stream;
         p->structure=std::make_shared<prepared_relation_structure>();p->structure->device=current;

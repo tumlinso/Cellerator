@@ -18,7 +18,7 @@ def run(argv, cwd=None):
 def prepare():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bindings", type=Path, required=True)
-    parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02", "ce_nf1_v03", "ce_nf1_v04", "ce_nf1_v05", "ce_nf1_v06"], default="ce_nf1_v01")
+    parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02", "ce_nf1_v03", "ce_nf1_v04", "ce_nf1_v05", "ce_nf1_v06", "ce_nf1_v07"], default="ce_nf1_v01")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()
@@ -45,7 +45,8 @@ def prepare():
                      "-DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-12", "-DCMAKE_CUDA_ARCHITECTURES=70",
                      "-DCUDAToolkit_ROOT=/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
                      "-DCELLERATOR_ENABLE_HARDWARE_PROBE=OFF", "-DBASEPLANE_SOURCE_DIR=/home/tumlinson/Baseplane",
-                     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"])]
+                     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                     "-DNF1_VALUES_RU1_REGRESSIONS=" + ("ON" if args.target == "ce_nf1_v07" else "OFF")])]
     cache = build / "CMakeCache.txt"
     entries = dict(line.split("=", 1) for line in cache.read_text().splitlines()
                    if "=" in line and not line.startswith(("#", "//")))

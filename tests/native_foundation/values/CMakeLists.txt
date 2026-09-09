@@ -7,7 +7,9 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   enable_testing()
   set(NF1_VALUES_OUTER_BUILD ON)
   set(CELLERATOR_BUILD_SEMANTIC_SPINE_V1 ON CACHE BOOL "Required actual pair owner" FORCE)
-  set(CELLERATOR_BUILD_TESTS OFF CACHE BOOL "Only scoped qualification" FORCE)
+  option(NF1_VALUES_RU1_REGRESSIONS "Rebuild retained RU1 regression owners" OFF)
+  set(CELLERATOR_BUILD_TESTS ${NF1_VALUES_RU1_REGRESSIONS} CACHE BOOL "Scoped qualification with explicit retained regressions" FORCE)
+  set(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1 ${NF1_VALUES_RU1_REGRESSIONS} CACHE BOOL "Retained RU1 regression owners" FORCE)
   get_filename_component(_nf1_values_root "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
   add_subdirectory("${_nf1_values_root}" "${CMAKE_CURRENT_BINARY_DIR}/cellerator")
   enable_language(CUDA)
@@ -61,3 +63,27 @@ set_target_properties(ce_nf1_v06 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUI
 add_test(NAME ce_nf1_v06 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIST_DIR}/run_leased_test.py"
   --executable $<TARGET_FILE:ce_nf1_v06> --sanitizer "${NF1_COMPUTE_SANITIZER}")
 set_tests_properties(ce_nf1_v06 PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 180)
+
+add_executable(ce_nf1_v07 v07.cu)
+target_link_libraries(ce_nf1_v07 PRIVATE Cellerator::native_value_instance)
+set_target_properties(ce_nf1_v07 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+set(_nf1_v07_regressions)
+if(TARGET ceRU1GpuNumerics)
+  set(_nf1_ru1_targets ceRU1HostTests ceRU1ReferenceTests ceRU1CoverTests ceRU1CompilerTests
+    ceRU1_source_bridge ceRU1_dual_origin ceRU1GpuNumerics ceRU1GpuBindings ceRU1GpuLifecycle
+    ceRU1ReadinessTests ceRU1WmmaLegality ceRU1N1Regression ceRU1_forward_n16 ceRU1_transpose_n16
+    ceRU1_sparse_gradient ceRU1_value_update ceRU1_update_publication ceRU1_native_failure
+    ceRU1_gradient_pack ceRU1_hybrid_gradient ceRU1_readiness_component ceRU1_read_lease)
+  foreach(_target IN LISTS _nf1_ru1_targets)
+    target_link_libraries(${_target} PRIVATE Cellerator::jbc_v1 cellerator_compute_sparse_project)
+  endforeach()
+  add_dependencies(ce_nf1_v07 ${_nf1_ru1_targets})
+  foreach(_name calculus reference cover compiler source_bridge dual_origin evidence_contract gpu_numerics
+      gpu_bindings gpu_lifecycle readiness wmma_legality n1_regression forward_n16 transpose_n16
+      sparse_gradient value_update update_publication native_failure gradient_pack hybrid_gradient readiness_component read_lease)
+    list(APPEND _nf1_v07_regressions --regression-test ru1_${_name})
+  endforeach()
+endif()
+add_test(NAME ce_nf1_v07 COMMAND "${Python3_EXECUTABLE}" -B "${CMAKE_CURRENT_LIST_DIR}/run_leased_test.py"
+  --executable $<TARGET_FILE:ce_nf1_v07> --sanitizer "${NF1_COMPUTE_SANITIZER}" --require-regressions ${_nf1_v07_regressions})
+set_tests_properties(ce_nf1_v07 PROPERTIES LABELS "nf1;cuda;values;sanitizer" TIMEOUT 300)

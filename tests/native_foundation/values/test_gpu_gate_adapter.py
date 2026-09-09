@@ -13,8 +13,36 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('run_gpu_gate', HERE / 'run_gpu_gate.py')
 adapter = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(adapter)
+child_spec = importlib.util.spec_from_file_location('run_leased_test', HERE / 'run_leased_test.py')
+child = importlib.util.module_from_spec(child_spec)
+child_spec.loader.exec_module(child)
 
 class AdapterAdmissionTests(unittest.TestCase):
+    def test_junit_requires_actual_complete_non_skipped_execution(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'result.xml'
+            passed = '<testsuite tests="1" skipped="0"><testcase name="ru1_test" status="run"/></testsuite>'
+            path.write_text(passed)
+            child.validate_regression_junit(path, ['ru1_test'])
+            for report in (
+                passed.replace('status="run"', 'status="notrun"'),
+                passed.replace('/>', '><skipped/></testcase>'),
+                passed.replace('skipped="0"', 'skipped="1"'),
+                passed.replace('/>', '><failure/></testcase>'),
+                passed.replace('ru1_test', 'ru1_other'),
+                '<testsuite tests="0"/>',
+            ):
+                with self.subTest(report=report), self.assertRaises(ValueError):
+                    path.write_text(report)
+                    child.validate_regression_junit(path, ['ru1_test'])
+
+    def test_required_regressions_cannot_be_silently_omitted(self):
+        result = subprocess.run([sys.executable, '-B', str(HERE / 'run_leased_test.py'),
+            '--executable', '/absent', '--sanitizer', '/absent', '--require-regressions'],
+            text=True, capture_output=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('retained RU1 regressions must be configured', result.stderr)
+
     def test_supplemental_failure_cannot_pass_aggregate_evidence(self):
         # Entire external process boundary is mocked: this tests evidence plumbing,
         # makes no native reservation, and executes no device command.
