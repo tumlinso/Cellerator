@@ -40,6 +40,7 @@ session_status init_session(
     execution_session *session,
     const execution_session_options &options) noexcept {
     if (session == nullptr) return session_status::invalid_argument;
+    if (session->initialized || session->exclusive_attachment) return session_status::invalid_state;
     if (options.external_stream_count != 0 && options.external_streams == nullptr) {
         return session_status::invalid_argument;
     }
@@ -49,7 +50,8 @@ session_status init_session(
         return session_status::capacity_exceeded;
     }
 
-    *session = execution_session{};
+    const execution_session empty{};
+    *session = empty;
     try {
         session->device = options.device;
         if (session->device < 0) {
@@ -87,9 +89,32 @@ session_status init_session(
     }
 }
 
-void clear_session(execution_session *session) noexcept {
-    if (session == nullptr) return;
-    if (session->initialized && session->device >= 0) (void) cudaSetDevice(session->device);
+session_status attach_session(execution_session *session, const void *owner) noexcept {
+    if (!session || !owner) return session_status::invalid_argument;
+    if (!session->initialized || !session->sealed || session->exclusive_attachment)
+        return session_status::invalid_state;
+    session->exclusive_attachment = owner;
+    return session_status::success;
+}
+
+session_status detach_session(execution_session *session, const void *owner) noexcept {
+    if (!session || !owner) return session_status::invalid_argument;
+    if (session->exclusive_attachment != owner) return session_status::invalid_state;
+    session->exclusive_attachment = nullptr;
+    return session_status::success;
+}
+
+session_status close_session(execution_session *session) noexcept {
+    if (session == nullptr) return session_status::invalid_argument;
+    if (session->exclusive_attachment) return session_status::invalid_state;
+    if (session->device >= 0 && cudaSetDevice(session->device) != cudaSuccess)
+        return session_status::cuda_failure;
+    // Fence borrowed and owned streams before releasing scratch or libraries.
+    // Include partially initialized slots during init_session failure recovery.
+    for (const auto &slot : session->streams) {
+        if (slot.execution.stream && cudaStreamSynchronize(slot.execution.stream) != cudaSuccess)
+            return session_status::cuda_failure;
+    }
     for (std::uint32_t index = 0; index < execution_session_max_streams; ++index) {
         session_stream_slot &slot = session->streams[index];
         clear(&slot.cusparse);
@@ -105,7 +130,13 @@ void clear_session(execution_session *session) noexcept {
         if (record.occupied && record.data != nullptr) (void) cudaFree(record.data);
         record = persistent_allocation_record{};
     }
-    *session = execution_session{};
+    const execution_session empty{};
+    *session = empty;
+    return session_status::success;
+}
+
+void clear_session(execution_session *session) noexcept {
+    (void)close_session(session);
 }
 
 session_status reserve_persistent(

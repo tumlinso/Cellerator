@@ -117,6 +117,7 @@ struct execution_session {
     std::uint32_t stream_count = 0;
     bool initialized = false;
     bool sealed = false;
+    const void *exclusive_attachment = nullptr;
 };
 
 struct launch_runtime_binding {
@@ -136,6 +137,14 @@ struct device_fleet_view {
 session_status init_session(
     execution_session *session,
     const execution_session_options &options) noexcept;
+// Cold session calls are externally serialized. Attached sessions must remain at
+// a stable address; copying/relocating their owning handles is unsupported.
+// One exclusive program borrower; only its exact token may detach after drain.
+session_status attach_session(execution_session*, const void *owner) noexcept;
+session_status detach_session(execution_session*, const void *owner) noexcept;
+session_status close_session(execution_session *session) noexcept;
+// Compatibility cleanup: an attached session is preserved; use checked close
+// when the caller needs to observe refusal or CUDA synchronization failure.
 void clear_session(execution_session *session) noexcept;
 
 session_status reserve_persistent(

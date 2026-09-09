@@ -76,3 +76,39 @@ workspace and missing binding leave every output and enqueue counter untouched.
 Changing accepted extents before a later execution is revalidated. The external
 lease/readiness tokens in this host fixture test descriptor validity only; live
 session ownership and CUDA readiness remain subsequent P03 qualification.
+
+## P03 native session attachment
+
+`program_session_v2` borrows one initialized, sealed `execution_session` and an
+immutable `prepared_program_v2`; it neither owns streams nor allocates scratch.
+Each native session stream is one program instance, with disjoint native scratch.
+The existing `relation_value_readiness` owns event publication and external
+reader completion for each instance. Host calls through the adapter use a
+nonblocking atomic guard; reentrant/concurrent calls return busy. The borrowed
+session/program and callback state must remain alive and immutable until checked
+close succeeds. Direct session mutation or destruction while attached is forbidden.
+
+`ce_nf1_p03` constructs a real two-stream CUDA session using existing runtime
+initialization, persistent/transient allocation, library preparation and sealing.
+Canonical program callbacks run a numerical kernel using independent scratch.
+Controls reject foreign scratch, device mismatch, a sibling reader ticket,
+mutation during an outstanding reader, and checked close during a live borrow.
+A delayed consumer reads old scratch while a later owner execution changes it;
+checked close observes completion before the caller clears the native session.
+The callback reenters the adapter to prove host serialization rejection.
+
+The task's host-labelled gate is strengthened by a native GPU lease plus the
+shared cross-repository lock. Its supplemental CTest runs Compute Sanitizer.
+These tests require CUDA 12.9 and the actual leased GPU. This section describes
+required cases; authoritative passing evidence is external and produced only
+by native finish after a clean committed rebuild.
+
+P03 session ABI adds an exclusive borrower token to the existing runtime session.
+Cold native session calls remain externally serialized. Checked close refuses a
+live attachment; legacy void cleanup preserves it. Reinitialization refuses an
+initialized session rather than overwriting owned handles. Attached session storage
+must remain at a stable address; raw aggregate copies do not transfer ownership.
+The adapter uses one session stream per instance and never switches streams for
+an instance. Its nonblocking host guard rejects reentry. All runtime consumers
+must rebuild for the transient session layout addition at M20. Tests cover duplicate
+attachment, foreign detach, close refusal and initialized handle preservation.
