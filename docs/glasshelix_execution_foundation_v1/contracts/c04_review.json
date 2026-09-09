@@ -1,0 +1,121 @@
+{
+  "task": "CE-NF1-C04",
+  "source_base_commit": "872f5c608e654fda933861da619b68f8dc07adca",
+  "evidence_level": "executed_host_contract_checks_only",
+  "summary": "Structural membership, exact predicate exclusion, numerical zero and activity realization are distinct. Value, mask and epoch invalidation differ; a zero primal does not remove response support without proof. Approximation budgets and nonfinite exclusion policy are explicit.",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "0f22b0ca93c42329818ebd6be6cdd852e172d1dc9d1e8b5de697b9f4893a36b4",
+    "docs/glasshelix_execution_foundation_v1/contracts/fixture.hh": "873c01da5eb87597b74a313e07a8f2a460860e40a4747b980d13f587264ca2ea",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "21e5f91f90565c3a3ba2411dcef351e0c06efb5dbcc9997b1a3f992f5aff7a9c",
+    "docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc": "2b5f6b0b16e4004eaced95943e1aaf07f756c186724e3ffdd99cbe537002b9fb",
+    "docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc": "cda93830d50e888978e3bcba220743757a3fdd4eb6454e89ce57ed5f026e9618",
+    "docs/glasshelix_execution_foundation_v1/contracts/support_test.cc": "a1b26b90a61420fa5357de7d1f56194ee19257f5dc0afda064a48a1f6e856316"
+  },
+  "results": [
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-ygtg2b3h/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-ygtg2b3h/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-ygtg2b3h/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-ygtg2b3h/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-ygtg2b3h/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-ygtg2b3h/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/support_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-ygtg2b3h/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-ygtg2b3h/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": "Host descriptor and policy checks do not qualify numerical execution, external SDK linkage, CUDA, or the complete NF1 toolbox."
+}

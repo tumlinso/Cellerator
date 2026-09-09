@@ -221,4 +221,71 @@ inline status validate_derivative(const operation_contract& operation,
     return status::success;
 }
 
+enum class contribution_kind : std::uint8_t {
+    structural_absence, predicate_excluded, numerical_zero, active
+};
+enum class support_realization : std::uint8_t {
+    persistent, compact_exact_active, approximate_drop
+};
+enum class approximation_kind : std::uint8_t {
+    exact_declared_arithmetic, justified_bound, empirical, unassessed
+};
+struct support_contract {
+    execution::structure_id structure{};
+    execution::structure_epoch epoch{};
+    generation_stamp activity{};
+    support_realization realization = support_realization::persistent;
+    approximation_kind accuracy = approximation_kind::exact_declared_arithmetic;
+    bool response_requested = false;
+    bool differentiate_predicate = false;
+    bool preserve_nonfinite_exclusion = true;
+    // Distinct budgets, not a single measurement-noise allowance.
+    double storage_error_bound = 0, arithmetic_error_bound = 0, dropping_error_bound = 0;
+};
+enum invalidation : std::uint32_t {
+    invalidate_nothing = 0, rebind_values = 1u, refresh_activity = 2u,
+    rebuild_projection = 4u, rebuild_structure = 8u, invalidate_primal = 16u
+};
+inline status validate_support(const support_contract& support) noexcept {
+    if (!execution::valid_identity(support.structure) || support.epoch.value == 0
+        || !valid_stamp(support.activity, false)) return status::invalid_identity;
+    if (support.realization < support_realization::persistent
+        || support.realization > support_realization::approximate_drop
+        || support.accuracy < approximation_kind::exact_declared_arithmetic
+        || support.accuracy > approximation_kind::unassessed) return status::invalid_contract;
+    if (support.differentiate_predicate) return status::unsupported_derivative;
+    if (!support.preserve_nonfinite_exclusion) return status::invalid_contract;
+    if (support.realization == support_realization::approximate_drop
+        && support.accuracy == approximation_kind::exact_declared_arithmetic)
+        return status::invalid_contract;
+    for (auto bound : {support.storage_error_bound, support.arithmetic_error_bound,
+                       support.dropping_error_bound})
+        if (!std::isfinite(bound) || bound < 0) return status::invalid_contract;
+    return status::success;
+}
+inline bool may_drop_response(contribution_kind contribution,
+                              bool exact_response_zero_proved = false) noexcept {
+    return contribution == contribution_kind::structural_absence
+        || contribution == contribution_kind::predicate_excluded
+        || exact_response_zero_proved;
+}
+inline std::uint32_t invalidation_for(const support_contract& before,
+                                     const support_contract& after,
+                                     bool values_changed) noexcept {
+    if (!execution::same_identity(before.structure, after.structure)
+        || before.epoch.value != after.epoch.value)
+        return rebuild_structure | rebuild_projection | invalidate_primal;
+    std::uint32_t result = values_changed ? rebind_values | invalidate_primal : invalidate_nothing;
+    if (!same_stamp(before.activity, after.activity)) {
+        result |= refresh_activity | invalidate_primal;
+        if (after.realization != support_realization::persistent) result |= rebuild_projection;
+    }
+    if (before.realization != after.realization || before.accuracy != after.accuracy)
+        result |= rebuild_projection | invalidate_primal;
+    // Approximate value-dependent drops must be reconsidered after value edits.
+    if (values_changed && after.realization == support_realization::approximate_drop)
+        result |= rebuild_projection;
+    return result;
+}
+
 } // namespace cellerator::compute::operation::nf1
