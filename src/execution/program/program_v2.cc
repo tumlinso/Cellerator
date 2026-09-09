@@ -1,5 +1,6 @@
 #include "Cellerator/execution/program/program_v2.h"
 #include <Cellerator/execution/launch_bindings.hh>
+#include <limits>
 
 namespace cellerator::execution::program {
 
@@ -83,7 +84,20 @@ program_status execute_prepared_program_v2(
 program_status execute_prepared_program_report_v2(
         const prepared_program_v2& program,const launch_binding_v2* bindings,
         std::uint64_t binding_count,void* caller_stream,submission_report_v2& report) noexcept {
+    return execute_prepared_program_report_v2(program,bindings,binding_count,caller_stream,report,nullptr,0);
+}
+
+program_status execute_prepared_program_report_v2(
+        const prepared_program_v2& program,const launch_binding_v2* bindings,
+        std::uint64_t binding_count,void* caller_stream,submission_report_v2& report,
+        stage_submission_counters_v2* counters,std::uint64_t counter_count) noexcept {
     report={};
+    if ((!counters && counter_count) || (counters && counter_count<program.stage_count))
+        return report.status=program_status::invalid_argument;
+    const auto increment=[](std::uint64_t& value,bool& saturated) noexcept {
+        if (value==std::numeric_limits<std::uint64_t>::max()) saturated=true;
+        else ++value;
+    };
     const auto valid = preflight_prepared_program_v2(
         program, bindings, binding_count, caller_stream);
     if (valid != program_status::success) return report.status=valid;
@@ -91,9 +105,11 @@ program_status execute_prepared_program_report_v2(
         const auto& stage = program.stages[i];
         const auto& binding = bindings[stage.binding_index];
         ++report.attempted_stages;
+        if(counters)increment(counters[i].attempted,counters[i].saturated);
         if (stage.launch(stage.prepared_state, binding, caller_stream) !=
             program_status::success) return report.status=program_status::launch_failed;
         ++report.accepted_stages;
+        if(counters)increment(counters[i].accepted,counters[i].saturated);
     }
     return report.status=program_status::success;
 }

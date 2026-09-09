@@ -158,3 +158,21 @@ failure is injected via the existing runtime API test seam after real kernels;
 removing the injection never unpoisons the result. This is deterministic failure
 injection, not evidence of a naturally occurring GPU hardware fault. The
 readiness layout/API additions require all consumers to rebuild at M20.
+
+P06 retains numerical operation/source IDs using operation_core_v2::stable_id,
+source structure epochs and value generations in immutable borrowed stage-origin
+maps. Each row must match the actual prepared stage and selected candidate.
+Fused stages may carry multiple origins; decomposed stages may repeat an origin.
+Cold comparison checks origin sets including source generations, without a hot
+registry. These IDs do not identify biological actors or establish molecular
+identity. Provenance metadata must outlive execution and remains separate from
+numeric payloads and candidate-specific implementation details.
+
+Optional caller-owned per-stage attempted/accepted counters are collected by the
+same canonical runner loop. They saturate explicitly at uint64 maximum rather
+than wrapping. Missing capacity rejects before callbacks. Existing execute/report
+entry points continue through this implementation without counter storage.
+Executed host tests compare actual fused and unfused numeric outputs and origin
+sets, changed source generations/epochs, stale candidate IDs, absent origin rows,
+many-to-many decomposition, capacity rejection and saturation. No accelerator
+fusion performance claim is made by this host qualification.

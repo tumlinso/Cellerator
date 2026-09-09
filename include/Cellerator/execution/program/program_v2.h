@@ -80,6 +80,15 @@ struct submission_report_v2 {
     std::uint64_t attempted_stages = 0;
     std::uint64_t accepted_stages = 0;
 };
+// Optional caller-owned counters. Saturation is explicit; execution does not
+// allocate, hash IDs, or interpret stage IDs as scientific/biological entities.
+struct stage_submission_counters_v2 {
+    std::uint64_t attempted=0, accepted=0;
+    bool saturated=false;
+};
+program_status execute_prepared_program_report_v2(const prepared_program_v2&,
+    const launch_binding_v2*,std::uint64_t,void*,submission_report_v2&,
+    stage_submission_counters_v2*,std::uint64_t counter_count) noexcept;
 program_status execute_prepared_program_report_v2(const prepared_program_v2&,
     const launch_binding_v2*,std::uint64_t,void*,submission_report_v2&) noexcept;
 
