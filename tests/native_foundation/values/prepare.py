@@ -21,7 +21,11 @@ def prepare():
     parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02", "ce_nf1_v03", "ce_nf1_v04", "ce_nf1_v05", "ce_nf1_v06", "ce_nf1_v07"], default="ce_nf1_v01")
     parser.add_argument("--reuse-clean-build-receipt", type=Path,
                         help="Reuse a verified build only after test-list, launcher or documentation changes")
+    parser.add_argument("--incremental", action="store_true",
+                        help="Allow tracked compiled-source changes against the verified prior build; record actual dependency rebuild")
     args = parser.parse_args()
+    if args.incremental and not args.reuse_clean_build_receipt:
+        raise ValueError("incremental build requires verified prior receipt")
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()
     binding_bytes = bindings_path.read_bytes()
@@ -55,10 +59,11 @@ def prepare():
         for name in changed:
             allowed = (name.startswith('tests/native_foundation/values/') and
                        (name.endswith('.py') or name.endswith('/CMakeLists.txt')))
-            if not allowed and name != 'include/Cellerator/execution/native_value_instance/CAPABILITY.md':
+            if not args.incremental and not allowed and name != 'include/Cellerator/execution/native_value_instance/CAPABILITY.md':
                 raise ValueError("compiled-source changes require a clean-first build: " + name)
         reused = {'path': str(args.reuse_clean_build_receipt.resolve()),
-                  'sha256': hashlib.sha256(prior_bytes).hexdigest(), 'source_commit': prior['source_commit']}
+                  'sha256': hashlib.sha256(prior_bytes).hexdigest(), 'source_commit': prior['source_commit'], 'changed_tracked_sources': changed,
+                  'dependency_rebuild_required': args.incremental}
     commands = [run(["cmake", "--version"]),
                 run(["cmake", "-S", str(source / "tests/native_foundation/values"), "-B", str(build),
                      "-DCELLERATOR_ENABLE_CUDA=ON", "-DCMAKE_BUILD_TYPE=Release",
