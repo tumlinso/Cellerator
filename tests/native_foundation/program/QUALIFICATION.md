@@ -1,7 +1,6 @@
 # Prepared program qualification
 
-Status: partial P01 checkpoint. Native acceptance is not complete. The typed
-host path needs the pending canonical host-stream correction described below.
+Status: P01 host source qualification. Native acceptance is recorded externally.
 
 P01 extends `execution/program/program_v2.h` by borrowing the canonical
 `prepared_binding_contract` and `launch_bindings` owners. Callbacks retain their
@@ -49,20 +48,10 @@ ctest --test-dir /tmp/ce-nf1-program --output-on-failure --no-tests=error
 Four build jobs bound this small host test while other native lanes compile
 concurrently on the shared controller host. No GPU reservation is needed.
 
-## Pending native scope correction
+## Host binding correction
 
-The existing `launch_bindings.hh` validator rejects host stream ordinal -1.
-A narrow scope amendment prepared from CE authority revision 7153 lives at
-`/tmp/nf1-p01-scope-delta/ce-p01.todo-plan.json`; its simulation changes only
-P01 ownership scopes. The adjacent `host-launch.patch` admits host ordinal -1
-with a null stream and host workspace, preserving the matching-device case.
-It has **not** been applied to repository source. The coordinator must apply
-the reviewed scope amendment and refresh the task brief before this owner edit.
-
-Prospective testing used that header only in an external include overlay.
-The real typed calculation, legacy adapter, all negative controls, and existing
-execution-order contract test passed with that prospective correction. This is
-review evidence, not native acceptance or qualification of this source commit.
-The unchanged fragment numerical test already passes against repository source.
-The source-only `ce_nf1_p01` will reject host mode until the correction lands.
-No task completion, integrated capability, or GPU qualification is claimed.
+Authority scope amendment 7155 and task brief v2 (7156) admitted the canonical
+launch-binding owner correction. Host stream ordinal -1 requires null stream
+and host workspace; device ordinals retain matching workspace-device checks.
+All tests now compile against repository headers, without an include overlay.
+The earlier partial checkpoint and prospective overlay are historical evidence.

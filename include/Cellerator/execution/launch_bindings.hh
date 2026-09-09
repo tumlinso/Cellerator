@@ -369,7 +369,10 @@ validate_launch_bindings(
             != lifetime_validation_code::ok)
             return binding_validation_code::stale_value;
     }
-    if (launch.stream.device_ordinal < 0
+    const bool host_stream = launch.stream.device_ordinal == -1;
+    if (launch.stream.device_ordinal < -1
+        || (host_stream && (launch.stream.stream != nullptr
+            || launch.workspace.location.residency != residency_kind::host))
         || launch.stream.device_ordinal
             != launch.workspace.location.device_ordinal)
         return binding_validation_code::invalid_stream;

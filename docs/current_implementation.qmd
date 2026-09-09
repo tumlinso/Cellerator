@@ -569,3 +569,16 @@ not contain hardware measurements and do not promote an experimental
 candidate. Deep Nsight profiling, biological-data campaigns, performance
 promotion, preprint claims, distributed CellShard orchestration, and CE-AMP
 remain deferred and separately authorized.
+
+## NF1 prepared program typed bindings
+
+The canonical `execution/program/program_v2.h` runner accepts optional borrowed
+`prepared_binding_contract` / `launch_bindings` collections alongside its legacy
+callback surface. It validates all stages before dispatch, including declared
+axes, effects, structure epochs and value generations. Host launches explicitly
+use ordinal -1, null stream and host workspace. No second scheduler is added.
+Appending these transient descriptor pointers preserves source aggregate use but
+changes C++ layouts: rebuild all producers and consumers together; this is not
+binary compatibility with older builds. The descriptors are not wire formats.
+Focused host and legacy numerical coverage is described in
+`tests/native_foundation/program/QUALIFICATION.md`; CUDA qualification is separate.
