@@ -760,6 +760,7 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
 namespace cellerator::compute::architecture::providers::nvidia::sm70::edge_value_gradient {
 // Private provider seam; public update semantics remain relation_update.hh.
 cudaError_t enqueue_relation_value_update(void*,const float*,std::uint32_t,bool,float,cudaStream_t) noexcept;
+cudaError_t enqueue_relation_value_update_f32(float*,void*,const float*,std::uint32_t,bool,float,cudaStream_t) noexcept;
 }
 namespace cellerator::compute::relation {
 namespace {
@@ -775,7 +776,6 @@ bool same_stamp(const gradient_stamp& a,const gradient_stamp& b) noexcept {
 }
 }
 status enqueue_value_update(prepared_relation_pair& p,const value_update_request& r,cudaStream_t stream) noexcept {
-    if(p.forward.semantic.arithmetic.relation_storage==execution::numeric_type::f32)return {status_code::unsupported_numeric_policy,"legacy update is f16-only"};
     auto s=reject_capture(stream);if(!s)return s;
     s=check_context(p,r.operand.device_ordinal,stream);if(!s)return s;
     if(r.kind!=value_update_kind::delta_add&&r.kind!=value_update_kind::gradient_step)
@@ -793,13 +793,16 @@ status enqueue_value_update(prepared_relation_pair& p,const value_update_request
             return {status_code::stale_generation,"gradient stamp or produced buffer is stale"};
     }
     s=readiness_status(p.readiness.validate_write(r.expected,r.next,stream));if(!s)return s;
-    auto result=gradient_provider::enqueue_relation_value_update(p.values,
-        static_cast<const float*>(r.operand.f32_data),
-        static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),
-        r.kind==value_update_kind::gradient_step,r.alpha,stream);
+    const bool f32=p.forward.semantic.arithmetic.relation_storage==execution::numeric_type::f32;
+    auto result=f32?gradient_provider::enqueue_relation_value_update_f32(p.authoritative_f32,p.values,
+        static_cast<const float*>(r.operand.f32_data),static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),
+        r.kind==value_update_kind::gradient_step,r.alpha,stream):
+        gradient_provider::enqueue_relation_value_update(p.values,static_cast<const float*>(r.operand.f32_data),
+        static_cast<std::uint32_t>(p.forward.semantic.topology.edge_count),r.kind==value_update_kind::gradient_step,r.alpha,stream);
     s=readiness_status(p.readiness.publish(r.next,stream,result));
     if(result!=cudaSuccess||!s){p.poisoned=true;return result!=cudaSuccess?cuda_status(result):s;}
     p.report.latest_enqueued_generation=r.next;++p.updates.physical_updates;
+    if(f32)p.report.derived_f16_generation=p.derive_f16?r.next:execution::value_generation{};
     p.last_gradient={};p.last_gradient_output={};return {};
 }
 } // namespace cellerator::compute::relation
