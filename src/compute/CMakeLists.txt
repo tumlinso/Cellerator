@@ -3,9 +3,10 @@
 target_sources(cellerator_operation_core PRIVATE
     src/compute/operation/operation_core_v2/composition.cc
     src/compute/operation/operation_core_v2/relation_algebra.cc
-    src/compute/operation/operation_core_v2/schema.cc
     src/compute/operation/operation_core_v2/v1_adapter.cc
 )
+
+target_link_libraries(cellerator_operation_core PUBLIC Cellerator::operation_schema_v2)
 
 add_library(cellerator_row_masked_n1_candidate STATIC
     src/compute/candidate/row_masked_n1_candidate.cu
@@ -544,7 +545,6 @@ target_link_libraries(cellerator_executable_core INTERFACE
 add_library(cellerator_executable_program STATIC
     src/execution/program.cc
     src/execution/program/program_v1_adapter.cc
-    src/execution/program/program_v2.cc
 )
 add_library(Cellerator::executable_program ALIAS
     cellerator_executable_program)
@@ -554,6 +554,7 @@ target_include_directories(cellerator_executable_program PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(cellerator_executable_program PUBLIC
+    Cellerator::prepared_program_v2
     Cellerator::executable_core
     Cellerator::planner
 )

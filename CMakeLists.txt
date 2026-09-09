@@ -49,6 +49,17 @@ set(CELLERATOR_ENABLE_CUDA "AUTO" CACHE STRING
     "Build compiler NVIDIA support: AUTO, ON, or OFF")
 set_property(CACHE CELLERATOR_ENABLE_CUDA PROPERTY STRINGS AUTO ON OFF)
 
+# Explicit source-linked NF1 host slice avoids compiler, model and device discovery.
+option(CELLERATOR_NATIVE_FOUNDATION_ONLY "Configure only the native foundation host targets" OFF)
+option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 host conformance tests" OFF)
+if(CELLERATOR_NATIVE_FOUNDATION_ONLY)
+    if(NOT CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
+        message(FATAL_ERROR "CELLERATOR_NATIVE_FOUNDATION_ONLY requires CELLERATOR_ENABLE_CUDA=OFF")
+    endif()
+    include(cmake/NativeFoundation.cmake)
+    return()
+endif()
+
 # Host-only module proof infrastructure is independent of native CUDA targets.
 add_subdirectory(modules)
 
@@ -84,14 +95,7 @@ if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
         include(tests/relation_update_spine_v1/CMakeLists.txt)
     endif()
 endif()
-# NF1 reference tests are independent of the optional CUDA runtime. The T lane
-# owns the required fragment and real test; enabling this option must never
-# silently succeed with an empty test inventory.
-option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 host reference tests" OFF)
-if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
-    enable_testing()
-    add_subdirectory(tests/native_foundation/reference)
-endif()
+include(cmake/NativeFoundation.cmake)
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     return()
 endif()
