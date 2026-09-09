@@ -27,3 +27,5 @@ P03 received `runtime/session.cuh` and `src/runtime/session_setup.cu.inc` at rev
 Native P04 revision 7219 extends the existing session setup owner scope and strengthens the gate to require the host scratch planner plus real P03 CUDA and sanitizer regressions. Task context was refreshed at 7220. This closes the partial-initialization retry case without erasing the historical P03 receipt.
 
 Native V06 revision 7228 adds only the retained relation value update provider and relation calculus validation owner. Task context was refreshed at 7229. FP32 values use these existing algorithms; all provenance and arithmetic assertions remain required. Isolated native plan simulations verified only the intended scope and gate changes, preserving claims, lifecycle and queue state.
+
+P05 revision 7237 extends only the retained readiness header/source for completion observation and strengthens its CUDA gate; task context refreshed at 7238. Submission and observed completion remain distinct, with failure poisoning in the existing readiness owner. The isolated simulation changed only scopes and gates.
