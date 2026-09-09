@@ -93,6 +93,13 @@ def main():
                        bindings_path=derived, bindings_sha256=hashlib.sha256(Path(derived).read_bytes()).hexdigest(),
                        test_receipt=str(test_receipt), returncode=result.returncode,
                        test_receipt_sha256=hashlib.sha256(test_receipt.read_bytes()).hexdigest() if test_receipt.exists() else None)
+        if test_receipt.exists():
+            completed = json.loads(test_receipt.read_bytes())
+            sidecar['source_commit'] = completed.get('source_commit')
+            sidecar['source_fingerprint'] = completed.get('source_fingerprint')
+            sidecar['executables'] = completed.get('executables')
+            sidecar['cmake_cache_sha256'] = completed.get('cmake_cache_sha256')
+            sidecar['passed'] = completed.get('passed')
         sidepath = evidence / ('lease-evidence-' + stamp + '.json')
         with sidepath.open('x') as output:
             json.dump(sidecar, output, indent=2)
