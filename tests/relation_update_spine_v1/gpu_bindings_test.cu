@@ -72,7 +72,7 @@ void metadata(){
         case 0:op.topology.identity.high^=1ull<<63;break;case 1:++op.topology.epoch.value;break;case 2:input.axis.identity.order.high++;break;
         case 3:output.axis.identity.domain.high++;break;case 4:input.count--;break;case 5:output.count--;break;
         case 6:op.topology.source.extent=~std::uint64_t(0);break;case 7:output.data=f.x+1;break;
-        case 8:output.data=f.pair->values;break;case 9:input.data=f.pair->forward_payload;break;case 10:input.device_ordinal=1;break;case 11:op.dense_width=32;break;}
+        case 8:output.data=f.pair->values;break;case 9:input.data=f.pair->structure->forward_payload;break;case 10:input.device_ordinal=1;break;case 11:op.dense_width=32;break;}
         return ce::enqueue(*f.pair,op,input,output,{1},f.owner);});
     rejects_without_effects(f,[&]{return ce::enqueue_value_update(*f.pair,f.request(),f.other);});
     for(unsigned field=0;field<6;++field)rejects_without_effects(f,[&]{auto input=f.input;auto cot=f.cotangent;auto target=f.gradient;auto c=f.calculus;switch(field){

@@ -34,7 +34,7 @@ static void fixture(unsigned rows, unsigned cols, unsigned width,
     std::vector<bool> seen(sources.size());
     for(unsigned e=0;e<sources.size();++e) {
         auto physical=layout.logical_to_physical[e];SPINE_REQUIRE(physical<sources.size()&&!seen[physical]);
-        seen[physical]=true;SPINE_REQUIRE(pair->physical_to_logical[physical]==e);
+        seen[physical]=true;SPINE_REQUIRE(pair->structure->physical_to_logical[physical]==e);
     }
     const auto projection=pair->report.forward_projection;
     std::vector<__half> weights(sources.size());
