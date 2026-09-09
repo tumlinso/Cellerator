@@ -14,6 +14,7 @@ enum class relation_readiness_status : std::uint8_t {
 struct relation_event_api {
     cudaError_t (*record)(cudaEvent_t, cudaStream_t) = cudaEventRecord;
     cudaError_t (*wait)(cudaStream_t, cudaEvent_t, unsigned) = cudaStreamWaitEvent;
+    cudaError_t (*synchronize)(cudaStream_t) = cudaStreamSynchronize;
 };
 struct relation_read_ticket {
     execution::structure_id structure{};
@@ -55,6 +56,10 @@ public:
     // Event failure retains the ticket and poisons. A matching return may retry
     // solely for safe cleanup; no operation makes a poisoned generation usable.
     relation_readiness_status end_read(relation_read_ticket&, cudaStream_t consumer) noexcept;
+    // Explicit cold observation. Submission/publication alone is not completion.
+    // Any runtime failure poisons; older observed generations are historical only.
+    relation_readiness_status observe_completion() noexcept;
+    execution::value_generation observed_generation() const noexcept { return observed_; }
     // Cold teardown fences owner work only. Never frees an unreturned borrow.
     relation_readiness_status close() noexcept;
     bool initialized() const noexcept { return ready_ != nullptr; }
@@ -70,7 +75,7 @@ private:
     cudaStream_t owner_ = nullptr, consumer_ = nullptr;
     execution::structure_id structure_{};
     execution::structure_epoch epoch_{};
-    execution::value_generation generation_{};
+    execution::value_generation generation_{}, observed_{};
     std::uint64_t incarnation_ = 0, nonce_ = 0, active_nonce_ = 0;
     std::uint64_t ready_records_ = 0, reader_returns_ = 0;
     int device_ = -1;

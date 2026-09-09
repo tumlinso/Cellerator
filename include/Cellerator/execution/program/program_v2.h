@@ -73,6 +73,16 @@ program_status preflight_prepared_program_v2(
 // Preflight every stage before launching any callback. Callback failure is
 // reported but cannot roll back earlier launches. Callers must not mutate
 // descriptors concurrently; callbacks may write payloads, never descriptors.
+// A successful callback accepts submission; it does not prove completion.
+// A failing callback may already have submitted or written partial effects.
+struct submission_report_v2 {
+    program_status status = program_status::invalid_argument;
+    std::uint64_t attempted_stages = 0;
+    std::uint64_t accepted_stages = 0;
+};
+program_status execute_prepared_program_report_v2(const prepared_program_v2&,
+    const launch_binding_v2*,std::uint64_t,void*,submission_report_v2&) noexcept;
+
 program_status execute_prepared_program_v2(
         const prepared_program_v2& program,
         const launch_binding_v2* bindings,

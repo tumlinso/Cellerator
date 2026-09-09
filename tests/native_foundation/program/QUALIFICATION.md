@@ -137,3 +137,24 @@ scratch and persistent allocation fields prevent reset even before initializatio
 flags/counts are published. The CUDA regression creates a real owned stream with
 unpublished flags, proves rejected retry retains it, then closes and resets it.
 No CUDA failure is fabricated; this exercises the preserved failure-state shape.
+
+P05 extends the canonical runner with a submission report: attempted and accepted
+callbacks are distinct, a failing callback may have written/submitted partially,
+and neither counter claims device completion. Existing execute delegates to the
+same reported implementation. Whole-program preflight still precedes callbacks.
+The existing native readiness owner now exposes explicit cold completion
+observation; successful owner-stream synchronization records the observed
+publication generation. Synchronization failure poisons the owner. Historical
+published/observed generation numbers are diagnostic only after poisoning, and
+all subsequent reads/writes remain forbidden. No rollback of in-place effects
+is promised. Native teardown continues to use real CUDA synchronization.
+
+Host tests inject a late callback failure after actual writes, preserve those
+writes, and prove later stages do not run; late preflight failure writes nothing.
+CUDA tests submit real kernels, observe generation 1, then inject a callback
+failure after a second-generation kernel and verify changed payload after drain,
+no new valid generation, and rejected reuse/borrowing. A separate synchronization
+failure is injected via the existing runtime API test seam after real kernels;
+removing the injection never unpoisons the result. This is deterministic failure
+injection, not evidence of a naturally occurring GPU hardware fault. The
+readiness layout/API additions require all consumers to rebuild at M20.

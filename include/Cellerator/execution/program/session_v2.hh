@@ -10,6 +10,11 @@ enum class instance_status : std::uint8_t {
     success, invalid_state, invalid_binding, busy, device_mismatch,
     insufficient_workspace, preflight_rejected, launch_failed, runtime_failure
 };
+struct instance_report_v2 {
+    submission_report_v2 submission{};
+    execution::value_generation published{}, observed{};
+    bool poisoned=false;
+};
 // Borrows the sole execution_session and immutable program. One instance per
 // session stream; no allocator, stream creation or alternate stage executor.
 // Session, program, stage state and payloads must outlive checked close.
@@ -22,7 +27,8 @@ public:
     program_session_v2(const program_session_v2&) = delete;
     program_session_v2& operator=(const program_session_v2&) = delete;
     instance_status initialize(runtime::execution_session&, const prepared_program_v2&,
-                               execution::structure_id, execution::structure_epoch) noexcept;
+                               execution::structure_id, execution::structure_epoch,
+                               runtime::relation_event_api = {}) noexcept;
     instance_status binding(std::uint32_t instance, runtime::launch_runtime_binding&) noexcept;
     instance_status execute(std::uint32_t instance, const launch_binding_v2*,
                             std::uint64_t count, execution::value_generation next) noexcept;
@@ -30,6 +36,8 @@ public:
                                cudaStream_t consumer, runtime::relation_read_ticket&) noexcept;
     instance_status end_read(std::uint32_t instance, runtime::relation_read_ticket&,
                              cudaStream_t consumer) noexcept;
+    instance_status observe_completion(std::uint32_t instance) noexcept;
+    instance_status report(std::uint32_t instance,instance_report_v2&) noexcept;
     instance_status close() noexcept;
 private:
     struct guard {
@@ -46,6 +54,7 @@ private:
     execution::structure_epoch epoch_{};
     std::uint64_t workspace_bytes_ = 0;
     std::uint32_t instance_count_ = 0;
+    std::array<submission_report_v2,runtime::execution_session_max_streams> reports_{};
     std::array<runtime::launch_runtime_binding,runtime::execution_session_max_streams> bindings_{};
     std::array<runtime::relation_value_readiness,runtime::execution_session_max_streams> readiness_{};
 };

@@ -58,3 +58,21 @@ add_executable(ce_nf1_p04 p04.cc
 target_include_directories(ce_nf1_p04 PRIVATE "${CE_ROOT}/include")
 target_compile_features(ce_nf1_p04 PRIVATE cxx_std_17)
 add_test(NAME ce_nf1_p04 COMMAND ce_nf1_p04)
+add_executable(ce_nf1_p05 p05.cc "${CE_ROOT}/src/execution/program/program_v2.cc")
+target_include_directories(ce_nf1_p05 PRIVATE "${CE_ROOT}/include")
+target_compile_features(ce_nf1_p05 PRIVATE cxx_std_17)
+add_test(NAME ce_nf1_p05 COMMAND ce_nf1_p05)
+if(NF1_PROGRAM_CUDA)
+  add_executable(ce_nf1_p05_cuda p05.cu
+    "${CE_ROOT}/src/execution/program/program_v2.cc"
+    "${CE_ROOT}/src/execution/program/session_v2.cc"
+    "${CE_ROOT}/src/runtime/runtime.cu"
+    "${CE_ROOT}/src/runtime/relation_value_readiness.cu")
+  target_include_directories(ce_nf1_p05_cuda PRIVATE "${CE_ROOT}/include")
+  target_compile_features(ce_nf1_p05_cuda PRIVATE cxx_std_17)
+  set_target_properties(ce_nf1_p05_cuda PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+  target_link_libraries(ce_nf1_p05_cuda PRIVATE CUDA::cudart CUDA::cublas CUDA::cusparse)
+  add_test(NAME ce_nf1_p05_cuda COMMAND ce_nf1_p05_cuda)
+  add_test(NAME ce_nf1_p05_memcheck COMMAND "${NF1_COMPUTE_SANITIZER}" --tool memcheck --error-exitcode 99 $<TARGET_FILE:ce_nf1_p05_cuda>)
+  set_tests_properties(ce_nf1_p05_cuda ce_nf1_p05_memcheck PROPERTIES LABELS "nf1;cuda;poison" TIMEOUT 120)
+endif()

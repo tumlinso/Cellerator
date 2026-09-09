@@ -35,7 +35,8 @@ instance_status program_session_v2::context(std::uint32_t index) const noexcept 
     return instance_status::success;
 }
 instance_status program_session_v2::initialize(runtime::execution_session& session,
-        const prepared_program_v2& program,execution::structure_id identity,execution::structure_epoch epoch) noexcept {
+        const prepared_program_v2& program,execution::structure_id identity,execution::structure_epoch epoch,
+        runtime::relation_event_api api) noexcept {
     guard lock(active_);if (!lock.acquired) return instance_status::busy;
     if (session_ || !session.initialized || !session.sealed || !session.stream_count ||
         session.stream_count>bindings_.size() || !execution::valid_identity(identity) || !epoch.value)
@@ -64,7 +65,7 @@ instance_status program_session_v2::initialize(runtime::execution_session& sessi
         return instance_status::invalid_state;
     session_=&session;instance_count_=session.stream_count;
     for (std::uint32_t i=0;i<session.stream_count;++i) {
-        auto result=readiness_[i].initialize(identity,epoch,session.device,bindings_[i].execution.stream);
+        auto result=readiness_[i].initialize(identity,epoch,session.device,bindings_[i].execution.stream,api);
         if (result!=runtime::relation_readiness_status::success) {
             bool drained=true;
             for (std::uint32_t j=0;j<=i;++j)
@@ -77,6 +78,7 @@ instance_status program_session_v2::initialize(runtime::execution_session& sessi
             return readiness(result);
         }
     }
+    reports_={};
     session_=&session;program_=&program;identity_=identity;epoch_=epoch;workspace_bytes_=bytes;instance_count_=session.stream_count;
     return instance_status::success;
 }
@@ -103,9 +105,11 @@ instance_status program_session_v2::execute(std::uint32_t index,const launch_bin
     auto& ready=readiness_[index];
     result=readiness(ready.validate_write(ready.generation(),next,bound.execution.stream));
     if (result!=instance_status::success) return result;
-    if (preflight_prepared_program_v2(*program_,bindings,count,bound.execution.stream)!=program_status::success)
-        return instance_status::preflight_rejected;
-    const auto launched=execute_prepared_program_v2(*program_,bindings,count,bound.execution.stream);
+    const auto preflight=preflight_prepared_program_v2(*program_,bindings,count,bound.execution.stream);
+    if (preflight!=program_status::success) {
+        reports_[index]={preflight,0,0};return instance_status::preflight_rejected;
+    }
+    const auto launched=execute_prepared_program_report_v2(*program_,bindings,count,bound.execution.stream,reports_[index]);
     result=readiness(ready.publish(next,bound.execution.stream,
         launched==program_status::success?cudaSuccess:cudaErrorUnknown));
     return launched!=program_status::success?instance_status::launch_failed:result;
@@ -120,6 +124,17 @@ instance_status program_session_v2::end_read(std::uint32_t index,runtime::relati
     guard lock(active_);if (!lock.acquired) return instance_status::busy;
     auto result=context(index);if (result!=instance_status::success) return result;
     return readiness(readiness_[index].end_read(ticket,consumer));
+}
+instance_status program_session_v2::observe_completion(std::uint32_t index) noexcept {
+    guard lock(active_);if (!lock.acquired) return instance_status::busy;
+    const auto result=context(index);if (result!=instance_status::success) return result;
+    return readiness(readiness_[index].observe_completion());
+}
+instance_status program_session_v2::report(std::uint32_t index,instance_report_v2& output) noexcept {
+    guard lock(active_);if (!lock.acquired) return instance_status::busy;
+    const auto result=context(index);if (result!=instance_status::success) return result;
+    output={reports_[index],readiness_[index].generation(),readiness_[index].observed_generation(),readiness_[index].poisoned()};
+    return instance_status::success;
 }
 instance_status program_session_v2::close() noexcept {
     guard lock(active_);if (!lock.acquired) return instance_status::busy;

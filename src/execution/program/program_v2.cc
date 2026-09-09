@@ -76,16 +76,26 @@ program_status execute_prepared_program_v2(
         const launch_binding_v2* bindings,
         std::uint64_t binding_count,
         void* caller_stream) noexcept {
+    submission_report_v2 report;
+    return execute_prepared_program_report_v2(program,bindings,binding_count,caller_stream,report);
+}
+
+program_status execute_prepared_program_report_v2(
+        const prepared_program_v2& program,const launch_binding_v2* bindings,
+        std::uint64_t binding_count,void* caller_stream,submission_report_v2& report) noexcept {
+    report={};
     const auto valid = preflight_prepared_program_v2(
         program, bindings, binding_count, caller_stream);
-    if (valid != program_status::success) return valid;
+    if (valid != program_status::success) return report.status=valid;
     for (std::uint64_t i = 0; i < program.stage_count; ++i) {
         const auto& stage = program.stages[i];
         const auto& binding = bindings[stage.binding_index];
+        ++report.attempted_stages;
         if (stage.launch(stage.prepared_state, binding, caller_stream) !=
-            program_status::success) return program_status::launch_failed;
+            program_status::success) return report.status=program_status::launch_failed;
+        ++report.accepted_stages;
     }
-    return program_status::success;
+    return report.status=program_status::success;
 }
 
 }  // namespace cellerator::execution::program

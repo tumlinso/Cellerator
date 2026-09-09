@@ -20,7 +20,7 @@ result relation_value_readiness::initialize(execution::structure_id structure,
     relation_event_api api) noexcept {
     if (initialized()) return result::invalid_state;
     if ((!structure.low && !structure.high) || !epoch.value || device < 0 ||
-        !api.record || !api.wait) return result::invalid_argument;
+        !api.record || !api.wait || !api.synchronize) return result::invalid_argument;
     cudaStreamCaptureStatus capture{};
     if (cudaStreamIsCapturing(owner, &capture) != cudaSuccess) return result::cuda_failure;
     if (capture != cudaStreamCaptureStatusNone) return result::capture_unsupported;
@@ -146,6 +146,18 @@ result relation_value_readiness::end_read(relation_read_ticket& ticket,
     active_nonce_ = 0; consumer_ = nullptr; ++reader_returns_; ticket = {};
     return result::success;
 }
+result relation_value_readiness::observe_completion() noexcept {
+    const auto checked=check_stream(owner_);
+    if (checked!=result::success) {
+        if (checked==result::cuda_failure) poisoned_=true;
+        return checked;
+    }
+    if (!generation_.value) return result::invalid_state;
+    if (api_.synchronize(owner_)!=cudaSuccess) {
+        poisoned_=true;return result::cuda_failure;
+    }
+    observed_=generation_;return result::success;
+}
 result relation_value_readiness::close() noexcept {
     if (active_reader()) return result::busy;
     if (!initialized()) return result::success;
@@ -163,7 +175,7 @@ result relation_value_readiness::close() noexcept {
     done_ = nullptr;
     if (cudaEventDestroy(ready_) != cudaSuccess) return result::cuda_failure;
     ready_ = nullptr; owner_ = nullptr; consumer_ = nullptr;
-    structure_ = {}; epoch_ = {}; generation_ = {};
+    structure_ = {}; epoch_ = {}; generation_ = {}; observed_ = {};
     incarnation_ = 0; nonce_ = 0; active_nonce_ = 0;
     ready_records_ = 0; reader_returns_ = 0; device_ = -1; poisoned_ = false;
     return result::success;
