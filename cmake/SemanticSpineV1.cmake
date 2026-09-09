@@ -1,16 +1,6 @@
-# Repository-local semantic foundation; no installed SDK or runtime ownership.
-add_library(cellerator_relation_semantics STATIC
-    src/compute/operation/relation_semantics.cc)
-add_library(Cellerator::relation_semantics ALIAS cellerator_relation_semantics)
-target_include_directories(cellerator_relation_semantics PUBLIC
-    "${PROJECT_SOURCE_DIR}/include")
-target_compile_features(cellerator_relation_semantics PUBLIC cxx_std_17)
+# Shared host owners remain available without device discovery.
+include("${CMAKE_CURRENT_LIST_DIR}/NativeFoundation.cmake")
 
-# The prepared pair always consumes calculus and the RU1 runtime support.
-add_library(cellerator_relation_calculus STATIC src/compute/operation/relation_calculus.cc)
-add_library(Cellerator::relation_calculus ALIAS cellerator_relation_calculus)
-target_link_libraries(cellerator_relation_calculus PUBLIC Cellerator::relation_semantics)
-target_compile_features(cellerator_relation_calculus PUBLIC cxx_std_17)
 add_library(cellerator_relation_gradient_cover STATIC
     src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/gradient_cover.cc)
 target_include_directories(cellerator_relation_gradient_cover PUBLIC "${PROJECT_SOURCE_DIR}/include")

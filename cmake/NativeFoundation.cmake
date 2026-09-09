@@ -19,6 +19,60 @@ target_link_libraries(cellerator_native_foundation INTERFACE
     Cellerator::operation_schema_v2 Cellerator::prepared_program_v2)
 target_compile_features(cellerator_native_foundation INTERFACE cxx_std_20)
 
+# Rehome existing host owners without copying their implementation into consumers.
+add_library(cellerator_relation_semantics STATIC "${_nf1_root}/src/compute/operation/relation_semantics.cc")
+add_library(Cellerator::relation_semantics ALIAS cellerator_relation_semantics)
+add_library(cellerator_relation_calculus STATIC "${_nf1_root}/src/compute/operation/relation_calculus.cc")
+add_library(Cellerator::relation_calculus ALIAS cellerator_relation_calculus)
+target_link_libraries(cellerator_relation_calculus PUBLIC Cellerator::relation_semantics)
+add_library(cellerator_segment_host STATIC
+    "${_nf1_root}/src/compute/candidate/segment/segment_v2.cc"
+    "${_nf1_root}/src/compute/candidate/segment/reduce_v2_reference.cc"
+    "${_nf1_root}/src/compute/candidate/segment/normalize_v2_reference.cc")
+add_library(Cellerator::segment_host ALIAS cellerator_segment_host)
+add_library(cellerator_gate_validation STATIC
+    "${_nf1_root}/src/compute/candidate/edge/gate_update_validation_v1.cc")
+add_library(Cellerator::gate_validation ALIAS cellerator_gate_validation)
+foreach(_nf1_target cellerator_relation_semantics cellerator_relation_calculus cellerator_segment_host cellerator_gate_validation)
+    target_include_directories(${_nf1_target} PUBLIC "${_nf1_root}/include")
+    target_compile_features(${_nf1_target} PUBLIC cxx_std_17)
+    set_target_properties(${_nf1_target} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endforeach()
+target_link_libraries(cellerator_native_foundation INTERFACE
+    Cellerator::relation_calculus Cellerator::segment_host Cellerator::gate_validation)
+
+# Call after declaring consumer sources. Private implementation inclusions bypass
+# target ownership and produce duplicate or unqualified implementations.
+function(cellerator_link_native_foundation consumer)
+    get_target_property(_sources ${consumer} SOURCES)
+    get_target_property(_source_dir ${consumer} SOURCE_DIR)
+    foreach(_source IN LISTS _sources)
+        if(NOT IS_ABSOLUTE "${_source}")
+            set(_source "${_source_dir}/${_source}")
+        endif()
+        if(EXISTS "${_source}")
+            file(READ "${_source}" _text)
+            if(_text MATCHES "#[ \t]*include[ \t]*[<\"][^>\"]+\\.(cu|cc|cpp)[>\"]")
+                message(FATAL_ERROR "Native consumer ${consumer} includes a private implementation: ${_source}; link declared Cellerator targets instead")
+            endif()
+        endif()
+    endforeach()
+    target_link_libraries(${consumer} PRIVATE Cellerator::native_foundation)
+endfunction()
+
+# Device execution stays in the established prepared-relation, segment/gate,
+# and value-readiness owners. No host replacement satisfies this dependency.
+function(cellerator_link_native_cuda consumer)
+    foreach(_owner Cellerator::prepared_relation_cuda Cellerator::relation_algebra Cellerator::runtime)
+        if(NOT TARGET ${_owner})
+            message(FATAL_ERROR "${_owner} unavailable: configure CUDA and CELLERATOR_BUILD_SEMANTIC_SPINE_V1=ON")
+        endif()
+    endforeach()
+    cellerator_link_native_foundation(${consumer})
+    target_link_libraries(${consumer} PRIVATE Cellerator::prepared_relation_cuda
+        Cellerator::relation_algebra Cellerator::runtime)
+endfunction()
+
 # N lane owns this implementation. AUTO admits it once integrated; explicit ON
 # fails if its source fragment is unavailable, rather than qualifying an empty test.
 set(CELLERATOR_BUILD_NATIVE_NUMERIC "AUTO" CACHE STRING "Build native numeric targets: AUTO, ON, OFF")

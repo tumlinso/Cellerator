@@ -140,6 +140,10 @@ target_compile_options(cellerator_ce_exop_relation_apply_v1_test PRIVATE
 # here, while schema-v2-only operations continue to fail closed under the
 # frozen operation-core schema v1.
 include(src/compute/candidate/segment/CMakeLists.txt)
+list(REMOVE_ITEM CELLERATOR_RELATION_SEGMENT_SOURCES
+    src/compute/candidate/segment/segment_v2.cc
+    src/compute/candidate/segment/reduce_v2_reference.cc
+    src/compute/candidate/segment/normalize_v2_reference.cc)
 add_library(cellerator_relation_algebra STATIC
     src/compute/operation/relation_algebra_catalog.cc
     src/compute/operation/relation_algebra_assembly.cc
@@ -147,7 +151,6 @@ add_library(cellerator_relation_algebra STATIC
     src/compute/candidate/edge_map_or_gate.cu
     src/compute/candidate/relation_bundle.cc
     src/compute/candidate/edge/dynamic_support_mask_v1.cu
-    src/compute/candidate/edge/gate_update_validation_v1.cc
     src/compute/candidate/edge/general_edge_map_v1.cu
     src/compute/candidate/edge/indexed_gates_v1.cu
     src/compute/candidate/sparse_axis_update/sparse_axis_update_v1.cu
@@ -159,6 +162,7 @@ target_include_directories(cellerator_relation_algebra PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(cellerator_relation_algebra PUBLIC
+    Cellerator::segment_host Cellerator::gate_validation
     Cellerator::operation_core
     CUDA::cudart
 )

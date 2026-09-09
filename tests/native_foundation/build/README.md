@@ -27,3 +27,18 @@ native numerical provider.
 `CELLERATOR_BUILD_NATIVE_NUMERIC=AUTO` includes the N lane's production/test
 fragments once present. Explicit `ON` fails configuration if a fragment is
 missing; `OFF` excludes that capability. Empty CTest inventory never qualifies.
+
+B02 rehomes the retained relation semantic/calculus and segment host numerical
+owners and gate validator into compiled targets. Use
+`cellerator_link_native_foundation(consumer)` after declaring source files to
+link them and reject direct private `.cu`, `.cc`, or `.cpp` inclusions.
+`cellerator_link_native_cuda(consumer)` additionally requires and links the real
+`prepared_relation_cuda`, `relation_algebra` (segment and gate device kernels),
+and `runtime` (value readiness) owners. Missing device targets fail configuration;
+the host slice does not substitute for them. Declare consumer source files
+before calling the helper; it checks these direct sources, not preprocessor
+macro expansion or all transitively included headers.
+
+The B02 executable reuses the retained segment reduction test, including empty
+segments, extrema and paired moments. Its companion boundary test configures an
+external project and verifies rejection of a private CUDA implementation include.
