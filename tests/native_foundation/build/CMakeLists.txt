@@ -29,3 +29,7 @@ add_test(NAME ce_nf1_b04 COMMAND "${CMAKE_COMMAND}"
     "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/regressions"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/regressions.cmake")
 set_tests_properties(ce_nf1_b04 PROPERTIES LABELS "nf1;host;regression" TIMEOUT 90)
+add_test(NAME ce_nf1_b05 COMMAND "${CMAKE_COMMAND}"
+    "-DREPO_ROOT=${_nf1_root}" "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/external"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/external.cmake")
+set_tests_properties(ce_nf1_b05 PROPERTIES LABELS "nf1;host;external" TIMEOUT 90)

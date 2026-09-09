@@ -77,6 +77,45 @@ function(cellerator_link_native_cuda consumer)
         Cellerator::relation_algebra Cellerator::runtime)
 endfunction()
 
+# Build-tree package: consumers may live anywhere and link compiled archives.
+# This is deliberately not an installed SDK or a movable binary distribution.
+set(_nf1_export_targets cellerator_operation_schema_v2 cellerator_prepared_program_v2
+    cellerator_relation_semantics cellerator_relation_calculus cellerator_segment_host
+    cellerator_gate_validation cellerator_native_foundation)
+foreach(_nf1_target IN LISTS _nf1_export_targets)
+    string(REGEX REPLACE "^cellerator_" "" _nf1_export_name "${_nf1_target}")
+    set_target_properties(${_nf1_target} PROPERTIES EXPORT_NAME "${_nf1_export_name}")
+endforeach()
+export(TARGETS ${_nf1_export_targets} NAMESPACE Cellerator::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeFoundationTargets.cmake")
+execute_process(COMMAND git -C "${_nf1_root}" rev-parse HEAD
+    OUTPUT_VARIABLE _nf1_source_commit OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+set(_nf1_manifest "{\n  \"kind\": \"nf1-build-dependencies-v1\",\n  \"source_commit\": \"${_nf1_source_commit}\",\n  \"files\": [")
+set(_nf1_separator "")
+# Public include propagation exposes this repository header tree. Fingerprint all
+# its headers conservatively, plus each compiled source of the exported owners.
+file(GLOB_RECURSE _nf1_dependencies RELATIVE "${_nf1_root}" "${_nf1_root}/include/Cellerator/*.h" "${_nf1_root}/include/Cellerator/*.hh" "${_nf1_root}/include/Cellerator/*.cuh")
+foreach(_nf1_target IN LISTS _nf1_export_targets)
+    get_target_property(_nf1_sources ${_nf1_target} SOURCES)
+    if(_nf1_sources)
+        foreach(_nf1_source IN LISTS _nf1_sources)
+            file(RELATIVE_PATH _nf1_relative "${_nf1_root}" "${_nf1_source}")
+            list(APPEND _nf1_dependencies "${_nf1_relative}")
+        endforeach()
+    endif()
+endforeach()
+list(REMOVE_DUPLICATES _nf1_dependencies)
+list(SORT _nf1_dependencies)
+foreach(_nf1_dependency IN LISTS _nf1_dependencies)
+    file(SHA256 "${_nf1_root}/${_nf1_dependency}" _nf1_digest)
+    string(APPEND _nf1_manifest "${_nf1_separator}\n    {\"path\":\"${_nf1_dependency}\",\"sha256\":\"${_nf1_digest}\"}")
+    set(_nf1_separator ",")
+endforeach()
+string(APPEND _nf1_manifest "\n  ]\n}\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeFoundationDependencies.json" "${_nf1_manifest}")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/CelleratorNativeFoundationConfig.cmake"
+    "include(\"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeFoundationTargets.cmake\")\nset(CELLERATOR_NATIVE_FOUNDATION_DEPENDENCY_MANIFEST \"\${CMAKE_CURRENT_LIST_DIR}/CelleratorNativeFoundationDependencies.json\")\n")
+
 # N lane owns this implementation. AUTO admits it once integrated; explicit ON
 # fails if its source fragment is unavailable, rather than qualifying an empty test.
 set(CELLERATOR_BUILD_NATIVE_NUMERIC "AUTO" CACHE STRING "Build native numeric targets: AUTO, ON, OFF")

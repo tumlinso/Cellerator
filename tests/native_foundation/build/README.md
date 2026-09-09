@@ -59,3 +59,15 @@ Requesting retained suites together with the minimal-only option fails clearly,
 rather than silently excluding a requested regression. CUDA semantic-spine
 examples retain their default availability and can explicitly be disabled with
 `CELLERATOR_BUILD_SEMANTIC_SPINE_EXAMPLES=OFF`.
+
+B05 generates `CelleratorNativeFoundationConfig.cmake` in the producer build.
+A separate project uses `find_package(CelleratorNativeFoundation CONFIG REQUIRED)`
+with `CelleratorNativeFoundation_DIR` pointing there and links
+`Cellerator::native_foundation`. Its source and build directories may be anywhere.
+The build-tree package refers to the producer's compiled archives and source
+headers; moving those requires reconfiguration. It is not an installed SDK or a
+self-contained redistributable binary package. The adjacent dependency manifest
+records the configure-time Git revision and hashes all public headers plus each
+exported compiled source. Final qualification must reconfigure after committing.
+`ce_nf1_b05` builds the producer independently, then builds and executes a fresh
+external consumer using only the package, supported headers, and imported targets.
