@@ -50,7 +50,10 @@ instance_status program_session_v2::initialize(runtime::execution_session& sessi
             bytes=std::max(bytes,program.stages[i].binding_contract->workspace.minimum_bytes);
     }
     for (std::uint32_t i=0;i<session.stream_count;++i) {
-        bindings_[i]=runtime::bind_launch(&session,i,bytes);
+        if (session.streams[i].transient.bytes<bytes) return instance_status::insufficient_workspace;
+        // The exclusive borrower binds the entire reserved arena; individual
+        // stages later select bounded slices, including live intermediates.
+        bindings_[i]=runtime::bind_launch(&session,i,session.streams[i].transient.bytes);
         if (bindings_[i].status!=runtime::session_status::success || (bytes && !bindings_[i].workspace))
             return instance_status::insufficient_workspace;
         for (std::uint32_t j=0;j<i;++j)
