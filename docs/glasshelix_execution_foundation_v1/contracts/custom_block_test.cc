@@ -34,6 +34,11 @@ int main() {
         assert(std::abs(double(u[i])-std::tanh(double(x[i])*0.25-0.1))<1e-6);
         assert(std::abs(double(v[i])-double(x[i])/1.0625)<1e-6);
     }
+    nf::primal_record cached; cached.instance={{{1,0},{2,0},{1},{3,0}},{{4,0},{1}},{{5,0},{1}}};
+    block.effects={true,true,true,true};
+    assert(nf::permits_result_reuse(block,cached,cached));
+    auto changed=cached; changed.instance.parameters.generation.value++;
+    assert(!nf::permits_result_reuse(block,cached,changed));
     block.contract.capabilities |= nf::jvp;
     assert(nf::validate_compiled_block(block)==nf::status::unsupported_derivative);
 }

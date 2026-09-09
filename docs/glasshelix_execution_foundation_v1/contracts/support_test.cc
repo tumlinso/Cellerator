@@ -9,6 +9,8 @@ int main() {
     assert(nf::invalidation_for(support,changed,false)==(nf::refresh_activity|nf::invalidate_primal));
     changed.realization=nf::support_realization::compact_exact_active;
     assert(nf::invalidation_for(support,changed,false)&nf::rebuild_projection);
+    changed=support; changed.arithmetic_error_bound=1e-6;
+    assert(nf::invalidation_for(support,changed,false)&nf::rebuild_projection);
     changed=support; changed.epoch.value++;
     assert(nf::invalidation_for(support,changed,false)&nf::rebuild_structure);
     changed=support; changed.realization=nf::support_realization::approximate_drop;

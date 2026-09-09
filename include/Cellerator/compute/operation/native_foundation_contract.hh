@@ -210,7 +210,8 @@ inline status validate_derivative(const operation_contract& operation,
     if (request.object < differentiated_object::vector_field
         || request.object > differentiated_object::implemented_rollout)
         return status::invalid_contract;
-    if (!valid_primal(request.primal) || !valid_primal(live_primal)
+    if (!v2::same_stable_id(operation.definition, request.primal.instance.prepared.definition)
+        || !valid_primal(request.primal) || !valid_primal(live_primal)
         || !same_primal(request.primal, live_primal)) return status::stale_generation;
     if (!std::isfinite(request.direction_scale) || request.direction_scale <= 0
         || !std::isfinite(request.response_scale) || request.response_scale <= 0)
@@ -280,7 +281,11 @@ inline std::uint32_t invalidation_for(const support_contract& before,
         result |= refresh_activity | invalidate_primal;
         if (after.realization != support_realization::persistent) result |= rebuild_projection;
     }
-    if (before.realization != after.realization || before.accuracy != after.accuracy)
+    if (before.realization != after.realization || before.accuracy != after.accuracy
+        || before.storage_error_bound != after.storage_error_bound
+        || before.arithmetic_error_bound != after.arithmetic_error_bound
+        || before.dropping_error_bound != after.dropping_error_bound
+        || before.response_requested != after.response_requested)
         result |= rebuild_projection | invalidate_primal;
     // Approximate value-dependent drops must be reconsidered after value edits.
     if (values_changed && after.realization == support_realization::approximate_drop)
@@ -306,6 +311,13 @@ struct compiled_block {
 inline bool permits_fusion_or_memoization(const compiled_block& block) noexcept {
     return block.effects.dependencies_known && block.effects.writes_only_declared_outputs
         && block.effects.deterministic && block.effects.allocation_free_launch;
+}
+inline bool permits_result_reuse(const compiled_block& block,
+                                 const primal_record& cached,
+                                 const primal_record& requested) noexcept {
+    return permits_fusion_or_memoization(block) && valid_primal(cached)
+        && valid_primal(requested) && same_primal(cached, requested)
+        && v2::same_stable_id(block.contract.definition, cached.instance.prepared.definition);
 }
 inline status validate_compiled_block(const compiled_block& block) noexcept {
     auto state = validate_operation(block.contract);

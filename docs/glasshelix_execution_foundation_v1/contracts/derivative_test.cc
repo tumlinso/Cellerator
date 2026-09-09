@@ -16,7 +16,9 @@ int main() {
     assert(nf::validate_derivative(op,request,live,input,input)==nf::status::stale_generation);
     live=request.primal; live.branches.generation.value++;
     assert(nf::validate_derivative(op,request,live,input,input)==nf::status::stale_generation);
-    live=request.primal; request.smooth_at_primal=false;
+    live=request.primal; op.definition.low=99;
+    assert(nf::validate_derivative(op,request,live,input,input)==nf::status::stale_generation);
+    op.definition.low=1; request.smooth_at_primal=false;
     assert(nf::validate_derivative(op,request,live,input,input)==nf::status::unsupported_derivative);
     request.smooth_at_primal=true; request.convention=nf::derivative_convention::through_rounding;
     assert(nf::validate_derivative(op,request,live,input,input)==nf::status::unsupported_derivative);
