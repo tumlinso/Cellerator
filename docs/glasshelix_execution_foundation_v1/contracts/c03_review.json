@@ -1,0 +1,94 @@
+{
+  "task": "CE-NF1-C03",
+  "source_base_commit": "db8e8663c10b0b9a1a0a0bdca76c4231b269b0c1",
+  "evidence_level": "executed_host_contract_checks_only",
+  "summary": "Optional JVP/VJP/second-direction requests carry differentiated object, axis signatures, positive scales, stored-value convention and exact primal state/parameter/forcing/context/activity/branch generations. Missing derivative and nonsmooth/rounding semantics reject explicitly.",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "da4170556d10302d78d3cb3db949834742d2e45c70e5fb8045e392efb2b57c0d",
+    "docs/glasshelix_execution_foundation_v1/contracts/fixture.hh": "873c01da5eb87597b74a313e07a8f2a460860e40a4747b980d13f587264ca2ea",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "21e5f91f90565c3a3ba2411dcef351e0c06efb5dbcc9997b1a3f992f5aff7a9c",
+    "docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc": "2b5f6b0b16e4004eaced95943e1aaf07f756c186724e3ffdd99cbe537002b9fb",
+    "docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc": "cda93830d50e888978e3bcba220743757a3fdd4eb6454e89ce57ed5f026e9618"
+  },
+  "results": [
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-twvkzjvs/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-twvkzjvs/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-twvkzjvs/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-twvkzjvs/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-twvkzjvs/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-twvkzjvs/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": "Host descriptor and policy checks do not qualify numerical execution, external SDK linkage, CUDA, or the complete NF1 toolbox."
+}

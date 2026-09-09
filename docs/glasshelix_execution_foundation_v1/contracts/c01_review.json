@@ -1,0 +1,19 @@
+{
+  "task": "CE-NF1-C01",
+  "evidence_level": "compiled_executed_host_contract_validation_not_numerical_runtime",
+  "contracts": "operation_core_v2 extension header uses existing numerical/determinism/effect validation and persistent identities; three-input two-output signature, explicit snapshot requirement and output assembly owner",
+  "tests": [
+    "valid 3-input 2-output width33 signature",
+    "foreign domain rejected",
+    "foreign order rejected",
+    "duplicate output role rejected",
+    "unknown capability rejected",
+    "uninitialized output policy contradiction rejected"
+  ],
+  "command": "c++ -std=c++20 -Wall -Wextra -Werror -UNDEBUG -Iinclude docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc src/compute/operation/operation_core_v2/schema.cc -o /tmp/ce-nf1-contract-test && /tmp/ce-nf1-contract-test",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "5f23d9caa6a2c78ae39d3eeccce394445a43ff7b7d868e706003143ec86abadd",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "b16a06adb550b79c6d9a1ff73c7bcd57a7a4453d5fa86dfd4f3d697beaf33901"
+  },
+  "limits": "Descriptor/validation evidence only. No native operation launch, GPU, n-ary evaluation or full toolbox acceptance."
+}
