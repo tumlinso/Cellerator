@@ -1,0 +1,87 @@
+{
+  "source_revision": 7070,
+  "validation": {
+    "valid": true,
+    "task_count": 13,
+    "checkpoint_count": 2,
+    "gate_count": 12,
+    "barrier_count": 0,
+    "interface_count": 6
+  },
+  "selected_tasks": [
+    "CE-NF1-0000",
+    "CE-NF1-A01",
+    "CE-NF1-A02",
+    "CE-NF1-A03",
+    "CE-NF1-A04",
+    "CE-NF1-C01",
+    "CE-NF1-C02",
+    "CE-NF1-C03",
+    "CE-NF1-C04",
+    "CE-NF1-C05",
+    "CE-NF1-C06",
+    "CE-NF1-M00",
+    "CE-NF1-M10"
+  ],
+  "changed_semantic_tables": [
+    "interfaces"
+  ],
+  "interfaces": [
+    {
+      "id": "CE-NF1-IF-CONSUMER-BUILD",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md",
+        "CMakeLists.txt"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-DIFFERENTIAL",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-LIFETIME-VALUES",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh",
+        "include/Cellerator/execution/launch_bindings.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-NARY",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-NATIVE-OPERANDS",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-SUPPORT",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    }
+  ],
+  "preserved": "all other normalized semantic tables including lifecycle, queues, gates and claims",
+  "plan_sha256": "e2ef176139aebbc09dc15e254938d4f8adddafafd7237c70040cd5246a8e7771",
+  "export_sha256": "b9d851a0abbdaf4a077317d65bb60bbf456040e29122158b8749c85ee9d53c50",
+  "source_commit_for_concrete_paths": "7e586f653d1384aef0ab06d45f261579ff15570a",
+  "declared_path_changes_only": true,
+  "not_applied": true
+}
