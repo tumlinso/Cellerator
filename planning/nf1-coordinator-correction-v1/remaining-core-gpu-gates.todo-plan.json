@@ -1,0 +1,2435 @@
+{
+  "schema_version": 3,
+  "project": {
+    "configuration": {
+      "busy_timeout_ms": 5000,
+      "claim_lease_seconds": 7200,
+      "context_budget_bytes": 12000,
+      "legacy_review_days": {
+        "blocked": 7,
+        "in_progress": 3,
+        "planned": 3,
+        "stale": 3
+      },
+      "resource_lease_seconds": 300,
+      "workflow_front_door": "project-control"
+    },
+    "created_at": "2026-08-26T10:34:35Z",
+    "project_name": "Cellerator",
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "schema_version": 2
+  },
+  "tasks": [
+    {
+      "id": "CE-NF1-0000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator native execution foundation for GlassHelix",
+      "objective": "",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-0000.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": []
+    },
+    {
+      "id": "CE-NF1-A01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Revalidate source and both planning precedents",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a01.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Resolve first-class dispatch and host evidence services",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a02.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Inventory native consumer reachability and numerical gaps",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a03.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Adopt constructive extension and regression boundary",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a04.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Partition host semantic and CUDA target dependencies",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Expose existing reusable operation targets",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make toolchain and architecture selection explicit",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Gate optional suites and provide CPU correctness target",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add relocatable build-tree consumer proof",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define multi-operand operation and effect contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c01.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define immutable preparation and independent bindings",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c02.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define derivative and differential provenance contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c03.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define support activity, epochs and accuracy contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c04.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define custom compiled block contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c05.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Freeze developmental native capability seam",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c06.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide local arithmetic JVP and VJP",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "include/Cellerator/compute/operation/native_numeric/local_arithmetic.hh",
+          "src/compute/operation/differential",
+          "src/compute/operation/native_numeric/local_arithmetic.cc",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M00",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Baseline and ownership accepted",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m00.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m00.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M00",
+          "title": "Baseline and ownership accepted",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M00-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M00"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M10",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Developmental contracts published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m10.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m10.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M10",
+          "title": "Developmental contracts published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M10-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M10"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide independent host f64 and executable f32 references",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize relation application across widths and tails",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n02",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n02/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize transpose and explicit destination effects",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n03",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n03/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide batched local arithmetic and gather/scatter",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n04",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n04/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize needed reductions and numeric diagnostics",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n05",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n05/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish general-width execution capability",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n06",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n06/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize stage bindings without a second runner",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/current_implementation.qmd",
+          "include/Cellerator/execution/launch_bindings.hh",
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preflight all dynamic launch bindings",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind sessions and independently reusable instances",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "include/Cellerator/runtime/session.cuh",
+          "src/execution/program",
+          "src/runtime/session_setup.cu.inc",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-a2d01bc7.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p03",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Plan scratch lifetimes and bounded state buffers",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "src/runtime/session_setup.cu.inc",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-a2d01bc7.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p04",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement failure and poison semantics",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "include/Cellerator/runtime/relation_value_readiness.hh",
+          "src/execution/program",
+          "src/runtime/relation_value_readiness.cu",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p05",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Map stage provenance and counters",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify linked composed-program boundary",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B05"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "/home/tumlinson/.local/state/nf1-20260908-v1/controller/run_gpu_gate-b1567876.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p07",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p07/bindings.json"
+          },
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Extract reusable structural preparation ownership",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v01",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind value and gradient instances through current planes",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v02",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preserve asynchronous publication and read completion",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v03",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Support f32 authoritative values alongside f16 projections",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/candidate/sparse/project.hh",
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/candidate/sparse/kernels/csr_spmm_fwd_kernel_.cuh",
+          "src/compute/candidate/sparse/project.cu",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v04",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make epoch replacement and stale-ticket rejection explicit",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v05",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify value provenance under update and branching",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/architecture/providers/nvidia/sm70/edge_value_gradient/relation_value_update.cu",
+          "src/compute/operation/prepared_relation.cu",
+          "src/compute/operation/relation_calculus.cc",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v06",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish executable shared-value capability",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "tests/native_foundation/values/run_gpu_gate.py",
+            "--gate-script",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v07",
+            "--verifier",
+            "docs/glasshelix_execution_foundation_v1/baseline/verify_gpu_lease.py",
+            "--gpu-uuid",
+            "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+          ],
+          "cuda": {
+            "cpu_threads": 2,
+            "gpu_uuids": [
+              "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+            ],
+            "gpus": 1,
+            "quiescence": {
+              "timeout_seconds": 60
+            },
+            "toolchain": {
+              "require_sanitizer": false,
+              "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9"
+            }
+          },
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v07/bindings.json"
+          }
+        }
+      ]
+    }
+  ],
+  "runs": [],
+  "interfaces": []
+}
