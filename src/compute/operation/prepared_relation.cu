@@ -174,13 +174,41 @@ struct cold_tiles {
     }
 };
 } // namespace
+// Counted immutable projection storage. Host callers serialize cold preparation
+// across instances sharing this owner; CUDA reads may use independent streams.
+struct prepared_relation_structure {
+    int device=0;
+    std::uint64_t identity=0,base_bytes=0;
+    void* forward_payload=nullptr;void* transpose_payload=nullptr;
+    std::uint32_t* logical_map=nullptr;
+    cm::feature_major_projection_view forward_view{};
+    cm::transpose_projection_view transpose_view{};
+    std::vector<std::uint32_t> logical_to_physical,physical_to_logical;
+    std::vector<gradient_contract::edge_ref_v1> physical_edges;
+    gradient_contract::edge_ref_v1* device_edges=nullptr;
+    ~prepared_relation_structure(){
+        int prior=-1;cudaGetDevice(&prior);if(prior!=device)cudaSetDevice(device);
+        if(device_edges)cudaFree(device_edges);
+        if(logical_map)cudaFree(logical_map);
+        if(transpose_payload)cudaFree(transpose_payload);
+        if(forward_payload)cudaFree(forward_payload);
+        if(prior>=0 && prior!=device)cudaSetDevice(prior);
+    }
+};
+namespace {
+std::uint64_t next_pair_incarnation() noexcept {
+    static std::atomic<std::uint64_t> serial{1};
+    auto id=serial.load();
+    do{if(id==std::numeric_limits<std::uint64_t>::max())return 0;}
+    while(!serial.compare_exchange_weak(id,id+1));
+    return id;
+}
+}
 struct prepared_relation_pair {
     native_contract forward{},transpose{};
     int device=0;cudaStream_t stream=nullptr;bool poisoned=false;
-    void* forward_payload=nullptr;void* transpose_payload=nullptr;
-    std::uint32_t* logical_map=nullptr;void* values=nullptr;
-    cm::feature_major_projection_view forward_view{};
-    cm::transpose_projection_view transpose_view{};
+    std::shared_ptr<prepared_relation_structure> structure;
+    void* values=nullptr;
     core::feature_major_small_n_prepared_state forward_state{};
     core::transpose_backward_prepared_state transpose_state{};
     core::prepared_operation forward_operation{},transpose_operation{};
@@ -192,9 +220,7 @@ struct prepared_relation_pair {
     gradient_provider::hybrid_gradient* hybrid=nullptr;
     bool hybrid_selected=false;
     std::uint64_t persistent_limit = 0, incarnation = 0;
-    std::vector<std::uint32_t> logical_to_physical, physical_to_logical;
-    std::vector<gradient_contract::edge_ref_v1> physical_edges;
-    gradient_contract::edge_ref_v1* device_edges = nullptr;
+
     __half *source_scratch = nullptr, *cotangent_scratch = nullptr;
     execution::order_id physical_order{};
     bool gradient_prepared = false;
@@ -208,10 +234,9 @@ struct prepared_relation_pair {
         (void)readiness.close();
         cudaStreamSynchronize(stream);
         gradient_provider::destroy_hybrid_gradient(hybrid);
-        if(device_edges)cudaFree(device_edges);
         if(source_scratch)cudaFree(source_scratch);if(cotangent_scratch)cudaFree(cotangent_scratch);
-        if(values)cudaFree(values);if(logical_map)cudaFree(logical_map);
-        if(transpose_payload)cudaFree(transpose_payload);if(forward_payload)cudaFree(forward_payload);
+        if(values)cudaFree(values);
+        structure.reset();
         if(prior>=0 && prior!=device)cudaSetDevice(prior);
     }
 };
@@ -232,12 +257,10 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         unsigned flags=0;s=cuda_status(cudaStreamGetFlags(stream,&flags));if(!s)return s;
         std::unique_ptr<prepared_relation_pair> p(new prepared_relation_pair);
         p->forward=f;p->transpose=t;p->device=current;p->stream=stream;
-        static std::atomic<std::uint64_t> serial{1};
-        auto id=serial.load();
-        do { if(id==std::numeric_limits<std::uint64_t>::max())
-            return {status_code::invalid_state,"pair incarnation exhausted"};
-        } while(!serial.compare_exchange_weak(id,id+1));
-        p->incarnation=id;p->persistent_limit=options.persistent_byte_limit;
+        p->structure=std::make_shared<prepared_relation_structure>();p->structure->device=current;
+        auto id=next_pair_incarnation();
+        if(!id)return {status_code::invalid_state,"pair incarnation exhausted"};
+        p->incarnation=id;p->structure->identity=id;p->persistent_limit=options.persistent_byte_limit;
         p->physical_order=forward.topology.logical_edge_order;
         p->physical_order.high^=0x464d503147524144ULL;
         if(!execution::valid_identity(p->physical_order))p->physical_order.low=1;
@@ -263,15 +286,15 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             // with CSR logical positions before CTP derives its bidirectional maps.
             auto* map=reinterpret_cast<std::uint32_t*>(fh.data()+fv.header.source_value_positions_offset);
             for(std::uint64_t i=0;i<forward.topology.edge_count;++i)map[i]=cold.logical[map[i]];
-            p->physical_to_logical.assign(map,map+forward.topology.edge_count);
-            p->logical_to_physical.resize(forward.topology.edge_count);
-            p->physical_edges.resize(forward.topology.edge_count);
+            p->structure->physical_to_logical.assign(map,map+forward.topology.edge_count);
+            p->structure->logical_to_physical.resize(forward.topology.edge_count);
+            p->structure->physical_edges.resize(forward.topology.edge_count);
             std::vector<std::uint32_t> logical_rows(forward.topology.edge_count);
             for(std::uint32_t row=0;row<forward.topology.destination.extent;++row)
                 for(auto e=topology.row_offsets[row];e<topology.row_offsets[row+1];++e)logical_rows[e]=row;
             for(std::uint32_t slot=0;slot<forward.topology.edge_count;++slot) {
-                auto logical=map[slot];p->logical_to_physical[logical]=slot;
-                p->physical_edges[slot]={topology.source_indices[logical],logical_rows[logical],slot};
+                auto logical=map[slot];p->structure->logical_to_physical[logical]=slot;
+                p->structure->physical_edges[slot]={topology.source_indices[logical],logical_rows[logical],slot};
             }
             cm::transpose_projection_build_request tr{report.transpose_projection,{2,1},fv};
             cm::transpose_projection_requirements rr{};s=physical(cm::query_transpose_projection_requirements_host(tr,&rr));if(!s)return s;
@@ -279,31 +302,32 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             s=physical(cm::build_transpose_projection_host(tr,{th.data(),th.size()},&tv));if(!s)return s;
             auto bytes=fr.payload_bytes+rr.payload_bytes+forward.topology.edge_count*26;
             p->updates.persistent_bytes=bytes;
+            p->structure->base_bytes=bytes-forward.topology.edge_count*2;
             if(options.persistent_byte_limit && bytes>options.persistent_byte_limit)
                 return {status_code::insufficient_capacity,"projection and mutable value storage exceed persistent limit"};
-            s=cuda_status(cudaMalloc(&p->forward_payload,fr.payload_bytes));if(!s)return s;
-            s=cuda_status(cudaMalloc(&p->transpose_payload,rr.payload_bytes));if(!s)return s;
-            s=cuda_status(cudaMalloc(reinterpret_cast<void**>(&p->logical_map),forward.topology.edge_count*4));if(!s)return s;
+            s=cuda_status(cudaMalloc(&p->structure->forward_payload,fr.payload_bytes));if(!s)return s;
+            s=cuda_status(cudaMalloc(&p->structure->transpose_payload,rr.payload_bytes));if(!s)return s;
+            s=cuda_status(cudaMalloc(reinterpret_cast<void**>(&p->structure->logical_map),forward.topology.edge_count*4));if(!s)return s;
             s=cuda_status(cudaMalloc(&p->values,forward.topology.edge_count*2));if(!s)return s;
             auto upload=[&](void* dst,const void* src,std::size_t bytes) {
                 auto submitted=cudaMemcpyAsync(dst,src,bytes,cudaMemcpyHostToDevice,stream);
                 auto completed=cudaStreamSynchronize(stream);
                 return cuda_status(submitted==cudaSuccess?completed:submitted);
             };
-            s=upload(p->forward_payload,fh.data(),fh.size());if(!s)return s;
-            s=upload(p->transpose_payload,th.data(),th.size());if(!s)return s;
-            s=upload(p->logical_map,map,forward.topology.edge_count*4);if(!s)return s;
+            s=upload(p->structure->forward_payload,fh.data(),fh.size());if(!s)return s;
+            s=upload(p->structure->transpose_payload,th.data(),th.size());if(!s)return s;
+            s=upload(p->structure->logical_map,map,forward.topology.edge_count*4);if(!s)return s;
             // Cold host arrays cease to be borrowed when preparation returns.
             s=cuda_status(cudaStreamSynchronize(stream));if(!s)return s;
-            s=physical(cm::rebind_feature_major_projection(fv,p->forward_payload,fh.size(),&p->forward_view));if(!s)return s;
-            s=physical(cm::rebind_transpose_projection(tv,p->transpose_payload,th.size(),&p->transpose_view));if(!s)return s;
+            s=physical(cm::rebind_feature_major_projection(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
+            s=physical(cm::rebind_transpose_projection(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
             core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
             core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
             if(!fs)return {status_code::unsupported_semantics,fs.message};
             {
                 auto prepare_transpose = forward.dense_width == 1 ? core::prepare_transpose_backward_n1_operation : core::prepare_transpose_backward_n16_operation;
-                auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+                auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
                 if(!ts)return {status_code::unsupported_semantics,ts.message};
             }
         }
@@ -318,8 +342,50 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
     }catch(const std::bad_alloc&){return {status_code::insufficient_capacity,"cold preparation allocation failed"};}
     catch(...){return {status_code::invalid_argument,"cold projection construction failed"};}
 }
+status create_relation_instance(const prepared_relation_pair& source,cudaStream_t stream,
+    prepared_relation_pair** out) noexcept {
+    if(!out || *out)return {status_code::invalid_argument,"new instance slot must be present and null"};
+    if(source.poisoned)return {status_code::invalid_state,"cannot share a poisoned instance"};
+    int current=-1;auto s=cuda_status(cudaGetDevice(&current));if(!s)return s;
+    if(current!=source.device)return {status_code::incompatible_device,"instance must use structure device"};
+    cudaStreamCaptureStatus capture{};s=cuda_status(cudaStreamIsCapturing(stream,&capture));if(!s)return s;
+    if(capture!=cudaStreamCaptureStatusNone)return {status_code::unsupported_semantics,"instance preparation cannot be captured"};
+    try {
+        std::unique_ptr<prepared_relation_pair> p(new prepared_relation_pair);
+        p->device=source.device;p->stream=stream;p->structure=source.structure;
+        p->forward=source.forward;p->transpose=source.transpose;p->physical_order=source.physical_order;
+        p->persistent_limit=source.persistent_limit;p->incarnation=next_pair_incarnation();
+        if(!p->incarnation)return {status_code::invalid_state,"pair incarnation exhausted"};
+        p->report=source.report;p->report.latest_enqueued_generation={};
+        p->report.value_refreshes=0;p->report.accepted_forward_launches=0;p->report.accepted_transpose_launches=0;
+        auto edges=p->forward.semantic.topology.edge_count;
+        p->updates.persistent_bytes=p->structure->base_bytes+edges*2;
+        if(edges){
+            s=cuda_status(cudaMalloc(&p->values,edges*2));if(!s)return s;
+            // Candidate launch state points into the new instance, while views
+            // refer to the one counted structure. No projection is rebuilt.
+            const auto& f=p->forward;const auto& t=p->transpose;
+            core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
+            core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
+            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,f.numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+            if(!fs)return {status_code::unsupported_semantics,fs.message};
+            auto prepare_transpose=f.semantic.dense_width==1?core::prepare_transpose_backward_n1_operation:core::prepare_transpose_backward_n16_operation;
+            auto ts=prepare_transpose(t.problem,t.structures,tk,t.numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+            if(!ts)return {status_code::unsupported_semantics,ts.message};
+        }
+        s=readiness_status(p->readiness.initialize(p->forward.semantic.topology.identity,
+            p->forward.semantic.topology.epoch,current,stream));if(!s)return s;
+        *out=p.release();return {};
+    }catch(const std::bad_alloc&){return {status_code::insufficient_capacity,"instance allocation failed"};}
+}
 status inspect(const prepared_relation_pair& p,preparation_report* out) noexcept {
-    if(!out)return {status_code::invalid_argument,"report is null"};*out=p.report;return {};
+    if(!out)return {status_code::invalid_argument,"report is null"};*out=p.report;
+    out->structural_preparation_id=p.structure->identity;
+    out->structural_instance_count=p.structure.use_count();
+    out->shared_structural_bytes=p.structure->base_bytes+
+        (p.structure->device_edges?p.structure->physical_edges.size()*sizeof(gradient_contract::edge_ref_v1):0);
+    out->instance_value_bytes=p.forward.semantic.topology.edge_count*2;
+    return {};
 }
 void destroy(prepared_relation_pair* p) noexcept {
     // Compatibility path cannot report busy. Preserve the pair and its borrow;
@@ -393,10 +459,10 @@ bool overlaps(const void* a,std::uint64_t a_bytes,const void* b,std::uint64_t b_
 bool protected_overlap(const prepared_relation_pair& p,const void* data,std::uint64_t bytes) noexcept {
     auto edges=p.forward.semantic.topology.edge_count;
     return (p.hybrid&&gradient_provider::overlaps_hybrid_storage(*p.hybrid,data,bytes))
-        || overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.logical_map,edges*4)
-        || overlaps(data,bytes,p.forward_payload,p.forward_view.header.payload_bytes)
-        || overlaps(data,bytes,p.transpose_payload,p.transpose_view.header.payload_bytes)
-        || overlaps(data,bytes,p.device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
+        || overlaps(data,bytes,p.values,edges*2) || overlaps(data,bytes,p.structure->logical_map,edges*4)
+        || overlaps(data,bytes,p.structure->forward_payload,p.structure->forward_view.header.payload_bytes)
+        || overlaps(data,bytes,p.structure->transpose_payload,p.structure->transpose_view.header.payload_bytes)
+        || overlaps(data,bytes,p.structure->device_edges,edges*sizeof(gradient_contract::edge_ref_v1))
         || (p.source_scratch && overlaps(data,bytes,p.source_scratch,p.forward.semantic.topology.source.extent*32))
         || (p.cotangent_scratch && overlaps(data,bytes,p.cotangent_scratch,p.forward.semantic.topology.destination.extent*32));
 }
@@ -429,7 +495,7 @@ status publish_values(prepared_relation_pair& p,const device_values_binding& bin
     cudaError_t submitted=cudaSuccess;
     if(topology.edge_count) {
         gather_values<<<(topology.edge_count+255)/256,256,0,stream>>>(
-            static_cast<const std::uint16_t*>(binding.f16_data),p.logical_map,
+            static_cast<const std::uint16_t*>(binding.f16_data),p.structure->logical_map,
             static_cast<std::uint16_t*>(p.values),topology.edge_count);
         submitted=cudaPeekAtLastError();
     }
@@ -511,7 +577,7 @@ status check_edge_plane(const prepared_relation_pair& p,const edge_plane_view& p
 }
 status inspect_edge_layout(const prepared_relation_pair& p,edge_layout_view* out) noexcept {
     if(!out)return {status_code::invalid_argument,"edge layout output absent"};
-    *out={p.physical_order,p.forward.semantic.topology.edge_count,p.logical_to_physical.data()};return {};
+    *out={p.physical_order,p.forward.semantic.topology.edge_count,p.structure->logical_to_physical.data()};return {};
 }
 status inspect_updates(const prepared_relation_pair& p,relation_update_report* out) noexcept {
     if(!out)return {status_code::invalid_argument,"update report output absent"};
@@ -532,28 +598,29 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
         return {status_code::unsupported_semantics,"full-f32 semantics cannot use WMMA"};
     if(p.gradient_prepared)return {status_code::invalid_state,"gradient already prepared"};
     auto nx=calculus.forward.topology.source.extent*16,ny=calculus.forward.topology.destination.extent*16;
-    auto bytes=p.physical_edges.size()*sizeof(gradient_contract::edge_ref_v1);
+    auto bytes=p.structure->physical_edges.size()*sizeof(gradient_contract::edge_ref_v1);
     auto scratch=calculus.gradient==gradient_arithmetic::round_operands_f16_rne?(nx+ny)*2:0;
     if((options.scratch_byte_limit && scratch>options.scratch_byte_limit) ||
         (p.persistent_limit && bytes+scratch>p.persistent_limit-p.updates.persistent_bytes))
         return {status_code::insufficient_capacity,"gradient prepared storage exceeds budget"};
-    gradient_contract::edge_ref_v1* edges=nullptr;__half *x=nullptr,*y=nullptr;
-    auto cleanup=[&](){if(edges)cudaFree(edges);if(x)cudaFree(x);if(y)cudaFree(y);};
-    if(bytes) {s=cuda_status(cudaMalloc(&edges,bytes));if(!s){cleanup();return s;}}
+    gradient_contract::edge_ref_v1* edges=p.structure->device_edges;
+    const bool owns_new_edges=edges==nullptr;__half *x=nullptr,*y=nullptr;
+    auto cleanup=[&](){if(owns_new_edges && edges)cudaFree(edges);if(x)cudaFree(x);if(y)cudaFree(y);};
+    if(bytes && owns_new_edges) {s=cuda_status(cudaMalloc(&edges,bytes));if(!s){cleanup();return s;}}
     if(scratch && nx) {s=cuda_status(cudaMalloc(&x,nx*2));if(!s){cleanup();return s;}}
     if(scratch && ny) {s=cuda_status(cudaMalloc(&y,ny*2));if(!s){cleanup();return s;}}
-    if(bytes) {
-        auto submitted=cudaMemcpyAsync(edges,p.physical_edges.data(),bytes,cudaMemcpyHostToDevice,stream);
+    if(bytes && owns_new_edges) {
+        auto submitted=cudaMemcpyAsync(edges,p.structure->physical_edges.data(),bytes,cudaMemcpyHostToDevice,stream);
         auto completed=cudaStreamSynchronize(stream);
         s=cuda_status(submitted==cudaSuccess?completed:submitted);if(!s){cleanup();return s;}
     }
     gradient_provider::hybrid_gradient* hybrid=nullptr;
     gradient_provider::hybrid_report hybrid_report{};
     if(options.route==gradient_route::force_hybrid &&
-        calculus.gradient==gradient_arithmetic::round_operands_f16_rne && !p.physical_edges.empty()) {
+        calculus.gradient==gradient_arithmetic::round_operands_f16_rne && !p.structure->physical_edges.empty()) {
         auto limit=p.persistent_limit?p.persistent_limit-p.updates.persistent_bytes-bytes-scratch:std::uint64_t(256)*1024*1024;
-        auto result=limit?gradient_provider::prepare_hybrid_gradient(p.physical_edges.data(),
-            {edges,0,static_cast<std::uint32_t>(p.physical_edges.size()),
+        auto result=limit?gradient_provider::prepare_hybrid_gradient(p.structure->physical_edges.data(),
+            {edges,0,static_cast<std::uint32_t>(p.structure->physical_edges.size()),
              static_cast<std::uint32_t>(calculus.forward.topology.source.extent),
              static_cast<std::uint32_t>(calculus.forward.topology.destination.extent)},nullptr,0,limit,stream,&hybrid,options.scratch_byte_limit?options.scratch_byte_limit-scratch:~std::uint64_t{0})
              :gradient_contract::status_v1::unsupported;
@@ -574,7 +641,7 @@ status prepare_relation_gradient(prepared_relation_pair& p,const relation_calcul
     // Conservative automatic selection may reject promotion after cold cover
     // discovery. Retain no unused panel storage in that case.
     if(!selection.use_hybrid){gradient_provider::destroy_hybrid_gradient(hybrid);hybrid=nullptr;hybrid_report={};}
-    p.device_edges=edges;p.source_scratch=x;p.cotangent_scratch=y;
+    p.structure->device_edges=edges;p.source_scratch=x;p.cotangent_scratch=y;
     p.hybrid=hybrid;p.hybrid_selected=selection.use_hybrid;
     p.calculus=calculus;p.gradient_options=options;p.gradient_prepared=true;
     p.updates.persistent_bytes+=bytes+hybrid_report.persistent_bytes;
@@ -617,7 +684,7 @@ status enqueue_edge_gradient(prepared_relation_pair& p,const relation_calculus_d
         overlaps(output.f32_data,t.edge_count*4,cotangent.data,ny*4))
         return {status_code::invalid_argument,"gradient operands overlap protected or output storage"};
     gradient_provider::relation_gradient_request request{};
-    request.support={p.device_edges,0,static_cast<std::uint32_t>(t.edge_count),
+    request.support={p.structure->device_edges,0,static_cast<std::uint32_t>(t.edge_count),
         static_cast<std::uint32_t>(t.source.extent),static_cast<std::uint32_t>(t.destination.extent)};
     request.source=static_cast<const float*>(input.data);request.cotangent=static_cast<const float*>(cotangent.data);request.output=static_cast<float*>(output.f32_data);
     request.source_capacity=input.count;request.cotangent_capacity=cotangent.count;request.output_capacity=output.count;

@@ -50,6 +50,10 @@ struct preparation_report {
     std::uint64_t value_refreshes = 0;
     std::uint64_t accepted_forward_launches = 0;
     std::uint64_t accepted_transpose_launches = 0;
+    std::uint64_t structural_preparation_id = 0;
+    std::uint64_t structural_instance_count = 0;
+    std::uint64_t shared_structural_bytes = 0;
+    std::uint64_t instance_value_bytes = 0;
     const char* forward_candidate = nullptr; // actual bound implementation
     const char* transpose_candidate = nullptr;
 };
@@ -61,6 +65,12 @@ status prepare_relation_pair(const operation_descriptor& forward,
                              const preparation_options& options,
                              cudaStream_t stream,
                              prepared_relation_pair** out) noexcept;
+// Retain the existing immutable projections/maps on the same device, allocating
+// only a fresh value plane and independent readiness/counters for the new stream.
+// No publication is inherited. Caller serializes cold operations across siblings.
+// Source may close after return; remaining instances retain structural ownership.
+status create_relation_instance(const prepared_relation_pair& source,
+                                cudaStream_t stream, prepared_relation_pair** out) noexcept;
 // Strictly increasing nonzero generation; borrowed values live through stream completion.
 // Successful submission publishes the enqueued generation, not GPU completion.
 status publish_values(prepared_relation_pair&, const device_values_binding&,
