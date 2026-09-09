@@ -18,7 +18,7 @@ def run(argv, cwd=None):
 def prepare():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bindings", type=Path, required=True)
-    parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02"], default="ce_nf1_v01")
+    parser.add_argument("--target", choices=["ce_nf1_v01", "ce_nf1_v02", "ce_nf1_v03"], default="ce_nf1_v01")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()

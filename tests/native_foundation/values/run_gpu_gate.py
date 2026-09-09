@@ -81,6 +81,7 @@ def main():
         json.dump(bindings, output, indent=2)
         output.write('\n')
     os.chmod(derived, 0o444)
+    os.environ['NF1_LEASED_BINDINGS'] = derived
     matrix = json.loads((script.parent.parent / 'machine/acceptance_matrix.json').read_text())
     group = matrix['gate_groups'][args.group]
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
