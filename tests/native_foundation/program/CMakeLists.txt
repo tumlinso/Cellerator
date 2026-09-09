@@ -52,3 +52,9 @@ if(NF1_PROGRAM_CUDA)
   add_test(NAME ce_nf1_p03_memcheck COMMAND "${NF1_COMPUTE_SANITIZER}" --tool memcheck --error-exitcode 99 $<TARGET_FILE:ce_nf1_p03>)
   set_tests_properties(ce_nf1_p03 ce_nf1_p03_memcheck PROPERTIES LABELS "nf1;cuda;session" TIMEOUT 120)
 endif()
+add_executable(ce_nf1_p04 p04.cc
+  "${CE_ROOT}/src/execution/program/program_v2.cc"
+  "${CE_ROOT}/src/execution/program/workspace_v2.cc")
+target_include_directories(ce_nf1_p04 PRIVATE "${CE_ROOT}/include")
+target_compile_features(ce_nf1_p04 PRIVATE cxx_std_17)
+add_test(NAME ce_nf1_p04 COMMAND ce_nf1_p04)

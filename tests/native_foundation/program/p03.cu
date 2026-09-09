@@ -38,7 +38,7 @@ int main()try {
     check(owner.session.streams[0].execution.stream==original_stream,"reinit preserves owning stream");
     float *input[2]{},*output[2]{},*observed{};
     for(unsigned i=0;i<2;++i) {
-        void* scratch{};check(rt::reserve_transient(&owner.session,i,16,&scratch)==rt::session_status::success,"native scratch");
+        void* scratch{};check(rt::reserve_transient(&owner.session,i,32,&scratch)==rt::session_status::success,"native scratch");
         check(rt::prepare_stream_libraries(&owner.session,i)==rt::session_status::success,"native library preparation");
         void* a{};check(rt::reserve_persistent(&owner.session,rt::persistent_lifetime::graph_stable,16,&a)==rt::session_status::success,"input allocation");input[i]=static_cast<float*>(a);
         check(rt::reserve_persistent(&owner.session,rt::persistent_lifetime::graph_stable,16,&a)==rt::session_status::success,"output allocation");output[i]=static_cast<float*>(a);
@@ -61,13 +61,16 @@ int main()try {
     cuda_ok(cudaMemcpy(input[0],a.data(),16,cudaMemcpyHostToDevice));cuda_ok(cudaMemcpy(input[1],b.data(),16,cudaMemcpyHostToDevice));
     pg::launch_binding_v2 launch_bindings[2]{};
     for(unsigned i=0;i<2;++i) {
-        launch_bindings[i]={input[i],output[i],nullptr,binding[i].workspace,binding[i].workspace_bytes};
+        cuda_ok(cudaMemset(binding[i].workspace,0xa5,16));
+        launch_bindings[i]={input[i],output[i],nullptr,static_cast<unsigned char*>(binding[i].workspace)+16,16};
         check(owner.instances.execute(i,&launch_bindings[i],1,{1})==pg::instance_status::success,"real instance execute");
     }
     owner.session.device=-1;
     rt::launch_runtime_binding invalid_device{};
     check(owner.instances.binding(0,invalid_device)==pg::instance_status::device_mismatch,"device ownership checked");
     owner.session.device=0;
+    auto overrun=launch_bindings[0];overrun.workspace_bytes=17;
+    check(owner.instances.execute(0,&overrun,1,{2})==pg::instance_status::invalid_binding,"slice overrun rejected");
     auto wrong=launch_bindings[0];wrong.workspace=binding[1].workspace;
     check(owner.instances.execute(0,&wrong,1,{2})==pg::instance_status::invalid_binding,"foreign scratch rejected");
     cuda_ok(cudaStreamCreateWithFlags(&owner.consumer,cudaStreamNonBlocking));
@@ -78,7 +81,7 @@ int main()try {
     check(owner.instances.end_read(1,ticket,owner.consumer)==pg::instance_status::invalid_state,"wrong instance ticket rejected");
     check(owner.instances.execute(1,&launch_bindings[1],1,{2})==pg::instance_status::success,"independent instance still executes");
     cudaDeviceProp props{};cuda_ok(cudaGetDeviceProperties(&props,0));
-    delayed_read<<<1,1,0,owner.consumer>>>(static_cast<float*>(binding[0].workspace),observed,static_cast<unsigned long long>(props.clockRate)*20);
+    delayed_read<<<1,1,0,owner.consumer>>>(static_cast<float*>(launch_bindings[0].workspace),observed,static_cast<unsigned long long>(props.clockRate)*20);
     cuda_ok(cudaPeekAtLastError());
     check(owner.instances.end_read(0,ticket,owner.consumer)==pg::instance_status::success,"reader return queues owner wait");
     a[0]=9;
@@ -87,6 +90,9 @@ int main()try {
     check(owner.instances.close()==pg::instance_status::success,"checked close observes completion");
     float read{};cuda_ok(cudaMemcpy(&read,observed,4,cudaMemcpyDeviceToHost));check(read==2,"borrowed scratch preserved");
     for(unsigned i=0;i<2;++i) {
+        std::array<unsigned char,16> canary{};
+        cuda_ok(cudaMemcpy(canary.data(),binding[i].workspace,16,cudaMemcpyDeviceToHost));
+        for(auto value:canary)check(value==0xa5,"scratch slice prefix preserved");
         std::array<float,4> got{};cuda_ok(cudaMemcpy(got.data(),output[i],16,cudaMemcpyDeviceToHost));
         for(unsigned j=0;j<4;++j) check(got[j]==2*(i?b[j]:a[j])+1,"independent numeric results");
     }

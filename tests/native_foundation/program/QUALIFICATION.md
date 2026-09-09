@@ -112,3 +112,22 @@ The adapter uses one session stream per instance and never switches streams for
 an instance. Its nonblocking host guard rejects reentry. All runtime consumers
 must rebuild for the transient session layout addition at M20. Tests cover duplicate
 attachment, foreign detach, close refusal and initialized handle preservation.
+
+P04 prepares whole-program stage scratch requirements and explicit inclusive
+intermediate lifetimes in the existing program namespace. Deterministic first-fit
+reuse is bounded but does not claim globally optimal packing. Preparation owns
+only metadata; payload allocation remains in the native session or caller.
+Stage-local slices reuse storage; retained intermediate slots overlap neither
+live stage scratch nor each other. Invalid alignment, overflow and failed binds
+preserve the prior plan/output. Two externally owned state buffers change roles
+without copies. The caller commits roles only after completion and must return
+all readers before the next write, enforced by the P03 native readiness boundary
+when executing through the session adapter. Metadata must remain immutable during
+execution. This is not automatic graph liveness inference.
+
+Host qualification runs two canonical stages over twelve steps with an independent
+recurrence oracle, unchanged operator-new count, and untouched exterior canaries.
+It tests overlapping state, insufficient storage, overflow and inclusive last-use
+boundaries. P04 requires additional qualification of real CUDA scratch subranges and delayed
+reader safety with the P03 test and Compute Sanitizer through the native gate.
+The session adapter accepts only contained slices of its fixed per-instance arena.

@@ -88,9 +88,15 @@ instance_status program_session_v2::execute(std::uint32_t index,const launch_bin
     auto result=context(index);if (result!=instance_status::success) return result;
     const auto& bound=bindings_[index];
     if (count && !bindings) return instance_status::invalid_binding;
-    for (std::uint64_t i=0;i<count;++i)
-        if (bindings[i].workspace!=bound.workspace || bindings[i].workspace_bytes!=bound.workspace_bytes)
+    const auto base=reinterpret_cast<std::uintptr_t>(bound.workspace);
+    for (std::uint64_t i=0;i<count;++i) {
+        const auto address=reinterpret_cast<std::uintptr_t>(bindings[i].workspace);
+        // Prepared stage slices may reuse the owning instance arena. Never
+        // accept a foreign range, wraparound, or bytes past the reserved end.
+        if (address<base || address-base>bound.workspace_bytes ||
+            bindings[i].workspace_bytes>bound.workspace_bytes-(address-base))
             return instance_status::invalid_binding;
+    }
     auto& ready=readiness_[index];
     result=readiness(ready.validate_write(ready.generation(),next,bound.execution.stream));
     if (result!=instance_status::success) return result;
