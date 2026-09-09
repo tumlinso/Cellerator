@@ -1,0 +1,153 @@
+{
+  "task": "CE-NF1-C05",
+  "source_base_commit": "de0100b6f5c245ed0f9a167066bc10a795a6fdb9",
+  "evidence_level": "executed_host_contract_checks_only",
+  "summary": "Precompiled grouped callbacks bind the existing prepared_program_v2 stage, with explicit dependency/effect and optional derivative declarations. Unknown effects prohibit fusion/result reuse. A consumer-defined host nonlinear 3-input 2-output width33 callback executed via existing program and matched independent double expressions.",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "1decfce3412d51c5bad33e44eb31551f11f9fd8dcf5369a66da2f68fc2c98798",
+    "docs/glasshelix_execution_foundation_v1/contracts/fixture.hh": "873c01da5eb87597b74a313e07a8f2a460860e40a4747b980d13f587264ca2ea",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "21e5f91f90565c3a3ba2411dcef351e0c06efb5dbcc9997b1a3f992f5aff7a9c",
+    "docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc": "2b5f6b0b16e4004eaced95943e1aaf07f756c186724e3ffdd99cbe537002b9fb",
+    "docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc": "cda93830d50e888978e3bcba220743757a3fdd4eb6454e89ce57ed5f026e9618",
+    "docs/glasshelix_execution_foundation_v1/contracts/support_test.cc": "a1b26b90a61420fa5357de7d1f56194ee19257f5dc0afda064a48a1f6e856316",
+    "docs/glasshelix_execution_foundation_v1/contracts/custom_block_test.cc": "a3d1882c3ee8698e45dca696952a7b4746405c2fa813aafba23de2e35c7473c5"
+  },
+  "results": [
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-bkktgrd2/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-bkktgrd2/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-bkktgrd2/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-bkktgrd2/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-bkktgrd2/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-bkktgrd2/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/support_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-bkktgrd2/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-bkktgrd2/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/custom_block_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-bkktgrd2/custom_block_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-bkktgrd2/custom_block_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": "Host descriptor and policy checks do not qualify numerical execution, external SDK linkage, CUDA, or the complete NF1 toolbox."
+}

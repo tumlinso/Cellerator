@@ -1,0 +1,66 @@
+{
+  "task": "CE-NF1-C02",
+  "source_base_commit": "80eb6c8cb88935f14c53c205b1daf3a399648c20",
+  "evidence_level": "executed_host_contract_checks_only",
+  "summary": "Independent state and parameter instance generations bind one prepared structure. Tying is explicit; pointer/value equality cannot infer it. Epoch and invalid-generation controls reject.",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "7bce63dcf0a32cb3792cae5abb821050a101954db2f942ba7f08edcc36937909",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "b16a06adb550b79c6d9a1ff73c7bcd57a7a4453d5fa86dfd4f3d697beaf33901",
+    "docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc": "2b5f6b0b16e4004eaced95943e1aaf07f756c186724e3ffdd99cbe537002b9fb"
+  },
+  "results": [
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-nksisyin/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-nksisyin/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-nksisyin/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-nksisyin/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": "Host descriptor and policy checks do not qualify numerical execution, external SDK linkage, CUDA, or the complete NF1 toolbox."
+}

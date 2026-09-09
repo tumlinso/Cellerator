@@ -1,0 +1,723 @@
+{
+  "schema_version": 3,
+  "project": {
+    "configuration": {
+      "busy_timeout_ms": 5000,
+      "claim_lease_seconds": 7200,
+      "context_budget_bytes": 12000,
+      "legacy_review_days": {
+        "blocked": 7,
+        "in_progress": 3,
+        "planned": 3,
+        "stale": 3
+      },
+      "resource_lease_seconds": 300,
+      "workflow_front_door": "project-control"
+    },
+    "created_at": "2026-08-26T10:34:35Z",
+    "project_name": "Cellerator",
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "schema_version": 2
+  },
+  "tasks": [
+    {
+      "id": "CE-NF1-0000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator native execution foundation for GlassHelix",
+      "objective": "",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-0000.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": []
+    },
+    {
+      "id": "CE-NF1-A01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Revalidate source and both planning precedents",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a01.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Resolve first-class dispatch and host evidence services",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a02.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Inventory native consumer reachability and numerical gaps",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a03.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Adopt constructive extension and regression boundary",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a04.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define multi-operand operation and effect contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c01.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define immutable preparation and independent bindings",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c02.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define derivative and differential provenance contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c03.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define support activity, epochs and accuracy contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c04.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define custom compiled block contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c05.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Freeze developmental native capability seam",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c06.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M00",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Baseline and ownership accepted",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m00.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m00.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M00",
+          "title": "Baseline and ownership accepted",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M00-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M00"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M10",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Developmental contracts published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m10.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m10.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M10",
+          "title": "Developmental contracts published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M10-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M10"
+          ],
+          "cwd": "."
+        }
+      ]
+    }
+  ],
+  "runs": [],
+  "interfaces": [
+    {
+      "id": "CE-NF1-IF-CONSUMER-BUILD",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md",
+        "CMakeLists.txt"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-DIFFERENTIAL",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-LIFETIME-VALUES",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh",
+        "include/Cellerator/execution/launch_bindings.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-NARY",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-NATIVE-OPERANDS",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    },
+    {
+      "id": "CE-NF1-IF-SUPPORT",
+      "owner_task_id": "CE-NF1-M10",
+      "version": "1",
+      "contract_paths": [
+        "include/Cellerator/compute/operation/native_foundation_contract.hh"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "source_revision": 7078,
+  "validation": {
+    "valid": true,
+    "task_count": 15,
+    "checkpoint_count": 2,
+    "gate_count": 14,
+    "barrier_count": 0,
+    "interface_count": 0
+  },
+  "selected_tasks": [
+    "CE-NF1-0000",
+    "CE-NF1-A01",
+    "CE-NF1-A02",
+    "CE-NF1-A03",
+    "CE-NF1-A04",
+    "CE-NF1-B01",
+    "CE-NF1-C01",
+    "CE-NF1-C02",
+    "CE-NF1-C03",
+    "CE-NF1-C04",
+    "CE-NF1-C05",
+    "CE-NF1-C06",
+    "CE-NF1-M00",
+    "CE-NF1-M10",
+    "CE-NF1-N01"
+  ],
+  "changed_semantic_tables": [
+    "gates",
+    "ownership_scopes"
+  ],
+  "changed_gates": [
+    "CE-NF1-B01-ACCEPT",
+    "CE-NF1-N01-ACCEPT"
+  ],
+  "added_scopes": [
+    {
+      "mode": "exclusive",
+      "path": "CMakeLists.txt",
+      "task_id": "CE-NF1-B01"
+    }
+  ],
+  "context_followup": "ce-b01-fragment.json via ContextFragmentStore.publish",
+  "preserved": "all other normalized durable semantic rows; plan runs empty means separate context publication required"
+}

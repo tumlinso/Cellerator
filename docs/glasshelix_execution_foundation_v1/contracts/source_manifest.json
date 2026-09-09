@@ -1,0 +1,55 @@
+{
+  "kind": "nf1-developmental-source-manifest-v1",
+  "contract_version": "1",
+  "source_base_commit": "4b19175cbef4a5482be159f97fc794660a94ac73",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "0c9c4a3a4f2a1afda5101813993685b7e03c8f9ac2041961033798e395255509",
+    "include/Cellerator/compute/operation/operation_core_v2/schema.hh": "8cb0eac80df4318c3c9e9e477097e222df630d505aaa377ccfad68d527a425c2",
+    "include/Cellerator/execution/biological_abi.hh": "b64e98995524b32ca55ad1dd14f454f650b0359a542a7f80f6224cd19b73267c",
+    "include/Cellerator/execution/execution_order.hh": "5ce60c6d1f51885b0337b4c9ba3349d0bc541c7a7e0b173c83857a53633eedf7",
+    "include/Cellerator/execution/identity.hh": "ac3e3e2c46a7b1928ea49317c82a94b0663f5739946fe9ad3aba12772c0e58b0",
+    "include/Cellerator/execution/launch_bindings.hh": "3e97b60066c8c1bcb01933a49015c5180c0e24632ec6de86d9409aadb2bf8b61",
+    "include/Cellerator/execution/lifetimes.hh": "5680593018778d61630d01d7b095a6f3dd746dc41dcffff05821b9d2e1c637a0",
+    "include/Cellerator/execution/operands.hh": "4514b949c2c082eaa2f8fefe9540bc4614c14d87746edb63964ade3ada8e8aba",
+    "include/Cellerator/execution/program/program_v2.h": "1fbe5bf1f2f26b0e43dce54f43f256f7d2b5eabfe9547317777def6ce57c8fbb",
+    "include/Cellerator/execution/validation.hh": "bd4b93acb6fefea15dc6cbdd82ee2867e21aab28a62eb9a753b71642256772b8",
+    "src/compute/operation/operation_core_v2/schema.cc": "6b3cbbf138755db04ab8ca56ec50e1d669ed31a78ba14ef954beeedc158e11e9",
+    "src/execution/program/program_v2.cc": "b51ef149a8ba688ee52681a908af23fd2ec85a9a41bcdc244e5035e23135f7a3",
+    "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md": "6d997c4815a8f8b47ac8901d7e8434491c7d212ffeaf90ea35dc7596a0cbdc01"
+  },
+  "interface_path_proposal": {
+    "CE-NF1-IF-NATIVE-OPERANDS": [
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md"
+    ],
+    "CE-NF1-IF-LIFETIME-VALUES": [
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md"
+    ],
+    "CE-NF1-IF-NARY": [
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md"
+    ],
+    "CE-NF1-IF-DIFFERENTIAL": [
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md"
+    ],
+    "CE-NF1-IF-SUPPORT": [
+      "include/Cellerator/compute/operation/native_foundation_contract.hh",
+      "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md"
+    ]
+  },
+  "consumer_build_contract": [
+    "docs/glasshelix_execution_foundation_v1/contracts/developmental_seam.md",
+    "CMakeLists.txt"
+  ],
+  "publication_owner": "CE-NF1-M10",
+  "evidence_level": "developmental_contract_and_bounded_host_callback_witness",
+  "not_qualified": [
+    "CUDA provider",
+    "installed native_foundation target",
+    "full nonlinear toolbox",
+    "automatic differentiation",
+    "runtime capacity/alias/lifetime acceptance"
+  ]
+}
