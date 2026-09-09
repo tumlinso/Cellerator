@@ -799,7 +799,7 @@ status close_relation_pair(prepared_relation_pair** slot) noexcept {
 namespace cellerator::compute::relation {
 namespace {
 status check_logical_atom(const prepared_relation_pair& p,
-    const execution::atom_plane::relation_value_atom_plane_v1& atom, execution::structure_id expected_structure) noexcept {
+    const execution::atom_plane::relation_value_atom_plane_v1& atom, const native_atom_association& association) noexcept {
     namespace vp=execution::projection_value_plane;
     if(!execution::atom_plane::validate_relation_value_atom_plane_v1(atom,{},nullptr))
         return {status_code::invalid_argument,"invalid existing atom-plane contract"};
@@ -811,7 +811,10 @@ status check_logical_atom(const prepared_relation_pair& p,
        plane.logical_edge_count!=topology.edge_count ||
        plane.structure_epoch_value.value!=topology.epoch.value)
         return {status_code::stale_structure,"atom topology differs from prepared structure"};
-    if(!execution::same_identity(expected_structure,topology.identity))
+    if(!equivalent(association.native_relation,p.forward.semantic) ||
+       !execution::same_structure_handle(association.atom_structure,plane.structure) ||
+       !execution::same_axis_identity(association.atom_source,atom.structural_binding->structure->source_axis) ||
+       !execution::same_axis_identity(association.atom_destination,atom.structural_binding->structure->destination_axis))
         return {status_code::stale_structure,"explicit atom-to-native structure association differs"};
     if(component.location.residency!=execution::residency_kind::device || component.location.device_ordinal!=p.device)
         return {status_code::incompatible_device,"atom values must reside on instance device"};
@@ -828,17 +831,17 @@ __global__ void scatter_atom_gradient(const float* physical,const std::uint32_t*
     auto i=blockIdx.x*blockDim.x+threadIdx.x;if(i<count)logical[map[i]]=physical[i];
 }
 }
-status publish_atom_values(prepared_relation_pair& p,const execution::atom_plane::relation_value_atom_plane_v1& atom,execution::structure_id expected_structure,cudaStream_t stream) noexcept {
-    auto s=check_logical_atom(p,atom,expected_structure);if(!s)return s;
+status publish_atom_values(prepared_relation_pair& p,const execution::atom_plane::relation_value_atom_plane_v1& atom,const native_atom_association& association,cudaStream_t stream) noexcept {
+    auto s=check_logical_atom(p,atom,association);if(!s)return s;
     const auto& t=p.forward.semantic.topology;const auto& c=atom.values->components[0];
     return publish_values(p,{c.values,c.slot_count,t.identity,t.epoch,t.logical_edge_order,atom.expected_generation,p.device},stream);
 }
 status enqueue_atom_gradient(prepared_relation_pair& p,const relation_calculus_descriptor& calculus,
     const device_state_view& input,const device_state_view& cotangent,operand_version input_version,operand_version cotangent_version,
-    const execution::atom_plane::gradient_atom_plane_v1& gradient,execution::structure_id expected_structure,const edge_plane_view& scratch,gradient_stamp* produced,cudaStream_t stream) noexcept {
+    const execution::atom_plane::gradient_atom_plane_v1& gradient,const native_atom_association& association,const edge_plane_view& scratch,gradient_stamp* produced,cudaStream_t stream) noexcept {
     if(!execution::atom_plane::validate_gradient_atom_plane_v1(gradient,{}))
         return {status_code::invalid_argument,"invalid existing gradient atom contract"};
-    auto s=check_logical_atom(p,*gradient.primal,expected_structure);if(!s)return s;
+    auto s=check_logical_atom(p,*gradient.primal,association);if(!s)return s;
     if(gradient.component_count!=1)return {status_code::unsupported_semantics,"one trainable logical gradient required"};
     const auto& c=gradient.components[0];auto count=p.forward.semantic.topology.edge_count;
     if(c.gradient_bytes<count*4)return {status_code::insufficient_capacity,"logical gradient capacity too small"};
