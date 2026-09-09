@@ -1,0 +1,51 @@
+{
+  "source_revision": 7041,
+  "validation": {
+    "valid": true,
+    "task_count": 7,
+    "checkpoint_count": 1,
+    "gate_count": 6,
+    "barrier_count": 0,
+    "interface_count": 0
+  },
+  "selected_tasks": [
+    "CE-NF1-0000",
+    "CE-NF1-A01",
+    "CE-NF1-A02",
+    "CE-NF1-A03",
+    "CE-NF1-A04",
+    "CE-NF1-M00",
+    "CE-NF1-T01"
+  ],
+  "changed_semantic_tables": [
+    "gates"
+  ],
+  "changed_gates": [
+    "CE-NF1-T01-ACCEPT"
+  ],
+  "before_gate_config": {
+    "argv": [
+      "python3",
+      "-B",
+      "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+      "--group",
+      "t01"
+    ],
+    "cwd": "."
+  },
+  "after_gate_config": {
+    "argv": [
+      "python3",
+      "-B",
+      "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+      "--group",
+      "t01"
+    ],
+    "cwd": ".",
+    "env": {
+      "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t01/bindings.json"
+    }
+  },
+  "preserved": "all other durable semantic rows, lifecycle, completion evidence, scopes, dependency conditions, run contexts, queues and workspaces; ignore revisions/timestamps/task versions and regenerated dependency row IDs",
+  "applied_revision": 7046
+}
