@@ -104,4 +104,61 @@ inline status match_operand(const operand_signature& expected,
     return status::success;
 }
 
+// Definition, structure, values and result caching have independent identity.
+struct prepared_identity {
+    identity definition{};
+    execution::structure_id structure{};
+    execution::structure_epoch epoch{};
+    execution::projection_id projection{};
+};
+struct generation_stamp {
+    identity instance{};
+    execution::value_generation generation{};
+};
+struct instance_binding {
+    prepared_identity prepared{};
+    generation_stamp state{};
+    generation_stamp parameters{};
+    // Nonzero only after an explicit caller parameter-sharing decision.
+    identity parameter_tie_group{};
+};
+
+enum class reuse_kind : std::uint8_t {
+    definition, structure, tied_parameters, memoized_result
+};
+
+inline bool valid_stamp(generation_stamp stamp, bool required = true) noexcept {
+    if (!required && !v2::valid_stable_id(stamp.instance))
+        return stamp.generation.value == 0;
+    return v2::valid_stable_id(stamp.instance) && stamp.generation.value != 0;
+}
+inline bool same_stamp(generation_stamp a, generation_stamp b) noexcept {
+    return v2::same_stable_id(a.instance, b.instance)
+        && a.generation.value == b.generation.value;
+}
+inline bool same_preparation(const prepared_identity& a,
+                             const prepared_identity& b) noexcept {
+    return v2::same_stable_id(a.definition, b.definition)
+        && execution::same_identity(a.structure, b.structure)
+        && a.epoch.value == b.epoch.value
+        && execution::same_identity(a.projection, b.projection);
+}
+inline status validate_instance(const prepared_identity& prepared,
+                                const instance_binding& binding) noexcept {
+    if (!v2::valid_stable_id(prepared.definition)
+        || !execution::valid_identity(prepared.structure) || prepared.epoch.value == 0
+        || !execution::valid_identity(prepared.projection)) return status::invalid_identity;
+    if (!same_preparation(prepared, binding.prepared)) return status::invalid_binding;
+    if (!valid_stamp(binding.state) || !valid_stamp(binding.parameters, false))
+        return status::stale_generation;
+    if (v2::valid_stable_id(binding.parameter_tie_group)
+        && !valid_stamp(binding.parameters)) return status::invalid_binding;
+    return status::success;
+}
+inline bool explicitly_tied(const instance_binding& a,
+                            const instance_binding& b) noexcept {
+    return v2::valid_stable_id(a.parameter_tie_group)
+        && v2::same_stable_id(a.parameter_tie_group, b.parameter_tie_group);
+}
+
 } // namespace cellerator::compute::operation::nf1
