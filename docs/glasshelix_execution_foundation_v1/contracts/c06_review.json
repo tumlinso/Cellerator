@@ -1,0 +1,153 @@
+{
+  "task": "CE-NF1-C06",
+  "source_base_commit": "4b19175cbef4a5482be159f97fc794660a94ac73",
+  "evidence_level": "executed_host_contract_checks_only",
+  "summary": "Developmental seam composes existing runtime owners; capability matrix and unsupported behavior published for M10. Final host contract suite adds foreign-definition, changed-accuracy and full-primal memoization controls. No CUDA or full native target claim.",
+  "source_hashes": {
+    "include/Cellerator/compute/operation/native_foundation_contract.hh": "0c9c4a3a4f2a1afda5101813993685b7e03c8f9ac2041961033798e395255509",
+    "docs/glasshelix_execution_foundation_v1/contracts/fixture.hh": "873c01da5eb87597b74a313e07a8f2a460860e40a4747b980d13f587264ca2ea",
+    "docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc": "21e5f91f90565c3a3ba2411dcef351e0c06efb5dbcc9997b1a3f992f5aff7a9c",
+    "docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc": "2b5f6b0b16e4004eaced95943e1aaf07f756c186724e3ffdd99cbe537002b9fb",
+    "docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc": "121bb6852aff915c7476d2345b4c7b3f61e51bbc2c0e20fcf6b1b7db48db2d44",
+    "docs/glasshelix_execution_foundation_v1/contracts/support_test.cc": "0293dba8c47d704d01137728a7f4817fa412ad61d89ce0381a8889d6cdee63ac",
+    "docs/glasshelix_execution_foundation_v1/contracts/custom_block_test.cc": "a402345e6ff72ae0edbf45d987ae1c11a56bdc2ba95bde4e46931adcbeaa2bd9"
+  },
+  "results": [
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/contract_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-zx8hhkzm/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-zx8hhkzm/contract_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/instance_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-zx8hhkzm/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-zx8hhkzm/instance_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/derivative_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-zx8hhkzm/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-zx8hhkzm/derivative_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/support_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-zx8hhkzm/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-zx8hhkzm/support_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-Iinclude",
+        "/home/tumlinson/Cellerator/.git/todo-orchestrator/0ccaac37-dbbf-448e-a5f8-def197a70aba/workflow-workspaces/ce-nf1-c-v1/docs/glasshelix_execution_foundation_v1/contracts/custom_block_test.cc",
+        "src/compute/operation/operation_core_v2/schema.cc",
+        "src/execution/program/program_v2.cc",
+        "-o",
+        "/tmp/ce-nf1-contract-zx8hhkzm/custom_block_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/ce-nf1-contract-zx8hhkzm/custom_block_test"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": "Host descriptor and policy checks do not qualify numerical execution, external SDK linkage, CUDA, or the complete NF1 toolbox."
+}
