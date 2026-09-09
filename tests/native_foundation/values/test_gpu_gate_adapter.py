@@ -1,9 +1,13 @@
 import importlib.util
+import hashlib
+import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('run_gpu_gate', HERE / 'run_gpu_gate.py')
@@ -11,6 +15,59 @@ adapter = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(adapter)
 
 class AdapterAdmissionTests(unittest.TestCase):
+    def test_supplemental_failure_cannot_pass_aggregate_evidence(self):
+        # Entire external process boundary is mocked: this tests evidence plumbing,
+        # makes no native reservation, and executes no device command.
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            evidence = base / 'evidence'
+            evidence.mkdir()
+            scripts = base / 'scripts'
+            scripts.mkdir()
+            (base / 'machine').mkdir()
+            (base / 'machine/acceptance_matrix.json').write_text(json.dumps(
+                {'gate_groups': {'test': {'requires_gpu': False}}}))
+            script = scripts / 'gate.py'
+            verifier = scripts / 'verifier.py'
+            script.write_text('# mocked gate\n')
+            verifier.write_text('# mocked verifier\n')
+            lease = base / 'lease.json'
+            lease.write_text(json.dumps({'format': 'CUDA-FOREGROUND-LEASE/1', 'state': 'active',
+                'project_root': str(Path.cwd()), 'resource_ids': ['accelerator:GPU-test']}))
+            bindings = base / 'bindings.json'
+            bindings.write_text(json.dumps({'evidence_dir': str(evidence), 'build_dir': str(base),
+                                           'supplemental_ctest_names': ['memcheck']}))
+            child = evidence / 'leased-executable-test.json'
+            def process(argv, **kwargs):
+                if argv[0] == 'nvidia-smi':
+                    return subprocess.CompletedProcess(argv, 0, '0, GPU-test\n', '')
+                if str(verifier) in argv:
+                    return subprocess.CompletedProcess(argv, 0, '{}', '')
+                if str(script) in argv:
+                    derived = Path(argv[argv.index('--bindings') + 1])
+                    child.write_text(json.dumps({'bindings_sha256': hashlib.sha256(derived.read_bytes()).hexdigest(),
+                        'executable_sha256': 'actual-binary-fixture', 'sanitizer_sha256': 'sanitizer-fixture', 'passed': True}))
+                    Path(argv[argv.index('--receipt') + 1]).write_text(json.dumps({'passed': True, 'source_commit': 'fixture'}))
+                    return subprocess.CompletedProcess(argv, 0)
+                self.assertEqual('ctest', argv[0])
+                return subprocess.CompletedProcess(argv, 8, 'supplemental failed', '')
+            with mock.patch.dict(os.environ, {'TODO_GPU_LEASE_RECEIPT': str(lease),
+                    'CUDA_VISIBLE_DEVICES': '0', 'NF1_EXECUTION_BINDINGS': str(bindings)}), \
+                 mock.patch.object(sys, 'argv', ['adapter', '--gate-script', str(script), '--verifier',
+                    str(verifier), '--group', 'test', '--gpu-uuid', 'GPU-test']), \
+                 mock.patch.object(adapter, 'SHARED_LOCK', str(base / 'lock')), \
+                 mock.patch.object(adapter.subprocess, 'run', side_effect=process):
+                self.assertNotEqual(0, adapter.main())
+            sidecar = json.loads(next(evidence.glob('lease-evidence-*.json')).read_text())
+            self.assertTrue(sidecar['required_group_passed'])
+            self.assertFalse(sidecar['passed'])
+            self.assertNotEqual(0, sidecar['returncode'])
+            self.assertEqual(8, sidecar['supplemental_tests'][0]['returncode'])
+            linked = sidecar['child_executable_evidence']
+            self.assertEqual(1, len(linked))
+            self.assertEqual(hashlib.sha256(child.read_bytes()).hexdigest(), linked[0]['sha256'])
+            self.assertEqual('actual-binary-fixture', linked[0]['executable_sha256'])
+
     def test_missing_lease_fails_before_any_device_probe(self):
         env = dict(os.environ)
         env.pop('TODO_GPU_LEASE_RECEIPT', None)

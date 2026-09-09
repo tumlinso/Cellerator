@@ -102,7 +102,7 @@ def main():
         final_returncode = result.returncode or (1 if any(x['returncode'] for x in supplemental) else 0)
         sidecar = dict(bindings['adapter_evidence'], live_verification=json.loads(live.stdout),
                        supplemental_tests=supplemental, bindings_path=derived, bindings_sha256=hashlib.sha256(Path(derived).read_bytes()).hexdigest(),
-                       test_receipt=str(test_receipt), returncode=final_returncode,
+                       test_receipt=str(test_receipt), returncode=final_returncode, passed=False, required_group_passed=False,
                        test_receipt_sha256=hashlib.sha256(test_receipt.read_bytes()).hexdigest() if test_receipt.exists() else None)
         if test_receipt.exists():
             completed = json.loads(test_receipt.read_bytes())
@@ -110,7 +110,8 @@ def main():
             sidecar['source_fingerprint'] = completed.get('source_fingerprint')
             sidecar['executables'] = completed.get('executables')
             sidecar['cmake_cache_sha256'] = completed.get('cmake_cache_sha256')
-            sidecar['passed'] = completed.get('passed')
+            sidecar['required_group_passed'] = completed.get('passed') is True
+            sidecar['passed'] = sidecar['required_group_passed'] and final_returncode == 0
         children = []
         for child in evidence.glob('leased-executable-*.json'):
             child_bytes = child.read_bytes()

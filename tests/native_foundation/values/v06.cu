@@ -1,9 +1,9 @@
 #include "fixture.cuh"
-void update_test(bool f32){
+void update_test(bool f32,bool derive=false){
     storage owner;cuda_ok(cudaStreamCreate(&owner.a));cuda_ok(cudaStreamCreate(&owner.b));
     rel::operation_descriptor f;f.topology={{40,1},{1},axis(1),axis(2),{41,1},3};f.dense_width=16;if(f32)f.arithmetic.relation_storage=ex::numeric_type::f32;
     auto t=f;t.direction=rel::orientation::transpose;
-    std::array<std::uint32_t,3> offsets{0,2,3},sources{0,1,0};ok(rel::prepare_relation_pair(f,t,{offsets.data(),3,sources.data(),3},{0,0,f32},owner.a,&owner.first));ok(rel::create_relation_instance(*owner.first,owner.b,&owner.second));
+    std::array<std::uint32_t,3> offsets{0,2,3},sources{0,1,0};ok(rel::prepare_relation_pair(f,t,{offsets.data(),3,sources.data(),3},{0,0,derive},owner.a,&owner.first));ok(rel::create_relation_instance(*owner.first,owner.b,&owner.second));
     float *values{},*cotangent{},*gradient1{},*gradient2{},*delta{};
     cuda_ok(cudaMalloc(&values,12));cuda_ok(cudaMalloc(&owner.weights,6));cuda_ok(cudaMalloc(&owner.input,128));cuda_ok(cudaMalloc(&owner.output,128));
     cuda_ok(cudaMalloc(&cotangent,128));cuda_ok(cudaMalloc(&gradient1,12));cuda_ok(cudaMalloc(&gradient2,12));cuda_ok(cudaMalloc(&delta,12));
@@ -44,9 +44,9 @@ void update_test(bool f32){
         request.operand=plane(gradient2);request.expected={1};request.next={2};request.gradient=stable_second;
         ok(rel::enqueue_value_update(*owner.second,request,owner.b));for(int e=0;e<3;++e)second[e]=std::fma(-1.f/16,grad[e],second[e]);check(*owner.second,owner.b,second,2);
         rel::preparation_report a{},b{};ok(rel::inspect(*owner.first,&a));ok(rel::inspect(*owner.second,&b));require(a.structural_preparation_id==b.structural_preparation_id,"updates share structure only");
-        if(f32)require(a.derived_f16_generation.value==3 && b.derived_f16_generation.value==2,"derived projections follow their own authoritative updates");
+        if(f32)require(a.derived_f16_generation.value==(derive?3:0) && b.derived_f16_generation.value==(derive?2:0),"derived projections follow their own authoritative updates");
         ok(rel::close_relation_pair(&owner.first));ok(rel::close_relation_pair(&owner.second));
     }catch(...){cudaFree(delta);cudaFree(gradient2);cudaFree(gradient1);cudaFree(cotangent);cudaFree(values);throw;}
     cudaFree(delta);cudaFree(gradient2);cudaFree(gradient1);cudaFree(cotangent);cudaFree(values);
 }
-int main()try{int count=0;cuda_ok(cudaGetDeviceCount(&count));require(count==1,"one leased GPU required");update_test(false);update_test(true);std::cout<<"V06 real f16/f32 delta and gradient updates, response invalidation and independent branching passed\n";}catch(const std::exception&e){std::cerr<<e.what()<<'\n';return 1;}
+int main()try{int count=0;cuda_ok(cudaGetDeviceCount(&count));require(count==1,"one leased GPU required");update_test(false);update_test(true,true);update_test(true,false);std::cout<<"V06 real f16/f32 delta and gradient updates, response invalidation and independent branching passed\n";}catch(const std::exception&e){std::cerr<<e.what()<<'\n';return 1;}
