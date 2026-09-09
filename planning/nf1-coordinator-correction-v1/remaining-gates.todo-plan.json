@@ -1,0 +1,4394 @@
+{
+  "schema_version": 3,
+  "project": {
+    "configuration": {
+      "busy_timeout_ms": 5000,
+      "claim_lease_seconds": 7200,
+      "context_budget_bytes": 12000,
+      "legacy_review_days": {
+        "blocked": 7,
+        "in_progress": 3,
+        "planned": 3,
+        "stale": 3
+      },
+      "resource_lease_seconds": 300,
+      "workflow_front_door": "project-control"
+    },
+    "created_at": "2026-08-26T10:34:35Z",
+    "project_name": "Cellerator",
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "schema_version": 2
+  },
+  "tasks": [
+    {
+      "id": "CE-NF1-0000",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "Cellerator native execution foundation for GlassHelix",
+      "objective": "",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-0000.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": []
+    },
+    {
+      "id": "CE-NF1-A01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Revalidate source and both planning precedents",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a01.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Resolve first-class dispatch and host evidence services",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a02.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Inventory native consumer reachability and numerical gaps",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a03.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-A04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Adopt constructive extension and regression boundary",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-a04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/baseline",
+          "docs/glasshelix_execution_foundation_v1/ownership",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-a04.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-A04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-A04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Partition host semantic and CUDA target dependencies",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Expose existing reusable operation targets",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make toolchain and architecture selection explicit",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Gate optional suites and provide CPU correctness target",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add relocatable build-tree consumer proof",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-B06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify build matrix and publish target receipt",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-b06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "tests/native_foundation/build"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-B06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "b06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/b06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define multi-operand operation and effect contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c01.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C01"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define immutable preparation and independent bindings",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c02.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C02"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define derivative and differential provenance contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c03.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C03"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define support activity, epochs and accuracy contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c04.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C04"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define custom compiled block contract",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c05.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C05"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-C06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Freeze developmental native capability seam",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-c06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/contracts",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-c06.json",
+          "include/Cellerator/compute/operation/native_foundation_contract.hh",
+          "include/Cellerator/compute/operation/operation_core_v2/schema.hh"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-C06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-C06"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide local arithmetic JVP and VJP",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Extend relation response through shared topology",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement n-ary evaluator derivatives",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Compose forward directional programs",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Compose reverse actions with explicit primal lifetime",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Support selected second-direction actions",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Validate nonsmooth boundaries and invalidation",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-D08",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish differential execution receipt",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-d08.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-D08-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "d08"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/d08/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Define argument incidence and output ownership",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement grouped native evaluator registration",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement independent CPU n-ary evaluation",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Execute n-ary groups on CUDA",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add exact inspectable compositions and custom block parity",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify deterministic assembly and nonfinite behavior",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-H07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish n-ary execution receipt",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-h07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-H07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "h07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/h07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M00",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Baseline and ownership accepted",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m00.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m00.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-A04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M00",
+          "title": "Baseline and ownership accepted",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M00-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M00"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M10",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Developmental contracts published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m10.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration",
+          "docs/glasshelix_execution_foundation_v1/records/ce-nf1-m10.json"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M10",
+          "title": "Developmental contracts published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M10-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/check_record.py",
+            "--milestone",
+            "CE-NF1-M10"
+          ],
+          "cwd": "."
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M20",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Linked execution and numeric core published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m20.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M20",
+          "title": "Linked execution and numeric core published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M20-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m20"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/m20/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M30",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Combinatorial and support execution published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m30.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M20"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-H07"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M30",
+          "title": "Combinatorial and support execution published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M30-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m30"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/m30/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M40",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Directional differential execution published",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m40.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-D08"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M40",
+          "title": "Directional differential execution published",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M40-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m40"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/m40/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M50",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Consumer-ready qualified capability bundle",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m50.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M50",
+          "title": "Consumer-ready qualified capability bundle",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M50-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m50"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/m50/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-M90",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Cellerator foundation closed and integrated",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-m90.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "docs/glasshelix_execution_foundation_v1/integration"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M50"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-X01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [
+        {
+          "id": "CE-NF1-CP-M90",
+          "title": "Cellerator foundation closed and integrated",
+          "metadata": {},
+          "publishes_interfaces": []
+        }
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1-M90-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "m90"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/m90/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide independent host f64 and executable f32 references",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize relation application across widths and tails",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V07"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize transpose and explicit destination effects",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Provide batched local arithmetic and gather/scatter",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize needed reductions and numeric diagnostics",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-N06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish general-width execution capability",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-n06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "tests/native_foundation/numeric"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-N06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "n06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/n06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Establish composed baseline and complete cost records",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Hoist reuse and preserve prepared orders",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Fuse indexed nonlinear evaluation and assembly",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Specialize legal batch and relation routes",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Measure active support crossover and precision tradeoffs",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify bounded read-only replay where supported",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-O07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish non-promotion or promotion decision",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-o07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "bench/native_foundation",
+          "docs/glasshelix_execution_foundation_v1/performance",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-O06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-O07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "o07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/o07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Generalize stage bindings without a second runner",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preflight all dynamic launch bindings",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind sessions and independently reusable instances",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P02"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Plan scratch lifetimes and bounded state buffers",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement failure and poison semantics",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Map stage provenance and counters",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-P07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify linked composed-program boundary",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-p07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "tests/native_foundation/program"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-P06"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-B05"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-P07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "p07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/p07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Integrate existing mask and indexed gate kernels",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Distinguish shared and per-instance activity",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S01"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-N06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Build a compact active-projection alternative",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Separate primal and differential support",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-C03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Implement safe topology replacement at boundaries",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Add approximate dropping with accuracy provenance",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-S07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify churn and reuse regimes",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-s07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "tests/native_foundation/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-S06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-S07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "s07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/s07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author independent formula and indexing referees",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M00"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author shape, numerical and nonfinite stress cases",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Author asynchronous lifetime and failure tests",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify external custom operations and capability honesty",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T03"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M30"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Run retained and new integrated conformance",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T04"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M40"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-T06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Run sanitizer and resource qualification",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-t06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/validation",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/reference"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-T05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-T06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "t06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/t06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Extract reusable structural preparation ownership",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M10"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v01"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v01/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V02",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Bind value and gradient instances through current planes",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v02.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V01"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V02-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v02"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v02/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V03",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Preserve asynchronous publication and read completion",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v03.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V02"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V03-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v03"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v03/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V04",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Support f32 authoritative values alongside f16 projections",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v04.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V03"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V04-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v04"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v04/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V05",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Make epoch replacement and stale-ticket rejection explicit",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v05.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V04"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V05-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v05"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v05/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V06",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Qualify value provenance under update and branching",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v06.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V05"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V06-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v06"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v06/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-V07",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Publish executable shared-value capability",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-v07.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "include/Cellerator/execution/native_value_instance",
+          "src/compute/operation/prepared_relation.cu",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/values"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-V06"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-V07-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/run_gate.py",
+            "--group",
+            "v07"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/v07/bindings.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CE-NF1-X01",
+      "parent_id": "CE-NF1-0000",
+      "kind": "task",
+      "title": "Verify GlassHelix real-consumer receipt",
+      "objective": "",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "next_action": "",
+      "notes": "planning/glasshelix-execution-foundation-v1/proposed-todos/ce-nf1-x01.md",
+      "tags": [],
+      "result_policy": {},
+      "scope": {
+        "exclusive_paths": [
+          "docs/glasshelix_execution_foundation_v1/imports"
+        ],
+        "read_paths": [],
+        "forbidden_paths": [],
+        "shared_locks": []
+      },
+      "claim_locks": [],
+      "invariants": [],
+      "produced_artifacts": [],
+      "resource_requests": [],
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1-M50"
+        }
+      ],
+      "consumes_interfaces": [],
+      "checkpoints": [],
+      "gates": [
+        {
+          "id": "CE-NF1-X01-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/glasshelix-execution-foundation-v1/scripts/verify_receipt.py",
+            "--edge",
+            "NF1-GH-CONSUMER"
+          ],
+          "cwd": ".",
+          "env": {
+            "NF1_EXECUTION_BINDINGS": "/home/tumlinson/.local/state/nf1-20260908-v1/ce/x01/bindings.json"
+          }
+        }
+      ]
+    }
+  ],
+  "runs": []
+}
