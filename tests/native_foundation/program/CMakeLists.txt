@@ -27,3 +27,10 @@ target_sources(ce_nf1_program_legacy PRIVATE
   "${CE_ROOT}/src/execution/joint_compiler/atom_requirement_v1.cc"
   "${CE_ROOT}/src/execution/joint_compiler/atom_affordance_v1.cc"
   "${CE_ROOT}/src/execution/joint_compiler/external_binding_v1.cc")
+add_executable(ce_nf1_p02 p02.cc
+  "${CE_ROOT}/src/execution/program/program_v2.cc"
+  "${CE_ROOT}/src/execution/joint_compiler/persistent_identity_v1.cc"
+  "${CE_ROOT}/src/execution/joint_compiler/external_binding_v1.cc")
+target_include_directories(ce_nf1_p02 PRIVATE "${CE_ROOT}/include")
+target_compile_features(ce_nf1_p02 PRIVATE cxx_std_17)
+add_test(NAME ce_nf1_p02 COMMAND ce_nf1_p02)

@@ -11,7 +11,7 @@ namespace cellerator::execution::program {
 
 enum class program_status : std::uint32_t {
     success = 0, invalid_argument, invalid_stage_graph, insufficient_bindings,
-    launch_failed, invalid_typed_binding
+    launch_failed, invalid_typed_binding, invalid_dynamic_binding
 };
 
 struct launch_binding_v2 {
@@ -24,6 +24,8 @@ struct launch_binding_v2 {
     // legacy input/output/values are unused in typed mode. Workspace and stream
     // remain identical across both views. All descriptors live through execute.
     const execution::launch_bindings* typed = nullptr;
+    // Borrowed operation-owned dynamic bounds/readiness metadata, if needed.
+    const void* validation_state = nullptr;
 };
 
 using stage_launch_v2 = program_status (*)(
@@ -41,6 +43,10 @@ struct prepared_stage_v2 {
     std::uint32_t binding_index = 0;
     std::uint64_t required_workspace_bytes = 0;
     const execution::prepared_binding_contract* binding_contract = nullptr;
+    // Optional owner-specific validation of capacities, byte-range aliases,
+    // numeric/layout restrictions and readiness not represented by typed axes.
+    // Runs every execute before any launch, with no writes/enqueues/allocation.
+    stage_launch_v2 preflight = nullptr;
 };
 
 struct prepared_program_v2 {
@@ -54,6 +60,15 @@ struct prepared_program_v2 {
 
 program_status validate_prepared_program_v2(
         const prepared_program_v2& program) noexcept;
+
+// Validate all dynamic launch data without submitting work. Operation owners
+// must provide preflight for requirements not expressible in binding_contract;
+// legacy erased pointers alone cannot prove capacities. No result is cached.
+program_status preflight_prepared_program_v2(
+        const prepared_program_v2& program,
+        const launch_binding_v2* bindings,
+        std::uint64_t binding_count,
+        void* caller_stream) noexcept;
 
 // Preflight every stage before launching any callback. Callback failure is
 // reported but cannot roll back earlier launches. Callers must not mutate

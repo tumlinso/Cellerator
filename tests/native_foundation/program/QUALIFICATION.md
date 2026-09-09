@@ -55,3 +55,24 @@ launch-binding owner correction. Host stream ordinal -1 requires null stream
 and host workspace; device ordinals retain matching workspace-device checks.
 All tests now compile against repository headers, without an include overlay.
 The earlier partial checkpoint and prospective overlay are historical evidence.
+
+## P02 dynamic preflight
+
+`preflight_prepared_program_v2` validates the entire stage graph and all dynamic
+bindings without launching work. `execute_prepared_program_v2` calls it every
+time, then dispatches the same existing callbacks. `prepared_stage_v2::preflight`
+is a borrowed, pure operation-owner callback using immutable prepared state plus
+`launch_binding_v2::validation_state`. Owners use it for capacities, layout and
+range-alias requirements which erased legacy pointers and typed axes cannot
+represent. Legacy bindings retain their original callback validation obligations;
+null preflight does not certify bounds. Neither dynamic validation nor its result
+is cached. A preflight callback must never enqueue, allocate or mutate payloads.
+
+`ce_nf1_p02` composes the existing `external_binding_v1` extent validator with a
+concrete host operation's required count, order, address and range-alias checks.
+Two dependent stages execute a real add-one calculation. Insufficient final
+capacity, wrong order, partial overlap, absent validation metadata, missing
+workspace and missing binding leave every output and enqueue counter untouched.
+Changing accepted extents before a later execution is revalidated. The external
+lease/readiness tokens in this host fixture test descriptor validity only; live
+session ownership and CUDA readiness remain subsequent P03 qualification.

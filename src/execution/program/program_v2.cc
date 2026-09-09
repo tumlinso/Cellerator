@@ -28,7 +28,7 @@ program_status validate_prepared_program_v2(
     return program_status::success;
 }
 
-program_status execute_prepared_program_v2(
+program_status preflight_prepared_program_v2(
         const prepared_program_v2& program,
         const launch_binding_v2* bindings,
         std::uint64_t binding_count,
@@ -62,7 +62,23 @@ program_status execute_prepared_program_v2(
                 return program_status::invalid_typed_binding;
             }
         }
+        if (stage.preflight != nullptr &&
+            stage.preflight(stage.prepared_state, binding, caller_stream) !=
+                program_status::success) {
+            return program_status::invalid_dynamic_binding;
+        }
     }
+    return program_status::success;
+}
+
+program_status execute_prepared_program_v2(
+        const prepared_program_v2& program,
+        const launch_binding_v2* bindings,
+        std::uint64_t binding_count,
+        void* caller_stream) noexcept {
+    const auto valid = preflight_prepared_program_v2(
+        program, bindings, binding_count, caller_stream);
+    if (valid != program_status::success) return valid;
     for (std::uint64_t i = 0; i < program.stage_count; ++i) {
         const auto& stage = program.stages[i];
         const auto& binding = bindings[stage.binding_index];
