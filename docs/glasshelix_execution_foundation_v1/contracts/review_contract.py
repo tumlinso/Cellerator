@@ -7,7 +7,7 @@ r=Path.cwd();d=r/'docs/glasshelix_execution_foundation_v1';directory=d/'contract
 with tempfile.TemporaryDirectory(prefix='ce-nf1-contract-') as output:
  for name in a.tests:
   source=directory/name;binary=Path(output)/source.stem
-  command=['c++','-std=c++20','-Wall','-Wextra','-Werror','-UNDEBUG','-Iinclude',str(source),'src/compute/operation/operation_core_v2/schema.cc','-o',str(binary)]
+  command=['c++','-std=c++20','-Wall','-Wextra','-Werror','-UNDEBUG','-Iinclude',str(source),'src/compute/operation/operation_core_v2/schema.cc','src/execution/program/program_v2.cc','-o',str(binary)]
   for argv in (command,[str(binary)]):
    run=subprocess.run(argv,text=True,capture_output=True);results.append({'argv':argv,'returncode':run.returncode,'stdout':run.stdout,'stderr':run.stderr});print(run.stderr) if run.returncode else None;run.check_returncode()
  head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();header=r/'include/Cellerator/compute/operation/native_foundation_contract.hh'

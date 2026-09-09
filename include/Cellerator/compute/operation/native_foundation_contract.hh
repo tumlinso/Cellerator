@@ -288,4 +288,57 @@ inline std::uint32_t invalidation_for(const support_contract& before,
     return result;
 }
 
+struct dependency_effects {
+    bool dependencies_known = false;
+    bool writes_only_declared_outputs = false;
+    bool deterministic = false;
+    bool allocation_free_launch = false;
+};
+struct compiled_block {
+    operation_contract contract{};
+    dependency_effects effects{};
+    // One invocation for a prepared group; never a per-edge virtual object.
+    execution::program::stage_launch_v2 forward_launch = nullptr;
+    execution::program::stage_launch_v2 jvp_launch = nullptr;
+    execution::program::stage_launch_v2 vjp_launch = nullptr;
+    execution::program::stage_launch_v2 second_launch = nullptr;
+};
+inline bool permits_fusion_or_memoization(const compiled_block& block) noexcept {
+    return block.effects.dependencies_known && block.effects.writes_only_declared_outputs
+        && block.effects.deterministic && block.effects.allocation_free_launch;
+}
+inline status validate_compiled_block(const compiled_block& block) noexcept {
+    auto state = validate_operation(block.contract);
+    if (state != status::success) return state;
+    if (!block.forward_launch) return status::unsupported_capability;
+    if (((block.contract.capabilities & jvp) != 0) != (block.jvp_launch != nullptr)
+        || ((block.contract.capabilities & vjp) != 0) != (block.vjp_launch != nullptr)
+        || ((block.contract.capabilities & second_direction) != 0) != (block.second_launch != nullptr))
+        return status::unsupported_derivative;
+    return status::success;
+}
+// The provider defines the typed payload behind existing launch_binding_v2.
+// Prepared state and all payload buffers remain owned by the existing session
+// or caller. This adapter creates no allocator, stream, graph or tensor owner.
+inline status bind_compiled_stage(const compiled_block& block, capability action,
+                                 const void* prepared_state,
+                                 std::uint64_t stage_id, std::uint64_t candidate_id,
+                                 std::uint32_t binding_index,
+                                 execution::program::prepared_stage_v2& stage) noexcept {
+    auto state = validate_compiled_block(block);
+    if (state != status::success) return state;
+    execution::program::stage_launch_v2 launch = nullptr;
+    switch (action) {
+    case forward: launch = block.forward_launch; break;
+    case jvp: launch = block.jvp_launch; break;
+    case vjp: launch = block.vjp_launch; break;
+    case second_direction: launch = block.second_launch; break;
+    default: return status::unsupported_capability;
+    }
+    if (!launch) return status::unsupported_derivative;
+    if (!stage_id || !candidate_id) return status::invalid_identity;
+    stage = {stage_id, candidate_id, prepared_state, launch, 0, 0, binding_index, 0};
+    return status::success;
+}
+
 } // namespace cellerator::compute::operation::nf1
