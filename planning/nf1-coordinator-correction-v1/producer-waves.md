@@ -1,0 +1,9 @@
+# Serial producer integration waves
+
+Some accepted NF1 lanes cross integration milestones. The controller explicitly publishes and enqueues a committed intermediate task artifact through native WorkspaceService; completion of the final lane task remains the ordinary automatic publication path.
+
+After an intermediate artifact is integrated, the producer workspace becomes integrated and cannot receive its next task under the old native lifecycle. Skills source commit `b6320cc0694973191cb34407836d9e4dbb08b9a4` adds owner-maintenance `WorkspaceService.advance_producer_wave`. It checks an active run, idle producer with no live dispatch or claim, remaining serial task, terminal old artifact queues, completed prior integration, next queued integration milestone, accepted commit ancestry, authoritative repository identity, clean worktree with no unpublished material difference, and an identical shared next-wave base. It changes no Git files and retains artifact/queue history.
+
+The producer first incorporates the exact accepted source by ordinary non-destructive merge. The native operation then advances only its current workspace contract; it neither completes a task nor qualifies future work. Use the reviewed source owner API without editing authority tables or replacing the installed runtime.
+
+Validation: 148 workflow tests passed before final review; after review corrected native task status (`done`, distinct from lane-task `completed`) and added active-run/orphan-claim guards, all 26 workspace tests passed. Negative controls include stale/missing integrated source, dirty work preservation, wrong queue order, pending artifacts, unresolved failed integration queue, active lane, orphan claim, inactive run and unfinished prior milestone. The positive test publishes and applies a second-wave artifact while preserving first-wave history.
