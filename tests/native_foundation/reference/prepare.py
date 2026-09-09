@@ -17,6 +17,8 @@ def run(argv, cwd=None):
 def prepare():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bindings", type=Path, required=True)
+    parser.add_argument("--target", action="append", choices=["ce_nf1_t01", "ce_nf1_t02"],
+                        help="Explicit owned oracle target; default remains ce_nf1_t01")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[3]
     bindings_path = args.bindings.resolve()
@@ -40,7 +42,7 @@ def prepare():
                    if "=" in line and not line.startswith(("#", "//")))
     if Path(entries["CMAKE_HOME_DIRECTORY:INTERNAL"]).resolve() != source:
         raise ValueError("build source differs from dispatched worktree")
-    commands.append(run(["cmake", "--build", str(build), "--target", "ce_nf1_t01", "--parallel", "2"]))
+    commands.append(run(["cmake", "--build", str(build), "--target", *(args.target or ["ce_nf1_t01"]), "--parallel", "2"]))
     commands.append(run(["ctest", "--test-dir", str(build), "--show-only=json-v1"]))
     if run(["git", "rev-parse", "HEAD"], source)["stdout"].strip() != head or run(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"], source)["stdout"]:
