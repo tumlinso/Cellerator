@@ -21,3 +21,9 @@ V04 received the three exact retained sparse candidate paths at revision 7201, t
 T03 asynchronous lifetime/failure conformance requires real retained CUDA event/stream owners. Revision 7205 strengthens its original host-labelled gate with the same pinned qualified adapter, actual lease and shared lock; sanitizer runs are explicit supplemental tests. No mock readiness provider substitutes for the execution proof.
 
 P03 received `runtime/session.cuh` and `src/runtime/session_setup.cu.inc` at revision 7206, task brief 7207, to enforce exclusive attachment and checked close in the existing native session owner. No program-side registry or second session is introduced. M20 must include the native-value-instance dependency fragment for ordinary CUDA consumers regardless of test registration; leaf tests alone do not prove that root build hook.
+
+## P04 partial session ownership and V06 retained FP32 update
+
+Native P04 revision 7219 extends the existing session setup owner scope and strengthens the gate to require the host scratch planner plus real P03 CUDA and sanitizer regressions. Task context was refreshed at 7220. This closes the partial-initialization retry case without erasing the historical P03 receipt.
+
+Native V06 revision 7228 adds only the retained relation value update provider and relation calculus validation owner. Task context was refreshed at 7229. FP32 values use these existing algorithms; all provenance and arithmetic assertions remain required. Isolated native plan simulations verified only the intended scope and gate changes, preserving claims, lifecycle and queue state.
