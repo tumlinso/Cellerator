@@ -4,6 +4,7 @@
 #include <Cellerator/execution/launch_bindings.hh>
 #include <Cellerator/execution/program/program_v2.h>
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -159,6 +160,65 @@ inline bool explicitly_tied(const instance_binding& a,
                             const instance_binding& b) noexcept {
     return v2::valid_stable_id(a.parameter_tie_group)
         && v2::same_stable_id(a.parameter_tie_group, b.parameter_tie_group);
+}
+
+enum class differentiated_object : std::uint8_t {
+    vector_field, discrete_step, observation, implemented_rollout
+};
+enum class derivative_convention : std::uint8_t {
+    mathematical_at_stored_values, through_rounding
+};
+struct primal_record {
+    instance_binding instance{};
+    generation_stamp forcing{}, context{}, activity{}, branches{};
+};
+struct derivative_request {
+    capability action = jvp;
+    differentiated_object object = differentiated_object::vector_field;
+    derivative_convention convention = derivative_convention::mathematical_at_stored_values;
+    primal_record primal{};
+    operand_signature direction_domain{};
+    operand_signature response_domain{};
+    double direction_scale = 1.0;
+    double response_scale = 1.0;
+    bool smooth_at_primal = true;
+};
+inline bool same_primal(const primal_record& a, const primal_record& b) noexcept {
+    return same_preparation(a.instance.prepared, b.instance.prepared)
+        && same_stamp(a.instance.state, b.instance.state)
+        && same_stamp(a.instance.parameters, b.instance.parameters)
+        && same_stamp(a.forcing, b.forcing) && same_stamp(a.context, b.context)
+        && same_stamp(a.activity, b.activity) && same_stamp(a.branches, b.branches);
+}
+inline bool valid_primal(const primal_record& primal) noexcept {
+    return validate_instance(primal.instance.prepared, primal.instance) == status::success
+        && valid_stamp(primal.forcing, false) && valid_stamp(primal.context, false)
+        && valid_stamp(primal.activity, false) && valid_stamp(primal.branches, false);
+}
+inline status validate_derivative(const operation_contract& operation,
+                                  const derivative_request& request,
+                                  const primal_record& live_primal,
+                                  const operand_signature& direction,
+                                  const operand_signature& response) noexcept {
+    auto state = validate_operation(operation);
+    if (state != status::success) return state;
+    if ((request.action != jvp && request.action != vjp && request.action != second_direction)
+        || !(operation.capabilities & request.action)
+        || !request.smooth_at_primal
+        || request.convention != derivative_convention::mathematical_at_stored_values)
+        return status::unsupported_derivative;
+    if (request.object < differentiated_object::vector_field
+        || request.object > differentiated_object::implemented_rollout)
+        return status::invalid_contract;
+    if (!valid_primal(request.primal) || !valid_primal(live_primal)
+        || !same_primal(request.primal, live_primal)) return status::stale_generation;
+    if (!std::isfinite(request.direction_scale) || request.direction_scale <= 0
+        || !std::isfinite(request.response_scale) || request.response_scale <= 0)
+        return status::invalid_contract;
+    if (match_operand(request.direction_domain, direction) != status::success
+        || match_operand(request.response_domain, response) != status::success)
+        return status::axis_mismatch;
+    return status::success;
 }
 
 } // namespace cellerator::compute::operation::nf1
