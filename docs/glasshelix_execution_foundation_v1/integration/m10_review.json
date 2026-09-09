@@ -1,5 +1,5 @@
 {
-  "phase": "queue-preflight",
+  "phase": "integrated-host-qualified",
   "reviewed": true,
   "ownership": "Cellerator existing operation/execution owners extended by developmental header; T01 independent host reference oracle.",
   "source_reconciliation": {
@@ -12,8 +12,17 @@
       "oracle"
     ]
   },
-  "acceptance_review": "Native queue applies committed artifacts serially. This preflight permits governance checking during integration; integrated contract programs and ce_nf1_t01 must pass before M10 completion.",
+  "acceptance_review": "Both native queue artifacts integrated. Five C++20 contract programs compiled with -Wall -Wextra -Werror -UNDEBUG and ran successfully against existing operation_core_v2 schema and program_v2. Fresh integrated CMake CUDA OFF build registered, built, and executed ce_nf1_t01: 1/1 passed with no skips.",
   "limitations": [
     "Developmental contracts only; no GPU or production runtime capability claimed."
+  ],
+  "integrated_source": "55cabd94ecdbb814fc52054ad38160b6d18d209d",
+  "tests": [
+    "contract_test",
+    "instance_test",
+    "derivative_test",
+    "support_test",
+    "custom_block_test",
+    "ce_nf1_t01"
   ]
 }
