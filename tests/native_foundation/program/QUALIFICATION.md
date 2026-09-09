@@ -131,3 +131,9 @@ It tests overlapping state, insufficient storage, overflow and inclusive last-us
 boundaries. P04 requires additional qualification of real CUDA scratch subranges and delayed
 reader safety with the P03 test and Compute Sanitizer through the native gate.
 The session adapter accepts only contained slices of its fixed per-instance arena.
+
+P04 corrects initialization retry after partial cleanup: actual stream, library,
+scratch and persistent allocation fields prevent reset even before initialization
+flags/counts are published. The CUDA regression creates a real owned stream with
+unpublished flags, proves rejected retry retains it, then closes and resets it.
+No CUDA failure is fabricated; this exercises the preserved failure-state shape.

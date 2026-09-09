@@ -40,10 +40,27 @@ session_status init_session(
     execution_session *session,
     const execution_session_options &options) noexcept {
     if (session == nullptr) return session_status::invalid_argument;
-    if (session->initialized || session->exclusive_attachment) return session_status::invalid_state;
+    if (session->initialized || session->sealed || session->exclusive_attachment ||
+        session->stream_count || session->persistent_allocation_count)
+        return session_status::invalid_state;
+    // Failed cleanup can retain resources before initialized/stream_count were
+    // published. Refuse reset based on the actual owning slots as well.
+    for (const auto &slot : session->streams) {
+        if (slot.execution.stream || slot.execution.owns_stream ||
+            slot.transient.data || slot.transient.bytes || slot.libraries_prepared ||
+            slot.cublas.handle || slot.cublas.owns_handle ||
+            slot.cusparse.handle || slot.cusparse.owns_handle ||
+            slot.cusparse.csr_f32 || slot.cusparse.blocked_ell_f16)
+            return session_status::invalid_state;
+    }
+    for (const auto &record : session->persistent_allocations)
+        if (record.occupied || record.data || record.bytes) return session_status::invalid_state;
     if (options.external_stream_count != 0 && options.external_streams == nullptr) {
         return session_status::invalid_argument;
     }
+    if (options.external_stream_count > execution_session_max_streams ||
+        options.owned_stream_count > execution_session_max_streams - options.external_stream_count)
+        return session_status::capacity_exceeded;
     const std::uint32_t stream_count =
         options.external_stream_count + options.owned_stream_count;
     if (stream_count == 0 || stream_count > execution_session_max_streams) {

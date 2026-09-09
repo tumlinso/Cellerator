@@ -31,6 +31,19 @@ struct resources {
 };
 int main()try {
     int devices=0;cuda_ok(cudaGetDeviceCount(&devices));check(devices==1,"one native leased device required");
+    // Emulate interruption before init publishes initialized/stream_count using
+    // a real owned CUDA stream, without fabricating an invalid runtime handle.
+    rt::execution_session partial{};partial.device=0;
+    cuda_ok(cudaStreamCreateWithFlags(&partial.streams[0].execution.stream,cudaStreamNonBlocking));
+    partial.streams[0].execution.device=0;partial.streams[0].execution.owns_stream=true;
+    const auto preserved=partial.streams[0].execution.stream;
+    rt::execution_session_options retry{};retry.device=0;
+    check(rt::init_session(&partial,retry)==rt::session_status::invalid_state,"partial owning session refuses reinit");
+    check(partial.streams[0].execution.stream==preserved && partial.streams[0].execution.owns_stream,"partial stream preserved");
+    check(rt::close_session(&partial)==rt::session_status::success,"checked partial close");
+    check(!partial.streams[0].execution.stream,"partial close resets slot");
+    retry.owned_stream_count=~std::uint32_t{0};
+    check(rt::init_session(&partial,retry)==rt::session_status::capacity_exceeded,"stream count overflow rejected");
     resources owner;rt::execution_session_options options{};options.device=0;options.owned_stream_count=2;
     check(rt::init_session(&owner.session,options)==rt::session_status::success,"real session init");
     const auto original_stream=owner.session.streams[0].execution.stream;
