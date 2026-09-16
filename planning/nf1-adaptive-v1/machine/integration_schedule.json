@@ -1,0 +1,15 @@
+{
+  "format": "nf1a-integration-schedule-v1",
+  "phases": [
+    {
+      "integration_task": "CE-NF1A-QUALIFY",
+      "required_tasks": [
+        "CE-NF1A-CORE",
+        "CE-NF1A-MECHANISMS",
+        "CE-NF1A-SUPPORT",
+        "CE-NF1A-RESPONSE"
+      ]
+    }
+  ],
+  "policy": "Stage the first core/system producer immediately, then integrate available producers continuously. Sealing a batch does not complete final qualification."
+}

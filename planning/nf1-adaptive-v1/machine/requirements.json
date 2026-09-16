@@ -1,0 +1,490 @@
+[
+  {
+    "id": "CE-CORE",
+    "owner": "CE-NF1A-CORE",
+    "classification": "required",
+    "statement": "A separately linked CPU/CUDA numerical core over the existing prepared-program, session, relation, value-plane and binding owners; metadata-invalid requests preflight before any submission, while asynchronous partial failure remains explicitly non-transactional.",
+    "evidence": "Actual external consumer, late-invalid-binding no-effects test, completion/lifetime/poisoning controls; retained program and RU1 behavior.",
+    "legacy_tasks": [
+      "CE-NF1-B01",
+      "CE-NF1-B02",
+      "CE-NF1-B03",
+      "CE-NF1-B04",
+      "CE-NF1-B05",
+      "CE-NF1-B06",
+      "CE-NF1-P01",
+      "CE-NF1-P02",
+      "CE-NF1-P03",
+      "CE-NF1-P04",
+      "CE-NF1-P05",
+      "CE-NF1-P06",
+      "CE-NF1-P07",
+      "CE-NF1-V01",
+      "CE-NF1-V02",
+      "CE-NF1-V03",
+      "CE-NF1-V04",
+      "CE-NF1-V05",
+      "CE-NF1-V06",
+      "CE-NF1-V07",
+      "CE-NF1-M20"
+    ]
+  },
+  {
+    "id": "CE-WIDTH",
+    "owner": "CE-NF1A-CORE",
+    "classification": "required",
+    "statement": "General-width FP32 forward/transpose, arithmetic, gather/scatter and needed reductions. Widths 1,3,15,16,17,33,65 plus meaningful empty/high-degree cases; declared destination effects and numerical policy.",
+    "evidence": "Independent logical-map FP64 oracle; tail, overwrite/accumulate/affine-effect and adjoint checks; no hidden padded biological coordinates.",
+    "legacy_tasks": [
+      "CE-NF1-N01",
+      "CE-NF1-N02",
+      "CE-NF1-N03",
+      "CE-NF1-N04",
+      "CE-NF1-N05",
+      "CE-NF1-N06"
+    ]
+  },
+  {
+    "id": "CE-VALUES",
+    "owner": "CE-NF1A-CORE",
+    "classification": "required",
+    "statement": "One actual immutable structural owner supports independent value instances. Retain explicit FP32 authority, optional half projection, epoch replacement and proven update/lifetime semantics without pretending a generation is a saved snapshot.",
+    "evidence": "Source-close/sibling-survival, precision-below-half-ULP, independent update and stale-ticket tests; actual preparation/memory counters.",
+    "legacy_tasks": [
+      "CE-NF1-V01",
+      "CE-NF1-V02",
+      "CE-NF1-V03",
+      "CE-NF1-V04",
+      "CE-NF1-V05",
+      "CE-NF1-V06",
+      "CE-NF1-V07",
+      "CE-NF1-P04",
+      "CE-NF1-P05",
+      "CE-NF1-P06"
+    ]
+  },
+  {
+    "id": "CE-NARY",
+    "owner": "CE-NF1A-MECHANISMS",
+    "classification": "required",
+    "statement": "Ordered, repeated n-ary argument incidence and explicit output ownership; grouped precompiled blocks plus a small inspectable composition vocabulary. CPU/CUDA evaluation does not require per-cell Python, per-edge virtual dispatch or a dense Cartesian expansion.",
+    "evidence": "Non-additive triad, repeated-argument and shared-destination controls; composed/custom parity; actual GPU route and bounded scratch.",
+    "legacy_tasks": [
+      "CE-NF1-H01",
+      "CE-NF1-H02",
+      "CE-NF1-H03",
+      "CE-NF1-H04",
+      "CE-NF1-H05",
+      "CE-NF1-H06",
+      "CE-NF1-H07"
+    ]
+  },
+  {
+    "id": "CE-PREDICATE",
+    "owner": "CE-NF1A-MECHANISMS",
+    "classification": "required",
+    "statement": "A false predicate prevents evaluation of an invalid operand. Arithmetic zero, masked exclusion and structural absence have distinct declared semantics.",
+    "evidence": "Masked nonfinite counterexample and deterministic assembly tests, not silent NaN sanitization.",
+    "legacy_tasks": [
+      "CE-NF1-H04",
+      "CE-NF1-H05",
+      "CE-NF1-H06",
+      "CE-NF1-S01",
+      "CE-NF1-S04"
+    ]
+  },
+  {
+    "id": "CE-SUPPORT",
+    "owner": "CE-NF1A-SUPPORT",
+    "classification": "required",
+    "statement": "Persistent support with activity and an exact compact-active alternative both work. Shared/cohort/per-instance activity, generation/epoch changes and full fallback remain explicit.",
+    "evidence": "Masked/compact parity across widths, active fractions and churn; rebuild only when structure changes; safe epoch replacement and identity restoration.",
+    "legacy_tasks": [
+      "CE-NF1-S01",
+      "CE-NF1-S02",
+      "CE-NF1-S03",
+      "CE-NF1-S05",
+      "CE-NF1-S07"
+    ]
+  },
+  {
+    "id": "CE-APPROX",
+    "owner": "CE-NF1A-SUPPORT",
+    "classification": "required",
+    "statement": "Keep primal and derivative support distinct. Provide an opt-in approximate-dropping route with bounded/empirical/unassessed accuracy provenance, never causal absence; exact execution remains the default.",
+    "evidence": "w*x at w=0 retains parameter response; exact/approximate controls and a valid bound or explicit unavailable guarantee.",
+    "legacy_tasks": [
+      "CE-NF1-S04",
+      "CE-NF1-S06",
+      "CE-NF1-S07"
+    ]
+  },
+  {
+    "id": "CE-RESPONSE",
+    "owner": "CE-NF1A-RESPONSE",
+    "classification": "required",
+    "statement": "Executable state/parameter JVP, VJP and bounded second-direction actions for the supported vocabulary; repeated arguments, fan-out, precision conventions, primal generations and branch decisions are respected.",
+    "evidence": "Independent analytic/finite-difference and adjoint tests; polynomial second response; real GPU, stale-primal and unsupported/nonsmooth refusals.",
+    "legacy_tasks": [
+      "CE-NF1-D01",
+      "CE-NF1-D02",
+      "CE-NF1-D03",
+      "CE-NF1-D04",
+      "CE-NF1-D05",
+      "CE-NF1-D06",
+      "CE-NF1-D07",
+      "CE-NF1-D08"
+    ]
+  },
+  {
+    "id": "CE-INTEGRATED",
+    "owner": "CE-NF1A-QUALIFY",
+    "classification": "required",
+    "statement": "Integrate producer commits into one coherent library; retain affected SS1/RU1/program/gate/segment behavior and qualify an external custom operation including forward-only capability.",
+    "evidence": "Actual registered nonempty test inventory, no required skips, real CUDA and Compute Sanitizer on the source/binary set being published.",
+    "legacy_tasks": [
+      "CE-NF1-T01",
+      "CE-NF1-T02",
+      "CE-NF1-T03",
+      "CE-NF1-T04",
+      "CE-NF1-T05",
+      "CE-NF1-T06",
+      "CE-NF1-M30",
+      "CE-NF1-M40",
+      "CE-NF1-M50"
+    ]
+  },
+  {
+    "id": "CE-PERFORMANCE",
+    "owner": "CE-NF1A-QUALIFY",
+    "classification": "required_evaluation_conditional_specialization",
+    "statement": "Measure complete cold, resident and amortized programs, with preparation, transfers, refresh, support, response, output observation, launch and memory costs. Evaluate legal reuse, grouping/fusion, applicable existing routes, support crossover and precision tradeoffs.",
+    "evidence": "Bounded workload matrix and distributions under the same semantics; retain negative results and baseline. Mandatory evaluation does not require every speculative prototype to be built.",
+    "legacy_tasks": [
+      "CE-NF1-O01",
+      "CE-NF1-O02",
+      "CE-NF1-O03",
+      "CE-NF1-O04",
+      "CE-NF1-O05",
+      "CE-NF1-O06",
+      "CE-NF1-O07"
+    ]
+  },
+  {
+    "id": "CE-REPLAY",
+    "owner": "CE-NF1A-QUALIFY",
+    "classification": "conditional",
+    "statement": "Fixed-program CUDA replay and further specializations are optional and activated only with capture-safety and workload evidence. A reasoned not-applicable or non-promotion result is acceptable; ordinary stream execution remains required.",
+    "evidence": "Recorded admissibility/benefit decision; tests and current-input/generation evidence for any advertised capture path.",
+    "legacy_tasks": [
+      "CE-NF1-O02",
+      "CE-NF1-O03",
+      "CE-NF1-O04",
+      "CE-NF1-O05",
+      "CE-NF1-O06",
+      "CE-NF1-O07"
+    ]
+  },
+  {
+    "id": "CE-FINAL",
+    "owner": "CE-NF1A-RELEASE",
+    "classification": "required",
+    "statement": "Verify the real GlassHelix acceptance against the exact qualified CE source (or an explicitly requalified descendant), publish final CE receipt and verify origin/main.",
+    "evidence": "Fresh producer/consumer task identity, source/interface/test receipt chain, inherited work disposition, no force rewriting or unrelated cleanup.",
+    "legacy_tasks": [
+      "CE-NF1-X01",
+      "CE-NF1-M90"
+    ]
+  },
+  {
+    "id": "GH-ROLES",
+    "owner": "GH-NF1A-SYSTEM",
+    "classification": "required",
+    "statement": "Scientific quantities, mechanism occurrences, observations, dynamical state and inferential state remain distinct. Sharing a definition or a numerical stage never merges candidate explanations, parameters or biological individuals.",
+    "evidence": "Role/domain/order/effect rejection and shared/independent instance tests; existing core contracts retained or deliberately versioned.",
+    "legacy_tasks": [
+      "GH-NF1-C01",
+      "GH-NF1-C02",
+      "GH-NF1-C03",
+      "GH-NF1-C04",
+      "GH-NF1-C05",
+      "GH-NF1-C06",
+      "GH-NF1-C07",
+      "GH-NF1-S01",
+      "GH-NF1-S02",
+      "GH-NF1-S03",
+      "GH-NF1-S04",
+      "GH-NF1-S05",
+      "GH-NF1-S06",
+      "GH-NF1-S07"
+    ]
+  },
+  {
+    "id": "GH-SYSTEM",
+    "owner": "GH-NF1A-SYSTEM",
+    "classification": "required",
+    "statement": "Usable separately linked C++20 system assembly, inspectable compositions and custom blocks lowered to Cellerator. Preserve the partial S01 implementation; replace test-only CE source recompilation with real production linkage.",
+    "evidence": "External native consumer at width33, custom/composed parity and provider provenance; no source-level .cu inclusion or alternate GH accelerator.",
+    "legacy_tasks": [
+      "GH-NF1-B01",
+      "GH-NF1-B02",
+      "GH-NF1-B03",
+      "GH-NF1-B04",
+      "GH-NF1-B05",
+      "GH-NF1-S01",
+      "GH-NF1-S02",
+      "GH-NF1-S03",
+      "GH-NF1-S04",
+      "GH-NF1-S05",
+      "GH-NF1-S06",
+      "GH-NF1-S07",
+      "GH-NF1-X01",
+      "GH-NF1-X02",
+      "GH-NF1-X03",
+      "GH-NF1-M10"
+    ]
+  },
+  {
+    "id": "GH-DYNAMICS",
+    "owner": "GH-NF1A-SYSTEM",
+    "classification": "required",
+    "statement": "Deterministic discrete maps and fixed-step RK4, stage-correct supplied forcing and declared discontinuities, device-resident repeated evolution and bounded checkpointable primal history.",
+    "evidence": "Map formula, RK4 convergence, discontinuity and state-reset tests; independent trajectories and stale-parameter/checkpoint refusals; no unsupported stiff/SDE/DDE claims.",
+    "legacy_tasks": [
+      "GH-NF1-D01",
+      "GH-NF1-D02",
+      "GH-NF1-D03",
+      "GH-NF1-D04",
+      "GH-NF1-D05",
+      "GH-NF1-D06",
+      "GH-NF1-D07",
+      "GH-NF1-M20"
+    ]
+  },
+  {
+    "id": "GH-OBSERVATION",
+    "owner": "GH-NF1A-OBSERVE",
+    "classification": "required",
+    "statement": "Partial, linear and nonlinear observations have explicit axes, time, units, missingness and individual/population record type. Simple declared noise/likelihood and reproducible observation sampling do not change deterministic process dynamics.",
+    "evidence": "Missing is not zero; population is not individual history; nonlinear/forward-only capability tests; likelihood/sampling comparisons and explicit invalid evidence.",
+    "legacy_tasks": [
+      "GH-NF1-O01",
+      "GH-NF1-O02",
+      "GH-NF1-O03",
+      "GH-NF1-O04",
+      "GH-NF1-O06"
+    ]
+  },
+  {
+    "id": "GH-INFERENCE",
+    "owner": "GH-NF1A-OBSERVE",
+    "classification": "required",
+    "statement": "Supplied finite candidates propagate through the common engine and use stable normalized likelihood updates; preserve joint state/mechanism identity, reporter correlations and evidence history.",
+    "evidence": "Indistinguishable observations retain alternatives; discriminating evidence changes weights; correlated/anticorrelated reporter test; zero-total likelihood and underflow handling.",
+    "legacy_tasks": [
+      "GH-NF1-E01",
+      "GH-NF1-E02",
+      "GH-NF1-E03",
+      "GH-NF1-E04",
+      "GH-NF1-E05"
+    ]
+  },
+  {
+    "id": "GH-DIFFERENTIATE",
+    "owner": "GH-NF1A-ANALYZE",
+    "classification": "required",
+    "statement": "Interrogate the requested vector field, map, implemented RK4 step, observation or rollout; compose matrix-free JVP/VJP using saved or exactly declared recomputed primal stages.",
+    "evidence": "Explicit differentiated-object labels; analytic, finite-difference and adjoint checks on the actual computation; old primal/forcing/activity/parameter rejection.",
+    "legacy_tasks": [
+      "GH-NF1-Q01",
+      "GH-NF1-Q02",
+      "GH-NF1-Q06",
+      "GH-NF1-Q07",
+      "GH-NF1-O05",
+      "GH-NF1-X04"
+    ]
+  },
+  {
+    "id": "GH-NULL",
+    "owner": "GH-NF1A-ANALYZE",
+    "classification": "required",
+    "statement": "Small selected/scaled sensitivity diagnostics use established SVD or rank-revealing linear algebra, not hardcoded fixture answers or unnecessary normal equations. Report thresholds, residuals, scales and local domain.",
+    "evidence": "a+b unresolved contrast plus a control that resolves it; scaling convention consistency; actual sensitivities feeding decomposition.",
+    "legacy_tasks": [
+      "GH-NF1-Q03",
+      "GH-NF1-Q04",
+      "GH-NF1-Q07"
+    ]
+  },
+  {
+    "id": "GH-ALTERNATIVES",
+    "owner": "GH-NF1A-ANALYZE",
+    "classification": "required",
+    "statement": "Compare aligned supplied candidates through shared features and jointly constrained alternatives without inventing an edge-wise hybrid or treating optimization-run counts as posterior mass.",
+    "evidence": "Explicit shared-role/alignment and exclusive-branch counterexample; local numerical degeneracy is not global identification.",
+    "legacy_tasks": [
+      "GH-NF1-Q05",
+      "GH-NF1-Q07"
+    ]
+  },
+  {
+    "id": "GH-REDUCTION",
+    "owner": "GH-NF1A-ANALYZE",
+    "classification": "required",
+    "statement": "Check supplied exact/approximate reductions for closure and response on a declared regime; do not implement universal minimal-state discovery. Preserve information needed by the observer even if irrelevant to physical output dynamics.",
+    "evidence": "Equal-decay aggregation positive control, nonclosed reduction negative control, reporter-correlation preservation; sampled checks are not global proofs.",
+    "legacy_tasks": [
+      "GH-NF1-R01",
+      "GH-NF1-R02",
+      "GH-NF1-R05"
+    ]
+  },
+  {
+    "id": "GH-ERROR",
+    "owner": "GH-NF1A-ANALYZE",
+    "classification": "required",
+    "statement": "Separate numerical conversion, integration, dropped support, empirical error, certified bounds and scientific uncertainty. Propagate only supplied justified bounds; allow numerically unresolved threshold outcomes.",
+    "evidence": "Bounded linear control and invalid-bound/threshold control; empirical Jacobian norms do not become global certificates.",
+    "legacy_tasks": [
+      "GH-NF1-R03",
+      "GH-NF1-R04",
+      "GH-NF1-D06"
+    ]
+  },
+  {
+    "id": "GH-PYTHON",
+    "owner": "GH-NF1A-ACCESS",
+    "classification": "required",
+    "statement": "A thin Python binding exposes the same native library with explicit host ingress, dtype/stride/copy policy, asynchronous owner/GIL/error lifetime and capability inspection.",
+    "evidence": "Native/Python parity in a fresh environment, bad dtype/stride and dropped-reference tests; no Torch-owned or Python-numerical substitute.",
+    "legacy_tasks": [
+      "GH-NF1-P01",
+      "GH-NF1-P02",
+      "GH-NF1-P03",
+      "GH-NF1-P04",
+      "GH-NF1-P06"
+    ]
+  },
+  {
+    "id": "GH-INTERCHANGE",
+    "owner": "GH-NF1A-ACCESS",
+    "classification": "conditional",
+    "statement": "Host-first Python access is acceptable; GPU interchange is optional, explicitly unsupported unless stream/lifetime semantics are implemented and tested.",
+    "evidence": "No raw-pointer-only zero-copy claim. Enabled interchange requires actual ownership/readiness tests.",
+    "legacy_tasks": [
+      "GH-NF1-P05"
+    ]
+  },
+  {
+    "id": "GH-REPLAY",
+    "owner": "GH-NF1A-ACCESS",
+    "classification": "required",
+    "statement": "Native/Python examples, capability/run/failure inspection and portable replay retain logical inputs, registered block definitions, identities, numerical policy and both source versions\u2014not pointers.",
+    "evidence": "Fresh-process replay, altered-input variation, corrupt/missing/incompatible artifact tests; failed/pending execution distinguishable from valid empty output.",
+    "legacy_tasks": [
+      "GH-NF1-U01",
+      "GH-NF1-U02",
+      "GH-NF1-U03",
+      "GH-NF1-U04",
+      "GH-NF1-U05",
+      "GH-NF1-U06",
+      "GH-NF1-M40"
+    ]
+  },
+  {
+    "id": "GH-ACCEPTANCE",
+    "owner": "GH-NF1A-ACCEPT",
+    "classification": "required",
+    "statement": "Integrate and independently exercise the whole toolkit: actual default-CUDA demo, native/Python parity, mathematical counterexamples, replay and lifetime, plus retained relevant regressions.",
+    "evidence": "Exact executed inventory, source/build/binary/device identity, no missing or skipped required tests; no fake provider or reference-only success.",
+    "legacy_tasks": [
+      "GH-NF1-T01",
+      "GH-NF1-T02",
+      "GH-NF1-T03",
+      "GH-NF1-T04",
+      "GH-NF1-T05",
+      "GH-NF1-T06",
+      "GH-NF1-M30",
+      "GH-NF1-M60",
+      "GH-NF1-X05"
+    ]
+  },
+  {
+    "id": "GH-PERFORMANCE",
+    "owner": "GH-NF1A-ACCEPT",
+    "classification": "required",
+    "statement": "Measure the actual supplied-system workload over a bounded range of widths, arity, candidate count, activity, churn, repeated steps and response directions, with cold/resident/output costs and numerical sensitivity visible.",
+    "evidence": "Shared/independent correctness and full-cost comparison; serial uncontaminated timing using actual GPU leases and one shared host lock. No required positive speedup.",
+    "legacy_tasks": [
+      "GH-NF1-K01",
+      "GH-NF1-K02",
+      "GH-NF1-K03",
+      "GH-NF1-K04",
+      "GH-NF1-K05"
+    ]
+  },
+  {
+    "id": "GH-FINAL",
+    "owner": "GH-NF1A-RELEASE",
+    "classification": "required",
+    "statement": "Close the pair only after CE final receipt, matching source/interface provenance and both published main branches; preserve all unrelated records and worktrees.",
+    "evidence": "Final source-pair reconciliation; no unsupported biological/identifiability promotion; safe owned cleanup only.",
+    "legacy_tasks": [
+      "GH-NF1-X06",
+      "GH-NF1-M90"
+    ]
+  },
+  {
+    "id": "PAIR-PRESERVE",
+    "owner": "PAIR",
+    "classification": "required",
+    "statement": "Preserve all completed legacy task identities/outcomes/evidence and every recoverable source artifact. Retire only fresh nonterminal members of the explicit old NF1 allowlist after successor import and source preservation.",
+    "evidence": "Exact canonical retirement receipts, before/after completed-record comparison, dirty-byte capture, ancestry checks and explicit successor destinations for pending old artifacts.",
+    "legacy_tasks": [
+      "CE-NF1-COORD",
+      "CE-NF1-0000",
+      "GH-NF1-COORD",
+      "GH-NF1-0000"
+    ],
+    "local_owners": [
+      "CE-NF1A-ADOPT",
+      "GH-NF1A-ADOPT",
+      "CE-NF1A-CONTROL",
+      "GH-NF1A-CONTROL"
+    ],
+    "owner_semantics": "query grouping only; no cross-authority claim"
+  },
+  {
+    "id": "PAIR-SCOPE",
+    "owner": "PAIR",
+    "classification": "required",
+    "statement": "Deliver the existing experimental execution toolbox. No biological experiment, final learner, universal identifiability/reduction engine, JIT/compiler project, distributed CellShard execution or sequence-to-mechanism model.",
+    "evidence": "Capability/public-output review and explicit unsupported cases; GH-SCIENCE-FOUNDATIONS and unrelated CE-AMP remain untouched.",
+    "legacy_tasks": [
+      "CE-NF1-A01",
+      "CE-NF1-A02",
+      "CE-NF1-A03",
+      "CE-NF1-A04",
+      "CE-NF1-C01",
+      "CE-NF1-C02",
+      "CE-NF1-C03",
+      "CE-NF1-C04",
+      "CE-NF1-C05",
+      "CE-NF1-C06",
+      "CE-NF1-M00",
+      "CE-NF1-M10",
+      "GH-NF1-A01",
+      "GH-NF1-A02",
+      "GH-NF1-A03",
+      "GH-NF1-A04",
+      "GH-NF1-M00"
+    ],
+    "local_owners": [
+      "CE-NF1A-ADOPT",
+      "GH-NF1A-ADOPT",
+      "CE-NF1A-CONTROL",
+      "GH-NF1A-CONTROL"
+    ],
+    "owner_semantics": "query grouping only; no cross-authority claim"
+  }
+]

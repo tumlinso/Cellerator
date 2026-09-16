@@ -1,0 +1,69 @@
+{
+  "format": "nf1a-choice-guidance-v1",
+  "authority": "Accepted execution guidance, not a new native task schema.",
+  "rule": "Keep alternatives inside an outcome by default. Materialize only selected work when it merits an independent durable boundary; never join every hypothetical branch.",
+  "choices": [
+    {
+      "id": "specialization",
+      "owner": "CE-NF1A-QUALIFY",
+      "choices": [
+        "retain correct baseline",
+        "reuse an existing qualified candidate",
+        "implement a bounded specialization"
+      ],
+      "select_by": "Matched full-program cost and correctness; smallest decisive experiment first.",
+      "always_required": [
+        "baseline execution",
+        "complete-cost measurement",
+        "negative evidence"
+      ]
+    },
+    {
+      "id": "capture",
+      "owner": "CE-NF1A-QUALIFY",
+      "choices": [
+        "explicitly unsupported/not useful",
+        "qualified fixed-program capture"
+      ],
+      "select_by": "Ordinary execution already correct, capture-safe operations and observable workload benefit. No mutable replay guarantee inferred."
+    },
+    {
+      "id": "python-device-interchange",
+      "owner": "GH-NF1A-ACCESS",
+      "choices": [
+        "host-first with explicit unsupported device borrowing",
+        "qualified device interchange"
+      ],
+      "select_by": "Actual ownership/stream protocol and consumer need. Host-first is accepted; Python parity is not optional."
+    },
+    {
+      "id": "primal-history",
+      "owner": "CE-NF1A-RESPONSE",
+      "choices": [
+        "retain bounded actual primal stages",
+        "deterministic checkpoint/recomputation"
+      ],
+      "select_by": "Actual memory/reuse workload and exact differentiated discrete calculation; generations alone are insufficient."
+    },
+    {
+      "id": "binding-library",
+      "owner": "GH-NF1A-ACCESS",
+      "choices": [
+        "reuse appropriate existing binding route",
+        "use nanobind",
+        "another small justified native binding"
+      ],
+      "select_by": "Current build/lifetime needs. No framework migration or duplicate numerical backend."
+    }
+  ],
+  "not_optional": [
+    "general-width FP32",
+    "actual CUDA and independent FP64 oracle",
+    "exact masked AND compact-active support",
+    "supported JVP/VJP and bounded second directions",
+    "finite candidate correlation preservation",
+    "thin Python parity",
+    "portable logical replay",
+    "complete-cost evidence"
+  ]
+}

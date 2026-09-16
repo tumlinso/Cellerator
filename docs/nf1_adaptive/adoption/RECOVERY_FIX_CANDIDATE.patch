@@ -1,0 +1,204 @@
+diff --git a/todo-orchestrator/tests/test_retirement.py b/todo-orchestrator/tests/test_retirement.py
+index e4ecdf8..78b6716 100644
+--- a/todo-orchestrator/tests/test_retirement.py
++++ b/todo-orchestrator/tests/test_retirement.py
+@@ -8,6 +8,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
+ 
+ from todo_orchestrator.models import TodoError
+ from todo_orchestrator.authority import logical_authority_fingerprint
++from todo_orchestrator.workflow.recovery import RecoveryEngine
+ 
+ 
+ class RetirementTests(unittest.TestCase):
+@@ -77,3 +78,27 @@ class RetirementTests(unittest.TestCase):
+         with self.assertRaises(TodoError) as blocked:
+             self.repo.service.retire_run_batch(request)
+         self.assertEqual(blocked.exception.code, "retirement_external_consumers")
++
++    def test_orphan_lane_entry_recovers_then_exact_retirement_succeeds(self):
++        self.repo.service.db.mutate(
++            actor_session_id=None, entity_type='fixture', entity_id='OLD', event_type='fixture.orphan', payload={},
++            operation=lambda conn, revision: conn.execute(
++                "UPDATE workflow_lane_tasks SET state='active',activated_at='now',revision=? WHERE lane_id='OLD-LANE' AND task_id='OLD'",
++                (revision,),
++            ),
++        )
++        self.repo.service.db.mutate(
++            actor_session_id=None, entity_type='fixture', entity_id='OLD', event_type='fixture.active_lane', payload={},
++            operation=lambda conn, revision: conn.execute("UPDATE workflow_lanes SET state='active',revision=? WHERE id='OLD-LANE'", (revision,)),
++        )
++        with self.assertRaises(TodoError) as blocked:
++            self.repo.service.retire_run_batch(self.request())
++        self.assertEqual(blocked.exception.code, 'retirement_not_quiescent')
++        engine = RecoveryEngine(self.repo.service.db, self.repo.root, str(self.repo.service.project['project_uuid']),
++                                process_probe=lambda *_: False, actor_identity='test-owner')
++        plan = engine.inspect('OLD')
++        self.assertEqual([item['kind'] for item in plan['actions']], ['requeue_orphan_lane_task'])
++        engine.execute(plan, 'requeue orphan for retirement')
++        self.assertEqual(self.repo.service.retire_run_batch(self.request())['status'], 'retired')
++        with self.repo.service.db.read() as conn:
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE task_id='OLD'").fetchone()[0], 'skipped')
+diff --git a/todo-orchestrator/tests/test_workflow_recovery.py b/todo-orchestrator/tests/test_workflow_recovery.py
+index 46513a1..9a684fc 100644
+--- a/todo-orchestrator/tests/test_workflow_recovery.py
++++ b/todo-orchestrator/tests/test_workflow_recovery.py
+@@ -308,6 +308,10 @@ class WorkflowRecoveryTests(unittest.TestCase):
+ 
+     def test_stopped_first_class_worker_clean_scope_retires_lineage_and_is_idempotent(self) -> None:
+         self.seed_dispatch(capability=True)
++        self.mutate(lambda conn, revision: conn.execute(
++            "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('LANE',0,'A','active','now','now',?)",
++            (revision,),
++        ))
+         engine = self.engine()
+         plan = engine.inspect("A")
+         self.assertEqual(plan["status"], "recovery_needed")
+@@ -322,6 +326,7 @@ class WorkflowRecoveryTests(unittest.TestCase):
+             self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], "recovered")
+             self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], "recovered_released")
+             self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], "retired")
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='LANE' AND task_id='A'").fetchone()[0], "queued")
+             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "planned")
+             audit = conn.execute("SELECT reason FROM workflow_recovery_audit").fetchone()
+             event = conn.execute("SELECT payload_json FROM events WHERE event_type='workflow_recovery.completed'").fetchone()
+@@ -332,6 +337,64 @@ class WorkflowRecoveryTests(unittest.TestCase):
+         with self.repo.service.db.read() as conn:
+             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_recovery_audit").fetchone()[0], 1)
+ 
++    def test_orphan_active_lane_task_is_requeued_without_touching_sibling(self) -> None:
++        def seed(conn, revision):
++            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','A','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('OTHER-RUN','T','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','active','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('SIBLING','OTHER-RUN','implementer','active','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('LANE',0,'A','active','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('SIBLING',0,'T','active','now','now',?)", (revision,))
++            conn.execute("UPDATE tasks SET status='planned' WHERE id IN ('A','T')")
++            conn.execute("UPDATE claims SET state='recovered_released',released_at='now' WHERE id=?", (self.claim_id,))
++        self.mutate(seed)
++        engine = self.engine()
++        plan = engine.inspect('A')
++        self.assertEqual(plan['status'], 'recovery_needed')
++        self.assertEqual([item['kind'] for item in plan['actions']], ['requeue_orphan_lane_task'])
++        engine.execute(plan, 'requeue orphaned lane entry')
++        with self.repo.service.db.read() as conn:
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='LANE' AND task_id='A'").fetchone()[0], 'queued')
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='SIBLING' AND task_id='T'").fetchone()[0], 'active')
++            self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='T'").fetchone()[0], 'planned')
++        self.assertEqual(engine.inspect('A')['status'], 'already_recovered')
++
++    def test_orphan_recovery_refuses_mismatched_live_dispatch_on_same_lane(self) -> None:
++        def seed(conn, revision):
++            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','A','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','active','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('LANE',0,'A','active','now','now',?)", (revision,))
++            conn.execute("UPDATE claims SET state='recovered_released',released_at='now' WHERE id=?", (self.claim_id,))
++        self.mutate(seed)
++        other = self.repo.service.continue_work(task_id='T')
++        def dispatch_other(conn, revision):
++            conn.execute("INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,workspace_id,context_version,heartbeat_at,hostname,pid,created_at,revision) VALUES('OTHER-DISPATCH','LANE',?,?,NULL,1,'2999-01-01T00:00:00Z',?,999999,'now',?)", (other['session']['agent_id'], other['claim']['claim_id'], socket.gethostname(), revision))
++        self.mutate(dispatch_other)
++        plan = self.engine().inspect('A')
++        self.assertEqual(plan['status'], 'refused')
++        self.assertEqual(plan['actions'], [])
++        self.assertIn({
++            'kind': 'orphan_lane_dispatch', 'task_id': 'A', 'lane_id': 'LANE',
++            'dispatch_id': 'OTHER-DISPATCH', 'state': 'active',
++        }, plan['blockers'])
++        with self.assertRaises(TodoError) as error:
++            self.engine().execute(plan, 'lane dispatch still active')
++        self.assertEqual(error.exception.code, 'recovery_live_work_refused')
++        with self.repo.service.db.read() as conn:
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='LANE' AND task_id='A'").fetchone()[0], 'active')
++
++    def test_orphan_recovery_preserves_nonactive_lane_state(self) -> None:
++        def seed(conn, revision):
++            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','A','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','attention_required','now','now',?)", (revision,))
++            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('LANE',0,'A','active','now','now',?)", (revision,))
++            conn.execute("UPDATE claims SET state='recovered_released',released_at='now' WHERE id=?", (self.claim_id,))
++        self.mutate(seed)
++        self.assertEqual(self.engine().inspect('A')['status'], 'already_recovered')
++        with self.repo.service.db.read() as conn:
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='LANE' AND task_id='A'").fetchone()[0], 'active')
++            self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='LANE'").fetchone()[0], 'attention_required')
++
+     def test_lost_capability_index_does_not_prevent_resume(self) -> None:
+         self.seed_dispatch(capability=False)
+         result = self.engine().execute(self.engine().inspect("A"), "lost locator and handle")
+diff --git a/todo-orchestrator/todo_orchestrator/workflow/recovery.py b/todo-orchestrator/todo_orchestrator/workflow/recovery.py
+index a9afc4f..04ab58e 100644
+--- a/todo-orchestrator/todo_orchestrator/workflow/recovery.py
++++ b/todo-orchestrator/todo_orchestrator/workflow/recovery.py
+@@ -333,6 +333,34 @@ class RecoveryEngine:
+                 if dirty:
+                     warnings.append({"kind": "dirty_scope_preserved", "claim_id": claim["id"], "task_id": claim["task_id"]})
+ 
++            orphan_lane_dispatch_query = (
++                "SELECT lt.lane_id,lt.task_id,d.id AS dispatch_id FROM workflow_lane_tasks lt JOIN tasks t ON t.id=lt.task_id "
++                "JOIN workflow_lanes l ON l.id=lt.lane_id "
++                "JOIN workflow_dispatches d ON d.lane_id=lt.lane_id AND d.state='active' "
++                "WHERE lt.state='active' AND l.state='active' AND t.status IN ('planned','in_progress','attention_required') "
++                "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=lt.task_id AND c.state IN ('active','orphaned')) "
++                + ("AND lt.task_id=? " if task_id else "") + "ORDER BY lt.lane_id,lt.task_id,d.id"
++            )
++            for held in (dict(row) for row in conn.execute(orphan_lane_dispatch_query, args)):
++                blockers.append({
++                    "kind": "orphan_lane_dispatch",
++                    "task_id": held["task_id"],
++                    "lane_id": held["lane_id"],
++                    "dispatch_id": held["dispatch_id"],
++                    "state": "active",
++                })
++
++            orphan_lane_query = (
++                "SELECT lt.lane_id,lt.task_id FROM workflow_lane_tasks lt JOIN tasks t ON t.id=lt.task_id "
++                "JOIN workflow_lanes l ON l.id=lt.lane_id "
++                "WHERE lt.state='active' AND l.state='active' AND t.status IN ('planned','in_progress','attention_required') "
++                "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=lt.task_id AND c.state IN ('active','orphaned')) "
++                "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches d WHERE d.lane_id=lt.lane_id AND d.state='active')"
++                + (" AND lt.task_id=?" if task_id else "") + " ORDER BY lt.lane_id,lt.task_id"
++            )
++            for orphan in (dict(row) for row in conn.execute(orphan_lane_query, args)):
++                actions.append({"kind": "requeue_orphan_lane_task", "lane_id": orphan["lane_id"], "task_id": orphan["task_id"]})
++
+             child_query = (
+                 "SELECT c.*,a.id AS attempt_id,a.state AS attempt_state,a.expires_at AS attempt_expires_at "
+                 "FROM child_executions c LEFT JOIN child_attempts a ON a.child_execution_id=c.id AND a.state='active' "
+@@ -532,6 +560,36 @@ class RecoveryEngine:
+                         store.stage_revoke(conn, capability_id=str(capability["id"]), family=True)
+                 elif kind == "retire_dispatch":
+                     conn.execute("UPDATE workflow_dispatches SET state='recovered',released_at=?,revision=? WHERE id=? AND state='active'", (now, revision, action["id"]))
++                    conn.execute(
++                        "UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? "
++                        "WHERE lane_id=? AND task_id=? AND state='active' "
++                        "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=? AND c.id<>? AND c.state IN ('active','orphaned')) "
++                        "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches d WHERE d.lane_id=? AND d.state='active' AND d.id<>?)",
++                        (revision, action["lane_id"], action["task_id"], action["task_id"], action["claim_id"], action["lane_id"], action["id"]),
++                    )
++                    conn.execute(
++                        "UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=? "
++                        "AND state='active' AND NOT EXISTS(SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND state='active') "
++                        "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches WHERE lane_id=? AND state='active')",
++                        (now, revision, action["lane_id"], action["lane_id"], action["lane_id"]),
++                    )
++                elif kind == "requeue_orphan_lane_task":
++                    updated = conn.execute(
++                        "UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? "
++                        "WHERE lane_id=? AND task_id=? AND state='active' "
++                        "AND EXISTS(SELECT 1 FROM workflow_lanes l WHERE l.id=? AND l.state='active') "
++                        "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=? AND c.state IN ('active','orphaned')) "
++                        "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches d WHERE d.lane_id=? AND d.state='active')",
++                        (revision, action["lane_id"], action["task_id"], action["lane_id"], action["task_id"], action["lane_id"]),
++                    )
++                    if updated.rowcount != 1:
++                        raise TodoError("recovery_plan_stale", "Orphan lane-task safety state changed", ExitCode.CONTENTION)
++                    conn.execute(
++                        "UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=? "
++                        "AND state='active' AND NOT EXISTS(SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND state='active') "
++                        "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches WHERE lane_id=? AND state='active')",
++                        (now, revision, action["lane_id"], action["lane_id"], action["lane_id"]),
++                    )
+                 elif kind == "release_claim":
+                     release_claim_locks(conn, str(action["id"]))
+                     conn.execute("UPDATE resource_leases SET state='recovered',released_at=? WHERE claim_id=? AND state='active'", (now, action["id"]))

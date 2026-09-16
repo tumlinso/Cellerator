@@ -1,0 +1,892 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-NF1A-INV-SCOPE",
+      "rule": "Deliver the accepted supplied-system execution toolbox, not a biological experiment, new learner, universal identifiability theorem or new execution framework.",
+      "severity": "error",
+      "scope": {}
+    },
+    {
+      "id": "CE-NF1A-INV-PRESERVE",
+      "rule": "Preserve unknown/uncommitted/unmerged work, all successful legacy records and unrelated programs. Selective evidence-backed pruning is allowed; mass deletion, reset/clean and force-push are not.",
+      "severity": "error",
+      "scope": {}
+    },
+    {
+      "id": "CE-NF1A-INV-TRUTH",
+      "rule": "Real capabilities require source-bound executed evidence. A descriptor, reference-only oracle, fake provider, skipped test, enqueue counter or unselected optimization does not establish a native capability.",
+      "severity": "error",
+      "scope": {}
+    },
+    {
+      "id": "CE-NF1A-INV-OWNERS",
+      "rule": "Use the existing numerical, identity, preparation and lifetime owners. Project-local claims govern writes; source scopes are coordination boundaries, amendable with conflict checks, not reasons to duplicate implementation.",
+      "severity": "error",
+      "scope": {}
+    },
+    {
+      "id": "CE-NF1A-INV-AGENCY",
+      "rule": "The root chooses decomposition, ordinary APIs, tests, algorithms, scope transfers and delegation. Explain consequential choices; do not generate procedural microtasks or request routine user direction.",
+      "severity": "error",
+      "scope": {}
+    }
+  ],
+  "decisions": [],
+  "locks": [],
+  "interfaces": [],
+  "barriers": [],
+  "resource_classes": [],
+  "tasks": [
+    {
+      "id": "CE-NF1A-ADOPT",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Adopt preserved NF1 work and switch the execution frontier",
+      "objective": "Verify both successor imports; preserve and map existing work, reconcile expired NF1 authority, and retire only superseded unfinished old NF1 records. Establish the usable build/gate/delegation bindings without rebuilding tooling.",
+      "priority": 200,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "docs/nf1_adaptive/adoption",
+          "planning/nf1-adaptive-v1"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-ADOPT-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-ADOPT"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ]
+        }
+      ],
+      "checkpoints": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/ADOPT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "This is a recovery-and-handoff outcome, not a repeat architectural audit. Completed work is an input, not work to redo.",
+      "desired_end_state": "Verify both successor imports; preserve and map existing work, reconcile expired NF1 authority, and retire only superseded unfinished old NF1 records. Establish the usable build/gate/delegation bindings without rebuilding tooling.",
+      "rationale": "This is a recovery-and-handoff outcome, not a repeat architectural audit. Completed work is an input, not work to redo.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/ADOPT.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-CONTROL",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Coordinate and close the accepted local program",
+      "objective": "Hold the ordinary local coordinator seat, choose and adapt execution, keep producer delivery and qualification moving, and finish only after local RELEASE.",
+      "priority": 190,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-CONTROL-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-CONTROL"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ]
+        }
+      ],
+      "checkpoints": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/CONTROL.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "A claimable coordinator must not depend at claim time on the work it coordinates. Its final gate, not its start prerequisite, requires release.",
+      "desired_end_state": "Hold the ordinary local coordinator seat, choose and adapt execution, keep producer delivery and qualification moving, and finish only after local RELEASE.",
+      "rationale": "A claimable coordinator must not depend at claim time on the work it coordinates. Its final gate, not its start prerequisite, requires release.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/CONTROL.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-CORE",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Deliver the general-width linked numerical core",
+      "objective": "Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.",
+      "priority": 160,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "include/Cellerator/execution/program",
+          "src/execution/program",
+          "include/Cellerator/compute/operation/native_numeric",
+          "src/compute/operation/native_numeric",
+          "include/Cellerator/compute/operation/prepared_relation.hh",
+          "src/compute/operation/prepared_relation.cu",
+          "include/Cellerator/execution/native_value_instance",
+          "src/execution/native_value_instance",
+          "tests/native_foundation/build",
+          "tests/native_foundation/program",
+          "tests/native_foundation/values",
+          "tests/native_foundation/numeric",
+          "docs/nf1_adaptive/core"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-CORE-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-CORE"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ],
+          "cuda": {
+            "gpus": 1,
+            "cpu_threads": 2
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1A-CORE-DONE",
+          "title": "Deliver the general-width linked numerical core"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "The paused system already has the right execution/value owners. Finish and expose them rather than introduce another runner or tensor framework.",
+      "desired_end_state": "Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.",
+      "rationale": "The paused system already has the right execution/value owners. Finish and expose them rather than introduce another runner or tensor framework.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/CORE.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-MECHANISMS",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Deliver reusable nonlinear indexed mechanisms",
+      "objective": "Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.",
+      "priority": 120,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/indexed_mechanism",
+          "src/compute/operation/indexed_mechanism",
+          "tests/native_foundation/nary",
+          "docs/nf1_adaptive/mechanisms"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-MECHANISMS-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-MECHANISMS"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ],
+          "cuda": {
+            "gpus": 1,
+            "cpu_threads": 2
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1A-MECHANISMS-DONE",
+          "title": "Deliver reusable nonlinear indexed mechanisms"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "Biological mechanism identity must survive numerical grouping. Pairwise algebra alone cannot express the intended nonlinear joint mechanisms.",
+      "desired_end_state": "Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.",
+      "rationale": "Biological mechanism identity must survive numerical grouping. Pairwise algebra alone cannot express the intended nonlinear joint mechanisms.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/MECHANISMS.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-SUPPORT",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Deliver exact and qualified approximate support behavior",
+      "objective": "Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.",
+      "priority": 120,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/active_projection",
+          "src/compute/operation/active_projection",
+          "include/Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh",
+          "include/Cellerator/compute/operation/edge/indexed_gates_v1.cuh",
+          "tests/native_foundation/support",
+          "docs/nf1_adaptive/support"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-ADOPT"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-SUPPORT-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-SUPPORT"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ],
+          "cuda": {
+            "gpus": 1,
+            "cpu_threads": 2
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1A-SUPPORT-DONE",
+          "title": "Deliver exact and qualified approximate support behavior"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/SUPPORT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "Masking, zero values, structural absence and small response are different facts; compaction is a required alternative, not a required performance winner.",
+      "desired_end_state": "Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.",
+      "rationale": "Masking, zero values, structural absence and small response are different facts; compaction is a required alternative, not a required performance winner.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/SUPPORT.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-RESPONSE",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "task",
+      "title": "Deliver native directional response",
+      "objective": "Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.",
+      "priority": 120,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "include/Cellerator/compute/operation/differential",
+          "src/compute/operation/differential",
+          "tests/native_foundation/differential",
+          "docs/nf1_adaptive/response"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-CORE"
+        },
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-MECHANISMS"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-RESPONSE-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-RESPONSE"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ],
+          "cuda": {
+            "gpus": 1,
+            "cpu_threads": 2
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1A-RESPONSE-DONE",
+          "title": "Deliver native directional response"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/RESPONSE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "Differentiate the implemented mathematical object. A generation stamp is not a historical snapshot, and an unavailable derivative is not zero.",
+      "desired_end_state": "Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.",
+      "rationale": "Differentiate the implemented mathematical object. A generation stamp is not a historical snapshot, and an unavailable derivative is not zero.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/RESPONSE.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-QUALIFY",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "integration_task",
+      "title": "Integrate continuously and publish consumer-ready Cellerator",
+      "objective": "Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.",
+      "priority": 90,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [
+          "CMakeLists.txt",
+          "cmake/NativeFoundation.cmake",
+          "cmake/SemanticSpineV1.cmake",
+          "src/compute/CMakeLists.txt",
+          "src/execution/CMakeLists.txt",
+          "src/runtime/CMakeLists.txt",
+          "include/Cellerator/compute/operation/native_foundation_optimization",
+          "src/compute/operation/native_foundation_optimization",
+          "tests/native_foundation/reference",
+          "tests/native_foundation/conformance",
+          "tests/native_foundation/integration",
+          "bench/native_foundation",
+          "docs/nf1_adaptive/qualification",
+          "docs/nf1_adaptive/performance",
+          "docs/nf1_adaptive/developmental"
+        ],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-CORE"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-QUALIFY-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-QUALIFY"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ],
+          "cuda": {
+            "gpus": 1,
+            "cpu_threads": 2
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CE-NF1A-QUALIFY-DONE",
+          "title": "Integrate continuously and publish consumer-ready Cellerator"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/QUALIFY.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "This integration owner starts after CORE, not after all producers. Final completion requires them; early integration does not. Optimization implementation is conditional on evidence.",
+      "desired_end_state": "Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.",
+      "rationale": "This integration owner starts after CORE, not after all producers. Final completion requires them; early integration does not. Optimization implementation is conditional on evidence.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/QUALIFY.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-RELEASE",
+      "parent_id": "CE-NF1A-0000",
+      "kind": "integration_task",
+      "title": "Verify real-consumer acceptance and close Cellerator",
+      "objective": "Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.",
+      "priority": 90,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": [],
+        "forbidden_paths": []
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-NF1A-QUALIFY"
+        }
+      ],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "gates": [
+        {
+          "id": "CE-NF1A-RELEASE-ACCEPT",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "-B",
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "--task",
+            "CE-NF1A-RELEASE"
+          ],
+          "cwd": ".",
+          "expected_exit_code": 0,
+          "input_paths": [
+            "planning/nf1-adaptive-v1/scripts/run_gate.py",
+            "planning/nf1-adaptive-v1/machine/outcomes.json"
+          ]
+        }
+      ],
+      "checkpoints": [],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "next_action": "Read planning/nf1-adaptive-v1/outcomes/RELEASE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.",
+      "notes": "planning/nf1-adaptive-v1/CHARTER.md is the accepted NF1A execution amendment. Legacy obligations are mapped in machine/legacy-disposition.json.",
+      "motivation": "Consumer-ready and consumer-accepted are different boundaries. Final verification must not create a mutual-final dependency.",
+      "desired_end_state": "Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.",
+      "rationale": "Consumer-ready and consumer-accepted are different boundaries. Final verification must not create a mutual-final dependency.",
+      "delegated_choices": [
+        "Ordinary implementation and test decomposition",
+        "Concrete APIs, module organization and sensible algorithms",
+        "Bounded child routing and local retries",
+        "Evidence-backed narrow scope/interface amendments within NF1"
+      ],
+      "references": [
+        "planning/nf1-adaptive-v1/outcomes/RELEASE.md",
+        "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+        "planning/nf1-adaptive-v1/machine/requirements.json"
+      ]
+    },
+    {
+      "id": "CE-NF1A-0000",
+      "kind": "epic",
+      "title": "Cellerator adaptive NF1 completion",
+      "objective": "Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.",
+      "priority": 0,
+      "parallel_policy": "parallel_safe",
+      "scope": {
+        "exclusive_paths": [],
+        "read_paths": []
+      },
+      "depends_on": [],
+      "invariants": [
+        "CE-NF1A-INV-SCOPE",
+        "CE-NF1A-INV-PRESERVE",
+        "CE-NF1A-INV-TRUTH",
+        "CE-NF1A-INV-OWNERS",
+        "CE-NF1A-INV-AGENCY"
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-NF1A-RUN-V1",
+      "root_task_id": "CE-NF1A-0000",
+      "charter": {
+        "objective": "Retain the NF1 experimental execution toolbox; change execution decomposition and conditional optimization policy, not scientific meaning.",
+        "execution_policy": "Outcome-directed, root-owned adaptive execution; be precise where needed and concise where possible. No default parallel heads. Selective pruning is authorized; unrelated work is protected.",
+        "authority": "Local Todo UUID unchanged. Both imports and old-work preservation precede successor implementation dispatch.",
+        "success": "Real native/GPU qualified toolkit and published paired source, not just terminal task records.",
+        "references": [
+          "planning/nf1-adaptive-v1/CHARTER.md",
+          "planning/nf1-adaptive-v1/ARCHITECTURAL_INTENT.md",
+          "planning/nf1-adaptive-v1/RUNTIME_AND_BOOTSTRAP.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-NF1A-L-ROOT",
+          "role": "coordinator",
+          "tasks": [
+            "CE-NF1A-ADOPT",
+            "CE-NF1A-CONTROL",
+            "CE-NF1A-0000"
+          ],
+          "workspace": {
+            "mode": "read_shared"
+          },
+          "motivation": "One local authority seat under the joint strategic controller.",
+          "delegated_choices": [
+            "Scheduling and ordinary replanning"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/CHARTER.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-CORE",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1A-CORE"
+          ],
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-NF1A-QUALIFY"
+          },
+          "desired_end_state": "Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.",
+          "rationale": "The paused system already has the right execution/value owners. Finish and expose them rather than introduce another runner or tensor framework.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/CORE.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-MECHANISMS",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1A-MECHANISMS"
+          ],
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-NF1A-QUALIFY"
+          },
+          "desired_end_state": "Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.",
+          "rationale": "Biological mechanism identity must survive numerical grouping. Pairwise algebra alone cannot express the intended nonlinear joint mechanisms.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/MECHANISMS.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-SUPPORT",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1A-SUPPORT"
+          ],
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-NF1A-QUALIFY"
+          },
+          "desired_end_state": "Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.",
+          "rationale": "Masking, zero values, structural absence and small response are different facts; compaction is a required alternative, not a required performance winner.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/SUPPORT.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-RESPONSE",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "implementer",
+          "tasks": [
+            "CE-NF1A-RESPONSE"
+          ],
+          "workspace": {
+            "mode": "isolated_merge",
+            "integration_task_id": "CE-NF1A-QUALIFY"
+          },
+          "desired_end_state": "Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.",
+          "rationale": "Differentiate the implemented mathematical object. A generation stamp is not a historical snapshot, and an unavailable derivative is not zero.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/RESPONSE.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-QUALIFY",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "integrator",
+          "tasks": [
+            "CE-NF1A-QUALIFY"
+          ],
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "desired_end_state": "Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.",
+          "rationale": "This integration owner starts after CORE, not after all producers. Final completion requires them; early integration does not. Optimization implementation is conditional on evidence.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/QUALIFY.md"
+          ]
+        },
+        {
+          "id": "CE-NF1A-L-RELEASE",
+          "parent_lane_id": "CE-NF1A-L-ROOT",
+          "role": "integrator",
+          "tasks": [
+            "CE-NF1A-RELEASE"
+          ],
+          "workspace": {
+            "mode": "read_shared"
+          },
+          "desired_end_state": "Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.",
+          "rationale": "Consumer-ready and consumer-accepted are different boundaries. Final verification must not create a mutual-final dependency.",
+          "delegated_choices": [
+            "Internal decomposition and test sequence",
+            "Return compact source/evidence references; do not duplicate full program context"
+          ],
+          "references": [
+            "planning/nf1-adaptive-v1/outcomes/RELEASE.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

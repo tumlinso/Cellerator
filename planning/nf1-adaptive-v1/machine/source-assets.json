@@ -1,0 +1,64 @@
+{
+  "format": "nf1a-preserved-source-observations-v1",
+  "observed_date": "2026-09-16",
+  "not_a_live_receipt": true,
+  "cellerator": [
+    {
+      "task": "CE-NF1-P06",
+      "commit": "18bff5f0b33e822b97435de8eab3082ecfd3f64b",
+      "successor": "CE-NF1A-CORE",
+      "source_read": true
+    },
+    {
+      "task": "CE-NF1-V07",
+      "commit": "d7b970d4d8898bcaf15a288b1249b78713a29cfc",
+      "successor": "CE-NF1A-CORE",
+      "source_read": true
+    },
+    {
+      "task": "CE-NF1-B06",
+      "commit": "8375dea1e72ebd77bda591fe497b1ee9fd01b9aa",
+      "successor": "CE-NF1A-CORE",
+      "receipt_observed": true
+    },
+    {
+      "task": "CE-NF1-T03",
+      "commit": "cda15cc8f56f41cbbbea9568336aad5b62635a76",
+      "successor": "CE-NF1A-QUALIFY",
+      "receipt_observed": true
+    },
+    {
+      "task": "CE-NF1-H02",
+      "previous_head": "4cb93a590419c9857e85b769d86ae71d43ab4b36",
+      "successor": "CE-NF1A-MECHANISMS",
+      "freshness": "prior review; current dirty bytes must be captured",
+      "previous_dirty_paths": [
+        "include/Cellerator/compute/operation/indexed_mechanism/evaluators.hh",
+        "src/compute/operation/indexed_mechanism/evaluators.cc",
+        "src/compute/operation/indexed_mechanism/CMakeLists.txt"
+      ]
+    },
+    {
+      "task": "CE-NF1-N02",
+      "previous_head": "3a4813ef36eae359fccf501ddd7060afe7681b5c",
+      "successor": "CE-NF1A-CORE",
+      "freshness": "prior review; ancestry and current head require verification"
+    }
+  ],
+  "glasshelix": [
+    {
+      "task": "GH-NF1-S01",
+      "commit": "9d6ac741a175bb284b8f0b28a9b4788f175ceb36",
+      "successor": "GH-NF1A-SYSTEM",
+      "source_read": true,
+      "qualification": "partial host assembly, not CUDA or full inspectable arithmetic"
+    },
+    {
+      "task": "GH-NF1-X01",
+      "successor": "GH-NF1A-SYSTEM",
+      "task_status": "done",
+      "rejected_integration_entry": "006d70bb-c447-49bd-8f81-d559353f72f2",
+      "instruction": "Preserve successful evidence; reconcile artifact, not repeat completed task"
+    }
+  ]
+}

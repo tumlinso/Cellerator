@@ -1,0 +1,556 @@
+{
+  "CE-NF1A-ADOPT": {
+    "id": "CE-NF1A-ADOPT",
+    "project": "cellerator",
+    "title": "Adopt preserved NF1 work and switch the execution frontier",
+    "objective": "Verify both successor imports; preserve and map existing work, reconcile expired NF1 authority, and retire only superseded unfinished old NF1 records. Establish the usable build/gate/delegation bindings without rebuilding tooling.",
+    "rationale": "This is a recovery-and-handoff outcome, not a repeat architectural audit. Completed work is an input, not work to redo.",
+    "claim_requires": [],
+    "completion_requires": [],
+    "requirements": [
+      "PAIR-PRESERVE",
+      "PAIR-SCOPE"
+    ],
+    "gate_kind": "administrative",
+    "role": "coordinator",
+    "scope": [
+      "docs/nf1_adaptive/adoption",
+      "planning/nf1-adaptive-v1"
+    ],
+    "work_profile": {
+      "difficulty": "routine",
+      "risk": "medium",
+      "work_type": "inspection",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-CONTROL": {
+    "id": "CE-NF1A-CONTROL",
+    "project": "cellerator",
+    "title": "Coordinate and close the accepted local program",
+    "objective": "Hold the ordinary local coordinator seat, choose and adapt execution, keep producer delivery and qualification moving, and finish only after local RELEASE.",
+    "rationale": "A claimable coordinator must not depend at claim time on the work it coordinates. Its final gate, not its start prerequisite, requires release.",
+    "claim_requires": [
+      "CE-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-RELEASE"
+    ],
+    "requirements": [
+      "PAIR-SCOPE"
+    ],
+    "gate_kind": "closure",
+    "role": "coordinator",
+    "scope": [],
+    "work_profile": {
+      "difficulty": "hard",
+      "risk": "high",
+      "work_type": "architecture",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-CORE": {
+    "id": "CE-NF1A-CORE",
+    "project": "cellerator",
+    "title": "Deliver the general-width linked numerical core",
+    "objective": "Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.",
+    "rationale": "The paused system already has the right execution/value owners. Finish and expose them rather than introduce another runner or tensor framework.",
+    "claim_requires": [
+      "CE-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "CE-CORE",
+      "CE-WIDTH",
+      "CE-VALUES"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "CMakeLists.txt",
+      "cmake/NativeFoundation.cmake",
+      "cmake/SemanticSpineV1.cmake",
+      "src/compute/CMakeLists.txt",
+      "src/execution/CMakeLists.txt",
+      "src/runtime/CMakeLists.txt",
+      "include/Cellerator/execution/program",
+      "src/execution/program",
+      "include/Cellerator/compute/operation/native_numeric",
+      "src/compute/operation/native_numeric",
+      "include/Cellerator/compute/operation/prepared_relation.hh",
+      "src/compute/operation/prepared_relation.cu",
+      "include/Cellerator/execution/native_value_instance",
+      "src/execution/native_value_instance",
+      "tests/native_foundation/build",
+      "tests/native_foundation/program",
+      "tests/native_foundation/values",
+      "tests/native_foundation/numeric",
+      "docs/nf1_adaptive/core"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-MECHANISMS": {
+    "id": "CE-NF1A-MECHANISMS",
+    "project": "cellerator",
+    "title": "Deliver reusable nonlinear indexed mechanisms",
+    "objective": "Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.",
+    "rationale": "Biological mechanism identity must survive numerical grouping. Pairwise algebra alone cannot express the intended nonlinear joint mechanisms.",
+    "claim_requires": [
+      "CE-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-CORE",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "CE-NARY",
+      "CE-PREDICATE"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "include/Cellerator/compute/operation/indexed_mechanism",
+      "src/compute/operation/indexed_mechanism",
+      "tests/native_foundation/nary",
+      "docs/nf1_adaptive/mechanisms"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-SUPPORT": {
+    "id": "CE-NF1A-SUPPORT",
+    "project": "cellerator",
+    "title": "Deliver exact and qualified approximate support behavior",
+    "objective": "Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.",
+    "rationale": "Masking, zero values, structural absence and small response are different facts; compaction is a required alternative, not a required performance winner.",
+    "claim_requires": [
+      "CE-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-CORE",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "CE-SUPPORT",
+      "CE-APPROX"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "include/Cellerator/compute/operation/active_projection",
+      "src/compute/operation/active_projection",
+      "include/Cellerator/compute/operation/edge/dynamic_support_mask_v1.cuh",
+      "include/Cellerator/compute/operation/edge/indexed_gates_v1.cuh",
+      "tests/native_foundation/support",
+      "docs/nf1_adaptive/support"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-RESPONSE": {
+    "id": "CE-NF1A-RESPONSE",
+    "project": "cellerator",
+    "title": "Deliver native directional response",
+    "objective": "Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.",
+    "rationale": "Differentiate the implemented mathematical object. A generation stamp is not a historical snapshot, and an unavailable derivative is not zero.",
+    "claim_requires": [
+      "CE-NF1A-CORE",
+      "CE-NF1A-MECHANISMS"
+    ],
+    "completion_requires": [
+      "CE-NF1A-CORE",
+      "CE-NF1A-MECHANISMS",
+      "CE-NF1A-SUPPORT",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "CE-RESPONSE"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "include/Cellerator/compute/operation/differential",
+      "src/compute/operation/differential",
+      "tests/native_foundation/differential",
+      "docs/nf1_adaptive/response"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-QUALIFY": {
+    "id": "CE-NF1A-QUALIFY",
+    "project": "cellerator",
+    "title": "Integrate continuously and publish consumer-ready Cellerator",
+    "objective": "Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.",
+    "rationale": "This integration owner starts after CORE, not after all producers. Final completion requires them; early integration does not. Optimization implementation is conditional on evidence.",
+    "claim_requires": [
+      "CE-NF1A-CORE"
+    ],
+    "completion_requires": [
+      "CE-NF1A-CORE",
+      "CE-NF1A-MECHANISMS",
+      "CE-NF1A-RESPONSE",
+      "CE-NF1A-SUPPORT",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "CE-INTEGRATED",
+      "CE-PERFORMANCE",
+      "CE-REPLAY"
+    ],
+    "gate_kind": "execution",
+    "role": "integrator",
+    "scope": [
+      "CMakeLists.txt",
+      "cmake/NativeFoundation.cmake",
+      "cmake/SemanticSpineV1.cmake",
+      "src/compute/CMakeLists.txt",
+      "src/execution/CMakeLists.txt",
+      "src/runtime/CMakeLists.txt",
+      "include/Cellerator/compute/operation/native_foundation_optimization",
+      "src/compute/operation/native_foundation_optimization",
+      "tests/native_foundation/reference",
+      "tests/native_foundation/conformance",
+      "tests/native_foundation/integration",
+      "bench/native_foundation",
+      "docs/nf1_adaptive/qualification",
+      "docs/nf1_adaptive/performance",
+      "docs/nf1_adaptive/developmental"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "integration",
+      "context_depth": "cross_project"
+    }
+  },
+  "CE-NF1A-RELEASE": {
+    "id": "CE-NF1A-RELEASE",
+    "project": "cellerator",
+    "title": "Verify real-consumer acceptance and close Cellerator",
+    "objective": "Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.",
+    "rationale": "Consumer-ready and consumer-accepted are different boundaries. Final verification must not create a mutual-final dependency.",
+    "claim_requires": [
+      "CE-NF1A-QUALIFY"
+    ],
+    "completion_requires": [
+      "CE-NF1A-QUALIFY",
+      "GH-NF1A-ACCEPT"
+    ],
+    "requirements": [
+      "CE-FINAL"
+    ],
+    "gate_kind": "closure",
+    "role": "integrator",
+    "scope": [],
+    "work_profile": {
+      "difficulty": "routine",
+      "risk": "medium",
+      "work_type": "integration",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-ADOPT": {
+    "id": "GH-NF1A-ADOPT",
+    "project": "glasshelix",
+    "title": "Adopt preserved NF1 work and switch the execution frontier",
+    "objective": "Verify both successor imports; preserve completed contracts and partial S01 source; reconcile stale NF1 authority and retire only superseded unfinished legacy records. Bind actual runtime and gate commands.",
+    "rationale": "This changes execution guidance, not scientific scope or the history of successful work.",
+    "claim_requires": [],
+    "completion_requires": [],
+    "requirements": [
+      "PAIR-PRESERVE",
+      "PAIR-SCOPE"
+    ],
+    "gate_kind": "administrative",
+    "role": "coordinator",
+    "scope": [
+      "docs/nf1_adaptive/adoption",
+      "planning/nf1-adaptive-v1"
+    ],
+    "work_profile": {
+      "difficulty": "routine",
+      "risk": "medium",
+      "work_type": "inspection",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-CONTROL": {
+    "id": "GH-NF1A-CONTROL",
+    "project": "glasshelix",
+    "title": "Coordinate and close the accepted local program",
+    "objective": "Serve as the strategic root and ordinary GlassHelix coordinator, delegate bounded work intelligently, coordinate the Cellerator seat and finish only after local RELEASE.",
+    "rationale": "Preserve global reasoning at the root without turning it into an expensive scheduler of procedural microtasks.",
+    "claim_requires": [
+      "GH-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "GH-NF1A-ADOPT",
+      "GH-NF1A-RELEASE"
+    ],
+    "requirements": [
+      "PAIR-SCOPE"
+    ],
+    "gate_kind": "closure",
+    "role": "coordinator",
+    "scope": [],
+    "work_profile": {
+      "difficulty": "hard",
+      "risk": "high",
+      "work_type": "architecture",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-SYSTEM": {
+    "id": "GH-NF1A-SYSTEM",
+    "project": "glasshelix",
+    "title": "Deliver usable native systems and deterministic evolution",
+    "objective": "Finish native linking and preserved S01 assembly, lower supplied n-ary systems to Cellerator, bind independent instances and implement maps, forcing, RK4, resident rollout and bounded primal checkpoints.",
+    "rationale": "This is the first usable consumer, not a final learner. Preserve scientific meaning above the existing numerical engine; eliminate test-only dependency recompilation in production.",
+    "claim_requires": [
+      "GH-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-CORE",
+      "CE-NF1A-MECHANISMS",
+      "GH-NF1A-ADOPT"
+    ],
+    "requirements": [
+      "GH-ROLES",
+      "GH-SYSTEM",
+      "GH-DYNAMICS"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "CMakeLists.txt",
+      "CMakePresets.json",
+      "cmake/GlassHelixFoundation.cmake",
+      "include/GlassHelix/core",
+      "src/core",
+      "include/GlassHelix/system",
+      "src/system",
+      "include/GlassHelix/dynamics",
+      "src/dynamics",
+      "tests/native_foundation/core",
+      "tests/native_foundation/build",
+      "tests/native_foundation/system",
+      "tests/native_foundation/dynamics",
+      "docs/nf1_adaptive/system"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-OBSERVE": {
+    "id": "GH-NF1A-OBSERVE",
+    "project": "glasshelix",
+    "title": "Deliver observation and finite-candidate evidence updates",
+    "objective": "Implement distinct observation records and simple declared likelihoods, then propagate and reweight supplied finite candidates without losing joint identity or reporter correlations.",
+    "rationale": "What determines the answer and what helps infer that determining state need not be the same information. This must remain executable, not merely documented.",
+    "claim_requires": [
+      "GH-NF1A-ADOPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "GH-NF1A-ADOPT",
+      "GH-NF1A-SYSTEM"
+    ],
+    "requirements": [
+      "GH-OBSERVATION",
+      "GH-INFERENCE"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "include/GlassHelix/observation",
+      "src/observation",
+      "include/GlassHelix/inference",
+      "src/inference",
+      "tests/native_foundation/observation",
+      "tests/native_foundation/inference",
+      "docs/nf1_adaptive/observation"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-ANALYZE": {
+    "id": "GH-NF1A-ANALYZE",
+    "project": "glasshelix",
+    "title": "Deliver response, local ambiguity and supplied-reduction instruments",
+    "objective": "Compose requested observation/rollout derivatives, scaled local sensitivity/null diagnostics, aligned alternative comparison and supplied-reduction/error checks.",
+    "rationale": "These are instruments over supplied models: local numerical evidence is not global identification, molecular discovery or universal minimal-state inference.",
+    "claim_requires": [
+      "GH-NF1A-SYSTEM"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-RESPONSE",
+      "GH-NF1A-OBSERVE",
+      "GH-NF1A-SYSTEM"
+    ],
+    "requirements": [
+      "GH-DIFFERENTIATE",
+      "GH-NULL",
+      "GH-ALTERNATIVES",
+      "GH-REDUCTION",
+      "GH-ERROR"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "include/GlassHelix/interrogation",
+      "src/interrogation",
+      "include/GlassHelix/reduction",
+      "src/reduction",
+      "tests/native_foundation/interrogation",
+      "tests/native_foundation/reduction",
+      "docs/nf1_adaptive/analysis"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-ACCESS": {
+    "id": "GH-NF1A-ACCESS",
+    "project": "glasshelix",
+    "title": "Deliver thin Python access, inspection and portable replay",
+    "objective": "Expose the same native implementation in Python, with correct array and asynchronous ownership, capability/failure inspection, logical replay artifacts and useful examples.",
+    "rationale": "Bind one library rather than duplicate its mathematics; replay logical inputs, not ephemeral pointers or opaque generations.",
+    "claim_requires": [
+      "GH-NF1A-SYSTEM"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "GH-NF1A-ANALYZE",
+      "GH-NF1A-OBSERVE",
+      "GH-NF1A-SYSTEM"
+    ],
+    "requirements": [
+      "GH-PYTHON",
+      "GH-INTERCHANGE",
+      "GH-REPLAY"
+    ],
+    "gate_kind": "execution",
+    "role": "implementer",
+    "scope": [
+      "bindings/python",
+      "python/glasshelix",
+      "include/GlassHelix/artifacts",
+      "src/artifacts",
+      "tools/native_foundation",
+      "tests/native_foundation/python",
+      "tests/native_foundation/artifacts",
+      "docs/nf1_adaptive/access"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "implementation",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-ACCEPT": {
+    "id": "GH-NF1A-ACCEPT",
+    "project": "glasshelix",
+    "title": "Integrate continuously and qualify the real consumer",
+    "objective": "Integrate SYSTEM first and other outcomes as available, run independent mathematical and lifetime counterexamples, native/Python/replay acceptance and bounded whole-workload measurements on the qualified Cellerator source.",
+    "rationale": "The integrator may work before CE final readiness; only this final consumer acceptance waits for CE QUALIFY. Do not block early development on final receipts.",
+    "claim_requires": [
+      "GH-NF1A-SYSTEM"
+    ],
+    "completion_requires": [
+      "CE-NF1A-ADOPT",
+      "CE-NF1A-QUALIFY",
+      "GH-NF1A-ACCESS",
+      "GH-NF1A-ANALYZE",
+      "GH-NF1A-OBSERVE",
+      "GH-NF1A-SYSTEM"
+    ],
+    "requirements": [
+      "GH-ACCEPTANCE",
+      "GH-PERFORMANCE"
+    ],
+    "gate_kind": "execution",
+    "role": "integrator",
+    "scope": [
+      "CMakeLists.txt",
+      "CMakePresets.json",
+      "cmake/GlassHelixFoundation.cmake",
+      "examples/native_foundation_v1",
+      "tests/native_foundation/fixtures",
+      "tests/native_foundation/independent",
+      "tests/native_foundation/integration",
+      "bench/native_foundation",
+      "docs/nf1_adaptive/qualification",
+      "docs/nf1_adaptive/performance",
+      "docs/nf1_adaptive/developmental"
+    ],
+    "work_profile": {
+      "difficulty": "complex",
+      "risk": "high",
+      "work_type": "integration",
+      "context_depth": "cross_project"
+    }
+  },
+  "GH-NF1A-RELEASE": {
+    "id": "GH-NF1A-RELEASE",
+    "project": "glasshelix",
+    "title": "Verify the final source pair and close GlassHelix",
+    "objective": "Consume CE RELEASE, verify both published source revisions and all preservation dispositions, issue the final paired receipt and allow only owned verified-merged cleanup.",
+    "rationale": "This is a source/evidence reconciliation, not another unconditional test campaign or the start of a biological experiment.",
+    "claim_requires": [
+      "GH-NF1A-ACCEPT"
+    ],
+    "completion_requires": [
+      "CE-NF1A-RELEASE",
+      "GH-NF1A-ACCEPT"
+    ],
+    "requirements": [
+      "GH-FINAL"
+    ],
+    "gate_kind": "closure",
+    "role": "integrator",
+    "scope": [],
+    "work_profile": {
+      "difficulty": "routine",
+      "risk": "medium",
+      "work_type": "integration",
+      "context_depth": "cross_project"
+    }
+  }
+}
