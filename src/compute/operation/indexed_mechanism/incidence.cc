@@ -30,14 +30,16 @@ incidence_status argument_incidence::prepare(std::span<const indexed_axis> input
             prepared.arguments.resize(mechanism.arguments.size());prepared.outputs.resize(mechanism.outputs.size());
             std::vector<bool> seen(mechanism.arguments.size(),false);
             for(const auto& arg:mechanism.arguments) {
-                if(arg.slot>=seen.size()||seen[arg.slot])return incidence_status::invalid_slot;seen[arg.slot]=true;
+                if(arg.slot>=seen.size()||seen[arg.slot]) return incidence_status::invalid_slot;
+                seen[arg.slot]=true;
                 if(!v2::valid_stable_id(arg.role))return incidence_status::invalid_identity;
                 if(arg.axis>=inputs.size()||arg.index>=inputs[arg.axis].extent)return incidence_status::invalid_index;
                 prepared.arguments[arg.slot]=arg;
             }
             seen.assign(mechanism.outputs.size(),false);
             for(const auto& out:mechanism.outputs) {
-                if(out.slot>=seen.size()||seen[out.slot])return incidence_status::invalid_slot;seen[out.slot]=true;
+                if(out.slot>=seen.size()||seen[out.slot]) return incidence_status::invalid_slot;
+                seen[out.slot]=true;
                 if(!v2::valid_stable_id(out.role)||!v2::valid_stable_id(out.assembly_owner))return incidence_status::invalid_identity;
                 if(out.axis>=outputs.size()||out.index>=outputs[out.axis].extent)return incidence_status::invalid_index;
                 if(!execution::valid_output_effect_contract(out.effect))return incidence_status::invalid_effect;

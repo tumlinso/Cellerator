@@ -22,3 +22,14 @@ arguments, checks physical record sorting/reversal, repeated source/role retenti
 metadata source lifetime, invalid slot preparation preserving prior state,
 wrong-order/aliased gathering preserving sentinels, duplicate writer rejection,
 and explicit shared assembly validation. No CUDA or throughput claim is made.
+
+H02 registers named blocks whose opcode and effect declarations are executable
+semantics, not a name-only callback.  It proves a non-additive runtime-width
+triad, composed/custom parity, predicate exclusion of a nonfinite operand, and
+FP16 storage with FP32 arithmetic and RNE conversion.
+
+H03 builds and executes the real CUDA library route.  Its one-thread grouped
+launch uses no per-cell dispatch or argument Cartesian materialization; it
+tests arbitrary argument count, predicate exclusion with a null device operand,
+FP32 evaluation, and FP16 storage with FP32 accumulation.  Device execution is
+recorded only under the externally bound lease and shared host lock.
