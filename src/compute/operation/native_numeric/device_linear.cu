@@ -1,0 +1,13 @@
+#include <Cellerator/compute/operation/native_numeric/device_linear.hh>
+namespace cellerator::compute::native_numeric { namespace {
+std::size_t bytes(const resident_vector& v){return v.elements*(v.representation==device_representation::f16?2:4);}
+__global__ void axpby(float* o,const float* x,const float* y,std::uint64_t n,float a,float b){auto i=std::uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;if(i<n)o[i]=a*x[i]+b*y[i];}
+execution::program::program_status launch(const void* state,const execution::program::launch_binding_v2& b,void* sp) noexcept {auto* s=static_cast<const linear_stage*>(state);auto stream=static_cast<cudaStream_t>(sp);if(!s||!b.input||!b.output||s->representation!=device_representation::f32)return execution::program::program_status::invalid_argument;if(s->kind==linear_kind::copy){if(cudaMemcpyAsync(b.output,b.input,s->elements*4,cudaMemcpyDeviceToDevice,stream)!=cudaSuccess)return execution::program::program_status::launch_failed;}else {if(!b.values)return execution::program::program_status::invalid_argument;axpby<<<unsigned((s->elements+255)/256),256,0,stream>>>(static_cast<float*>(b.output),static_cast<const float*>(b.input),static_cast<const float*>(b.values),s->elements,s->alpha,s->beta);if(cudaGetLastError()!=cudaSuccess)return execution::program::program_status::launch_failed;}return execution::program::program_status::success;}
+}
+cudaError_t allocate(resident_vector* v,std::uint64_t n,device_representation r,int d) noexcept {if(!v||v->data||!n)return cudaErrorInvalidValue;v->elements=n;v->representation=r;v->device_ordinal=d;if(cudaSetDevice(d)!=cudaSuccess)return cudaErrorInvalidDevice;return cudaMalloc(&v->data,bytes(*v));}
+cudaError_t release(resident_vector* v) noexcept {if(!v)return cudaErrorInvalidValue;auto e=v->data?cudaFree(v->data):cudaSuccess;*v={};return e;}
+cudaError_t upload(resident_vector&v,const void*h,std::uint64_t n,execution::value_generation g,cudaStream_t s) noexcept {if(!h||n!=v.elements||!g.value)return cudaErrorInvalidValue;auto e=cudaMemcpyAsync(v.data,h,bytes(v),cudaMemcpyHostToDevice,s);if(e==cudaSuccess)v.generation=g;return e;}
+cudaError_t download(const resident_vector&v,void*h,std::uint64_t n,cudaStream_t s) noexcept{return !h||n!=v.elements?cudaErrorInvalidValue:cudaMemcpyAsync(h,v.data,bytes(v),cudaMemcpyDeviceToHost,s);}
+cudaError_t reset(resident_vector&v,float x,cudaStream_t s) noexcept{return v.representation!=device_representation::f32||x!=0?cudaErrorNotSupported:cudaMemsetAsync(v.data,0,bytes(v),s);}
+execution::program::prepared_stage_v2 make_linear_stage(std::uint64_t id,std::uint64_t c,const linear_stage*s) noexcept{return{id,c,s,launch,0,0,0,0};}
+}

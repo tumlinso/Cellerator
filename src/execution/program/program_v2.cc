@@ -37,6 +37,8 @@ program_status execute_prepared_program_v2(
     if (binding_count != 0 && bindings == nullptr) {
         return program_status::invalid_argument;
     }
+    // Admission is whole-program: a late invalid binding must reject before
+    // any earlier stage can submit device work or mutate caller output.
     for (std::uint64_t i = 0; i < program.stage_count; ++i) {
         const auto& stage = program.stages[i];
         if (stage.binding_index >= binding_count) {
@@ -46,6 +48,12 @@ program_status execute_prepared_program_v2(
         if (binding.workspace_bytes < stage.required_workspace_bytes) {
             return program_status::insufficient_bindings;
         }
+    }
+    // Callback/device failures are intentionally distinct: previously accepted
+    // launches are observable and cannot promise transactional rollback.
+    for (std::uint64_t i = 0; i < program.stage_count; ++i) {
+        const auto& stage = program.stages[i];
+        const auto& binding = bindings[stage.binding_index];
         if (stage.launch(stage.prepared_state, binding, caller_stream) !=
             program_status::success) return program_status::launch_failed;
     }

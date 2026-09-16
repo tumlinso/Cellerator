@@ -84,14 +84,9 @@ if(CELLERATOR_BUILD_RELATION_UPDATE_SPINE_V1)
         include(tests/relation_update_spine_v1/CMakeLists.txt)
     endif()
 endif()
-# NF1 reference tests are independent of the optional CUDA runtime. The T lane
-# owns the required fragment and real test; enabling this option must never
-# silently succeed with an empty test inventory.
-option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 host reference tests" OFF)
-if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
-    enable_testing()
-    add_subdirectory(tests/native_foundation/reference)
-endif()
+# Build the linked NF1 numerical foundation and its host reference consumer.
+# CUDA relation/value tests are enabled only with the semantic spine owner.
+option(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS "Build NF1 numerical foundation tests" OFF)
 if(CELLERATOR_ENABLE_CUDA STREQUAL "OFF")
     return()
 endif()
@@ -215,6 +210,7 @@ find_path(NCCL_INCLUDE_DIR
 include(src/runtime/CMakeLists.txt)
 include(src/execution/CMakeLists.txt)
 include(src/compute/foundation_targets.cmake)
+include(cmake/NativeFoundation.cmake)
 function(cellerator_add_cellshard_source cellshard_source_dir)
     if(NOT EXISTS "${cellshard_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "CELLERATOR_CELLSHARD_SOURCE_DIR does not point to a CellShard source tree: ${cellshard_source_dir}")
