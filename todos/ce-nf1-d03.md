@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-NF1-D03: Implement n-ary evaluator derivatives
 
-Task revision: `6996`; current project revision is in `todo-status.md`.
+Task revision: `7302`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 _None._

@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-NF1-V05: Make epoch replacement and stale-ticket rejection explicit
 
-Task revision: `6996`; current project revision is in `todo-status.md`.
+Task revision: `7260`; current project revision is in `todo-status.md`.
 
 ## Objective
 _None._
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

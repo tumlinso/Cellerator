@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `6996`
+Project revision: `7312`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -965,18 +965,25 @@ Project revision: `6996`
 - `CE-ARCH-12` | status: done | execution: closed | next: Extend existing Cellerator::runtime into one session substrate; migrate rather than wrap it with a second context.
 - `CE-ARCH-20` | status: done | execution: closed | next: Implement read-only adapters for frozen plan/order/records/tiles/CPK1/direct kernel and define semantic geometry/statistics without changing v1 bytes or objective.
 - `CE-ARCH-30` | status: done | execution: closed | next: After explicit authorization, design manifests, deterministic generators, compact traces, tiers, resource contracts, and benchmark watches; do not run them in planning or create watches for nonexistent kernels.
+- `CE-NF1A-ADOPT` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/ADOPT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-POST-REMAP-04` | status: done | execution: closed | next: Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.
 - `CE-ARCH-21` | status: done | execution: closed | next: Design a new Cellerator payload schema with section/projection directories and CPK1 loader, inside unchanged CPEXEC01 unless an external decision proves otherwise.
+- `CE-NF1A-CONTROL` | status: in_progress | execution: claimed | next: Read planning/nf1-adaptive-v1/outcomes/CONTROL.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
 - `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.
 - `CE-ARCH-40` | status: done | execution: closed | next: Complete. The frozen v1 seam imports Baseplane predicate/event contracts, exposes validity-aware sequence operands, and validates fused and caller-materialized predicate-to-regulatory-to-gene execution on V100 sm_70.
+- `CE-NF1A-CORE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-ARCH-50` | status: done | execution: closed | next: Complete: forward-compatibility matrix validates additive paths for transpose/backward, sparse gradients, numerical evolution, graph capture, persistent scheduling, nested partitions, multi-device planning, and later architecture classes without hot-record bloat or premature implementation.
+- `CE-NF1A-MECHANISMS` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-RESPONSE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/RESPONSE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-SUPPORT` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/SUPPORT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1-COORD` | status: superseded | execution: closed | next: Hold the local coordinator seat while first-class lanes execute the accepted NF1 program. Complete only after local M90 qualification and delivery are verified, then close the original epic.
 - `CE-ARCH-60` | status: done | execution: closed | next: Complete. Supported targets are consolidated, harmful CP-Math runtime assumptions are retired, compatibility evidence is preserved, and all final host/GPU/audit gates pass.
 - `CE-ARCH-70` | status: done | execution: closed | next: Complete. Start CE-ARCH-71 to register the preserved CP-BP row-masked N=1 kernel as a real operation-core/planner candidate; do not reopen these frozen foundations.
 - `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
-- `CE-NF1-0000` | status: planned | execution: inactive | next: 
+- `CE-NF1-0000` | status: superseded | execution: closed | next: 
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
 - `CE-RU1-0000` | status: done | execution: closed | next: 
@@ -1001,6 +1008,8 @@ Project revision: `6996`
 - `CE-ARCH-61` | status: done | execution: closed | next: Complete: legacy CP-Math backend/runtime interfaces are versioned as retired evidence and the operation-core documentation identity is refreshed.
 - `CE-ARCH-71` | status: done | execution: closed | next: Register a truthful N=1 candidate adapter over the preserved CPK1/native-tile/direct-kernel path, add focused capability, binding, order, effect, and parity tests, then run the declared host and CUDA gates.
 - `CE-ARCH-91` | status: done | execution: closed | next: Wait only on the authoritative CS-FOUND interfaces, then add the narrow cross-repository opaque artifact vertical slice with one-copy caller-stream upload and direct CPE2 execution.
+- `CE-NF1A-QUALIFY` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/QUALIFY.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-RELEASE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/RELEASE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-SS1-C01` | status: done | execution: closed | next: Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.
 - `CE-SS1-C02` | status: done | execution: closed | next: Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.
 - `CE-SS1-C03` | status: done | execution: closed | next: Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.
@@ -1176,85 +1185,86 @@ Project revision: `6996`
 - `CE-JBC-X06` | status: done | execution: closed | next: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | status: done | execution: closed | next: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
-- `CE-NF1-A01` | status: planned | execution: ready | next: 
-- `CE-NF1-A02` | status: planned | execution: ready | next: 
-- `CE-NF1-A03` | status: planned | execution: ready | next: 
-- `CE-NF1-A04` | status: planned | execution: ready | next: 
-- `CE-NF1-B01` | status: planned | execution: ready | next: 
-- `CE-NF1-B02` | status: planned | execution: ready | next: 
-- `CE-NF1-B03` | status: planned | execution: ready | next: 
-- `CE-NF1-B04` | status: planned | execution: ready | next: 
-- `CE-NF1-B05` | status: planned | execution: ready | next: 
-- `CE-NF1-B06` | status: planned | execution: ready | next: 
-- `CE-NF1-C01` | status: planned | execution: ready | next: 
-- `CE-NF1-C02` | status: planned | execution: ready | next: 
-- `CE-NF1-C03` | status: planned | execution: ready | next: 
-- `CE-NF1-C04` | status: planned | execution: ready | next: 
-- `CE-NF1-C05` | status: planned | execution: ready | next: 
-- `CE-NF1-C06` | status: planned | execution: ready | next: 
-- `CE-NF1-D01` | status: planned | execution: ready | next: 
-- `CE-NF1-D02` | status: planned | execution: ready | next: 
-- `CE-NF1-D03` | status: planned | execution: ready | next: 
-- `CE-NF1-D04` | status: planned | execution: ready | next: 
-- `CE-NF1-D05` | status: planned | execution: ready | next: 
-- `CE-NF1-D06` | status: planned | execution: ready | next: 
-- `CE-NF1-D07` | status: planned | execution: ready | next: 
-- `CE-NF1-D08` | status: planned | execution: ready | next: 
-- `CE-NF1-H01` | status: planned | execution: ready | next: 
-- `CE-NF1-H02` | status: planned | execution: ready | next: 
-- `CE-NF1-H03` | status: planned | execution: ready | next: 
-- `CE-NF1-H04` | status: planned | execution: ready | next: 
-- `CE-NF1-H05` | status: planned | execution: ready | next: 
-- `CE-NF1-H06` | status: planned | execution: ready | next: 
-- `CE-NF1-H07` | status: planned | execution: ready | next: 
-- `CE-NF1-M00` | status: planned | execution: ready | next: 
-- `CE-NF1-M10` | status: planned | execution: ready | next: 
-- `CE-NF1-M20` | status: planned | execution: ready | next: 
-- `CE-NF1-M30` | status: planned | execution: ready | next: 
-- `CE-NF1-M40` | status: planned | execution: ready | next: 
-- `CE-NF1-M50` | status: planned | execution: ready | next: 
-- `CE-NF1-M90` | status: planned | execution: ready | next: 
-- `CE-NF1-N01` | status: planned | execution: ready | next: 
-- `CE-NF1-N02` | status: planned | execution: ready | next: 
-- `CE-NF1-N03` | status: planned | execution: ready | next: 
-- `CE-NF1-N04` | status: planned | execution: ready | next: 
-- `CE-NF1-N05` | status: planned | execution: ready | next: 
-- `CE-NF1-N06` | status: planned | execution: ready | next: 
-- `CE-NF1-O01` | status: planned | execution: ready | next: 
-- `CE-NF1-O02` | status: planned | execution: ready | next: 
-- `CE-NF1-O03` | status: planned | execution: ready | next: 
-- `CE-NF1-O04` | status: planned | execution: ready | next: 
-- `CE-NF1-O05` | status: planned | execution: ready | next: 
-- `CE-NF1-O06` | status: planned | execution: ready | next: 
-- `CE-NF1-O07` | status: planned | execution: ready | next: 
-- `CE-NF1-P01` | status: planned | execution: ready | next: 
-- `CE-NF1-P02` | status: planned | execution: ready | next: 
-- `CE-NF1-P03` | status: planned | execution: ready | next: 
-- `CE-NF1-P04` | status: planned | execution: ready | next: 
-- `CE-NF1-P05` | status: planned | execution: ready | next: 
-- `CE-NF1-P06` | status: planned | execution: ready | next: 
-- `CE-NF1-P07` | status: planned | execution: ready | next: 
-- `CE-NF1-S01` | status: planned | execution: ready | next: 
-- `CE-NF1-S02` | status: planned | execution: ready | next: 
-- `CE-NF1-S03` | status: planned | execution: ready | next: 
-- `CE-NF1-S04` | status: planned | execution: ready | next: 
-- `CE-NF1-S05` | status: planned | execution: ready | next: 
-- `CE-NF1-S06` | status: planned | execution: ready | next: 
-- `CE-NF1-S07` | status: planned | execution: ready | next: 
-- `CE-NF1-T01` | status: planned | execution: ready | next: 
-- `CE-NF1-T02` | status: planned | execution: ready | next: 
-- `CE-NF1-T03` | status: planned | execution: ready | next: 
-- `CE-NF1-T04` | status: planned | execution: ready | next: 
-- `CE-NF1-T05` | status: planned | execution: ready | next: 
-- `CE-NF1-T06` | status: planned | execution: ready | next: 
-- `CE-NF1-V01` | status: planned | execution: ready | next: 
-- `CE-NF1-V02` | status: planned | execution: ready | next: 
-- `CE-NF1-V03` | status: planned | execution: ready | next: 
-- `CE-NF1-V04` | status: planned | execution: ready | next: 
-- `CE-NF1-V05` | status: planned | execution: ready | next: 
-- `CE-NF1-V06` | status: planned | execution: ready | next: 
-- `CE-NF1-V07` | status: planned | execution: ready | next: 
-- `CE-NF1-X01` | status: planned | execution: ready | next: 
+- `CE-NF1-A01` | status: done | execution: closed | next: 
+- `CE-NF1-A02` | status: done | execution: closed | next: 
+- `CE-NF1-A03` | status: done | execution: closed | next: 
+- `CE-NF1-A04` | status: done | execution: closed | next: 
+- `CE-NF1-B01` | status: done | execution: closed | next: 
+- `CE-NF1-B02` | status: done | execution: closed | next: 
+- `CE-NF1-B03` | status: done | execution: closed | next: 
+- `CE-NF1-B04` | status: done | execution: closed | next: 
+- `CE-NF1-B05` | status: done | execution: closed | next: 
+- `CE-NF1-B06` | status: done | execution: closed | next: 
+- `CE-NF1-C01` | status: done | execution: closed | next: 
+- `CE-NF1-C02` | status: done | execution: closed | next: 
+- `CE-NF1-C03` | status: done | execution: closed | next: 
+- `CE-NF1-C04` | status: done | execution: closed | next: 
+- `CE-NF1-C05` | status: done | execution: closed | next: 
+- `CE-NF1-C06` | status: done | execution: closed | next: 
+- `CE-NF1-D01` | status: done | execution: closed | next: 
+- `CE-NF1-D02` | status: superseded | execution: closed | next: 
+- `CE-NF1-D03` | status: superseded | execution: closed | next: 
+- `CE-NF1-D04` | status: superseded | execution: closed | next: 
+- `CE-NF1-D05` | status: superseded | execution: closed | next: 
+- `CE-NF1-D06` | status: superseded | execution: closed | next: 
+- `CE-NF1-D07` | status: superseded | execution: closed | next: 
+- `CE-NF1-D08` | status: superseded | execution: closed | next: 
+- `CE-NF1-H01` | status: done | execution: closed | next: 
+- `CE-NF1-H02` | status: superseded | execution: closed | next: 
+- `CE-NF1-H03` | status: superseded | execution: closed | next: 
+- `CE-NF1-H04` | status: superseded | execution: closed | next: 
+- `CE-NF1-H05` | status: superseded | execution: closed | next: 
+- `CE-NF1-H06` | status: superseded | execution: closed | next: 
+- `CE-NF1-H07` | status: superseded | execution: closed | next: 
+- `CE-NF1-M00` | status: done | execution: closed | next: 
+- `CE-NF1-M10` | status: done | execution: closed | next: 
+- `CE-NF1-M20` | status: superseded | execution: closed | next: 
+- `CE-NF1-M30` | status: superseded | execution: closed | next: 
+- `CE-NF1-M40` | status: superseded | execution: closed | next: 
+- `CE-NF1-M50` | status: superseded | execution: closed | next: 
+- `CE-NF1-M90` | status: superseded | execution: closed | next: 
+- `CE-NF1-N01` | status: done | execution: closed | next: 
+- `CE-NF1-N02` | status: superseded | execution: closed | next: 
+- `CE-NF1-N03` | status: superseded | execution: closed | next: 
+- `CE-NF1-N04` | status: superseded | execution: closed | next: 
+- `CE-NF1-N05` | status: superseded | execution: closed | next: 
+- `CE-NF1-N06` | status: superseded | execution: closed | next: 
+- `CE-NF1-O01` | status: superseded | execution: closed | next: 
+- `CE-NF1-O02` | status: superseded | execution: closed | next: 
+- `CE-NF1-O03` | status: superseded | execution: closed | next: 
+- `CE-NF1-O04` | status: superseded | execution: closed | next: 
+- `CE-NF1-O05` | status: superseded | execution: closed | next: 
+- `CE-NF1-O06` | status: superseded | execution: closed | next: 
+- `CE-NF1-O07` | status: superseded | execution: closed | next: 
+- `CE-NF1-P01` | status: done | execution: closed | next: 
+- `CE-NF1-P02` | status: done | execution: closed | next: 
+- `CE-NF1-P03` | status: done | execution: closed | next: 
+- `CE-NF1-P04` | status: done | execution: closed | next: 
+- `CE-NF1-P05` | status: done | execution: closed | next: 
+- `CE-NF1-P06` | status: done | execution: closed | next: 
+- `CE-NF1-P07` | status: superseded | execution: closed | next: 
+- `CE-NF1-S01` | status: superseded | execution: closed | next: 
+- `CE-NF1-S02` | status: superseded | execution: closed | next: 
+- `CE-NF1-S03` | status: superseded | execution: closed | next: 
+- `CE-NF1-S04` | status: superseded | execution: closed | next: 
+- `CE-NF1-S05` | status: superseded | execution: closed | next: 
+- `CE-NF1-S06` | status: superseded | execution: closed | next: 
+- `CE-NF1-S07` | status: superseded | execution: closed | next: 
+- `CE-NF1-T01` | status: done | execution: closed | next: 
+- `CE-NF1-T02` | status: done | execution: closed | next: 
+- `CE-NF1-T03` | status: done | execution: closed | next: 
+- `CE-NF1-T04` | status: superseded | execution: closed | next: 
+- `CE-NF1-T05` | status: superseded | execution: closed | next: 
+- `CE-NF1-T06` | status: superseded | execution: closed | next: 
+- `CE-NF1-V01` | status: done | execution: closed | next: 
+- `CE-NF1-V02` | status: done | execution: closed | next: 
+- `CE-NF1-V03` | status: done | execution: closed | next: 
+- `CE-NF1-V04` | status: done | execution: closed | next: 
+- `CE-NF1-V05` | status: done | execution: closed | next: 
+- `CE-NF1-V06` | status: done | execution: closed | next: 
+- `CE-NF1-V07` | status: done | execution: closed | next: 
+- `CE-NF1-X01` | status: superseded | execution: closed | next: 
+- `CE-NF1A-0000` | status: planned | execution: inactive | next: Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.
 - `CE-RU1-C01` | status: done | execution: closed | next: 
 - `CE-RU1-C02` | status: done | execution: closed | next: 
 - `CE-RU1-C03` | status: done | execution: closed | next: 
