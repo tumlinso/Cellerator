@@ -6,7 +6,7 @@
 namespace cellerator::compute::native_numeric {
 enum class device_representation : std::uint32_t { f16 = 3, f32 = 4 };
 struct resident_vector { void* data=nullptr; std::uint64_t elements=0; device_representation representation=device_representation::f32; int device_ordinal=0; execution::value_generation generation{}; };
-enum class linear_kind : std::uint32_t { copy, axpby };
+enum class linear_kind : std::uint32_t { copy, axpby, weighted_sum4 };
 struct linear_stage { linear_kind kind=linear_kind::copy; std::uint64_t elements=0; device_representation representation=device_representation::f32; float alpha=1.0f; float beta=0.0f; };
 cudaError_t allocate(resident_vector*,std::uint64_t,device_representation,int) noexcept;
 cudaError_t release(resident_vector*) noexcept;
