@@ -31,6 +31,36 @@ inline void cusparse_require_(cusparseStatus_t status, const char *label) {
 
 } // namespace
 
+namespace {
+
+// Prepared f32 relations retain an authoritative edge-value plane.  The
+// retained f16 kernel cannot consume it or its optional edge-to-value map.
+__global__ void csr_spmm_fwd_f32_kernel_(
+    const std::uint32_t *major_ptr,
+    const std::uint32_t *minor_idx,
+    const float *values,
+    std::uint32_t rows,
+    const float *rhs,
+    std::int64_t rhs_ld,
+    std::int64_t out_cols,
+    float *out,
+    std::int64_t out_ld,
+    const std::uint32_t *value_indices) {
+    const std::uint32_t row = static_cast<std::uint32_t>(blockIdx.x);
+    const std::int64_t col = static_cast<std::int64_t>(threadIdx.x) +
+        static_cast<std::int64_t>(blockIdx.y) * blockDim.x;
+    if (row >= rows || col >= out_cols) return;
+
+    float accum = 0.0f;
+    for (std::uint32_t edge = major_ptr[row]; edge < major_ptr[row + 1u]; ++edge) {
+        const std::uint32_t value = value_indices == nullptr ? edge : value_indices[edge];
+        accum += values[value] * rhs[static_cast<std::int64_t>(minor_idx[edge]) * rhs_ld + col];
+    }
+    out[static_cast<std::int64_t>(row) * out_ld + col] = accum;
+}
+
+} // namespace
+
 void csr_spmm_fwd_f16_f32(
     const runtime::execution_context &ctx,
     const std::uint32_t *major_ptr,
@@ -57,7 +87,7 @@ void csr_spmm_fwd_f32(const runtime::execution_context& ctx,
     runtime::cuda_require(cudaSetDevice(ctx.device), "cudaSetDevice(csr_spmm_f32)");
     if(!rows || !out_cols)return;
     const dim3 grid(rows,static_cast<unsigned int>((out_cols+kSpmmColsThreads-1)/kSpmmColsThreads),1u);
-    csr_spmm_fwd_kernel_<<<grid,kSpmmColsThreads,0,ctx.stream>>>(major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices);
+    csr_spmm_fwd_f32_kernel_<<<grid,kSpmmColsThreads,0,ctx.stream>>>(major_ptr,minor_idx,values,rows,rhs,rhs_ld,out_cols,out,out_ld,value_indices);
     runtime::cuda_require(cudaGetLastError(),"csr_spmm_f32_kernel");
 }
 

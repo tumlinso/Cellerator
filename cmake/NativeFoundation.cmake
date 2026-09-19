@@ -2,11 +2,20 @@
 # the prepared-program/session and relation owners; it does not create a runner.
 add_subdirectory(src/compute/operation/native_numeric)
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/indexed_mechanism/CMakeLists.txt")
+    add_subdirectory(src/compute/operation/indexed_mechanism)
+endif()
+
 add_library(cellerator_native_foundation INTERFACE)
 add_library(Cellerator::native_foundation ALIAS cellerator_native_foundation)
 target_link_libraries(cellerator_native_foundation INTERFACE
     Cellerator::native_numeric
     Cellerator::executable_program)
+
+if(TARGET Cellerator::indexed_mechanism)
+    target_link_libraries(cellerator_native_foundation INTERFACE
+        Cellerator::indexed_mechanism)
+endif()
 
 if(TARGET cellerator_prepared_relation_cuda)
     target_link_libraries(cellerator_native_foundation INTERFACE
@@ -26,6 +35,9 @@ if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
     add_subdirectory(tests/native_foundation/reference)
     add_subdirectory(tests/native_foundation/numeric)
     add_subdirectory(tests/native_foundation/program)
+    if(TARGET Cellerator::indexed_mechanism)
+        add_subdirectory(tests/native_foundation/nary)
+    endif()
     if(TARGET Cellerator::native_value_instance)
         add_subdirectory(tests/native_foundation/values)
     endif()
