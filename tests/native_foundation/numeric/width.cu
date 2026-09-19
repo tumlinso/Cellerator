@@ -48,7 +48,7 @@ void fixture(unsigned width, bool empty) {
         : std::vector<std::uint32_t>{0, 4, 4, 5, 9};
     // Logical row order deliberately differs from source order; row zero has high degree and row one is empty.
     const std::vector<std::uint32_t> sources = empty ? std::vector<std::uint32_t>{}
-        : std::vector<std::uint32_t>{4, 0, 1, 0, 2, 4, 1, 3, 0};
+        : std::vector<std::uint32_t>{4, 0, 1, 3, 2, 4, 1, 3, 0};
     auto forward = descriptor(width, rows, columns, static_cast<unsigned>(sources.size()));
     auto transpose = forward; transpose.direction = rel::orientation::transpose;
     cudaStream_t stream{}; gpu(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
