@@ -21,8 +21,12 @@ struct native_contract {
 status adapt(const operation_descriptor& op, native_contract& out) noexcept {
     auto result = validate(op);
     if (!result) return result;
-    if (op.dense_width != 1 && op.dense_width != 16)
-        return {status_code::unsupported_width, "native pair supports N1 and N16 only"};
+    // The FP16 projection candidates are intentionally N1/N16 only.  The
+    // authoritative FP32 route below is a retained CSR implementation and
+    // has no padded-width restriction.
+    if (op.arithmetic.relation_storage == execution::numeric_type::f16 &&
+        op.dense_width != 1 && op.dense_width != 16)
+        return {status_code::unsupported_width, "FP16 prepared projections support N1 and N16 only"};
     const auto& a = op.arithmetic;
     if ((a.relation_storage != execution::numeric_type::f16 && a.relation_storage != execution::numeric_type::f32)
         || a.input_storage != execution::numeric_type::f32
@@ -257,6 +261,9 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
         auto reverse=transpose;reverse.direction=orientation::forward;
         if(forward.direction!=orientation::forward || transpose.direction!=orientation::transpose || !equivalent(forward,reverse))
             return {status_code::invalid_argument,"forward and transpose must describe one mathematical relation"};
+        if (forward.arithmetic.relation_storage == execution::numeric_type::f32 && options.derive_f16 &&
+            forward.dense_width != 1 && forward.dense_width != 16)
+            return {status_code::unsupported_width, "derived FP16 evaluation supports N1 and N16 only"};
         s=check_topology(forward.topology,topology);if(!s)return s;
         int current=-1;s=cuda_status(cudaGetDevice(&current));if(!s)return s;
         if(current!=options.device_ordinal)return {status_code::incompatible_device,"prepare on the caller current device"};
@@ -356,12 +363,12 @@ status prepare_relation_pair(const operation_descriptor& forward,const operation
             s=cuda_status(cudaStreamSynchronize(stream));if(!s)return s;
             s=physical(cm::rebind_feature_major_projection(fv,p->structure->forward_payload,fh.size(),&p->structure->forward_view));if(!s)return s;
             s=physical(cm::rebind_transpose_projection(tv,p->structure->transpose_payload,th.size(),&p->structure->transpose_view));if(!s)return s;
-            core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
-            core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
-            if(!fs)return {status_code::unsupported_semantics,fs.message};
-            {
+            if (!f32 || p->derive_f16) {
+                core::projection_key fk{report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
+                core::projection_key tk{report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
+                auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
+                auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,forward.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+                if(!fs)return {status_code::unsupported_semantics,fs.message};
                 auto prepare_transpose = forward.dense_width == 1 ? core::prepare_transpose_backward_n1_operation : core::prepare_transpose_backward_n16_operation;
                 auto ts=prepare_transpose(t.problem,t.structures,tk,projected_numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
                 if(!ts)return {status_code::unsupported_semantics,ts.message};
@@ -399,17 +406,19 @@ status create_relation_instance(const prepared_relation_pair& source,cudaStream_
         if(edges){
             if(source.authoritative_f32){s=cuda_status(cudaMalloc(&p->authoritative_f32,edges*4));if(!s)return s;}
             if(!source.authoritative_f32 || p->derive_f16){s=cuda_status(cudaMalloc(&p->values,edges*2));if(!s)return s;}
-            // Candidate launch state points into the new instance, while views
-            // refer to the one counted structure. No projection is rebuilt.
-            const auto& f=p->forward;const auto& t=p->transpose;
-            core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
-            core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
-            auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
-            auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
-            if(!fs)return {status_code::unsupported_semantics,fs.message};
-            auto prepare_transpose=f.semantic.dense_width==1?core::prepare_transpose_backward_n1_operation:core::prepare_transpose_backward_n16_operation;
-            auto ts=prepare_transpose(t.problem,t.structures,tk,projected_numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
-            if(!ts)return {status_code::unsupported_semantics,ts.message};
+            if (!source.authoritative_f32 || p->derive_f16) {
+                // Candidate launch state points into the new instance, while views
+                // refer to the one counted structure. No projection is rebuilt.
+                const auto& f=p->forward;const auto& t=p->transpose;
+                core::projection_key fk{p->report.forward_projection,{1,1},core::projection_kind::native_feature_major,cm::feature_major_projection_schema_version,cm::feature_major_projection_variant};
+                core::projection_key tk{p->report.transpose_projection,{2,1},core::projection_kind::transpose_or_backward,cm::transpose_projection_schema_version,cm::transpose_projection_variant};
+                auto projected_numeric=f.numeric;projected_numeric.sparse_storage=execution::numeric_type::f16;
+                auto fs=core::prepare_feature_major_small_n_operation(f.problem,f.structures,fk,projected_numeric,{},p->structure->forward_view,current,f.semantic.dense_width,f.source,f.destination,f.column,&p->forward_state,&p->forward_operation);
+                if(!fs)return {status_code::unsupported_semantics,fs.message};
+                auto prepare_transpose=f.semantic.dense_width==1?core::prepare_transpose_backward_n1_operation:core::prepare_transpose_backward_n16_operation;
+                auto ts=prepare_transpose(t.problem,t.structures,tk,projected_numeric,{},p->structure->transpose_view,current,t.source,t.destination,t.column,&p->transpose_state,&p->transpose_operation);
+                if(!ts)return {status_code::unsupported_semantics,ts.message};
+            }
         }
         s=readiness_status(p->readiness.initialize(p->forward.semantic.topology.identity,
             p->forward.semantic.topology.epoch,current,stream));if(!s)return s;
