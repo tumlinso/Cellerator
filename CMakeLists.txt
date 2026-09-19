@@ -210,7 +210,6 @@ find_path(NCCL_INCLUDE_DIR
 include(src/runtime/CMakeLists.txt)
 include(src/execution/CMakeLists.txt)
 include(src/compute/foundation_targets.cmake)
-include(cmake/NativeFoundation.cmake)
 function(cellerator_add_cellshard_source cellshard_source_dir)
     if(NOT EXISTS "${cellshard_source_dir}/CMakeLists.txt")
         message(FATAL_ERROR "CELLERATOR_CELLSHARD_SOURCE_DIR does not point to a CellShard source tree: ${cellshard_source_dir}")
@@ -377,8 +376,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_cuda_mode INTERFACE)
 target_include_directories(cellerator_cuda_mode INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(cellerator_cuda_mode INTERFACE
     CELLERATOR_CUDA_MODE_GENERIC=${CELLERATOR_CUDA_MODE_GENERIC}
@@ -386,6 +386,15 @@ target_compile_definitions(cellerator_cuda_mode INTERFACE
     CELLERATOR_CUDA_MODE_NATIVE_EXTREME=${CELLERATOR_CUDA_MODE_NATIVE_EXTREME}
 )
 target_compile_features(cellerator_cuda_mode INTERFACE cxx_std_17)
+
+# These generated public configuration headers are consumed through the
+# exported CUDA-mode target and therefore must accompany the installed SDK.
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/cellerator_cuda_mode.hh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/Cellerator")
 
 function(cellerator_enable_perf target)
     set(cellerator_cuda_perf_flags
@@ -643,3 +652,5 @@ endif()
 
 add_subdirectory(compat)
 include(compat/cp_math_v1/CMakeLists.txt)
+
+include(cmake/NativeFoundation.cmake)
