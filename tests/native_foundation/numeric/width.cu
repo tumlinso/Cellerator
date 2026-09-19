@@ -52,6 +52,13 @@ void fixture(unsigned width, bool empty) {
     auto forward = descriptor(width, rows, columns, static_cast<unsigned>(sources.size()));
     auto transpose = forward; transpose.direction = rel::orientation::transpose;
     cudaStream_t stream{}; gpu(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+    if (!empty) {
+        const std::vector<std::uint32_t> duplicate_sources{4, 0, 1, 0, 2, 4, 1, 3, 0};
+        rel::prepared_relation_pair* duplicate = nullptr;
+        auto duplicate_status = rel::prepare_relation_pair(forward, transpose,
+            {offsets.data(), offsets.size(), duplicate_sources.data(), duplicate_sources.size()}, {0, 0, false}, stream, &duplicate);
+        require(!duplicate_status && !duplicate, "duplicate endpoint topology is explicitly rejected by the retained provider");
+    }
     rel::prepared_relation_pair* pair = nullptr;
     ok(rel::prepare_relation_pair(forward, transpose,
         {offsets.data(), offsets.size(), sources.data(), sources.size()}, {0, 1u << 26, false}, stream, &pair));
