@@ -10,7 +10,11 @@ bool same_gradient(const scalar_gradient_policy& a, const scalar_gradient_policy
 }
 bool supported_arithmetic(const arithmetic_policy& a) noexcept {
     using execution::numeric_type;
-    return a.relation_storage == numeric_type::f16 && a.input_storage == numeric_type::f32
+    // Calculus consumes either authoritative IEEE f16 values or authoritative
+    // f32 values.  The relation's storage precision is distinct from the
+    // required f32 multiply/accumulate/output contract.
+    return (a.relation_storage == numeric_type::f16 || a.relation_storage == numeric_type::f32)
+        && a.input_storage == numeric_type::f32
         && a.multiply == numeric_type::f32 && a.accumulation == numeric_type::f32
         && a.output_storage == numeric_type::f32 && a.permit_fma
         && a.permit_reassociation && a.nonfinite == nonfinite_policy::propagate;
@@ -32,7 +36,7 @@ status validate(const relation_calculus_descriptor& c) noexcept {
     if (c.forward.input_output_aliasing_legal)
         return {status_code::unsupported_semantics, "bounded calculus forbids input/output aliasing"};
     if (!supported_arithmetic(c.forward.arithmetic))
-        return {status_code::unsupported_numeric_policy, "bounded apply requires f16 weights and permitted f32 fused reductions"};
+        return {status_code::unsupported_numeric_policy, "bounded apply requires f16 or f32 weights and permitted f32 fused reductions"};
     if (c.gradient != gradient_arithmetic::full_f32 && c.gradient != gradient_arithmetic::round_operands_f16_rne)
         return {status_code::unsupported_numeric_policy, "unknown gradient operand profile"};
     if (c.update != value_update_kind::delta_add && c.update != value_update_kind::gradient_step)
