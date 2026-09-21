@@ -68,15 +68,6 @@ void fixture(unsigned width, bool empty) {
         "FP32 baseline must bind the retained CSR route or explicit empty zero-fill");
     require(std::string(report.transpose_candidate) == (empty ? "device-zero-fill" : "retained-csr-f32"),
         "FP32 transpose must bind the retained CSR route or explicit empty zero-fill");
-    auto accumulate = forward; accumulate.update = rel::output_update::accumulate;
-    rel::prepared_relation_pair* rejected = nullptr;
-    require(rel::prepare_relation_pair(accumulate, transpose,
-        {offsets.data(), offsets.size(), sources.data(), sources.size()}, {0, 0, false}, stream, &rejected).code == rel::status_code::unsupported_semantics && !rejected,
-        "accumulate is declared unsupported without hidden output mutation");
-    auto affine = forward; affine.update = rel::output_update::affine_accumulate;
-    require(rel::prepare_relation_pair(affine, transpose,
-        {offsets.data(), offsets.size(), sources.data(), sources.size()}, {0, 0, false}, stream, &rejected).code == rel::status_code::unsupported_semantics && !rejected,
-        "affine accumulation is explicitly unsupported without coefficients");
     std::vector<float> weights(sources.size()), input(columns * width), cotangent(rows * width);
     for (unsigned e = 0; e < weights.size(); ++e) weights[e] = float(int((e * 5 + 3) % 13) - 6) / 7.0f;
     for (unsigned i = 0; i < input.size(); ++i) input[i] = float(int((i * 7 + width) % 19) - 9) / 11.0f;
@@ -97,6 +88,33 @@ void fixture(unsigned width, bool empty) {
             forward_oracle[row * width + column] += double(weights[edge]) * input[sources[edge] * width + column];
             transpose_oracle[sources[edge] * width + column] += double(weights[edge]) * cotangent[row * width + column];
         }
+    auto check_effect = [&](rel::output_update update, float alpha, float beta, const char* message) {
+        auto effect_forward = forward;
+        auto effect_transpose = transpose;
+        effect_forward.update = effect_transpose.update = update;
+        if (update == rel::output_update::affine_accumulate) {
+            effect_forward.input_scale = effect_transpose.input_scale = alpha;
+            effect_forward.destination_scale = effect_transpose.destination_scale = beta;
+        }
+        rel::prepared_relation_pair* effect_pair = nullptr;
+        ok(rel::prepare_relation_pair(effect_forward, effect_transpose,
+            {offsets.data(), offsets.size(), sources.data(), sources.size()}, {0, 1u << 26, false}, stream, &effect_pair));
+        struct effect_closer { rel::prepared_relation_pair*& pair; ~effect_closer() { if (pair) rel::destroy(pair); } } effect_cleanup{effect_pair};
+        ok(rel::publish_f32_values(*effect_pair, {dw.value, weights.size(), forward.topology.identity, forward.topology.epoch,
+            forward.topology.logical_edge_order, {1}, 0}, stream));
+        std::vector<float> seed(rows * width);
+        for (unsigned i = 0; i < seed.size(); ++i) seed[i] = float(int((i * 11 + 5) % 23) - 11) / 9.0f;
+        device_buffer effect_output(seed.size());
+        copy_to_device(effect_output, seed, stream);
+        ok(rel::enqueue(*effect_pair, effect_forward, {dx.value, input.size(), forward.topology.source, 0},
+            {effect_output.value, std::uint64_t(rows) * width, forward.topology.destination, 0}, {1}, stream));
+        std::vector<float> actual(rows * width);
+        copy_to_host(actual, effect_output, stream); gpu(cudaStreamSynchronize(stream));
+        for (unsigned i = 0; i < actual.size(); ++i)
+            require(close(actual[i], alpha * forward_oracle[i] + beta * seed[i]), message);
+    };
+    check_effect(rel::output_update::accumulate, 1.0f, 1.0f, "accumulate differs from declared destination effect");
+    check_effect(rel::output_update::affine_accumulate, 1.75f, -0.5f, "affine differs from declared alpha/beta destination effect");
     double lhs = 0.0, rhs = 0.0;
     for (unsigned i = 0; i < forward_actual.size(); ++i) { require(close(forward_actual[i], forward_oracle[i]), "forward differs from independent FP64 logical oracle"); lhs += double(forward_actual[i]) * cotangent[i]; }
     for (unsigned i = 0; i < transpose_actual.size(); ++i) { require(close(transpose_actual[i], transpose_oracle[i]), "transpose differs from independent FP64 logical oracle"); rhs += double(input[i]) * transpose_actual[i]; }
