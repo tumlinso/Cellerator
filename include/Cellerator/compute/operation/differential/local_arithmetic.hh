@@ -1,4 +1,5 @@
 #pragma once
+#include <Cellerator/compute/operation/native_numeric/device_linear.hh>
 #include <Cellerator/compute/operation/native_numeric/local_arithmetic.hh>
 #include <Cellerator/compute/operation/native_foundation_contract.hh>
 
@@ -30,16 +31,34 @@ template<class T> struct local_device_binding {
     T* right_adjoint = nullptr;
     std::uint64_t count = 0;
 };
+// Device primal owners are captured when the primitive is prepared.  They are
+// borrowed: callers retain the vectors and stream until program completion.
+// The request carries semantic primal metadata, while admission derives the
+// mutable state/parameter generations from these resident CE values.
+struct local_primal_owners {
+    const numeric::resident_vector* left = nullptr;
+    const numeric::resident_vector* right = nullptr;
+    const numeric::resident_vector* state = nullptr;
+    const numeric::resident_vector* parameters = nullptr;
+    cudaStream_t stream = nullptr;
+    nf1::primal_record identity{};
+};
 template<class T> struct response_binding {
-    local_device_binding<T> device{};
+    const numeric::resident_vector* left_direction = nullptr;
+    const numeric::resident_vector* right_direction = nullptr;
+    const numeric::resident_vector* cotangent = nullptr;
+    const numeric::resident_vector* output = nullptr;
+    const numeric::resident_vector* left_adjoint = nullptr;
+    const numeric::resident_vector* right_adjoint = nullptr;
+    std::uint64_t count = 0;
     nf1::derivative_request request{};
-    nf1::primal_record live_primal{};
     nf1::operand_signature direction{};
     nf1::operand_signature response{};
 };
 struct local_block {
     numeric::local_operation operation{};
     nf1::compiled_block block{};
+    local_primal_owners device_primal{};
 };
 // Produces callbacks for the existing runner; no graph/evaluator is added.
 // Borrowed contract spans must outlive the block. Pass &local_block as stage
@@ -51,5 +70,6 @@ nf1::status make_local_block(numeric::local_operation, const nf1::operation_cont
 // CUDA sibling of local_block. It remains a single primitive callback; program
 // sequencing and dependency admission are still owned by prepared_program_v2.
 nf1::status make_local_device_block(numeric::local_operation,
-                                    const nf1::operation_contract&, local_block&) noexcept;
+                                    const nf1::operation_contract&, const local_primal_owners&,
+                                    local_block&) noexcept;
 } // namespace cellerator::compute::differential
