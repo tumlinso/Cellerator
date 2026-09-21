@@ -36,8 +36,11 @@ status adapt(const operation_descriptor& op, native_contract& out) noexcept {
         || !a.permit_fma || !a.permit_reassociation
         || a.nonfinite != nonfinite_policy::propagate)
         return {status_code::unsupported_numeric_policy, "FMP1/CTP1 require f16/f32 and permitted FMA/reassociation with propagation"};
-    if (op.update != output_update::overwrite || op.input_output_aliasing_legal)
-        return {status_code::unsupported_semantics, "native pair requires nonaliasing overwrite"};
+    if (op.input_output_aliasing_legal)
+        return {status_code::unsupported_semantics, "native pair requires nonaliasing destination storage"};
+    if (a.relation_storage == execution::numeric_type::f16
+        && op.update != output_update::overwrite)
+        return {status_code::unsupported_semantics, "f16 retained provider supports overwrite only"};
     out = {};
     out.semantic = op;
     out.numeric.sparse_storage = a.relation_storage;
@@ -478,6 +481,17 @@ status submit_half(prepared_relation_pair& p,orientation direction,const void* i
 
 namespace cellerator::compute::relation {
 namespace {
+float effect_input_scale(const operation_descriptor& op) noexcept {
+    return op.update == output_update::affine_accumulate ? op.input_scale : 1.0f;
+}
+float effect_destination_scale(const operation_descriptor& op) noexcept {
+    return op.update == output_update::affine_accumulate ? op.destination_scale
+        : op.update == output_update::accumulate ? 1.0f : 0.0f;
+}
+__global__ void apply_empty_destination_effect(float* output,std::uint64_t count,float destination_scale) {
+    auto index=std::uint64_t(blockIdx.x)*blockDim.x+threadIdx.x;
+    if(index<count) output[index]=destination_scale==0.0f?0.0f:destination_scale*output[index];
+}
 status check_context(const prepared_relation_pair& p,int device,cudaStream_t stream) noexcept {
     if(p.poisoned)return {status_code::invalid_state,"pair is poisoned by failed CUDA submission"};
     if(stream!=p.stream)return {status_code::incompatible_stream,"pair belongs to one caller stream"};
@@ -596,12 +610,21 @@ status enqueue(prepared_relation_pair& p,const operation_descriptor& op,
     auto s=check_launch(p,op,input,output,expected,stream);if(!s)return s;
     if(op.arithmetic.relation_storage==execution::numeric_type::f32){
         const auto& t=op.topology;const auto rows=result_axis(op).extent;
-        if(!t.edge_count)s=rows?cuda_status(cudaMemsetAsync(output.data,0,rows*op.dense_width*4,stream)):status{};
+        if(!t.edge_count) {
+            auto count=rows*op.dense_width;
+            if(!count)s={};
+            else {
+                apply_empty_destination_effect<<<(count+255)/256,256,0,stream>>>(
+                    static_cast<float*>(output.data),count,effect_destination_scale(op));
+                s=cuda_status(cudaPeekAtLastError());
+            }
+        }
         else try {
             auto* csr=op.direction==orientation::forward?p.structure->csr_forward:p.structure->csr_transpose;
             runtime::execution_context context{};context.device=p.device;context.stream=stream;
             compute::sparse::project::csr_spmm_fwd_f32(context,csr,csr+rows+1,p.authoritative_f32,rows,input_axis(op).extent,
-                static_cast<const float*>(input.data),op.dense_width,op.dense_width,static_cast<float*>(output.data),op.dense_width,csr+rows+1+t.edge_count);
+                static_cast<const float*>(input.data),op.dense_width,op.dense_width,static_cast<float*>(output.data),op.dense_width,csr+rows+1+t.edge_count,
+                effect_input_scale(op),effect_destination_scale(op));
         }catch(...){s={status_code::invalid_state,"f32 candidate launch failed"};}
     }else s=submit_half(p,op.direction,input.data,output.data);
     if(!s){p.poisoned=true;return s;}

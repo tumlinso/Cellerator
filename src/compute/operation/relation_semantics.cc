@@ -1,5 +1,6 @@
 #include <Cellerator/compute/operation/relation_semantics.hh>
 
+#include <cmath>
 #include <limits>
 
 namespace cellerator::compute::relation {
@@ -44,8 +45,12 @@ status validate(const operation_descriptor& op) noexcept {
     if (op.dense_width == 0 || (t.edge_count != 0
         && (t.source.extent == 0 || t.destination.extent == 0)))
         return {status_code::invalid_shape, "nonempty edges require both axes; width must be nonzero"};
-    if (op.update != output_update::overwrite && op.update != output_update::accumulate)
-        return {status_code::unsupported_semantics, "update has no defined coefficient contract"};
+    if (op.update != output_update::overwrite && op.update != output_update::accumulate
+        && op.update != output_update::affine_accumulate)
+        return {status_code::unsupported_semantics, "unknown destination update"};
+    if (op.update == output_update::affine_accumulate
+        && (!std::isfinite(op.input_scale) || !std::isfinite(op.destination_scale)))
+        return {status_code::invalid_argument, "destination effect coefficients must be finite"};
     const auto& a = op.arithmetic;
     if (!float_bytes(a.relation_storage) || !float_bytes(a.input_storage)
         || !float_bytes(a.multiply) || !float_bytes(a.accumulation)
@@ -75,6 +80,8 @@ bool equivalent(const operation_descriptor& x, const operation_descriptor& y) no
         && p.output_storage == q.output_storage && p.permit_fma == q.permit_fma
         && p.permit_reassociation == q.permit_reassociation && p.nonfinite == q.nonfinite
         && x.dense_width == y.dense_width && x.update == y.update
+        && (x.update != output_update::affine_accumulate
+            || (x.input_scale == y.input_scale && x.destination_scale == y.destination_scale))
         && x.input_output_aliasing_legal == y.input_output_aliasing_legal;
 }
 } // namespace cellerator::compute::relation
