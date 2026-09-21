@@ -1,0 +1,5 @@
+add_executable(ce_nf1_program_preflight program_preflight.cc)
+target_link_libraries(ce_nf1_program_preflight PRIVATE Cellerator::native_foundation)
+target_compile_features(ce_nf1_program_preflight PRIVATE cxx_std_17)
+add_test(NAME ce_nf1_program_preflight COMMAND ce_nf1_program_preflight)
+set_tests_properties(ce_nf1_program_preflight PROPERTIES LABELS "nf1;program;host" TIMEOUT 30)

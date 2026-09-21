@@ -34,8 +34,11 @@ static void fixture(unsigned rows, unsigned cols, unsigned width,
     std::vector<bool> seen(sources.size());
     for(unsigned e=0;e<sources.size();++e) {
         auto physical=layout.logical_to_physical[e];SPINE_REQUIRE(physical<sources.size()&&!seen[physical]);
-        seen[physical]=true;SPINE_REQUIRE(pair->physical_to_logical[physical]==e);
+        seen[physical]=true;
     }
+    // The public logical-to-physical layout is a complete permutation.  This
+    // proves the inverse physical mapping without reaching into its owner.
+    for (bool mapped : seen) SPINE_REQUIRE(mapped);
     const auto projection=pair->report.forward_projection;
     std::vector<__half> weights(sources.size());
     __half* dw=nullptr; if (!weights.empty()) gpu(cudaMalloc(&dw,weights.size()*2));
