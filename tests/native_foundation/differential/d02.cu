@@ -84,13 +84,23 @@ int main() {
     check(run<nf::vjp>(multiply,response,stream)==pg::program_status::success);gpu(cudaStreamSynchronize(stream));
     gpu(cudaMemcpy(left_adj.data(),dleft_adj,n*sizeof(float),cudaMemcpyDeviceToHost));gpu(cudaMemcpy(right_adj.data(),dright_adj,n*sizeof(float),cudaMemcpyDeviceToHost));
     for(std::size_t i=0;i<n;++i) check(std::abs(left_adj[i]-right[i]*cotangent[i])<2e-6f && std::abs(right_adj[i]-left[i]*cotangent[i])<2e-6f);
+    // One primal may occupy repeated argument roles.  The program leaves their
+    // separate adjoint contributions for the caller to assemble.
+    response.device.right=dleft;
+    check(run<nf::vjp>(multiply,response,stream)==pg::program_status::success);gpu(cudaStreamSynchronize(stream));
+    gpu(cudaMemcpy(left_adj.data(),dleft_adj,n*sizeof(float),cudaMemcpyDeviceToHost));gpu(cudaMemcpy(right_adj.data(),dright_adj,n*sizeof(float),cudaMemcpyDeviceToHost));
+    for(std::size_t i=0;i<n;++i) check(std::abs(left_adj[i]-left[i]*cotangent[i])<2e-6f && std::abs(right_adj[i]-left[i]*cotangent[i])<2e-6f);
+    response.device.right=dright;
     response.request.action=nf::second_direction;response.request.direction_domain=multiply.inputs[0];response.request.response_domain=multiply.output.operand;response.direction=multiply.inputs[0];response.response=multiply.output.operand;
     check(run<nf::second_direction>(multiply,response,stream)==pg::program_status::success);gpu(cudaStreamSynchronize(stream));
     gpu(cudaMemcpy(result.data(),dresult,n*sizeof(float),cudaMemcpyDeviceToHost));
     for(std::size_t i=0;i<n;++i) check(std::abs(result[i]-2*dl[i]*dr[i])<2e-6f);
+    std::fill(result.begin(),result.end(),91.f);upload(dresult,result);
     auto stale=response; ++stale.request.primal.instance.state.generation.value;
     check(run<nf::second_direction>(multiply,stale,stream)==pg::program_status::launch_failed);
     gpu(cudaStreamSynchronize(stream));
+    gpu(cudaMemcpy(result.data(),dresult,n*sizeof(float),cudaMemcpyDeviceToHost));
+    for(float value:result) check(value==91.f);
     cudaStreamDestroy(stream);
     for (auto address : {dleft,dright,ddl,ddr,dcot,dresult,dleft_adj,dright_adj}) cudaFree(address);
     std::cout << "D02 real CUDA width33 state/parameter JVP, VJP, second action and stale primal refusal passed\n";
