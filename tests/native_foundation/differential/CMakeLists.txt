@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.28)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(CelleratorLocalDifferential LANGUAGES CXX)
+  include(CTest)
+endif()
+get_filename_component(CE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_executable(ce_nf1_d01 d01.cc)
+if(TARGET Cellerator::local_differential)
+  target_link_libraries(ce_nf1_d01 PRIVATE Cellerator::local_differential)
+else()
+  target_sources(ce_nf1_d01 PRIVATE
+  "${CE_ROOT}/src/compute/operation/native_numeric/local_arithmetic.cc"
+  "${CE_ROOT}/src/compute/operation/differential/local_arithmetic.cc"
+  "${CE_ROOT}/src/compute/operation/operation_core_v2/schema.cc"
+  "${CE_ROOT}/src/execution/program/program_v2.cc")
+endif()
+target_include_directories(ce_nf1_d01 PRIVATE "${CE_ROOT}/include")
+target_compile_features(ce_nf1_d01 PRIVATE cxx_std_20)
+target_compile_options(ce_nf1_d01 PRIVATE -Wall -Wextra -Werror -ffp-contract=off)
+add_test(NAME ce_nf1_d01 COMMAND ce_nf1_d01)
+if(TARGET Cellerator::local_differential)
+  add_executable(ce_nf1_d02 d02.cu)
+  target_link_libraries(ce_nf1_d02 PRIVATE Cellerator::local_differential)
+  target_compile_features(ce_nf1_d02 PRIVATE cxx_std_20)
+  set_target_properties(ce_nf1_d02 PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
+  add_test(NAME ce_nf1_d02 COMMAND ce_nf1_d02)
+  set_tests_properties(ce_nf1_d02 PROPERTIES LABELS "nf1;cuda;response;sm70" TIMEOUT 90)
+endif()

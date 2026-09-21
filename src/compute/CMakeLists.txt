@@ -153,6 +153,10 @@ add_library(cellerator_relation_algebra STATIC
     ${CELLERATOR_RELATION_SEGMENT_SOURCES}
 )
 add_library(Cellerator::relation_algebra ALIAS cellerator_relation_algebra)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/active_projection/active_projection_v1.cu")
+    target_sources(cellerator_relation_algebra PRIVATE
+        src/compute/operation/active_projection/active_projection_v1.cu)
+endif()
 target_include_directories(cellerator_relation_algebra PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

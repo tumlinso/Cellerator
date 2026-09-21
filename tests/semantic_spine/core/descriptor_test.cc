@@ -92,7 +92,13 @@ int main() {
     y.update = output_update::accumulate; y.arithmetic.nonfinite = nonfinite_policy::reject;
     check(bool(validate(y)), "valid capability-limited policy rejected");
     y.update = output_update::affine_accumulate;
-    check(validate(y).code == status_code::unsupported_semantics, "undefined affine accepted");
+    y.input_scale = 2.0f; y.destination_scale = -0.5f;
+    check(bool(validate(y)), "finite affine coefficients rejected");
+    y.input_scale = std::numeric_limits<float>::infinity();
+    check(validate(y).code == status_code::invalid_argument, "nonfinite input coefficient accepted");
+    y.input_scale = 2.0f;
+    y.destination_scale = std::numeric_limits<float>::quiet_NaN();
+    check(validate(y).code == status_code::invalid_argument, "nonfinite destination coefficient accepted");
     y = x; y.direction = orientation(255); check(!validate(y), "invalid direction accepted");
     y = x; y.dense_width = 0; check(!validate(y), "zero width accepted");
     y = x; y.arithmetic.nonfinite = nonfinite_policy(255);

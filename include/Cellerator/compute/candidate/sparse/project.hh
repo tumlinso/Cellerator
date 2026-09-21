@@ -22,6 +22,12 @@ void csr_spmm_fwd_f16_f32(
     float *out,
     std::int64_t out_ld);
 
+void csr_spmm_fwd_f32(const runtime::execution_context&, const std::uint32_t*,
+    const std::uint32_t*, const float*, std::uint32_t, std::uint32_t,
+    const float*, std::int64_t, std::int64_t, float*, std::int64_t,
+    const std::uint32_t* value_indices = nullptr, float input_scale = 1.0f,
+    float destination_scale = 0.0f);
+
 void csr_spmm_fwd_f32_lib(
     const runtime::execution_context &ctx,
     runtime::cusparse_cache *cache,

@@ -1,0 +1,6 @@
+add_executable(ce_nf1_complete_program_bench complete_program.cu)
+target_link_libraries(ce_nf1_complete_program_bench PRIVATE
+    Cellerator::local_differential
+    Cellerator::relation_algebra)
+target_compile_features(ce_nf1_complete_program_bench PRIVATE cxx_std_20)
+set_target_properties(ce_nf1_complete_program_bench PROPERTIES CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
