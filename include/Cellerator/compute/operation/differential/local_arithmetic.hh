@@ -17,6 +17,26 @@ numeric::local_status local_jvp(numeric::local_operation, const local_binding<fl
 numeric::local_status local_jvp(numeric::local_operation, const local_binding<double>&) noexcept;
 numeric::local_status local_vjp(numeric::local_operation, const local_binding<float>&) noexcept;
 numeric::local_status local_vjp(numeric::local_operation, const local_binding<double>&) noexcept;
+// Device actions use the same stored primal convention as the host actions.
+// The caller owns all device memory through stream completion.
+template<class T> struct local_device_binding {
+    const T* left = nullptr;
+    const T* right = nullptr;
+    const T* left_direction = nullptr;
+    const T* right_direction = nullptr;
+    const T* cotangent = nullptr;
+    T* output = nullptr;
+    T* left_adjoint = nullptr;
+    T* right_adjoint = nullptr;
+    std::uint64_t count = 0;
+};
+template<class T> struct response_binding {
+    local_device_binding<T> device{};
+    nf1::derivative_request request{};
+    nf1::primal_record live_primal{};
+    nf1::operand_signature direction{};
+    nf1::operand_signature response{};
+};
 struct local_block {
     numeric::local_operation operation{};
     nf1::compiled_block block{};
@@ -28,4 +48,8 @@ struct local_block {
 // saturation, overwrite/nonaliasing. Unsupported capabilities fail explicitly.
 nf1::status make_local_block(numeric::local_operation, const nf1::operation_contract&,
                             local_block&) noexcept;
+// CUDA sibling of local_block. It remains a single primitive callback; program
+// sequencing and dependency admission are still owned by prepared_program_v2.
+nf1::status make_local_device_block(numeric::local_operation,
+                                    const nf1::operation_contract&, local_block&) noexcept;
 } // namespace cellerator::compute::differential

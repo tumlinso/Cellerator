@@ -1,6 +1,9 @@
 # Linked numerical foundation used by external native consumers.  This preserves
 # the prepared-program/session and relation owners; it does not create a runner.
 add_subdirectory(src/compute/operation/native_numeric)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/differential/CMakeLists.txt")
+    add_subdirectory(src/compute/operation/differential)
+endif()
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/compute/operation/indexed_mechanism/CMakeLists.txt")
     add_subdirectory(src/compute/operation/indexed_mechanism)
@@ -11,6 +14,9 @@ add_library(Cellerator::native_foundation ALIAS cellerator_native_foundation)
 target_link_libraries(cellerator_native_foundation INTERFACE
     Cellerator::native_numeric
     Cellerator::executable_program)
+if(TARGET Cellerator::local_differential)
+    target_link_libraries(cellerator_native_foundation INTERFACE Cellerator::local_differential)
+endif()
 
 if(TARGET Cellerator::indexed_mechanism)
     target_link_libraries(cellerator_native_foundation INTERFACE
@@ -36,6 +42,9 @@ if(CELLERATOR_BUILD_NATIVE_FOUNDATION_TESTS)
     add_subdirectory(tests/native_foundation/numeric)
     add_subdirectory(tests/native_foundation/program)
     add_subdirectory(tests/native_foundation/build)
+    if(TARGET Cellerator::local_differential)
+        add_subdirectory(tests/native_foundation/differential)
+    endif()
     if(TARGET Cellerator::indexed_mechanism)
         add_subdirectory(tests/native_foundation/nary)
     endif()
