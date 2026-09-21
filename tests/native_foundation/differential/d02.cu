@@ -36,5 +36,5 @@ int main(){gpu(cudaSetDevice(0));cudaDeviceProp prop{};gpu(cudaGetDeviceProperti
  check(vmul.left_direction==nullptr&&vmul.right_direction==nullptr);
  // Uploading the bound state owner changes the resident generation. A copied old request must refuse without writes.
  std::fill(got.begin(),got.end(),91.f);gpu(nn::upload(O.value,got.data(),n,{5},stream));gpu(nn::upload(L.value,left.data(),n,{8},stream));auto stale=smul;check(run<nf::second_direction>(mul,stale,stream)==pg::program_status::launch_failed);get(O,got,stream);for(float v:got)check(v==91.f);
- cudaStreamDestroy(stream);std::cout<<"D02 real CUDA width33 add/multiply/tanh JVP/VJP/second, resident-stale and alias refusal passed\\n";
+ cudaStreamDestroy(stream);std::cout<<"D02 real CUDA width33 add/multiply/tanh JVP/VJP/second, resident-stale and alias refusal passed\n";
 }

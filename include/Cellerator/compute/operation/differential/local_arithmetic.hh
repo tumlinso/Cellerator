@@ -8,7 +8,9 @@ namespace numeric = native_numeric;
 namespace nf1 = operation::nf1;
 // Mathematical actions at supplied stored primal values. Independent output
 // contributions are overwrite-only; callers explicitly assemble repeated roles.
-// No pointer or generation caching. Spans remain borrowed through execution.
+// Host spans remain borrowed through execution. CUDA primitives retain only
+// borrowed resident-owner references and derive their live generations on each
+// admission.
 template<class T> struct local_binding {
     std::span<const T> left, right;
     std::span<const T> left_direction, right_direction, cotangent;
