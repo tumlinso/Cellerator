@@ -4,9 +4,18 @@
 namespace p = cellerator::execution::program;
 namespace {
 int launches = 0;
+int admissions = 0;
 p::program_status launch(const void*, const p::launch_binding_v2&, void*) noexcept {
     ++launches;
     return p::program_status::success;
+}
+p::program_status admit(const void*, const p::launch_binding_v2& binding, void*) noexcept {
+    ++admissions;
+    return binding.input ? p::program_status::success : p::program_status::invalid_argument;
+}
+p::program_status fail_launch(const void*, const p::launch_binding_v2&, void*) noexcept {
+    ++launches;
+    return p::program_status::launch_failed;
 }
 void require(bool value, const char* message) {
     if (!value) throw std::runtime_error(message);
@@ -28,4 +37,26 @@ int main() {
                 p::program_status::success,
             "valid program should execute");
     require(launches == 2, "both accepted stages should launch");
+    // Typed admission is also whole-program: a late rejection cannot submit
+    // the earlier accepted stage.
+    stages[0].admit = admit;
+    stages[1].admit = admit;
+    bindings[0].input = reinterpret_cast<void*>(1);
+    bindings[1].input = nullptr;
+    launches = admissions = 0;
+    require(p::execute_prepared_program_v2(program, bindings, 2, nullptr) ==
+                p::program_status::launch_failed,
+            "late typed admission must reject");
+    require(admissions == 2 && launches == 0,
+            "typed preflight must leave earlier output untouched");
+    // Device/launch failure remains intentionally nontransactional after all
+    // admissions have succeeded.
+    bindings[1].input = reinterpret_cast<void*>(1);
+    stages[1].launch = fail_launch;
+    launches = admissions = 0;
+    require(p::execute_prepared_program_v2(program, bindings, 2, nullptr) ==
+                p::program_status::launch_failed,
+            "later launch failure must propagate");
+    require(admissions == 2 && launches == 2,
+            "accepted earlier launch remains observable after later failure");
 }

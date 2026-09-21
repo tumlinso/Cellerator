@@ -48,6 +48,8 @@ program_status execute_prepared_program_v2(
         if (binding.workspace_bytes < stage.required_workspace_bytes) {
             return program_status::insufficient_bindings;
         }
+        if (stage.admit && stage.admit(stage.prepared_state, binding, caller_stream) !=
+            program_status::success) return program_status::launch_failed;
     }
     // Callback/device failures are intentionally distinct: previously accepted
     // launches are observable and cannot promise transactional rollback.

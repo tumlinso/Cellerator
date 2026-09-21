@@ -74,4 +74,10 @@ nf1::status make_local_block(numeric::local_operation, const nf1::operation_cont
 nf1::status make_local_device_block(numeric::local_operation,
                                     const nf1::operation_contract&, const local_primal_owners&,
                                     local_block&) noexcept;
+// Attach the action-specific pure admission hook required by program_v2.
+// Use this factory rather than bind_compiled_stage for CUDA response stages.
+nf1::status make_local_device_stage(const local_block&, nf1::capability,
+                                    std::uint64_t stage_id, std::uint64_t candidate_id,
+                                    std::uint32_t binding_index,
+                                    execution::program::prepared_stage_v2&) noexcept;
 } // namespace cellerator::compute::differential

@@ -96,24 +96,34 @@ bool valid_prepared_stage(const prepared_evaluator_stage& stage) noexcept {
 execution::program::program_status launch_evaluator_stage(
         const void* prepared_state, const execution::program::launch_binding_v2& binding,
         void* caller_stream) noexcept {
+    if (admit_evaluator_stage(prepared_state, binding, caller_stream) !=
+        execution::program::program_status::success)
+        return execution::program::program_status::invalid_argument;
     const auto* stage = static_cast<const prepared_evaluator_stage*>(prepared_state);
     const auto* values = static_cast<const evaluator_stage_values*>(binding.values);
-    if (!stage || !values || values->binding_magic != evaluator_stage_values::magic
-        || values->value_generation != stage->required_value_generation
-        || !binding.input || !binding.output || !valid_prepared_stage(*stage))
-        return execution::program::program_status::invalid_argument;
     return evaluate_cuda_f32(stage->block, values->predicate,
         static_cast<const float*>(binding.input), stage->argument_count,
         static_cast<float*>(binding.output), caller_stream) == evaluation_status::success
         ? execution::program::program_status::success
         : execution::program::program_status::launch_failed;
 }
+execution::program::program_status admit_evaluator_stage(
+        const void* prepared_state, const execution::program::launch_binding_v2& binding,
+        void*) noexcept {
+    const auto* stage = static_cast<const prepared_evaluator_stage*>(prepared_state);
+    const auto* values = static_cast<const evaluator_stage_values*>(binding.values);
+    if (!stage || !values || values->binding_magic != evaluator_stage_values::magic
+        || values->value_generation != stage->required_value_generation
+        || !binding.input || !binding.output || !valid_prepared_stage(*stage))
+        return execution::program::program_status::invalid_argument;
+    return execution::program::program_status::success;
+}
 execution::program::prepared_stage_v2 make_prepared_stage(
         std::uint64_t stable_stage_id, std::uint64_t candidate_id,
         const prepared_evaluator_stage& state, std::uint32_t binding_index,
         std::uint64_t first_dependency, std::uint32_t dependency_count) noexcept {
     return {stable_stage_id, candidate_id, &state, launch_evaluator_stage, first_dependency,
-            dependency_count, binding_index, 0};
+            dependency_count, binding_index, 0, admit_evaluator_stage};
 }
 evaluation_status evaluate_f32(const registered_block& block, bool predicate,
                                std::span<const float> arguments, std::span<float> destination) noexcept {

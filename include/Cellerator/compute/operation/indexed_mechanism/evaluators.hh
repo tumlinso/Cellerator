@@ -75,6 +75,9 @@ struct evaluator_stage_values {
     bool predicate = true;
 };
 bool valid_prepared_stage(const prepared_evaluator_stage& stage) noexcept;
+execution::program::program_status admit_evaluator_stage(
+    const void* prepared_state, const execution::program::launch_binding_v2& binding,
+    void* caller_stream) noexcept;
 execution::program::program_status launch_evaluator_stage(
     const void* prepared_state, const execution::program::launch_binding_v2& binding,
     void* caller_stream) noexcept;

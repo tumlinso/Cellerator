@@ -1,5 +1,6 @@
 #include <Cellerator/compute/operation/differential/local_arithmetic.hh>
 #include <cuda_runtime_api.h>
+#include <cstdint>
 #include <limits>
 
 namespace cellerator::compute::differential {
@@ -22,8 +23,17 @@ template<class T> __global__ void action_kernel(op operation, local_device_bindi
 bool valid_owner(const numeric::resident_vector* v, std::uint64_t n, int device) {
     return v && v->data && v->elements==n && v->representation==numeric::device_representation::f32 && v->device_ordinal==device;
 }
+bool overlaps(const numeric::resident_vector* a, const numeric::resident_vector* b) {
+    if (!a || !b || !a->data || !b->data || a->representation != numeric::device_representation::f32 || b->representation != numeric::device_representation::f32) return false;
+    constexpr auto limit=std::numeric_limits<std::uintptr_t>::max();
+    if (a->elements > limit / sizeof(float) || b->elements > limit / sizeof(float)) return true;
+    const auto ab=reinterpret_cast<std::uintptr_t>(a->data), bb=reinterpret_cast<std::uintptr_t>(b->data);
+    const auto as=a->elements*sizeof(float), bs=b->elements*sizeof(float);
+    if (ab > limit-as || bb > limit-bs) return true;
+    return ab < bb+bs && bb < ab+as;
+}
 bool separate(const numeric::resident_vector* output, std::initializer_list<const numeric::resident_vector*> inputs) {
-    if (!output) return false; for (const auto* input : inputs) if (input && input->data==output->data) return false; return true;
+    if (!output) return false; for (const auto* input : inputs) if (overlaps(output,input)) return false; return true;
 }
 nf1::primal_record current_primal(const local_primal_owners& owners) {
     auto result=owners.identity; result.instance.state.generation=owners.state->generation; result.instance.parameters.generation=owners.parameters->generation; return result;
@@ -37,19 +47,27 @@ template<class T> bool complete(const local_block& block, const response_binding
     const int device=o.left->device_ordinal;
     if(action==nf1::vjp) {
         if(r.output || r.left_direction || r.right_direction || !valid_owner(r.cotangent,r.count,device)||!valid_owner(r.left_adjoint,r.count,device)||(binary&&!valid_owner(r.right_adjoint,r.count,device))||
-           !separate(r.left_adjoint,{o.left,o.right,r.cotangent,r.left_direction,r.right_direction}) || (binary&&(!separate(r.right_adjoint,{o.left,o.right,r.cotangent,r.left_direction,r.right_direction,r.left_adjoint})||r.left_adjoint->data==r.right_adjoint->data))) return false;
+           !separate(r.left_adjoint,{o.left,o.right,o.state,o.parameters,r.cotangent,r.left_direction,r.right_direction}) || (binary&&(!separate(r.right_adjoint,{o.left,o.right,o.state,o.parameters,r.cotangent,r.left_direction,r.right_direction,r.left_adjoint})||overlaps(r.left_adjoint,r.right_adjoint)))) return false;
         d={static_cast<const T*>(o.left->data),binary?static_cast<const T*>(o.right->data):nullptr,nullptr,nullptr,static_cast<const T*>(r.cotangent->data),nullptr,static_cast<T*>(r.left_adjoint->data),binary?static_cast<T*>(r.right_adjoint->data):nullptr,r.count}; return true;
     }
     if(r.cotangent || r.left_adjoint || r.right_adjoint || !valid_owner(r.output,r.count,device)||!valid_owner(r.left_direction,r.count,device)||(binary&&!valid_owner(r.right_direction,r.count,device))||
-       !separate(r.output,{o.left,o.right,r.left_direction,r.right_direction})) return false;
+       !separate(r.output,{o.left,o.right,o.state,o.parameters,r.left_direction,r.right_direction})) return false;
     d={static_cast<const T*>(o.left->data),binary?static_cast<const T*>(o.right->data):nullptr,static_cast<const T*>(r.left_direction->data),binary?static_cast<const T*>(r.right_direction->data):nullptr,nullptr,static_cast<T*>(r.output->data),nullptr,nullptr,r.count}; return true;
 }
-template<class T, nf1::capability Capability> pg::program_status device_callback(const void* state, const pg::launch_binding_v2& launch, void* stream) noexcept {
+template<class T, nf1::capability Capability> pg::program_status device_admission(const void* state, const pg::launch_binding_v2& launch, void* stream) noexcept {
     if(!state||!launch.input||launch.output||launch.values||!stream) return pg::program_status::invalid_argument;
     const auto& block=*static_cast<const local_block*>(state); const auto& response=*static_cast<const response_binding<T>*>(launch.input);
     if(response.request.action!=Capability || nf1::validate_derivative(block.block.contract,response.request,current_primal(block.device_primal),response.direction,response.response)!=nf1::status::success) return pg::program_status::invalid_argument;
     const auto arity=numeric::local_arity(block.operation); local_device_binding<T> d{};
     if(!arity||!complete(block,response,Capability,arity==2,stream,d)||d.count>std::uint64_t(std::numeric_limits<unsigned>::max())*256u) return pg::program_status::invalid_argument;
+    return pg::program_status::success;
+}
+template<class T, nf1::capability Capability> pg::program_status device_callback(const void* state, const pg::launch_binding_v2& launch, void* stream) noexcept {
+    if (device_admission<T, Capability>(state, launch, stream) != pg::program_status::success)
+        return pg::program_status::invalid_argument;
+    const auto& block=*static_cast<const local_block*>(state); const auto& response=*static_cast<const response_binding<T>*>(launch.input);
+    const auto arity=numeric::local_arity(block.operation); local_device_binding<T> d{};
+    if (!complete(block,response,Capability,arity==2,stream,d)) return pg::program_status::invalid_argument;
     action_kernel<<<static_cast<unsigned>((d.count+255u)/256u),256,0,static_cast<cudaStream_t>(stream)>>>(block.operation,d,Capability);
     return cudaGetLastError()==cudaSuccess?pg::program_status::success:pg::program_status::launch_failed;
 }
@@ -64,5 +82,19 @@ nf1::status make_local_device_block(op operation, const nf1::operation_contract&
     output.block.jvp_launch=device_callback<float,nf1::jvp>; output.block.vjp_launch=device_callback<float,nf1::vjp>; output.block.second_launch=device_callback<float,nf1::second_direction>;
     if(contract.numeric.state_storage!=execution::numeric_type::f32) return nf1::status::unsupported_capability;
     return nf1::validate_compiled_block(output.block);
+}
+nf1::status make_local_device_stage(const local_block& block, nf1::capability action,
+                                    std::uint64_t stage_id, std::uint64_t candidate_id,
+                                    std::uint32_t binding_index,
+                                    pg::prepared_stage_v2& stage) noexcept {
+    auto status=nf1::bind_compiled_stage(block.block,action,&block,stage_id,candidate_id,binding_index,stage);
+    if(status!=nf1::status::success) return status;
+    switch(action) {
+    case nf1::jvp: stage.admit=device_admission<float,nf1::jvp>; break;
+    case nf1::vjp: stage.admit=device_admission<float,nf1::vjp>; break;
+    case nf1::second_direction: stage.admit=device_admission<float,nf1::second_direction>; break;
+    default: return nf1::status::unsupported_capability;
+    }
+    return nf1::status::success;
 }
 } // namespace cellerator::compute::differential

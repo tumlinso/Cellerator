@@ -21,6 +21,12 @@ using stage_launch_v2 = program_status (*)(
         const void* prepared_state,
         const launch_binding_v2& binding,
         void* caller_stream) noexcept;
+// Optional pure typed admission. It may inspect prepared state and binding,
+// but must not submit work or mutate caller-visible state.
+using stage_admission_v2 = program_status (*)(
+        const void* prepared_state,
+        const launch_binding_v2& binding,
+        void* caller_stream) noexcept;
 
 struct prepared_stage_v2 {
     std::uint64_t stable_stage_id = 0;
@@ -31,6 +37,7 @@ struct prepared_stage_v2 {
     std::uint32_t dependency_count = 0;
     std::uint32_t binding_index = 0;
     std::uint64_t required_workspace_bytes = 0;
+    stage_admission_v2 admit = nullptr;
 };
 
 struct prepared_program_v2 {
