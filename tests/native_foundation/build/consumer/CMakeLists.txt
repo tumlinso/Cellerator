@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20)
+project(CelleratorInstalledWidth33Consumer LANGUAGES CXX CUDA)
+find_package(Cellerator CONFIG REQUIRED)
+add_executable(ce_nf1_installed_width33 width33.cu)
+target_link_libraries(ce_nf1_installed_width33 PRIVATE Cellerator::native_foundation)
+target_compile_features(ce_nf1_installed_width33 PRIVATE cxx_std_17)
+set_target_properties(ce_nf1_installed_width33 PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
