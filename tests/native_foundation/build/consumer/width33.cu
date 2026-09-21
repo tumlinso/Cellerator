@@ -64,5 +64,5 @@ int main() try {
     cudaFree(dy); cudaFree(dx); cudaFree(dw); rel::destroy(pair); cudaStreamDestroy(stream);
     std::cout << "installed Cellerator native CUDA consumer width=33 PASS\\n";
 } catch (const std::exception& error) {
-    std::cerr << error.what() << '\\n'; return 1;
+    std::cerr << error.what() << '\n'; return 1;
 }
