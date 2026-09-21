@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7312`
+Project revision: `7316`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -972,7 +972,7 @@ Project revision: `7312`
 - `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
 - `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.
 - `CE-ARCH-40` | status: done | execution: closed | next: Complete. The frozen v1 seam imports Baseplane predicate/event contracts, exposes validity-aware sequence operands, and validates fused and caller-materialized predicate-to-regulatory-to-gene execution on V100 sm_70.
-- `CE-NF1A-CORE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-CORE` | status: in_progress | execution: claimed | next: Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-ARCH-50` | status: done | execution: closed | next: Complete: forward-compatibility matrix validates additive paths for transpose/backward, sparse gradients, numerical evolution, graph capture, persistent scheduling, nested partitions, multi-device planning, and later architecture classes without hot-record bloat or premature implementation.
 - `CE-NF1A-MECHANISMS` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-NF1A-RESPONSE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/RESPONSE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
