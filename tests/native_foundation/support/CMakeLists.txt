@@ -1,0 +1,6 @@
+add_executable(ce_nf1_support active_projection_v1_test.cu)
+target_link_libraries(ce_nf1_support PRIVATE Cellerator::relation_algebra CUDA::cudart)
+target_compile_features(ce_nf1_support PRIVATE cxx_std_17)
+set_target_properties(ce_nf1_support PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+add_test(NAME ce_nf1_support COMMAND ce_nf1_support)
+set_tests_properties(ce_nf1_support PROPERTIES LABELS "nf1;cuda;support;sm70" TIMEOUT 90)
