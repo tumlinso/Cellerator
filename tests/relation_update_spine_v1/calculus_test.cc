@@ -63,6 +63,9 @@ int main() {
     check(!equivalent(c, fixture()), "mixed profile compared equal");
     c = fixture(); c.forward.dense_width = c.transpose.dense_width = 1;
     check(bool(validate(c)), "retained N1 rejected");
+    c = fixture();
+    c.forward.arithmetic.relation_storage = c.transpose.arithmetic.relation_storage = execution::numeric_type::f32;
+    check(bool(validate(c)), "authoritative f32 relation weights rejected");
     c = fixture(); c.transpose.update = output_update::accumulate;
     check(bool(validate(c)), "independent output accumulation rejected");
     c = fixture(); c.update = value_update_kind::delta_add;
@@ -83,6 +86,7 @@ int main() {
     reject([](auto& x){x.scalar_gradient.permit_reassociation=false;});
     reject([](auto& x){x.scalar_gradient.nonfinite=nonfinite_policy::reject;});
     reject([](auto& x){x.forward.arithmetic.permit_fma=x.transpose.arithmetic.permit_fma=false;});
+    reject([](auto& x){x.forward.arithmetic.relation_storage=x.transpose.arithmetic.relation_storage=execution::numeric_type::f64;});
     reject([](auto& x){x.forward.topology.source.extent=std::numeric_limits<std::uint64_t>::max();});
     for (bool source : {false,true}) for (int field=0;field<8;++field) {
         reject([=](auto& x){

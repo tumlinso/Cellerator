@@ -38,6 +38,11 @@ struct operation_descriptor {
     std::uint32_t dense_width = 1;
     output_update update = output_update::overwrite;
     bool input_output_aliasing_legal = false;
+    // Declared effect: input_scale * relation(input) + destination_scale * destination.
+    // These fields are used only by affine_accumulate; overwrite and accumulate
+    // retain their fixed (1, 0) and (1, 1) contracts for aggregate compatibility.
+    float input_scale = 1.0f;
+    float destination_scale = 0.0f;
 };
 enum class status_code : std::uint8_t {
     ok, invalid_argument, invalid_identity, invalid_shape, invalid_axis,
@@ -52,7 +57,6 @@ struct status {
 };
 // Validity does not promise a physical implementation. In particular wider and
 // alternate numeric policies are representable; providers must check capability.
-// affine_accumulate is reserved and rejected: no coefficients are represented.
 // Arithmetic uses round-to-nearest; FMA and reassociation permissions are separate.
 inline const axis_descriptor& input_axis(const operation_descriptor& op) noexcept {
     return op.direction == orientation::forward ? op.topology.source : op.topology.destination;
