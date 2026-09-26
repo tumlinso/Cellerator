@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7316`
+Project revision: `7417`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1349,15 +1349,15 @@ Project revision: `7316`
 - `CE-NF1A-ADOPT` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Verify both successor imports; preserve and map existing work, reconcile expired NF1 authority, and retire only superseded unfinished old NF1 records. Establish the usable build/gate/delegation bindings without rebuilding tooling.
 - `CE-POST-REMAP-04` | kind: integration_task | status: done | parent: - | objective: Run fresh native, CelleraTorch, independent CellShard, integration, CE-LIVE, sanitizer, compatibility, layout, suffix, include, and dependency-graph validation; record exact evidence; reconcile the historical CE-REMAP run through authority; and leave both repositories clean.
 - `CE-ARCH-21` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Evolve CPK1 pointer-free persistence into an execution IR holding one semantic geometry and multiple physical projections.
-- `CE-NF1A-CONTROL` | kind: task | status: in_progress | parent: CE-NF1A-0000 | objective: Hold the ordinary local coordinator seat, choose and adapt execution, keep producer delivery and qualification moving, and finish only after local RELEASE.
+- `CE-NF1A-CONTROL` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Hold the ordinary local coordinator seat, choose and adapt execution, keep producer delivery and qualification moving, and finish only after local RELEASE.
 - `CE-ARCH-22` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Transform useful CP-Math experiments into Cellerator core operation, projection, planning, and execution contracts.
 - `CE-ARCH-31` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Select the fastest correct end-to-end strategy and feed measured costs into versioned semantic-geometry optimization.
 - `CE-ARCH-40` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Make Baseplane sequence structures native Cellerator operands without a host, dense-matrix, or generic-SpMM boundary.
-- `CE-NF1A-CORE` | kind: task | status: in_progress | parent: CE-NF1A-0000 | objective: Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.
+- `CE-NF1A-CORE` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Reuse preserved B/P/V/N implementation and relevant D01/T evidence, coordinate donor ownership, and complete general-width FP32 primitives, prepared execution, independent values and a real separately linked CPU/CUDA consumer.
 - `CE-ARCH-50` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Prove the foundations do not trap Cellerator in forward-only, single-GPU, fp32, Volta-only execution.
-- `CE-NF1A-MECHANISMS` | kind: task | status: planned | parent: CE-NF1A-0000 | objective: Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.
-- `CE-NF1A-RESPONSE` | kind: task | status: planned | parent: CE-NF1A-0000 | objective: Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.
-- `CE-NF1A-SUPPORT` | kind: task | status: planned | parent: CE-NF1A-0000 | objective: Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.
+- `CE-NF1A-MECHANISMS` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.
+- `CE-NF1A-RESPONSE` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Compose state/parameter JVP/VJP and supported second directions through the real numerical program with correct primal lifetime, precision, branch and invalidation semantics.
+- `CE-NF1A-SUPPORT` | kind: task | status: done | parent: CE-NF1A-0000 | objective: Implement persistent activity, exact compact-active execution, independent activity generations, epoch replacement and honest derivative/approximation support.
 - `CE-NF1-COORD` | kind: task | status: superseded | parent: CE-NF1-0000 | objective: Hold the local coordinator seat while first-class lanes execute the accepted NF1 program. Complete only after local M90 qualification and delivery are verified, then close the original epic.
 - `CE-ARCH-60` | kind: integration_task | status: done | parent: CE-ARCH-00 | objective: Complete migration from experimental CP-Math and direct CP-BP v1 coupling into the validated biological execution architecture.
 - `CE-ARCH-70` | kind: epic | status: done | parent: CE-ARCH-00 | objective: Correct the existing Cellerator execution architecture's foundational ABI, lifetime, identity, planning-key, and device-prebinding defects without expanding its feature or projection scope.
@@ -1389,8 +1389,8 @@ Project revision: `7316`
 - `CE-ARCH-61` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Version the retirement of obsolete CP-Math runtime interfaces and refresh operation-core documentation identity without restoring deleted implementation.
 - `CE-ARCH-71` | kind: workstream | status: done | parent: CE-ARCH-00 | objective: Register the existing CP-BP v1 native row-masked N=1 kernel as a real operation-core and planner candidate without changing its projection or kernel semantics.
 - `CE-ARCH-91` | kind: integration_task | status: done | parent: CE-ARCH-80 | objective: Consume the completed CellShard foundation to persist, validate, place, upload, and directly execute opaque Cellerator images without CellShard interpreting execution semantics or Cellerator owning storage transport.
-- `CE-NF1A-QUALIFY` | kind: integration_task | status: planned | parent: CE-NF1A-0000 | objective: Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.
-- `CE-NF1A-RELEASE` | kind: integration_task | status: planned | parent: CE-NF1A-0000 | objective: Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.
+- `CE-NF1A-QUALIFY` | kind: integration_task | status: done | parent: CE-NF1A-0000 | objective: Integrate CORE first and later producer commits as they arrive, keep central build hooks usable, independently qualify the combined stack and evaluate full-program performance. Publish the pinned consumer-ready receipt.
+- `CE-NF1A-RELEASE` | kind: integration_task | status: done | parent: CE-NF1A-0000 | objective: Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.
 - `CE-SS1-C01` | kind: task | status: done | parent: CE-SS1-0000 | objective: Create the smallest canonical mathematical descriptor for exact forward/transpose application, reusing existing biological identities rather than canonizing a versioned operation enum.
 - `CE-SS1-C02` | kind: task | status: done | parent: CE-SS1-0000 | objective: Both native and compiler callers must use the same relation semantics checks and equality rules.
 - `CE-SS1-C03` | kind: task | status: done | parent: CE-SS1-0000 | objective: Give parallel consumers a small native execution contract for one prepared forward/transpose pair, without freezing the eventual SDK.
@@ -1645,7 +1645,7 @@ Project revision: `7316`
 - `CE-NF1-V06` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
 - `CE-NF1-V07` | kind: task | status: done | parent: CE-NF1-0000 | objective: 
 - `CE-NF1-X01` | kind: task | status: superseded | parent: CE-NF1-0000 | objective: 
-- `CE-NF1A-0000` | kind: epic | status: planned | parent: - | objective: Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.
+- `CE-NF1A-0000` | kind: epic | status: done | parent: - | objective: Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.
 - `CE-RU1-C01` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C02` | kind: task | status: done | parent: CE-RU1-0000 | objective: 
 - `CE-RU1-C03` | kind: task | status: done | parent: CE-RU1-0000 | objective: 

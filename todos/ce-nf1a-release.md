@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-NF1A-RELEASE: Verify real-consumer acceptance and close Cellerator
 
-Task revision: `7311`; current project revision is in `todo-status.md`.
+Task revision: `7411`; current project revision is in `todo-status.md`.
 
 ## Objective
 Verify GlassHelix ACCEPT and its exact Cellerator source, reconcile published main and preserved work, and issue the final Cellerator receipt without gratuitously rerunning unchanged qualification.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Read planning/nf1-adaptive-v1/outcomes/RELEASE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.

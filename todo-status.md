@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7316`
+Project revision: `7417`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -968,15 +968,15 @@ Project revision: `7316`
 - `CE-NF1A-ADOPT` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/ADOPT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-POST-REMAP-04` | status: done | execution: closed | next: Validate from fresh build directories, record exact graph and test evidence, then reconcile the historical CE-REMAP workflow state.
 - `CE-ARCH-21` | status: done | execution: closed | next: Design a new Cellerator payload schema with section/projection directories and CPK1 loader, inside unchanged CPEXEC01 unless an external decision proves otherwise.
-- `CE-NF1A-CONTROL` | status: in_progress | execution: claimed | next: Read planning/nf1-adaptive-v1/outcomes/CONTROL.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-CONTROL` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/CONTROL.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-ARCH-22` | status: done | execution: closed | next: Complete: reusable Cellerator::operation_core target, compact native/vendor/composed candidate registry, direct prepared dispatch, explicit numeric/projection policies, and dynamic launch binding validation are implemented; experimental CP-Math remains quarantined evidence for later migration.
 - `CE-ARCH-31` | status: done | execution: closed | next: Complete: planner v1 ranks complete workflow cost, performs bounded structure-specific measurement, validates factored cache evidence, selects conventional fallbacks without bias, and exposes versioned CP-BP objective v2 without changing v1 semantics; GPU evidence remains background-controlled.
 - `CE-ARCH-40` | status: done | execution: closed | next: Complete. The frozen v1 seam imports Baseplane predicate/event contracts, exposes validity-aware sequence operands, and validates fused and caller-materialized predicate-to-regulatory-to-gene execution on V100 sm_70.
-- `CE-NF1A-CORE` | status: in_progress | execution: claimed | next: Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-CORE` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/CORE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-ARCH-50` | status: done | execution: closed | next: Complete: forward-compatibility matrix validates additive paths for transpose/backward, sparse gradients, numerical evolution, graph capture, persistent scheduling, nested partitions, multi-device planning, and later architecture classes without hot-record bloat or premature implementation.
-- `CE-NF1A-MECHANISMS` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
-- `CE-NF1A-RESPONSE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/RESPONSE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
-- `CE-NF1A-SUPPORT` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/SUPPORT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-MECHANISMS` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-RESPONSE` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/RESPONSE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-SUPPORT` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/SUPPORT.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-NF1-COORD` | status: superseded | execution: closed | next: Hold the local coordinator seat while first-class lanes execute the accepted NF1 program. Complete only after local M90 qualification and delivery are verified, then close the original epic.
 - `CE-ARCH-60` | status: done | execution: closed | next: Complete. Supported targets are consolidated, harmful CP-Math runtime assumptions are retired, compatibility evidence is preserved, and all final host/GPU/audit gates pass.
 - `CE-ARCH-70` | status: done | execution: closed | next: Complete. Start CE-ARCH-71 to register the preserved CP-BP row-masked N=1 kernel as a real operation-core/planner candidate; do not reopen these frozen foundations.
@@ -1008,8 +1008,8 @@ Project revision: `7316`
 - `CE-ARCH-61` | status: done | execution: closed | next: Complete: legacy CP-Math backend/runtime interfaces are versioned as retired evidence and the operation-core documentation identity is refreshed.
 - `CE-ARCH-71` | status: done | execution: closed | next: Register a truthful N=1 candidate adapter over the preserved CPK1/native-tile/direct-kernel path, add focused capability, binding, order, effect, and parity tests, then run the declared host and CUDA gates.
 - `CE-ARCH-91` | status: done | execution: closed | next: Wait only on the authoritative CS-FOUND interfaces, then add the narrow cross-repository opaque artifact vertical slice with one-copy caller-stream upload and direct CPE2 execution.
-- `CE-NF1A-QUALIFY` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/QUALIFY.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
-- `CE-NF1A-RELEASE` | status: planned | execution: ready | next: Read planning/nf1-adaptive-v1/outcomes/RELEASE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-QUALIFY` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/QUALIFY.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
+- `CE-NF1A-RELEASE` | status: done | execution: closed | next: Read planning/nf1-adaptive-v1/outcomes/RELEASE.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
 - `CE-SS1-C01` | status: done | execution: closed | next: Use the supplied declaration sketch as a concrete starting point, not an ABI commitment. Keep source provenance, live buffers, stream, candidate, projections and mutable generations outside mathematical identity.
 - `CE-SS1-C02` | status: done | execution: closed | next: Implement explicit fieldwise comparison and validation; never compare padding or use pointer addresses as persistent keys.
 - `CE-SS1-C03` | status: done | execution: closed | next: Define a declaration-only prepared pair interface with caller stream and borrowed device inputs/outputs, structured errors, topology lifetime, explicit refresh and destruction.
@@ -1264,7 +1264,7 @@ Project revision: `7316`
 - `CE-NF1-V06` | status: done | execution: closed | next: 
 - `CE-NF1-V07` | status: done | execution: closed | next: 
 - `CE-NF1-X01` | status: superseded | execution: closed | next: 
-- `CE-NF1A-0000` | status: planned | execution: inactive | next: Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.
+- `CE-NF1A-0000` | status: done | execution: closed | next: Aggregate the local successful outcomes after CONTROL and RELEASE. Do not use this aggregate as the coordinator seat or make a child depend on it.
 - `CE-RU1-C01` | status: done | execution: closed | next: 
 - `CE-RU1-C02` | status: done | execution: closed | next: 
 - `CE-RU1-C03` | status: done | execution: closed | next: 

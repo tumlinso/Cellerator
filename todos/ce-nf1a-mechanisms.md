@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-NF1A-MECHANISMS: Deliver reusable nonlinear indexed mechanisms
 
-Task revision: `7311`; current project revision is in `todo-status.md`.
+Task revision: `7352`; current project revision is in `todo-status.md`.
 
 ## Objective
 Complete the preserved H work as real CPU/CUDA n-ary operations, inspectable composition and registered custom blocks with explicit output and predicate behavior.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Read planning/nf1-adaptive-v1/outcomes/MECHANISMS.md and relevant source. Choose a short useful implementation loop; preserve actual acceptance.
