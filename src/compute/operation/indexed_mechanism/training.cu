@@ -325,6 +325,10 @@ void mechanism_parameter_owner::restore(std::span<const float> values, void* str
     for (float value : values) require(std::isfinite(value), "nonfinite checkpoint coefficient");
     {
         std::lock_guard lock(impl_->mutex);
+        // An admitted writer may still be modifying the master plane on its
+        // stream. Restore cannot supersede it: only a poisoned writer has a
+        // recorded completion event (or requires the cold device sync below).
+        require(!impl_->writing, "checkpoint restoration cannot supersede an active writer");
         for (const auto& r : impl_->readers)
             require(!r.active, "checkpoint restoration has live tapes");
         require(impl_->generation != std::numeric_limits<std::uint64_t>::max(),

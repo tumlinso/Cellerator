@@ -314,10 +314,13 @@ torch::Tensor Mechanism::coefficients() const { return impl_->coefficients; }
 void Mechanism::validate_coefficients(const torch::Tensor& t) const {
     std::lock_guard<std::mutex> guard(impl_->mutex);
     TORCH_CHECK(!impl_->owner->poisoned(), "mechanism parameter owner is poisoned");
-    TORCH_CHECK(t.defined() && t.is_cuda() && t.scalar_type() == torch::kFloat32 && t.dim() == 1
+    TORCH_CHECK(t.defined(), "coefficient tensor is undefined");
+    TORCH_CHECK(t.is_cuda() && t.scalar_type() == torch::kFloat32 && t.dim() == 1
         && t.is_contiguous() && t.get_device() == impl_->owner->device()
-        && t.numel() == static_cast<std::int64_t>(impl_->owner->size())
-        && t.data_ptr<float>() == impl_->owner->data(), "coefficient tensor must alias canonical FP32 native storage exactly");
+        && t.numel() == static_cast<std::int64_t>(impl_->owner->size()),
+        "coefficient tensor metadata no longer matches the canonical FP32 native view");
+    TORCH_CHECK(t.data_ptr<float>() == impl_->owner->data(),
+        "coefficient tensor storage no longer aliases canonical native storage; Module.to or parameter replacement is unsupported");
     auto found = impl_->aliases.find(t.unsafeGetTensorImpl());
     if (found == impl_->aliases.end()) {
         impl_->aliases.emplace(t.unsafeGetTensorImpl(), std::make_pair(t, version(t)));
@@ -354,7 +357,11 @@ void Mechanism::publish_update() {
         throw;
     }
 }
-void Mechanism::poison() { impl_->owner->poison(); }
+void Mechanism::poison() {
+    std::lock_guard<std::mutex> guard(impl_->mutex);
+    impl_->owner->poison();
+    impl_->update_open = false;
+}
 torch::Tensor Mechanism::snapshot() {
     auto values = impl_->owner->snapshot(at::cuda::getCurrentCUDAStream(impl_->owner->device()).stream());
     auto cpu = torch::empty({static_cast<std::int64_t>(values.size())}, torch::TensorOptions().dtype(torch::kFloat32));
@@ -368,9 +375,13 @@ void Mechanism::restore(const torch::Tensor& values) {
         TORCH_CHECK(half_admissible(std::span<const float>(cpu.data_ptr<float>(), static_cast<std::size_t>(cpu.numel()))),
             "mixed mechanism restore coefficients must remain finite after FP16 round-to-nearest conversion");
     }
+    std::lock_guard<std::mutex> guard(impl_->mutex);
+    TORCH_CHECK(!impl_->update_open,
+        "cannot restore while a guarded mechanism writer is open; poison failed state first");
     impl_->owner->restore(std::span<const float>(cpu.data_ptr<float>(), static_cast<std::size_t>(cpu.numel())),
         at::cuda::getCurrentCUDAStream(impl_->owner->device()).stream());
     for (auto& alias : impl_->aliases) alias.second.second = version(alias.second.first);
+    impl_->update_open = false;
 }
 std::int64_t Mechanism::generation() const { return narrow(impl_->owner->generation(), "generation does not fit int64"); }
 bool Mechanism::poisoned() const { return impl_->owner->poisoned(); }
@@ -380,7 +391,9 @@ std::shared_ptr<ix::mechanism_parameter_owner> Mechanism::owner() const { return
 
 MechanismModule::MechanismModule(c10::intrusive_ptr<Mechanism> mechanism)
     : mechanism_(std::move(mechanism)), coefficients_(mechanism_->coefficients()) {
-    register_parameter("coefficients", coefficients_);
+    // Keep the exact Tensor returned by Module registration in the member used
+    // by optimizers and checkpoint traversal. It must still alias CE storage.
+    coefficients_ = register_parameter("coefficients", coefficients_);
 }
 torch::Tensor MechanismModule::forward(const torch::Tensor& input, const std::vector<std::int64_t>& axis_words) {
     const auto parameters = named_parameters(/*recurse=*/false);

@@ -9,6 +9,7 @@ import weakref
 
 import pytest
 import torch
+from torch import nn
 
 from celleratorch import (
     Axis, BiologicalTensor, Identity, Incidence, Mechanism, MechanismModule,
@@ -322,7 +323,8 @@ def test_mixed_checkpoint_overflow_is_rejected_before_target_mutation(tmp_path):
 @requires_native
 def test_composed_torch_model_fits_coefficients_and_roundtrips_next_step(tmp_path):
     spec = specification()
-    mechanism = make_module(spec, initial=(0.1, 0.1))
+    batch_capacity = 64
+    mechanism = make_module(spec, initial=(0.1, 0.1), max_batch=batch_capacity)
     before = nn.Linear(3, 3, device="cuda")
     after = nn.Linear(2, 2, device="cuda")
     with torch.no_grad():
@@ -334,7 +336,7 @@ def test_composed_torch_model_fits_coefficients_and_roundtrips_next_step(tmp_pat
         parameter.requires_grad_(False)
     model = nn.Sequential(before, mechanism, after)
     optimizer = torch.optim.Adam([mechanism.coefficients], lr=3e-2)
-    x = torch.rand((64, 3), device="cuda")
+    x = torch.rand((batch_capacity, 3), device="cuda")
     truth = torch.tensor([0.9, -0.4], device="cuda")
     target = reference(x, truth, spec)
     initial_loss = (model(x) - target).square().mean().item()
@@ -347,7 +349,7 @@ def test_composed_torch_model_fits_coefficients_and_roundtrips_next_step(tmp_pat
     checkpoint = tmp_path / "composed.pt"
     save_checkpoint(checkpoint, model, optimizer)
     expected = model(x).detach()
-    restored_mechanism = make_module(spec, initial=(0.0, 0.0))
+    restored_mechanism = make_module(spec, initial=(0.0, 0.0), max_batch=batch_capacity)
     restored = nn.Sequential(nn.Linear(3, 3, device="cuda"), restored_mechanism,
                              nn.Linear(2, 2, device="cuda"))
     restored_optimizer = torch.optim.Adam([restored_mechanism.coefficients], lr=1e-3)
@@ -406,12 +408,12 @@ def test_abandoned_forward_releases_native_reader():
 
 
 @requires_native
-def test_python_owner_parameter_registry_does_not_pin_dropped_modules():
+def test_python_owner_binding_releases_with_dropped_module():
     module = make_module()
-    parameter_ref = weakref.ref(module.coefficients)
+    binding_ref = weakref.ref(module._binding)
     del module
     gc.collect()
-    assert parameter_ref() is None
+    assert binding_ref() is None
 
 
 @requires_native

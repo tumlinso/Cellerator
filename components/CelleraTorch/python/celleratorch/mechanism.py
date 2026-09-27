@@ -6,7 +6,6 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
-import weakref
 
 import torch
 from torch import Tensor, nn
@@ -236,23 +235,15 @@ def _constructor_data(spec: MechanismSpec) -> tuple:
     )
 
 
-_owner_parameters: weakref.WeakValueDictionary[int, nn.Parameter] = weakref.WeakValueDictionary()
+class _OwnerBinding:
+    """Python lifetime anchor for one native handle and its sole Torch leaf."""
 
-
-def _parameter_for(handle: object) -> nn.Parameter:
-    view = handle.coefficients()
-    key = int(view.data_ptr())
-    saved = _owner_parameters.get(key)
-    if saved is not None:
-        if getattr(saved, "_cellerator_native_handle", None) is not handle:
-            raise RuntimeError("native coefficient storage address is already registered to another owner")
-        return saved
-    parameter = nn.Parameter(view, requires_grad=True)
-    parameter._cellerator_native_handle = handle
-    parameter._cellerator_owner_key = key
-    parameter._cellerator_expected_version = parameter._version
-    _owner_parameters[key] = parameter
-    return parameter
+    def __init__(self, handle: object):
+        self.handle = handle
+        self.parameter = nn.Parameter(handle.coefficients(), requires_grad=True)
+        self.parameter._cellerator_native_handle = handle
+        self.parameter._cellerator_owner_key = int(self.parameter.data_ptr())
+        self.parameter._cellerator_expected_version = self.parameter._version
 
 
 class BiologicalTensor:
@@ -270,7 +261,8 @@ class MechanismModule(nn.Module):
 
     def __init__(self, spec: MechanismSpec, initial_coefficients: Tensor,
                  *, max_batch: int, max_live_forwards: int = 8,
-                 precision: str = "f32", _handle: object | None = None):
+                 precision: str = "f32", _handle: object | None = None,
+                 _binding: Optional[_OwnerBinding] = None):
         super().__init__()
         if precision not in ("f32", "mixed_f16"):
             raise ValueError("precision must be 'f32' or 'mixed_f16'")
@@ -296,11 +288,17 @@ class MechanismModule(nn.Module):
             )
         else:
             self._native = _handle
+        if _binding is None:
+            self._binding = _OwnerBinding(self._native)
+        else:
+            if _binding.handle is not self._native:
+                raise ValueError("shared owner binding does not match native mechanism handle")
+            self._binding = _binding
         self.spec = spec
         self.precision = precision
         self.max_batch = int(max_batch)
         self.max_live_forwards = int(max_live_forwards)
-        self.coefficients = _parameter_for(self._native)
+        self.coefficients = self._binding.parameter
         self._owner_key = int(self.coefficients.data_ptr())
         # A version baseline detects ordinary in-place mutation outside the guard.
         self.coefficients._cellerator_expected_version = self.coefficients._version
@@ -323,7 +321,8 @@ class MechanismModule(nn.Module):
         """Create another module view that reuses the exact prepared owner/program."""
         return cls(owner.spec, owner.coefficients, max_batch=owner.max_batch,
                    max_live_forwards=owner.max_live_forwards,
-                   precision=owner.precision, _handle=owner._native)
+                   precision=owner.precision, _handle=owner._native,
+                   _binding=owner._binding)
 
     def _apply(self, fn, recurse: bool = True):  # noqa: ANN001
         raise RuntimeError("native coefficient storage cannot be moved or recast with Module.to/_apply")

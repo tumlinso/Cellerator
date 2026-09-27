@@ -79,6 +79,16 @@ int main() {
     assert(rejected_bad_restore);
     assert(mixed->generation() == mixed_generation);
     assert(torch::allclose(mixed->snapshot(), mixed_checkpoint));
+    mixed->begin_update();
+    bool rejected_open_writer_restore = false;
+    try { mixed->restore(mixed_checkpoint); }
+    catch (const c10::Error&) { rejected_open_writer_restore = true; }
+    assert(rejected_open_writer_restore && !mixed->poisoned());
+    assert(mixed->generation() == mixed_generation);
+    assert(torch::allclose(mixed->coefficients().detach(), mixed_checkpoint.to(device)));
+    mixed->poison();
+    mixed->restore(mixed_checkpoint);
+    const auto recovery_generation = mixed->generation();
     auto mixed_k = mixed->coefficients();
     torch::optim::Adam explosive_adam({mixed_k}, torch::optim::AdamOptions(1.0e6));
     { torch::NoGradGuard no_grad; mixed_k.mutable_grad() = torch::ones_like(mixed_k); }
@@ -86,7 +96,7 @@ int main() {
     try { celleratorch::guarded_adam_step(explosive_adam, {mixed}); }
     catch (const c10::Error&) { rejected_half_overflow_step = true; }
     assert(rejected_half_overflow_step && mixed->poisoned());
-    assert(mixed->generation() == mixed_generation);
+    assert(mixed->generation() == recovery_generation);
     mixed->restore(mixed_checkpoint); // explicit native checkpoint recovery.
     auto large_f32 = make_mechanism(torch::tensor({100000.0f}, options), 0);
     assert(std::abs(large_f32->snapshot().item<float>() - 100000.0f) < 1.0f);
@@ -189,8 +199,14 @@ int main() {
               << " native_reserved_bytes=" << mechanism->program()->reserved_bytes()
               << " native_generation=" << mechanism->generation() << "\n";
 
+    // Archive Torch-owned dense layers separately from CE-owned coefficient
+    // storage. The native snapshot below is the only restore path for k.
     torch::serialize::OutputArchive model_archive, optimizer_archive;
-    net->save(model_archive);
+    torch::serialize::OutputArchive pre_archive, post_archive;
+    net->pre->save(pre_archive);
+    net->post->save(post_archive);
+    model_archive.write("pre", pre_archive);
+    model_archive.write("post", post_archive);
     net_optimizer.save(optimizer_archive);
     auto saved_coefficients = mechanism->snapshot();
     model_archive.save_to("celleratorch-mechanism-model.pt");
@@ -202,9 +218,13 @@ int main() {
     torch::serialize::InputArchive model_input, optimizer_input;
     model_input.load_from("celleratorch-mechanism-model.pt");
     optimizer_input.load_from("celleratorch-mechanism-optimizer.pt");
-    reloaded->load(model_input);
-    // Module loading copies the serialized leaf. Native restoration republishes
-    // the master and half plane in its owned generation domain.
+    torch::serialize::InputArchive pre_input, post_input;
+    model_input.read("pre", pre_input);
+    model_input.read("post", post_input);
+    reloaded->pre->load(pre_input);
+    reloaded->post->load(post_input);
+    // CE parameters are deliberately absent from Module archives. Restoration
+    // republishes the master and half plane through the owner API.
     reloaded_handle->restore(saved_coefficients);
     auto reloaded_params = trainable_params(*reloaded);
     torch::optim::Adam reloaded_optimizer(reloaded_params, torch::optim::AdamOptions(0.01));

@@ -201,6 +201,11 @@ void run_precision(ix::training_precision precision, int device, cudaStream_t st
     cuda_check(cudaLaunchHostFunc(stream2, delay_stream, nullptr), "queue failed-writer delay");
     overwrite_coefficients<<<1, 32, 0, stream2>>>(owner->data());
     cuda_check(cudaGetLastError(), "queue partial optimizer write");
+    rejected = false;
+    try { owner->restore(next_coeff, stream); } catch (const std::exception&) { rejected = true; }
+    check(rejected, "checkpoint restore must reject an active, nonpoisoned writer");
+    check(owner->generation() == 2 && !owner->poisoned(),
+          "rejected restore must leave the admitted writer and generation unchanged");
     owner->poison();
     rejected = false;
     try { (void)program->forward(x_dev.value, false, 1, d.input.identity, y.value, stream); }
