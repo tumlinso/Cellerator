@@ -9,8 +9,11 @@ for typed synchronization. Rich Project Control reads are secondary escalation
 tools when bounded workflow context is insufficient.
 
 Todo Orchestrator remains the transactional authority. First-class Codex agents
-receive lanes and roles; local workers are optional bounded children of exactly
-one parent claim and never become first-class participants.
+receive lanes and roles. Use configured Codex subagents for bounded research,
+implementation, tests and review under the root claim. Local workers are reserved
+for Project Control observers for now; do not use `delegate_task` or
+`local-coding-worker` for implementation delegation. Subagents do not take over
+the root's task lifecycle or final acceptance.
 <!-- project-control:end -->
 
 ## Authority
