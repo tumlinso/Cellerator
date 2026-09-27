@@ -1,0 +1,156 @@
+{
+  "gates": [
+    {
+      "id": "CE-ML2-TRAIN-NATIVE",
+      "type": "command",
+      "argv": [
+        "../build-ml2-native/ce_ml2_native_training"
+      ],
+      "cwd": "tests",
+      "timeout": 300,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        },
+        "build_argv": [
+          "cmake",
+          "--build",
+          "build-ml2-native",
+          "--target",
+          "ce_ml2_native_training",
+          "-j",
+          "16"
+        ],
+        "binary_paths": [
+          "build-ml2-native/ce_ml2_native_training"
+        ]
+      }
+    },
+    {
+      "id": "CE-ML2-TRAIN-MEMCHECK",
+      "type": "command",
+      "argv": [
+        "/home/tumlinson/Software/cuda-sanitizer-12.9/usr/local/cuda-12.9/bin/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "../build-ml2-native/ce_ml2_native_training"
+      ],
+      "cwd": "tests",
+      "timeout": 300,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        }
+      }
+    },
+    {
+      "id": "CE-ML2-TRAIN-INITCHECK",
+      "type": "command",
+      "argv": [
+        "/home/tumlinson/Software/cuda-sanitizer-12.9/usr/local/cuda-12.9/bin/compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "99",
+        "../build-ml2-native/ce_ml2_native_training"
+      ],
+      "cwd": "tests",
+      "timeout": 300,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        }
+      }
+    },
+    {
+      "id": "CE-ML2-TRAIN-CPP-INSTALLED",
+      "type": "command",
+      "argv": [
+        "../build-ml2-installed/ce_ml2_installed_consumer"
+      ],
+      "cwd": "tests",
+      "timeout": 300,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        },
+        "build_argv": [
+          "cmake",
+          "--build",
+          "build-ml2-installed",
+          "--target",
+          "ce_ml2_installed_consumer",
+          "-j",
+          "16"
+        ],
+        "binary_paths": [
+          "build-ml2-installed/ce_ml2_installed_consumer"
+        ]
+      }
+    },
+    {
+      "id": "CE-ML2-TRAIN-PYTHON-INSTALLED",
+      "type": "command",
+      "argv": [
+        "env",
+        "CELLERATORCH_NATIVE_LIBRARY=/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so",
+        "CELLERATORCH_REQUIRE_NATIVE=1",
+        "/home/tumlinson/Software/venvs/cellerator-ml2-py313-cu126/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "../components/CelleraTorch/tests/test_mechanism.py"
+      ],
+      "cwd": "tests",
+      "timeout": 600,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        }
+      }
+    },
+    {
+      "id": "CE-ML2-TRAIN-N16-RETAINED",
+      "type": "command",
+      "argv": [
+        "../build-ml2-cpp/celleraTorchAutogradOpsTest"
+      ],
+      "cwd": "tests",
+      "timeout": 300,
+      "required": true,
+      "cuda": {
+        "gpus": 1,
+        "cpu_threads": 2,
+        "toolchain": {
+          "root": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9",
+          "require_sanitizer": false
+        },
+        "binary_paths": [
+          "build-ml2-cpp/celleraTorchAutogradOpsTest"
+        ]
+      }
+    }
+  ]
+}

@@ -43,6 +43,10 @@ endif()
 
 project(Cellerator LANGUAGES CXX)
 
+# Native session and execution targets are declared early. They also back the
+# optional shared Torch producer, so PIC must be enabled before target creation.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CELLERATOR_ENABLE_CUDA "AUTO" CACHE STRING
@@ -371,8 +375,6 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Cellerator/config.cuh
     @ONLY
 )
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(cellerator_cuda_mode INTERFACE)
 target_include_directories(cellerator_cuda_mode INTERFACE

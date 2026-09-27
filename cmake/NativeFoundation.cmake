@@ -65,6 +65,7 @@ endif()
 
 # Export the actual linked dependency closure, including the preserved program
 # and candidate owners. Consumers use these libraries, never source inclusion.
+include(${PROJECT_SOURCE_DIR}/cmake/CelleraTorchLearning.cmake)
 set(_nf_pending cellerator_native_foundation)
 set(_nf_exports)
 while(_nf_pending)

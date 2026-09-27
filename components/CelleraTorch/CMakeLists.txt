@@ -3,15 +3,19 @@ set(CELLERATORCH_PREFERRED_LIBTORCH_ROOT "/usr/local" CACHE PATH
 
 if(DEFINED ENV{LIBTORCH_PATH} AND NOT "$ENV{LIBTORCH_PATH}" STREQUAL "")
     list(PREPEND CMAKE_PREFIX_PATH "$ENV{LIBTORCH_PATH}")
+    set(Torch_DIR "$ENV{LIBTORCH_PATH}/share/cmake/Torch" CACHE PATH "Explicit libtorch package" FORCE)
+    if(EXISTS "$ENV{LIBTORCH_PATH}/share/cmake/Caffe2/Caffe2Config.cmake")
+        set(Caffe2_DIR "$ENV{LIBTORCH_PATH}/share/cmake/Caffe2" CACHE PATH "Explicit Caffe2 package" FORCE)
+    endif()
 elseif(EXISTS "${CELLERATORCH_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch/TorchConfig.cmake")
-    if(NOT Torch_DIR OR Torch_DIR MATCHES ".*/site-packages/torch/share/cmake/Torch/?$")
+    if(NOT Torch_DIR)
         set(Torch_DIR
             "${CELLERATORCH_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch"
             CACHE PATH "Torch CMake package directory" FORCE)
         message(STATUS "Defaulting Torch_DIR to source-built libtorch at ${Torch_DIR}")
     endif()
     if(EXISTS "${CELLERATORCH_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2/Caffe2Config.cmake")
-        if(NOT Caffe2_DIR OR Caffe2_DIR MATCHES ".*/site-packages/torch/share/cmake/Caffe2/?$")
+        if(NOT Caffe2_DIR)
             set(Caffe2_DIR
                 "${CELLERATORCH_PREFERRED_LIBTORCH_ROOT}/share/cmake/Caffe2"
                 CACHE PATH "Caffe2 CMake package directory" FORCE)
@@ -24,7 +28,8 @@ elseif(EXISTS "${CELLERATORCH_PREFERRED_LIBTORCH_ROOT}/share/cmake/Torch/TorchCo
                 C10_CUDA_LIBRARY
                 c10_LIBRARY
                 kineto_LIBRARY)
-        if(DEFINED ${celleratorch_torch_cache_var}
+        if(NOT Torch_DIR MATCHES ".*/site-packages/torch/share/cmake/Torch/?$"
+           AND DEFINED ${celleratorch_torch_cache_var}
            AND "${${celleratorch_torch_cache_var}}" MATCHES ".*/site-packages/torch/.*")
             unset(${celleratorch_torch_cache_var} CACHE)
         endif()
@@ -117,12 +122,36 @@ set_target_properties(cellera_torch_autograd_ops PROPERTIES
     CUDA_STANDARD_REQUIRED YES
 )
 
+# Biology-shaped prepared mechanism adapter. Numerical ownership remains in
+# Cellerator's indexed-mechanism training program.
+add_library(cellera_torch_mechanism SHARED
+    src/mechanism.cc
+)
+add_library(CelleraTorch::mechanism ALIAS cellera_torch_mechanism)
+target_include_directories(cellera_torch_mechanism PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(cellera_torch_mechanism
+    PUBLIC CelleraTorch::torch
+    PRIVATE Cellerator::indexed_mechanism
+)
+target_compile_features(cellera_torch_mechanism PUBLIC cxx_std_20)
+
+add_executable(celleraTorchMechanismTest tests/mechanism_test.cc)
+target_link_libraries(celleraTorchMechanismTest PRIVATE CelleraTorch::mechanism)
+target_compile_features(celleraTorchMechanismTest PRIVATE cxx_std_20)
+set_target_properties(celleraTorchMechanismTest PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CELLERATORCH_TEST_OUTPUT_DIR}")
+
 add_library(cellera_torch_native_adapter INTERFACE)
 add_library(CelleraTorch::native_adapter ALIAS cellera_torch_native_adapter)
 target_link_libraries(cellera_torch_native_adapter INTERFACE
     CelleraTorch::native_views
     CelleraTorch::program_ops
     CelleraTorch::autograd_ops
+    CelleraTorch::mechanism
 )
 
 add_library(cellera_torch_model_ops STATIC
