@@ -1,0 +1,39 @@
+
+=== CE-ML2-TRAIN-NATIVE ===
+f32 prepare_us=281.889 reserved_bytes=1344 forward_us=94.551 backward_us=88.622
+mixed prepare_us=240.841 reserved_bytes=1344 forward_us=26.151 backward_us=24.143
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+{"gate": "CE-ML2-TRAIN-NATIVE", "returncode": 0, "elapsed_seconds": 3.1224468600012187}
+
+=== CE-ML2-TRAIN-MEMCHECK ===
+========= COMPUTE-SANITIZER
+f32 prepare_us=262.079 reserved_bytes=1344 forward_us=2981.92 backward_us=1349.34
+mixed prepare_us=256.823 reserved_bytes=1344 forward_us=259.6 backward_us=325.97
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+========= ERROR SUMMARY: 0 errors
+{"gate": "CE-ML2-TRAIN-MEMCHECK", "returncode": 0, "elapsed_seconds": 3.2732333579988335}
+
+=== CE-ML2-TRAIN-INITCHECK ===
+========= COMPUTE-SANITIZER
+f32 prepare_us=349.854 reserved_bytes=1344 forward_us=2823.88 backward_us=1271.62
+mixed prepare_us=344.355 reserved_bytes=1344 forward_us=230.592 backward_us=268.549
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+========= ERROR SUMMARY: 0 errors
+{"gate": "CE-ML2-TRAIN-INITCHECK", "returncode": 0, "elapsed_seconds": 3.2726370509990375}
+
+=== CE-ML2-TRAIN-CPP-INSTALLED ===
+training_lifecycle_ms=113.458 guarded_adam_total_ms=42.3087 steps=40 initial_loss=0.0459375 final_loss=0.000788288 native_reserved_bytes=1856 native_generation=44
+prepared mechanism autograd and guarded Adam passed
+{"gate": "CE-ML2-TRAIN-CPP-INSTALLED", "returncode": 0, "elapsed_seconds": 3.4738076710000314}
+
+=== CE-ML2-TRAIN-PYTHON-INSTALLED ===
+......................                                                   [100%]
+22 passed in 6.44s
+{"gate": "CE-ML2-TRAIN-PYTHON-INSTALLED", "returncode": 0, "elapsed_seconds": 8.085751325999809}
+
+=== CE-ML2-TRAIN-N16-RETAINED ===
+{"gate": "CE-ML2-TRAIN-N16-RETAINED", "returncode": 0, "elapsed_seconds": 3.172691797999505}
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock

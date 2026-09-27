@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-ML2-TRAIN: Make native biological training compose with Torch
 
-Task revision: `7419`; current project revision is in `todo-status.md`.
+Task revision: `7422`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose one genuinely composable trainable CT path over current CE owners, replacing assumptions about the old combined N16 backward/update adapter with tested gradient and update semantics.

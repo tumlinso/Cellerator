@@ -1,7 +1,7 @@
 # TRAIN qualification receipt
 
-Status: implementation prepared; **CUDA numerical qualification is pending**.
-Do not treat compilation or operator registration as training acceptance.
+Status: **all six GPU executable checks passed**.
+Project Control completion is tracked separately below.
 
 ## Installed environments
 
@@ -23,41 +23,59 @@ The two Torch producers use distinct build/install trees. Load only the Python
 producer into the Python distribution. Set `CELLERATORCH_NATIVE_LIBRARY` to
 its `lib/libcellera_torch_mechanism.so` before constructing a Python module.
 
-## Evidence obtained
+## GPU qualification
 
-The native fixture, both Torch producer variants, the new C++ training test,
-and the retained N16 regression compiled. An independent CMake consumer built
-against the installed `CelleraTorch::mechanism` package. The installed Python
-shared library loaded and registered the custom class and both dispatcher
-schemas. The installed Python package's two host declaration/identity tests
-passed; those tests do not execute CUDA numerics.
+Source commit: `f42ce55a`. All six configured executable checks passed on a
+V100 under one CUDA controller reservation, using the exact commands in
+`required-gates.json`. Controller evidence:
+`c0704f79-fbbb-48ba-80a5-cc6e1a17b360`.
 
-Focused source review corrected tensor ownership, replay admission, writer
-stream ordering, failed-writer recovery, optimizer membership, checkpoint
-moment permutation and mixed coefficient overflow admission. These fixes still
-require runtime qualification.
+| Check | Result |
+| --- | --- |
+| Native FP32/mixed reference, gradients, identity, capacity, lifetime and recovery | Passed |
+| Compute Sanitizer memcheck | 0 errors |
+| Compute Sanitizer initcheck | 0 errors |
+| Installed C++ composition, Adam, checkpoint and next-step parity | Passed |
+| Installed Python integration | 22 passed, no skips |
+| Retained combined N16 path | Passed |
 
-Build parallelism was capped at 16 per producer because the two producer builds
-and the native fixture were compiled concurrently on a 62 GiB host. Native-only
-incremental builds used two jobs. No speedup or performance result is claimed.
+The first integration runs exposed a composite C++ archive replacing CE-owned
+storage, an adapter update left open after failed optimizer recovery, and two
+Python fixture setup mistakes. These were fixed and the complete suite rerun.
+Review additionally found that restore could supersede an active writer;
+both native and adapter paths now reject it, with regression coverage.
+Python shared modules retain their single coefficient leaf through an explicit
+owner binding, avoiding weak references to Torch tensors.
 
-## Remaining acceptance
+See `gpu-validation.log` for test output and `capability-receipt.json` for
+artifact hashes, build evidence, exact source identity and per-check results.
+The installed Python source matches the repository package byte-for-byte.
 
-The six required executable gates are recorded in `required-gates.json` and
-bound to CE-ML2-TRAIN: native reference/lifetime tests, memcheck, initcheck,
-installed C++ composition/training/checkpoint tests, installed Python tests,
-and the preserved combined N16 regression. The C++ test reports complete
-training and optimizer-step timing; the native fixture reports preparation,
-forward/VJP timing and reserved memory. These results are pending.
+The small C++ fixture reduced loss from 0.0459375 to 0.000788288 in 40 steps;
+it reported 113.458 ms for the training lifecycle and 42.3087 ms total guarded
+Adam time. These are fixture observations, not a performance comparison.
+The native fixture reserved 1344 bytes in each precision mode; the C++ fixture
+reported 1856 bytes. No real dataset or biological fit is claimed.
 
-At preflight, all four V100s were reserved by two idle Project Control observer
-services. The supported CUDA controller requested preemption, but its test
-launches returned `foreground_resource_contention`, including a 30-second
-grace attempt. Investigation found the observer process polls preemption after
-observer calls rather than on an idle timer; no public per-observer stop API
-was available. A Project Control restart was requested from the user to release
-the observers. No service was restarted and no competing GPU process was killed.
+## Scheduling and workflow acceptance
 
-The claim must not be completed until the required gates pass. No dataset is
-needed for these gates; no GlassHelix scientific training or CE-ML2-BIO work
-has started.
+With the user's authorization, Project Control was restarted to release idle
+observer GPU reservations; readiness returned successfully. Tests retained the
+CUDA controller's three consecutive idle samples and used a 60-second idle
+proof timeout because this host's monitoring queries exceeded the default
+10-second window. No competing GPU process was killed manually.
+
+The bound Project Control gates retain their original default idle timeout;
+the supported binding operation cannot amend an existing gate. The completion
+attempt refused acceptance: C++ gate evidence
+`2e852ec7-ecfb-4851-8934-2a8fee89f6c1` reports `gpu_not_quiescent`,
+14.616 seconds elapsed and two of three idle samples. Both samples were idle
+with no foreign processes; its executable did not run. The same executable
+passed in the 60-second-proof suite above. No task state was overridden.
+
+TRAIN remains open; the claim was released through handoff
+`ed34da17-9c10-4de2-bfa8-2f8f4368e7e4` at project revision 7435. Completing
+the ledger requires a supported amendment of the bound gate idle timeout.
+
+No dataset is needed for these checks. No GlassHelix scientific training or
+CE-ML2-BIO work has started.

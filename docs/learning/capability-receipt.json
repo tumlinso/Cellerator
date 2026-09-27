@@ -1,17 +1,15 @@
 {
   "schema_version": 1,
   "task": "CE-ML2-TRAIN",
-  "status": "awaiting_gpu_validation",
-  "source_commit": "6eb98e4076ebfb7822df3bccba0137c47a91fa22",
+  "status": "gpu_qualified_workflow_handoff",
+  "source_commit": "f42ce55ae3adef1062f290b8784a23a187491b51",
   "passed": [
     "native compilation",
     "system libtorch producer and C++ tests compilation",
     "Python Torch 2.7.0+cu126 producer compilation",
     "installed C++ consumer compilation",
     "installed Python CUDA/Autograd registration",
-    "two host declaration/identity tests"
-  ],
-  "pending": [
+    "two host declaration/identity tests",
     "native numerical/lifetime CUDA tests",
     "native memcheck",
     "native initcheck",
@@ -20,19 +18,19 @@
     "retained combined N16 regression"
   ],
   "controller_build_evidence": {
-    "native": "b681f5f1-1787-4840-b7da-2b398aa8a42f",
-    "cpp": "7f4eb38c-a592-4bee-b737-8df871124b30",
-    "python": "7dd339ee-50f1-4688-8bcd-17dbd2042721",
-    "installed_cpp": "e5513af6-f838-4799-90fb-c57faa7b4d2c"
+    "native": "763d62f2-786f-4fb4-bb70-47e485b2e545",
+    "cpp": "819228ec-f6bd-430e-bdb5-d36ee2e90242",
+    "python": "7490292c-7753-4c3a-bfb8-0822997c925f",
+    "installed_cpp": "ef80f24c-f68e-4b03-8201-2997d898ed43"
   },
   "artifacts": [
     {
       "path": "/home/tumlinson/Cellerator/build-ml2-native/ce_ml2_native_training",
-      "sha256": "2cd084c8a5d4f0ed4acaff554f4c880dff6f45a6e76bc52174a2fa9b1fbc5945"
+      "sha256": "f62904425dec4317f0d78881553d7a0d44ba5fe31ff189695b4c0dc7bad5f69d"
     },
     {
       "path": "/home/tumlinson/Cellerator/build-ml2-installed/ce_ml2_installed_consumer",
-      "sha256": "d7ca0ddbd6601f427052dc5582b7a0dd488b9e8efc331fa67b3ac16ec87d18f6"
+      "sha256": "d1be229881e87480c72755bc57bdc6e987c6232143db1736af4e360c434a35cb"
     },
     {
       "path": "/home/tumlinson/Cellerator/build-ml2-cpp/celleraTorchAutogradOpsTest",
@@ -40,11 +38,67 @@
     },
     {
       "path": "/home/tumlinson/Software/cellerator-ml2-cpp/lib/libcellera_torch_mechanism.so",
-      "sha256": "8118f0411825cb775df708912f8dffe7c33aa655dbf78f10218b7f8c6b630da7"
+      "sha256": "edc0634b6f490df6b315d822e82eb18f7ec7ad648bb5f1a5e665e65ba570e93e"
     },
     {
       "path": "/home/tumlinson/Software/cellerator-ml2-python/lib/libcellera_torch_mechanism.so",
-      "sha256": "84615494fe900cb1b48121721cae05e21e838b1999a9eae7523d1ac9e471c17d"
+      "sha256": "79c21e4428d49a679cedbfcdb394d56ffe58382cb933db3f9abd554bee52a33b"
     }
-  ]
+  ],
+  "gpu_validation": {
+    "evidence_id": "c0704f79-fbbb-48ba-80a5-cc6e1a17b360",
+    "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+    "quiescence": {
+      "timeout_seconds": 60,
+      "consecutive_idle_samples": 3
+    },
+    "execution": "All six required-gates.json commands sequentially under one CUDA controller lease; same argv/cwd/timeouts.",
+    "results": [
+      {
+        "gate": "CE-ML2-TRAIN-NATIVE",
+        "returncode": 0,
+        "elapsed_seconds": 3.1224468600012187
+      },
+      {
+        "gate": "CE-ML2-TRAIN-MEMCHECK",
+        "returncode": 0,
+        "elapsed_seconds": 3.2732333579988335
+      },
+      {
+        "gate": "CE-ML2-TRAIN-INITCHECK",
+        "returncode": 0,
+        "elapsed_seconds": 3.2726370509990375
+      },
+      {
+        "gate": "CE-ML2-TRAIN-CPP-INSTALLED",
+        "returncode": 0,
+        "elapsed_seconds": 3.4738076710000314
+      },
+      {
+        "gate": "CE-ML2-TRAIN-PYTHON-INSTALLED",
+        "returncode": 0,
+        "elapsed_seconds": 8.085751325999809
+      },
+      {
+        "gate": "CE-ML2-TRAIN-N16-RETAINED",
+        "returncode": 0,
+        "elapsed_seconds": 3.172691797999505
+      }
+    ],
+    "python": "22 passed, no skips",
+    "memcheck_errors": 0,
+    "initcheck_errors": 0,
+    "log": "gpu-validation.log"
+  },
+  "installed_python_source_sha256": "d627e92d771ee7a917f57aadf03cf0537663c7fde882677c2b0d06195e9e6d43",
+  "workflow": {
+    "completion": "refused_required_gates_unsatisfied",
+    "failed_gate": "CE-ML2-TRAIN-CPP-INSTALLED",
+    "evidence_id": "2e852ec7-ecfb-4851-8934-2a8fee89f6c1",
+    "reason": "gpu_not_quiescent: default10-second timeout elapsed14.616s, observed2 of3 required idle samples; both idle, no foreign processes. Executable did not run in this gate attempt.",
+    "handoff_id": "ed34da17-9c10-4de2-bfa8-2f8f4368e7e4",
+    "project_revision": 7435,
+    "claim_released": true,
+    "task_complete": false
+  }
 }
