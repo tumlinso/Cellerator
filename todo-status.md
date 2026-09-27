@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7417`
+Project revision: `7418`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -983,6 +983,8 @@ Project revision: `7417`
 - `CE-ARCH-70A` | status: done | execution: closed | next: Audit the user-owned Baseplane predicate-plan implementation, establish the baseline build failure or success, add the minimal ABI/version and validity checks, run focused Baseplane host and Cellerator compile/runtime tests, then freeze the interface.
 - `CE-ARCH-80` | status: done | execution: closed | next: Complete: CE-ARCH-81 through CE-ARCH-92 satisfy the continuation barrier and the CE-ARCH-92 real-data audit validates the migration definition.
 - `CE-ARCH-81` | status: done | execution: closed | next: Audit each roadmap exit criterion against canonical source and tests, publish the truthful matrix, and leave implementation gaps owned by CE-ARCH-82 through CE-ARCH-92.
+- `CE-ML2-BIO` | status: planned | execution: ready | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
+- `CE-ML2-TRAIN` | status: planned | execution: ready | next: Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.
 - `CE-NF1-0000` | status: superseded | execution: closed | next: 
 - `CE-PTR` | status: done | execution: closed | next: Advance the first-class CE-PTR run through its parallel lanes; close the epic only after CE-PTR-15 acceptance.
 - `CE-PTR-00` | status: done | execution: closed | next: No further bootstrap action; leave CE-PTR-01 unclaimed and ready.
@@ -1185,6 +1187,7 @@ Project revision: `7417`
 - `CE-JBC-X06` | status: done | execution: closed | next: Build the shared value and gradient identity spine. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X07` | status: done | execution: closed | next: Compare specialized and generalized view families. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
 - `CE-JBC-X08` | status: done | execution: closed | next: Emit cross-operation Pareto frontier and promotion disposition. Deliver this as one isolated, reviewable step in the Cross-operation Cellerator projection families workstream.
+- `CE-ML2-0000` | status: planned | execution: inactive | next: Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.
 - `CE-NF1-A01` | status: done | execution: closed | next: 
 - `CE-NF1-A02` | status: done | execution: closed | next: 
 - `CE-NF1-A03` | status: done | execution: closed | next: 

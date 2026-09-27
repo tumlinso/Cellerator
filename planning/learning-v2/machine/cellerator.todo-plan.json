@@ -1,0 +1,288 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-ML2-OWNERSHIP",
+      "severity": "error",
+      "rule": "GlassHelix owns scientific models, evidence and inference meaning; Torch supplies ordinary ML. CelleraTorch owns framework integration; native Cellerator owns reusable biological math, differentiation, parameter/value contracts, geometry, planning and compiler/runtime. No parallel GH ML runtime or CT kernel home."
+    },
+    {
+      "id": "CE-ML2-BIOLOGY",
+      "severity": "error",
+      "rule": "A biology-purpose learning operation needs an explicit model assumption, semantic contract, exact reference and identified computational advantage to test. Biological labels or a generic ML kernel alone do not establish this. Model restrictions are hypotheses, not truths or hardware requirements."
+    },
+    {
+      "id": "CE-ML2-EVIDENCE",
+      "severity": "error",
+      "rule": "Preserve actual measurement relationships and allowed information. Population snapshots and sibling cells are not individual trajectories; nominal common forcing is not identical intracellular input. No held-out ATAC, future targets or target-derived preprocessing in unauthorized inference."
+    },
+    {
+      "id": "CE-ML2-IDENTITY",
+      "severity": "error",
+      "rule": "Keep biological/structure identity independent of physical layout and encoding. Preserve ordered and repeated arguments, actual saved-primal generations, lawful contribution assembly and canonical parameter ownership. Never hide mutation inside the new composable backward."
+    },
+    {
+      "id": "CE-ML2-PRESERVE",
+      "severity": "error",
+      "rule": "Preserve successful NF1A, compiler, relation, geometry and CelleraTorch work and separate Todo authorities. No retirement, runtime replacement, old-plan reapply, unrelated cleanup, preprint edits or Ampere-epic activation is authorized."
+    },
+    {
+      "id": "CE-ML2-LEAN",
+      "severity": "error",
+      "rule": "Use coarse outcomes and evidence-selected alternatives. Reuse ordinary Torch and existing Cellerator compositions before new kernels. Easy work may proceed immediately. A costly design needs an explicit rationale, not a universal framework or mandatory survey."
+    },
+    {
+      "id": "CE-ML2-HONEST",
+      "severity": "error",
+      "rule": "Separate engineering correctness, scientific adequacy, numerical policy and performance. Searched candidates are not an exhaustive compatible set; no fabricated biology, derivative support, compiler coverage or speedup."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-ML2-0000",
+      "kind": "epic",
+      "title": "Cellerator ML2 integration",
+      "objective": "Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/learning-v2",
+          "docs/learning"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "All local outcomes have executed acceptance and selected-branch evidence. Close last; preserve separate engineering, biological and performance claims."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/learning-v2/START_CONTROLLER.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ]
+    },
+    {
+      "id": "CE-ML2-TRAIN",
+      "parent_id": "CE-ML2-0000",
+      "kind": "task",
+      "title": "Make native biological training compose with Torch",
+      "objective": "Expose one genuinely composable trainable CT path over current CE owners, replacing assumptions about the old combined N16 backward/update adapter with tested gradient and update semantics.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch",
+          "include/Cellerator/compute",
+          "include/Cellerator/execution",
+          "include/Cellerator/parameters.hh",
+          "include/Cellerator/interop",
+          "src/compute",
+          "src/execution",
+          "src/interop",
+          "cmake",
+          "CMakeLists.txt",
+          "tests",
+          "bench",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "README.md",
+          "scope.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive",
+          "docs/relation_update_spine_v1",
+          "docs/language",
+          "include/Cellerator/compiler",
+          "src/compiler",
+          "library",
+          "stdlib"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "CE-ML2-OWNERSHIP",
+        "CE-ML2-BIOLOGY",
+        "CE-ML2-EVIDENCE",
+        "CE-ML2-IDENTITY",
+        "CE-ML2-PRESERVE",
+        "CE-ML2-LEAN",
+        "CE-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Keep the old explicit combined training route intact. Add/reuse a separate route whose backward returns requested input and parameter gradients without updating learned values; saved forward values must be the values differentiated.",
+          "Register real Python/Torch or libtorch operations and a useful module/parameter view; provide the actual Python entry used by the GH consumer. Reuse standard Torch optimizers through a sanctioned update/publication contract with exactly one update authority.",
+          "Preserve existing CE canonical native-parameter ownership. Ordinary Torch-only parameters remain Torch-owned. Define lifecycle, mutation/version detection, gradient layout, read completion and value-generation publication; zero-copy alone is not optimizer safety.",
+          "Qualify composed outputs and full parameter gradients, repeated/shared use, gradient accumulation before a step, irregular/tail shapes in the selected supported domain, non-default streams, stale operands, lifetime and save/reload. Verify registration separately from mathematical gradients.",
+          "Use the existing CE operation/execution/differential/update contracts. Extend only what the chosen trainable route needs; no CT native kernel duplicate, GH optimizer, full tensor framework or forced toolchain upgrade. Publish an installed producer and exact tested capability receipt."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "The existing adapter explicitly mutates in backward and returns no native-parameter Torch gradients. Treat that as a known bounded gap, not permission to discard its tests.",
+        "Choose the smallest safe parameter update integration: stock Torch math is preferred, but native ownership/readiness must remain correct. Make any synchronization/packing cost explicit.",
+        "Begin obvious integration work immediately; do not wait for biological data or a completed GH model. CPU/straightforward references are allowed; final claimed CUDA route needs real GPU tests."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/TORCH_BRIDGE.md",
+        "planning/learning-v2/SOURCE_REVIEW.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "CE-ML2-BIO",
+      "parent_id": "CE-ML2-0000",
+      "kind": "task",
+      "title": "Realize and assess one biology-purpose learning construction",
+      "objective": "Turn the scientifically selected structured computation into a reusable CE/CT facility or a justified composition of existing facilities, with exact semantics and complete-cost evidence.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "components/CelleraTorch",
+          "include/Cellerator/compute",
+          "include/Cellerator/execution",
+          "include/Cellerator/parameters.hh",
+          "include/Cellerator/interop",
+          "src/compute",
+          "src/execution",
+          "src/interop",
+          "cmake",
+          "CMakeLists.txt",
+          "tests",
+          "bench",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "README.md",
+          "scope.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive",
+          "docs/relation_update_spine_v1",
+          "docs/language",
+          "include/Cellerator/compiler",
+          "src/compiler",
+          "library",
+          "stdlib"
+        ],
+        "forbidden_paths": [
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-ML2-TRAIN"
+        }
+      ],
+      "invariants": [
+        "CE-ML2-OWNERSHIP",
+        "CE-ML2-BIOLOGY",
+        "CE-ML2-EVIDENCE",
+        "CE-ML2-IDENTITY",
+        "CE-ML2-PRESERVE",
+        "CE-ML2-LEAN",
+        "CE-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Use the worked BIOLOGICAL_ML design and the GH consumer demand to choose one actual computation. Document its biological modeling assumption separately from the native mathematical identity and hardware realization.",
+          "Preserve typed domains, logical support, ordered/repeated arguments, whole-candidate identity, value/structure separation and legal contribution assembly as applicable. Dynamic zero values are not automatically structural absence or zero derivative support.",
+          "Try an exact composition of existing CE operations with Torch components first. Add a native operator, fusion or compiler lowering only for a demonstrated missing capability or credible measured benefit; a layer is not synonymous with a new CUDA kernel.",
+          "Test forward and selected parameter/input/activity derivatives against the same-model reference, including cases that defeat the claimed structural advantage. Benchmark preparation plus forward/backward/update, packing, transfers and memory, not only one favorable kernel.",
+          "Expose reusable framework wrappers through CT and keep native math/compiler semantics in CE. Native C++ and .cell/compiler routes must not acquire conflicting meanings; full source-language integration is not required unless selected.",
+          "Return implemented, validated, no_change_required or evaluated_not_promoted with evidence. A non-promoted optimization retains a correct reusable path and honest measurements; it must not become an excuse to substitute unrelated generic work."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required",
+          "evaluated_not_promoted"
+        ]
+      },
+      "delegated_choices": [
+        "The default candidate is context-modulated shared support; change it when the scientific model or measured workload justifies another candidate. Do not implement the whole shortlist.",
+        "Cellerator compiler/std-library implementation is legitimate when advantageous; do not build a new GH IR or demand complete compiler modernization.",
+        "This outcome can be a composition, reuse and rejection of needless fusion. New native kernels are not a completion quota."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/BIOLOGICAL_ML.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    }
+  ],
+  "runs": [
+    {
+      "id": "CE-ML2-RUN-V1",
+      "root_task_id": "CE-ML2-0000",
+      "charter": {
+        "objective": "Deliver biology-purpose scientific learning through GlassHelix, Torch/CelleraTorch and Cellerator without duplicating an ML runtime.",
+        "desired_end_state": "One useful fitted/conditioned scientific consumer, a real composable CT/CE training path, and one carefully reasoned structured-learning construction with honest qualification.",
+        "boundaries": [
+          "GlassHelix owns scientific models, evidence and inference meaning; Torch supplies ordinary ML. CelleraTorch owns framework integration; native Cellerator owns reusable biological math, differentiation, parameter/value contracts, geometry, planning and compiler/runtime. No parallel GH ML runtime or CT kernel home.",
+          "Preserve successful NF1A, compiler, relation, geometry and CelleraTorch work and separate Todo authorities. No retirement, runtime replacement, old-plan reapply, unrelated cleanup, preprint edits or Ampere-epic activation is authorized.",
+          "Use coarse outcomes and evidence-selected alternatives. Reuse ordinary Torch and existing Cellerator compositions before new kernels. Easy work may proceed immediately. A costly design needs an explicit rationale, not a universal framework or mandatory survey."
+        ],
+        "delegated_judgment": "Main thread owns consequential design and cross-project acceptance. Use one writable implementer lane per authority and bounded children by default. Routine coding may be quick; do not turn the deeper design into repeated approval ceremonies.",
+        "references": [
+          "planning/learning-v2/DESIGN.md",
+          "planning/learning-v2/BIOLOGICAL_ML.md",
+          "planning/learning-v2/CROSS_PROJECT.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "CE-ML2-L-EXEC",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "CE-ML2-TRAIN",
+            "CE-ML2-BIO",
+            "CE-ML2-0000"
+          ],
+          "motivation": "One writable main lane avoids an idle coordinator. Bounded delegates can handle independent files; genuine new lanes require an authorized plan amendment.",
+          "references": [
+            "planning/learning-v2/START_CONTROLLER.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

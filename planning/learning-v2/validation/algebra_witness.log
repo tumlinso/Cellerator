@@ -1,0 +1,26 @@
+test_analytic_vjp (__main__.AlgebraTests.test_analytic_vjp) ... ok
+test_domain_permutation_requires_corresponding_index_remap (__main__.AlgebraTests.test_domain_permutation_requires_corresponding_index_remap) ... ok
+test_duplicate_edge_parameters_remain_distinct (__main__.AlgebraTests.test_duplicate_edge_parameters_remain_distinct) ... ok
+test_finite_difference_gradcheck (__main__.AlgebraTests.test_finite_difference_gradcheck) ... ok
+test_forward_three_realizations (__main__.AlgebraTests.test_forward_three_realizations) ... ok
+test_general_context_edge_changes_not_always_gate_factorizable (__main__.AlgebraTests.test_general_context_edge_changes_not_always_gate_factorizable) ... ok
+test_physical_edge_permutation_preserves_identity (__main__.AlgebraTests.test_physical_edge_permutation_preserves_identity) ... ok
+test_repeated_shared_parameter_accumulates_without_mutation (__main__.AlgebraTests.test_repeated_shared_parameter_accumulates_without_mutation) ... ok
+test_zero_activity_can_have_nonzero_gradient (__main__.AlgebraTests.test_zero_activity_can_have_nonzero_gradient) ... ok
+test_zero_weight_can_have_nonzero_gradient (__main__.AlgebraTests.test_zero_weight_can_have_nonzero_gradient) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.345s
+
+OK
+{
+  "ok": true,
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "torch_version": "2.10.0+cpu",
+  "device": "cpu",
+  "dtype": "float64",
+  "scope": "Original mathematical reference only; no Cellerator/CelleraTorch/native/GPU or biological validation.",
+  "assumptions": "Finite real-valued inputs, sum assembly, distinct logical edge parameters; no numerical zero-pruning."
+}

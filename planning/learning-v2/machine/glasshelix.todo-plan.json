@@ -1,0 +1,576 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "GlassHelix"
+  },
+  "invariants": [
+    {
+      "id": "GH-ML2-OWNERSHIP",
+      "severity": "error",
+      "rule": "GlassHelix owns scientific models, evidence and inference meaning; Torch supplies ordinary ML. CelleraTorch owns framework integration; native Cellerator owns reusable biological math, differentiation, parameter/value contracts, geometry, planning and compiler/runtime. No parallel GH ML runtime or CT kernel home."
+    },
+    {
+      "id": "GH-ML2-BIOLOGY",
+      "severity": "error",
+      "rule": "A biology-purpose learning operation needs an explicit model assumption, semantic contract, exact reference and identified computational advantage to test. Biological labels or a generic ML kernel alone do not establish this. Model restrictions are hypotheses, not truths or hardware requirements."
+    },
+    {
+      "id": "GH-ML2-EVIDENCE",
+      "severity": "error",
+      "rule": "Preserve actual measurement relationships and allowed information. Population snapshots and sibling cells are not individual trajectories; nominal common forcing is not identical intracellular input. No held-out ATAC, future targets or target-derived preprocessing in unauthorized inference."
+    },
+    {
+      "id": "GH-ML2-IDENTITY",
+      "severity": "error",
+      "rule": "Keep biological/structure identity independent of physical layout and encoding. Preserve ordered and repeated arguments, actual saved-primal generations, lawful contribution assembly and canonical parameter ownership. Never hide mutation inside the new composable backward."
+    },
+    {
+      "id": "GH-ML2-PRESERVE",
+      "severity": "error",
+      "rule": "Preserve successful NF1A, compiler, relation, geometry and CelleraTorch work and separate Todo authorities. No retirement, runtime replacement, old-plan reapply, unrelated cleanup, preprint edits or Ampere-epic activation is authorized."
+    },
+    {
+      "id": "GH-ML2-LEAN",
+      "severity": "error",
+      "rule": "Use coarse outcomes and evidence-selected alternatives. Reuse ordinary Torch and existing Cellerator compositions before new kernels. Easy work may proceed immediately. A costly design needs an explicit rationale, not a universal framework or mandatory survey."
+    },
+    {
+      "id": "GH-ML2-HONEST",
+      "severity": "error",
+      "rule": "Separate engineering correctness, scientific adequacy, numerical policy and performance. Searched candidates are not an exhaustive compatible set; no fabricated biology, derivative support, compiler coverage or speedup."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "GH-ML2-0000",
+      "kind": "epic",
+      "title": "GlassHelix ML2 integration",
+      "objective": "Closure-only aggregate for the verified local outcomes, not a coordinator seat or prerequisite of children.",
+      "priority": 0,
+      "parallel_policy": "serial",
+      "scope": {
+        "read_paths": [
+          "planning/learning-v2",
+          "docs/learning"
+        ],
+        "exclusive_paths": []
+      },
+      "completion_contract": {
+        "required": [
+          "All local outcomes have executed acceptance and selected-branch evidence. Close last; preserve separate engineering, biological and performance claims."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated"
+        ]
+      },
+      "references": [
+        "planning/learning-v2/START_CONTROLLER.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ]
+    },
+    {
+      "id": "GH-ML2-DESIGN",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Choose and make executable one biology-purpose learning formulation",
+      "objective": "Turn the supplied design study into one small scientific model/reference and an explicit GH/CT/CE demand. This is deliberation at the hard boundary, not a new universal ML architecture.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "docs/learning",
+          "planning/learning-v2",
+          "experiments/celltag_reprogramming"
+        ],
+        "read_paths": [
+          "python/glasshelix",
+          "include/GlassHelix",
+          "src",
+          "tests",
+          "README.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "State the question, allowed observations, model level, latent/state/forcing roles, principal non-identifiabilities and the chosen primary experiment arm. A conditional choice may remain provisional until the data coverage audit.",
+          "Use BIOLOGICAL_ML.md to select/refine one justified learning construction or reject it in favor of a better-supported one. Record the biology assumption, exact expression, trainable unknowns, derivative/contribution meaning, exploitable structure and a counterexample/control. No new kernel is required merely to finish design.",
+          "Provide a small executable Torch mathematical reference or reuse an existing equivalent. Compare the same model under straightforward and structure-preserving computation; do not confuse changing the model with accelerating it.",
+          "Publish one concise consumer demand and decision record separating ordinary Torch, CT exposure/lifecycle, CE reusable math and optional compiler work. Ordinary wiring and data work need not await a universal design review."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "The worked shared-support/activity candidate is preferred for low initial cost, not compulsory. A measured scientific reason may select n-ary or another formulation.",
+        "The supplied algebra witness saves derivation work; inspect its limits and adapt it rather than rerunning an open-ended literature survey.",
+        "A few pages and executable evidence can settle this outcome. Do not manufacture unresolved questions to delay obvious implementation."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/BIOLOGICAL_ML.md",
+        "planning/learning-v2/EXPERIMENT.md",
+        "planning/learning-v2/references/shared_support_witness.py"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "GH-ML2-DATA",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Make the independent experiment evidence usable",
+      "objective": "Build the CellTag experiment adapter/client boundary and audit the actual cohort without inventing trajectories or paired modalities.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/celltag_reprogramming",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "python/glasshelix",
+          "include/GlassHelix",
+          "tests",
+          "README.md",
+          "AGENTS.md"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Construct clone-by-original-time-by-modality-by-replicate coverage and deterministic source-ID joins for available inputs; retain missingness, QC decisions and the original day labels.",
+          "Default to an independently packaged experiments/celltag_reprogramming consumer. Core GH must not import its dataset constants, preprocessing recipe, labels or plots. Reuse existing data tools rather than building BioPrep or CellShard replacements.",
+          "Freeze authorized features/splits and document how clone metadata was produced. Exclude the separate Zfp281 perturbation arms from the nominal-common-forcing cohort unless declared as a separate later test.",
+          "Obtain bounded real processed inputs when feasible. If indispensable inputs cannot be obtained, deliver tested format fixtures plus an exact missing-input manifest and real-run configuration; biology remains not_run, not a synthetic success."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "Choose API spelling, concrete implementation, test sequence and bounded children. Create extra durable work only for a real scope, ownership or risk boundary."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/EXPERIMENT.md",
+        "planning/learning-v2/SOURCES.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "GH-ML2-REPAIR",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Repair the retained inference diagnostics",
+      "objective": "Recheck and repair the live nullspace extraction and candidate log-weight defects without changing GH scientific ontology.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix",
+          "bindings",
+          "include/GlassHelix",
+          "src",
+          "tests",
+          "cmake",
+          "CMakeLists.txt",
+          "pyproject.toml",
+          "setup.py",
+          "setup.cfg",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive",
+          "planning/NF1A_NUMERICAL_POLICY_CLARIFICATION.md"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Test the actual native rank/nullspace code on nontrivial rectangular matrices, multiple null directions and documented scaling; fix column-major VT row extraction if still present.",
+          "Preserve authoritative log weights in the existing probabilistic candidate strategy; finite evidence underflow must not become permanent pruning. Test explicit zero prior separately and same conditionally independent evidence in different orders/batches.",
+          "Run affected native regressions. These repairs do not make all future uncertainty probabilistic, and they are not a prerequisite for unrelated Torch/data prototyping."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "no_change_required"
+        ]
+      },
+      "delegated_choices": [
+        "Choose API spelling, concrete implementation, test sequence and bounded children. Create extra durable work only for a real scope, ownership or risk boundary."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/SOURCE_REVIEW.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "GH-ML2-LEARN",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Express scientific inference over Torch and CelleraTorch",
+      "objective": "Implement the smallest reusable GH evidence/hypothesis/conditioning/result layer and one fitted scientific model using ordinary Torch plus the qualified CT/CE path.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix",
+          "bindings",
+          "include/GlassHelix",
+          "src",
+          "tests",
+          "cmake",
+          "CMakeLists.txt",
+          "pyproject.toml",
+          "setup.py",
+          "setup.cfg",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive",
+          "planning/NF1A_NUMERICAL_POLICY_CLARIFICATION.md"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-ML2-DESIGN"
+        }
+      ],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Fit genuinely unknown shared law quantities and local hidden/initial quantities. Reuse Torch modules, parameter registration, autograd, optimizers and state dictionaries; GH adds scientific roles, evidence permissions, hypotheses, conditioning and interpretation, not a parallel ML engine.",
+          "Separate global fitting, retrospective reconstruction and prospective held-out conditioning. Freeze global quantities for conditioning, prohibit target access and preserve unresolved forcing/state and whole alternative explanations.",
+          "Connect at least one fitted component to the existing NF1A typed system/evolution/interrogation boundary, comparing the same frozen values and declared observable or selected response. Do not translate arbitrary Torch models into a new GH IR or force every model to be Markovian.",
+          "Use the CE-ML2-TRAIN producer path as an actual composed trainable operation; a pure-Torch prototype can proceed while it is developed but is not the final integrated-substrate acceptance. Capability flags, not mere class names, control supported responses.",
+          "Save underlying model state through its actual owner plus a GH scientific manifest. Reload in a fresh process with stable logical identity and reproduce predictions; do not serialize pointers, streams or stale prepared caches."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "Keep evidence views, families, problems, strategies and explanations conceptually separable without mandating five class hierarchies.",
+        "Use a small horizon model first where adequate; a neural component, memory model or mechanistic component can be chosen explicitly.",
+        "Use native GH bindings only for genuinely GH scientific facilities; they must not wrap CE generic ML a second time."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/CROSS_PROJECT.md",
+        "planning/learning-v2/EXPERIMENT.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "GH-ML2-PILOT",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Exercise the first scientific consumer",
+      "objective": "Run one supported CellTag protocol and appropriate controls through the independent experiment package, evaluating the selected biology-purpose computation without requiring a scientific victory.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "experiments/celltag_reprogramming",
+          "docs/learning",
+          "planning/learning-v2"
+        ],
+        "read_paths": [
+          "python/glasshelix",
+          "include/GlassHelix",
+          "tests",
+          "README.md",
+          "AGENTS.md"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-ML2-DATA"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-ML2-LEARN"
+        }
+      ],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Implement one coverage-supported primary arm with explicit evidence cutoff: blind population law, retrospective early-state reconstruction, or prospective family history. Lineage may be inference evidence in the latter arms but cannot simultaneously be called wholly withheld.",
+          "Compare snapshot-only and same-authorized-information non-dynamical controls as applicable. Preserve mixed clones, uncertainty and the distinction between sampled abundance and fate/transition probability.",
+          "Evaluate a CT/CE biology-aware realization against the same model in straightforward Torch; record correctness, full-iteration cost and memory. Use CE-ML2-BIO evidence; lack of speedup permits non-promotion, not deletion of unfavorable evidence.",
+          "Use withheld ATAC only for the declared grounding/validation role and a separately fitted probe where required. Report molecular correlation separately from identified mechanism.",
+          "Run a bounded real feasibility pilot when verified data permits; otherwise run explicitly synthetic format fixtures and document the exact biological blocker. No model-performance win, unique hidden state or complete paper result is required."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "Choose API spelling, concrete implementation, test sequence and bounded children. Create extra durable work only for a real scope, ownership or risk boundary."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/EXPERIMENT.md",
+        "planning/learning-v2/BIOLOGICAL_ML.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    },
+    {
+      "id": "GH-ML2-ACCEPT",
+      "parent_id": "GH-ML2-0000",
+      "kind": "task",
+      "title": "Qualify the composed toolkit and publish the handoff",
+      "objective": "Accept the installed scientific client, selected CT/CE implementation, native-foundation connection and evidence boundaries as one useful slice.",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "python/glasshelix",
+          "bindings",
+          "include/GlassHelix",
+          "src",
+          "tests",
+          "cmake",
+          "CMakeLists.txt",
+          "pyproject.toml",
+          "setup.py",
+          "setup.cfg",
+          "docs/learning",
+          "planning/learning-v2",
+          "experiments/celltag_reprogramming"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "docs/nf1_adaptive",
+          "planning/NF1A_NUMERICAL_POLICY_CLARIFICATION.md"
+        ],
+        "forbidden_paths": [
+          "preprint",
+          ".todo-orchestrator",
+          "todos",
+          "todos.md",
+          "todo-status.md"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "GH-ML2-REPAIR"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-ML2-DESIGN"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-ML2-DATA"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-ML2-LEARN"
+        },
+        {
+          "type": "task",
+          "task_id": "GH-ML2-PILOT"
+        }
+      ],
+      "invariants": [
+        "GH-ML2-OWNERSHIP",
+        "GH-ML2-BIOLOGY",
+        "GH-ML2-EVIDENCE",
+        "GH-ML2-IDENTITY",
+        "GH-ML2-PRESERVE",
+        "GH-ML2-LEAN",
+        "GH-ML2-HONEST"
+      ],
+      "completion_contract": {
+        "required": [
+          "Run real integrated model/conditioning/serialization tests plus both repaired native diagnostics against the final source pair. Reuse producer tests rather than rerunning every historical suite.",
+          "Build/import the external client against installed or explicitly pinned developmental public packages; no CE private source inclusion or new GH numerical runtime.",
+          "Verify CE-ML2-TRAIN and the selected CE-ML2-BIO disposition with exact source/build/test receipts and actual installed-consumer evidence. Native changes may be unnecessary; composable integration is not optional.",
+          "Report supported dtypes/widths/derivative actions, complete fitting costs and explicit limits. CUDA claims require actual authorized GPU qualification; package lint or CPU reference tests cannot substitute.",
+          "Give a minimal invocation, reusable API outline, selected assumptions, next genuine gaps, and separate toolkit/client/biological-run status. Close the aggregate last; do not edit the preprint or old plans."
+        ]
+      },
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated"
+        ]
+      },
+      "delegated_choices": [
+        "Choose API spelling, concrete implementation, test sequence and bounded children. Create extra durable work only for a real scope, ownership or risk boundary."
+      ],
+      "references": [
+        "planning/learning-v2/DESIGN.md",
+        "planning/learning-v2/ACCEPTANCE.md",
+        "planning/learning-v2/CROSS_PROJECT.md"
+      ],
+      "next_action": "Use the outcome brief and fetch its deeper references only as needed. Bind actual executable acceptance gates once commands exist; finish_task runs them. No inspect/build/retry microtasks.",
+      "notes": "Same-repository ordinary decisions stay with this owner. A task label does not grant cross-authority writes. Source drift can justify reusing an already-correct route with executed evidence."
+    }
+  ],
+  "runs": [
+    {
+      "id": "GH-ML2-RUN-V1",
+      "root_task_id": "GH-ML2-0000",
+      "charter": {
+        "objective": "Deliver biology-purpose scientific learning through GlassHelix, Torch/CelleraTorch and Cellerator without duplicating an ML runtime.",
+        "desired_end_state": "One useful fitted/conditioned scientific consumer, a real composable CT/CE training path, and one carefully reasoned structured-learning construction with honest qualification.",
+        "boundaries": [
+          "GlassHelix owns scientific models, evidence and inference meaning; Torch supplies ordinary ML. CelleraTorch owns framework integration; native Cellerator owns reusable biological math, differentiation, parameter/value contracts, geometry, planning and compiler/runtime. No parallel GH ML runtime or CT kernel home.",
+          "Preserve successful NF1A, compiler, relation, geometry and CelleraTorch work and separate Todo authorities. No retirement, runtime replacement, old-plan reapply, unrelated cleanup, preprint edits or Ampere-epic activation is authorized.",
+          "Use coarse outcomes and evidence-selected alternatives. Reuse ordinary Torch and existing Cellerator compositions before new kernels. Easy work may proceed immediately. A costly design needs an explicit rationale, not a universal framework or mandatory survey."
+        ],
+        "delegated_judgment": "Main thread owns consequential design and cross-project acceptance. Use one writable implementer lane per authority and bounded children by default. Routine coding may be quick; do not turn the deeper design into repeated approval ceremonies.",
+        "references": [
+          "planning/learning-v2/DESIGN.md",
+          "planning/learning-v2/BIOLOGICAL_ML.md",
+          "planning/learning-v2/CROSS_PROJECT.md"
+        ]
+      },
+      "lanes": [
+        {
+          "id": "GH-ML2-L-EXEC",
+          "role": "implementer",
+          "workspace": {
+            "mode": "exclusive"
+          },
+          "tasks": [
+            "GH-ML2-DESIGN",
+            "GH-ML2-DATA",
+            "GH-ML2-REPAIR",
+            "GH-ML2-LEARN",
+            "GH-ML2-PILOT",
+            "GH-ML2-ACCEPT",
+            "GH-ML2-0000"
+          ],
+          "motivation": "One writable main lane avoids an idle coordinator. Bounded delegates can handle independent files; genuine new lanes require an authorized plan amendment.",
+          "references": [
+            "planning/learning-v2/START_CONTROLLER.md"
+          ]
+        }
+      ]
+    }
+  ]
+}

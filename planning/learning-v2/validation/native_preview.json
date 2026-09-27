@@ -1,0 +1,59 @@
+{
+  "record_type": "Selected exact fields from non-mutating Project Control plan_preview responses; limitations are explicit.",
+  "date": "2026-09-27",
+  "plans_applied": false,
+  "plans": {
+    "glasshelix": {
+      "target": "glasshelix",
+      "plan_digest": "4076bb5563bd36060aab06ba633f8641a4bdd2ce4b450aa47f362ee82d402444",
+      "scope": "Actual target validation and diff",
+      "valid": true,
+      "observed_at": "2026-09-27T12:14:46Z",
+      "base_revision": 237,
+      "base_commits": {
+        "glasshelix": "a7d330b46b76128b3c8dba069a3d8367d0d1258f"
+      },
+      "would_add": [
+        "GH-ML2-0000",
+        "GH-ML2-ACCEPT",
+        "GH-ML2-DATA",
+        "GH-ML2-DESIGN",
+        "GH-ML2-LEARN",
+        "GH-ML2-PILOT",
+        "GH-ML2-REPAIR"
+      ],
+      "would_modify": [],
+      "dependency_errors": [],
+      "scope_conflicts": [],
+      "interface_errors": [],
+      "warnings": [],
+      "mutation_guard": "unchanged"
+    },
+    "cellerator": {
+      "target": "cellerator",
+      "plan_digest": "28bd5d39a4d3a03a07153d1d3272283cdcb600fb67adfa84b4a6d393f9bac897",
+      "scope": "Shared canonical schema validated; actual target preview unavailable",
+      "valid_schema": true,
+      "valid_target": null,
+      "target_attempt": {
+        "observed_at": "2026-09-27T12:13:30Z",
+        "status": "internal_error",
+        "warnings": [
+          "bounded_read_failed"
+        ]
+      },
+      "shared_validator_check": {
+        "validation_workspace": "glasshelix",
+        "observed_at": "2026-09-27T12:15:41Z",
+        "valid": true,
+        "base_revision": 237,
+        "plan_digest": "28bd5d39a4d3a03a07153d1d3272283cdcb600fb67adfa84b4a6d393f9bac897",
+        "mutation_guard": "unchanged",
+        "dependency_errors": [],
+        "interface_errors": [],
+        "scope": "Payload/schema only. Not a Cellerator conflict or authority check. Never apply the CE payload to GH."
+      },
+      "required_before_apply": "A successful fresh native validation/diff against the actual cellerator authority."
+    }
+  }
+}
