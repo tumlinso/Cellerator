@@ -1,6 +1,63 @@
 {
   "project": "cellerator",
+  "decision": "no_move",
+  "observed_at": "2026-09-29",
+  "source_head": "e4135674446ab9e32717f8b5ade04c1c3648326a",
   "approved_moves": [],
   "deletions": [],
-  "policy": "One coherent mechanical source cluster maximum by default. Use migration-map.md to choose; no automatic moves are authorized by a suggested path."
+  "retained_clusters": [
+    {
+      "paths": [
+        "src/compiler",
+        "include/Cellerator/compiler",
+        "cmake/compiler"
+      ],
+      "reason": "These already separate implementation, public compiler API, and CMake integration. Moving them would add path churn without improving reader or developer navigation; the exact current entry paths are bound below."
+    },
+    {
+      "paths": [
+        "src/geometry",
+        "src/execution"
+      ],
+      "reason": "Geometry preparation and execution are useful distinct implementation areas. CE-ML2-TRAIN remains in_progress and owns CMake, src/execution, tests, and CelleraTorch interfaces; preserving these paths keeps that scheduled work continuable."
+    }
+  ],
+  "continuity_check": {
+    "task": "CE-ML2-TRAIN",
+    "observed_state": "in_progress; execution idle",
+    "authority_snapshot": "todo-status.md",
+    "result": "no paths moved or renamed"
+  },
+  "bound_paths": {
+    "P_COMPILER": "src/compiler/CMakeLists.txt",
+    "P_API": "include/Cellerator/compiler/api/compiler.hpp",
+    "P_GEOMETRY": "src/geometry",
+    "P_EXECUTION": "src/execution",
+    "P_UPDATE_EXAMPLE": "examples/relation_update_spine_v1/regulatory_learning.cc",
+    "P_ADAPTER": "components/CelleraTorch",
+    "P_CORE_CMAKE": "CMakeLists.txt",
+    "P_GEO_RECORD": "bench/ce_geo/evidence/sm70_forward_disposition.json",
+    "P_LEGACY": "compat",
+    "README": "README.md",
+    "agent_contract": "AGENTS.md",
+    "contributor_guide": "CONTRIBUTING.md",
+    "design": "docs/design/overview.md",
+    "source_map": "docs/development/source-map.md",
+    "developer_guide": "docs/development/start.md",
+    "current_status": "docs/status/current.md",
+    "results_index": "docs/results/index.md",
+    "archive_index": "docs/archive/README.md",
+    "host_build_config": "cmake/compiler/CelleratorHostSdk.cmake",
+    "cuda_acceptance_targets": "tests/CMakeLists.txt"
+  },
+  "policy": "No source move was useful for this outcome. Retain current implementation boundaries, do not delete or rename source, and revisit only under a separately scoped task with affected consumers and tests identified.",
+  "bound_build_targets": {
+    "host": [
+      "cellerator",
+      "celleratord"
+    ],
+    "cuda_acceptance": [
+      "abiRuntimeTest"
+    ]
+  }
 }

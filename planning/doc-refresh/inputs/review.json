@@ -1,18 +1,14 @@
 {
   "project": "cellerator",
-  "qualified_head": null,
-  "reviewer": null,
-  "paths_finalized": false,
-  "status_reconciled": false,
-  "build_instructions_verified": false,
-  "managed_workflow_preserved": false,
-  "source_moves_reviewed": false,
-  "rendered_pages_reviewed": false,
-  "evidence_selection_reviewed": false,
-  "pending": [
-    "Reinspect after intervening source work.",
-    "Finalize bindings after moves.",
-    "Verify selected historical/raw evidence or record a bounded fresh replay."
-  ],
-  "notes": "Flags record actual implementing-agent review, not user reconfirmation of already-settled intent."
+  "qualified_head": "e4135674446ab9e32717f8b5ade04c1c3648326a",
+  "reviewer": "Codex CE-DOCS-90 final local review",
+  "paths_finalized": true,
+  "status_reconciled": true,
+  "build_instructions_verified": true,
+  "managed_workflow_preserved": true,
+  "source_moves_reviewed": true,
+  "rendered_pages_reviewed": true,
+  "evidence_selection_reviewed": true,
+  "pending": [],
+  "notes": "Final hierarchy and selected result pages reviewed from final staging; README and result page rendered to standalone HTML, result image markup is responsive (img-fluid), and chart inspected in color and grayscale, including a 360px-width render. Text and links checked by final local package checker. No browser viewport screenshot tool is installed, so narrow rendering was reviewed through responsive HTML/image behavior and narrow text-flow inspection rather than a browser screenshot. Verified host-only configure/build plus celleratord and cellerator C++ passthrough smoke (receipts in planning/doc-refresh/evidence); no CUDA/GPU run. CE-ML2-TRAIN task snapshot raw status in_progress, execution blocked_scope, no task claim during the docs scope claim; root also reports the claim-aware CE-ML2-RUN-V1 active, its lane ready and TRAIN/BIO/0000 queued; docs task made no source moves or ML2 changes. Exact-cover remains historical aggregate evidence only; normalization omitted."
 }

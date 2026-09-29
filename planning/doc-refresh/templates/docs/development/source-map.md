@@ -12,4 +12,4 @@ Read a semantic contract, its realization and one consumer before exploring the 
 | Where is the framework boundary? | [CelleraTorch](../../{{P_ADAPTER}}) | Explicit supported views/gradients; not a duplicate numerical owner. |
 | Where do old interfaces live? | [compatibility material](../../{{P_LEGACY}}) | Useful evidence and remaining callers, not the default architecture. |
 
-The [root build](../../{{P_CORE_CMAKE}}) is authoritative for actual targets. Historical task-derived filenames need not dictate future naming, but this cleanup does not rename the entire compiler. A small API/driver cluster may be renamed with all consumers repaired; record that map before changing these links.
+For the detailed design and migration record, continue to [Architecture](../architecture.qmd), [Current Implementation history](../current_implementation.qmd), and [Migration Roadmap](../migration_roadmap.qmd). The [root build](../../{{P_CORE_CMAKE}}) is authoritative for actual targets. These are the current source entry paths. No source-path move was justified in this outcome; the compiler, geometry, and execution groupings remain in place.

@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7436`
+Project revision: `7457`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1468,11 +1468,11 @@ Project revision: `7436`
 - `cellpack-packing-plan-evaluator` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve completed evaluator/referee evidence.
 - `sequence-bits-dna2` | kind: validation_task | status: done | parent: CE-ARCH-00 | objective: Preserve historical exact-sequence evidence now owned by Baseplane.
 - `CE-ARCH-00` | kind: epic | status: done | parent: - | objective: Coordinate migration from completed CP-BP v1 plus experimental CP-Math into a domain-aware biological execution core while preserving validated behavior and the CellShard storage boundary.
-- `CE-DOCS-000` | kind: epic | status: planned | parent: - | objective: Apply the prewritten public/agent/developer/status hierarchy, perform only useful small moves, and qualify selected result displays. Part of DOCS-REFRESH-2026-09; authority remains local.
-- `CE-DOCS-10` | kind: task | status: planned | parent: CE-DOCS-000 | objective: Refresh source/claims after prior packages; classify important documents; stage the already-written README, design, status, source-map and agent pages without rederiving intent.
-- `CE-DOCS-20` | kind: task | status: planned | parent: CE-DOCS-000 | objective: Move at most one useful mechanical source cluster by default, or keep source as-is; repair living docs/build/import/export references and preserve all semantic/evidence boundaries.
-- `CE-DOCS-30` | kind: task | status: planned | parent: CE-DOCS-000 | objective: Verify existing result records, export portable raw evidence, and refresh only bounded selected cases when justified. Choose at most two public studies. Optional GH capability probe only; no broad benchmark or model work.
-- `CE-DOCS-90` | kind: task | status: planned | parent: CE-DOCS-000 | objective: Apply reviewed final staged docs, validate local links/status/evidence and affected builds/tests, inspect rendered pages/figures, and write one authentic local handoff receipt.
+- `CE-DOCS-000` | kind: epic | status: done | parent: - | objective: Apply the prewritten public/agent/developer/status hierarchy, perform only useful small moves, and qualify selected result displays. Part of DOCS-REFRESH-2026-09; authority remains local.
+- `CE-DOCS-10` | kind: task | status: done | parent: CE-DOCS-000 | objective: Refresh source/claims after prior packages; classify important documents; stage the already-written README, design, status, source-map and agent pages without rederiving intent.
+- `CE-DOCS-20` | kind: task | status: done | parent: CE-DOCS-000 | objective: Move at most one useful mechanical source cluster by default, or keep source as-is; repair living docs/build/import/export references and preserve all semantic/evidence boundaries.
+- `CE-DOCS-30` | kind: task | status: done | parent: CE-DOCS-000 | objective: Verify existing result records, export portable raw evidence, and refresh only bounded selected cases when justified. Choose at most two public studies. Optional GH capability probe only; no broad benchmark or model work.
+- `CE-DOCS-90` | kind: task | status: done | parent: CE-DOCS-000 | objective: Apply reviewed final staged docs, validate local links/status/evidence and affected builds/tests, inspect rendered pages/figures, and write one authentic local handoff receipt.
 - `CE-JBC-B01` | kind: task | status: done | parent: - | objective: Revalidate live Cellerator, submodule, and Todo cursors. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B02` | kind: task | status: done | parent: - | objective: Produce the source-backed Cellerator transition map. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B03` | kind: task | status: done | parent: - | objective: Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.

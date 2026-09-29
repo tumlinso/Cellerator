@@ -1,0 +1,12 @@
+Host-only tools/use smoke; no CUDA or GPU execution.
+$ ./build-docs-host/celleratord
+celleratord architecture v1: libCellerator snapshots + upstream clangd
+returncode=0
+
+$ ./build-docs-host/cellerator --driver c++ planning/doc-refresh/evidence/host-smoke.cc -o planning/doc-refresh/evidence/host-smoke
+returncode=0
+
+$ planning/doc-refresh/evidence/host-smoke
+host SDK passthrough OK
+returncode=0
+

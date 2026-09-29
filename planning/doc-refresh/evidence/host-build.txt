@@ -1,0 +1,33 @@
+Cellerator host-only compiler/SDK validation; no CUDA discovery/build or GPU execution.
+Source HEAD: e4135674446ab9e32717f8b5ade04c1c3648326a
+
+$ cmake -S . -B build-docs-host -DCELLERATOR_ENABLE_CUDA=OFF
+-- Defaulting CUDA compiler to the local HPC SDK nvcc
+-- Defaulting CUDA host compiler to /usr/bin/g++-12 for nvcc compatibility
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/tumlinson/Cellerator/build-docs-host
+
+returncode=0
+
+$ cmake --build build-docs-host --target cellerator celleratord -j 4
+[ 20%] Building CXX object CMakeFiles/libCellerator.dir/src/compiler/driver/deliver_the_driver_passthrough_milestone.cc.o
+[ 40%] Building CXX object CMakeFiles/libCellerator.dir/src/compiler/tooling/freeze_the_celleratord_architecture.cc.o
+[ 60%] Linking CXX static library libCellerator.a
+[ 60%] Built target libCellerator
+[ 80%] Building CXX object CMakeFiles/cellerator.dir/tools/cellerator/deliver_the_driver_passthrough_milestone.cc.o
+[100%] Linking CXX executable cellerator
+[100%] Built target cellerator
+[ 60%] Built target libCellerator
+[ 80%] Building CXX object CMakeFiles/celleratord.dir/tools/celleratord/freeze_the_celleratord_architecture.cc.o
+[100%] Linking CXX executable celleratord
+[100%] Built target celleratord
+
+returncode=0
+

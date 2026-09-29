@@ -2,70 +2,17 @@
 title: "Cellerator"
 ---
 
-Cellerator is a performance-first biological execution system.
+Cellerator is a compiler and execution substrate for biologically structured computation. It explores how recurring relations, support patterns, and useful order can become reusable geometry and executable work while quantitative values change.
 
-Its purpose is to exploit the fact that cellular systems are regular rather than random. Genes co-occur in programs. Regulatory elements share targets. Cell states activate related modules. Sequence predicates are reused across enormous numbers of state evaluations. Sparse biological relations contain structure at warp, CTA, GPU, and node scales.
+The implementation combines a host-first compiler/SDK route with a separately configured CUDA numerical runtime. It includes prepared operations and multiple physical candidates, while the wider language, general training, and adaptive execution goals remain incomplete. The dated [current snapshot](status/current.md) separates implemented, bounded, and future capabilities.
 
-Cellerator compiles that organization into:
+Biological semantics guide which structure may be reusable; measurements decide whether a physical realization is useful. No one sparse format or device path is the universal center. See the short [design overview](design/overview.md), then the detailed architecture and subsystem chapters below.
 
-- biological domain and order identity;
-- reusable semantic execution geometry;
-- one or more physical projections;
-- operation-specific native or vendor kernels;
-- persistent execution order;
-- explicit structure and value lifetimes;
-- graph-wide planning and autotuning.
+## Documentation map
 
-The project is not defined by one sparse format. CSR, SELL, BSR, Blocked-ELL, bitmask-driven tiles, dense fragments, Tensor Core paths, and vendor libraries are candidate physical mechanisms.
-
-## First-class architectural assumption
-
-Baseplane is a subordinate library within the Cellerator conceptual and computational umbrella.
-
-It is a separate repository because sequence-level computation presents a sufficiently distinct engineering problem to justify its own implementation, not because it is intended to form an independent numerical ecosystem.
-
-Baseplane and Cellerator should ultimately interoperate at an extremely low-friction numerical level. The long-term goal is for sequence, regulatory structure, cellular state, expression level, and downstream biological behavior to occupy one coherent computational space rather than being separated by expensive representation boundaries.
-
-"Sequence" and "level" should eventually be interpretable as different structures, axes, or views within one biological execution model.
-
-## The system at a glance
-
-```{mermaid}
-flowchart LR
-    BP[Baseplane sequence primitives] --> ABI[Biological domains and relations]
-    DATA[Cell and regulatory data] --> CP[CellPack / CP-BP geometry compiler]
-    ABI --> CP
-    CP --> GEO[Semantic execution geometry]
-    GEO --> PROJ[Physical projection catalog]
-    PROJ --> MATH[Cellerator core / CP-Math planner]
-    MATH --> KERNELS[Native and vendor kernels]
-    KERNELS --> STATE[Expression and cellular state]
-    STATE --> HIGHER[Models, trajectories, phenotype, behavior]
-    CS[CellShard storage and delivery] --> PROJ
-    PROJ --> CS
-```
-
-## What exists today
-
-The repository already contains a substantial CP-BP v1 implementation:
-
-- sampled structural support;
-- candidate discovery;
-- exact merge-cost scoring;
-- constrained geometry optimization;
-- frozen packing plans;
-- full-data application;
-- compact records;
-- bounded local row ordering;
-- warp tiles;
-- direct `N=1` weighted-row reduction;
-- statistical validation;
-- V100 cost calibration;
-- pointer-free persistence.
-
-It also contains an experimental CP-Math layer with SpMM contracts, backend capabilities, planning, runtime context, CSR and BELL projections, epilogues, and a referee.
-
-The current architecture is not yet the end state. The important missing pieces include universal domain and order identity, structure/value separation, projection plurality, measured end-to-end planning, graph-wide order preservation, training projections, and direct Baseplane integration.
+- [Reader overview](design/overview.md) summarizes the question, intended model, and project boundaries.
+- [Current snapshot](status/current.md) gives the dated implementation boundary.
+- [Results index](results/index.md) lists only studies that pass local evidence review.
 
 ## Documentation map
 

@@ -1,0 +1,31 @@
+{
+  "schema": "CELLERATOR-CE-GEO-HISTORICAL-EVIDENCE-MANIFEST/1",
+  "evidence_state": "verified_historical",
+  "campaign": "CE-GEO-113 sm70-hybrid-forward",
+  "producer_commit": "2fe2db329af1430fb52cf3677bb34be9e97a4216",
+  "gate_id": "CE-GEO-113-BENCH",
+  "gate_evidence_id": "56c4e4e8-7df2-4900-ba5e-3583a28dc4e7",
+  "gate_authority_state": "historical_valid / passed",
+  "gate_last_run_at": "2026-08-30T02:40:37Z",
+  "raw_source_path": "bench/ce_geo/evidence/sm70_forward_complete_cost.jsonl",
+  "raw_source_sha256": "f51964ebb5eccf85fde359105c232ccef071608bef5b3ed42ee176b7177964f7",
+  "disposition_source_path": "bench/ce_geo/evidence/sm70_forward_disposition.json",
+  "disposition_source_sha256": "e09e263a3b82bcbd06f9008a618a5184dd141928af54d1fef67dec54642bada4",
+  "current_document_review_head": "e4135674446ab9e32717f8b5ade04c1c3648326a",
+  "campaign_source_sha256": {
+    "bench/tensor_core/ce_geo/run_hybrid_forward.py": "701cc2387474e6ba5567a1baa0801d00afa428ac7aa362111f5ee075b74cf824",
+    "bench/tensor_core/ce_geo/hybrid_forward.cu": "7c97116305df45c9156e6103413246dc487cdb5edd8d20576ba10875f1d43088",
+    "src/compute/architecture/providers/nvidia/sm70/relation_apply_hybrid.cu": "9fc72bcab38754af4d2dd52f197d22bb36d401d6b3cf6de82169952fc1b4a45d",
+    "src/compute/architecture/providers/nvidia/sm70/relation_apply_n64.cu": "53faa923a23e559fad7eb4658b67b7212f38928476c94ebd508e5073e369445f",
+    "src/compute/architecture/providers/nvidia/sm70/residual.cu": "733f3e6b569f0c60c1542c3ffcb82519bb3cbe59bc5cbca4cf53e692c22cbebf",
+    "src/compute/architecture/providers/nvidia/sm70/value_pack.cu": "db92467d8376f2f9ce116c567e175e9cf500e073f2d279405d1bac0d6828e5ff",
+    "src/compute/projection/mma_residual_builder.cc": "b80cbddd24b66a8864f2244d1d5743ee2c344559898cdded20d77cb83248c8c9",
+    "bench/ce_geo/harness/run.py": "5e536b620c286a75fa474e925a55c69510ba4db290eea8effa3f3d5b88dfa5d8"
+  },
+  "record_shape": {
+    "provenance_records": 1,
+    "aggregate_reuse_records": 2,
+    "individual_repeat_samples_in_file": false
+  },
+  "interpretation": "The JSONL is the original aggregate gate record. Each reuse row reports a median and relative MAD from 11 steady samples; the individual per-sample timing values are not present in this file."
+}

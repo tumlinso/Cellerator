@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # CE-DOCS-90: Validate the human/agent reading paths and publish the local handoff
 
-Task revision: `7436`; current project revision is in `todo-status.md`.
+Task revision: `7455`; current project revision is in `todo-status.md`.
 
 ## Objective
 Apply reviewed final staged docs, validate local links/status/evidence and affected builds/tests, inspect rendered pages/figures, and write one authentic local handoff receipt.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

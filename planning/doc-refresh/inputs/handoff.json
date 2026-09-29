@@ -1,0 +1,151 @@
+{
+  "project": "cellerator",
+  "program_id": "DOCS-REFRESH-2026-09",
+  "status": "completed",
+  "qualified_head": "e4135674446ab9e32717f8b5ade04c1c3648326a",
+  "reviewer": "Codex CE-DOCS-90 final local review",
+  "managed_workflow_preserved": true,
+  "source_moves": [],
+  "commands": [
+    {
+      "argv": [
+        "cmake",
+        "-S",
+        ".",
+        "-B",
+        "build-docs-host",
+        "-DCELLERATOR_ENABLE_CUDA=OFF"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/host-build.txt"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "build-docs-host",
+        "--target",
+        "cellerator",
+        "celleratord",
+        "-j",
+        "4"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/host-build.txt"
+    },
+    {
+      "argv": [
+        "./build-docs-host/celleratord"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/host-smoke.txt"
+    },
+    {
+      "argv": [
+        "./build-docs-host/cellerator",
+        "--driver",
+        "c++",
+        "planning/doc-refresh/evidence/host-smoke.cc",
+        "-o",
+        "planning/doc-refresh/evidence/host-smoke"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/host-smoke.txt"
+    },
+    {
+      "argv": [
+        "planning/doc-refresh/evidence/host-smoke"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/host-smoke.txt"
+    },
+    {
+      "argv": [
+        "quarto",
+        "render",
+        "README.md",
+        "--to",
+        "html",
+        "--output-dir",
+        "planning/doc-refresh/evidence/html"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/quarto-readme.txt"
+    },
+    {
+      "argv": [
+        "quarto",
+        "render",
+        "results/ce-exact-cover.md",
+        "--to",
+        "html"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/quarto-result.txt",
+      "working_directory": "planning/doc-refresh/evidence/html"
+    },
+    {
+      "argv": [
+        "python3",
+        "planning/doc-refresh/tools/check.py",
+        "--local",
+        "--project",
+        "cellerator",
+        "--repo",
+        ".",
+        "--evidence"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/local-evidence-check.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/ce_geo/validate_documentation.py",
+        "--evidence",
+        "bench/ce_geo/evidence"
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/ce-geo-validator.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "planning/doc-refresh/tools/check.py",
+        "--final",
+        "--project",
+        "cellerator",
+        "--repo",
+        "."
+      ],
+      "returncode": 0,
+      "expected_exit_code": 0,
+      "basis": "executed",
+      "evidence_path": "planning/doc-refresh/evidence/final-check.txt"
+    }
+  ],
+  "result_ids": [
+    "ce-exact-cover"
+  ],
+  "reader_walkthrough": true,
+  "pending": [],
+  "notes": "No source files moved or changed. Current host passthrough/tooling route only; this does not qualify complete .cell compilation or CUDA runtime. No GPU benchmark rerun. CE-ML2-TRAIN remained untouched; task snapshot observed 2026-09-29 12:58:59Z at Todo revision 7452 showed raw status in_progress, execution blocked_scope and active_claim null during the docs scope claim; root subsequently reports the claim-aware CE-ML2-RUN-V1 active, lane ready, and TRAIN/BIO/0000 queued. Its gate-binding next action remains intact. Final tree contains other root/package changes and pending local edits; no commit or push performed. README/result prose and a 360px chart render were reviewed; the static chart retains visible labels and hatch differentiation at narrow width. Result is a narrow verified historical exact-cover claim from aggregate gate evidence, not a fresh measurement; individual samples and CUDA/cuSPARSE versions remain unavailable."
+}

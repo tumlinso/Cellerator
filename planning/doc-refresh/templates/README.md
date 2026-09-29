@@ -27,7 +27,7 @@ Biology and hardware are considered together: repeated supports, order and modul
 
 {{README_RESULTS}}
 
-The [results pages](docs/results/index.md) show the workload, costs included, comparison and limitations. A win in one structure/width/reuse regime is not a universal claim; an instructive loss is retained when it changes a design decision.
+The [results index](docs/results/index.md) states which studies have been checked and promoted. Each published study will show its workload, costs, comparison and limitations.
 
 ## Where to start
 

@@ -8,4 +8,4 @@ These pages connect the scientific/computational question to actual evidence. Th
 
 Check the source version, input construction, numerical policy and timed phase before comparing numbers. A prepared device pipeline excludes costs that an end-to-end application still pays. A synthetic workload may establish numerical or systems behavior without validating biology. Historical measurements remain historical even when drawn in a new chart.
 
-The source records and reproduction instructions belong on each study page. Figures are generated from the linked machine-readable inputs; no diagram or plot is a substitute for the underlying measurements. Remaining unsupported goals are listed in the [current snapshot](../status/current.md), not hidden in a benchmark footnote.
+Any promoted study must link its source record and reproduction instructions. Figures are presentation only; they do not replace underlying measurements. Remaining unsupported goals are listed in the [current snapshot](../status/current.md).

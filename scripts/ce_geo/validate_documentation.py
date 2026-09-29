@@ -9,7 +9,21 @@ from pathlib import Path
 
 
 DOCUMENT_REQUIREMENTS = {
-    "README.md": ("CE-GEO Volta implementation status", "22/22"),
+    # Short reader-facing entry pages. They should route users to dated status
+    # and evidence without promoting the pending result summaries themselves.
+    "README.md": ("What exists now", "docs/status/current.md"),
+    "AGENTS.md": ("Project Control workflow", "docs/design/overview.md"),
+    "CONTRIBUTING.md": ("docs/development/start.md", "docs/results/index.md"),
+    "docs/index.md": ("Understand the idea", "See what exists"),
+    "docs/design/overview.md": ("N=64", "regime-specific"),
+    "docs/development/source-map.md": ("src/compiler/CMakeLists.txt", "src/execution"),
+    "docs/development/start.md": ("CELLERATOR_ENABLE_CUDA=OFF", "abiRuntimeTest"),
+    "docs/status/current.md": ("CE-GEO exact-cover result", "CE-ML2-TRAIN remains in progress"),
+    "docs/results/index.md": ("Reading a result", "Check the source version"),
+    "docs/archive/README.md": ("2026-09-06", "migration_roadmap.qmd"),
+
+    # Detailed Quarto/campaign chapters retain their source-linked technical
+    # outcomes; the concise pages above do not replace this evidence spine.
     "scope.md": ("CE-GEO boundary after Volta integration", "planner"),
     "docs/architecture.qmd": ("Integrated CE-GEO realization", "CSG1"),
     "docs/current_implementation.qmd": ("CE-GEO integrated implementation", "N=64"),
@@ -106,7 +120,11 @@ def main() -> int:
     root = Path(__file__).resolve().parents[2]
     validate_documents(root)
     validate_evidence((root / args.evidence).resolve())
-    print("CE-GEO documentation validation passed: 12 documents, 22/22 acceptance, 22/22 sanitizer")
+    print(
+        "CE-GEO documentation validation passed: "
+        f"{len(DOCUMENT_REQUIREMENTS)} documents, "
+        "22/22 acceptance, 22/22 sanitizer"
+    )
     return 0
 
 
