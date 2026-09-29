@@ -1,0 +1,346 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "cellerator"
+  },
+  "invariants": [
+    {
+      "id": "CE-DOCS-SCOPE",
+      "rule": "Documentation-first, at most one coherent mechanical source cluster by default. Preserve numerical/scientific semantics, live ownership, generated authority state and immutable evidence. Final source paths and status must be checked after intervening packages.",
+      "severity": "error"
+    },
+    {
+      "id": "CE-DOCS-EVIDENCE",
+      "rule": "Public results are source-linked and scoped. No invented data, timing-phase substitution, hidden selection of only winning points, or historical summary presented as a new run. Existing GPU resource control remains required.",
+      "severity": "error"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CE-DOCS-000",
+      "kind": "epic",
+      "title": "Cellerator documentation-first cleanup and selected evidence",
+      "objective": "Apply the prewritten public/agent/developer/status hierarchy, perform only useful small moves, and qualify selected result displays. Part of DOCS-REFRESH-2026-09; authority remains local.",
+      "parallel_policy": "serial",
+      "notes": "Read planning/doc-refresh/START_LOCAL.md and shared/TASKS.md. Local authority only; preserve current claims and source."
+    },
+    {
+      "id": "CE-DOCS-10",
+      "parent_id": "CE-DOCS-000",
+      "kind": "task",
+      "title": "Reconcile the current tree and apply the prewritten documentation",
+      "objective": "Refresh source/claims after prior packages; classify important documents; stage the already-written README, design, status, source-map and agent pages without rederiving intent.",
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CONTRIBUTING.md",
+          "docs",
+          "planning/doc-refresh"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CMakeLists.txt",
+          "docs",
+          "planning",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples"
+        ],
+        "forbidden_paths": [
+          "todos.md",
+          "todo-status.md",
+          "todos"
+        ]
+      },
+      "depends_on": [],
+      "notes": "Use the prepared shared/TASKS.md outcome and migration map. Preserve dirty work, managed agent instructions and old evidence. Bound source changes and measurements; final paths are local decisions.",
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "evaluated_not_promoted",
+          "no_change_required"
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-DOCS-10-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/doc-refresh/tools/check.py",
+            "--local",
+            "--project",
+            "cellerator",
+            "--repo",
+            "."
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/doc-refresh",
+            "README.md",
+            "AGENTS.md",
+            "docs"
+          ],
+          "expected_exit_code": 0
+        }
+      ]
+    },
+    {
+      "id": "CE-DOCS-20",
+      "parent_id": "CE-DOCS-000",
+      "kind": "task",
+      "title": "Perform bounded moves and bind final source/build paths",
+      "objective": "Move at most one useful mechanical source cluster by default, or keep source as-is; repair living docs/build/import/export references and preserve all semantic/evidence boundaries.",
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CONTRIBUTING.md",
+          "docs",
+          "planning/doc-refresh",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples",
+          "tools",
+          "scripts",
+          "cmake",
+          "CMakeLists.txt",
+          "scope.md"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CMakeLists.txt",
+          "docs",
+          "planning",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples"
+        ],
+        "forbidden_paths": [
+          "todos.md",
+          "todo-status.md",
+          "todos"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-DOCS-10"
+        }
+      ],
+      "notes": "Use the prepared shared/TASKS.md outcome and migration map. Preserve dirty work, managed agent instructions and old evidence. Bound source changes and measurements; final paths are local decisions.",
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "evaluated_not_promoted",
+          "no_change_required"
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-DOCS-20-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/doc-refresh/tools/check.py",
+            "--local",
+            "--project",
+            "cellerator",
+            "--repo",
+            "."
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/doc-refresh",
+            "README.md",
+            "AGENTS.md",
+            "docs"
+          ],
+          "expected_exit_code": 0
+        }
+      ]
+    },
+    {
+      "id": "CE-DOCS-30",
+      "parent_id": "CE-DOCS-000",
+      "kind": "task",
+      "title": "Qualify and curate the selected result displays",
+      "objective": "Verify existing result records, export portable raw evidence, and refresh only bounded selected cases when justified. Choose at most two public studies. Optional GH capability probe only; no broad benchmark or model work.",
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CONTRIBUTING.md",
+          "docs",
+          "planning/doc-refresh",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples",
+          "tools",
+          "scripts",
+          "cmake",
+          "CMakeLists.txt",
+          "scope.md"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CMakeLists.txt",
+          "docs",
+          "planning",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples"
+        ],
+        "forbidden_paths": [
+          "todos.md",
+          "todo-status.md",
+          "todos"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-DOCS-20"
+        }
+      ],
+      "notes": "Use the prepared shared/TASKS.md outcome and migration map. Preserve dirty work, managed agent instructions and old evidence. Bound source changes and measurements; final paths are local decisions.",
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "evaluated_not_promoted",
+          "no_change_required"
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-DOCS-30-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/doc-refresh/tools/check.py",
+            "--local",
+            "--evidence",
+            "--project",
+            "cellerator",
+            "--repo",
+            "."
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/doc-refresh",
+            "README.md",
+            "AGENTS.md",
+            "docs"
+          ],
+          "expected_exit_code": 0
+        }
+      ]
+    },
+    {
+      "id": "CE-DOCS-90",
+      "parent_id": "CE-DOCS-000",
+      "kind": "task",
+      "title": "Validate the human/agent reading paths and publish the local handoff",
+      "objective": "Apply reviewed final staged docs, validate local links/status/evidence and affected builds/tests, inspect rendered pages/figures, and write one authentic local handoff receipt.",
+      "parallel_policy": "serial",
+      "scope": {
+        "exclusive_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CONTRIBUTING.md",
+          "docs",
+          "planning/doc-refresh",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples",
+          "tools",
+          "scripts",
+          "cmake",
+          "CMakeLists.txt",
+          "scope.md"
+        ],
+        "read_paths": [
+          "README.md",
+          "AGENTS.md",
+          "CMakeLists.txt",
+          "docs",
+          "planning",
+          "include",
+          "src",
+          "tests",
+          "bench",
+          "examples"
+        ],
+        "forbidden_paths": [
+          "todos.md",
+          "todo-status.md",
+          "todos"
+        ]
+      },
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CE-DOCS-30"
+        }
+      ],
+      "notes": "Use the prepared shared/TASKS.md outcome and migration map. Preserve dirty work, managed agent instructions and old evidence. Bound source changes and measurements; final paths are local decisions.",
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "evaluated_not_promoted",
+          "no_change_required"
+        ]
+      },
+      "gates": [
+        {
+          "id": "CE-DOCS-90-CHECK",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python3",
+            "planning/doc-refresh/tools/check.py",
+            "--final",
+            "--project",
+            "cellerator",
+            "--repo",
+            "."
+          ],
+          "cwd": ".",
+          "input_paths": [
+            "planning/doc-refresh",
+            "README.md",
+            "AGENTS.md",
+            "docs"
+          ],
+          "expected_exit_code": 0
+        }
+      ]
+    }
+  ]
+}

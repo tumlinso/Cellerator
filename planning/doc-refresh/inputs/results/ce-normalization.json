@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "ce-normalization",
+  "project": "cellerator",
+  "title": "Normalization improved; whole-exchange fusion remains unproven",
+  "question": "What does a local win justify promoting?",
+  "evidence_state": "recorded_summary",
+  "source": {
+    "path": "bench/ce_geo/evidence/fusion_evaluation.json",
+    "observed_at": "2026-09-29",
+    "repository_head_when_read": "84e132d41069d417a90f14195e7dbf83e1d65065",
+    "file_identity": "7058ed2a2d510dfaccf8aa52d3076ff40d94d9a9ec9e8a2a3cf286da9b2c4cce",
+    "measurement_revision": null,
+    "raw_paths": [],
+    "basis": "Transcribed from an inspected repository summary; not a new run."
+  },
+  "metric": {
+    "unit": "ns",
+    "timing_scope": "host wall-clock normalization stage plus amortized preparation/upload",
+    "statistic": "as reported",
+    "uncertainty": "not available unless row bounds are supplied"
+  },
+  "hardware": "Tesla V100-SXM2-16GB / sm_70 (reported)",
+  "environment": {
+    "cuda": "not fully recovered from this summary",
+    "precision": "Confirm source numerical-policy record; independent CPU partition softmax, reported max absolute error 0.",
+    "warmups": 3,
+    "repeats": 11
+  },
+  "series": [
+    {
+      "key": "cover",
+      "label": "Cover-native normalization"
+    },
+    {
+      "key": "materialized",
+      "label": "Materialized stage"
+    }
+  ],
+  "rows": [
+    {
+      "case": "Reuse 1",
+      "x": 1,
+      "values": {
+        "cover": 114329.0,
+        "materialized": 118495.0
+      }
+    },
+    {
+      "case": "Reuse 16",
+      "x": 16,
+      "values": {
+        "cover": 37521.5,
+        "materialized": 41687.5
+      }
+    },
+    {
+      "case": "Reuse 256",
+      "x": 256,
+      "values": {
+        "cover": 32721.031,
+        "materialized": 36887.031
+      }
+    }
+  ],
+  "chart": "bar",
+  "claim": "Cover-native normalization used two rather than four launches and won these stage measurements. Whole-exchange fusion was correctly not promoted.",
+  "limitations": [
+    "The comparator is gather/normalize/scatter normalization, not a prepared full exchange program.",
+    "One synthetic case: 256 partitions, 16 edges each; independent CPU softmax reference passed.",
+    "No downstream relation apply, whole-program lifetime, or biological generalization was measured."
+  ],
+  "reproduce": "Resolve the current benchmark driver and source-specific command from the original record; run under the existing assigned resources only if a refresh is justified.",
+  "selection": {
+    "recommended": true,
+    "selected": false,
+    "rationale": "Prepared candidate; final editor must verify evidence and select for explanatory value, not maximum speedup."
+  },
+  "review": {
+    "reviewer": null,
+    "verified_at_head": null,
+    "source_verified": false,
+    "method_verified": false,
+    "public_evidence_paths": []
+  },
+  "figure_context": "V100-SXM2-16GB · 256 partitions × 16 edges · normalization stage only"
+}

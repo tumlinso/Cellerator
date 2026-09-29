@@ -58,7 +58,7 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `7435`
+Project revision: `7436`
 
 ## Workstreams
 - `CE-CCP1-0000` | status: done | execution: closed | next: Begin only after manual plan application and explicit run activation; execute A01 authority baseline first.
@@ -1087,6 +1087,11 @@ Project revision: `7435`
 - `cellpack-packing-plan-evaluator` | status: done | execution: closed | next: Preserve completed evaluator/referee evidence.
 - `sequence-bits-dna2` | status: done | execution: closed | next: Preserve historical exact-sequence evidence now owned by Baseplane.
 - `CE-ARCH-00` | status: done | execution: closed | next: Complete as the bounded recovery epic. CE-ARCH-80 owns the remaining roadmap implementation and migration exit criteria.
+- `CE-DOCS-000` | status: planned | execution: inactive | next: Apply the prewritten public/agent/developer/status hierarchy, perform only useful small moves, and qualify selected result displays. Part of DOCS-REFRESH-2026-09; authority remains local.
+- `CE-DOCS-10` | status: planned | execution: ready | next: Refresh source/claims after prior packages; classify important documents; stage the already-written README, design, status, source-map and agent pages without rederiving intent.
+- `CE-DOCS-20` | status: planned | execution: ready | next: Move at most one useful mechanical source cluster by default, or keep source as-is; repair living docs/build/import/export references and preserve all semantic/evidence boundaries.
+- `CE-DOCS-30` | status: planned | execution: ready | next: Verify existing result records, export portable raw evidence, and refresh only bounded selected cases when justified. Choose at most two public studies. Optional GH capability probe only; no broad benchmark or model work.
+- `CE-DOCS-90` | status: planned | execution: ready | next: Apply reviewed final staged docs, validate local links/status/evidence and affected builds/tests, inspect rendered pages/figures, and write one authentic local handoff receipt.
 - `CE-JBC-B01` | status: done | execution: closed | next: Revalidate live Cellerator, submodule, and Todo cursors. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B02` | status: done | execution: closed | next: Produce the source-backed Cellerator transition map. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
 - `CE-JBC-B03` | status: done | execution: closed | next: Freeze the privileged compiler-component charter. Deliver this as one isolated, reviewable step in the Cellerator baseline, charter, and source ownership workstream.
