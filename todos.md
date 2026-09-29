@@ -439,7 +439,7 @@ Use this file as the canonical index for substantial multi-step work.
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `7457`
+Project revision: `7474`
 
 ## Workstreams
 - `CE-CCP1-0000` | kind: epic | status: done | parent: - | objective: Implement the complete Cellerator compiler family, public CEIR, source language, libCellerator SDK, celleratord, compiler-owned JBC rule discovery, and installable AOT toolchain while deferring general JIT and deep CellShard runtime integration.
@@ -1365,7 +1365,7 @@ Project revision: `7457`
 - `CE-ARCH-80` | kind: epic | status: done | parent: - | objective: Finish the implementation and evidence required by roadmap Phases 4 through 11 and the definition of migration completion, without erasing the bounded results of CE-ARCH-40 through CE-ARCH-79.
 - `CE-ARCH-81` | kind: validation_task | status: done | parent: CE-ARCH-80 | objective: Replace stale completion language with a source-backed Phase 4 through Phase 11 exit matrix that distinguishes implemented, partial, missing, and externally blocked requirements.
 - `CE-ML2-BIO` | kind: task | status: planned | parent: CE-ML2-0000 | objective: Turn the scientifically selected structured computation into a reusable CE/CT facility or a justified composition of existing facilities, with exact semantics and complete-cost evidence.
-- `CE-ML2-TRAIN` | kind: task | status: in_progress | parent: CE-ML2-0000 | objective: Expose one genuinely composable trainable CT path over current CE owners, replacing assumptions about the old combined N16 backward/update adapter with tested gradient and update semantics.
+- `CE-ML2-TRAIN` | kind: task | status: done | parent: CE-ML2-0000 | objective: Expose one genuinely composable trainable CT path over current CE owners, replacing assumptions about the old combined N16 backward/update adapter with tested gradient and update semantics.
 - `CE-NF1-0000` | kind: epic | status: superseded | parent: - | objective: 
 - `CE-PTR` | kind: epic | status: done | parent: - | objective: Remove inappropriate generic STL ownership and incidental container structures from production Cellerator by replacing them with explicit semantic structures, lifetimes, memory domains, images, views, and prepared workspaces without creating a generic container library.
 - `CE-PTR-00` | kind: task | status: done | parent: CE-PTR | objective: Preserve the supplied migration report unmodified, establish CE-PTR mission and invariants, create the first-class parallel task graph, and prove selective context retrieval without production implementation.

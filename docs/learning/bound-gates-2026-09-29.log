@@ -1,0 +1,71 @@
+
+=== CE-ML2-TRAIN-CPP-INSTALLED ===
+Evidence: cf6066c6-73e1-482d-a135-30d84b544238
+training_lifecycle_ms=141.758 guarded_adam_total_ms=48.4491 steps=40 initial_loss=0.0459375 final_loss=0.000788288 native_reserved_bytes=1856 native_generation=44
+prepared mechanism autograd and guarded Adam passed
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "b7927c2d-2c4a-41c9-8bbf-3fce59f62fcb", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/c4491cc7-25a4-46b1-9aca-bd97166f8584/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/c4491cc7-25a4-46b1-9aca-bd97166f8584/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/c4491cc7-25a4-46b1-9aca-bd97166f8584/foreground.stdout.txt"}
+
+=== CE-ML2-TRAIN-INITCHECK ===
+Evidence: c9ff6ccd-1db9-4a83-8c89-dbf6278cef75
+========= COMPUTE-SANITIZER
+f32 prepare_us=341.47 reserved_bytes=1344 forward_us=2827.66 backward_us=1252.33
+mixed prepare_us=345.769 reserved_bytes=1344 forward_us=230.72 backward_us=270.332
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+========= ERROR SUMMARY: 0 errors
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "4ce04460-a906-4933-bcf0-39bb87516659", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/0f51f06d-aaaf-46c2-87e6-6df1e3dc4b59/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/0f51f06d-aaaf-46c2-87e6-6df1e3dc4b59/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/0f51f06d-aaaf-46c2-87e6-6df1e3dc4b59/foreground.stdout.txt"}
+
+=== CE-ML2-TRAIN-MEMCHECK ===
+Evidence: d061db8f-5200-451b-8451-a5bce817c2f6
+========= COMPUTE-SANITIZER
+f32 prepare_us=253.739 reserved_bytes=1344 forward_us=2985.08 backward_us=1349.05
+mixed prepare_us=246.352 reserved_bytes=1344 forward_us=265.688 backward_us=310.427
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+========= ERROR SUMMARY: 0 errors
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "84c3ee9f-a9ad-4221-99ae-60c583f5ca68", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/a958b6f8-445f-45cd-b090-b8ef198bd5d4/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/a958b6f8-445f-45cd-b090-b8ef198bd5d4/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/a958b6f8-445f-45cd-b090-b8ef198bd5d4/foreground.stdout.txt"}
+
+=== CE-ML2-TRAIN-N16-RETAINED ===
+Evidence: c65f85e3-7bd9-4ead-ab2b-c4fb00dbee0d
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "99596a25-4eb6-44a3-9426-0936820aa2ac", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/878a696c-fb91-4dd2-969b-8ad994f4cac7/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/878a696c-fb91-4dd2-969b-8ad994f4cac7/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/878a696c-fb91-4dd2-969b-8ad994f4cac7/foreground.stdout.txt"}
+
+=== CE-ML2-TRAIN-NATIVE ===
+Evidence: 609a7fbf-7381-45ca-bd23-6e9c72c12878
+f32 prepare_us=236.819 reserved_bytes=1344 forward_us=83.907 backward_us=84.082
+mixed prepare_us=228.306 reserved_bytes=1344 forward_us=23.559 backward_us=20.788
+native product training forward/VJP, identity, capacity, lifetime, assembly, and publication checks passed
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "481d67eb-2d2d-4c5a-9707-1034899744d9", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/498138b8-053e-45f6-b0bb-3c8b530a2925/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/498138b8-053e-45f6-b0bb-3c8b530a2925/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/498138b8-053e-45f6-b0bb-3c8b530a2925/foreground.stdout.txt"}
+
+=== CE-ML2-TRAIN-PYTHON-INSTALLED ===
+Evidence: 530c9554-cccf-43c4-b55a-913ae673168c
+......................                                                   [100%]
+22 passed in 7.55s
+
+STDERR
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+
+CUDA gate receipt: {"classification": "decision-result", "evidence_id": "52a5d70e-1e24-43c8-a621-b1ad12fa90f4", "lease_receipt": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/75b519b7-d954-4542-b324-aafa8d53fc0f/lease.json", "message": "No action-worthy result; evidence stored.", "ok": true, "returncode": 0, "status": "succeeded", "stderr_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/75b519b7-d954-4542-b324-aafa8d53fc0f/foreground.stderr.txt", "stdout_path": "/home/tumlinson/Cellerator/.todo-orchestrator/runtime/background-artifacts/foreground/75b519b7-d954-4542-b324-aafa8d53fc0f/foreground.stdout.txt"}

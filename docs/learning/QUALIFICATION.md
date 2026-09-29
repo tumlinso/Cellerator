@@ -1,7 +1,7 @@
 # TRAIN qualification receipt
 
-Status: **all six GPU executable checks passed**.
-Project Control completion is tracked separately below.
+Status: **TRAIN completed as implemented on 2026-09-29, revision 7474**.
+All six bound Project Control gates passed; no active TRAIN claim remains.
 
 ## Installed environments
 
@@ -23,7 +23,7 @@ The two Torch producers use distinct build/install trees. Load only the Python
 producer into the Python distribution. Set `CELLERATORCH_NATIVE_LIBRARY` to
 its `lib/libcellera_torch_mechanism.so` before constructing a Python module.
 
-## GPU qualification
+## GPU qualification on 2026-09-27
 
 Source commit: `f42ce55a`. All six configured executable checks passed on a
 V100 under one CUDA controller reservation, using the exact commands in
@@ -57,25 +57,28 @@ Adam time. These are fixture observations, not a performance comparison.
 The native fixture reserved 1344 bytes in each precision mode; the C++ fixture
 reported 1856 bytes. No real dataset or biological fit is claimed.
 
-## Scheduling and workflow acceptance
+## Bound workflow acceptance on 2026-09-29
 
-With the user's authorization, Project Control was restarted to release idle
-observer GPU reservations; readiness returned successfully. Tests retained the
-CUDA controller's three consecutive idle samples and used a 60-second idle
-proof timeout because this host's monitoring queries exceeded the default
-10-second window. No competing GPU process was killed manually.
+The earlier completion attempt failed GPU idle verification before test launch:
+its default 10-second window obtained only two of three required idle samples.
+A fresh amendment assembled from the current authority applied at revision
+7460 sets all six gates to a 60-second window while retaining three consecutive
+idle samples. The supported owner-maintenance plan operation preserved task
+semantics, scopes, invariants, queue, historical evidence and unrelated state;
+a before/after comparison verified those boundaries. No gate was waived.
 
-The bound Project Control gates retain their original default idle timeout;
-the supported binding operation cannot amend an existing gate. The completion
-attempt refused acceptance: C++ gate evidence
-`2e852ec7-ecfb-4851-8934-2a8fee89f6c1` reports `gpu_not_quiescent`,
-14.616 seconds elapsed and two of three idle samples. Both samples were idle
-with no foreign processes; its executable did not run. The same executable
-passed in the 60-second-proof suite above. No task state was overridden.
+Project Control then executed all six bound gates successfully, including
+22 Python tests with no skips and zero errors from both CUDA sanitizers.
+TRAIN closed as `done` / `implemented` at revision 7474. The client call reached
+its 300-second wait limit while the server continued; a subsequent authoritative
+inspection confirmed completion, so the operation was not repeated.
 
-TRAIN remains open; the claim was released through handoff
-`ed34da17-9c10-4de2-bfa8-2f8f4368e7e4` at project revision 7435. Completing
-the ledger requires a supported amendment of the bound gate idle timeout.
+See `bound-gates-2026-09-29.log` for the new outputs and the `workflow` section
+of `capability-receipt.json` for all six evidence IDs and artifact hashes.
+The original numerical source remains `f42ce55a`; the qualification checkout
+was `52870f8f` with the recorded gate configuration change. No numerical code
+was changed during this repair. The GPUs were already free; no service restart
+was required on this date.
 
 No dataset is needed for these checks. No GlassHelix scientific training or
 CE-ML2-BIO work has started.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "CE-ML2-TRAIN",
-  "status": "gpu_qualified_workflow_handoff",
+  "status": "complete",
   "source_commit": "f42ce55ae3adef1062f290b8784a23a187491b51",
   "passed": [
     "native compilation",
@@ -91,14 +91,81 @@
     "log": "gpu-validation.log"
   },
   "installed_python_source_sha256": "d627e92d771ee7a917f57aadf03cf0537663c7fde882677c2b0d06195e9e6d43",
+  "workflow_history": [
+    {
+      "completion": "refused_required_gates_unsatisfied",
+      "failed_gate": "CE-ML2-TRAIN-CPP-INSTALLED",
+      "evidence_id": "2e852ec7-ecfb-4851-8934-2a8fee89f6c1",
+      "reason": "gpu_not_quiescent: default10-second timeout elapsed14.616s, observed2 of3 required idle samples; both idle, no foreign processes. Executable did not run in this gate attempt.",
+      "handoff_id": "ed34da17-9c10-4de2-bfa8-2f8f4368e7e4",
+      "project_revision": 7435,
+      "claim_released": true,
+      "task_complete": false
+    }
+  ],
   "workflow": {
-    "completion": "refused_required_gates_unsatisfied",
-    "failed_gate": "CE-ML2-TRAIN-CPP-INSTALLED",
-    "evidence_id": "2e852ec7-ecfb-4851-8934-2a8fee89f6c1",
-    "reason": "gpu_not_quiescent: default10-second timeout elapsed14.616s, observed2 of3 required idle samples; both idle, no foreign processes. Executable did not run in this gate attempt.",
-    "handoff_id": "ed34da17-9c10-4de2-bfa8-2f8f4368e7e4",
-    "project_revision": 7435,
+    "completion": "done",
+    "result": "implemented",
+    "project_revision": 7474,
     "claim_released": true,
-    "task_complete": false
+    "task_complete": true,
+    "amendment_revision": 7460,
+    "maintenance": "Fresh current-state schema-v3 amendment, preserving task definitions/scopes/invariants/queue/history;6 quiescence configs changed to timeout60/3samples. Parent included only for native-plan parent validation.",
+    "preservation_check": "All unrelated snapshot tables and task semantic fields preserved; expected handoff/resume and plan audit metadata changes verified.",
+    "controller_recovery": "Root handled the validated owner-maintenance amendment and semantic comparison as workflow recovery; subagents researched the route and edited the gate configuration.",
+    "transport": "Completion call exceeded300s client wait; subsequent authoritative inspection confirmed done/implemented at7474, no retry or manual completion.",
+    "gates": [
+      {
+        "gate": "CE-ML2-TRAIN-CPP-INSTALLED",
+        "status": "passed",
+        "evidence_id": "cf6066c6-73e1-482d-a135-30d84b544238",
+        "revision": 7463,
+        "created_at": "2026-09-29T13:26:26Z",
+        "input_fingerprint": "8e340e45f7a0aa75f73336db4c5ea6eac3c041fe83ca9d554d4f0e3e0bcb2c57"
+      },
+      {
+        "gate": "CE-ML2-TRAIN-INITCHECK",
+        "status": "passed",
+        "evidence_id": "c9ff6ccd-1db9-4a83-8c89-dbf6278cef75",
+        "revision": 7465,
+        "created_at": "2026-09-29T13:27:26Z",
+        "input_fingerprint": "85cc8be336adb3efd4d62a660c4f700bb2c5d9470bf096090578a9aa1690a8e4"
+      },
+      {
+        "gate": "CE-ML2-TRAIN-MEMCHECK",
+        "status": "passed",
+        "evidence_id": "d061db8f-5200-451b-8451-a5bce817c2f6",
+        "revision": 7467,
+        "created_at": "2026-09-29T13:28:25Z",
+        "input_fingerprint": "07b43c7064dad9404d873e1cc155d1089d237d0c33289a9080cb9e2c8eed49a0"
+      },
+      {
+        "gate": "CE-ML2-TRAIN-N16-RETAINED",
+        "status": "passed",
+        "evidence_id": "c65f85e3-7bd9-4ead-ab2b-c4fb00dbee0d",
+        "revision": 7469,
+        "created_at": "2026-09-29T13:29:25Z",
+        "input_fingerprint": "cb2b00a47ea22cff42852d3459255c813c7b0adbf357794c7aeb843cdf729713"
+      },
+      {
+        "gate": "CE-ML2-TRAIN-NATIVE",
+        "status": "passed",
+        "evidence_id": "609a7fbf-7381-45ca-bd23-6e9c72c12878",
+        "revision": 7471,
+        "created_at": "2026-09-29T13:30:25Z",
+        "input_fingerprint": "bb38aba3d629400a5e79e537eda60033a5cdc4208c014caf0c8ee0b1c55a5a93"
+      },
+      {
+        "gate": "CE-ML2-TRAIN-PYTHON-INSTALLED",
+        "status": "passed",
+        "evidence_id": "530c9554-cccf-43c4-b55a-913ae673168c",
+        "revision": 7473,
+        "created_at": "2026-09-29T13:31:31Z",
+        "input_fingerprint": "61320434e17aa0288c6e6fd109d111211abfe12837d81e22a315af2ebffa2ae7"
+      }
+    ],
+    "log": "bound-gates-2026-09-29.log",
+    "qualification_checkout_commit": "52870f8fa2ed14f0f44ffdb9f89076ba7ed14531",
+    "gate_configuration_sha256": "25da6e037a8253027718deb4bcf31c9dbf5b4452887c595eabbfbf87766442bb"
   }
 }
