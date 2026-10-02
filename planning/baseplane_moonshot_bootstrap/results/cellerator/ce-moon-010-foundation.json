@@ -1,0 +1,108 @@
+{
+  "task": "CE-MOON-010",
+  "recorded_at": "2026-10-02T13:35:15.467820+00:00",
+  "producer_base_commit": "297b2350bce866d4e96098df54b3d4cd330349bd",
+  "producer_source_digest": "89943b0a37afc9439a037e0a411067641c2419b9dddf7f04c37c3f7990fc6e28",
+  "artifact_sha256": {
+    "experiments/baseplane_moonshot/CMakeLists.txt": "b8ba7b53551c3256879b07cdd22958450c7fa1586fa60ba7fb5625a19971ad42",
+    "experiments/baseplane_moonshot/README.md": "abf9e147a3c085e7d8d5ea2110797f3f4f32ca6b384d3eb2769de3cbca8ddc8f",
+    "experiments/baseplane_moonshot/cuda/compile.cu": "53de5750ddb2eed11797fe2dcaf90c16e0682761f2f8460e53e6433bed4c373b",
+    "experiments/baseplane_moonshot/cuda/link_a.cu": "00b743dfaed7e1a49cc2bd595cb82e394074f9af46cab1d24687e6d74f3904e6",
+    "experiments/baseplane_moonshot/cuda/link_b.cu": "f9bffdd9282fea42dc646bbf49bd3e4cedb923812491442ecc9105e80c9a68fd",
+    "experiments/baseplane_moonshot/host/smoke.cpp": "4cff577a7c3f74920b6cbc16e091be5c55ce7a5b9c5cc1e472e437cdea775a83",
+    "experiments/baseplane_moonshot/include/ce_moon/reference.hpp": "dcb8b316a823c48fc7ffcbbee0cd7ab7d9bf06e3935d5fcdf972a751269138ed",
+    "experiments/baseplane_moonshot/include/ce_moon/volta.cuh": "b67667e42a2b82633aba07e058dfe54db87f89c1dbf2270e3eb6b4a1069f3d8a",
+    "experiments/baseplane_moonshot/python/learn_lut.py": "2b80bfba8f379bd9455158e5cc5fe809d959259ab3e99dcd2a16fad597e14224"
+  },
+  "entry_point_and_shape_contract": {
+    "target": "Cellerator::moonshot",
+    "source_dir": "explicit CE_MOON_SOURCE_DIR points to experiments/baseplane_moonshot",
+    "header": "ce_moon/reference.hpp",
+    "namespace": "ce_moon",
+    "dfa": "32 source-independent states; left effect followed by right; validates states; checked counted uint64 addition",
+    "affine": "N permutation slots with double scaling/bias",
+    "residual": "nonempty finite scalar vector, reconstruct leaf index, above threshold scalar-max query",
+    "relation": "16x16 binary matrices",
+    "cuda_header": "ce_moon/volta.cuh",
+    "cuda_namespace": "ce_moon_cuda",
+    "family_discovery": "families/*/CMakeLists.txt"
+  },
+  "status": {
+    "authored": true,
+    "host_compiled": true,
+    "host_run": true,
+    "host_compared": true,
+    "cuda_compiled_sm70": true,
+    "gpu_run": false,
+    "gpu_compared": false,
+    "biological_validation": false,
+    "benchmark_run": false,
+    "cuda_two_translation_unit_link": true
+  },
+  "known_approximation_and_loss": [
+    "floating affine composition and residual reconstruction approximate",
+    "residual pruning certified only for scalar maximum",
+    "finite DFA/counts do not recover source positions",
+    "WMMA FP16 inputs FP32 accumulator; butterfly float; texture finite coordinate precision",
+    "CUDA counted composition requires caller proof against uint64 overflow",
+    "toy LUT teacher agreement does not establish held-out generalization"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-foundation-host",
+        "-j",
+        "2"
+      ],
+      "returncode": 0,
+      "output": "[100%] Built target ce_moon_host_smoke\n"
+    },
+    {
+      "argv": [
+        "ctest",
+        "--test-dir",
+        "/tmp/ce-moon-foundation-host",
+        "--output-on-failure"
+      ],
+      "returncode": 0,
+      "output": "Internal ctest changing into directory: /tmp/ce-moon-foundation-host\nTest project /tmp/ce-moon-foundation-host\n    Start 1: ce_moon_host_smoke\n1/2 Test #1: ce_moon_host_smoke ...............   Passed    0.00 sec\n    Start 2: ce_moon_learn_lut\n2/2 Test #2: ce_moon_learn_lut ................   Passed    0.05 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.06 sec\n"
+    },
+    {
+      "argv": [
+        "/tmp/ce-moon-foundation-host/ce_moon_host_smoke"
+      ],
+      "returncode": 0,
+      "output": "{\"status\":\"host_smoke_pass\",\"random_dfa_cases\":100,\"gpu_executed\":false,\"biological_validation\":false}\n"
+    },
+    {
+      "argv": [
+        "python",
+        "experiments/baseplane_moonshot/python/learn_lut.py"
+      ],
+      "returncode": 0,
+      "output": "{\n  \"fixture\": \"synthetic_truth_table\",\n  \"logits\": [\n    -4.57891203005526,\n    -4.57891203005526,\n    -4.57891203005526,\n    4.578912030055261,\n    4.578912030055261,\n    4.578912030055261,\n    4.578912030055261,\n    -4.57891203005526\n  ],\n  \"lop3_immediate\": \"0x78\",\n  \"teacher_lut\": \"0x78\",\n  \"truth_table_agreement\": true,\n  \"biological_validation\": false,\n  \"generalization_evaluated\": false\n}\n"
+    },
+    {
+      "argv": [
+        "cmake",
+        "--build",
+        "/tmp/ce-moon-foundation-cuda",
+        "--target",
+        "ce_moon_cuda_compile",
+        "ce_moon_cuda_header_link",
+        "-j",
+        "2"
+      ],
+      "returncode": 0,
+      "output": "[100%] Built target ce_moon_cuda_compile\n[100%] Built target ce_moon_cuda_header_link\n"
+    }
+  ],
+  "previous_source_digest": "08c39a74f01df246469106b6602485ba150206b44b4bfdb6c95c0c95bda281a7",
+  "review_corrections": [
+    "internal-linkage CUDA kernels to support multiple including translation units",
+    "reject nonfinite lifting inputs and intermediate overflow during residual tree build/reconstruction",
+    "extreme finite success and intermediate overflow rejection tests"
+  ]
+}
